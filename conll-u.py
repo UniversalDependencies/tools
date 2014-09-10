@@ -5,6 +5,7 @@ import argparse
 import os.path
 import logging
 import re
+import file_util
 
 THIS=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
 
@@ -130,22 +131,10 @@ def validate(inp,out,args):
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description='CoNLL-U validation script')
-    opt_parser.add_argument('--ie', default="utf-8", help='Input encoding. Default: %(default)s')
-    opt_parser.add_argument('--oe', default="utf-8", help='Output encoding. Default: %(default)s')
     opt_parser.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
     opt_parser.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
     opt_parser.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
     args = opt_parser.parse_args() #Parsed command-line arguments
 
-    #Decide where to get the data from
-    if args.input is None or args.input=="-": #Stdin
-        inp=codecs.getreader(args.ie)(sys.stdin)
-    else: #File name given
-        inp=codecs.open(args.input,"r",args.ie)
-    #inp is now an iterator over lines, giving unicode strings
-
-    if args.output is None or args.output=="-": #stdout
-        out=codecs.getreader(args.oe)(sys.stdout)
-    else: #File name given
-        out=codecs.open(args.output,"w",args.oe)
+    inp,out=file_util.in_out(args)
     validate(inp,out,args)
