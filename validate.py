@@ -81,11 +81,10 @@ def validate_ID_sequence(tree):
             tokens.append((beg,end))
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
-        warn(u"Words do not form a sequence in the preceding tree. Got: %s. Giving up."%(u",".join(unicode(x) for x in words)))
-        sys.exit(1)
+        warn(u"Words do not form a sequence in the preceding tree. Got: %s."%(u",".join(unicode(x) for x in words)))
     #TODO: Check sanity of word intervals
 
-whitespace_re=re.compile(ur"\s",re.U)
+whitespace_re=re.compile(ur".*\s",re.U)
 def validate_whitespace(cols):
     """
     Checks a single line for disallowed whitespace.
