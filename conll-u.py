@@ -171,18 +171,19 @@ def load_set(f_name):
     return res
 
 if __name__=="__main__":
-    opt_parser = argparse.ArgumentParser(description='CoNLL-U validation script')
+    opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
+    list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets. The various file name options can be set to an existing file, a file name in the local data directory, or 'none'.")
+    list_group.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
+    list_group.add_argument("--cpos-file", action="store", default="GoogleTags", help="A file listing the allowed CPOS tags. Default: %(default)s.")
+    list_group.add_argument("--pos-file", action="store", default="FineTags", help="A file listing the allowed POS tags. Default: %(default)s.")
+    list_group.add_argument("--feature-file", action="store", default="UniMorphSet", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
+    list_group.add_argument("--deprel-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
+    list_group.add_argument("--deps-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
 
-    opt_parser.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
-    opt_parser.add_argument("--cpos-file", action="store", default="GoogleTags", help="A file listing the allowed CPOS tags. Default: %(default)s.")
-    opt_parser.add_argument("--pos-file", action="store", default="GoogleTags", help="A file listing the allowed POS tags. Default: %(default)s.")
-    opt_parser.add_argument("--feature-file", action="store", default="UniMorphSet", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
-    opt_parser.add_argument("--deprel-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
-    opt_parser.add_argument("--deps-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
-
-    opt_parser.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
-    opt_parser.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
-    opt_parser.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
+    io_group=opt_parser.add_argument_group("Input / output options")
+    io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
+    io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
+    io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
     args = opt_parser.parse_args() #Parsed command-line arguments
 
 
