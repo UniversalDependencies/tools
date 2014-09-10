@@ -87,15 +87,19 @@ def subset_to_words(tree):
     """
     return [cols for cols in tree if cols[ID].isdigit()]
     
-def validate(inp):
+def validate(inp,out,args):
     for comments,tree in trees(inp):
         validate_ID_sequence(tree)
+        if args.echo_input:
+            print_tree(comments,tree,out)
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description='CoNLL-U validation script')
     opt_parser.add_argument('--ie', default="utf-8", help='Input encoding. Default: %(default)s')
     opt_parser.add_argument('--oe', default="utf-8", help='Output encoding. Default: %(default)s')
+    opt_parser.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
     opt_parser.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
+    opt_parser.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
     args = opt_parser.parse_args() #Parsed command-line arguments
 
     #Decide where to get the data from
@@ -104,4 +108,9 @@ if __name__=="__main__":
     else: #File name given
         inp=codecs.open(args.input,"r",args.ie)
     #inp is now an iterator over lines, giving unicode strings
-    validate(inp)
+
+    if args.output is None or args.output=="-": #stdout
+        out=codecs.getreader(args.oe)(sys.stdout)
+    else: #File name given
+        out=codecs.open(args.output,"w",args.oe)
+    validate(inp,out,args)
