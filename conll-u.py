@@ -4,6 +4,7 @@ import codecs
 import argparse
 import os.path
 import logging
+import re
 
 #Constants for the column indices
 COLCOUNT=10
@@ -11,6 +12,13 @@ ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 
 def warn(msg):
     print msg #TODO: encoding
+
+def print_tree(comments,tree,out):
+    if comments:
+        print >> out, u"\n".join(comments)
+    for cols in tree:
+        print >> out, u"\t".join(cols)
+    print >> out
 
 def trees(inp):
     """
@@ -45,11 +53,43 @@ def trees(inp):
         if comments or lines: #These should have been yielded on an empty line!
             warn(u"Missing empty line after the last tree.")
             yield comments, lines
-        
 
+interval_re=re.compile(ur"^([0-9]+)-([0-9]+)$",re.U)
+def validate_ID_sequence(tree):
+    """
+    Validates that the ID sequence is correctly formed. Assumes word indexing.
+    """
+    words=[]
+    tokens=[]
+    for cols in tree:
+        if cols[ID].isdigit():
+            t_id=int(cols[ID])
+            words.append(t_id)
+            #Not covered by the previous interval?
+            if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
+                tokens.append((t_id,t_id)) #nope - let's make a default interval for it
+        else:
+            match=interval_re.match(cols[ID]) #Check the interval against the regex
+            if not match:
+                warn(u"Spurious token interval definition: '%s'. Giving up."%cols[ID])
+                sys.exit(1)
+            beg,end=int(match.group(1)),int(match.group(2))
+            tokens.append((beg,end))
+    #Now let's do some basic sanity checks on the sequences
+    if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
+        warn(u"Words do not form a sequence in the preceding tree. Got: %s. Giving up."%(u",".join(unicode(x) for x in words)))
+        sys.exit(1)
+    #TODO: Check sanity of word intervals
+
+def subset_to_words(tree):
+    """
+    Only picks the word lines, skips token lines.
+    """
+    return [cols for cols in tree if cols[ID].isdigit()]
+    
 def validate(inp):
-    for comments,lines in trees(inp):
-        pass
+    for comments,tree in trees(inp):
+        validate_ID_sequence(tree)
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description='CoNLL-U validation script')
