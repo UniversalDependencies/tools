@@ -7,7 +7,7 @@ import logging
 import re
 import file_util
 
-THIS=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
+THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
 
 #Constants for the column indices
 COLCOUNT=10
@@ -97,44 +97,104 @@ def validate_whitespace(cols):
     return True #passed
 
 attr_val_re=re.compile(ur"^([^=]+)=([^=]+)$",re.U) #TODO: Maybe this can be made tighter?
-def validate_features(feats):
+def validate_features(cols,tag_sets):
+    feats=cols[FEATS]
     if feats==u"_":
         return True
     feat_list=feats.split(u"|")
     if feat_list!=sorted(feat_list):
-        warn("Morphological features must be sorted: '%s'"%feats)
+        warn(u"Morphological features must be sorted: '%s'"%feats)
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
-            warn("Spurious morhological feature: '%s'. Should be of the form attribute=value."%f)
+            warn(u"Spurious morhological feature: '%s'. Should be of the form attribute=value."%f)
         else:
             #Check that the values are sorted as well
+            attr=match.group(1)
             values=match.group(2).split(u"+")
             if values!=sorted(values):
-                warn("If an attribute has multiple values, these must be sorted as well: '%s'"%f)
-            #TODO: check against list of values / attributes
+                warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f)
+            for v in values:
+                if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
+                    warn(u"Unknown attribute-value pair %s=%s"%(attr,v))
 
+def validate_pos(cols,tag_sets):
+    if tag_sets[CPOSTAG] is not None and cols[CPOSTAG] not in tag_sets[CPOSTAG]:
+        warn(u"Unknown CPOS tag: %s"%cols[CPOSTAG])
+    if tag_sets[POSTAG] is not None and cols[POSTAG] not in tag_sets[POSTAG]:
+        warn(u"Unknown POS tag: %s"%cols[POSTAG])
+    
+
+def validate_deprels(cols,tag_sets):
+    if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
+        warn(u"Unknown DEPREL: %s"%cols[DEPREL])
+    if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
+        for head_deprel in cols[DEPS].split(u"|"):
+            head,deprel=head_deprel.split(u":")
+            if deprel not in tag_sets[DEPS]:
+                warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
+                
 def subset_to_words(tree):
     """
     Only picks the word lines, skips token lines.
     """
     return [cols for cols in tree if cols[ID].isdigit()]
     
-def validate(inp,out,args):
+def validate(inp,out,args,tag_sets):
     for comments,tree in trees(inp):
         validate_ID_sequence(tree)
         for cols in tree:
             validate_whitespace(cols)
-            validate_features(cols[FEATS])
+            validate_features(cols,tag_sets)
+            validate_pos(cols,tag_sets)
+            validate_deprels(cols,tag_sets)
         if args.echo_input:
             print_tree(comments,tree,out)
 
+def load_set(f_name):
+    """
+    Loads a list of values from f_name, and returns their set. If
+    f_name is "none", return None. If f_name is not found, tries to
+    look in the local data dir.
+    """
+    if f_name.lower()=="none":
+        return None
+    res=set()
+    if not os.path.exists(f_name) and os.path.exists(os.path.join(THISDIR,"data",f_name)):
+        f_name=os.path.join(THISDIR,"data",f_name)
+    with codecs.open(f_name,"r","utf-8") as f:
+        for line in f:
+            line=line.strip()
+            if not line or line.startswith(u"#"):
+                continue
+            res.add(line)
+    return res
+
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description='CoNLL-U validation script')
+
+    opt_parser.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
+    opt_parser.add_argument("--cpos-file", action="store", default="GoogleTags", help="A file listing the allowed CPOS tags. Default: %(default)s.")
+    opt_parser.add_argument("--pos-file", action="store", default="GoogleTags", help="A file listing the allowed POS tags. Default: %(default)s.")
+    opt_parser.add_argument("--feature-file", action="store", default="UniMorphSet", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
+    opt_parser.add_argument("--deprel-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
+    opt_parser.add_argument("--deps-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
+
     opt_parser.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
     opt_parser.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
     opt_parser.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
     args = opt_parser.parse_args() #Parsed command-line arguments
 
+
+    tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
+    #Load the tag lists
+    if args.check_lists:
+        tagsets[FEATS]=load_set(args.feature_file)
+        tagsets[POSTAG]=load_set(args.pos_file)
+        tagsets[CPOSTAG]=load_set(args.cpos_file)
+        tagsets[DEPREL]=load_set(args.deprel_file)
+        tagsets[DEPS]=load_set(args.deps_file)
+        
+
     inp,out=file_util.in_out(args)
-    validate(inp,out,args)
+    validate(inp,out,args,tagsets)
