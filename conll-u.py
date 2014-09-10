@@ -6,9 +6,12 @@ import os.path
 import logging
 import re
 
+THIS=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
+
 #Constants for the column indices
 COLCOUNT=10
 ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
+COLNAMES=u"ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
 
 def warn(msg):
     print msg #TODO: encoding
@@ -81,6 +84,35 @@ def validate_ID_sequence(tree):
         sys.exit(1)
     #TODO: Check sanity of word intervals
 
+whitespace_re=re.compile(ur"\s",re.U)
+def validate_whitespace(cols):
+    """
+    Checks a single line for disallowed whitespace.
+    """
+    for col_idx in range(DEPS+1): #...all columns up to and including DEPS
+        if whitespace_re.match(cols[col_idx]) is not None:
+            warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
+            return False #failed
+    return True #passed
+
+attr_val_re=re.compile(ur"^([^=]+)=([^=]+)$",re.U) #TODO: Maybe this can be made tighter?
+def validate_features(feats):
+    if feats==u"_":
+        return True
+    feat_list=feats.split(u"|")
+    if feat_list!=sorted(feat_list):
+        warn("Morphological features must be sorted: '%s'"%feats)
+    for f in feat_list:
+        match=attr_val_re.match(f)
+        if match is None:
+            warn("Spurious morhological feature: '%s'. Should be of the form attribute=value."%f)
+        else:
+            #Check that the values are sorted as well
+            values=match.group(2).split(u"+")
+            if values!=sorted(values):
+                warn("If an attribute has multiple values, these must be sorted as well: '%s'"%f)
+            #TODO: check against list of values / attributes
+
 def subset_to_words(tree):
     """
     Only picks the word lines, skips token lines.
@@ -90,6 +122,9 @@ def subset_to_words(tree):
 def validate(inp,out,args):
     for comments,tree in trees(inp):
         validate_ID_sequence(tree)
+        for cols in tree:
+            validate_whitespace(cols)
+            validate_features(cols[FEATS])
         if args.echo_input:
             print_tree(comments,tree,out)
 
