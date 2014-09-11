@@ -87,6 +87,7 @@ def validate_cols(cols,tag_sets,args):
     called from trees()
     """
     validate_whitespace(cols)
+    validate_token_empty_vals(cols)
     validate_features(cols,tag_sets)
     validate_pos(cols,tag_sets)
     validate_deprels(cols,tag_sets)
@@ -101,6 +102,17 @@ def validate_whitespace(cols):
             warn(u"Empty value in column %s"%(COLNAMES[col_idx]))
         if whitespace_re.match(cols[col_idx]) is not None:
             warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
+
+def validate_token_empty_vals(cols):
+    """
+    Checks that a token only has _ empty values in all fields except MISC.
+    """
+    if cols[ID].isdigit(): #not a token line
+        return 
+    for col_idx in range(LEMMA,MISC): #all columns in the LEMMA-DEPS range
+        if cols[col_idx]!=u"_":
+            warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]))
+        
 
 attr_val_re=re.compile(ur"^([^=]+)=([^=]+)$",re.U) #TODO: Maybe this can be made tighter?
 def validate_features(cols,tag_sets):
