@@ -117,7 +117,7 @@ def validate_features(cols,tag_sets):
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
-            values=match.group(2).split(u"+")
+            values=match.group(2).split(u",")
             if values!=sorted(values):
                 warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f)
             for v in values:
