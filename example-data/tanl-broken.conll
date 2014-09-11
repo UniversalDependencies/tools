@@ -7,7 +7,7 @@
 1	Gas	gas	NOU	X	num=n|gen=f	0	ROOT	3:nsubq|2:nsubj	_
 2-3	dalla	_	_	_	_	_	_	_	_
 2	da	da	ADP	EA	_	1	adpmod	_	_
-3	la	la	DET	RD	gen=m+f|num=s	4	det	_	_
+3	la	la	DET	RD	gen=m+f|num=s	_	det	_	_
 4	sta tua	statua	NOUN	S	gen=f|num=s	2	adpobj	_	_
 6	.	.	.	FS	_	1	p	_	_
 
