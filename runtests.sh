@@ -3,7 +3,6 @@
 # Run test cases through CoNLL-U validator.
 
 set -u
-set -e
 
 VALIDATOR="python validate.py"
 VALID_DIR="test-cases/valid"
@@ -21,7 +20,7 @@ for validf in true false; do
     fi
 
     for f in $d/*; do 
-	$VALIDATOR < $f > /dev/null
+	$VALIDATOR < $f > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
 	    validv=true
 	else
