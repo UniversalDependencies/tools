@@ -136,7 +136,11 @@ def validate_deprels(cols,tag_sets):
         warn(u"Unknown DEPREL: %s"%cols[DEPREL])
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
-            head,deprel=head_deprel.split(u":")
+            try:
+                head,deprel=head_deprel.split(u":")
+            except ValueError:
+                warn(u"Malformed head:deprel pair '%s'"%head_deprel)
+                continue
             if deprel not in tag_sets[DEPS]:
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
 
