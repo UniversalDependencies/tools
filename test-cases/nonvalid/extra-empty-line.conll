@@ -1,0 +1,8 @@
+# valid one-word sentence.
+1	valid	valid	NOUN	SP	_	0	ROOT	_	_
+
+
+# format error: sentences must be separated by exactly one empty line
+# valid one-word sentence.
+1	valid	valid	NOUN	SP	_	0	ROOT	_	_
+
