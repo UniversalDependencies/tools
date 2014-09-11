@@ -2,8 +2,7 @@
 
 # Run test cases through CoNLL-U validator.
 
-#set -u
-#set -e
+set -u
 
 VALIDATOR="python validate.py --quiet"
 VALID_DIR="test-cases/valid"
