@@ -1,0 +1,3 @@
+# not valid: feature definition is malformed / ambiguous (two "=" characters)
+1	non-valid	non-valid	NOUN	SP	A=B=C	0	ROOT	_	_
+
