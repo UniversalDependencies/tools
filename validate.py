@@ -14,8 +14,20 @@ COLCOUNT=10
 ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES=u"ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
 
-def warn(msg):
-    print msg #TODO: encoding
+error_counter=0
+def warn(msg,lineno=True):
+    """
+    Print the warning. If lineno is True, print the exact line, otherwise
+    print the line on which the current tree starts.
+    """
+    global curr_line, sentence_line, error_counter, args
+    if lineno:
+        print u"[Line         %d]: %s"%(curr_line,msg)
+    else:
+        print u"[Tree on line %d]: %s"%(sentence_line,msg)
+    error_counter+=1
+    if args.max_err>0 and error_counter==args.max_err:
+        sys.exit(1)
 
 def print_tree(comments,tree,out):
     if comments:
@@ -24,6 +36,10 @@ def print_tree(comments,tree,out):
         print >> out, u"\t".join(cols)
     print >> out
 
+
+#Two global variables:
+curr_line=0 #Current line in the input file
+sentence_line=0 #The line in the input file on which the current sentence starts
 def trees(inp):
     """
     `inp` a file-like object yielding lines as unicode
@@ -31,9 +47,11 @@ def trees(inp):
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
     """
+    global curr_line, sentence_line
     comments=[] #List of comment lines to go with the current sentence
     lines=[] #List of token/word lines of the current sentence
     for line_counter, line in enumerate(inp):
+        curr_line=line_counter+1
         line=line.rstrip()
         if not line: #empty line
             if lines: #Sentence done
@@ -41,18 +59,18 @@ def trees(inp):
                 comments=[]
                 lines=[]
             else:
-                warn(u"Line %d: Spurious empty line."%(line_counter+1))
+                warn(u"Spurious empty line.")
         elif line[0]==u"#":
             comments.append(line)
         elif line[0].isdigit():
+            if not lines: #new sentence
+                sentence_line=curr_line
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
-                warn(u"Line %d: The line has %d columns, but %d are expected. Giving up."%(line_counter+1,len(cols),COLCOUNT))
-                sys.exit(1)
+                warn(u"The line has %d columns, but %d are expected."%(len(cols),COLCOUNT))
             lines.append(cols)
         else: #A line which is not a comment, nor a token/word, nor empty. That's bad!
-            warn(u"Line %d: Spurious line: '%s'. Giving up."%(line_counter+1,line))
-            sys.exit(1) #Give a non-zero exit code
+            warn(u"Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line))
     else: #end of file
         if comments or lines: #These should have been yielded on an empty line!
             warn(u"Missing empty line after the last tree.")
@@ -75,13 +93,12 @@ def validate_ID_sequence(tree):
         else:
             match=interval_re.match(cols[ID]) #Check the interval against the regex
             if not match:
-                warn(u"Spurious token interval definition: '%s'. Giving up."%cols[ID])
-                sys.exit(1)
+                warn(u"Spurious token interval definition: '%s'."%cols[ID],lineno=False)
             beg,end=int(match.group(1)),int(match.group(2))
             tokens.append((beg,end))
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
-        warn(u"Words do not form a sequence in the preceding tree. Got: %s."%(u",".join(unicode(x) for x in words)))
+        warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),lineno=False)
     #TODO: Check sanity of word intervals
 
 whitespace_re=re.compile(ur".*\s",re.U)
@@ -92,8 +109,6 @@ def validate_whitespace(cols):
     for col_idx in range(MISC+1): #...all columns up to and including MISC (i.e. all columns ;)
         if whitespace_re.match(cols[col_idx]) is not None:
             warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
-            return False #failed
-    return True #passed
 
 attr_val_re=re.compile(ur"^([^=]+)=([^=]+)$",re.U) #TODO: Maybe this can be made tighter?
 def validate_features(cols,tag_sets):
@@ -154,14 +169,14 @@ def validate_tree(tree):
     word_tree=subset_to_words(tree)
     for cols in word_tree:
         if cols[HEAD]==u"_":
-            warn(u"Empty head for word ID %s"%cols[ID])
+            warn(u"Empty head for word ID %s"%cols[ID],lineno=False)
         else:
             deps.setdefault(int(cols[HEAD]),set()).add(int(cols[ID]))
     root_proj=set()
     proj(0,root_proj,deps)
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
     if unreachable:
-        warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))))
+        warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),lineno=False)
     
 def validate(inp,out,args,tag_sets):
     for comments,tree in trees(inp):
@@ -196,6 +211,13 @@ def load_set(f_name):
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
+
+    io_group=opt_parser.add_argument_group("Input / output options")
+    io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
+    io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
+    io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
+    io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
+
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets. The various file name options can be set to an existing file, a file name in the local data directory, or 'none'.")
     list_group.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
     list_group.add_argument("--cpos-file", action="store", default="GoogleTags", help="A file listing the allowed CPOS tags. Default: %(default)s.")
@@ -204,10 +226,9 @@ if __name__=="__main__":
     list_group.add_argument("--deprel-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
     list_group.add_argument("--deps-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
 
-    io_group=opt_parser.add_argument_group("Input / output options")
-    io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
-    io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
-    io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
+    tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
+
+
     args = opt_parser.parse_args() #Parsed command-line arguments
 
 
@@ -222,4 +243,12 @@ if __name__=="__main__":
         
 
     inp,out=file_util.in_out(args)
+    error_counter=0 #Incremented by warn()
     validate(inp,out,args,tagsets)
+    if error_counter==0:
+        print >> sys.stderr, "*** PASSED ***"
+        sys.exit(0)
+    else:
+        print >> sys.stderr, "*** FAILED *** with %d errors"%error_counter
+        sys.exit(1)
+    
