@@ -21,10 +21,11 @@ def warn(msg,lineno=True):
     print the line on which the current tree starts.
     """
     global curr_line, sentence_line, error_counter, args
-    if lineno:
-        print >> sys.stderr, (u"[Line         %d]: %s"%(curr_line,msg)).encode(args.err_enc)
-    else:
-        print >> sys.stderr, (u"[Tree on line %d]: %s"%(sentence_line,msg)).encode(args.err_enc)
+    if not args.quiet:
+        if lineno:
+            print >> sys.stderr, (u"[Line         %d]: %s"%(curr_line,msg)).encode(args.err_enc)
+        else:
+            print >> sys.stderr, (u"[Tree on line %d]: %s"%(sentence_line,msg)).encode(args.err_enc)
     error_counter+=1
     if args.max_err>0 and error_counter==args.max_err:
         sys.exit(1)
@@ -53,7 +54,7 @@ def trees(inp,tag_sets,args):
     lines=[] #List of token/word lines of the current sentence
     for line_counter, line in enumerate(inp):
         curr_line=line_counter+1
-        line=line.rstrip()
+        line=line.rstrip(u"\n")
         if not line: #empty line
             if lines: #Sentence done
                 yield comments, lines
@@ -96,6 +97,8 @@ def validate_whitespace(cols):
     Checks a single line for disallowed whitespace.
     """
     for col_idx in range(MISC+1): #...all columns up to and including MISC (i.e. all columns ;)
+        if not cols[col_idx]:
+            warn(u"Empty value in column %s"%(COLNAMES[col_idx]))
         if whitespace_re.match(cols[col_idx]) is not None:
             warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
 
@@ -232,6 +235,7 @@ if __name__=="__main__":
 
     io_group=opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
+    io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail. Implies --noecho.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
     io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)s. Note that the CoNLL-U output is by definition always utf-8.')
     io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
@@ -250,6 +254,8 @@ if __name__=="__main__":
 
     args = opt_parser.parse_args() #Parsed command-line arguments
 
+    if args.quiet:
+        args.echo_input=False
 
     tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
     #Load the tag lists
@@ -265,9 +271,11 @@ if __name__=="__main__":
     error_counter=0 #Incremented by warn()
     validate(inp,out,args,tagsets)
     if error_counter==0:
-        print >> sys.stderr, "*** PASSED ***"
+        if not args.quiet:
+            print >> sys.stderr, "*** PASSED ***"
         sys.exit(0)
     else:
-        print >> sys.stderr, "*** FAILED *** with %d errors"%error_counter
+        if not args.quiet:
+            print >> sys.stderr, "*** FAILED *** with %d errors"%error_counter
         sys.exit(1)
     
