@@ -40,9 +40,10 @@ def print_tree(comments,tree,out):
 #Two global variables:
 curr_line=0 #Current line in the input file
 sentence_line=0 #The line in the input file on which the current sentence starts
-def trees(inp):
+def trees(inp,tag_sets,args):
     """
     `inp` a file-like object yielding lines as unicode
+    `tag_sets` and `args` are needed for choosing the tests
     
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
@@ -69,6 +70,7 @@ def trees(inp):
             if len(cols)!=COLCOUNT:
                 warn(u"The line has %d columns, but %d are expected."%(len(cols),COLCOUNT))
             lines.append(cols)
+            validate_cols(cols,tag_sets,args)
         else: #A line which is not a comment, nor a token/word, nor empty. That's bad!
             warn(u"Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line))
     else: #end of file
@@ -177,15 +179,22 @@ def validate_tree(tree):
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
     if unreachable:
         warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),lineno=False)
+
+def validate_cols(cols,tag_sets,args):
+    """
+    All tests that can run on a single line. Done as soon as the line is read,
+    called from trees()
+    """
+    validate_whitespace(cols)
+    validate_features(cols,tag_sets)
+    validate_pos(cols,tag_sets)
+    validate_deprels(cols,tag_sets)
     
 def validate(inp,out,args,tag_sets):
-    for comments,tree in trees(inp):
+    for comments,tree in trees(inp,tag_sets,args):
+        #the individual lines have been validated already in trees()
+        #here go tests which are done on the whole tree
         validate_ID_sequence(tree)
-        for cols in tree:
-            validate_whitespace(cols)
-            validate_features(cols,tag_sets)
-            validate_pos(cols,tag_sets)
-            validate_deprels(cols,tag_sets)
         validate_tree(tree)
         if args.echo_input:
             print_tree(comments,tree,out)
@@ -215,7 +224,7 @@ if __name__=="__main__":
     io_group=opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
-    io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)d. Note that the CoNLL-U output is by definition always UTF-8.')
+    io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)s. Note that the CoNLL-U output is by definition always utf-8.')
     io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
     io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
 
