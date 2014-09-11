@@ -125,7 +125,7 @@ def validate_features(cols,tag_sets):
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
-            warn(u"Spurious morhological feature: '%s'. Should be of the form attribute=value."%f)
+            warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value."%f)
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
