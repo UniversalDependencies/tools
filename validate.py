@@ -89,7 +89,7 @@ def validate_whitespace(cols):
     """
     Checks a single line for disallowed whitespace.
     """
-    for col_idx in range(DEPS+1): #...all columns up to and including DEPS
+    for col_idx in range(MISC+1): #...all columns up to and including MISC (i.e. all columns ;)
         if whitespace_re.match(cols[col_idx]) is not None:
             warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
             return False #failed
@@ -138,6 +138,30 @@ def subset_to_words(tree):
     Only picks the word lines, skips token lines.
     """
     return [cols for cols in tree if cols[ID].isdigit()]
+
+def proj(node,s,deps):
+    """
+    Recursive calculation of the projection of a node `node` (1-based
+    integer). The nodes, as they get discovered` are added to the set
+    `s`. Deps is a dictionary node -> set of children.
+    """
+    for dependent in deps.get(node,[]):
+        s.add(dependent)
+        proj(dependent,s,deps)
+
+def validate_tree(tree):
+    deps={} #node -> set of children
+    word_tree=subset_to_words(tree)
+    for cols in word_tree:
+        if cols[HEAD]==u"_":
+            warn(u"Empty head for word ID %s"%cols[ID])
+        else:
+            deps.setdefault(int(cols[HEAD]),set()).add(int(cols[ID]))
+    root_proj=set()
+    proj(0,root_proj,deps)
+    unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
+    if unreachable:
+        warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))))
     
 def validate(inp,out,args,tag_sets):
     for comments,tree in trees(inp):
@@ -147,6 +171,7 @@ def validate(inp,out,args,tag_sets):
             validate_features(cols,tag_sets)
             validate_pos(cols,tag_sets)
             validate_deprels(cols,tag_sets)
+        validate_tree(tree)
         if args.echo_input:
             print_tree(comments,tree,out)
 

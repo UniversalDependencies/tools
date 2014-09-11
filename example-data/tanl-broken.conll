@@ -17,3 +17,8 @@
 4	Gallery	Gallery	NOUN	SP	_	3	mwe	_	_
 5	.	.	.	FS	_	3	p	_	_
 
+1	Evacuata	evacuare	VERB	V	gen=f|mod=p|num=s	3	partmod	_	_
+2	la	il	DET	RD	gen=f|num=s	3	det	_	_
+3	Tate	Tate	NOUN	SP	_	0	ROOT	_	_
+4	Gallery	Gallery	NOUN	SP	_	5	mwe	_	_
+5	.	.	.	FS	_	4	p	_	_
