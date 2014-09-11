@@ -1,0 +1,6 @@
+# valid one-word sentence.
+1	valid	valid	NOUN	SP	_	0	ROOT	_	_
+
+# not valid: ID must start at 1 for each new sentence
+2	valid	valid	NOUN	SP	_	0	ROOT	_	_
+
