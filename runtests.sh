@@ -4,7 +4,8 @@
 
 set -u
 
-VALIDATOR="python validate.py --quiet"
+# TODO: include a subset of tests run without --no-lists
+VALIDATOR="python validate.py --quiet --no-lists"
 VALID_DIR="test-cases/valid"
 NONVALID_DIR="test-cases/nonvalid"
 
