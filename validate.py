@@ -78,30 +78,17 @@ def trees(inp,tag_sets,args):
             warn(u"Missing empty line after the last tree.")
             yield comments, lines
 
-interval_re=re.compile(ur"^([0-9]+)-([0-9]+)$",re.U)
-def validate_ID_sequence(tree):
+###### Tests applicable to a single row indpendently of the others
+
+def validate_cols(cols,tag_sets,args):
     """
-    Validates that the ID sequence is correctly formed. Assumes word indexing.
+    All tests that can run on a single line. Done as soon as the line is read,
+    called from trees()
     """
-    words=[]
-    tokens=[]
-    for cols in tree:
-        if cols[ID].isdigit():
-            t_id=int(cols[ID])
-            words.append(t_id)
-            #Not covered by the previous interval?
-            if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
-                tokens.append((t_id,t_id)) #nope - let's make a default interval for it
-        else:
-            match=interval_re.match(cols[ID]) #Check the interval against the regex
-            if not match:
-                warn(u"Spurious token interval definition: '%s'."%cols[ID],lineno=False)
-            beg,end=int(match.group(1)),int(match.group(2))
-            tokens.append((beg,end))
-    #Now let's do some basic sanity checks on the sequences
-    if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
-        warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),lineno=False)
-    #TODO: Check sanity of word intervals
+    validate_whitespace(cols)
+    validate_features(cols,tag_sets)
+    validate_pos(cols,tag_sets)
+    validate_deprels(cols,tag_sets)
 
 whitespace_re=re.compile(ur".*\s",re.U)
 def validate_whitespace(cols):
@@ -149,6 +136,34 @@ def validate_deprels(cols,tag_sets):
             head,deprel=head_deprel.split(u":")
             if deprel not in tag_sets[DEPS]:
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
+
+##### Tests applicable to the whole tree
+
+interval_re=re.compile(ur"^([0-9]+)-([0-9]+)$",re.U)
+def validate_ID_sequence(tree):
+    """
+    Validates that the ID sequence is correctly formed. Assumes word indexing.
+    """
+    words=[]
+    tokens=[]
+    for cols in tree:
+        if cols[ID].isdigit():
+            t_id=int(cols[ID])
+            words.append(t_id)
+            #Not covered by the previous interval?
+            if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
+                tokens.append((t_id,t_id)) #nope - let's make a default interval for it
+        else:
+            match=interval_re.match(cols[ID]) #Check the interval against the regex
+            if not match:
+                warn(u"Spurious token interval definition: '%s'."%cols[ID],lineno=False)
+            beg,end=int(match.group(1)),int(match.group(2))
+            tokens.append((beg,end))
+    #Now let's do some basic sanity checks on the sequences
+    if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
+        warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),lineno=False)
+    #TODO: Check sanity of word intervals
+
                 
 def subset_to_words(tree):
     """
@@ -167,6 +182,9 @@ def proj(node,s,deps):
         proj(dependent,s,deps)
 
 def validate_tree(tree):
+    """
+    Validates that all words can be reached from the root
+    """
     deps={} #node -> set of children
     word_tree=subset_to_words(tree)
     for cols in word_tree:
@@ -180,15 +198,6 @@ def validate_tree(tree):
     if unreachable:
         warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),lineno=False)
 
-def validate_cols(cols,tag_sets,args):
-    """
-    All tests that can run on a single line. Done as soon as the line is read,
-    called from trees()
-    """
-    validate_whitespace(cols)
-    validate_features(cols,tag_sets)
-    validate_pos(cols,tag_sets)
-    validate_deprels(cols,tag_sets)
     
 def validate(inp,out,args,tag_sets):
     for comments,tree in trees(inp,tag_sets,args):
