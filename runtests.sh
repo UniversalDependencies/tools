@@ -2,10 +2,10 @@
 
 # Run test cases through CoNLL-U validator.
 
-set -u
-set -e
+#set -u
+#set -e
 
-VALIDATOR="python validate.py"
+VALIDATOR="python validate.py --quiet"
 VALID_DIR="test-cases/valid"
 NONVALID_DIR="test-cases/nonvalid"
 
@@ -19,9 +19,9 @@ for validf in true false; do
     else
 	d="$NONVALID_DIR";
     fi
-
+    
     for f in $d/*; do 
-	$VALIDATOR < $f > /dev/null
+	$VALIDATOR < $f
 	if [ $? -eq 0 ]; then
 	    validv=true
 	else
