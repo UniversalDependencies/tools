@@ -22,9 +22,9 @@ def warn(msg,lineno=True):
     """
     global curr_line, sentence_line, error_counter, args
     if lineno:
-        print u"[Line         %d]: %s"%(curr_line,msg)
+        print >> sys.stderr, (u"[Line         %d]: %s"%(curr_line,msg)).encode(args.err_enc)
     else:
-        print u"[Tree on line %d]: %s"%(sentence_line,msg)
+        print >> sys.stderr, (u"[Tree on line %d]: %s"%(sentence_line,msg)).encode(args.err_enc)
     error_counter+=1
     if args.max_err>0 and error_counter==args.max_err:
         sys.exit(1)
@@ -215,6 +215,7 @@ if __name__=="__main__":
     io_group=opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
+    io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)d. Note that the CoNLL-U output is by definition always UTF-8.')
     io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
     io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
 
