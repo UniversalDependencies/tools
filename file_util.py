@@ -5,6 +5,8 @@ file I/O
 
 import codecs
 import sys
+import io
+import os
 
 COLCOUNT=10
 ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
@@ -17,9 +19,10 @@ def in_out(args):
     """
     #Decide where to get the data from
     if args.input is None or args.input=="-": #Stdin
-        inp=codecs.getreader("utf-8")(sys.stdin)
+        inp=codecs.getreader("utf-8")(os.fdopen(0,"U")) #Switched universal newlines on
     else: #File name given
-        inp=codecs.open(args.input,"r","utf-8")
+        inp_raw=open(args.input,"U")
+        inp=codecs.getreader("utf-8")(inp_raw)
     #inp is now an iterator over lines, giving unicode strings
 
     if args.output is None or args.output=="-": #stdout
