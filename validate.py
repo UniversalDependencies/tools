@@ -221,6 +221,9 @@ def validate_tree(tree):
     if unreachable:
         warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),lineno=False)
 
+def validate_newlines(inp):
+    if inp.newlines and inp.newlines!='\n':
+        warn("Only the unix-style LF line terminator is allowed")
     
 def validate(inp,out,args,tag_sets):
     for comments,tree in trees(inp,tag_sets,args):
@@ -230,6 +233,7 @@ def validate(inp,out,args,tag_sets):
         validate_tree(tree)
         if args.echo_input:
             print_tree(comments,tree,out)
+    validate_newlines(inp)
 
 def load_set(f_name):
     """
