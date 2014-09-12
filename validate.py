@@ -114,25 +114,29 @@ def validate_token_empty_vals(cols):
             warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]))
         
 
-attr_val_re=re.compile(ur"^([^=]+)=([^=]+)$",re.U) #TODO: Maybe this can be made tighter?
+attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*)=([A-Z0-9][A-Z0-9a-z]*)$",re.U)
+val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
 def validate_features(cols,tag_sets):
     feats=cols[FEATS]
     if feats==u"_":
         return True
     feat_list=feats.split(u"|")
-    if feat_list!=sorted(feat_list):
+    #the lower() thing is to be on the safe side, since all features must start with [A-Z0-9] anyway
+    if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
         warn(u"Morphological features must be sorted: '%s'"%feats)
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
-            warn(u"Spurious morhological feature: '%s'. Should be of the form attribute=value."%f)
+            warn(u"Spurious morhological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f)
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
             values=match.group(2).split(u",")
-            if values!=sorted(values):
+            if [v.lower() for v in values]!=sorted(v.lower() for v in values):
                 warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f)
             for v in values:
+                if not val_re.match(v):
+                    warn(u"Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f))
                 if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
                     warn(u"Unknown attribute-value pair %s=%s"%(attr,v))
 
