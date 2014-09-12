@@ -124,6 +124,7 @@ def validate_features(cols,tag_sets):
     #the lower() thing is to be on the safe side, since all features must start with [A-Z0-9] anyway
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
         warn(u"Morphological features must be sorted: '%s'"%feats)
+    attr_set=set() #I'll gather the set of attributes here to check later than none is repeated 
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
@@ -131,7 +132,10 @@ def validate_features(cols,tag_sets):
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
+            attr_set.add(attr)
             values=match.group(2).split(u",")
+            if len(values)!=len(set(values)):
+                warn(u"Repeated features values are disallowed: %s"%feats)
             if [v.lower() for v in values]!=sorted(v.lower() for v in values):
                 warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f)
             for v in values:
@@ -139,6 +143,8 @@ def validate_features(cols,tag_sets):
                     warn(u"Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f))
                 if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
                     warn(u"Unknown attribute-value pair %s=%s"%(attr,v))
+    if len(attr_set)!=len(feat_list):
+        warn(u"Repeated features are disallowed: %s"%feats)
 
 def validate_pos(cols,tag_sets):
     if tag_sets[CPOSTAG] is not None and cols[CPOSTAG] not in tag_sets[CPOSTAG]:
