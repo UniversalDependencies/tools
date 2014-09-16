@@ -1,0 +1,4 @@
+# not valid: no word can be its own head (?)
+1	cycle	cycle	VERB	_	_	0	root	_	_
+2	cycle	cycle	VERB	_	_	1	nsubj	2:dep	_
+

@@ -1,0 +1,4 @@
+# not valid: HEAD and DEPREL must encode a dependency tree over words.
+1	cycle	cycle	VERB	_	_	0	root	_	_
+2	cycle	cycle	VERB	_	_	2	nsubj	_	_
+
