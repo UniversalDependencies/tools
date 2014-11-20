@@ -192,13 +192,44 @@ def validate_ID_sequence(tree):
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
         warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),lineno=False)
     #TODO: Check sanity of word intervals
-
                 
 def subset_to_words(tree):
     """
     Only picks the word lines, skips token lines.
     """
     return [cols for cols in tree if cols[ID].isdigit()]
+
+def deps_list(cols):
+    if cols[DEPS] == u'_':
+        deps = []
+    else:
+        deps = [hd.split(u':') for hd in cols[DEPS].split(u'|')]
+    if any(hd for hd in deps if len(hd) != 2):
+        raise ValueError(u'malformed DEPS: %s' % cols[DEPS])
+    return deps
+
+def validate_ID_references(tree):
+    """
+    Validates that HEAD and DEPRELS reference existing IDs.
+    """
+
+    word_tree = subset_to_words(tree)
+    ids = set([cols[ID] for cols in word_tree])
+
+    def valid_id(i):
+        return i in ids or i == u'0'
+
+    for cols in word_tree:
+        if not valid_id(cols[HEAD]):
+            warn(u"Undefined ID in HEAD: %s" % cols[HEAD])
+        try:
+            deps = deps_list(cols)
+        except ValueError:
+            warn(u"Failed for parse DEPS: %s" % cols[DEPS])
+            continue
+        for head, deprel in deps:
+            if not valid_id(head):
+                warn(u"Undefined ID in DEPS: %s" % head)
 
 def proj(node,s,deps):
     """
@@ -254,6 +285,7 @@ def validate(inp,out,args,tag_sets):
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
         validate_ID_sequence(tree)
+        validate_ID_references(tree)
         validate_root(tree)
         validate_tree(tree)
         if args.echo_input:
