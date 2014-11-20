@@ -256,6 +256,20 @@ def validate_root(tree):
             if cols[DEPREL] == u'root':
                 warn(u'DEPREL can only be "root" if HEAD is 0')
 
+def validate_deps(tree):
+    """
+    Validates that DEPS is correctly formatted.
+    """
+    for cols in subset_to_words(tree):
+        try:
+            deps = deps_list(cols)
+            heads = [int(h) for h, d in deps]
+        except ValueError:
+            warn(u"Failed for parse DEPS: %s" % cols[DEPS])
+            return
+        if heads != sorted(heads):
+            warn(u"DEPS not sorted by head index: %s" % cols[DEPS])
+
 def validate_tree(tree):
     """
     Validates that all words can be reached from the root
@@ -287,6 +301,7 @@ def validate(inp,out,args,tag_sets):
         validate_ID_sequence(tree)
         validate_ID_references(tree)
         validate_root(tree)
+        validate_deps(tree)
         validate_tree(tree)
         if args.echo_input:
             print_tree(comments,tree,out)
