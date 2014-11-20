@@ -220,7 +220,10 @@ def validate_tree(tree):
         if cols[HEAD]==u"_":
             warn(u"Empty head for word ID %s"%cols[ID],lineno=False)
         else:
-            deps.setdefault(int(cols[HEAD]),set()).add(int(cols[ID]))
+            try:
+                deps.setdefault(int(cols[HEAD]),set()).add(int(cols[ID]))
+            except ValueError:
+                warn(u"Non-integer head for word ID %s"%cols[ID],lineno=False)
     root_proj=set()
     proj(0,root_proj,deps)
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
