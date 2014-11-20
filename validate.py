@@ -213,6 +213,18 @@ def proj(node,s,deps):
         s.add(dependent)
         proj(dependent,s,deps)
 
+def validate_root(tree):
+    """
+    Validates that DEPREL is "root" iff HEAD is 0.
+    """
+    for cols in subset_to_words(tree):
+        if cols[HEAD] == u'0':
+            if cols[DEPREL] != u'root':
+                warn(u'DEPREL must be "root" if HEAD is 0')
+        else:
+            if cols[DEPREL] == u'root':
+                warn(u'DEPREL can only be "root" if HEAD is 0')
+
 def validate_tree(tree):
     """
     Validates that all words can be reached from the root
@@ -242,6 +254,7 @@ def validate(inp,out,args,tag_sets):
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
         validate_ID_sequence(tree)
+        validate_root(tree)
         validate_tree(tree)
         if args.echo_input:
             print_tree(comments,tree,out)
