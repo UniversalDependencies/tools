@@ -1,4 +1,4 @@
 # valid: multiple features (separator '|') and values (',') allowed
 # (see http://universaldependencies.github.io/docs/format.html#morphological-annotation)
-1	multival	multival	NOUN	SP	Case=Acc,Dat|Def=Def|Gen=Uter|Num=Sing	0	ROOT	_	_
+1	multival	multival	NOUN	SP	Case=Acc,Dat|Def=Def|Gen=Uter|Num=Sing	0	root	_	_
 

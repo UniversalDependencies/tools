@@ -1,6 +1,6 @@
 # This is a comment
-1	Gas	gas	NOUN	S	Gen=M|Num=N	0	ROOT	_	_
-2-3	dalla	dalla	_	_	_	0	ROOT	_	_
+1	Gas	gas	NOUN	S	Gen=M|Num=N	0	root	_	_
+2-3	dalla	dalla	_	_	_	0	root	_	_
 2	da	da	ADP	EA	_	1	adpmod	_	_
 3	la	la	DET	RD	Gen=F|Num=S	4	det	_	_
 4	statua	statua	NOUN	S	Gen=F|Num=S	2	adpobj	_	_

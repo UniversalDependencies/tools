@@ -1,4 +1,4 @@
 # not valid: features must be ordered alphabetically (ignoring case)
 # (see http://universaldependencies.github.io/docs/features.html)
-1	non-valid	non-valid	NOUN	SP	XB=True|Xa=True	0	ROOT	_	_
+1	non-valid	non-valid	NOUN	SP	XB=True|Xa=True	0	root	_	_
 

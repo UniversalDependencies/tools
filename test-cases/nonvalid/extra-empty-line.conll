@@ -1,8 +1,8 @@
 # valid one-word sentence.
-1	valid	valid	NOUN	SP	_	0	ROOT	_	_
+1	valid	valid	NOUN	SP	_	0	root	_	_
 
 
 # format error: sentences must be separated by exactly one empty line
 # valid one-word sentence.
-1	valid	valid	NOUN	SP	_	0	ROOT	_	_
+1	valid	valid	NOUN	SP	_	0	root	_	_
 

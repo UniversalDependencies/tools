@@ -1,5 +1,5 @@
 # not valid: sentences must contain at least one word.
 
 # valid one-word sentence.
-1	valid	valid	NOUN	SP	_	0	ROOT	_	_
+1	valid	valid	NOUN	SP	_	0	root	_	_
 
