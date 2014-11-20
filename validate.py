@@ -207,6 +207,9 @@ def proj(node,s,deps):
     `s`. Deps is a dictionary node -> set of children.
     """
     for dependent in deps.get(node,[]):
+        if dependent in s:
+            warn(u"Loop from %s" % dependent)
+            continue
         s.add(dependent)
         proj(dependent,s,deps)
 
