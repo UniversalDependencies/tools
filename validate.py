@@ -87,6 +87,7 @@ def validate_cols(cols,tag_sets,args):
     called from trees()
     """
     validate_whitespace(cols)
+    validate_token_ranges(cols)
     validate_token_empty_vals(cols)
     validate_features(cols,tag_sets)
     validate_pos(cols,tag_sets)
@@ -102,6 +103,27 @@ def validate_whitespace(cols):
             warn(u"Empty value in column %s"%(COLNAMES[col_idx]))
         if whitespace_re.match(cols[col_idx]) is not None:
             warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
+
+def validate_token_ranges(cols):
+    """
+    Checks that the word ranges for multiword tokens are valid.
+    """
+    if cols[ID].isdigit(): # not a multiword token
+        return
+
+    m = interval_re.match(cols[ID])
+    if not m:
+        warn(u"Failed to parse ID %s" % cols[ID])
+        return
+
+    start, end = m.groups()
+    try:
+        start, end = int(start), int(end)
+    except ValueError:
+        assert False, 'internal error' # RE should assure that this works
+
+    if not start < end:
+        warn(u"Invalid range: %s" % cols[ID])
 
 def validate_token_empty_vals(cols):
     """
