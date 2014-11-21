@@ -63,7 +63,10 @@ def trees(inp,tag_sets,args):
             else:
                 warn(u"Spurious empty line.")
         elif line[0]==u"#":
-            comments.append(line)
+            if not lines: # before sentence
+                comments.append(line)
+            else:
+                warn(u"Spurious comment line.")
         elif line[0].isdigit():
             if not lines: #new sentence
                 sentence_line=curr_line
