@@ -211,8 +211,9 @@ def validate_ID_sequence(tree):
             match=interval_re.match(cols[ID]) #Check the interval against the regex
             if not match:
                 warn(u"Spurious token interval definition: '%s'."%cols[ID],lineno=False)
-            beg,end=int(match.group(1)),int(match.group(2))
-            tokens.append((beg,end))
+            else:
+                beg,end=int(match.group(1)),int(match.group(2))
+                tokens.append((beg,end))
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
         warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),lineno=False)
