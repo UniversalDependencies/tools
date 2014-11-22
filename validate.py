@@ -90,7 +90,6 @@ def validate_cols(cols,tag_sets,args):
     called from trees()
     """
     validate_whitespace(cols)
-    validate_token_ranges(cols)
     validate_token_empty_vals(cols)
     validate_features(cols,tag_sets)
     validate_pos(cols,tag_sets)
@@ -106,27 +105,6 @@ def validate_whitespace(cols):
             warn(u"Empty value in column %s"%(COLNAMES[col_idx]))
         if whitespace_re.match(cols[col_idx]) is not None:
             warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
-
-def validate_token_ranges(cols):
-    """
-    Checks that the word ranges for multiword tokens are valid.
-    """
-    if cols[ID].isdigit(): # not a multiword token
-        return
-
-    m = interval_re.match(cols[ID])
-    if not m:
-        warn(u"Failed to parse ID %s" % cols[ID])
-        return
-
-    start, end = m.groups()
-    try:
-        start, end = int(start), int(end)
-    except ValueError:
-        assert False, 'internal error' # RE should assure that this works
-
-    if not start < end:
-        warn(u"Invalid range: %s" % cols[ID])
 
 def validate_token_empty_vals(cols):
     """
@@ -273,6 +251,36 @@ def proj(node,s,deps):
         s.add(dependent)
         proj(dependent,s,deps)
 
+def validate_token_ranges(tree):
+    """
+    Checks that the word ranges for multiword tokens are valid.
+    """
+
+    covered = set()
+
+    for cols in tree:
+        if cols[ID].isdigit(): # not a multiword token
+            continue
+
+        m = interval_re.match(cols[ID])
+        if not m:
+            warn(u"Failed to parse ID %s" % cols[ID])
+            continue
+
+        start, end = m.groups()
+        try:
+            start, end = int(start), int(end)
+        except ValueError:
+            assert False, 'internal error' # RE should assure that this works
+
+        if not start < end:
+            warn(u"Invalid range: %s" % cols[ID])
+            continue
+
+        if covered & set(range(start, end+1)):
+            warn(u"Range overlaps with others: %s" % cols[ID])
+        covered |= set(range(start, end+1))
+
 def validate_root(tree):
     """
     Validates that DEPREL is "root" iff HEAD is 0.
@@ -349,6 +357,7 @@ def validate(inp,out,args,tag_sets):
         #here go tests which are done on the whole tree
         validate_ID_sequence(tree)
         validate_ID_references(tree)
+        validate_token_ranges(tree)
         validate_root(tree)
         validate_deps(tree)
         validate_tree(tree)
