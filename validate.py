@@ -117,7 +117,7 @@ def validate_token_empty_vals(cols):
             warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]))
         
 
-attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
+attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
 val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
 def validate_features(cols,tag_sets):
     feats=cols[FEATS]
