@@ -287,7 +287,8 @@ def validate_root(tree):
 
 def validate_deps(tree):
     """
-    Validates that DEPS is correctly formatted.
+    Validates that DEPS is correctly formatted and that there are no
+    self-loops in DEPS.
     """
     for cols in subset_to_words(tree):
         try:
@@ -299,20 +300,39 @@ def validate_deps(tree):
         if heads != sorted(heads):
             warn(u"DEPS not sorted by head index: %s" % cols[DEPS])
 
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            warn(u"Non-integer ID: %s" % cols[ID])
+            return
+        if id_ in heads:
+            warn(u"ID in DEPS for %s" % cols[ID])
+
 def validate_tree(tree):
     """
-    Validates that all words can be reached from the root
+    Validates that all words can be reached from the root and that
+    there are no self-loops in HEAD.
     """
     deps={} #node -> set of children
     word_tree=subset_to_words(tree)
     for cols in word_tree:
         if cols[HEAD]==u"_":
-            warn(u"Empty head for word ID %s"%cols[ID],lineno=False)
-        else:
-            try:
-                deps.setdefault(int(cols[HEAD]),set()).add(int(cols[ID]))
-            except ValueError:
-                warn(u"Non-integer head for word ID %s"%cols[ID],lineno=False)
+            warn(u"Empty head for word ID %s" % cols[ID], lineno=False)
+            continue
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            warn(u"Non-integer ID: %s" % cols[ID], lineno=False)
+            continue
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            warn(u"Non-integer head for word ID %s" % cols[ID], lineno=False)
+            continue
+        if head == id_:
+            warn(u"HEAD == ID for %s" % cols[ID], lineno=False)
+            continue
+        deps.setdefault(head, set()).add(id_)
     root_proj=set()
     proj(0,root_proj,deps)
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
