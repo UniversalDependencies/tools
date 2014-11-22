@@ -1,0 +1,4 @@
+# valid: features can be repeated when differentiated by "[layer]"
+# (http://universaldependencies.github.io/docs/u/overview/morphology.html#layered-features)
+1	layered	layered	NOUN	N	Number=Sing|Number[psor]=Plur	0	root	_	_
+
