@@ -94,6 +94,7 @@ def validate_cols(cols,tag_sets,args):
     validate_features(cols,tag_sets)
     validate_pos(cols,tag_sets)
     validate_deprels(cols,tag_sets)
+    validate_character_constraints(cols)
 
 whitespace_re=re.compile(ur".*\s",re.U)
 def validate_whitespace(cols):
@@ -168,6 +169,28 @@ def validate_deprels(cols,tag_sets):
                 continue
             if deprel not in tag_sets[DEPS]:
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
+
+def validate_character_constraints(cols):
+    """
+    Checks general constraints on valid characters, e.g. that CPOSTAG
+    only contains [A-Z].
+    """
+    if not cols[ID].isdigit():
+        return # skip multiword tokens
+
+    if not re.match(r"^[A-Z]+$", cols[CPOSTAG]):
+        warn("Invalid CPOSTAG value %s" % cols[CPOSTAG])
+    if not re.match(r"^[a-z][a-z_-]*$", cols[DEPREL]):
+        warn("Invalid DEPREL value %s" % cols[DEPREL])
+    try:
+        deps = deps_list(cols)
+    except ValueError:
+        warn(u"Failed for parse DEPS: %s" % cols[DEPS])
+        return
+    if any(deprel for head, deprel in deps_list(cols)
+           if not re.match(r"^[a-z][a-z_-]*", deprel)):
+        warn("Invalid value in DEPS: %s" % cols[DEPS])
+
 
 ##### Tests applicable to the whole tree
 
