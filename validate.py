@@ -32,9 +32,9 @@ def warn(msg,lineno=True):
 
 def print_tree(comments,tree,out):
     if comments:
-        print >> out, u"\n".join(comments)
+        print >> out, (u"\n".join(comments)).encode("utf8")
     for cols in tree:
-        print >> out, u"\t".join(cols)
+        print >> out, (u"\t".join(cols)).encode("utf-8")
     print >> out
 
 
