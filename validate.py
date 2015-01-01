@@ -180,7 +180,7 @@ def validate_character_constraints(cols):
 
     if not re.match(r"^[A-Z]+$", cols[CPOSTAG]):
         warn("Invalid CPOSTAG value %s" % cols[CPOSTAG])
-    if not re.match(r"^[a-z][a-z_-]*$", cols[DEPREL]):
+    if not re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]):
         warn("Invalid DEPREL value %s" % cols[DEPREL])
     try:
         deps = deps_list(cols)
