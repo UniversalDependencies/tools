@@ -163,7 +163,7 @@ def validate_deprels(cols,tag_sets):
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
             try:
-                head,deprel=head_deprel.split(u":")
+                head,deprel=head_deprel.split(u":",1)
             except ValueError:
                 warn(u"Malformed head:deprel pair '%s'"%head_deprel)
                 continue
@@ -233,7 +233,7 @@ def deps_list(cols):
     if cols[DEPS] == u'_':
         deps = []
     else:
-        deps = [hd.split(u':') for hd in cols[DEPS].split(u'|')]
+        deps = [hd.split(u':',1) for hd in cols[DEPS].split(u'|')]
     if any(hd for hd in deps if len(hd) != 2):
         raise ValueError(u'malformed DEPS: %s' % cols[DEPS])
     return deps
