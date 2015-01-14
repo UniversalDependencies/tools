@@ -91,6 +91,8 @@ def validate_cols(cols,tag_sets,args):
     """
     validate_whitespace(cols)
     validate_token_empty_vals(cols)
+    if not cols[ID].isdigit():
+        return #The stuff below applies to words and not tokens
     validate_features(cols,tag_sets)
     validate_pos(cols,tag_sets)
     validate_deprels(cols,tag_sets)
