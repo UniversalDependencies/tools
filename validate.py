@@ -28,6 +28,7 @@ def warn(msg,lineno=True):
             print >> sys.stderr, (u"[Tree on line %d]: %s"%(sentence_line,msg)).encode(args.err_enc)
     error_counter+=1
     if args.max_err>0 and error_counter==args.max_err:
+        print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
         sys.exit(1)
 
 def print_tree(comments,tree,out):
