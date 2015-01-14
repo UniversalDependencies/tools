@@ -164,9 +164,8 @@ def lspec2ud(deprel):
 
 
 def validate_deprels(cols,tag_sets):
-    if tag_sets[DEPREL] is not None: 
-        if lspec2ud(cols[DEPREL]) not in tag_sets[DEPREL]: #TODO: we should be validating the language-specific lists, really
-            warn(u"Unknown UD DEPREL: %s"%cols[DEPREL])
+    if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
+        warn(u"Unknown UD DEPREL: %s"%cols[DEPREL])
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
             try:
@@ -427,6 +426,7 @@ if __name__=="__main__":
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets. The various file name options can be set to an existing file, a file name in the local data directory, or 'none'.")
     list_group.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
+    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), and do not specify --no-lists, this option will try to load the per-language tag lists from data, in addition to the .ud ones. Default: None")
     list_group.add_argument("--cpos-file", action="store", default="cpos.ud", help="A file listing the allowed CPOS tags. Default: %(default)s.")
     list_group.add_argument("--pos-file", action="store", default="none", help="A file listing the allowed POS tags. Default: %(default)s.")
     list_group.add_argument("--feature-file", action="store", default="none", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
@@ -435,20 +435,26 @@ if __name__=="__main__":
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
 
-
     args = opt_parser.parse_args() #Parsed command-line arguments
 
     if args.quiet:
         args.echo_input=False
 
     tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
-    #Load the tag lists
+
+    #Load the UD lists
     if args.check_lists:
         tagsets[FEATS]=load_set(args.feature_file)
         tagsets[POSTAG]=load_set(args.pos_file)
         tagsets[CPOSTAG]=load_set(args.cpos_file)
         tagsets[DEPREL]=load_set(args.deprel_file)
         tagsets[DEPS]=load_set(args.deps_file)
+        #Load the UD lists
+        if args.lang:
+            tagsets[DEPREL].update(load_set("deprel."+args.lang))
+        else:
+            print >> sys.stderr, u"\nWARNING: You did not specify --no-lists, so I think you should specify --lang (e.g. --lang=en for English). Otherwise the language-specific extensions will be reported as errors.\n\n".encode(args.err_enc)
+
         
 
     inp,out=file_util.in_out(args)
