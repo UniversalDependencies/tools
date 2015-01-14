@@ -156,10 +156,14 @@ def validate_pos(cols,tag_sets):
     if tag_sets[POSTAG] is not None and cols[POSTAG] not in tag_sets[POSTAG]:
         warn(u"Unknown POS tag: %s"%cols[POSTAG])
     
+def lspec2ud(deprel):
+    return deprel.split(u":",1)[0]
+
 
 def validate_deprels(cols,tag_sets):
-    if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
-        warn(u"Unknown DEPREL: %s"%cols[DEPREL])
+    if tag_sets[DEPREL] is not None: 
+        if lspec2ud(cols[DEPREL]) not in tag_sets[DEPREL]: #TODO: we should be validating the language-specific lists, really
+            warn(u"Unknown UD DEPREL: %s"%cols[DEPREL])
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
             try:
@@ -167,7 +171,7 @@ def validate_deprels(cols,tag_sets):
             except ValueError:
                 warn(u"Malformed head:deprel pair '%s'"%head_deprel)
                 continue
-            if deprel not in tag_sets[DEPS]:
+            if lspec2ud(deprel) not in tag_sets[DEPS]:
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
 
 def validate_character_constraints(cols):
@@ -420,11 +424,11 @@ if __name__=="__main__":
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets. The various file name options can be set to an existing file, a file name in the local data directory, or 'none'.")
     list_group.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
-    list_group.add_argument("--cpos-file", action="store", default="GoogleTags", help="A file listing the allowed CPOS tags. Default: %(default)s.")
-    list_group.add_argument("--pos-file", action="store", default="FineTags", help="A file listing the allowed POS tags. Default: %(default)s.")
-    list_group.add_argument("--feature-file", action="store", default="UniMorphSet", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
-    list_group.add_argument("--deprel-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
-    list_group.add_argument("--deps-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
+    list_group.add_argument("--cpos-file", action="store", default="cpos.ud", help="A file listing the allowed CPOS tags. Default: %(default)s.")
+    list_group.add_argument("--pos-file", action="store", default="none", help="A file listing the allowed POS tags. Default: %(default)s.")
+    list_group.add_argument("--feature-file", action="store", default="none", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
+    list_group.add_argument("--deprel-file", action="store", default="deprel.ud", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
+    list_group.add_argument("--deps-file", action="store", default="none", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
 
