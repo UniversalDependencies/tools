@@ -1,6 +1,6 @@
-advmod:auxz
-mwe:reflex
-nummod:gov
+advmod:emph
 auxpass:reflex
-det:nummodgov
+compound:reflex
+det:numgov
 det:nummod
+nummod:gov
