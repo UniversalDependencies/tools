@@ -1,11 +1,17 @@
 #! /usr/bin/python
 import sys
 import codecs
-import argparse
 import os.path
 import logging
 import re
 import file_util
+
+try:
+    import argparse
+except:
+    #we are on Python 2.6 or older
+    from compat import argparse
+
 
 THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
 
