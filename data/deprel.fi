@@ -1,17 +1,11 @@
 nmod:poss
-acl:partmod
 nsubj:cop
 acl:relcl
 nmod:gobj
 compound:nn
 xcomp:ds
 nmod:gsubj
-advcl:compar
-xcomp:a
-mark:comparator
 nmod:own
-advmod:q
 compound:prt
-acl:infmod
 cc:preconj
 csubj:cop
