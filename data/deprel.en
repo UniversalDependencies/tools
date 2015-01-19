@@ -3,3 +3,5 @@ acl:relcl
 nmod:tmod
 compound:prt
 nmod:npmod
+conj:preconj
+det:predet
