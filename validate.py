@@ -273,18 +273,20 @@ def validate_ID_references(tree):
             if not valid_id(head):
                 warn(u"Undefined ID in DEPS: %s" % head)
 
-def proj(node,s,deps):
+def proj(node,s,deps,depth,max_depth):
     """
     Recursive calculation of the projection of a node `node` (1-based
     integer). The nodes, as they get discovered` are added to the set
     `s`. Deps is a dictionary node -> set of children.
     """
+    if max_depth is not None and depth==max_depth:
+        return
     for dependent in deps.get(node,[]):
         if dependent in s:
             warn(u"Loop from %s" % dependent)
             continue
         s.add(dependent)
-        proj(dependent,s,deps)
+        proj(dependent,s,deps,depth+1,max_depth)
 
 def validate_token_ranges(tree):
     """
@@ -376,8 +378,12 @@ def validate_tree(tree):
             warn(u"HEAD == ID for %s" % cols[ID], lineno=False)
             continue
         deps.setdefault(head, set()).add(id_)
+    root_deps=set()
+    proj(0,root_deps,deps,0,1)
+    if len(root_deps)>1 and args.single_root:
+        warn(u"Multiple root words: %s"%list(root_deps), lineno=False)
     root_proj=set()
-    proj(0,root_proj,deps)
+    proj(0,root_proj,deps,0,None)
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
     if unreachable:
         warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),lineno=False)
@@ -440,6 +446,7 @@ if __name__=="__main__":
     list_group.add_argument("--deps-file", action="store", default="none", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
+    tree_group.add_argument("--single-root", action="store_true", default=False, help="Require every tree to have a single root word (multiple allowed by default).")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
 
