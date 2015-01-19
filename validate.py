@@ -1,11 +1,17 @@
 #! /usr/bin/python
 import sys
 import codecs
-import argparse
 import os.path
 import logging
 import re
 import file_util
+
+try:
+    import argparse
+except:
+    #we are on Python 2.6 or older
+    from compat import argparse
+
 
 THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
 
@@ -28,6 +34,7 @@ def warn(msg,lineno=True):
             print >> sys.stderr, (u"[Tree on line %d]: %s"%(sentence_line,msg)).encode(args.err_enc)
     error_counter+=1
     if args.max_err>0 and error_counter==args.max_err:
+        print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
         sys.exit(1)
 
 def print_tree(comments,tree,out):
@@ -91,6 +98,8 @@ def validate_cols(cols,tag_sets,args):
     """
     validate_whitespace(cols)
     validate_token_empty_vals(cols)
+    if not cols[ID].isdigit():
+        return #The stuff below applies to words and not tokens
     validate_features(cols,tag_sets)
     validate_pos(cols,tag_sets)
     validate_deprels(cols,tag_sets)
@@ -156,10 +165,13 @@ def validate_pos(cols,tag_sets):
     if tag_sets[POSTAG] is not None and cols[POSTAG] not in tag_sets[POSTAG]:
         warn(u"Unknown POS tag: %s"%cols[POSTAG])
     
+def lspec2ud(deprel):
+    return deprel.split(u":",1)[0]
+
 
 def validate_deprels(cols,tag_sets):
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
-        warn(u"Unknown DEPREL: %s"%cols[DEPREL])
+        warn(u"Unknown UD DEPREL: %s"%cols[DEPREL])
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
             try:
@@ -167,7 +179,7 @@ def validate_deprels(cols,tag_sets):
             except ValueError:
                 warn(u"Malformed head:deprel pair '%s'"%head_deprel)
                 continue
-            if deprel not in tag_sets[DEPS]:
+            if lspec2ud(deprel) not in tag_sets[DEPS]:
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
 
 def validate_character_constraints(cols):
@@ -420,14 +432,14 @@ if __name__=="__main__":
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets. The various file name options can be set to an existing file, a file name in the local data directory, or 'none'.")
     list_group.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
-    list_group.add_argument("--cpos-file", action="store", default="GoogleTags", help="A file listing the allowed CPOS tags. Default: %(default)s.")
-    list_group.add_argument("--pos-file", action="store", default="FineTags", help="A file listing the allowed POS tags. Default: %(default)s.")
-    list_group.add_argument("--feature-file", action="store", default="UniMorphSet", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
-    list_group.add_argument("--deprel-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
-    list_group.add_argument("--deps-file", action="store", default="USDRels", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
+    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), and do not specify --no-lists, this option will try to load the per-language tag lists from data, in addition to the .ud ones. Default: None")
+    list_group.add_argument("--cpos-file", action="store", default="cpos.ud", help="A file listing the allowed CPOS tags. Default: %(default)s.")
+    list_group.add_argument("--pos-file", action="store", default="none", help="A file listing the allowed POS tags. Default: %(default)s.")
+    list_group.add_argument("--feature-file", action="store", default="none", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
+    list_group.add_argument("--deprel-file", action="store", default="deprel.ud", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
+    list_group.add_argument("--deps-file", action="store", default="none", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
-
 
     args = opt_parser.parse_args() #Parsed command-line arguments
 
@@ -435,13 +447,20 @@ if __name__=="__main__":
         args.echo_input=False
 
     tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
-    #Load the tag lists
+
+    #Load the UD lists
     if args.check_lists:
         tagsets[FEATS]=load_set(args.feature_file)
         tagsets[POSTAG]=load_set(args.pos_file)
         tagsets[CPOSTAG]=load_set(args.cpos_file)
         tagsets[DEPREL]=load_set(args.deprel_file)
         tagsets[DEPS]=load_set(args.deps_file)
+        #Load the UD lists
+        if args.lang:
+            tagsets[DEPREL].update(load_set("deprel."+args.lang))
+        else:
+            print >> sys.stderr, u"\nWARNING: You did not specify --no-lists, so I think you should specify --lang (e.g. --lang=en for English). Otherwise the language-specific extensions will be reported as errors.\n\n".encode(args.err_enc)
+
         
 
     inp,out=file_util.in_out(args)
