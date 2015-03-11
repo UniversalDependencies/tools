@@ -26,7 +26,7 @@ def in_out(args):
     #inp is now an iterator over lines, giving unicode strings
 
     if args.output is None or args.output=="-": #stdout
-        out=codecs.getreader("utf-8")(sys.stdout)
+        out=codecs.getwriter("utf-8")(sys.stdout)
     else: #File name given
         out=codecs.open(args.output,"w","utf-8")
     return inp,out
