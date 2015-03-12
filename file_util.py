@@ -7,22 +7,30 @@ import codecs
 import sys
 import io
 import os
+import fileinput
 
 COLCOUNT=10
 ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES=u"ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
 
 
-def in_out(args):
-    """
-    Open the input/output data streams.
+def in_out(args,multiple_files=False):
+    """Open the input/output data streams. If multiple_files is set to
+    True, returns an iterator over lines. If set to False, returns an open file.
+    This distinction is needed because validator.py checks the newlines property and
+    needs to get the input as a file, but the other scripts just need the lines
+    so they can work with several files.
     """
     #Decide where to get the data from
     if args.input is None or args.input=="-": #Stdin
         inp=codecs.getreader("utf-8")(os.fdopen(0,"U")) #Switched universal newlines on
     else: #File name given
-        inp_raw=open(args.input,"U")
-        inp=codecs.getreader("utf-8")(inp_raw)
+        if multiple_files:
+            inp_raw=fileinput.input(files=args.input,mode="U")
+            inp=(line.decode("utf-8") for line in inp_raw)
+        else:
+            inp_raw=open(args.input,mode="U")
+            inp=codecs.getreader("utf-8")(inp_raw)
     #inp is now an iterator over lines, giving unicode strings
 
     if args.output is None or args.output=="-": #stdout

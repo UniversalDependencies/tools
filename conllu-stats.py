@@ -67,7 +67,7 @@ if __name__=="__main__":
     opt_parser.add_argument('--catvals',action='store_true',default=False,help='Print category=value pairs.')
     args = opt_parser.parse_args() #Parsed command-line arguments
     args.output="-"
-    inp,out=file_util.in_out(args)
+    inp,out=file_util.in_out(args,multiple_files=True)
 
     stats=Stats()
     for comments,tree in file_util.trees(inp):
