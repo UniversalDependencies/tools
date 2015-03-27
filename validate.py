@@ -436,7 +436,7 @@ if __name__=="__main__":
     io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
-    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked.")
+    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data directory. It's also ok to use 'ud' for checking compliance with purely ud.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--single-root", action="store_true", default=False, help="Require every tree to have a single root word (multiple allowed by default).")
