@@ -37,13 +37,6 @@ def warn(msg,lineno=True):
         print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
         sys.exit(1)
 
-def print_tree(comments,tree,out):
-    if comments:
-        print >> out, (u"\n".join(comments)).encode("utf8")
-    for cols in tree:
-        print >> out, (u"\t".join(cols)).encode("utf-8")
-    print >> out
-
 
 #Two global variables:
 curr_line=0 #Current line in the input file
@@ -403,26 +396,32 @@ def validate(inp,out,args,tag_sets):
         validate_deps(tree)
         validate_tree(tree)
         if args.echo_input:
-            print_tree(comments,tree,out)
+            file_util.print_tree(comments,tree,out)
     validate_newlines(inp)
 
-def load_set(f_name):
-    """
-    Loads a list of values from f_name, and returns their set. If
-    f_name is "none", return None. If f_name is not found, tries to
-    look in the local data dir.
-    """
-    if f_name.lower()=="none":
-        return None
+def load_file(f_name):
     res=set()
-    if not os.path.exists(f_name) and os.path.exists(os.path.join(THISDIR,"data",f_name)):
-        f_name=os.path.join(THISDIR,"data",f_name)
     with codecs.open(f_name,"r","utf-8") as f:
         for line in f:
             line=line.strip()
             if not line or line.startswith(u"#"):
                 continue
             res.add(line)
+    return res
+
+def load_set(f_name_ud,f_name_langspec):
+    """
+    Loads a list of values from the two files, and returns their
+    set. If f_name_langspec doesn't exist, loads nothing and returns
+    None (ie this taglist is not checked for the given language). If f_name_langspec
+    is None, only loads the UD one. This is probably only useful for CPOS which doesn't
+    allow language-specific extensions.
+    """
+    if f_name_langspec is not None and not os.path.exists(os.path.join(THISDIR,"data",f_name_langspec)):
+        return None #No lang-spec file but would expect one, do no checking
+    res=load_file(os.path.join(THISDIR,"data",f_name_ud))
+    if f_name_langspec is not None:
+        res.update(load_file(os.path.join(THISDIR,"data",f_name_langspec)))
     return res
 
 if __name__=="__main__":
@@ -436,14 +435,8 @@ if __name__=="__main__":
     io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
     io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
 
-    list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets. The various file name options can be set to an existing file, a file name in the local data directory, or 'none'.")
-    list_group.add_argument("--no-lists", action="store_false", dest="check_lists",default=True, help="Do not check the features, tags and dependency relations against the lists of allowed values. Same as setting all of the files below to 'none'.")
-    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), and do not specify --no-lists, this option will try to load the per-language tag lists from data, in addition to the .ud ones. Default: None")
-    list_group.add_argument("--cpos-file", action="store", default="cpos.ud", help="A file listing the allowed CPOS tags. Default: %(default)s.")
-    list_group.add_argument("--pos-file", action="store", default="none", help="A file listing the allowed POS tags. Default: %(default)s.")
-    list_group.add_argument("--feature-file", action="store", default="none", help="A file listing the allowed attribute=value pairs. Default: %(default)s.")
-    list_group.add_argument("--deprel-file", action="store", default="deprel.ud", help="A file listing the allowed dependency relations for DEPREL. Default: %(default)s.")
-    list_group.add_argument("--deps-file", action="store", default="none", help="A file listing the allowed dependency relations for DEPS. Default: %(default)s.")
+    list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
+    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--single-root", action="store_true", default=False, help="Require every tree to have a single root word (multiple allowed by default).")
@@ -455,20 +448,15 @@ if __name__=="__main__":
 
     tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
 
-    #Load the UD lists
-    if args.check_lists:
-        tagsets[FEATS]=load_set(args.feature_file)
-        tagsets[POSTAG]=load_set(args.pos_file)
-        tagsets[CPOSTAG]=load_set(args.cpos_file)
-        tagsets[DEPREL]=load_set(args.deprel_file)
-        tagsets[DEPS]=load_set(args.deps_file)
-        #Load the UD lists
-        if args.lang:
-            tagsets[DEPREL].update(load_set("deprel."+args.lang))
-        else:
-            print >> sys.stderr, u"\nWARNING: You did not specify --no-lists, so I think you should specify --lang (e.g. --lang=en for English). Otherwise the language-specific extensions will be reported as errors.\n\n".encode(args.err_enc)
-
-        
+    if args.lang:
+        tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang)
+        if tagsets[DEPREL] is None:
+            print >> sys.stderr, (u"\nWARNING: the language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\n\n"%args.lang).encode(args.err_enc)
+        tagsets[DEPS]=tagsets[DEPREL]
+        tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
+        if tagsets[FEATS] is None:
+            print >> sys.stderr, (u"\nWARNING: the language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\n\n"%args.lang).encode(args.err_enc)
+        tagsets[CPOSTAG]=load_set("cpos.ud",None)
 
     inp,out=file_util.in_out(args)
     error_counter=0 #Incremented by warn()
