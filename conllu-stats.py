@@ -3,6 +3,10 @@ import re
 import file_util
 from file_util import CPOSTAG,FEATS,DEPREL,DEPS #column index for the columns we'll need
 import argparse
+import os
+import codecs 
+
+THISDIR=os.path.dirname(os.path.abspath(__file__))
 
 class Stats(object):
 
@@ -44,17 +48,40 @@ class Stats(object):
         print >> out, "POS tags:",sum(1 for cat_is_val in self.f_val_counter if cat_is_val.startswith(u"CPOSTAG="))
         print >> out, "Category=value feature pairs:",sum(1 for cat_is_val in self.f_val_counter if not cat_is_val.startswith(u"CPOSTAG="))
 
-    def print_deprels(self,out,which=u"UD+langspec"):
+    def print_deprels(self,out,which=u"UD+langspec",sort="freq"):
         #which can be UD, langspec
-        for deprel,count in sorted(self.deprel_counter.iteritems(),key=lambda x:x[1],reverse=True):
+        if sort=="freq":
+            key=lambda x:-x[1]
+        elif sort=="alph":
+            key=lambda x:x[0].lower()
+        else:
+            print >> sys.stderr, "Unknown sort order: %s. Use --sort=freq or --sort=alph."
+            sys.exit(1)
+        for deprel,count in sorted(self.deprel_counter.iteritems(),key=key):
             if u":" in deprel and u"langspec" in which:
                 print >> out, deprel
             if u":" not in deprel and u"UD" in which:
                 print >> out, deprel
 
-    def print_features(self,out):
-        for cat_is_val,count in sorted(self.f_val_counter.iteritems(),key=lambda x:x[1],reverse=True):
-            if not cat_is_val.startswith(u"CPOSTAG="):
+    def print_features(self,out,which=u"UD+langspec",sort="freq"):
+        #1) get UD features
+        ud_cats=set()
+        with codecs.open(os.path.join(THISDIR,"data","feats.ud"),"r","utf-8") as f:
+            for line in f:
+                line=line.strip()
+                if not line or line.startswith(u"#"):
+                    continue
+                ud_cats.add(line)
+        if sort=="freq":
+            key=lambda x:-x[1]
+        elif sort=="alph":
+            key=lambda x:x[0].lower()
+        else:
+            print >> sys.stderr, "Unknown sort order: %s. Use --sort=freq or --sort=alph."
+            sys.exit(1)
+        for cat_is_val,count in sorted(self.f_val_counter.iteritems(),key=key):
+            cat,val=cat_is_val.split(u"=",1)
+            if not cat==u"CPOSTAG" and ((u"UD" in which and cat in ud_cats) or (u"langspec" in which and cat not in ud_cats)):
                 print >> out, cat_is_val
         
         
@@ -63,8 +90,9 @@ if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description='Script for basic stats generation. Assumes a validated input.')
     opt_parser.add_argument('input', nargs='+', help='Input file name (can be several files), or "-" or nothing for standard input.')
     opt_parser.add_argument('--stats',action='store_true',default=False, help='Print basic stats')
-    opt_parser.add_argument('--deprels',default=None,help='Print deprels. The values can be "UD", "langspec", or "UD+langspec"')
-    opt_parser.add_argument('--catvals',action='store_true',default=False,help='Print category=value pairs.')
+    opt_parser.add_argument('--deprels',default=None,help='Print deprels. The option can be "UD", "langspec", or "UD+langspec".')
+    opt_parser.add_argument('--catvals',default=None,help='Print category=value pairs. The option can be "UD", "langspec", or "UD+langspec". This distinction is based on the feature, not the value.')
+    opt_parser.add_argument('--sort',default='freq',help='Sort the values by their frequency (freq) or alphabetically (alph). Default: %(default)s.')
     args = opt_parser.parse_args() #Parsed command-line arguments
     args.output="-"
     inp,out=file_util.in_out(args,multiple_files=True)
@@ -77,9 +105,9 @@ if __name__=="__main__":
     if args.stats:
         stats.print_basic_stats(out)
     if args.deprels:
-        stats.print_deprels(out,args.deprels)
+        stats.print_deprels(out,args.deprels,args.sort)
     if args.catvals:
-        stats.print_features(out)
+        stats.print_features(out,args.catvals,args.sort)
 
     
 
