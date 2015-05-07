@@ -12,12 +12,12 @@ then
 fi
 
 declare -A lang_config
-#lang_config["cs"]="--multi"
+lang_config["cs"]="--multi"
 
 for D in $*
 do
     echo $(basename "$D")
-    if [[ $(ls $D/ | grep conllu | wc -l) == "0" ]]
+    if [[ $(ls $D/ | grep -P '.conllu$' | wc -l) == "0" ]]
     then
 	echo "No data uploaded"
 	echo
