@@ -12,7 +12,7 @@ then
 fi
 
 declare -A lang_config
-lang_config["cs"]="--multi"    #"--multi"
+#lang_config["cs"]="--multi"
 
 for D in $*
 do
@@ -28,13 +28,14 @@ do
     do
 	L=$(echo $(basename "$F") | cut -f 1 -d-)
 	echo -n "$(basename $F)"
-	python validate.py ${lang_config[$L]} --noecho --lang=$L "$F" >> log.$(basename $D) 2>&1
+	python validate.py --max-err=1000000 ${lang_config[$L]} --noecho --lang=$L "$F" > current.log 2>&1
 	RES=$?
+	cat current.log >> log.$(basename $D)
 	if [[ $RES == 0 ]]
 	then
 	    echo "    ... SUCCESS"
 	else
-	    echo "    ... FAIL"
+	    echo "    ... FAIL" $(cat current.log | grep "FAILED" | grep -Po '[0-9]+ errors')
 	fi
     done
     echo
