@@ -11,13 +11,21 @@ then
     exit
 fi
 
+lang_config["cs"]="--multi"
+
 for D in $*
 do
+    echo $(basename "$D")
+    if [[ $(ls $D/ | grep conllu | wc -l) == "0" ]]
+    then
+	echo "No data uploaded"
+	continue
+    fi
     for F in $D/*.conllu
     do
 	L=$(echo $(basename "$F") | cut -f 1 -d-)
 	echo -n "$(basename $F)"
-	python validate.py --noecho --lang=$L "$F" > /dev/null 2>&1
+	python validate.py ${lang_config[$L]} --noecho --lang=$L "$F" > /dev/null 2>&1
 	RES=$?
 	if [[ $RES == 0 ]]
 	then
@@ -26,5 +34,6 @@ do
 	    echo "    ... FAIL"
 	fi
     done
+    echo
 done
 
