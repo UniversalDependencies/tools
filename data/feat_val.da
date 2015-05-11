@@ -1,0 +1,11 @@
+AdpType=Prep
+Variant=Long
+PartType=Inf
+Variant=Short
+Number[psor]=Sing
+Number[psor]=Plur
+Foreign=Yes
+Style=Form
+Abbr=Yes
+Polite=Pol
+Style=Arch
