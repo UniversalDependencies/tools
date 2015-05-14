@@ -84,6 +84,7 @@ PronType=Prs
 PronType=Rcp
 PronType=Rel
 PronType=Tot
+PronType=Clit
 Reflex=Yes
 Tense=Fut
 Tense=Imp
