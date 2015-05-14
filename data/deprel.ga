@@ -4,6 +4,7 @@ nmod:prep
 acl:relcl
 nmod:poss
 nmod:tmod
+csubj:cleft
 csubj:cop
 case:voc
 compound:prt
