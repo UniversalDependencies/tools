@@ -1,0 +1,12 @@
+Foreign=Yes
+Gender[psor]=Fem
+Gender[psor]=Masc
+Gender[psor]=Neut
+NumForm=Digit
+NumForm=Roman
+NumForm=Word
+Number[psor]=Dual
+Number[psor]=Plur
+Number[psor]=Sing
+Variant=Bound
+Variant=Short

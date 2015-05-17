@@ -1,0 +1,15 @@
+HebBinyan=PAAL
+HebBinyan=HIFIL
+HebBinyan=PIEL
+HebSource=ConvUncertainHead
+VerbType=Cop
+HebBinyan=NIFAL
+HebBinyan=HITPAEL
+VerbType=Mod
+HebBinyan=HUFAL
+HebBinyan=PUAL
+HebExistential=True
+HebSource=ConvUncertainLabel
+Negtive=Neg
+Prefix=Yes
+Xtra=Junk
