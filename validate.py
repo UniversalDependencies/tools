@@ -26,12 +26,12 @@ def warn(msg,lineno=True):
     Print the warning. If lineno is True, print the exact line, otherwise
     print the line on which the current tree starts.
     """
-    global curr_line, sentence_line, error_counter, args
+    global curr_line, sentence_line, error_counter, tree_counter, args
     if not args.quiet:
         if lineno:
-            print >> sys.stderr, (u"[Line         %d]: %s"%(curr_line,msg)).encode(args.err_enc)
+            print >> sys.stderr, (u"[Line                   %d]: %s"%(curr_line,msg)).encode(args.err_enc)
         else:
-            print >> sys.stderr, (u"[Tree on line %d]: %s"%(sentence_line,msg)).encode(args.err_enc)
+            print >> sys.stderr, (u"[Tree number %d on line %d]: %s"%(tree_counter,sentence_line,msg)).encode(args.err_enc)
     error_counter+=1
     if args.max_err>0 and error_counter==args.max_err:
         print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
@@ -386,7 +386,9 @@ def validate_newlines(inp):
         warn("Only the unix-style LF line terminator is allowed")
     
 def validate(inp,out,args,tag_sets):
+    global tree_counter
     for comments,tree in trees(inp,tag_sets,args):
+        tree_counter+=1
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
         validate_ID_sequence(tree)
@@ -459,6 +461,7 @@ if __name__=="__main__":
         tagsets[CPOSTAG]=load_set("cpos.ud",None)
 
     inp,out=file_util.in_out(args)
+    tree_counter=0
     error_counter=0 #Incremented by warn()
     validate(inp,out,args,tagsets)
     if error_counter==0:
