@@ -1,3 +1,4 @@
 VerbType=Aux
 VerbType=Cop
 VerbType=Mod
+PronType=Exc
