@@ -430,7 +430,8 @@ if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
 
     io_group=opt_parser.add_argument_group("Input / output options")
-    io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=True, help='Do not echo the input CoNLL-U data onto output.')
+    io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=False, help='Do not echo the input CoNLL-U data onto output. (for backward compatibility)')
+    io_group.add_argument('--echo', dest="echo_input", action="store_true", default=False, help='Echo the input CoNLL-U data onto output. (for backward compatibility)')
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail. Implies --noecho.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
     io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)s. Note that the CoNLL-U output is by definition always utf-8.')
