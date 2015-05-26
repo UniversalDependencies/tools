@@ -438,7 +438,7 @@ if __name__=="__main__":
     io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
-    list_group.add_argument("--lang", action="store", default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data directory. It's also ok to use 'ud' for checking compliance with purely ud.")
+    list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
@@ -453,11 +453,11 @@ if __name__=="__main__":
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang)
         if tagsets[DEPREL] is None:
-            print >> sys.stderr, (u"\nWARNING: the language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\n\n"%args.lang).encode(args.err_enc)
+            print >> sys.stderr, (u"\nWARNING: the language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations.\n\n"%(args.lang,args.lang)).encode(args.err_enc)
         tagsets[DEPS]=tagsets[DEPREL]
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
         if tagsets[FEATS] is None:
-            print >> sys.stderr, (u"\nWARNING: the language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\n\n"%args.lang).encode(args.err_enc)
+            print >> sys.stderr, (u"\nWARNING: the language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/featval.%s\n \n\n"%(args.lang,args.lang)).encode(args.err_enc)
         tagsets[CPOSTAG]=load_set("cpos.ud",None)
 
     inp,out=file_util.in_out(args)
