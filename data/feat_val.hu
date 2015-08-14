@@ -1,8 +1,8 @@
 Number[psed]=None
-Person[psor]=None
-Number[psor]=None
-Person[psor]=3
-Number[psor]=Sing
-Number[psor]=Plur
-Person[psor]=1
 Number[psed]=Sing
+Number[psor]=None
+Number[psor]=Plur
+Number[psor]=Sing
+Person[psor]=1
+Person[psor]=3
+Person[psor]=None
