@@ -26,9 +26,9 @@ while(<>)
         # Split line into columns.
         my @columns = split(/\s+/, $_);
         # Remember the occurrence of the universal POS tag.
-        $tagset{$fields[3]}++;
+        $tagset{$columns[3]}++;
         # We can also print example lemmas that had the tag.
-        $examples{$fields[3]}{$fields[2]}++;
+        $examples{$columns[3]}{$columns[2]}++;
         # Remember the occurrence of each feature-value pair.
         my $features = $columns[$i_feat_column];
         # Skip the token if there are no features.
