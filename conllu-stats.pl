@@ -41,6 +41,7 @@ while(<>)
         }
     }
 }
+# Sort the features alphabetically before printing them.
 @featureset = sort(keys(%featureset));
 # Examples may contain uppercase letters only if all-lowercase version does not exist.
 foreach my $feature (@featureset)
@@ -55,7 +56,7 @@ foreach my $feature (@featureset)
         }
     }
 }
-# Sort the features alphabetically and print them to the STDOUT.
+# Print the list of features as an XML structure that can be used in the treebank description XML file.
 print("  <feats unique=\"".scalar(@featureset)."\">\n");
 foreach my $feature (@featureset)
 {
@@ -70,7 +71,7 @@ foreach my $feature (@featureset)
     }
     (keys(%{$examples{$feature}}));
     splice(@examples, 10);
-    my $upostags = join(',', sort(keys(%{$upos{$tag}})));
+    my $upostags = join(',', sort(keys(%{$upos{$feature}})));
     my ($name, $value) = split(/=/, $feature);
     print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$featureset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
 }
