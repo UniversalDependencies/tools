@@ -31,24 +31,30 @@ while(<>)
         $examples{$columns[3]}{$columns[2]}++;
         # Remember the occurrence of each feature-value pair.
         my $features = $columns[$i_feat_column];
-        # Skip the token if there are no features.
-        next if($features eq '_');
-        my @features = split(/\|/, $features);
-        my $form = $columns[1];
-        my $upos = $columns[3];
-        foreach my $feature (@features)
+        # Skip if there are no features.
+        unless($features eq '_')
         {
-            $featureset{$feature}++;
-            # We can also list tags with which the feature occurred.
-            $upos{$feature}{$upos}++;
-            # We can also print example words that had the feature.
-            $examples{$feature}{$form}++;
+            my @features = split(/\|/, $features);
+            my $form = $columns[1];
+            my $upos = $columns[3];
+            foreach my $feature (@features)
+            {
+                $featureset{$feature}++;
+                # We can also list tags with which the feature occurred.
+                $upos{$feature}{$upos}++;
+                # We can also print example words that had the feature.
+                $examples{$feature}{$form}++;
+            }
         }
+        # Remember the occurrence of each dependency relation.
+        my $deprel = $columns[7];
+        $deprelset{$deprel}++;
     }
 }
 # Sort the features alphabetically before printing them.
 @tagset = sort(keys(%tagset));
 @featureset = sort(keys(%featureset));
+@deprelset = sort(keys(%deprelset));
 # Examples may contain uppercase letters only if all-lowercase version does not exist.
 foreach my $key (@tagset, @featureset)
 {
@@ -102,3 +108,22 @@ foreach my $feature (@featureset)
     print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$featureset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
 }
 print("  </feats>\n");
+# Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
+print("  <!-- Statistics of universal dependency relations. -->\n");
+print("  <deps unique=\"".scalar(@deprelset)."\">\n");
+foreach my $deprel (@deprelset)
+{
+    my @examples = sort
+    {
+        my $result = $examples{$deprel}{$b} <=> $examples{$deprel}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$examples{$deprel}}));
+    splice(@examples, 10);
+    print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}.'</dep><!-- ', join(', ', @examples), " -->\n");
+}
+print("  </deps>\n");
