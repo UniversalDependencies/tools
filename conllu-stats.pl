@@ -62,7 +62,27 @@ foreach my $key (@tagset, @featureset)
         }
     }
 }
+# Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
+print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
+print("  <tags unique=\"".scalar(@tagset)."\">\n");
+foreach my $tag (@tagset)
+{
+    my @examples = sort
+    {
+        my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$examples{$tag}}));
+    splice(@examples, 10);
+    print('    <tag name="'.$tag.'">'.$tagset{$tag}.'</tag><!-- ', join(', ', @examples), " -->\n");
+}
+print("  </tags>\n");
 # Print the list of features as an XML structure that can be used in the treebank description XML file.
+print("  <!-- Statistics of features and values. The comments with the most frequent word forms are optional (but easy to obtain). -->\n");
 print("  <feats unique=\"".scalar(@featureset)."\">\n");
 foreach my $feature (@featureset)
 {
