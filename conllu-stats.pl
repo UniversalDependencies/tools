@@ -113,17 +113,6 @@ print("  <!-- Statistics of universal dependency relations. -->\n");
 print("  <deps unique=\"".scalar(@deprelset)."\">\n");
 foreach my $deprel (@deprelset)
 {
-    my @examples = sort
-    {
-        my $result = $examples{$deprel}{$b} <=> $examples{$deprel}{$a};
-        unless($result)
-        {
-            $result = $a cmp $b;
-        }
-        $result
-    }
-    (keys(%{$examples{$deprel}}));
-    splice(@examples, 10);
-    print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}.'</dep><!-- ', join(', ', @examples), " -->\n");
+    print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}."</dep>\n");
 }
 print("  </deps>\n");
