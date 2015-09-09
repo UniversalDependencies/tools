@@ -53,7 +53,7 @@ while(<>)
 }
 # Sort the features alphabetically before printing them.
 @tagset = sort(keys(%tagset));
-@featureset = sort(keys(%featureset));
+@featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
 @deprelset = sort(keys(%deprelset));
 # Examples may contain uppercase letters only if all-lowercase version does not exist.
 foreach my $key (@tagset, @featureset)
