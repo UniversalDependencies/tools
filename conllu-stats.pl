@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Reads CoNLL(-U) data from STDIN, collects all features (FEAT column, delimited by vertical bars) and prints them sorted to STDOUT.
-# Copyright © 2014 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2013-2015 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -33,7 +33,7 @@ while(<>)
         my $upos = $columns[3];
         foreach my $feature (@features)
         {
-            $tagset{$feature}++;
+            $featureset{$feature}++;
             # We can also list tags with which the feature occurred.
             $upos{$feature}{$upos}++;
             # We can also print example words that had the feature.
@@ -41,36 +41,37 @@ while(<>)
         }
     }
 }
-@tagset = sort(keys(%tagset));
+@featureset = sort(keys(%featureset));
 # Examples may contain uppercase letters only if all-lowercase version does not exist.
-foreach my $tag (@tagset)
+foreach my $feature (@featureset)
 {
-    my @examples = keys(%{$examples{$tag}});
+    my @examples = keys(%{$examples{$feature}});
     foreach my $example (@examples)
     {
-        if(lc($example) ne $example && exists($examples{$tag}{lc($example)}))
+        if(lc($example) ne $example && exists($examples{$feature}{lc($example)}))
         {
-            $examples{$tag}{lc($example)} += $examples{$tag}{$example};
-            delete($examples{$tag}{$example});
+            $examples{$feature}{lc($example)} += $examples{$feature}{$example};
+            delete($examples{$feature}{$example});
         }
     }
 }
-# Sort the tagset alphabetically and print it to the STDOUT.
-foreach my $tag (@tagset)
+# Sort the features alphabetically and print them to the STDOUT.
+print("  <feats unique=\"".scalar(@featureset)."\">\n");
+foreach my $feature (@featureset)
 {
     my @examples = sort
     {
-        my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
+        my $result = $examples{$feature}{$b} <=> $examples{$feature}{$a};
         unless($result)
         {
             $result = $a cmp $b;
         }
         $result
     }
-    (keys(%{$examples{$tag}}));
+    (keys(%{$examples{$feature}}));
     splice(@examples, 10);
     my $upostags = join(',', sort(keys(%{$upos{$tag}})));
-    my ($name, $value) = split(/=/, $tag);
-    print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$tagset{$tag}.'</feat><!-- ', join(', ', @examples), " -->\n");
+    my ($name, $value) = split(/=/, $feature);
+    print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$featureset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
 }
-print("Total ", scalar(@tagset), " feature values.\n");
+print("  </feats>\n");
