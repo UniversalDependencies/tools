@@ -25,6 +25,11 @@ while(<>)
         s/\r?\n$//;
         # Split line into columns.
         my @columns = split(/\s+/, $_);
+        # Remember the occurrence of the universal POS tag.
+        $tagset{$fields[3]}++;
+        # We can also print example lemmas that had the tag.
+        $examples{$fields[3]}{$fields[2]}++;
+        # Remember the occurrence of each feature-value pair.
         my $features = $columns[$i_feat_column];
         # Skip the token if there are no features.
         next if($features eq '_');
@@ -41,17 +46,18 @@ while(<>)
         }
     }
 }
+@tagset = sort(keys(%tagset));
 @featureset = sort(keys(%featureset));
 # Examples may contain uppercase letters only if all-lowercase version does not exist.
-foreach my $feature (@featureset)
+foreach my $key (@tagset, @featureset)
 {
-    my @examples = keys(%{$examples{$feature}});
+    my @examples = keys(%{$examples{$key}});
     foreach my $example (@examples)
     {
-        if(lc($example) ne $example && exists($examples{$feature}{lc($example)}))
+        if(lc($example) ne $example && exists($examples{$key}{lc($example)}))
         {
-            $examples{$feature}{lc($example)} += $examples{$feature}{$example};
-            delete($examples{$feature}{$example});
+            $examples{$key}{lc($example)} += $examples{$key}{$example};
+            delete($examples{$key}{$example});
         }
     }
 }
