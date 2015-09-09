@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Reads CoNLL data from STDIN, collects all features (FEAT column, delimited by vertical bars) and prints them sorted to STDOUT.
+# Reads CoNLL(-U) data from STDIN, collects all features (FEAT column, delimited by vertical bars) and prints them sorted to STDOUT.
 # Copyright © 2014 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
