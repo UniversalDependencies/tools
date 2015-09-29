@@ -1,0 +1,12 @@
+Abbr=Yes
+AdpType=Post
+AdpType=Prep
+NameType=Nat
+NumForm=Digit
+NumForm=Word
+PunctType=Comm
+PunctType=Excl
+PunctType=Peri
+PunctType=Qest
+VerbType=Mod
+
