@@ -1,12 +1,2 @@
-Variant=Short
-NumForm=Digit
-NumForm=Word
-Number[psor]=Sing
-Foreign=Yes
-Number[psor]=Plur
-Gender[psor]=Masc
-Gender[psor]=Fem
-Variant=Bound
-NumForm=Roman
-Number[psor]=Dual
-Gender[psor]=Neut
+cc:preconj
+compound:reflex
