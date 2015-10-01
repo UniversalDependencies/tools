@@ -13,14 +13,21 @@ binmode(STDERR, ':utf8');
 my $format = shift;
 my $i_feat_column = $format eq '2009' ? 6 : 5;
 
+my $ntok = 0;
+my $nsent = 0;
 while(<>)
 {
     # Skip comment lines (new in CoNLL-U).
     next if(m/^\#/);
     # Skip lines with fused tokens (they do not contain features; this is new in CoNLL-U).
     next if(m/^(\d+)-(\d+)\t/);
-    unless(m/^\s*$/)
+    if(m/^\s*$/)
     {
+        $nsent++;
+    }
+    else
+    {
+        $ntok++;
         # Get rid of the line break.
         s/\r?\n$//;
         # Split line into columns.
@@ -69,6 +76,22 @@ foreach my $key (@tagset, @featureset)
     }
 }
 # Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
+print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+print("<treebank>\n");
+print << EOF
+  <!-- tokens means "surface tokens", e.g. Spanish "vámonos" counts as one token
+       words means "syntactic words", e.g. Spanish "vámonos" is split to two words, "vamos" and "nos"
+       fused is the number of tokens that are split to two or more syntactic words
+       The words and fused elements can be omitted if no token is split to smaller syntactic words. -->
+EOF
+;
+print("  <size>\n");
+print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens></total>\n");
+###!!! We do not know what part of the data is for training, development or testing. We would have to change the calling syntax.
+#print("    <train></train>\n");
+#print("    <dev></dev>\n");
+#print("    <test></test>\n");
+print("  </size>\n");
 print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
 print("  <tags unique=\"".scalar(@tagset)."\">\n");
 foreach my $tag (@tagset)
@@ -116,3 +139,4 @@ foreach my $deprel (@deprelset)
     print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}."</dep>\n");
 }
 print("  </deps>\n");
+print("</treebank>\n");
