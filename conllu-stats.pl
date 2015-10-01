@@ -78,7 +78,7 @@ foreach my $key (@tagset, @featureset)
 # Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
 print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 print("<treebank>\n");
-print << EOF
+print <<EOF
   <!-- tokens means "surface tokens", e.g. Spanish "vámonos" counts as one token
        words means "syntactic words", e.g. Spanish "vámonos" is split to two words, "vamos" and "nos"
        fused is the number of tokens that are split to two or more syntactic words
