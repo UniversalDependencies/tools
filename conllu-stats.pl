@@ -14,20 +14,31 @@ my $format = shift;
 my $i_feat_column = $format eq '2009' ? 6 : 5;
 
 my $ntok = 0;
+my $nfus = 0;
+my $nword = 0;
 my $nsent = 0;
 while(<>)
 {
     # Skip comment lines (new in CoNLL-U).
     next if(m/^\#/);
-    # Skip lines with fused tokens (they do not contain features; this is new in CoNLL-U).
-    next if(m/^(\d+)-(\d+)\t/);
+    # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
     if(m/^\s*$/)
     {
         $nsent++;
     }
+    # Lines with fused tokens do not contain features but we want to count the fusions.
+    elsif(m/^(\d+)-(\d+)\t/)
+    {
+        my $i0 = $1;
+        my $i1 = $2;
+        my $size = $i1-$i0+1;
+        $ntok -= $size-1;
+        $nfus++;
+    }
     else
     {
         $ntok++;
+        $nword++;
         # Get rid of the line break.
         s/\r?\n$//;
         # Split line into columns.
@@ -86,7 +97,7 @@ print <<EOF
 EOF
 ;
 print("  <size>\n");
-print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens></total>\n");
+print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens><words>$nword</words><fused>$nfus</fused></total>\n");
 ###!!! We do not know what part of the data is for training, development or testing. We would have to change the calling syntax.
 #print("    <train></train>\n");
 #print("    <dev></dev>\n");
