@@ -123,6 +123,7 @@ if __name__=="__main__":
                 stats.count_cols(cols)
     except:
         traceback.print_exc()
+        print >> sys.stderr, "\n\n ------- STATS MAY BE EMPTY OR INCOMPLETE ----------"
         pass
     if args.stats:
         stats.print_basic_stats(out)
