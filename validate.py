@@ -458,7 +458,7 @@ if __name__=="__main__":
         tagsets[DEPS]=tagsets[DEPREL]
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
         if tagsets[FEATS] is None:
-            print >> sys.stderr, (u"\nWARNING: the language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s\n \n\n"%(args.lang,args.lang)).encode(args.err_enc)
+            print >> sys.stderr, (u"\nWARNING: the language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu | sort > data/feat_val.%s\n \n\n"%(args.lang,args.lang)).encode(args.err_enc)
         tagsets[CPOSTAG]=load_set("cpos.ud",None)
 
     inp,out=file_util.in_out(args)
