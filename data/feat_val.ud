@@ -1,5 +1,6 @@
 Animacy=Anim
 Animacy=Inan
+Animacy=Nhum
 Aspect=Imp
 Aspect=Perf
 Aspect=Pro
@@ -82,6 +83,7 @@ Reflex=Yes
 Tense=Fut
 Tense=Imp
 Tense=Past
+Tense=Pqp
 Tense=Pres
 VerbForm=Fin
 VerbForm=Ger

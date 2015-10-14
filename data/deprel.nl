@@ -1,0 +1,2 @@
+compound:prt
+det:nummod
