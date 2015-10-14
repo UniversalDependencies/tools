@@ -20,22 +20,30 @@ COLCOUNT=10
 ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES=u"ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
 
-error_counter=0
-def warn(msg,lineno=True):
+error_counter={} #key: error type value: error count
+def warn(msg,error_type,lineno=True):
     """
     Print the warning. If lineno is True, print the exact line, otherwise
     print the line on which the current tree starts.
     """
     global curr_line, sentence_line, error_counter, tree_counter, args
+    error_counter[error_type]=error_counter.get(error_type,0)+1
     if not args.quiet:
-        if lineno:
-            print >> sys.stderr, (u"[Line                   %d]: %s"%(curr_line,msg)).encode(args.err_enc)
+        if args.max_err>0 and error_counter[error_type]==args.max_err:
+            print >> sys.stderr, (u"...suppressing further errors regarding "+error_type).encode(args.err_enc)
+        elif args.max_err>0 and error_counter[error_type]>args.max_err:
+            pass #suppressed
         else:
-            print >> sys.stderr, (u"[Tree number %d on line %d]: %s"%(tree_counter,sentence_line,msg)).encode(args.err_enc)
-    error_counter+=1
-    if args.max_err>0 and error_counter==args.max_err:
-        print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
-        sys.exit(1)
+            if lineno:
+                print >> sys.stderr, (u"[Line                   %d]: %s"%(curr_line,msg)).encode(args.err_enc)
+            else:
+                print >> sys.stderr, (u"[Tree number %d on line %d]: %s"%(tree_counter,sentence_line,msg)).encode(args.err_enc)
+
+    ## I think this is no longer needed here
+    # if args.max_err>0:
+    #     for err_type in and error_counter[error_type]>=args.max_err:
+    #     print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
+    #     sys.exit(1)
 
 
 #Two global variables:
@@ -61,25 +69,25 @@ def trees(inp,tag_sets,args):
                 comments=[]
                 lines=[]
             else:
-                warn(u"Spurious empty line.")
+                warn(u"Spurious empty line.",u"Format")
         elif line[0]==u"#":
             if not lines: # before sentence
                 comments.append(line)
             else:
-                warn(u"Spurious comment line.")
+                warn(u"Spurious comment line.",u"Format")
         elif line[0].isdigit():
             if not lines: #new sentence
                 sentence_line=curr_line
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
-                warn(u"The line has %d columns, but %d are expected."%(len(cols),COLCOUNT))
+                warn(u"The line has %d columns, but %d are expected."%(len(cols),COLCOUNT),u"Format")
             lines.append(cols)
             validate_cols(cols,tag_sets,args)
         else: #A line which is not a comment, nor a token/word, nor empty. That's bad!
-            warn(u"Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line))
+            warn(u"Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line),u"Format")
     else: #end of file
         if comments or lines: #These should have been yielded on an empty line!
-            warn(u"Missing empty line after the last tree.")
+            warn(u"Missing empty line after the last tree.",u"Format")
             yield comments, lines
 
 ###### Tests applicable to a single row indpendently of the others
@@ -105,9 +113,9 @@ def validate_whitespace(cols):
     """
     for col_idx in range(MISC+1): #...all columns up to and including MISC (i.e. all columns ;)
         if not cols[col_idx]:
-            warn(u"Empty value in column %s"%(COLNAMES[col_idx]))
+            warn(u"Empty value in column %s"%(COLNAMES[col_idx]),u"Format")
         if whitespace_re.match(cols[col_idx]) is not None:
-            warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]))
+            warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
 def validate_token_empty_vals(cols):
     """
@@ -117,7 +125,7 @@ def validate_token_empty_vals(cols):
         return 
     for col_idx in range(LEMMA,MISC): #all columns in the LEMMA-DEPS range
         if cols[col_idx]!=u"_":
-            warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]))
+            warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
         
 
 attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
@@ -129,34 +137,34 @@ def validate_features(cols,tag_sets):
     feat_list=feats.split(u"|")
     #the lower() thing is to be on the safe side, since all features must start with [A-Z0-9] anyway
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
-        warn(u"Morphological features must be sorted: '%s'"%feats)
+        warn(u"Morphological features must be sorted: '%s'"%feats,u"Morpho")
     attr_set=set() #I'll gather the set of attributes here to check later than none is repeated 
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
-            warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f)
+            warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f,u"Morpho")
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
             attr_set.add(attr)
             values=match.group(2).split(u",")
             if len(values)!=len(set(values)):
-                warn(u"Repeated features values are disallowed: %s"%feats)
+                warn(u"Repeated features values are disallowed: %s"%feats,u"Morpho")
             if [v.lower() for v in values]!=sorted(v.lower() for v in values):
-                warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f)
+                warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f,u"Morpho")
             for v in values:
                 if not val_re.match(v):
-                    warn(u"Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f))
+                    warn(u"Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f),u"Morpho")
                 if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
-                    warn(u"Unknown attribute-value pair %s=%s"%(attr,v))
+                    warn(u"Unknown attribute-value pair %s=%s"%(attr,v),u"Morpho")
     if len(attr_set)!=len(feat_list):
-        warn(u"Repeated features are disallowed: %s"%feats)
+        warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
 def validate_pos(cols,tag_sets):
     if tag_sets[CPOSTAG] is not None and cols[CPOSTAG] not in tag_sets[CPOSTAG]:
-        warn(u"Unknown CPOS tag: %s"%cols[CPOSTAG])
+        warn(u"Unknown CPOS tag: %s"%cols[CPOSTAG],u"Morpho")
     if tag_sets[POSTAG] is not None and cols[POSTAG] not in tag_sets[POSTAG]:
-        warn(u"Unknown POS tag: %s"%cols[POSTAG])
+        warn(u"Unknown POS tag: %s"%cols[POSTAG],u"Morpho")
     
 def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
@@ -164,16 +172,16 @@ def lspec2ud(deprel):
 
 def validate_deprels(cols,tag_sets):
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
-        warn(u"Unknown UD DEPREL: %s"%cols[DEPREL])
+        warn(u"Unknown UD DEPREL: %s"%cols[DEPREL],u"Syntax")
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
             try:
                 head,deprel=head_deprel.split(u":",1)
             except ValueError:
-                warn(u"Malformed head:deprel pair '%s'"%head_deprel)
+                warn(u"Malformed head:deprel pair '%s'"%head_deprel,u"Syntax")
                 continue
             if lspec2ud(deprel) not in tag_sets[DEPS]:
-                warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel))
+                warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
 
 def validate_character_constraints(cols):
     """
@@ -184,17 +192,17 @@ def validate_character_constraints(cols):
         return # skip multiword tokens
 
     if not re.match(r"^[A-Z]+$", cols[CPOSTAG]):
-        warn("Invalid CPOSTAG value %s" % cols[CPOSTAG])
+        warn("Invalid CPOSTAG value %s" % cols[CPOSTAG],u"Morpho")
     if not re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]):
-        warn("Invalid DEPREL value %s" % cols[DEPREL])
+        warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
     try:
         deps = deps_list(cols)
     except ValueError:
-        warn(u"Failed for parse DEPS: %s" % cols[DEPS])
+        warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Syntax")
         return
     if any(deprel for head, deprel in deps_list(cols)
            if not re.match(r"^[a-z][a-z_-]*", deprel)):
-        warn("Invalid value in DEPS: %s" % cols[DEPS])
+        warn("Invalid value in DEPS: %s" % cols[DEPS],u"Syntax")
 
 
 ##### Tests applicable to the whole tree
@@ -216,16 +224,16 @@ def validate_ID_sequence(tree):
         else:
             match=interval_re.match(cols[ID]) #Check the interval against the regex
             if not match:
-                warn(u"Spurious token interval definition: '%s'."%cols[ID],lineno=False)
+                warn(u"Spurious token interval definition: '%s'."%cols[ID],u"Format",lineno=False)
                 continue
             beg,end=int(match.group(1)),int(match.group(2))
             if not ((not words and beg == 1) or (words and beg == words[-1]+1)):
-                warn(u"Multiword range not before its first word")
+                warn(u"Multiword range not before its first word",u"Format")
                 continue
             tokens.append((beg,end))
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
-        warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),lineno=False)
+        warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),u"Format",lineno=False)
     #TODO: Check sanity of word intervals
                 
 def subset_to_words(tree):
@@ -256,15 +264,15 @@ def validate_ID_references(tree):
 
     for cols in word_tree:
         if not valid_id(cols[HEAD]):
-            warn(u"Undefined ID in HEAD: %s" % cols[HEAD])
+            warn(u"Undefined ID in HEAD: %s" % cols[HEAD],u"Format")
         try:
             deps = deps_list(cols)
         except ValueError:
-            warn(u"Failed for parse DEPS: %s" % cols[DEPS])
+            warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Format")
             continue
         for head, deprel in deps:
             if not valid_id(head):
-                warn(u"Undefined ID in DEPS: %s" % head)
+                warn(u"Undefined ID in DEPS: %s" % head,u"Format")
 
 def proj(node,s,deps,depth,max_depth):
     """
@@ -276,7 +284,7 @@ def proj(node,s,deps,depth,max_depth):
         return
     for dependent in deps.get(node,[]):
         if dependent in s:
-            warn(u"Loop from %s" % dependent)
+            warn(u"Loop from %s" % dependent,u"Syntax")
             continue
         s.add(dependent)
         proj(dependent,s,deps,depth+1,max_depth)
@@ -294,7 +302,7 @@ def validate_token_ranges(tree):
 
         m = interval_re.match(cols[ID])
         if not m:
-            warn(u"Failed to parse ID %s" % cols[ID])
+            warn(u"Failed to parse ID %s" % cols[ID],u"Format")
             continue
 
         start, end = m.groups()
@@ -304,11 +312,11 @@ def validate_token_ranges(tree):
             assert False, 'internal error' # RE should assure that this works
 
         if not start < end:
-            warn(u"Invalid range: %s" % cols[ID])
+            warn(u"Invalid range: %s" % cols[ID],u"Format")
             continue
 
         if covered & set(range(start, end+1)):
-            warn(u"Range overlaps with others: %s" % cols[ID])
+            warn(u"Range overlaps with others: %s" % cols[ID],u"Format")
         covered |= set(range(start, end+1))
 
 def validate_root(tree):
@@ -318,10 +326,10 @@ def validate_root(tree):
     for cols in subset_to_words(tree):
         if cols[HEAD] == u'0':
             if cols[DEPREL] != u'root':
-                warn(u'DEPREL must be "root" if HEAD is 0')
+                warn(u'DEPREL must be "root" if HEAD is 0',u"Syntax")
         else:
             if cols[DEPREL] == u'root':
-                warn(u'DEPREL can only be "root" if HEAD is 0')
+                warn(u'DEPREL can only be "root" if HEAD is 0',u"Syntax")
 
 def validate_deps(tree):
     """
@@ -333,18 +341,18 @@ def validate_deps(tree):
             deps = deps_list(cols)
             heads = [int(h) for h, d in deps]
         except ValueError:
-            warn(u"Failed for parse DEPS: %s" % cols[DEPS])
+            warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Format")
             return
         if heads != sorted(heads):
-            warn(u"DEPS not sorted by head index: %s" % cols[DEPS])
+            warn(u"DEPS not sorted by head index: %s" % cols[DEPS],u"Format")
 
         try:
             id_ = int(cols[ID])
         except ValueError:
-            warn(u"Non-integer ID: %s" % cols[ID])
+            warn(u"Non-integer ID: %s" % cols[ID],u"Format")
             return
         if id_ in heads:
-            warn(u"ID in DEPS for %s" % cols[ID])
+            warn(u"ID in DEPS for %s" % cols[ID],u"Format")
 
 def validate_tree(tree):
     """
@@ -355,35 +363,35 @@ def validate_tree(tree):
     word_tree=subset_to_words(tree)
     for cols in word_tree:
         if cols[HEAD]==u"_":
-            warn(u"Empty head for word ID %s" % cols[ID], lineno=False)
+            warn(u"Empty head for word ID %s" % cols[ID], u"Format", lineno=False)
             continue
         try:
             id_ = int(cols[ID])
         except ValueError:
-            warn(u"Non-integer ID: %s" % cols[ID], lineno=False)
+            warn(u"Non-integer ID: %s" % cols[ID], u"Format", lineno=False)
             continue
         try:
             head = int(cols[HEAD])
         except ValueError:
-            warn(u"Non-integer head for word ID %s" % cols[ID], lineno=False)
+            warn(u"Non-integer head for word ID %s" % cols[ID], u"Format", lineno=False)
             continue
         if head == id_:
-            warn(u"HEAD == ID for %s" % cols[ID], lineno=False)
+            warn(u"HEAD == ID for %s" % cols[ID], u"Format", lineno=False)
             continue
         deps.setdefault(head, set()).add(id_)
     root_deps=set()
     proj(0,root_deps,deps,0,1)
     if len(root_deps)>1 and args.single_root:
-        warn(u"Multiple root words: %s"%list(root_deps), lineno=False)
+        warn(u"Multiple root words: %s"%list(root_deps), u"Syntax", lineno=False)
     root_proj=set()
     proj(0,root_proj,deps,0,None)
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
     if unreachable:
-        warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),lineno=False)
+        warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),u"Syntax",lineno=False)
 
 def validate_newlines(inp):
     if inp.newlines and inp.newlines!='\n':
-        warn("Only the unix-style LF line terminator is allowed")
+        warn("Only the unix-style LF line terminator is allowed",u"Format")
     
 def validate(inp,out,args,tag_sets):
     global tree_counter
@@ -445,6 +453,8 @@ if __name__=="__main__":
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
+    error_counter={} #Incremented by warn()  {key: error type value: its count}
+    tree_counter=0
 
     if args.quiet:
         args.echo_input=False
@@ -454,23 +464,26 @@ if __name__=="__main__":
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang)
         if tagsets[DEPREL] is None:
-            print >> sys.stderr, (u"\nWARNING: the language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations.\n\n"%(args.lang,args.lang)).encode(args.err_enc)
+            warn(u"The language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations. It's okay if the file is empty, but it must exist.\n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[DEPS]=tagsets[DEPREL]
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
         if tagsets[FEATS] is None:
-            print >> sys.stderr, (u"\nWARNING: the language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/featval.%s\n \n\n"%(args.lang,args.lang)).encode(args.err_enc)
+            warn(u"The language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/featval.%s It's okay if the file is empty, but it must exist.\n \n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[CPOSTAG]=load_set("cpos.ud",None)
 
     inp,out=file_util.in_out(args)
-    tree_counter=0
-    error_counter=0 #Incremented by warn()
+
+
+
     validate(inp,out,args,tagsets)
-    if error_counter==0:
+    if not error_counter:
         if not args.quiet:
             print >> sys.stderr, "*** PASSED ***"
         sys.exit(0)
     else:
         if not args.quiet:
-            print >> sys.stderr, "*** FAILED *** with %d errors"%error_counter
+            print >> sys.stderr, "*** FAILED *** with %d errors"%sum(v for k,v in error_counter.iteritems())
+            for k,v in sorted(error_counter.items()):
+                print >> sys.stderr, k, "errors:", v
         sys.exit(1)
     
