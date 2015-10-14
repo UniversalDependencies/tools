@@ -1,5 +1,5 @@
-nmod:poss
 acl:relcl
 compound:prt
 nmod:loc
-nmod:temp
+nmod:poss
+nmod:tmod
