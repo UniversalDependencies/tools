@@ -26,6 +26,7 @@ Foreign=Fscript
 InfForm=1
 InfForm=2
 InfForm=3
+Negative=Yes
 Number[psor]=Plur
 Number[psor]=Sing
 PartForm=Agt
