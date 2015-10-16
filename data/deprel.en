@@ -1,7 +1,7 @@
-nmod:poss
 acl:relcl
-nmod:tmod
+cc:preconj
 compound:prt
-nmod:npmod
-conj:preconj
 det:predet
+nmod:npmod
+nmod:poss
+nmod:tmod
