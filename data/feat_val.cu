@@ -1,3 +1,3 @@
+Aspect=Res
 Strength=Strong
 Strength=Weak
-Aspect=Resultative
