@@ -109,9 +109,14 @@ foreach my $folder (@folders)
                 my $prefix = $langcode;
                 $prefix .= '_'.lc($treebank) if($treebank ne '');
                 $prefix .= '-ud';
-                if(!-f "$prefix-train.conllu")
+                if($langcode ne 'cs' && !-f "$prefix-train.conllu")
                 {
                     print("$folder: missing $prefix-train.conllu\n");
+                    $n_errors++;
+                }
+                elsif($langcode eq 'cs' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
+                {
+                    print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
                     $n_errors++;
                 }
                 if(!-f "$prefix-dev.conllu")
