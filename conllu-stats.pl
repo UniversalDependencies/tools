@@ -27,13 +27,16 @@ while(<>)
         $nsent++;
     }
     # Lines with fused tokens do not contain features but we want to count the fusions.
-    elsif(m/^(\d+)-(\d+)\t/)
+    elsif(m/^(\d+)-(\d+)\t(\S+)/)
     {
         my $i0 = $1;
         my $i1 = $2;
+        my $fusion = $3;
         my $size = $i1-$i0+1;
         $ntok -= $size-1;
         $nfus++;
+        # Remember the occurrence of the fusion.
+        $fusions{$fusion}++ unless($fusion eq '_');
     }
     else
     {
@@ -43,6 +46,10 @@ while(<>)
         s/\r?\n$//;
         # Split line into columns.
         my @columns = split(/\s+/, $_);
+        # Remember the occurrence of the word form (syntactic word).
+        $words{$columns[1]}++ unless($columns[1] eq '_');
+        # Remember the occurrence of the lemma.
+        $lemmas{$columns[2]}++ unless($columns[2] eq '_');
         # Remember the occurrence of the universal POS tag.
         $tagset{$columns[3]}++;
         # We can also print example lemmas that had the tag.
@@ -69,6 +76,12 @@ while(<>)
         $deprelset{$deprel}++;
     }
 }
+prune_examples(\%fusions);
+@fusions = sort {$fusions{$b} <=> $fusions{$a}} (keys(%fusions));
+prune_examples(\%words);
+@words = sort {$words{$b} <=> $words{$a}} (keys(%words));
+prune_examples(\%lemmas);
+@lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
 # Sort the features alphabetically before printing them.
 @tagset = sort(keys(%tagset));
 @featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
@@ -103,6 +116,15 @@ print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens><words>$nwo
 #print("    <dev></dev>\n");
 #print("    <test></test>\n");
 print("  </size>\n");
+print('  <lemmas unique="', scalar(@lemmas), '" />');
+splice(@lemmas, 15);
+print("<!-- ", join(', ', @lemmas), " -->\n");
+print('  <forms unique="', scalar(@words), '" />');
+splice(@words, 15);
+print("<!-- ", join(', ', @words), " -->\n");
+print('  <fusions unique="', scalar(@fusions), '" />');
+splice(@fusions, 15);
+print("<!-- ", join(', ', @fusions), " -->\n");
 print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
 print("  <tags unique=\"".scalar(@tagset)."\">\n");
 foreach my $tag (@tagset)
@@ -151,3 +173,23 @@ foreach my $deprel (@deprelset)
 }
 print("  </deps>\n");
 print("</treebank>\n");
+
+
+
+#------------------------------------------------------------------------------
+# Takes the reference to a hash of examples. Prunes the hash so that if a
+# lowercased example exists, its capitalized counterpart will be deleted.
+#------------------------------------------------------------------------------
+sub prune_examples
+{
+    my $examplehash = shift;
+    my @examples = keys(%{$examplehash});
+    foreach my $example (@examples)
+    {
+        if(lc($example) ne $example && exists($examplehash->{lc($example)}))
+        {
+            $examplehash->{lc($example)} += $examplehash->{$example};
+            delete($examplehash->{$example});
+        }
+    }
+}
