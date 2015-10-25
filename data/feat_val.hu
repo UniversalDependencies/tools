@@ -1,3 +1,4 @@
+Aspect=Freq
 Definite=2
 Number[psed]=None
 Number[psed]=Sing
@@ -7,3 +8,6 @@ Number[psor]=Sing
 Person[psor]=1
 Person[psor]=3
 Person[psor]=None
+VerbForm=PartFut
+VerbForm=PartPast
+VerbForm=PartPres
