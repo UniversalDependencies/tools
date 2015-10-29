@@ -25,3 +25,4 @@ PartType=Deg
 PartType=Cop
 PartType=Cmpl
 PartType=Vb
+PartType=Inf
