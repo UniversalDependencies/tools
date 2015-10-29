@@ -4,7 +4,7 @@ nmod:poss
 acl:relcl
 case:gen
 case:acc
-subj:cop
+nsubj:cop
 acl:inf
 nmod:tmod
 advmod:phrase
