@@ -419,19 +419,33 @@ def load_file(f_name):
             res.add(line)
     return res
 
-def load_set(f_name_ud,f_name_langspec):
+def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
     """
     Loads a list of values from the two files, and returns their
     set. If f_name_langspec doesn't exist, loads nothing and returns
     None (ie this taglist is not checked for the given language). If f_name_langspec
     is None, only loads the UD one. This is probably only useful for CPOS which doesn't
-    allow language-specific extensions.
+    allow language-specific extensions. Set validate_langspec=True when loading dependencies.
+    That way the language speciic deps will be checked to be truly extensions of UD ones"
     """
     if f_name_langspec is not None and not os.path.exists(os.path.join(THISDIR,"data",f_name_langspec)):
         return None #No lang-spec file but would expect one, do no checking
     res=load_file(os.path.join(THISDIR,"data",f_name_ud))
+    #Now res holds UD
+    #Next load and optionally check the langspec extensions
     if f_name_langspec is not None:
-        res.update(load_file(os.path.join(THISDIR,"data",f_name_langspec)))
+        l_spec=load_file(os.path.join(THISDIR,"data",f_name_langspec))
+        for v in l_spec:
+            if validate_langspec:
+                try:
+                    ud_v,l_v=v.split(u":")
+                    if ud_v not in res:
+                        warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
+                        continue
+                except:
+                    warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
+                    continue
+            res.add(v)
     return res
 
 if __name__=="__main__":
@@ -462,7 +476,7 @@ if __name__=="__main__":
     tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
 
     if args.lang:
-        tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang)
+        tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
         if tagsets[DEPREL] is None:
             warn(u"The language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations. It's okay if the file is empty, but it must exist.\n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[DEPS]=tagsets[DEPREL]
