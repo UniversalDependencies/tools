@@ -5,7 +5,7 @@ Form=Len
 Form=Ecl
 Form=HPref
 Form=Emph
-Form=Vf
+Form=VF
 Case=Com
 NounType=Strong
 NounType=Weak
@@ -25,6 +25,8 @@ PartType=Comp
 PartType=Pat
 PartType=Voc
 PartType=Deg
+PartType=Num
+
 PartType=Cop
 PartType=Cmpl
 PartType=Vb
