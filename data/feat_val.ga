@@ -26,7 +26,6 @@ PartType=Pat
 PartType=Voc
 PartType=Deg
 PartType=Num
-
 PartType=Cop
 PartType=Cmpl
 PartType=Vb
