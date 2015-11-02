@@ -8,7 +8,6 @@ Form=Len
 Form=VF
 Mood=Cond
 Mood=Int
-Negation=Neg
 NounType=NotSlender
 NounType=Slender
 NounType=Strong
