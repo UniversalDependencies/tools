@@ -60,6 +60,7 @@ my %langcodes =
 );
 my $n_folders_with_data = 0;
 my $n_errors = 0;
+my %languages_with_data;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -88,7 +89,11 @@ foreach my $folder (@folders)
             }
             else
             {
-                $n_folders_with_data++ if($n>0);
+                if($n>0)
+                {
+                    $n_folders_with_data++;
+                    $languages_with_data{$language}++;
+                }
                 my $expected_n = $langcode eq 'cs' ? 6 : 3;
                 unless($n==$expected_n)
                 {
@@ -145,4 +150,6 @@ foreach my $folder (@folders)
 }
 print("Found ", scalar(@folders), " repositories.\n");
 print("$n_folders_with_data are git repositories and contain data.\n");
+my @languages = sort(keys(%languages_with_data));
+print(scalar(@languages), " languages with data: ", join(' ', @languages), "\n");
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
