@@ -9,6 +9,8 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
+# Dan's sorting library
+use csort;
 
 # Include reports on future repositories (not scheduled for the upcoming release)?
 # (If there is no README file, we will include the repository in the report and complain about the missing README.)
@@ -70,6 +72,9 @@ my %langcodes =
 my $n_folders_with_data = 0;
 my $n_errors = 0;
 my %languages_with_data;
+my %licenses;
+my %genres;
+my %contributors;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -157,6 +162,29 @@ foreach my $folder (@folders)
                     print("$folder: missing $prefix-test.conllu\n");
                     $n_errors++;
                 }
+                # Summarize metadata.
+                if($metadata->{'License'} ne '')
+                {
+                    $licenses{$metadata->{'License'}}++;
+                }
+                if($metadata->{'Genre'} ne '')
+                {
+                    my @genres = split(/\s+/, $metadata->{'Genre'});
+                    foreach my $genre (@genres)
+                    {
+                        $genres{$genre}++;
+                    }
+                }
+                if($metadata->{'Contributors'} ne '')
+                {
+                    my @contributors = split(/;\s*/, $metadata->{'Contributors'});
+                    foreach my $contributor (@contributors)
+                    {
+                        $contributor =~ s/^\s+//;
+                        $contributor =~ s/\s+$//;
+                        $contributors{$contributor}++;
+                    }
+                }
             }
             closedir(DIR);
             chdir('..') or die("Cannot return to the upper folder");
@@ -175,6 +203,19 @@ print("Found ", scalar(@folders), " repositories.\n");
 print("$n_folders_with_data are git repositories and contain data.\n");
 my @languages = sort(keys(%languages_with_data));
 print(scalar(@languages), " languages with data: ", join(' ', @languages), "\n");
+my @licenses = sort(keys(%licenses));
+print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n");
+my @genres = sort(keys(%genres));
+print(scalar(@genres), " different genres: ", join(', ', @genres), "\n");
+my @contributors = keys(%contributors);
+my %trid;
+foreach my $contributor (@contributors)
+{
+    $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
+}
+my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
+#@contributors = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
+print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n");
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
 
 
@@ -197,6 +238,7 @@ sub read_readme
     my $folder = shift;
     my $filename = (-f 'README.txt') ? 'README.txt' : 'README.md';
     open(README, $filename) or return;
+    binmode(README, ':utf8');
     my %metadata;
     my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors');
     my $attributes_re = join('|', @attributes);
