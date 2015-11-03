@@ -201,8 +201,8 @@ foreach my $folder (@folders)
 }
 print("Found ", scalar(@folders), " repositories.\n");
 print("$n_folders_with_data are git repositories and contain data.\n");
-my @languages = sort(keys(%languages_with_data));
-print(scalar(@languages), " languages with data: ", join(' ', @languages), "\n");
+my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
+print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
 my @licenses = sort(keys(%licenses));
 print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n");
 my @genres = sort(keys(%genres));
