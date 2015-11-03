@@ -130,6 +130,7 @@ foreach my $folder (@folders)
                 if(!-f 'LICENSE.txt')
                 {
                     print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
+                    generate_license($metadata->{License});
                     $n_errors++;
                 }
                 # Check the names of the data files.
@@ -259,4 +260,34 @@ sub read_readme
         }
     }
     return \%metadata;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Generates the LICENSE.txt file for a Creative Commons license.
+#------------------------------------------------------------------------------
+sub generate_license
+{
+    my $license = shift;
+    ###!!! Currently all missing licenses are CC BY-NC-SA 3.0 so I am not going to make this more general.
+    if($license ne 'CC BY-NC-SA 3.0')
+    {
+        print("WARNING: Cannot generate LICENSE.txt for license '$license'\n");
+        return;
+    }
+    my $text = <<EOF
+This work is licensed under the Creative Commons Attribution-NonCommercial-
+ShareAlike 3.0 Generic License. To view a copy of this license, visit
+
+http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+or send a letter to
+Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+EOF
+    ;
+    open(LICENSE, '>LICENSE.txt') or die("Cannot write LICENSE.txt: $!");
+    print LICENSE ($text);
+    close(LICENSE);
+    system('git add LICENSE.txt');
 }
