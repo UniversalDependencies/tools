@@ -75,6 +75,7 @@ my %languages_with_data;
 my %licenses;
 my %genres;
 my %contributors;
+my %stats;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -109,7 +110,8 @@ foreach my $folder (@folders)
             }
             # Look for the other files in the repository.
             opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
-            my @conllufiles = grep {-f $_ && m/\.conllu$/} (readdir(DIR));
+            my @files = readdir(DIR);
+            my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
             my $n = scalar(@conllufiles);
             if($n==0)
             {
@@ -139,9 +141,9 @@ foreach my $folder (@folders)
                     $n_errors++;
                 }
                 # Check the names of the data files.
-                my $prefix = $langcode;
-                $prefix .= '_'.lc($treebank) if($treebank ne '');
-                $prefix .= '-ud';
+                my $key = $langcode;
+                $key .= '_'.lc($treebank) if($treebank ne '');
+                my $prefix = $key.'-ud';
                 if($langcode ne 'cs' && !-f "$prefix-train.conllu")
                 {
                     print("$folder: missing $prefix-train.conllu\n");
@@ -161,6 +163,22 @@ foreach my $folder (@folders)
                 {
                     print("$folder: missing $prefix-test.conllu\n");
                     $n_errors++;
+                }
+                $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
+                # Look for additional files. (Do we want to include them in the release package?)
+                my @extrafiles = map
+                {
+                    $_ .= '/' if(-d $_);
+                    $_
+                }
+                grep
+                {
+                    !m/^(\.\.?|\.git(ignore)?|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
+                }
+                (@files);
+                if(scalar(@extrafiles)>0)
+                {
+                    print("$folder extra files: ", join(', ', sort(@extrafiles)), "\n");
                 }
                 # Summarize metadata.
                 if($metadata->{'License'} ne '')
@@ -202,11 +220,11 @@ foreach my $folder (@folders)
 print("Found ", scalar(@folders), " repositories.\n");
 print("$n_folders_with_data are git repositories and contain data.\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
-print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
+print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
 my @licenses = sort(keys(%licenses));
-print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n");
+print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n\n");
 my @genres = sort(keys(%genres));
-print(scalar(@genres), " different genres: ", join(', ', @genres), "\n");
+print(scalar(@genres), " different genres: ", join(', ', @genres), "\n\n");
 my @contributors = keys(%contributors);
 my %trid;
 foreach my $contributor (@contributors)
@@ -215,8 +233,29 @@ foreach my $contributor (@contributors)
 }
 my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
 #@contributors = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
-print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n");
+print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
+# Old release.
+# zen:/net/data/universal-dependencies-1.1
+# mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.1
+my $oldpath = 'C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.1';
+print("Collecting statistics of $oldpath...\n");
+my $stats11 = collect_statistics_about_ud_release($oldpath);
+my @languages11 = sort(keys(%{$stats11}));
+foreach my $l (@languages11)
+{
+    print("$l\tt=$stats11->{$l}{ntok}\tw=$stats11->{$l}{nword}\tf=$stats11->{$l}{nfus}\ts=$stats11->{$l}{nsent}\n");
+    if($stats11->{$l}{ntok}  != $stats{$l}{ntok}  ||
+       $stats11->{$l}{nword} != $stats{$l}{nword} ||
+       $stats11->{$l}{nfus}  != $stats{$l}{nfus}  ||
+       $stats11->{$l}{nsent} != $stats{$l}{nsent})
+    {
+        print(" NOW:\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
+    }
+}
+# Then we may want to do this for treebanks whose size has not changed:
+# zeman@zen:/ha/home/zeman/network/unidep$ for i in UD_* ; do echo $i ; cd $i ; git pull ; cd .. ; done
+# zeman@zen:/net/data/universal-dependencies-1.1$ for i in German Greek English Finnish Finnish-FTB Irish Hebrew Croatian Hungarian Indonesian Swedish ; do for j in UD_$i/*.conllu ; do echo diff $j /net/work/people/zeman/unidep/$j ; ( diff $j /net/work/people/zeman/unidep/$j | head -2 ) ; done ; done
 
 
 
@@ -332,4 +371,100 @@ EOF
     print LICENSE ($text);
     close(LICENSE);
     system('git add LICENSE.txt');
+}
+
+
+
+#------------------------------------------------------------------------------
+# Examines a UD distribution and counts the number of tokens for every
+# treebank in the distribution. The results can be used to compare the current
+# release with a previous one.
+#------------------------------------------------------------------------------
+sub collect_statistics_about_ud_release
+{
+    my $release_path = shift;
+    my %stats;
+    opendir(DIR, $release_path) or die("Cannot read folder $release_path: $!");
+    my @folders = readdir(DIR);
+    closedir(DIR);
+    foreach my $folder (@folders)
+    {
+        # The name of the folder: 'UD_' + language name + optional treebank identifier.
+        # Example: UD_Ancient_Greek-PROIEL
+        my $language = '';
+        my $treebank = '';
+        my $langcode;
+        if(-d "$release_path/$folder" && $folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Z]+))?$/)
+        {
+            $language = $1;
+            $treebank = $2 if(defined($2));
+            if(exists($langcodes{$language}))
+            {
+                $langcode = $langcodes{$language};
+                my $key = $langcode;
+                $key .= '_'.lc($treebank) if($treebank ne '');
+                $stats{$key} = collect_statistics_about_ud_treebank("$release_path/$folder", $key);
+            }
+        }
+    }
+    return \%stats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Examines a UD treebank and counts the number of tokens in all .conllu files.
+#------------------------------------------------------------------------------
+sub collect_statistics_about_ud_treebank
+{
+    my $treebank_path = shift;
+    my $treebank_code = shift;
+    my $prefix = "$treebank_code-ud";
+    # All .conllu files with the given prefix in the given folder are considered disjunct parts of the treebank.
+    # Hence we do not have to bother with Czech exceptions in file naming etc.
+    # But we have to be careful if we look at a future release where the folders may not yet be clean.
+    opendir(DIR, $treebank_path) or die("Cannot read folder $treebank_path: $!");
+    my @files = grep {m/^$prefix-.+\.conllu$/} (readdir(DIR));
+    closedir(DIR);
+    my $nsent = 0;
+    my $ntok = 0;
+    my $nfus = 0;
+    my $nword = 0;
+    foreach my $file (@files)
+    {
+        open(CONLLU, "$treebank_path/$file") or die("Cannot read file $treebank_path/$file");
+        while(<CONLLU>)
+        {
+            # Skip comment lines.
+            next if(m/^\#/);
+            # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
+            if(m/^\s*$/)
+            {
+                $nsent++;
+            }
+            # Lines with fused tokens do not contain features but we want to count the fusions.
+            elsif(m/^(\d+)-(\d+)\t(\S+)/)
+            {
+                my $i0 = $1;
+                my $i1 = $2;
+                my $size = $i1-$i0+1;
+                $ntok -= $size-1;
+                $nfus++;
+            }
+            else
+            {
+                $ntok++;
+                $nword++;
+            }
+        }
+        close(CONLLU);
+    }
+    my $stats =
+    {
+        'nsent' => $nsent,
+        'ntok'  => $ntok,
+        'nfus'  => $nfus,
+        'nword' => $nword
+    };
+    return $stats;
 }
