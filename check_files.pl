@@ -108,6 +108,12 @@ foreach my $folder (@folders)
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
+            my $current_release = 1.2;
+            if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
+            {
+                print("$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
+                $n_errors++;
+            }
             # Look for the other files in the repository.
             opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
             my @files = readdir(DIR);
@@ -319,6 +325,10 @@ sub read_readme
                     $metadata{'release'} = 1;
                 }
             }
+        }
+        elsif(m/change\s*log/i)
+        {
+            $metadata{'changelog'} = 1;
         }
     }
     close(README);
