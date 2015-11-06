@@ -66,11 +66,12 @@ def trees(inp):
         elif line[0].isdigit():
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
-                warn(u"Line %d: The line has %d columns, but %d are expected. Giving up."%(line_counter+1,len(cols),COLCOUNT))
+                print >> sys.stderr, u"Line %d: The line has %d columns, but %d are expected. Giving up."%(line_counter+1,len(cols),COLCOUNT)
                 sys.exit(1)
             lines.append(cols)
         else: #A line which is not a comment, nor a token/word, nor empty. That's bad!
             #TODO warn!
+            print >> sys.stderr, u"Line %d not conllu: Giving up."%(line_counter+1)
             sys.exit(1) #Give a non-zero exit code
     else: #end of file
         if comments or lines: #Looks like a forgotten empty line at the end of the file, well, okay...
