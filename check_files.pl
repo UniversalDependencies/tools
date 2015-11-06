@@ -253,9 +253,24 @@ foreach my $l (@languages11)
         print(" NOW:\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
     }
 }
+print("\n");
 # Then we may want to do this for treebanks whose size has not changed:
 # zeman@zen:/ha/home/zeman/network/unidep$ for i in UD_* ; do echo $i ; cd $i ; git pull ; cd .. ; done
 # zeman@zen:/net/data/universal-dependencies-1.1$ for i in German Greek English Finnish Finnish-FTB Irish Hebrew Croatian Hungarian Indonesian Swedish ; do for j in UD_$i/*.conllu ; do echo diff $j /net/work/people/zeman/unidep/$j ; ( diff $j /net/work/people/zeman/unidep/$j | head -2 ) ; done ; done
+my @languages = sort(keys(%stats));
+my $ntok = 0;
+my $nword = 0;
+my $nfus = 0;
+my $nsent = 0;
+foreach my $l (@languages)
+{
+    print("$l\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
+    $ntok += $stats{$l}{ntok};
+    $nword += $stats{$l}{nword};
+    $nfus += $stats{$l}{nfus};
+    $nsent += $stats{$l}{nsent};
+}
+print("TOTAL\tt=$ntok\tw=$nword\tf=$nfus\ts=$nsent\n");
 
 
 
