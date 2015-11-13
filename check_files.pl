@@ -143,7 +143,7 @@ foreach my $folder (@folders)
                 if($pull)
                 {
                     print("git pull $folder\n");
-                    system('git pull');
+                    system('git pull --tags');
                     print(`git status`);
                 }
                 if($n>0)
@@ -239,6 +239,7 @@ foreach my $folder (@folders)
                         print("Tagging $folder $tag\n");
                         system("git tag $tag");
                     }
+                    system('git push');
                     system('git push --tags');
                 }
             }
