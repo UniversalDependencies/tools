@@ -239,7 +239,7 @@ foreach my $folder (@folders)
                         print("Tagging $folder $tag\n");
                         system("git tag $tag");
                     }
-                    system('git push -t');
+                    system('git push --tags');
                 }
             }
             closedir(DIR);
