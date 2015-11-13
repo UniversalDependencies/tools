@@ -326,7 +326,7 @@ sub read_readme
                 }
             }
         }
-        elsif(m/change\s*log/i)
+        elsif(m/change(\s|-)*log/i)
         {
             $metadata{'changelog'} = 1;
         }
