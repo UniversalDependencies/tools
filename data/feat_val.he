@@ -8,7 +8,6 @@ HebBinyan=PUAL
 HebExistential=True
 HebSource=ConvUncertainHead
 HebSource=ConvUncertainLabel
-Negtive=Neg
 Prefix=Yes
 VerbType=Cop
 VerbType=Mod
