@@ -190,7 +190,7 @@ foreach my $folder (@folders)
                 }
                 grep
                 {
-                    !m/^(\.\.?|\.git(ignore)?|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
+                    !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
                 }
                 (@files);
                 if(scalar(@extrafiles)>0)
