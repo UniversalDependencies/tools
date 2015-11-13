@@ -17,10 +17,16 @@ use csort;
 my $include_future = 0;
 # Pull the latest changes from Github and show git status of each repository?
 my $pull = 0;
+# Recompute statistics of all treebanks and push them to Github?
+my $recompute_stats = 0;
+# Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
+my $tag = ''; # example: 'r1.0'
 GetOptions
 (
     'future' => \$include_future,
-    'pull'   => \$pull
+    'pull'   => \$pull,
+    'stats'  => \$recompute_stats,
+    'tag=s'  => \$tag
 );
 
 # This script expects to be invoked in the folder in which all the UD_folders
@@ -219,6 +225,21 @@ foreach my $folder (@folders)
                         $contributor =~ s/\s+$//;
                         $contributors{$contributor}++;
                     }
+                }
+                # Recompute statistics of the treebank and push it back to Github.
+                if($recompute_stats)
+                {
+                    print("Recomputing statistics of $folder...\n");
+                    system('cat *.conllu | ../tools/conllu-stats.pl > stats.xml');
+                    print("Pushing statistics to Github...\n");
+                    system('git add stats.xml');
+                    system('git commit -m "Updated statistics."');
+                    if($tag ne '')
+                    {
+                        print("Tagging $folder $tag\n");
+                        system("git tag $tag");
+                    }
+                    system('git push -t');
                 }
             }
             closedir(DIR);
