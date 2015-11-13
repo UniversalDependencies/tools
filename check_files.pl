@@ -129,6 +129,11 @@ foreach my $folder (@folders)
             }
             else
             {
+                # This is a git repository with data.
+                # Make sure it is up-to-date.
+                print("git pull $folder\n");
+                system('git pull');
+                print(`git status`);
                 if($n>0)
                 {
                     $n_folders_with_data++;
