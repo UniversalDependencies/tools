@@ -15,9 +15,12 @@ use csort;
 # Include reports on future repositories (not scheduled for the upcoming release)?
 # (If there is no README file, we will include the repository in the report and complain about the missing README.)
 my $include_future = 0;
+# Pull the latest changes from Github and show git status of each repository?
+my $pull = 0;
 GetOptions
 (
-    'future' => \$include_future
+    'future' => \$include_future,
+    'pull'   => \$pull
 );
 
 # This script expects to be invoked in the folder in which all the UD_folders
@@ -131,9 +134,12 @@ foreach my $folder (@folders)
             {
                 # This is a git repository with data.
                 # Make sure it is up-to-date.
-                print("git pull $folder\n");
-                system('git pull');
-                print(`git status`);
+                if($pull)
+                {
+                    print("git pull $folder\n");
+                    system('git pull');
+                    print(`git status`);
+                }
                 if($n>0)
                 {
                     $n_folders_with_data++;
