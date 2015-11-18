@@ -20,7 +20,8 @@ while(<>)
     {
         s/\r?\n$//;
         my @fields = split(/\t/, $_);
-        # Some tools (MaltParser?) may not expect POSTAG to be empty if we have non-empty CPOSTAG. Copy CPOSTAG to POSTAG if POSTAG is empty.
+        # CoNLL-X specification did not allow POSTAG to be empty if there was CPOSTAG, and some tools rely on it.
+        # Copy CPOSTAG to POSTAG if POSTAG is empty.
         $fields[4] = $fields[3] if($fields[4] eq '_');
         # The last two columns ([8] and [9]) had different meaning in CoNLL-X.
         # In many cases it is probably harmless to keep their contents from CoNLL-U, but some tools may rely on their expectations about these columns,
