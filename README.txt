@@ -41,6 +41,17 @@ that a previously training sentence is now in test or vice versa. That is someth
 
 
 ==============================
+conllu_to_conllx.pl
+==============================
+
+Converts a file in the CoNLL-U format to the old CoNLL-X format. Useful with old tools (e.g. parsers) that require
+CoNLL-X as their input. Usage:
+
+  perl conllu_to_conllx.pl < file.conllu > file.conll
+
+
+
+==============================
 conll_convert_tags_to_uposf.pl
 ==============================
 
