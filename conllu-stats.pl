@@ -324,6 +324,8 @@ sub prune_examples
 #------------------------------------------------------------------------------
 sub detailed_statistics
 {
+    my $docspath = '../docs'; ###!!! This should be a parameter. Path to the git repository with the documentation where we can edit the pages about POS tags.
+    my $langcode = 'pt'; ###!!! This should be a parameter. We use it in hyperlinks to features and relations.
     # We have to see all tags before we can compute percentage of each tag.
     my %ntypes; # hash{$tag}
     my %nlemmas; # hash{$tag}
@@ -362,13 +364,28 @@ sub detailed_statistics
     my $limit = 10;
     foreach my $tag (@tagset)
     {
-        print("--------------------------------------------------------------------------------\n");
+        my $file = "$docspath/_$langcode-pos/$tag.md";
+        $file =~ s/AUX\.md/AUX_.md/;
+        my $page;
+        open(PAGE, $file) or die("Cannot read $file: $!");
+        while(<PAGE>)
+        {
+            $page .= $_;
+        }
+        close(PAGE);
+        unless($page =~ m/This document is a placeholder/s)
+        {
+            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
+        }
+        # Remove previous statistics, if any, from the page.
+        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
+        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
         my $ntokens = $tagset{$tag};
-        my $ptokens = sprintf("%d", ($ntokens/$ntokens_total)*100+0.5);
-        my $ptypes = sprintf("%d", ($ntypes{$tag}/$ntypes_total)*100+0.5);
-        my $plemmas = sprintf("%d", ($nlemmas{$tag}/$nlemmas_total)*100+0.5);
-        print("There are $nlemmas{$tag} `$tag` lemmas ($plemmas\%), $ntypes{$tag} `$tag` types ($ptypes\%) and $ntokens `$tag` tokens ($ptokens\%).\n");
-        print("Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n");
+        my $ptokens = percent($ntokens, $ntokens_total);
+        my $ptypes = percent($ntypes{$tag}, $ntypes_total);
+        my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
+        $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
+        $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
         my @examples = sort
         {
             my $result = $examples{$tag.'-lemma'}{$b} <=> $examples{$tag.'-lemma'}{$a};
@@ -380,7 +397,7 @@ sub detailed_statistics
         }
         (keys(%{$examples{$tag.'-lemma'}}));
         splice(@examples, $limit);
-        print("The $limit most frequent `$tag` lemmas: _", join(', ', @examples), "_\n\n");
+        $page .= "The $limit most frequent `$tag` lemmas: _".join(', ', @examples)."_\n\n";
         @examples = sort
         {
             my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
@@ -392,7 +409,7 @@ sub detailed_statistics
         }
         (keys(%{$examples{$tag}}));
         splice(@examples, $limit);
-        print("The $limit most frequent `$tag` types:  _", join(', ', @examples), "_\n\n");
+        $page .= "The $limit most frequent `$tag` types:  _".join(', ', @examples)."_\n\n";
         # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
         @examples = sort
         {
@@ -406,7 +423,7 @@ sub detailed_statistics
         (grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}})));
         splice(@examples, $limit);
         @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); '_'.$l.'_ ('.join(', ', @t).')'} (@examples);
-        print("The $limit most frequent ambiguous lemmas: ", join(', ', @examples), "\n\n");
+        $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
         # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
         @examples = sort
         {
@@ -420,21 +437,20 @@ sub detailed_statistics
         (grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}})));
         splice(@examples, $limit);
         my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); '_'.$w.'_ ('.join(', ', @t).')'} (@examples);
-        print("The $limit most frequent ambiguous types:  ", join(', ', @examples1), "\n\n");
-        print("\n");
+        $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
         foreach my $example (@examples)
         {
-            print('* _'.$example."_\n");
+            $page .= '* _'.$example."_\n";
             my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
             foreach my $ambtag (@ambtags)
             {
-                print("  * [$ambtag]() $wordtag{$example}{$ambtag}: _$exentwt{$example}{$ambtag}_\n");
+                $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: _$exentwt{$example}{$ambtag}_\n";
             }
         }
-        print("\n");
+        $page .= "\n";
         # Morphological richness.
-        print("## Morphology\n\n");
-        printf("The form / lemma ratio of $tag is %f (the average of all parts of speech is %f).\n\n", $ntypes{$tag}/$nlemmas{$tag}, $flratio);
+        $page .= "## Morphology\n\n";
+        $page .= sprintf("The form / lemma ratio of `$tag` is %f (the average of all parts of speech is %f).\n\n", $ntypes{$tag}/$nlemmas{$tag}, $flratio);
         my @mrich_lemmas = sort {my $v = scalar(keys(%{$tlw{$tag}{$b}})) <=> scalar(keys(%{$tlw{$tag}{$a}})); $v = $a cmp $b unless($v); $v} (keys(%{$tlw{$tag}}));
         for(my $i = 0; $i < 3; $i++)
         {
@@ -442,7 +458,7 @@ sub detailed_statistics
             my @richest_paradigm = sort(keys(%{$tlw{$tag}{$mrich_lemmas[$i]}}));
             my $richness = scalar(@richest_paradigm);
             my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
-            print("The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _", join(', ', @richest_paradigm), "_\n\n");
+            $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _".join(', ', @richest_paradigm)."_\n\n";
         }
         my @features = sort(keys(%{$tf{$tag}}));
         my $nfeatures = scalar(@features);
@@ -450,8 +466,7 @@ sub detailed_statistics
         my $nfeaturepairs = scalar(@featurepairs);
         my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
         my $nfeaturesets = scalar(@featuresets);
-        my $langcode = 'pt'; ###!!!
-        my @features_with_counts = map {my $p = sprintf("%d", ($tf{$tag}{$_}/$tagset{$tag})*100+0.5); "[$langcode-feat/$_]() ($tf{$tag}{$_}; $p\% tokens)"} (@features);
+        my @features_with_counts = map {my $p = percent($tf{$tag}{$_}, $tagset{$tag}); "[$langcode-feat/$_]() ($tf{$tag}{$_}; $p tokens)"} (@features);
         @examples = sort
         {
             my $result = $examples{$tag."\t".$featuresets[0]}{$b} <=> $examples{$tag."\t".$featuresets[0]}{$a};
@@ -465,63 +480,66 @@ sub detailed_statistics
         splice(@examples, $limit);
         if($nfeatures > 0)
         {
-            print("`$tag` occurs with $nfeatures features: ", join(', ', @features_with_counts), "\n\n");
-            print("`$tag` occurs with $nfeaturepairs feature-value pairs: ", join(', ', @featurepairs), "\n\n");
+            $page .= "`$tag` occurs with $nfeatures features: ".join(', ', @features_with_counts)."\n\n";
+            $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
             # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
             # Update: The vertical bar is not treated as a special character if it is inside `code text`.
             my $escaped_featureset = $featuresets[0];
             #$escaped_featureset =~ s/\|/\\\|/g;
-            print("`$tag` occurs with $nfeaturesets feature combinations. The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens, examples: _".join(', ', @examples)."_).\n\n");
+            $page .= "`$tag` occurs with $nfeaturesets feature combinations. The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens, examples: _".join(', ', @examples)."_).\n\n";
         }
         else
         {
-            print("`$tag` does not occur with any features.\n\n");
+            $page .= "`$tag` does not occur with any features.\n\n";
         }
-        print("\n");
+        $page .= "\n";
         # Dependency relations.
-        print("## Relations\n\n");
+        $page .= "## Relations\n\n";
         my @deprels = sort {$tagdeprel{$tag}{$b} <=> $tagdeprel{$tag}{$a}} (keys(%{$tagdeprel{$tag}}));
         my $ndeprels = scalar(@deprels);
-        my $deprels_with_counts = join(', ', map {my $p = sprintf("%d", ($tagdeprel{$tag}{$_}/$tagset{$tag})*100+0.5); "[$langcode-dep/$_]() ($tagdeprel{$tag}{$_}; $p\% tokens)"} (@deprels));
-        print("`$tag` nodes are attached to their parents using $ndeprels different relations: $deprels_with_counts\n\n");
+        my $deprels_with_counts = join(', ', map {my $p = percent($tagdeprel{$tag}{$_}, $tagset{$tag}); "[$langcode-dep/$_]() ($tagdeprel{$tag}{$_}; $p tokens)"} (@deprels));
+        $page .= "`$tag` nodes are attached to their parents using $ndeprels different relations: $deprels_with_counts\n\n";
         my @parenttags = sort {$parenttag{$tag}{$b} <=> $parenttag{$tag}{$a}} (keys(%{$parenttag{$tag}}));
         my $nparenttags = scalar(@parenttags);
-        my $parenttags_with_counts = join(', ', map {my $p = sprintf("%d", ($parenttag{$tag}{$_}/$tagset{$tag})*100+0.5); "[$_]() ($parenttag{$tag}{$_}; $p\% tokens)"} (@parenttags));
-        print("Parents of `$tag` nodes belong to $nparenttags different parts of speech: $parenttags_with_counts\n\n");
+        my $parenttags_with_counts = join(', ', map {my $p = percent($parenttag{$tag}{$_}, $tagset{$tag}); "[$_]() ($parenttag{$tag}{$_}; $p tokens)"} (@parenttags));
+        $page .= "Parents of `$tag` nodes belong to $nparenttags different parts of speech: $parenttags_with_counts\n\n";
         my $n0c = $tagdegree{$tag}{0} // 0;
         my $p0c = percent($n0c, $tagset{$tag});
-        print("$n0c ($p0c) `$tag` nodes are leaves.\n\n");
+        $page .= "$n0c ($p0c) `$tag` nodes are leaves.\n\n";
         if($maxtagdegree{$tag} > 0)
         {
             my $n1c = $tagdegree{$tag}{1} // 0;
             my $p1c = percent($n1c, $tagset{$tag});
-            print("$n1c ($p1c) `$tag` nodes have one child.\n\n");
+            $page .= "$n1c ($p1c) `$tag` nodes have one child.\n\n";
             if($maxtagdegree{$tag} > 1)
             {
                 my $n2c = $tagdegree{$tag}{2} // 0;
                 my $p2c = percent($n2c, $tagset{$tag});
-                print("$n2c ($p2c) `$tag` nodes have two children.\n\n");
+                $page .= "$n2c ($p2c) `$tag` nodes have two children.\n\n";
                 if($maxtagdegree{$tag} > 2)
                 {
                     my $n3c = $tagdegree{$tag}{3} // 0;
                     my $p3c = percent($n3c, $tagset{$tag});
-                    print("$n3c ($p3c) `$tag` nodes have three or more children.\n\n");
+                    $page .= "$n3c ($p3c) `$tag` nodes have three or more children.\n\n";
                 }
             }
         }
-        print("The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n");
+        $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
         if($maxtagdegree{$tag} > 0)
         {
             my @deprels = sort {$childtagdeprel{$tag}{$b} <=> $childtagdeprel{$tag}{$a}} (keys(%{$childtagdeprel{$tag}}));
             my $ndeprels = scalar(@deprels);
             my $deprels_with_counts = join(', ', map {my $p = percent($childtagdeprel{$tag}{$_}, $nchildren{$tag}); "[$langcode-dep/$_]() ($childtagdeprel{$tag}{$_}; $p tokens)"} (@deprels));
-            print("Children of `$tag` nodes are attached using $ndeprels different relations: $deprels_with_counts\n\n");
+            $page .= "Children of `$tag` nodes are attached using $ndeprels different relations: $deprels_with_counts\n\n";
             my @childtags = sort {$childtag{$tag}{$b} <=> $childtag{$tag}{$a}} (keys(%{$childtag{$tag}}));
             my $nchildtags = scalar(@childtags);
             my $childtags_with_counts = join(', ', map {my $p = percent($childtag{$tag}{$_}, $nchildren{$tag}); "[$_]() ($childtag{$tag}{$_}; $p tokens)"} (@childtags));
-            print("Children of `$tag` nodes belong to $nchildtags different parts of speech: $childtags_with_counts\n\n");
+            $page .= "Children of `$tag` nodes belong to $nchildtags different parts of speech: $childtags_with_counts\n\n";
         }
-        print("\n");
+        print STDERR ("Writing $file\n");
+        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        print PAGE ($page);
+        close(PAGE);
     }
 }
 
