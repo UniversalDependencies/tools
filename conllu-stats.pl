@@ -403,28 +403,26 @@ sub detailed_statistics
             my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
             $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _".join(', ', @richest_paradigm)."_\n\n";
         }
-        my @features = sort(keys(%{$tf{$tag}}));
-        my $nfeatures = scalar(@features);
-        my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
-        my $nfeaturepairs = scalar(@featurepairs);
-        my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
-        my $nfeaturesets = scalar(@featuresets);
-        my @features_with_counts = map {my $p = percent($tf{$tag}{$_}, $tagset{$tag}); "[$langcode-feat/$_]() ($tf{$tag}{$_}; $p tokens)"} (@features);
-        @examples = sort
+        if(scalar(keys(%{$tf{$tag}})) > 0)
         {
-            my $result = $examples{$tag."\t".$featuresets[0]}{$b} <=> $examples{$tag."\t".$featuresets[0]}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$tag."\t".$featuresets[0]}}));
-        splice(@examples, $limit);
-        if($nfeatures > 0)
-        {
-            $page .= "`$tag` occurs with $nfeatures features: ".join(', ', @features_with_counts)."\n\n";
+            my ($list, $n) = list_keys_with_counts($tf{$tag}, $tagset{$tag}, "$langcode-feat/");
+            $page .= "`$tag` occurs with $n features: $list\n\n";
+            my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
+            my $nfeaturepairs = scalar(@featurepairs);
             $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
+            my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
+            my $nfeaturesets = scalar(@featuresets);
+            @examples = sort
+            {
+                my $result = $examples{$tag."\t".$featuresets[0]}{$b} <=> $examples{$tag."\t".$featuresets[0]}{$a};
+                unless($result)
+                {
+                    $result = $a cmp $b;
+                }
+                $result
+            }
+            (keys(%{$examples{$tag."\t".$featuresets[0]}}));
+            splice(@examples, $limit);
             # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
             # Update: The vertical bar is not treated as a special character if it is inside `code text`.
             my $escaped_featureset = $featuresets[0];
@@ -438,14 +436,10 @@ sub detailed_statistics
         $page .= "\n";
         # Dependency relations.
         $page .= "## Relations\n\n";
-        my @deprels = sort {$tagdeprel{$tag}{$b} <=> $tagdeprel{$tag}{$a}} (keys(%{$tagdeprel{$tag}}));
-        my $ndeprels = scalar(@deprels);
-        my $deprels_with_counts = join(', ', map {my $p = percent($tagdeprel{$tag}{$_}, $tagset{$tag}); "[$langcode-dep/$_]() ($tagdeprel{$tag}{$_}; $p tokens)"} (@deprels));
-        $page .= "`$tag` nodes are attached to their parents using $ndeprels different relations: $deprels_with_counts\n\n";
-        my @parenttags = sort {$parenttag{$tag}{$b} <=> $parenttag{$tag}{$a}} (keys(%{$parenttag{$tag}}));
-        my $nparenttags = scalar(@parenttags);
-        my $parenttags_with_counts = join(', ', map {my $p = percent($parenttag{$tag}{$_}, $tagset{$tag}); "[$_]() ($parenttag{$tag}{$_}; $p tokens)"} (@parenttags));
-        $page .= "Parents of `$tag` nodes belong to $nparenttags different parts of speech: $parenttags_with_counts\n\n";
+        my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $tagset{$tag}, "$langcode-dep/");
+        $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
+        ($list, $n) = list_keys_with_counts($parenttag{$tag}, $tagset{$tag}, '');
+        $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
         my $n0c = $tagdegree{$tag}{0} // 0;
         my $p0c = percent($n0c, $tagset{$tag});
         $page .= "$n0c ($p0c) `$tag` nodes are leaves.\n\n";
@@ -470,20 +464,46 @@ sub detailed_statistics
         $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
         if($maxtagdegree{$tag} > 0)
         {
-            my @deprels = sort {$childtagdeprel{$tag}{$b} <=> $childtagdeprel{$tag}{$a}} (keys(%{$childtagdeprel{$tag}}));
-            my $ndeprels = scalar(@deprels);
-            my $deprels_with_counts = join(', ', map {my $p = percent($childtagdeprel{$tag}{$_}, $nchildren{$tag}); "[$langcode-dep/$_]() ($childtagdeprel{$tag}{$_}; $p tokens)"} (@deprels));
-            $page .= "Children of `$tag` nodes are attached using $ndeprels different relations: $deprels_with_counts\n\n";
-            my @childtags = sort {$childtag{$tag}{$b} <=> $childtag{$tag}{$a}} (keys(%{$childtag{$tag}}));
-            my $nchildtags = scalar(@childtags);
-            my $childtags_with_counts = join(', ', map {my $p = percent($childtag{$tag}{$_}, $nchildren{$tag}); "[$_]() ($childtag{$tag}{$_}; $p tokens)"} (@childtags));
-            $page .= "Children of `$tag` nodes belong to $nchildtags different parts of speech: $childtags_with_counts\n\n";
+            ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$langcode-dep/");
+            $page .= "Children of `$tag` nodes are attached using $n different relations: $list\n\n";
+            ($list, $n) = list_keys_with_counts($childtag{$tag}, $nchildren{$tag}, '');
+            $page .= "Children of `$tag` nodes belong to $n different parts of speech: $list\n\n";
         }
         print STDERR ("Writing $file\n");
         open(PAGE, ">$file") or die("Cannot write $file: $!");
         print PAGE ($page);
         close(PAGE);
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Returns the list (as string) of elements with which this element has been
+# observed, together with counts and percentages. For example, returns the list
+# of dependency relation labels with which a part-of-speech tag has been seen.
+#------------------------------------------------------------------------------
+sub list_keys_with_counts
+{
+    my $freqhash = shift; # gives frequency for each key
+    my $totalcount = shift; # total frequency of all keys (inefficient to compute here because it is typically already known) ###!!! OR NO?
+    my $linkprefix = shift; # for links from POS to dependency relations, "$langcode-dep/" must be prepended; for link from POS to POS, the prefix is empty
+    my @keys = sort {$freqhash->{$b} <=> $freqhash->{$a}} (keys(%{$freqhash}));
+    my $n = scalar(@keys);
+    my $list = join(', ', map {my $p = percent($freqhash->{$_}, $totalcount); "[$linkprefix$_]() ($freqhash->{$_}; $p tokens)"} (@keys));
+    return ($list, $n);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Computes percentage, rounds it and adds the '%' symbol.
+#------------------------------------------------------------------------------
+sub percent
+{
+    my $part = shift;
+    my $whole = shift;
+    return sprintf("%d%%", ($part/$whole)*100+0.5);
 }
 
 
@@ -569,16 +589,4 @@ EOF
     }
     print("  </deps>\n");
     print("</treebank>\n");
-}
-
-
-
-#------------------------------------------------------------------------------
-# Computes percentage, rounds it and adds the '%' symbol.
-#------------------------------------------------------------------------------
-sub percent
-{
-    my $part = shift;
-    my $whole = shift;
-    return sprintf("%d%%", ($part/$whole)*100+0.5);
 }
