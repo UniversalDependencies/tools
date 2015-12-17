@@ -329,56 +329,18 @@ sub detailed_statistics
         my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
         $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
         $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
-        my @examples = sort
-        {
-            my $result = $examples{$tag.'-lemma'}{$b} <=> $examples{$tag.'-lemma'}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$tag.'-lemma'}}));
-        splice(@examples, $limit);
-        $page .= "The $limit most frequent `$tag` lemmas: _".join(', ', @examples)."_\n\n";
-        @examples = sort
-        {
-            my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$tag}}));
-        splice(@examples, $limit);
-        $page .= "The $limit most frequent `$tag` types:  _".join(', ', @examples)."_\n\n";
+        my $examples = prepare_examples($examples{$tag.'-lemma'}, $limit);
+        $page .= "The $limit most frequent `$tag` lemmas: _${examples}_\n\n";
+        $examples = prepare_examples($examples{$tag}, $limit);
+        $page .= "The $limit most frequent `$tag` types:  _${examples}_\n\n";
         # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
-        @examples = sort
-        {
-            my $result = $examples{$tag.'-lemma'}{$b} <=> $examples{$tag.'-lemma'}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}})));
-        splice(@examples, $limit);
+        my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}}));
+        @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@examples, $limit);
         @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); '_'.$l.'_ ('.join(', ', @t).')'} (@examples);
         $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
         # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
-        @examples = sort
-        {
-            my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}})));
-        splice(@examples, $limit);
+        @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}}));
+        @examples = sort_and_truncate_examples($examples{$tag}, \@examples, $limit);
         my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); '_'.$w.'_ ('.join(', ', @t).')'} (@examples);
         $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
         foreach my $example (@examples)
@@ -412,22 +374,14 @@ sub detailed_statistics
             $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
             my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
             my $nfeaturesets = scalar(@featuresets);
-            @examples = sort
-            {
-                my $result = $examples{$tag."\t".$featuresets[0]}{$b} <=> $examples{$tag."\t".$featuresets[0]}{$a};
-                unless($result)
-                {
-                    $result = $a cmp $b;
-                }
-                $result
-            }
-            (keys(%{$examples{$tag."\t".$featuresets[0]}}));
-            splice(@examples, $limit);
+            $examples = prepare_examples($examples{$tag."\t".$featuresets[0]}, $limit);
             # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
             # Update: The vertical bar is not treated as a special character if it is inside `code text`.
             my $escaped_featureset = $featuresets[0];
             #$escaped_featureset =~ s/\|/\\\|/g;
-            $page .= "`$tag` occurs with $nfeaturesets feature combinations. The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens, examples: _".join(', ', @examples)."_).\n\n";
+            $page .= "`$tag` occurs with $nfeaturesets feature combinations.\n";
+            $page .= "The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens).\n";
+            $page .= "Examples: _${examples}_\n\n";
         }
         else
         {
@@ -474,6 +428,50 @@ sub detailed_statistics
         print PAGE ($page);
         close(PAGE);
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a hash of example words for a given phenomenon (e.g., for a POS tag).
+# Values in the hash are frequencies of the words. Returns the list (as string)
+# of the N most frequent examples, in descendeng order by frequency.
+#------------------------------------------------------------------------------
+sub prepare_examples
+{
+    my $examplehash = shift; # e.g. $examples{$tag}: keys are words, values are counts
+    my $limit = shift; # how many most frequent examples shall be returned
+    my @examples = keys(%{$examplehash});
+    @examples = sort_and_truncate_examples($examplehash, \@examples, $limit);
+    return join(', ', @examples);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a hash of example words for a given phenomenon (e.g., for a POS tag).
+# Also takes a list of elligible example words (this function does not call
+# keys(%{$examplehash}) itself; hence the caller may grep the examples by
+# additional criteria). Sorts the examples by frequencies and returns the N
+# most frequent ones (as a real list, not as a string).
+#------------------------------------------------------------------------------
+sub sort_and_truncate_examples
+{
+    my $examplehash = shift; # e.g. $examples{$tag}: keys are words, values are counts
+    my $selected_keys = shift; # arrayref; may be grepped before we sort them
+    my $limit = shift; # how many most frequent examples shall be returned
+    my @examples = sort
+    {
+        my $result = $examplehash->{$b} <=> $examplehash->{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (@{$selected_keys});
+    splice(@examples, $limit);
+    return @examples;
 }
 
 
