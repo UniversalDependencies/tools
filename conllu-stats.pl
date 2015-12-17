@@ -433,6 +433,41 @@ sub detailed_statistics
 
 
 #------------------------------------------------------------------------------
+# Detailed statistics about a feature:
+#
+# - Is this a language-specific feature?
+# - If the feature is universal, are there additional language-specific values
+#   used with this feature?
+# - How many tokens and types have a non-empty value of this feature? How many
+#   different lemmas and parts of speech occur at least once with this feature?
+# - For every part of speech with which the feature occurs separate section:
+# -- How many tokens in this class occur with the feature?
+# -- Is there a specific value of another feature, that is always the same when
+#    the current feature is non-empty? (Motivation for this question: some
+#    features will be only used with personal pronouns. The other feature will
+#    be PronType and the fixed value will be Prs.)
+# -- What values of the feature are used and how frequent are they?
+# -- Most frequent examples for every value of the feature.
+# -- Most frequent examples of words that do not have this feature.
+# -- Examples of lemmas for which all (or many) values of the feature have been
+#    observed. Show the inflection paradigm of the word! Try to fix the values
+#    of the other features if possible. For example, if showing forms of
+#    different cases, try not to mix singular and plural examples.
+# -- Does the feature appear to be lexical? Is it rare to see multiple values
+#    of the feature with the same lemma?
+# -- If it is frequent to see different values of the feature with one lemma
+#    (i.e. the feature seems to be inflectional), do the word forms really
+#    change? Not necessarily always, but often enough?
+# -- Are there two values of the feature that have always the same form when
+#    they occur with instances of the same lemma? (This would indicate that the
+#    values are context-sensitive. It might be useful to show examples of the
+#    entire sentences.)
+# - Are there relations where the parent and the child agree in the feature?
+#------------------------------------------------------------------------------
+
+
+
+#------------------------------------------------------------------------------
 # Takes a hash of example words for a given phenomenon (e.g., for a POS tag).
 # Values in the hash are frequencies of the words. Returns the list (as string)
 # of the N most frequent examples, in descendeng order by frequency.
