@@ -115,80 +115,7 @@ if($konfig{detailed})
 }
 else # stats.xml
 {
-    # Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
-    print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    print("<treebank>\n");
-    print <<EOF
-  <!-- tokens means "surface tokens", e.g. Spanish "vámonos" counts as one token
-       words means "syntactic words", e.g. Spanish "vámonos" is split to two words, "vamos" and "nos"
-       fused is the number of tokens that are split to two or more syntactic words
-       The words and fused elements can be omitted if no token is split to smaller syntactic words. -->
-EOF
-    ;
-    print("  <size>\n");
-    print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens><words>$nword</words><fused>$nfus</fused></total>\n");
-    ###!!! We do not know what part of the data is for training, development or testing. We would have to change the calling syntax.
-    #print("    <train></train>\n");
-    #print("    <dev></dev>\n");
-    #print("    <test></test>\n");
-    print("  </size>\n");
-    print('  <lemmas unique="', scalar(@lemmas), '" />');
-    splice(@lemmas, 15);
-    print("<!-- ", join(', ', @lemmas), " -->\n");
-    print('  <forms unique="', scalar(@words), '" />');
-    splice(@words, 15);
-    print("<!-- ", join(', ', @words), " -->\n");
-    print('  <fusions unique="', scalar(@fusions), '" />');
-    splice(@fusions, 15);
-    print("<!-- ", join(', ', @fusions), " -->\n");
-    print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
-    print("  <tags unique=\"".scalar(@tagset)."\">\n");
-    foreach my $tag (@tagset)
-    {
-        my @examples = sort
-        {
-            my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$tag}}));
-        splice(@examples, 10);
-        print('    <tag name="'.$tag.'">'.$tagset{$tag}.'</tag><!-- ', join(', ', @examples), " -->\n");
-    }
-    print("  </tags>\n");
-    # Print the list of features as an XML structure that can be used in the treebank description XML file.
-    print("  <!-- Statistics of features and values. The comments with the most frequent word forms are optional (but easy to obtain). -->\n");
-    print("  <feats unique=\"".scalar(@featureset)."\">\n");
-    foreach my $feature (@featureset)
-    {
-        my @examples = sort
-        {
-            my $result = $examples{$feature}{$b} <=> $examples{$feature}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$feature}}));
-        splice(@examples, 10);
-        my $upostags = join(',', sort(keys(%{$upos{$feature}})));
-        my ($name, $value) = split(/=/, $feature);
-        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$featureset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
-    }
-    print("  </feats>\n");
-    # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
-    print("  <!-- Statistics of universal dependency relations. -->\n");
-    print("  <deps unique=\"".scalar(@deprelset)."\">\n");
-    foreach my $deprel (@deprelset)
-    {
-        print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}."</dep>\n");
-    }
-    print("  </deps>\n");
-    print("</treebank>\n");
+    simple_xml_statistics();
 }
 
 
@@ -557,6 +484,91 @@ sub detailed_statistics
         print PAGE ($page);
         close(PAGE);
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints fundamental statistics about words, lemmas, part-of-speech tags,
+# features and dependency relations to the standard output. The output of this
+# function is included with each treebank in the stats.xml file.
+#------------------------------------------------------------------------------
+sub simple_xml_statistics
+{
+    # Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
+    print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    print("<treebank>\n");
+    print <<EOF
+  <!-- tokens means "surface tokens", e.g. Spanish "vámonos" counts as one token
+       words means "syntactic words", e.g. Spanish "vámonos" is split to two words, "vamos" and "nos"
+       fused is the number of tokens that are split to two or more syntactic words
+       The words and fused elements can be omitted if no token is split to smaller syntactic words. -->
+EOF
+    ;
+    print("  <size>\n");
+    print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens><words>$nword</words><fused>$nfus</fused></total>\n");
+    ###!!! We do not know what part of the data is for training, development or testing. We would have to change the calling syntax.
+    #print("    <train></train>\n");
+    #print("    <dev></dev>\n");
+    #print("    <test></test>\n");
+    print("  </size>\n");
+    print('  <lemmas unique="', scalar(@lemmas), '" />');
+    splice(@lemmas, 15);
+    print("<!-- ", join(', ', @lemmas), " -->\n");
+    print('  <forms unique="', scalar(@words), '" />');
+    splice(@words, 15);
+    print("<!-- ", join(', ', @words), " -->\n");
+    print('  <fusions unique="', scalar(@fusions), '" />');
+    splice(@fusions, 15);
+    print("<!-- ", join(', ', @fusions), " -->\n");
+    print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
+    print("  <tags unique=\"".scalar(@tagset)."\">\n");
+    foreach my $tag (@tagset)
+    {
+        my @examples = sort
+        {
+            my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
+            unless($result)
+            {
+                $result = $a cmp $b;
+            }
+            $result
+        }
+        (keys(%{$examples{$tag}}));
+        splice(@examples, 10);
+        print('    <tag name="'.$tag.'">'.$tagset{$tag}.'</tag><!-- ', join(', ', @examples), " -->\n");
+    }
+    print("  </tags>\n");
+    # Print the list of features as an XML structure that can be used in the treebank description XML file.
+    print("  <!-- Statistics of features and values. The comments with the most frequent word forms are optional (but easy to obtain). -->\n");
+    print("  <feats unique=\"".scalar(@featureset)."\">\n");
+    foreach my $feature (@featureset)
+    {
+        my @examples = sort
+        {
+            my $result = $examples{$feature}{$b} <=> $examples{$feature}{$a};
+            unless($result)
+            {
+                $result = $a cmp $b;
+            }
+            $result
+        }
+        (keys(%{$examples{$feature}}));
+        splice(@examples, 10);
+        my $upostags = join(',', sort(keys(%{$upos{$feature}})));
+        my ($name, $value) = split(/=/, $feature);
+        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$featureset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
+    }
+    print("  </feats>\n");
+    # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
+    print("  <!-- Statistics of universal dependency relations. -->\n");
+    print("  <deps unique=\"".scalar(@deprelset)."\">\n");
+    foreach my $deprel (@deprelset)
+    {
+        print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}."</dep>\n");
+    }
+    print("  </deps>\n");
+    print("</treebank>\n");
 }
 
 
