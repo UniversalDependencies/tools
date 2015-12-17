@@ -4,6 +4,15 @@
 # License: GNU GPL
 
 use utf8;
+
+sub usage
+{
+    print STDERR ("conllu-stats.pl < *.conllu > stats.xml\n");
+    print STDERR ("... generates the basic statistics that accompany each treebank.\n");
+    print STDERR ("conllu-stats.pl < *.conllu --detailed --docs ../docs --lang pt\n");
+    print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
+}
+
 use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
@@ -12,10 +21,16 @@ use Getopt::Long;
 
 # Read options.
 $konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
+$konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
+$konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 GetOptions
 (
-    'detailed' => \$konfig{detailed}
+    'detailed'   => \$konfig{detailed},
+    'docs=s'     => \$konfig{docspath},
+    'language=s' => \$konfig{langcode},
+    'help'       => \$konfig{help}
 );
+exit(usage()) if($konfig{help});
 # Argument "2009" toggles the CoNLL 2009 data format.
 my $format = shift;
 my $i_feat_column = $format eq '2009' ? 6 : 5;
@@ -324,8 +339,8 @@ sub prune_examples
 #------------------------------------------------------------------------------
 sub detailed_statistics
 {
-    my $docspath = '../docs'; ###!!! This should be a parameter. Path to the git repository with the documentation where we can edit the pages about POS tags.
-    my $langcode = 'pt'; ###!!! This should be a parameter. We use it in hyperlinks to features and relations.
+    my $docspath = $konfig{docspath};
+    my $langcode = $konfig{langcode};
     # We have to see all tags before we can compute percentage of each tag.
     my %ntypes; # hash{$tag}
     my %nlemmas; # hash{$tag}
@@ -380,6 +395,7 @@ sub detailed_statistics
         # Remove previous statistics, if any, from the page.
         $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
         $page .= "\n\n--------------------------------------------------------------------------------\n\n";
+        $page .= "## Treebank Statistics\n\n";
         my $ntokens = $tagset{$tag};
         my $ptokens = percent($ntokens, $ntokens_total);
         my $ptypes = percent($ntypes{$tag}, $ntypes_total);
