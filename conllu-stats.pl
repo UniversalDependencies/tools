@@ -34,6 +34,26 @@ exit(usage()) if($konfig{help});
 # Argument "2009" toggles the CoNLL 2009 data format.
 my $format = shift;
 my $i_feat_column = $format eq '2009' ? 6 : 5;
+my %universal_features =
+(
+    'PronType' => ['Prs', 'Rcp', 'Art', 'Int', 'Rel', 'Dem', 'Tot', 'Neg', 'Ind'],
+    'NumType'  => ['Card', 'Ord', 'Mult', 'Frac', 'Sets', 'Dist', 'Range', 'Gen'],
+    'Poss'     => ['Yes'],
+    'Reflex'   => ['Yes'],
+    'Gender'   => ['Masc', 'Fem', 'Neut', 'Com'],
+    'Animacy'  => ['Anim', 'Nhum', 'Inan'],
+    'Number'   => ['Sing', 'Plur', 'Dual', 'Ptan', 'Coll'],
+    'Case'     => ['Nom', 'Acc', 'Abs', 'Erg', 'Dat', 'Gen', 'Voc', 'Loc', 'Ins', 'Par', 'Dis', 'Ess', 'Tra', 'Com', 'Abe', 'Ine', 'Ill', 'Ela', 'Add', 'Ade', 'All', 'Abl', 'Sup', 'Sub', 'Del', 'Lat', 'Tem', 'Ter', 'Cau', 'Ben'],
+    'Definite' => ['Ind', 'Def', 'Red', 'Com'],
+    'Degree'   => ['Pos', 'Cmp', 'Sup', 'Abs'],
+    'VerbForm' => ['Fin', 'Inf', 'Sup', 'Part', 'Trans', 'Ger'],
+    'Mood'     => ['Ind', 'Imp', 'Cnd', 'Pot', 'Sub', 'Jus', 'Qot', 'Opt', 'Des', 'Nec'],
+    'Tense'    => ['Past', 'Pres', 'Fut', 'Imp', 'Nar', 'Pqp'],
+    'Aspect'   => ['Imp', 'Perf', 'Pro', 'Prog'],
+    'Voice'    => ['Act', 'Pass', 'Rcp', 'Cau'],
+    'Person'   => ['1', '2', '3'],
+    'Negative' => ['Pos', 'Neg']
+);
 
 my $ntok = 0;
 my $nfus = 0;
@@ -86,6 +106,7 @@ prune_examples(\%lemmas);
 # Sort the features alphabetically before printing them.
 @tagset = sort(keys(%tagset));
 @featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
+@fvset = sort {lc($a) cmp lc($b)} (keys(%fvset));
 @deprelset = sort(keys(%deprelset));
 # Examples may contain uppercase letters only if all-lowercase version does not exist.
 my @ltagset = map {$_.'-lemma'} (@tagset);
@@ -111,7 +132,8 @@ foreach my $tag (@tagset)
 }
 if($konfig{detailed})
 {
-    detailed_statistics();
+    #detailed_statistics();
+    detailed_statistics_features();
 }
 else # stats.xml
 {
@@ -174,20 +196,39 @@ sub process_sentence
         $tfsetjoint{$tagfeatures}++;
         $examples{$tagfeatures}{$word}++;
         # Skip if there are no features.
+        my %features_found_here;
         unless($features eq '_')
         {
             my @features = split(/\|/, $features);
             foreach my $fv (@features)
             {
-                $featureset{$fv}++;
+                $fvset{$fv}++;
                 # We can also list tags with which the feature occurred.
                 $upos{$fv}{$tag}++;
                 $tfv{$tag}{$fv}++;
                 # We can also print example words that had the feature.
-                $examples{$feature}{$word}++;
+                $examples{$fv}{$word}++;
+                $examples{"$tag\t$fv"}{$word}++;
                 # Aggregate feature names over all values.
                 my ($f, $v) = split(/=/, $fv);
+                $featureset{$f}++;
                 $tf{$tag}{$f}++;
+                $ft{$f}{$tag}++;
+                $fw{$f}{$word}++;
+                $fl{$f}{$lemma}++;
+                my @other_features = grep {!m/$f/} (@features);
+                my $other_features = scalar(@other_features) > 0 ? join('|', @other_features) : '_';
+                $paradigm{$tag}{$f}{$lemma}{$v}{$other_features}{$word}++;
+                $fv{$f}{$v}++;
+                $features_found_here{$f}++;
+            }
+        }
+        # Remember examples of empty values of features.
+        foreach my $f (keys(%universal_features))
+        {
+            if(!exists($features_found_here{$f}))
+            {
+                $examples{"$tag\t$f=EMPTY"}{$word}++;
             }
         }
         # Remember the occurrence of each dependency relation.
@@ -207,6 +248,42 @@ sub process_sentence
             my $cdeprel = $cnode->[7];
             $childtag{$tag}{$ctag}++;
             $childtagdeprel{$tag}{$cdeprel}++;
+        }
+        # Feature agreement between parent and child.
+        unless($head==0)
+        {
+            my $relation = "$parent_tag --[$deprel]--> $tag";
+            my $parent_features = $sentence[$head-1][5];
+            my @pfvs = $parent_features eq '_' ? () : split(/\|/, $parent_features);
+            my @cfvs = $features        eq '_' ? () : split(/\|/, $features);
+            my %pf;
+            foreach my $pfv (@pfvs)
+            {
+                my ($f, $v) = split(/=/, $pfv);
+                $pf{$f} = $v;
+            }
+            my %cf;
+            foreach my $cfv (@cfvs)
+            {
+                my ($f, $v) = split(/=/, $cfv);
+                $cf{$f} = $v;
+                # Does the parent have the same value of the feature?
+                if($pf{$f} eq $v)
+                {
+                    $agreement{$f}{$relation}++;
+                }
+                else
+                {
+                    $disagreement{$f}{$relation}++;
+                }
+            }
+            foreach my $f (keys(%pf))
+            {
+                if(!exists($cf{$f}))
+                {
+                    $disagreement{$f}{$relation}++;
+                }
+            }
         }
     }
 }
@@ -462,8 +539,329 @@ sub detailed_statistics
 #    they occur with instances of the same lemma? (This would indicate that the
 #    values are context-sensitive. It might be useful to show examples of the
 #    entire sentences.)
+# -- Alternating word forms. Fixed combination of lemma and values of all
+#    features, the current feature must have a non-empty value, more than one
+#    word form must be observed. The most frequent examples only (the alternate
+#    word form could be a typo; but we hope that typos are infrequent). Do not
+#    do this for lexical features.
+# -- If this is a layered feature, list all layers and give examples of words
+#    that have set two or more layers of this feature.
 # - Are there relations where the parent and the child agree in the feature?
 #------------------------------------------------------------------------------
+sub detailed_statistics_features
+{
+    my $docspath = $konfig{docspath};
+    my $langcode = $konfig{langcode};
+    my $limit = 10;
+    # Identify layered features.
+    my %layers;
+    my %base_features;
+    foreach my $feature (@featureset)
+    {
+        my ($base, $layer);
+        if($feature =~ m/^(\w+)\[(.+)\]$/)
+        {
+            $base = $1;
+            $layer = $2;
+        }
+        else
+        {
+            $base = $feature;
+            $layer = 'DEFAULT';
+        }
+        $layers{$base}{$layer} = $feature;
+        $base_features{$feature} = $base;
+    }
+    foreach my $feature (@featureset)
+    {
+        my $page;
+        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
+        $page .= "## $feature\n\n";
+        $page .= "## Treebank Statistics\n\n";
+        # Count values. Dissolve multivalues.
+        my @values = sort(keys(%{$fv{$feature}}));
+        my %svalues;
+        foreach my $v (@values)
+        {
+            my @svalues = split(/,/, $v);
+            foreach my $sv (@svalues)
+            {
+                $svalues{$sv}++;
+            }
+        }
+        my @svalues = sort(keys(%svalues));
+        my $nsvalues = scalar(@svalues);
+        my $universal = '';
+        # Override alphabetic ordering of feature values.
+        local %sort_values;
+        if(exists($universal_features{$feature}))
+        {
+            $universal = 'universal';
+            for(my $i = 0; $i <= $#{$universal_features{$feature}}; $i++)
+            {
+                $sort_values{$universal_features{$feature}[$i]} = $i;
+            }
+            # Are all values universal?
+            my @lsvalues = grep {my $v = $_; scalar(grep {$_ eq $v} (@{$universal_features{$feature}})) == 0} (@svalues);
+            if(@lsvalues)
+            {
+                $universal .= ' but the values '.join(', ', map {"`$_`"} (@lsvalues)).' are language-specific';
+                foreach my $lsv (@lsvalues)
+                {
+                    $sort_values{$lsv} = 1000;
+                }
+            }
+        }
+        else
+        {
+            $universal = 'language-specific';
+        }
+        $page .= "This feature is $universal.\n";
+        $page .= "It occurs with $nsvalues different values: ".join(', ', map {"`$_`"} (@svalues)).".\n";
+        my @mvalues = map {s/,/|/g; $_} (grep {/,/} (@values));
+        my $nmvalues = scalar(@mvalues);
+        if($nmvalues > 0)
+        {
+            $page .= "Some words have combined values of the feature; $nmvalues combinations have been observed: ".join(', ', map {"`$_`"} (@mvalues)).".\n";
+        }
+        $page .= "\n";
+        my $base_feature = $base_features{$feature};
+        my @layers = sort(keys(%{$layers{$base_feature}}));
+        if(scalar(@layers) > 1)
+        {
+            # We are linking e.g. from pt/feat/Number.html to u/overview/feat-layers.html.
+            $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"[$layers{$base_feature}{$_}]()"} (@layers)).".\n\n";
+        }
+        my $n = $featureset{$feature};
+        my $p = percent($n, $nword);
+        $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
+        $n = scalar(keys($fw{$feature}));
+        $p = percent($n, scalar(@words));
+        $page .= "$n types ($p) occur at least once with a non-empty value of `$feature`.\n";
+        $n = scalar(keys($fl{$feature}));
+        $p = percent($n, scalar(@lemmas));
+        $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
+        # List part-of-speech tags with which this feature occurs.
+        my $list; ($list, $n) = list_keys_with_counts($ft{$feature}, $nword, "$langcode-pos/");
+        $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
+        my @tags = sort {$ft{$feature}{$b} <=> $ft{$feature}{$a}} (keys(%{$ft{$feature}}));
+        foreach my $tag (@tags)
+        {
+            $page .= "### `$tag`\n\n";
+            $n = $ft{$feature}{$tag};
+            $p = percent($n, $tagset{$tag});
+            $page .= "$n [$langcode-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
+            # Is this feature used exclusively with some other feature?
+            # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
+            my @other_features = grep {$tf{$tag}{$_} / $tagset{$tag} > 0.1} (keys(%{$tf{$tag}}));
+            # Get all feature combinations observed with the current tag.
+            my @fsets_packed = keys(%{$tfset{$tag}});
+            my %other_features;
+            foreach my $fsp (@fsets_packed)
+            {
+                my %fs;
+                foreach my $fv (split(/\|/, $fsp))
+                {
+                    my ($f, $v) = split(/=/, $fv);
+                    $fs{$f} = $v;
+                }
+                # Filter the feature combinations to those that have the current feature set.
+                next if(!defined($fs{$feature}));
+                # Count values of all other features (meaning all features that can be non-empty with this tag; even if they are empty in this combination).
+                foreach my $f (@other_features)
+                {
+                    unless($f eq $feature)
+                    {
+                        my $v = $fs{$f} // 'EMPTY';
+                        $other_features{"$f=$v"} += $tfset{$tag}{$fsp};
+                    }
+                }
+            }
+            # Report feature-value pairs whose frequency exceeds 50% of the occurrences of the current feature.
+            my @frequent_pairs = sort {$other_features{$b} <=> $other_features{$a}} (grep {$other_features{$_} / $ft{$feature}{$tag} > 0.5} (keys(%other_features)));
+            if(scalar(@frequent_pairs) > 0)
+            {
+                splice(@frequent_pairs, $limit);
+                @frequent_pairs = map
+                {
+                    my $x = $_;
+                    my $n = $other_features{$x};
+                    my $p = percent($n, $ft{$feature}{$tag});
+                    $x =~ s/^(.+)=(.+)$/<tt><a href="$1.html">$1<\/a>=$2<\/tt>/;
+                    "$x ($n; $p)"
+                }
+                (@frequent_pairs);
+                $page .= "The most frequent other feature values with which `$tag` and `$feature` co-occurred: ".join(', ', @frequent_pairs).".\n\n";
+            }
+            # List values of the feature with this tag.
+            $page .= "`$tag` tokens may have the following values of `$feature`:\n\n";
+            my @values = sort(map {s/^$feature=//; $_} (grep {m/^$feature=/} (keys(%{$tfv{$tag}}))));
+            foreach my $value (@values)
+            {
+                $n = $tfv{$tag}{"$feature=$value"};
+                $p = percent($n, $tf{$tag}{$feature});
+                my $examples = prepare_examples($examples{"$tag\t$feature=$value"}, $limit);
+                $page .= "* `$value` ($n; $p of non-empty `$feature`): _${examples}_\n";
+            }
+            $n = $tagset{$tag} - $ft{$feature}{$tag};
+            my $examples = prepare_examples($examples{"$tag\t$feature=EMPTY"}, $limit);
+            # There might be no examples even if $n > 0. We collect examples only for universal features, not for language-specific ones.
+            ###!!! We may want to collect them for language-specific features. But we do not know in advance what these features are!
+            ###!!! Maybe we should use just general examples of the tag, and grep them for not having the feature set?
+            if($examples)
+            {
+                $page .= "* `EMPTY` ($n): _${examples}_\n";
+            }
+            $page .= "\n";
+            # Show examples of lemmas for which all (or many) values of the feature have been observed.
+            # This should provide an image of a complete paradigm with respect to this feature.
+            # Try to fix the values of the other features if possible (e.g. do not mix singular and plural when showing case inflection).
+            # $paradigm{$tag}{$f}{$lemma}{$v}{$other_features}{$word}++;
+            my @paradigms = sort
+            {
+                my $result = scalar(keys(%{$paradigm{$tag}{$feature}{$b}})) <=> scalar(keys(%{$paradigm{$tag}{$feature}{$a}}));
+                unless($result)
+                {
+                    $result = $lemmatag{$b}{$tag} <=> $lemmatag{$a}{$tag};
+                }
+                $result
+            }
+            keys(%{$paradigm{$tag}{$feature}});
+            $page .= get_paradigm_table($paradigms[$i], $tag, $feature);
+            # How many $lemmas have only one value of this feature? Is the feature lexical?
+            # Do this only for feature-tag combinations that appear with enough lemmas.
+            my $total = scalar(@paradigms);
+            if($total >= 10)
+            {
+                my @lemmas_with_only_one_value = grep {scalar(keys(%{$paradigm{$tag}{$feature}{$_}})) == 1} (@paradigms);
+                $n = scalar(@lemmas_with_only_one_value);
+                $p = percent($n, $total);
+                if($n / $total > 0.9)
+                {
+                    $page .= "`$feature` seems to be **lexical feature** of `$tag`. $p lemmas ($n) occur only with one value of `$feature`.\n\n";
+                }
+            }
+            ###!!! NOT YET IMPLEMENTED
+            # If it is frequent to see different values of the feature with one lemma
+            # (i.e. the feature seems to be inflectional), do the word forms really
+            # change? Not necessarily always, but often enough?
+            ###!!!
+        }
+        # Agreement in this feature between parent and child of a relation.
+        my @agreement = grep {$agreement{$feature}{$_} > $disagreement{$feature}{$_}} (keys(%{$agreement{$feature}}));
+        @agreement = sort {$agreement{$feature}{$b} <=> $agreement{$feature}{$a}} (@agreement);
+        splice(@agreement, $limit);
+        if(scalar(@agreement) > 0)
+        {
+            $page .= "## Relations with Agreement in `$feature`\n\n";
+            $page .= "The $limit most frequent relations where parent and child node agree in `$feature`: ".join(', ', map {my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_}); "`$_` ($agreement{$feature}{$_}; $p)"} (@agreement)).".\n\n";
+        }
+        print($page);
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Generates the paradigm table of a given lemma, focused on values of one
+# particular feature.
+#------------------------------------------------------------------------------
+sub get_paradigm_table
+{
+    my $lemma = shift;
+    my $tag = shift;
+    my $feature = shift;
+    my $page = '';
+    my $paradigm = $paradigm{$tag}{$feature}{$lemma};
+    # Override alphabetic ordering of feature values.
+    my @values = sort
+    {
+        my $result = $sort_values{$a} <=> $sort_values{$b};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$paradigm}));
+    if(scalar(@values) > 1)
+    {
+        # Get all combinations of other features observed with any value.
+        my %other_features;
+        my %sort_other_features;
+        foreach my $v (@values)
+        {
+            my @other_features = keys(%{$paradigm->{$v}});
+            foreach my $of (@other_features)
+            {
+                $other_features{$of}++;
+                ###!!! Pokus s řazením rysů.
+                # In general we want alphabetic ordering but there are some exceptions, e.g. singular number should precede plural.
+                my $ofsort = $of;
+                $ofsort =~ s/Gender=Masc/Gender=1Masc/;
+                $ofsort =~ s/Gender=Fem/Gender=2Fem/;
+                $ofsort =~ s/Gender=Com/Gender=3Com/;
+                $ofsort =~ s/Gender=Neut/Gender=4Neut/;
+                $ofsort =~ s/Number=Sing/Number=1Sing/;
+                $ofsort =~ s/Number=Dual/Number=2Dual/;
+                $ofsort =~ s/Number=Plur/Number=3Plur/;
+                $ofsort =~ s/Degree=Pos/Degree=1Pos/;
+                $ofsort =~ s/Degree=Cmp/Degree=2Cmp/;
+                $ofsort =~ s/Degree=Sup/Degree=3Sup/;
+                $ofsort =~ s/Degree=Abs/Degree=4Abs/;
+                $sort_other_features{$of} = $ofsort;
+            }
+        }
+        my @other_features = sort
+        {
+            my $aa = lc($sort_other_features{$a});
+            my $bb = lc($sort_other_features{$b});
+            $aa cmp $bb
+        }
+        (keys(%other_features));
+        # Keep track of all individual other features.
+        # We will want to hide those that appear everywhere.
+        my %map_other_features;
+        foreach my $of (@other_features)
+        {
+            my @of = split(/\|/, $of);
+            foreach my $ofv (@of)
+            {
+                $map_other_features{$ofv}++;
+            }
+        }
+        $page .= "<table>\n";
+        $page .= "  <tr><th>Paradigm <i>$lemma</i></th>";
+        foreach my $v (@values)
+        {
+            $page .= "<th><tt>$v</tt></th>";
+        }
+        $page .= "</tr>\n";
+        foreach my $of (@other_features)
+        {
+            # Do not display other features that occur in all combinations.
+            my @of = split(/\|/, $of);
+            @of = grep {$map_other_features{$_} < scalar(@other_features)} (@of);
+            my $showof = join('|', map {s/^(.+)=(.+)$/<a href="$1.html">$1<\/a>=$2/; $_} (@of));
+            $page .= "  <tr><td><tt>$showof</tt></td>";
+            foreach my $v (@values)
+            {
+                $page .= "<td>";
+                my $vforms = $paradigm->{$v}{$of};
+                prune_examples($vforms);
+                my @vforms = sort {my $r = $vforms->{$b} <=> $vforms->{$a}; unless($r) {$r = $vforms->{$a} cmp $vforms->{$b}} $r} (keys(%{$vforms}));
+                if(scalar(@vforms) > 0)
+                {
+                    $page .= '<i>'.join(', ', @vforms).'</i>';
+                }
+                $page .= "</td>";
+            }
+            $page .= "</tr>\n";
+        }
+        $page .= "</table>\n\n";
+    }
+    return $page;
+}
 
 
 
@@ -594,8 +992,8 @@ EOF
     print("  </tags>\n");
     # Print the list of features as an XML structure that can be used in the treebank description XML file.
     print("  <!-- Statistics of features and values. The comments with the most frequent word forms are optional (but easy to obtain). -->\n");
-    print("  <feats unique=\"".scalar(@featureset)."\">\n");
-    foreach my $feature (@featureset)
+    print("  <feats unique=\"".scalar(@fvset)."\">\n");
+    foreach my $feature (@fvset)
     {
         my @examples = sort
         {
@@ -610,7 +1008,7 @@ EOF
         splice(@examples, 10);
         my $upostags = join(',', sort(keys(%{$upos{$feature}})));
         my ($name, $value) = split(/=/, $feature);
-        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$featureset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
+        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$fvset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
     }
     print("  </feats>\n");
     # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
