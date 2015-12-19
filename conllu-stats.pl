@@ -574,9 +574,26 @@ sub detailed_statistics_features
     }
     foreach my $feature (@featureset)
     {
+        my $file = "$docspath/_$langcode-feat/$feature.md";
+        # Layered features do not have the brackets in their file names.
+        $file =~ s/\[(.+)\]/-$1/;
         my $page;
+        # Do not die if page about the feature does not exist. Maybe it is a language-specific feature.
+        if(open(PAGE, $file))
+        {
+            while(<PAGE>)
+            {
+                $page .= $_;
+            }
+            close(PAGE);
+        }
+        unless($page =~ m/This document is a placeholder/s)
+        {
+            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
+        }
+        # Remove previous statistics, if any, from the page.
+        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
         $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-        $page .= "## $feature\n\n";
         $page .= "## Treebank Statistics\n\n";
         # Count values. Dissolve multivalues.
         my @values = sort(keys(%{$fv{$feature}}));
@@ -617,7 +634,15 @@ sub detailed_statistics_features
             $universal = 'language-specific';
         }
         $page .= "This feature is $universal.\n";
-        $page .= "It occurs with $nsvalues different values: ".join(', ', map {"`$_`"} (@svalues)).".\n";
+        if($nvalues == 1)
+        {
+            $page .= "It occurs only with 1 value: ";
+        }
+        else
+        {
+            $page .= "It occurs with $nsvalues different values: ";
+        }
+        $page .= join(', ', map {"`$_`"} (@svalues)).".\n";
         my @mvalues = map {s/,/|/g; $_} (grep {/,/} (@values));
         my $nmvalues = scalar(@mvalues);
         if($nmvalues > 0)
@@ -756,7 +781,10 @@ sub detailed_statistics_features
             $page .= "## Relations with Agreement in `$feature`\n\n";
             $page .= "The $limit most frequent relations where parent and child node agree in `$feature`: ".join(', ', map {my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_}); "`$_` ($agreement{$feature}{$_}; $p)"} (@agreement)).".\n\n";
         }
-        print($page);
+        print STDERR ("Writing $file\n");
+        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        print PAGE ($page);
+        close(PAGE);
     }
 }
 
