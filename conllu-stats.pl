@@ -791,6 +791,27 @@ sub detailed_statistics_features
 
 
 #------------------------------------------------------------------------------
+# Detailed statistics about a relation:
+#
+# - Is this a language-specific subtype?
+# - If it is universal, does it have language-specific subtypes?
+# - How often is this relation left-to-right vs. right-to-left?
+# - What is the average length of this relation (right position minus left
+#   position)?
+# - How many nodes are attached to their parent using this relation?
+# - How many different types are at least once attached using this relation?
+# -- What are the most frequent types?
+# - How many different types are at least once parents in this relation?
+# -- What are the most frequent types?
+# - Same for lemmas, tags and feature-value pairs.
+# - What are the most frequent combinations of parent tag and child tag?
+# -- For each combination, give the most frequent examples of word forms.
+# -- Visualize these examples using Brat.
+#------------------------------------------------------------------------------
+
+
+
+#------------------------------------------------------------------------------
 # Generates the paradigm table of a given lemma, focused on values of one
 # particular feature.
 #------------------------------------------------------------------------------
