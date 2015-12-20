@@ -7,9 +7,9 @@ use utf8;
 
 sub usage
 {
-    print STDERR ("conllu-stats.pl < *.conllu > stats.xml\n");
+    print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
     print STDERR ("... generates the basic statistics that accompany each treebank.\n");
-    print STDERR ("conllu-stats.pl < *.conllu --detailed --docs ../docs --lang pt\n");
+    print STDERR ("cat *.conllu | perl conllu-stats.pl --detailed --docs ../docs --lang pt\n");
     print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
 }
 
@@ -132,8 +132,8 @@ foreach my $tag (@tagset)
 }
 if($konfig{detailed})
 {
-    #detailed_statistics();
-    #detailed_statistics_features();
+    detailed_statistics_tags();
+    detailed_statistics_features();
     detailed_statistics_relations();
 }
 else # stats.xml
@@ -329,45 +329,19 @@ sub prune_examples
 
 #------------------------------------------------------------------------------
 # Extended statistics could be used to substitute documentation if it does not
-# exist. This could be said about NOUN in the language, based on the current
-# data:
-#
-# - how many nouns are there (types, tokens). What is the rank of this part of
-#   speech? What percentage of all tokens (or types) is nouns?
-# - N most frequent lemmas that are tagged NOUN
-# -- if the treebank does not have lemmas, N most frequent words
-# - N most frequent ambiguities, i.e. words that are sometimes tagged NOUN and
-#   sometimes something else. Same for lemmas if they exist.
-# - Morphological richness of nouns, form-lemma ratio. How different is it from
-#   the other parts of speech and from the average? What is the highest number
-#   of forms per one lemma? And what is the number of different feature-value
-#   combinations observed with nouns?
-# - What features may be non-empty with nouns. How often is each feature non-
-#   empty with nouns? Are there features that are always filled with nouns?
-# - For every feature, what are the values of the feature used with nouns? How
-#   frequent are the values? Show example words.
-# - Try to find example lemmas that appear with all values of a feature (or as
-#   many values as possible). Show the paradigm. If there are no lemmas, try to
-#   substitute them with automatically estimated stems.
-# -- Specifically for nouns: If there is the feature of gender / animacy, can
-#    we do this for each gender separately?
-# - What are the most frequent dependency relations of a noun to its parent?
-#   What is the typical part of speech of the parent?
-#   Is the parent usually to the left or to the right? Close or distant? Most
-#   frequent examples?
-# - What is the average number of children of a noun? What are their prevailing
-#   relations and parts of speech? Most frequent examples?
+# exist. This function generates statistics of all part-of-speech tags and
+# saves them in the docs repository.
 #------------------------------------------------------------------------------
-sub detailed_statistics
+sub detailed_statistics_tags
 {
-    my $docspath = $konfig{docspath};
-    my $langcode = $konfig{langcode};
+    local $docspath = $konfig{docspath};
+    local $langcode = $konfig{langcode};
     # We have to see all tags before we can compute percentage of each tag.
-    my %ntypes; # hash{$tag}
-    my %nlemmas; # hash{$tag}
-    my $ntokens_total = 0;
-    my $ntypes_total = 0;
-    my $nlemmas_total = 0;
+    local %ntypes; # hash{$tag}
+    local %nlemmas; # hash{$tag}
+    local $ntokens_total = 0;
+    local $ntypes_total = 0;
+    local $nlemmas_total = 0;
     foreach my $tag (@tagset)
     {
         $ntokens_total += $tagset{$tag};
@@ -376,28 +350,28 @@ sub detailed_statistics
         $nlemmas{$tag} = scalar(keys(%{$examples{$tag.'-lemma'}}));
         $nlemmas_total += $nlemmas{$tag};
     }
-    my $flratio = $ntypes_total/$nlemmas_total;
+    local $flratio = $ntypes_total/$nlemmas_total;
     # Rank tags by number of lemmas, types and tokens.
-    my %rtokens;
-    my @tags = sort {$tagset{$b} <=> $tagset{$a}} (@tagset);
+    local %rtokens;
+    local @tags = sort {$tagset{$b} <=> $tagset{$a}} (@tagset);
     for(my $i = 0; $i <= $#tags; $i++)
     {
         $rtokens{$tags[$i]} = $i + 1;
     }
-    my %rtypes;
+    local %rtypes;
     @tags = sort {$ntypes{$b} <=> $ntypes{$a}} (@tagset);
     for(my $i = 0; $i <= $#tags; $i++)
     {
         $rtypes{$tags[$i]} = $i + 1;
     }
-    my %rlemmas;
+    local %rlemmas;
     @tags = sort {$nlemmas{$b} <=> $nlemmas{$a}} (@tagset);
     for(my $i = 0; $i <= $#tags; $i++)
     {
         $rlemmas{$tags[$i]} = $i + 1;
     }
-    my $ntags = scalar(@tagset);
-    my $limit = 10;
+    local $ntags = scalar(@tagset);
+    local $limit = 10;
     foreach my $tag (@tagset)
     {
         my $file = "$docspath/_$langcode-pos/$tag.md";
@@ -415,108 +389,7 @@ sub detailed_statistics
         }
         # Remove previous statistics, if any, from the page.
         $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
-        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-        $page .= "## Treebank Statistics\n\n";
-        my $ntokens = $tagset{$tag};
-        my $ptokens = percent($ntokens, $ntokens_total);
-        my $ptypes = percent($ntypes{$tag}, $ntypes_total);
-        my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
-        $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
-        $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
-        my $examples = prepare_examples($examples{$tag.'-lemma'}, $limit);
-        $page .= "The $limit most frequent `$tag` lemmas: _${examples}_\n\n";
-        $examples = prepare_examples($examples{$tag}, $limit);
-        $page .= "The $limit most frequent `$tag` types:  _${examples}_\n\n";
-        # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
-        my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}}));
-        @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@examples, $limit);
-        @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); '_'.$l.'_ ('.join(', ', @t).')'} (@examples);
-        $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
-        # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
-        @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}}));
-        @examples = sort_and_truncate_examples($examples{$tag}, \@examples, $limit);
-        my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); '_'.$w.'_ ('.join(', ', @t).')'} (@examples);
-        $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
-        foreach my $example (@examples)
-        {
-            $page .= '* _'.$example."_\n";
-            my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
-            foreach my $ambtag (@ambtags)
-            {
-                $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: _$exentwt{$example}{$ambtag}_\n";
-            }
-        }
-        $page .= "\n";
-        # Morphological richness.
-        $page .= "## Morphology\n\n";
-        $page .= sprintf("The form / lemma ratio of `$tag` is %f (the average of all parts of speech is %f).\n\n", $ntypes{$tag}/$nlemmas{$tag}, $flratio);
-        my @mrich_lemmas = sort {my $v = scalar(keys(%{$tlw{$tag}{$b}})) <=> scalar(keys(%{$tlw{$tag}{$a}})); $v = $a cmp $b unless($v); $v} (keys(%{$tlw{$tag}}));
-        for(my $i = 0; $i < 3; $i++)
-        {
-            last unless(defined($mrich_lemmas[$i]));
-            my @richest_paradigm = sort(keys(%{$tlw{$tag}{$mrich_lemmas[$i]}}));
-            my $richness = scalar(@richest_paradigm);
-            my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
-            $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _".join(', ', @richest_paradigm)."_\n\n";
-        }
-        if(scalar(keys(%{$tf{$tag}})) > 0)
-        {
-            my ($list, $n) = list_keys_with_counts($tf{$tag}, $tagset{$tag}, "$langcode-feat/");
-            $page .= "`$tag` occurs with $n features: $list\n\n";
-            my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
-            my $nfeaturepairs = scalar(@featurepairs);
-            $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
-            my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
-            my $nfeaturesets = scalar(@featuresets);
-            $examples = prepare_examples($examples{$tag."\t".$featuresets[0]}, $limit);
-            # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
-            # Update: The vertical bar is not treated as a special character if it is inside `code text`.
-            my $escaped_featureset = $featuresets[0];
-            #$escaped_featureset =~ s/\|/\\\|/g;
-            $page .= "`$tag` occurs with $nfeaturesets feature combinations.\n";
-            $page .= "The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens).\n";
-            $page .= "Examples: _${examples}_\n\n";
-        }
-        else
-        {
-            $page .= "`$tag` does not occur with any features.\n\n";
-        }
-        $page .= "\n";
-        # Dependency relations.
-        $page .= "## Relations\n\n";
-        my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $tagset{$tag}, "$langcode-dep/");
-        $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
-        ($list, $n) = list_keys_with_counts($parenttag{$tag}, $tagset{$tag}, '');
-        $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
-        my $n0c = $tagdegree{$tag}{0} // 0;
-        my $p0c = percent($n0c, $tagset{$tag});
-        $page .= "$n0c ($p0c) `$tag` nodes are leaves.\n\n";
-        if($maxtagdegree{$tag} > 0)
-        {
-            my $n1c = $tagdegree{$tag}{1} // 0;
-            my $p1c = percent($n1c, $tagset{$tag});
-            $page .= "$n1c ($p1c) `$tag` nodes have one child.\n\n";
-            if($maxtagdegree{$tag} > 1)
-            {
-                my $n2c = $tagdegree{$tag}{2} // 0;
-                my $p2c = percent($n2c, $tagset{$tag});
-                $page .= "$n2c ($p2c) `$tag` nodes have two children.\n\n";
-                if($maxtagdegree{$tag} > 2)
-                {
-                    my $n3c = $tagdegree{$tag}{3} // 0;
-                    my $p3c = percent($n3c, $tagset{$tag});
-                    $page .= "$n3c ($p3c) `$tag` nodes have three or more children.\n\n";
-                }
-            }
-        }
-        $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
-        if($maxtagdegree{$tag} > 0)
-        {
-            ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$langcode-dep/");
-            $page .= "Children of `$tag` nodes are attached using $n different relations: $list\n\n";
-            ($list, $n) = list_keys_with_counts($childtag{$tag}, $nchildren{$tag}, '');
-            $page .= "Children of `$tag` nodes belong to $n different parts of speech: $list\n\n";
-        }
+        $page .= get_detailed_statistics_tag($tag);
         print STDERR ("Writing $file\n");
         open(PAGE, ">$file") or die("Cannot write $file: $!");
         print PAGE ($page);
@@ -559,149 +432,168 @@ sub detailed_statistics
 #------------------------------------------------------------------------------
 sub get_detailed_statistics_tag
 {
-    my $docspath = $konfig{docspath};
-    my $langcode = $konfig{langcode};
-    # We have to see all tags before we can compute percentage of each tag.
-    my %ntypes; # hash{$tag}
-    my %nlemmas; # hash{$tag}
-    my $ntokens_total = 0;
-    my $ntypes_total = 0;
-    my $nlemmas_total = 0;
-    foreach my $tag (@tagset)
+    my $tag = shift;
+    my $page;
+    $page .= "\n\n--------------------------------------------------------------------------------\n\n";
+    $page .= "## Treebank Statistics\n\n";
+    my $ntokens = $tagset{$tag};
+    my $ptokens = percent($ntokens, $ntokens_total);
+    my $ptypes = percent($ntypes{$tag}, $ntypes_total);
+    my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
+    $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
+    $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
+    my $examples = prepare_examples($examples{$tag.'-lemma'}, $limit);
+    $page .= "The $limit most frequent `$tag` lemmas: _${examples}_\n\n";
+    $examples = prepare_examples($examples{$tag}, $limit);
+    $page .= "The $limit most frequent `$tag` types:  _${examples}_\n\n";
+    # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
+    my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}}));
+    @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@examples, $limit);
+    @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); '_'.$l.'_ ('.join(', ', @t).')'} (@examples);
+    $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
+    # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
+    @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}}));
+    @examples = sort_and_truncate_examples($examples{$tag}, \@examples, $limit);
+    my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); '_'.$w.'_ ('.join(', ', @t).')'} (@examples);
+    $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
+    foreach my $example (@examples)
     {
-        $ntokens_total += $tagset{$tag};
-        $ntypes{$tag} = scalar(keys(%{$examples{$tag}}));
-        $ntypes_total += $ntypes{$tag};
-        $nlemmas{$tag} = scalar(keys(%{$examples{$tag.'-lemma'}}));
-        $nlemmas_total += $nlemmas{$tag};
-    }
-    my $flratio = $ntypes_total/$nlemmas_total;
-    # Rank tags by number of lemmas, types and tokens.
-    my %rtokens;
-    my @tags = sort {$tagset{$b} <=> $tagset{$a}} (@tagset);
-    for(my $i = 0; $i <= $#tags; $i++)
-    {
-        $rtokens{$tags[$i]} = $i + 1;
-    }
-    my %rtypes;
-    @tags = sort {$ntypes{$b} <=> $ntypes{$a}} (@tagset);
-    for(my $i = 0; $i <= $#tags; $i++)
-    {
-        $rtypes{$tags[$i]} = $i + 1;
-    }
-    my %rlemmas;
-    @tags = sort {$nlemmas{$b} <=> $nlemmas{$a}} (@tagset);
-    for(my $i = 0; $i <= $#tags; $i++)
-    {
-        $rlemmas{$tags[$i]} = $i + 1;
-    }
-    my $ntags = scalar(@tagset);
-    my $limit = 10;
-    foreach my $tag (@tagset)
-    {
-        my $page;
-        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-        $page .= "## Treebank Statistics\n\n";
-        my $ntokens = $tagset{$tag};
-        my $ptokens = percent($ntokens, $ntokens_total);
-        my $ptypes = percent($ntypes{$tag}, $ntypes_total);
-        my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
-        $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
-        $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
-        my $examples = prepare_examples($examples{$tag.'-lemma'}, $limit);
-        $page .= "The $limit most frequent `$tag` lemmas: _${examples}_\n\n";
-        $examples = prepare_examples($examples{$tag}, $limit);
-        $page .= "The $limit most frequent `$tag` types:  _${examples}_\n\n";
-        # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
-        my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}}));
-        @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@examples, $limit);
-        @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); '_'.$l.'_ ('.join(', ', @t).')'} (@examples);
-        $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
-        # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
-        @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}}));
-        @examples = sort_and_truncate_examples($examples{$tag}, \@examples, $limit);
-        my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); '_'.$w.'_ ('.join(', ', @t).')'} (@examples);
-        $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
-        foreach my $example (@examples)
+        $page .= '* _'.$example."_\n";
+        my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
+        foreach my $ambtag (@ambtags)
         {
-            $page .= '* _'.$example."_\n";
-            my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
-            foreach my $ambtag (@ambtags)
+            $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: _$exentwt{$example}{$ambtag}_\n";
+        }
+    }
+    $page .= "\n";
+    # Morphological richness.
+    $page .= "## Morphology\n\n";
+    $page .= sprintf("The form / lemma ratio of `$tag` is %f (the average of all parts of speech is %f).\n\n", $ntypes{$tag}/$nlemmas{$tag}, $flratio);
+    my @mrich_lemmas = sort {my $v = scalar(keys(%{$tlw{$tag}{$b}})) <=> scalar(keys(%{$tlw{$tag}{$a}})); $v = $a cmp $b unless($v); $v} (keys(%{$tlw{$tag}}));
+    for(my $i = 0; $i < 3; $i++)
+    {
+        last unless(defined($mrich_lemmas[$i]));
+        my @richest_paradigm = sort(keys(%{$tlw{$tag}{$mrich_lemmas[$i]}}));
+        my $richness = scalar(@richest_paradigm);
+        my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
+        $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _".join(', ', @richest_paradigm)."_\n\n";
+    }
+    if(scalar(keys(%{$tf{$tag}})) > 0)
+    {
+        my ($list, $n) = list_keys_with_counts($tf{$tag}, $tagset{$tag}, "$langcode-feat/");
+        $page .= "`$tag` occurs with $n features: $list\n\n";
+        my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
+        my $nfeaturepairs = scalar(@featurepairs);
+        $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
+        my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
+        my $nfeaturesets = scalar(@featuresets);
+        $examples = prepare_examples($examples{$tag."\t".$featuresets[0]}, $limit);
+        # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
+        # Update: The vertical bar is not treated as a special character if it is inside `code text`.
+        my $escaped_featureset = $featuresets[0];
+        #$escaped_featureset =~ s/\|/\\\|/g;
+        $page .= "`$tag` occurs with $nfeaturesets feature combinations.\n";
+        $page .= "The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens).\n";
+        $page .= "Examples: _${examples}_\n\n";
+    }
+    else
+    {
+        $page .= "`$tag` does not occur with any features.\n\n";
+    }
+    $page .= "\n";
+    # Dependency relations.
+    $page .= "## Relations\n\n";
+    my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $tagset{$tag}, "$langcode-dep/");
+    $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
+    ($list, $n) = list_keys_with_counts($parenttag{$tag}, $tagset{$tag}, '');
+    $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
+    my $n0c = $tagdegree{$tag}{0} // 0;
+    my $p0c = percent($n0c, $tagset{$tag});
+    $page .= "$n0c ($p0c) `$tag` nodes are leaves.\n\n";
+    if($maxtagdegree{$tag} > 0)
+    {
+        my $n1c = $tagdegree{$tag}{1} // 0;
+        my $p1c = percent($n1c, $tagset{$tag});
+        $page .= "$n1c ($p1c) `$tag` nodes have one child.\n\n";
+        if($maxtagdegree{$tag} > 1)
+        {
+            my $n2c = $tagdegree{$tag}{2} // 0;
+            my $p2c = percent($n2c, $tagset{$tag});
+            $page .= "$n2c ($p2c) `$tag` nodes have two children.\n\n";
+            if($maxtagdegree{$tag} > 2)
             {
-                $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: _$exentwt{$example}{$ambtag}_\n";
+                my $n3c = $tagdegree{$tag}{3} // 0;
+                my $p3c = percent($n3c, $tagset{$tag});
+                $page .= "$n3c ($p3c) `$tag` nodes have three or more children.\n\n";
             }
         }
-        $page .= "\n";
-        # Morphological richness.
-        $page .= "## Morphology\n\n";
-        $page .= sprintf("The form / lemma ratio of `$tag` is %f (the average of all parts of speech is %f).\n\n", $ntypes{$tag}/$nlemmas{$tag}, $flratio);
-        my @mrich_lemmas = sort {my $v = scalar(keys(%{$tlw{$tag}{$b}})) <=> scalar(keys(%{$tlw{$tag}{$a}})); $v = $a cmp $b unless($v); $v} (keys(%{$tlw{$tag}}));
-        for(my $i = 0; $i < 3; $i++)
+    }
+    $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
+    if($maxtagdegree{$tag} > 0)
+    {
+        ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$langcode-dep/");
+        $page .= "Children of `$tag` nodes are attached using $n different relations: $list\n\n";
+        ($list, $n) = list_keys_with_counts($childtag{$tag}, $nchildren{$tag}, '');
+        $page .= "Children of `$tag` nodes belong to $n different parts of speech: $list\n\n";
+    }
+    return $page;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Generates statistics of all features and saves them in the docs repository.
+#------------------------------------------------------------------------------
+sub detailed_statistics_features
+{
+    local $docspath = $konfig{docspath};
+    local $langcode = $konfig{langcode};
+    my $limit = 10;
+    # Identify layered features.
+    local %layers;
+    local %base_features;
+    foreach my $feature (@featureset)
+    {
+        my ($base, $layer);
+        if($feature =~ m/^(\w+)\[(.+)\]$/)
         {
-            last unless(defined($mrich_lemmas[$i]));
-            my @richest_paradigm = sort(keys(%{$tlw{$tag}{$mrich_lemmas[$i]}}));
-            my $richness = scalar(@richest_paradigm);
-            my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
-            $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _".join(', ', @richest_paradigm)."_\n\n";
-        }
-        if(scalar(keys(%{$tf{$tag}})) > 0)
-        {
-            my ($list, $n) = list_keys_with_counts($tf{$tag}, $tagset{$tag}, "$langcode-feat/");
-            $page .= "`$tag` occurs with $n features: $list\n\n";
-            my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
-            my $nfeaturepairs = scalar(@featurepairs);
-            $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
-            my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
-            my $nfeaturesets = scalar(@featuresets);
-            $examples = prepare_examples($examples{$tag."\t".$featuresets[0]}, $limit);
-            # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
-            # Update: The vertical bar is not treated as a special character if it is inside `code text`.
-            my $escaped_featureset = $featuresets[0];
-            #$escaped_featureset =~ s/\|/\\\|/g;
-            $page .= "`$tag` occurs with $nfeaturesets feature combinations.\n";
-            $page .= "The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens).\n";
-            $page .= "Examples: _${examples}_\n\n";
+            $base = $1;
+            $layer = $2;
         }
         else
         {
-            $page .= "`$tag` does not occur with any features.\n\n";
+            $base = $feature;
+            $layer = 'DEFAULT';
         }
-        $page .= "\n";
-        # Dependency relations.
-        $page .= "## Relations\n\n";
-        my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $tagset{$tag}, "$langcode-dep/");
-        $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
-        ($list, $n) = list_keys_with_counts($parenttag{$tag}, $tagset{$tag}, '');
-        $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
-        my $n0c = $tagdegree{$tag}{0} // 0;
-        my $p0c = percent($n0c, $tagset{$tag});
-        $page .= "$n0c ($p0c) `$tag` nodes are leaves.\n\n";
-        if($maxtagdegree{$tag} > 0)
+        $layers{$base}{$layer} = $feature;
+        $base_features{$feature} = $base;
+    }
+    foreach my $feature (@featureset)
+    {
+        my $file = "$docspath/_$langcode-feat/$feature.md";
+        # Layered features do not have the brackets in their file names.
+        $file =~ s/\[(.+)\]/-$1/;
+        my $page;
+        # Do not die if page about the feature does not exist. Maybe it is a language-specific feature.
+        if(open(PAGE, $file))
         {
-            my $n1c = $tagdegree{$tag}{1} // 0;
-            my $p1c = percent($n1c, $tagset{$tag});
-            $page .= "$n1c ($p1c) `$tag` nodes have one child.\n\n";
-            if($maxtagdegree{$tag} > 1)
+            while(<PAGE>)
             {
-                my $n2c = $tagdegree{$tag}{2} // 0;
-                my $p2c = percent($n2c, $tagset{$tag});
-                $page .= "$n2c ($p2c) `$tag` nodes have two children.\n\n";
-                if($maxtagdegree{$tag} > 2)
-                {
-                    my $n3c = $tagdegree{$tag}{3} // 0;
-                    my $p3c = percent($n3c, $tagset{$tag});
-                    $page .= "$n3c ($p3c) `$tag` nodes have three or more children.\n\n";
-                }
+                $page .= $_;
             }
+            close(PAGE);
         }
-        $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
-        if($maxtagdegree{$tag} > 0)
+        unless($page =~ m/This document is a placeholder/s)
         {
-            ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$langcode-dep/");
-            $page .= "Children of `$tag` nodes are attached using $n different relations: $list\n\n";
-            ($list, $n) = list_keys_with_counts($childtag{$tag}, $nchildren{$tag}, '');
-            $page .= "Children of `$tag` nodes belong to $n different parts of speech: $list\n\n";
+            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
         }
+        # Remove previous statistics, if any, from the page.
+        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
+        $page .= get_detailed_statistics_feature($feature);
+        print STDERR ("Writing $file\n");
+        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        print PAGE ($page);
+        close(PAGE);
     }
 }
 
@@ -746,244 +638,199 @@ sub get_detailed_statistics_tag
 #    that have set two or more layers of this feature.
 # - Are there relations where the parent and the child agree in the feature?
 #------------------------------------------------------------------------------
-sub detailed_statistics_features
+sub get_detailed_statistics_feature
 {
-    my $docspath = $konfig{docspath};
-    my $langcode = $konfig{langcode};
-    my $limit = 10;
-    # Identify layered features.
-    my %layers;
-    my %base_features;
-    foreach my $feature (@featureset)
+    my $feature = shift;
+    my $page;
+    $page .= "\n\n--------------------------------------------------------------------------------\n\n";
+    $page .= "## Treebank Statistics\n\n";
+    # Count values. Dissolve multivalues.
+    my @values = sort(keys(%{$fv{$feature}}));
+    my %svalues;
+    foreach my $v (@values)
     {
-        my ($base, $layer);
-        if($feature =~ m/^(\w+)\[(.+)\]$/)
+        my @svalues = split(/,/, $v);
+        foreach my $sv (@svalues)
         {
-            $base = $1;
-            $layer = $2;
+            $svalues{$sv}++;
         }
-        else
-        {
-            $base = $feature;
-            $layer = 'DEFAULT';
-        }
-        $layers{$base}{$layer} = $feature;
-        $base_features{$feature} = $base;
     }
-    foreach my $feature (@featureset)
+    my @svalues = sort(keys(%svalues));
+    my $nsvalues = scalar(@svalues);
+    my $universal = '';
+    # Override alphabetic ordering of feature values.
+    local %sort_values;
+    if(exists($universal_features{$feature}))
     {
-        my $file = "$docspath/_$langcode-feat/$feature.md";
-        # Layered features do not have the brackets in their file names.
-        $file =~ s/\[(.+)\]/-$1/;
-        my $page;
-        # Do not die if page about the feature does not exist. Maybe it is a language-specific feature.
-        if(open(PAGE, $file))
+        $universal = 'universal';
+        for(my $i = 0; $i <= $#{$universal_features{$feature}}; $i++)
         {
-            while(<PAGE>)
-            {
-                $page .= $_;
-            }
-            close(PAGE);
+            $sort_values{$universal_features{$feature}[$i]} = $i;
         }
-        unless($page =~ m/This document is a placeholder/s)
+        # Are all values universal?
+        my @lsvalues = grep {my $v = $_; scalar(grep {$_ eq $v} (@{$universal_features{$feature}})) == 0} (@svalues);
+        if(@lsvalues)
         {
-            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
-        }
-        # Remove previous statistics, if any, from the page.
-        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
-        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-        $page .= "## Treebank Statistics\n\n";
-        # Count values. Dissolve multivalues.
-        my @values = sort(keys(%{$fv{$feature}}));
-        my %svalues;
-        foreach my $v (@values)
-        {
-            my @svalues = split(/,/, $v);
-            foreach my $sv (@svalues)
+            $universal .= ' but the values '.join(', ', map {"`$_`"} (@lsvalues)).' are language-specific';
+            foreach my $lsv (@lsvalues)
             {
-                $svalues{$sv}++;
+                $sort_values{$lsv} = 1000;
             }
         }
-        my @svalues = sort(keys(%svalues));
-        my $nsvalues = scalar(@svalues);
-        my $universal = '';
-        # Override alphabetic ordering of feature values.
-        local %sort_values;
-        if(exists($universal_features{$feature}))
+    }
+    else
+    {
+        $universal = 'language-specific';
+    }
+    $page .= "This feature is $universal.\n";
+    if($nvalues == 1)
+    {
+        $page .= "It occurs only with 1 value: ";
+    }
+    else
+    {
+        $page .= "It occurs with $nsvalues different values: ";
+    }
+    $page .= join(', ', map {"`$_`"} (@svalues)).".\n";
+    my @mvalues = map {s/,/|/g; $_} (grep {/,/} (@values));
+    my $nmvalues = scalar(@mvalues);
+    if($nmvalues > 0)
+    {
+        $page .= "Some words have combined values of the feature; $nmvalues combinations have been observed: ".join(', ', map {"`$_`"} (@mvalues)).".\n";
+    }
+    $page .= "\n";
+    my $base_feature = $base_features{$feature};
+    my @layers = sort(keys(%{$layers{$base_feature}}));
+    if(scalar(@layers) > 1)
+    {
+        # We are linking e.g. from pt/feat/Number.html to u/overview/feat-layers.html.
+        $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"[$layers{$base_feature}{$_}]()"} (@layers)).".\n\n";
+    }
+    my $n = $featureset{$feature};
+    my $p = percent($n, $nword);
+    $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
+    $n = scalar(keys($fw{$feature}));
+    $p = percent($n, scalar(@words));
+    $page .= "$n types ($p) occur at least once with a non-empty value of `$feature`.\n";
+    $n = scalar(keys($fl{$feature}));
+    $p = percent($n, scalar(@lemmas));
+    $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
+    # List part-of-speech tags with which this feature occurs.
+    my $list; ($list, $n) = list_keys_with_counts($ft{$feature}, $nword, "$langcode-pos/");
+    $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
+    my @tags = sort {$ft{$feature}{$b} <=> $ft{$feature}{$a}} (keys(%{$ft{$feature}}));
+    foreach my $tag (@tags)
+    {
+        $page .= "### `$tag`\n\n";
+        $n = $ft{$feature}{$tag};
+        $p = percent($n, $tagset{$tag});
+        $page .= "$n [$langcode-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
+        # Is this feature used exclusively with some other feature?
+        # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
+        my @other_features = grep {$tf{$tag}{$_} / $tagset{$tag} > 0.1} (keys(%{$tf{$tag}}));
+        # Get all feature combinations observed with the current tag.
+        my @fsets_packed = keys(%{$tfset{$tag}});
+        my %other_features;
+        foreach my $fsp (@fsets_packed)
         {
-            $universal = 'universal';
-            for(my $i = 0; $i <= $#{$universal_features{$feature}}; $i++)
+            my %fs;
+            foreach my $fv (split(/\|/, $fsp))
             {
-                $sort_values{$universal_features{$feature}[$i]} = $i;
+                my ($f, $v) = split(/=/, $fv);
+                $fs{$f} = $v;
             }
-            # Are all values universal?
-            my @lsvalues = grep {my $v = $_; scalar(grep {$_ eq $v} (@{$universal_features{$feature}})) == 0} (@svalues);
-            if(@lsvalues)
+            # Filter the feature combinations to those that have the current feature set.
+            next if(!defined($fs{$feature}));
+            # Count values of all other features (meaning all features that can be non-empty with this tag; even if they are empty in this combination).
+            foreach my $f (@other_features)
             {
-                $universal .= ' but the values '.join(', ', map {"`$_`"} (@lsvalues)).' are language-specific';
-                foreach my $lsv (@lsvalues)
+                unless($f eq $feature)
                 {
-                    $sort_values{$lsv} = 1000;
+                    my $v = $fs{$f} // 'EMPTY';
+                    $other_features{"$f=$v"} += $tfset{$tag}{$fsp};
                 }
             }
         }
-        else
+        # Report feature-value pairs whose frequency exceeds 50% of the occurrences of the current feature.
+        my @frequent_pairs = sort {$other_features{$b} <=> $other_features{$a}} (grep {$other_features{$_} / $ft{$feature}{$tag} > 0.5} (keys(%other_features)));
+        if(scalar(@frequent_pairs) > 0)
         {
-            $universal = 'language-specific';
+            splice(@frequent_pairs, $limit);
+            @frequent_pairs = map
+            {
+                my $x = $_;
+                my $n = $other_features{$x};
+                my $p = percent($n, $ft{$feature}{$tag});
+                $x =~ s/^(.+)=(.+)$/<tt><a href="$1.html">$1<\/a>=$2<\/tt>/;
+                "$x ($n; $p)"
+            }
+            (@frequent_pairs);
+            $page .= "The most frequent other feature values with which `$tag` and `$feature` co-occurred: ".join(', ', @frequent_pairs).".\n\n";
         }
-        $page .= "This feature is $universal.\n";
-        if($nvalues == 1)
+        # List values of the feature with this tag.
+        $page .= "`$tag` tokens may have the following values of `$feature`:\n\n";
+        my @values = sort(map {s/^$feature=//; $_} (grep {m/^$feature=/} (keys(%{$tfv{$tag}}))));
+        foreach my $value (@values)
         {
-            $page .= "It occurs only with 1 value: ";
+            $n = $tfv{$tag}{"$feature=$value"};
+            $p = percent($n, $tf{$tag}{$feature});
+            my $examples = prepare_examples($examples{"$tag\t$feature=$value"}, $limit);
+            $page .= "* `$value` ($n; $p of non-empty `$feature`): _${examples}_\n";
         }
-        else
+        $n = $tagset{$tag} - $ft{$feature}{$tag};
+        my $examples = prepare_examples($examples{"$tag\t$feature=EMPTY"}, $limit);
+        # There might be no examples even if $n > 0. We collect examples only for universal features, not for language-specific ones.
+        ###!!! We may want to collect them for language-specific features. But we do not know in advance what these features are!
+        ###!!! Maybe we should use just general examples of the tag, and grep them for not having the feature set?
+        if($examples)
         {
-            $page .= "It occurs with $nsvalues different values: ";
-        }
-        $page .= join(', ', map {"`$_`"} (@svalues)).".\n";
-        my @mvalues = map {s/,/|/g; $_} (grep {/,/} (@values));
-        my $nmvalues = scalar(@mvalues);
-        if($nmvalues > 0)
-        {
-            $page .= "Some words have combined values of the feature; $nmvalues combinations have been observed: ".join(', ', map {"`$_`"} (@mvalues)).".\n";
+            $page .= "* `EMPTY` ($n): _${examples}_\n";
         }
         $page .= "\n";
-        my $base_feature = $base_features{$feature};
-        my @layers = sort(keys(%{$layers{$base_feature}}));
-        if(scalar(@layers) > 1)
+        # Show examples of lemmas for which all (or many) values of the feature have been observed.
+        # This should provide an image of a complete paradigm with respect to this feature.
+        # Try to fix the values of the other features if possible (e.g. do not mix singular and plural when showing case inflection).
+        # $paradigm{$tag}{$f}{$lemma}{$v}{$other_features}{$word}++;
+        my @paradigms = sort
         {
-            # We are linking e.g. from pt/feat/Number.html to u/overview/feat-layers.html.
-            $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"[$layers{$base_feature}{$_}]()"} (@layers)).".\n\n";
+            my $result = scalar(keys(%{$paradigm{$tag}{$feature}{$b}})) <=> scalar(keys(%{$paradigm{$tag}{$feature}{$a}}));
+            unless($result)
+            {
+                $result = $lemmatag{$b}{$tag} <=> $lemmatag{$a}{$tag};
+            }
+            $result
         }
-        my $n = $featureset{$feature};
-        my $p = percent($n, $nword);
-        $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
-        $n = scalar(keys($fw{$feature}));
-        $p = percent($n, scalar(@words));
-        $page .= "$n types ($p) occur at least once with a non-empty value of `$feature`.\n";
-        $n = scalar(keys($fl{$feature}));
-        $p = percent($n, scalar(@lemmas));
-        $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
-        # List part-of-speech tags with which this feature occurs.
-        my $list; ($list, $n) = list_keys_with_counts($ft{$feature}, $nword, "$langcode-pos/");
-        $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
-        my @tags = sort {$ft{$feature}{$b} <=> $ft{$feature}{$a}} (keys(%{$ft{$feature}}));
-        foreach my $tag (@tags)
+        keys(%{$paradigm{$tag}{$feature}});
+        $page .= get_paradigm_table($paradigms[$i], $tag, $feature);
+        # How many $lemmas have only one value of this feature? Is the feature lexical?
+        # Do this only for feature-tag combinations that appear with enough lemmas.
+        my $total = scalar(@paradigms);
+        if($total >= 10)
         {
-            $page .= "### `$tag`\n\n";
-            $n = $ft{$feature}{$tag};
-            $p = percent($n, $tagset{$tag});
-            $page .= "$n [$langcode-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
-            # Is this feature used exclusively with some other feature?
-            # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
-            my @other_features = grep {$tf{$tag}{$_} / $tagset{$tag} > 0.1} (keys(%{$tf{$tag}}));
-            # Get all feature combinations observed with the current tag.
-            my @fsets_packed = keys(%{$tfset{$tag}});
-            my %other_features;
-            foreach my $fsp (@fsets_packed)
+            my @lemmas_with_only_one_value = grep {scalar(keys(%{$paradigm{$tag}{$feature}{$_}})) == 1} (@paradigms);
+            $n = scalar(@lemmas_with_only_one_value);
+            $p = percent($n, $total);
+            if($n / $total > 0.9)
             {
-                my %fs;
-                foreach my $fv (split(/\|/, $fsp))
-                {
-                    my ($f, $v) = split(/=/, $fv);
-                    $fs{$f} = $v;
-                }
-                # Filter the feature combinations to those that have the current feature set.
-                next if(!defined($fs{$feature}));
-                # Count values of all other features (meaning all features that can be non-empty with this tag; even if they are empty in this combination).
-                foreach my $f (@other_features)
-                {
-                    unless($f eq $feature)
-                    {
-                        my $v = $fs{$f} // 'EMPTY';
-                        $other_features{"$f=$v"} += $tfset{$tag}{$fsp};
-                    }
-                }
+                $page .= "`$feature` seems to be **lexical feature** of `$tag`. $p lemmas ($n) occur only with one value of `$feature`.\n\n";
             }
-            # Report feature-value pairs whose frequency exceeds 50% of the occurrences of the current feature.
-            my @frequent_pairs = sort {$other_features{$b} <=> $other_features{$a}} (grep {$other_features{$_} / $ft{$feature}{$tag} > 0.5} (keys(%other_features)));
-            if(scalar(@frequent_pairs) > 0)
-            {
-                splice(@frequent_pairs, $limit);
-                @frequent_pairs = map
-                {
-                    my $x = $_;
-                    my $n = $other_features{$x};
-                    my $p = percent($n, $ft{$feature}{$tag});
-                    $x =~ s/^(.+)=(.+)$/<tt><a href="$1.html">$1<\/a>=$2<\/tt>/;
-                    "$x ($n; $p)"
-                }
-                (@frequent_pairs);
-                $page .= "The most frequent other feature values with which `$tag` and `$feature` co-occurred: ".join(', ', @frequent_pairs).".\n\n";
-            }
-            # List values of the feature with this tag.
-            $page .= "`$tag` tokens may have the following values of `$feature`:\n\n";
-            my @values = sort(map {s/^$feature=//; $_} (grep {m/^$feature=/} (keys(%{$tfv{$tag}}))));
-            foreach my $value (@values)
-            {
-                $n = $tfv{$tag}{"$feature=$value"};
-                $p = percent($n, $tf{$tag}{$feature});
-                my $examples = prepare_examples($examples{"$tag\t$feature=$value"}, $limit);
-                $page .= "* `$value` ($n; $p of non-empty `$feature`): _${examples}_\n";
-            }
-            $n = $tagset{$tag} - $ft{$feature}{$tag};
-            my $examples = prepare_examples($examples{"$tag\t$feature=EMPTY"}, $limit);
-            # There might be no examples even if $n > 0. We collect examples only for universal features, not for language-specific ones.
-            ###!!! We may want to collect them for language-specific features. But we do not know in advance what these features are!
-            ###!!! Maybe we should use just general examples of the tag, and grep them for not having the feature set?
-            if($examples)
-            {
-                $page .= "* `EMPTY` ($n): _${examples}_\n";
-            }
-            $page .= "\n";
-            # Show examples of lemmas for which all (or many) values of the feature have been observed.
-            # This should provide an image of a complete paradigm with respect to this feature.
-            # Try to fix the values of the other features if possible (e.g. do not mix singular and plural when showing case inflection).
-            # $paradigm{$tag}{$f}{$lemma}{$v}{$other_features}{$word}++;
-            my @paradigms = sort
-            {
-                my $result = scalar(keys(%{$paradigm{$tag}{$feature}{$b}})) <=> scalar(keys(%{$paradigm{$tag}{$feature}{$a}}));
-                unless($result)
-                {
-                    $result = $lemmatag{$b}{$tag} <=> $lemmatag{$a}{$tag};
-                }
-                $result
-            }
-            keys(%{$paradigm{$tag}{$feature}});
-            $page .= get_paradigm_table($paradigms[$i], $tag, $feature);
-            # How many $lemmas have only one value of this feature? Is the feature lexical?
-            # Do this only for feature-tag combinations that appear with enough lemmas.
-            my $total = scalar(@paradigms);
-            if($total >= 10)
-            {
-                my @lemmas_with_only_one_value = grep {scalar(keys(%{$paradigm{$tag}{$feature}{$_}})) == 1} (@paradigms);
-                $n = scalar(@lemmas_with_only_one_value);
-                $p = percent($n, $total);
-                if($n / $total > 0.9)
-                {
-                    $page .= "`$feature` seems to be **lexical feature** of `$tag`. $p lemmas ($n) occur only with one value of `$feature`.\n\n";
-                }
-            }
-            ###!!! NOT YET IMPLEMENTED
-            # If it is frequent to see different values of the feature with one lemma
-            # (i.e. the feature seems to be inflectional), do the word forms really
-            # change? Not necessarily always, but often enough?
-            ###!!!
         }
-        # Agreement in this feature between parent and child of a relation.
-        my @agreement = grep {$agreement{$feature}{$_} > $disagreement{$feature}{$_}} (keys(%{$agreement{$feature}}));
-        @agreement = sort {$agreement{$feature}{$b} <=> $agreement{$feature}{$a}} (@agreement);
-        splice(@agreement, $limit);
-        if(scalar(@agreement) > 0)
-        {
-            $page .= "## Relations with Agreement in `$feature`\n\n";
-            $page .= "The $limit most frequent relations where parent and child node agree in `$feature`: ".join(', ', map {my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_}); "`$_` ($agreement{$feature}{$_}; $p)"} (@agreement)).".\n\n";
-        }
-        print STDERR ("Writing $file\n");
-        open(PAGE, ">$file") or die("Cannot write $file: $!");
-        print PAGE ($page);
-        close(PAGE);
+        ###!!! NOT YET IMPLEMENTED
+        # If it is frequent to see different values of the feature with one lemma
+        # (i.e. the feature seems to be inflectional), do the word forms really
+        # change? Not necessarily always, but often enough?
+        ###!!!
     }
+    # Agreement in this feature between parent and child of a relation.
+    my @agreement = grep {$agreement{$feature}{$_} > $disagreement{$feature}{$_}} (keys(%{$agreement{$feature}}));
+    @agreement = sort {$agreement{$feature}{$b} <=> $agreement{$feature}{$a}} (@agreement);
+    splice(@agreement, $limit);
+    if(scalar(@agreement) > 0)
+    {
+        $page .= "## Relations with Agreement in `$feature`\n\n";
+        $page .= "The $limit most frequent relations where parent and child node agree in `$feature`: ".join(', ', map {my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_}); "`$_` ($agreement{$feature}{$_}; $p)"} (@agreement)).".\n\n";
+    }
+    return $page;
 }
 
 
@@ -1092,33 +939,16 @@ sub get_paradigm_table
 
 
 #------------------------------------------------------------------------------
-# Detailed statistics about a relation:
-#
-# - Is this a language-specific subtype? Are there other subtypes of the same
-#   universal relation?
-# - If it is universal, does it have language-specific subtypes?
-# - How many nodes are attached to their parent using this relation?
-# - How often is this relation left-to-right vs. right-to-left?
-# - What is the average length of this relation (right position minus left
-#   position)?
-# - How many different types are at least once attached using this relation?
-# -- What are the most frequent types?
-# - How many different types are at least once parents in this relation?
-# -- What are the most frequent types?
-# - Same for lemmas, tags and feature-value pairs.
-# - What are the most frequent combinations of parent tag and child tag?
-# -- For each combination, give the most frequent examples of word forms.
-# -- Visualize these examples using Brat.
-# - How often is this relation non-projective?
+# Generates statistics of all relations and saves them in the docs repository.
 #------------------------------------------------------------------------------
 sub detailed_statistics_relations
 {
-    my $docspath = $konfig{docspath};
-    my $langcode = $konfig{langcode};
-    my $limit = 10;
+    local $docspath = $konfig{docspath};
+    local $langcode = $konfig{langcode};
+    local $limit = 10;
     # Identify clusters of universal relations and their language-specific subtypes.
-    my %clusters;
-    my %base_relations;
+    local %clusters;
+    local %base_relations;
     foreach my $deprel (@deprelset)
     {
         my ($base, $extension);
@@ -1157,74 +987,104 @@ sub detailed_statistics_relations
         }
         # Remove previous statistics, if any, from the page.
         $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
-        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-        $page .= "## Treebank Statistics\n\n";
-        # Universal versus language-specific.
-        my $cluster = $clusters{$base_relations{$deprel}};
-        my @subtypes = map {$cluster->{$_}} (grep {$_ ne ''} (sort(keys(%{$cluster}))));
-        if($base_relations{$deprel} eq $deprel)
-        {
-            $page .= "This relation is universal.\n";
-            my $nsubtypes = scalar(@subtypes);
-            if($nsubtypes > 0)
-            {
-                $page .= "There are $nsubtypes language-specific subtypes of `$deprel`: ";
-                $page .= join(', ', map {"[$_]()"} (@subtypes));
-                $page .= ".\n";
-            }
-        }
-        else
-        {
-            my $base = $base_relations{$deprel};
-            $page .= "This relation is a language-specific subtype of [$base]().\n";
-            my $nsubtypes = scalar(@subtypes) - 1;
-            if($nsubtypes > 0)
-            {
-                $page .= "There are also $nsubtypes other language-specific subtypes of `$base`: ";
-                $page .= join(', ', map {"[$_]()"} (grep {$_ ne $deprel} (@subtypes)));
-                $page .= ".\n";
-            }
-        }
-        $page .= "\n";
-        # Counts.
-        my $n = $deprelset{$deprel};
-        my $p = percent($n, $nword);
-        $page .= "$n nodes ($p) are attached to their parents as `$deprel`.\n\n";
-        my $nltr = $ltrdeprel{$deprel};
-        my $nrtl = $n - $nltr;
-        if($nltr >= $nrtl)
-        {
-            $p = percent($nltr, $n);
-            $page .= "$nltr instances of `$deprel` ($p) are left-to-right (parent precedes child).\n";
-        }
-        else
-        {
-            $p = percent($nrtl, $n);
-            $page .= "$nrtl instances of `$deprel` ($p) are right-to-left (child precedes parent).\n";
-        }
-        my $avglen = $deprellen{$deprel} / $n;
-        $page .= "Average distance between parent and child is $avglen.\n\n";
-        # Word types, lemmas, tags and features.
-        my $list;
-        ($list, $n) = list_keys_with_counts($depreltags{$deprel}, $deprelset{$deprel}, "$langcode-pos/");
-        $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
-        ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
-        my @tagpairs = sort {$depreltags{$deprel}{$b} <=> $depreltags{$deprel}{$a}} (keys(%{$depreltags{$deprel}}));
-        for(my $i = 0; $i < 3; $i++)
-        {
-            last if($i > $#tagpairs);
-            my @tags = split(/-/, $tagpairs[$i]);
-            #my $sentence = $exentdtt{$deprel}{$tags[0]}{$tags[1]};
-            #$page .= "* `$tagpairs[$i]`: _${sentence}_\n";
-            my $conllu = $exconlludtt{$deprel}{$tags[0]}{$tags[1]};
-            $page .= "\n~~~ conllu\n".$conllu."~~~\n\n";
-        }
-        $page .= "\n";
+        $page .= get_detailed_statistics_relation($deprel);
         print STDERR ("Writing $file\n");
         open(PAGE, ">$file") or die("Cannot write $file: $!");
         print PAGE ($page);
         close(PAGE);
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Detailed statistics about a relation:
+#
+# - Is this a language-specific subtype? Are there other subtypes of the same
+#   universal relation?
+# - If it is universal, does it have language-specific subtypes?
+# - How many nodes are attached to their parent using this relation?
+# - How often is this relation left-to-right vs. right-to-left?
+# - What is the average length of this relation (right position minus left
+#   position)?
+# - How many different types are at least once attached using this relation?
+# -- What are the most frequent types?
+# - How many different types are at least once parents in this relation?
+# -- What are the most frequent types?
+# - Same for lemmas, tags and feature-value pairs.
+# - What are the most frequent combinations of parent tag and child tag?
+# -- For each combination, give the most frequent examples of word forms.
+# -- Visualize these examples using Brat.
+# - How often is this relation non-projective?
+#------------------------------------------------------------------------------
+sub get_detailed_statistics_relation
+{
+    my $deprel = shift;
+    my $page;
+    $page .= "\n\n--------------------------------------------------------------------------------\n\n";
+    $page .= "## Treebank Statistics\n\n";
+    # Universal versus language-specific.
+    my $cluster = $clusters{$base_relations{$deprel}};
+    my @subtypes = map {$cluster->{$_}} (grep {$_ ne ''} (sort(keys(%{$cluster}))));
+    if($base_relations{$deprel} eq $deprel)
+    {
+        $page .= "This relation is universal.\n";
+        my $nsubtypes = scalar(@subtypes);
+        if($nsubtypes > 0)
+        {
+            $page .= "There are $nsubtypes language-specific subtypes of `$deprel`: ";
+            $page .= join(', ', map {"[$_]()"} (@subtypes));
+            $page .= ".\n";
+        }
+    }
+    else
+    {
+        my $base = $base_relations{$deprel};
+        $page .= "This relation is a language-specific subtype of [$base]().\n";
+        my $nsubtypes = scalar(@subtypes) - 1;
+        if($nsubtypes > 0)
+        {
+            $page .= "There are also $nsubtypes other language-specific subtypes of `$base`: ";
+            $page .= join(', ', map {"[$_]()"} (grep {$_ ne $deprel} (@subtypes)));
+            $page .= ".\n";
+        }
+    }
+    $page .= "\n";
+    # Counts.
+    my $n = $deprelset{$deprel};
+    my $p = percent($n, $nword);
+    $page .= "$n nodes ($p) are attached to their parents as `$deprel`.\n\n";
+    my $nltr = $ltrdeprel{$deprel};
+    my $nrtl = $n - $nltr;
+    if($nltr >= $nrtl)
+    {
+        $p = percent($nltr, $n);
+        $page .= "$nltr instances of `$deprel` ($p) are left-to-right (parent precedes child).\n";
+    }
+    else
+    {
+        $p = percent($nrtl, $n);
+        $page .= "$nrtl instances of `$deprel` ($p) are right-to-left (child precedes parent).\n";
+    }
+    my $avglen = $deprellen{$deprel} / $n;
+    $page .= "Average distance between parent and child is $avglen.\n\n";
+    # Word types, lemmas, tags and features.
+    my $list;
+    ($list, $n) = list_keys_with_counts($depreltags{$deprel}, $deprelset{$deprel}, "$langcode-pos/");
+    $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
+    ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
+    my @tagpairs = sort {$depreltags{$deprel}{$b} <=> $depreltags{$deprel}{$a}} (keys(%{$depreltags{$deprel}}));
+    for(my $i = 0; $i < 3; $i++)
+    {
+        last if($i > $#tagpairs);
+        my @tags = split(/-/, $tagpairs[$i]);
+        #my $sentence = $exentdtt{$deprel}{$tags[0]}{$tags[1]};
+        #$page .= "* `$tagpairs[$i]`: _${sentence}_\n";
+        my $conllu = $exconlludtt{$deprel}{$tags[0]}{$tags[1]};
+        $page .= "\n~~~ conllu\n".$conllu."~~~\n\n";
+    }
+    $page .= "\n";
+    return $page;
 }
 
 
