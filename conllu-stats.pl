@@ -133,7 +133,8 @@ foreach my $tag (@tagset)
 if($konfig{detailed})
 {
     #detailed_statistics();
-    detailed_statistics_features();
+    #detailed_statistics_features();
+    detailed_statistics_relations();
 }
 else # stats.xml
 {
@@ -165,6 +166,7 @@ sub process_sentence
     }
     foreach my $node (@sentence)
     {
+        my $id = $node->[0];
         my $word = $node->[1];
         my $lemma = $node->[2];
         my $tag = $node->[3];
@@ -233,9 +235,24 @@ sub process_sentence
         }
         # Remember the occurrence of each dependency relation.
         $deprelset{$deprel}++;
+        $ltrdeprel{$deprel}++ if($head < $id);
+        $deprellen{$deprel} += abs($id - $head);
         $tagdeprel{$tag}{$deprel}++;
         my $parent_tag = ($head==0) ? 'ROOT' : $sentence[$head-1][3];
         $parenttag{$tag}{$parent_tag}++;
+        $depreltags{$deprel}{"$parent_tag-$tag"}++;
+        if(!exists($exentdtt{$deprel}{$parent_tag}{$tag}) || length($exentdtt{$deprel}{$parent_tag}{$tag}) > 80 && $slength < length($exentdtt{$deprel}{$parent_tag}{$tag}))
+        {
+            $exentdtt{$deprel}{$parent_tag}{$tag} = join(' ', map {($_->[0] == $id || $_->[0] == $head) ? "<b>$_->[1]</b>" : $_->[1]} (@sentence));
+            my $visualstyle = "# visual-style $id\tbgColor:blue\n";
+            $visualstyle .= "# visual-style $id\tfgColor:white\n";
+            $visualstyle .= "# visual-style $head\tbgColor:blue\n";
+            $visualstyle .= "# visual-style $head\tfgColor:white\n";
+            $visualstyle .= "# visual-style $head $id $deprel\tcolor:blue\n";
+            $exconlludtt{$deprel}{$parent_tag}{$tag} = $visualstyle.join("\n", map {my @f = @{$_}; join("\t", (@f[0..9]))} (@sentence))."\n\n";
+        }
+        $exentlt{$lemma}{$tag} = $sentence unless(exists($exentlt{$lemma}{$tag}));
+        # Children from the perspective of their parent.
         my $nchildren = scalar(@children);
         $maxtagdegree{$tag} = $nchildren if(!defined($maxtagdegree{$tag}) || $nchildren > $maxtagdegree{$tag});
         $nchildren{$tag} += $nchildren;
@@ -791,27 +808,6 @@ sub detailed_statistics_features
 
 
 #------------------------------------------------------------------------------
-# Detailed statistics about a relation:
-#
-# - Is this a language-specific subtype?
-# - If it is universal, does it have language-specific subtypes?
-# - How often is this relation left-to-right vs. right-to-left?
-# - What is the average length of this relation (right position minus left
-#   position)?
-# - How many nodes are attached to their parent using this relation?
-# - How many different types are at least once attached using this relation?
-# -- What are the most frequent types?
-# - How many different types are at least once parents in this relation?
-# -- What are the most frequent types?
-# - Same for lemmas, tags and feature-value pairs.
-# - What are the most frequent combinations of parent tag and child tag?
-# -- For each combination, give the most frequent examples of word forms.
-# -- Visualize these examples using Brat.
-#------------------------------------------------------------------------------
-
-
-
-#------------------------------------------------------------------------------
 # Generates the paradigm table of a given lemma, focused on values of one
 # particular feature.
 #------------------------------------------------------------------------------
@@ -915,6 +911,144 @@ sub get_paradigm_table
 
 
 #------------------------------------------------------------------------------
+# Detailed statistics about a relation:
+#
+# - Is this a language-specific subtype? Are there other subtypes of the same
+#   universal relation?
+# - If it is universal, does it have language-specific subtypes?
+# - How many nodes are attached to their parent using this relation?
+# - How often is this relation left-to-right vs. right-to-left?
+# - What is the average length of this relation (right position minus left
+#   position)?
+# - How many different types are at least once attached using this relation?
+# -- What are the most frequent types?
+# - How many different types are at least once parents in this relation?
+# -- What are the most frequent types?
+# - Same for lemmas, tags and feature-value pairs.
+# - What are the most frequent combinations of parent tag and child tag?
+# -- For each combination, give the most frequent examples of word forms.
+# -- Visualize these examples using Brat.
+# - How often is this relation non-projective?
+#------------------------------------------------------------------------------
+sub detailed_statistics_relations
+{
+    my $docspath = $konfig{docspath};
+    my $langcode = $konfig{langcode};
+    my $limit = 10;
+    # Identify clusters of universal relations and their language-specific subtypes.
+    my %clusters;
+    my %base_relations;
+    foreach my $deprel (@deprelset)
+    {
+        my ($base, $extension);
+        if($deprel =~ m/^(\w+):(\w+)$/)
+        {
+            $base = $1;
+            $extension = $2;
+        }
+        else
+        {
+            $base = $deprel;
+            $extension = '';
+        }
+        $clusters{$base}{$extension} = $deprel;
+        $base_relations{$deprel} = $base;
+    }
+    foreach my $deprel (@deprelset)
+    {
+        my $file = "$docspath/_$langcode-dep/$deprel.md";
+        # Language-specific relations do not have the colon in their file names.
+        $file =~ s/:/-/;
+        $file =~ s/aux\.md/aux_.md/;
+        my $page;
+        # Do not die if page about the relations does not exist. Maybe it is a language-specific relation.
+        if(open(PAGE, $file))
+        {
+            while(<PAGE>)
+            {
+                $page .= $_;
+            }
+            close(PAGE);
+        }
+        unless($page =~ m/This document is a placeholder/s)
+        {
+            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
+        }
+        # Remove previous statistics, if any, from the page.
+        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
+        $page .= "\n\n--------------------------------------------------------------------------------\n\n";
+        $page .= "## Treebank Statistics\n\n";
+        # Universal versus language-specific.
+        my $cluster = $clusters{$base_relations{$deprel}};
+        my @subtypes = map {$cluster->{$_}} (grep {$_ ne ''} (sort(keys(%{$cluster}))));
+        if($base_relations{$deprel} eq $deprel)
+        {
+            $page .= "This relation is universal.\n";
+            my $nsubtypes = scalar(@subtypes);
+            if($nsubtypes > 0)
+            {
+                $page .= "There are $nsubtypes language-specific subtypes of `$deprel`: ";
+                $page .= join(', ', map {"[$_]()"} (@subtypes));
+                $page .= ".\n";
+            }
+        }
+        else
+        {
+            my $base = $base_relations{$deprel};
+            $page .= "This relation is a language-specific subtype of [$base]().\n";
+            my $nsubtypes = scalar(@subtypes) - 1;
+            if($nsubtypes > 0)
+            {
+                $page .= "There are also $nsubtypes other language-specific subtypes of `$base`: ";
+                $page .= join(', ', map {"[$_]()"} (grep {$_ ne $deprel} (@subtypes)));
+                $page .= ".\n";
+            }
+        }
+        $page .= "\n";
+        # Counts.
+        my $n = $deprelset{$deprel};
+        my $p = percent($n, $nword);
+        $page .= "$n nodes ($p) are attached to their parents as `$deprel`.\n\n";
+        my $nltr = $ltrdeprel{$deprel};
+        my $nrtl = $n - $nltr;
+        if($nltr >= $nrtl)
+        {
+            $p = percent($nltr, $n);
+            $page .= "$nltr instances of `$deprel` ($p) are left-to-right (parent precedes child).\n";
+        }
+        else
+        {
+            $p = percent($nrtl, $n);
+            $page .= "$nrtl instances of `$deprel` ($p) are right-to-left (child precedes parent).\n";
+        }
+        my $avglen = $deprellen{$deprel} / $n;
+        $page .= "Average distance between parent and child is $avglen.\n\n";
+        # Word types, lemmas, tags and features.
+        my $list;
+        ($list, $n) = list_keys_with_counts($depreltags{$deprel}, $deprelset{$deprel}, "$langcode-pos/");
+        $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
+        ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
+        my @tagpairs = sort {$depreltags{$deprel}{$b} <=> $depreltags{$deprel}{$a}} (keys(%{$depreltags{$deprel}}));
+        for(my $i = 0; $i < 3; $i++)
+        {
+            last if($i > $#tagpairs);
+            my @tags = split(/-/, $tagpairs[$i]);
+            #my $sentence = $exentdtt{$deprel}{$tags[0]}{$tags[1]};
+            #$page .= "* `$tagpairs[$i]`: _${sentence}_\n";
+            my $conllu = $exconlludtt{$deprel}{$tags[0]}{$tags[1]};
+            $page .= "\n~~~ conllu\n".$conllu."~~~\n\n";
+        }
+        $page .= "\n";
+        print STDERR ("Writing $file\n");
+        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        print PAGE ($page);
+        close(PAGE);
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
 # Takes a hash of example words for a given phenomenon (e.g., for a POS tag).
 # Values in the hash are frequencies of the words. Returns the list (as string)
 # of the N most frequent examples, in descendeng order by frequency.
@@ -968,9 +1102,35 @@ sub list_keys_with_counts
     my $freqhash = shift; # gives frequency for each key
     my $totalcount = shift; # total frequency of all keys (inefficient to compute here because it is typically already known) ###!!! OR NO?
     my $linkprefix = shift; # for links from POS to dependency relations, "$langcode-dep/" must be prepended; for link from POS to POS, the prefix is empty
-    my @keys = sort {$freqhash->{$b} <=> $freqhash->{$a}} (keys(%{$freqhash}));
+    my @keys = sort
+    {
+        my $result = $freqhash->{$b} <=> $freqhash->{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$freqhash}));
     my $n = scalar(@keys);
-    my $list = join(', ', map {my $p = percent($freqhash->{$_}, $totalcount); "[$linkprefix$_]() ($freqhash->{$_}; $p tokens)"} (@keys));
+    my $linkprefix_is_pos = $linkprefix =~ m/-pos/;
+    my $list = join(', ', map
+    {
+        my $x = $_;
+        my $p = percent($freqhash->{$_}, $totalcount);
+        my $link;
+        if($linkprefix_is_pos && $x =~ m/-/)
+        {
+            my ($a, $b) = split(/-/, $x);
+            $link = "[$linkprefix$a]()-[$linkprefix$b]()";
+        }
+        else
+        {
+            $link = "[$linkprefix$x]()";
+        }
+        "$link ($freqhash->{$x}; $p instances)"
+    }
+    (@keys));
     return ($list, $n);
 }
 
