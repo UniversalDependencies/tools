@@ -113,12 +113,16 @@ if(!exists($languages{$konfig{langcode}}))
 }
 @treebanks = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}*");
 print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
-$treebank = shift(@treebanks);
-$treebank_id = $treebank;
-$treebank_id =~ s-^.*/--;
-@ARGV = glob("$treebank/*.conllu");
-print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
-process_treebank();
+$mode = '>';
+foreach my $treebank (@treebanks)
+{
+    local $treebank_id = $treebank;
+    $treebank_id =~ s-^.*/--;
+    @ARGV = glob("$treebank/*.conllu");
+    print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
+    process_treebank();
+    $mode = '>>';
+}
 
 
 
@@ -454,7 +458,7 @@ sub detailed_statistics_tags
         $file =~ s/AUX\.md/AUX_.md/;
         my $page = get_detailed_statistics_tag($tag);
         print STDERR ("Writing $file\n");
-        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        open(PAGE, "$mode$file") or die("Cannot write $file: $!");
         print PAGE ($page);
         close(PAGE);
     }
@@ -640,7 +644,7 @@ sub detailed_statistics_features
         $file =~ s/\[(.+)\]/-$1/;
         my $page = get_detailed_statistics_feature($feature);
         print STDERR ("Writing $file\n");
-        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        open(PAGE, "$mode$file") or die("Cannot write $file: $!");
         print PAGE ($page);
         close(PAGE);
     }
@@ -1032,7 +1036,7 @@ sub detailed_statistics_relations
         $file =~ s/aux\.md/aux_.md/;
         my $page = get_detailed_statistics_relation($deprel);
         print STDERR ("Writing $file\n");
-        open(PAGE, ">$file") or die("Cannot write $file: $!");
+        open(PAGE, "$mode$file") or die("Cannot write $file: $!");
         print PAGE ($page);
         close(PAGE);
     }
