@@ -374,22 +374,11 @@ sub detailed_statistics_tags
     local $limit = 10;
     foreach my $tag (@tagset)
     {
-        my $file = "$docspath/_includes/stats/$langcode/pos/$tag.md";
+        my $path = "$docspath/_includes/stats/$langcode/pos";
+        mkdir($path) unless(-d $path);
+        my $file = "$path/$tag.md";
         $file =~ s/AUX\.md/AUX_.md/;
-        my $page;
-        open(PAGE, $file) or die("Cannot read $file: $!");
-        while(<PAGE>)
-        {
-            $page .= $_;
-        }
-        close(PAGE);
-        unless($page =~ m/This document is a placeholder/s)
-        {
-            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
-        }
-        # Remove previous statistics, if any, from the page.
-        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
-        $page .= get_detailed_statistics_tag($tag);
+        my $page = get_detailed_statistics_tag($tag);
         print STDERR ("Writing $file\n");
         open(PAGE, ">$file") or die("Cannot write $file: $!");
         print PAGE ($page);
@@ -570,26 +559,12 @@ sub detailed_statistics_features
     }
     foreach my $feature (@featureset)
     {
-        my $file = "$docspath/_includes/stats/$langcode/feat/$feature.md";
+        my $path = "$docspath/_includes/stats/$langcode/feat";
+        mkdir($path) unless(-d $path);
+        my $file = "$path/$feature.md";
         # Layered features do not have the brackets in their file names.
         $file =~ s/\[(.+)\]/-$1/;
-        my $page;
-        # Do not die if page about the feature does not exist. Maybe it is a language-specific feature.
-        if(open(PAGE, $file))
-        {
-            while(<PAGE>)
-            {
-                $page .= $_;
-            }
-            close(PAGE);
-        }
-        unless($page =~ m/This document is a placeholder/s)
-        {
-            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
-        }
-        # Remove previous statistics, if any, from the page.
-        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
-        $page .= get_detailed_statistics_feature($feature);
+        my $page = get_detailed_statistics_feature($feature);
         print STDERR ("Writing $file\n");
         open(PAGE, ">$file") or die("Cannot write $file: $!");
         print PAGE ($page);
@@ -967,27 +942,13 @@ sub detailed_statistics_relations
     }
     foreach my $deprel (@deprelset)
     {
-        my $file = "$docspath/_includes/stats/$langcode/dep/$deprel.md";
+        my $path = "$docspath/_includes/stats/$langcode/dep";
+        mkdir($path) unless(-d $path);
+        my $file = "$path/$deprel.md";
         # Language-specific relations do not have the colon in their file names.
         $file =~ s/:/-/;
         $file =~ s/aux\.md/aux_.md/;
-        my $page;
-        # Do not die if page about the relations does not exist. Maybe it is a language-specific relation.
-        if(open(PAGE, $file))
-        {
-            while(<PAGE>)
-            {
-                $page .= $_;
-            }
-            close(PAGE);
-        }
-        unless($page =~ m/This document is a placeholder/s)
-        {
-            print STDERR ("WARNING: page $file does not contain the placeholder sentence. Is it still just a template?\n");
-        }
-        # Remove previous statistics, if any, from the page.
-        $page =~ s/\s*--------------------------------------------------------------------------------.*//s;
-        $page .= get_detailed_statistics_relation($deprel);
+        my $page = get_detailed_statistics_relation($deprel);
         print STDERR ("Writing $file\n");
         open(PAGE, ">$file") or die("Cannot write $file: $!");
         print PAGE ($page);
