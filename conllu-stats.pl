@@ -537,7 +537,7 @@ sub detailed_statistics_features
 {
     local $docspath = $konfig{docspath};
     local $langcode = $konfig{langcode};
-    my $limit = 10;
+    local $limit = 10;
     # Identify layered features.
     local %layers;
     local %base_features;
