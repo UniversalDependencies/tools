@@ -111,93 +111,105 @@ if(!exists($languages{$konfig{langcode}}))
 {
     die("Unknown language code '$konfig{langcode}'");
 }
+@treebanks = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}*");
+print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
 @ARGV = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}/*.conllu");
 print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
+process_treebank();
 
-my $ntok = 0;
-my $nfus = 0;
-my $nword = 0;
-my $nsent = 0;
-my @sentence;
-while(<>)
+
+
+#------------------------------------------------------------------------------
+# Reads the standard input (simple stats) or all CoNLL-U files in one treebank
+# (detailed stats) and analyzes them.
+#------------------------------------------------------------------------------
+sub process_treebank
 {
-    # Skip comment lines (new in CoNLL-U).
-    next if(m/^\#/);
-    # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
-    if(m/^\s*$/)
+    local $ntok = 0;
+    local $nfus = 0;
+    local $nword = 0;
+    local $nsent = 0;
+    local @sentence;
+    while(<>)
     {
-        if(@sentence)
+        # Skip comment lines (new in CoNLL-U).
+        next if(m/^\#/);
+        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
+        if(m/^\s*$/)
         {
-            process_sentence(@sentence);
+            if(@sentence)
+            {
+                process_sentence(@sentence);
+            }
+            $nsent++;
+            splice(@sentence);
         }
-        $nsent++;
-        splice(@sentence);
-    }
-    # Lines with fused tokens do not contain features but we want to count the fusions.
-    elsif(m/^(\d+)-(\d+)\t(\S+)/)
-    {
-        my $i0 = $1;
-        my $i1 = $2;
-        my $fusion = $3;
-        my $size = $i1-$i0+1;
-        $ntok -= $size-1;
-        $nfus++;
-        # Remember the occurrence of the fusion.
-        $fusions{$fusion}++ unless($fusion eq '_');
-    }
-    else
-    {
-        $ntok++;
-        $nword++;
-        # Get rid of the line break.
-        s/\r?\n$//;
-        # Split line into columns.
-        my @columns = split(/\s+/, $_);
-        push(@sentence, \@columns);
-    }
-}
-prune_examples(\%fusions);
-@fusions = sort {$fusions{$b} <=> $fusions{$a}} (keys(%fusions));
-prune_examples(\%words);
-@words = sort {$words{$b} <=> $words{$a}} (keys(%words));
-prune_examples(\%lemmas);
-@lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
-# Sort the features alphabetically before printing them.
-@tagset = sort(keys(%tagset));
-@featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
-@fvset = sort {lc($a) cmp lc($b)} (keys(%fvset));
-@deprelset = sort(keys(%deprelset));
-# Examples may contain uppercase letters only if all-lowercase version does not exist.
-my @ltagset = map {$_.'-lemma'} (@tagset);
-foreach my $key (keys(%examples))
-{
-    my @examples = keys(%{$examples{$key}});
-    foreach my $example (@examples)
-    {
-        if(lc($example) ne $example && exists($examples{$key}{lc($example)}))
+        # Lines with fused tokens do not contain features but we want to count the fusions.
+        elsif(m/^(\d+)-(\d+)\t(\S+)/)
         {
-            $examples{$key}{lc($example)} += $examples{$key}{$example};
-            delete($examples{$key}{$example});
+            my $i0 = $1;
+            my $i1 = $2;
+            my $fusion = $3;
+            my $size = $i1-$i0+1;
+            $ntok -= $size-1;
+            $nfus++;
+            # Remember the occurrence of the fusion.
+            $fusions{$fusion}++ unless($fusion eq '_');
+        }
+        else
+        {
+            $ntok++;
+            $nword++;
+            # Get rid of the line break.
+            s/\r?\n$//;
+            # Split line into columns.
+            my @columns = split(/\s+/, $_);
+            push(@sentence, \@columns);
         }
     }
-}
-foreach my $tag (@tagset)
-{
-    my @lemmas = keys(%{$tlw{$tag}});
-    foreach my $lemma (@lemmas)
+    prune_examples(\%fusions);
+    local @fusions = sort {$fusions{$b} <=> $fusions{$a}} (keys(%fusions));
+    prune_examples(\%words);
+    local @words = sort {$words{$b} <=> $words{$a}} (keys(%words));
+    prune_examples(\%lemmas);
+    local @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
+    # Sort the features alphabetically before printing them.
+    local @tagset = sort(keys(%tagset));
+    local @featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
+    local @fvset = sort {lc($a) cmp lc($b)} (keys(%fvset));
+    local @deprelset = sort(keys(%deprelset));
+    # Examples may contain uppercase letters only if all-lowercase version does not exist.
+    my @ltagset = map {$_.'-lemma'} (@tagset);
+    foreach my $key (keys(%examples))
     {
-        prune_examples($tlw{$tag}{$lemma});
+        my @examples = keys(%{$examples{$key}});
+        foreach my $example (@examples)
+        {
+            if(lc($example) ne $example && exists($examples{$key}{lc($example)}))
+            {
+                $examples{$key}{lc($example)} += $examples{$key}{$example};
+                delete($examples{$key}{$example});
+            }
+        }
     }
-}
-if($konfig{detailed})
-{
-    detailed_statistics_tags();
-    detailed_statistics_features();
-    detailed_statistics_relations();
-}
-else # stats.xml
-{
-    simple_xml_statistics();
+    foreach my $tag (@tagset)
+    {
+        my @lemmas = keys(%{$tlw{$tag}});
+        foreach my $lemma (@lemmas)
+        {
+            prune_examples($tlw{$tag}{$lemma});
+        }
+    }
+    if($konfig{detailed})
+    {
+        detailed_statistics_tags();
+        detailed_statistics_features();
+        detailed_statistics_relations();
+    }
+    else # stats.xml
+    {
+        simple_xml_statistics();
+    }
 }
 
 
