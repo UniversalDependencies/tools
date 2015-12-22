@@ -111,7 +111,9 @@ if(!exists($languages{$konfig{langcode}}))
 {
     die("Unknown language code '$konfig{langcode}'");
 }
-@treebanks = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}*");
+my $language = $languages{$konfig{langcode}};
+$language =~ s/ /_/g;
+@treebanks = glob("$konfig{datapath}/UD_$language*");
 print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
 $mode = '>';
 foreach my $treebank (@treebanks)
@@ -119,7 +121,17 @@ foreach my $treebank (@treebanks)
     local $treebank_id = $treebank;
     $treebank_id =~ s-^.*/--;
     @ARGV = glob("$treebank/*.conllu");
+    if(scalar(@ARGV)==0)
+    {
+        print STDERR ("WARNING: No CoNLL-U files found in $treebank.\n");
+        next;
+    }
     print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
+    my $target_path = "$konfig{docspath}/_includes/stats/$konfig{langcode}";
+    if(!-d $target_path)
+    {
+        mkdir($target_path) or die("Cannot create folder $target_path: $!");
+    }
     process_treebank();
     $mode = '>>';
 }
