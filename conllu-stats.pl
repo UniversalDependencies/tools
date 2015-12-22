@@ -113,7 +113,10 @@ if(!exists($languages{$konfig{langcode}}))
 }
 @treebanks = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}*");
 print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
-@ARGV = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}/*.conllu");
+$treebank = shift(@treebanks);
+$treebank_id = $treebank;
+$treebank_id =~ s-^.*/--;
+@ARGV = glob("$treebank/*.conllu");
 print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
 process_treebank();
 
@@ -495,7 +498,7 @@ sub get_detailed_statistics_tag
     my $tag = shift;
     my $page;
     $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-    $page .= "## Treebank Statistics\n\n";
+    $page .= "## Treebank Statistics ($treebank_id)\n\n";
     my $ntokens = $tagset{$tag};
     my $ptokens = percent($ntokens, $ntokens_total);
     my $ptypes = percent($ntypes{$tag}, $ntypes_total);
@@ -689,7 +692,7 @@ sub get_detailed_statistics_feature
     my $feature = shift;
     my $page;
     $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-    $page .= "## Treebank Statistics\n\n";
+    $page .= "## Treebank Statistics ($treebank_id)\n\n";
     # Count values. Dissolve multivalues.
     my @values = sort(keys(%{$fv{$feature}}));
     my %svalues;
@@ -1062,7 +1065,7 @@ sub get_detailed_statistics_relation
     my $deprel = shift;
     my $page;
     $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-    $page .= "## Treebank Statistics\n\n";
+    $page .= "## Treebank Statistics ($treebank_id)\n\n";
     # Universal versus language-specific.
     my $cluster = $clusters{$base_relations{$deprel}};
     my @subtypes = map {$cluster->{$_}} (grep {$_ ne ''} (sort(keys(%{$cluster}))));
