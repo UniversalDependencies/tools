@@ -374,7 +374,7 @@ sub detailed_statistics_tags
     local $limit = 10;
     foreach my $tag (@tagset)
     {
-        my $file = "$docspath/_$langcode-pos/$tag.md";
+        my $file = "$docspath/_includes/stats/$langcode/pos/$tag.md";
         $file =~ s/AUX\.md/AUX_.md/;
         my $page;
         open(PAGE, $file) or die("Cannot read $file: $!");
@@ -570,7 +570,7 @@ sub detailed_statistics_features
     }
     foreach my $feature (@featureset)
     {
-        my $file = "$docspath/_$langcode-feat/$feature.md";
+        my $file = "$docspath/_includes/stats/$langcode/feat/$feature.md";
         # Layered features do not have the brackets in their file names.
         $file =~ s/\[(.+)\]/-$1/;
         my $page;
@@ -967,7 +967,7 @@ sub detailed_statistics_relations
     }
     foreach my $deprel (@deprelset)
     {
-        my $file = "$docspath/_$langcode-dep/$deprel.md";
+        my $file = "$docspath/_includes/stats/$langcode/dep/$deprel.md";
         # Language-specific relations do not have the colon in their file names.
         $file =~ s/:/-/;
         $file =~ s/aux\.md/aux_.md/;
