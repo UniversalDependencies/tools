@@ -9,8 +9,10 @@ sub usage
 {
     print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
     print STDERR ("... generates the basic statistics that accompany each treebank.\n");
-    print STDERR ("cat *.conllu | perl conllu-stats.pl --detailed --docs ../docs --lang pt\n");
+    print STDERR ("perl conllu-stats.pl --detailed --data .. --docs ../docs --lang pt\n");
     print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
+    print STDERR ("    data = parent folder of the data repositories, e.g. of UD_English\n");
+    print STDERR ("    The script will analyze all treebanks of the given language.\n");
 }
 
 use open ':utf8';
@@ -21,16 +23,23 @@ use Getopt::Long;
 
 # Read options.
 $konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
+$konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 GetOptions
 (
     'detailed'   => \$konfig{detailed},
+    'data=s'     => \$konfig{datapath},
     'docs=s'     => \$konfig{docspath},
     'language=s' => \$konfig{langcode},
     'help'       => \$konfig{help}
 );
 exit(usage()) if($konfig{help});
+if($konfig{detailed} && $konfig{langcode} eq '')
+{
+    usage();
+    die("Missing language code for detailed analysis");
+}
 # Argument "2009" toggles the CoNLL 2009 data format.
 my $format = shift;
 my $i_feat_column = $format eq '2009' ? 6 : 5;
@@ -54,6 +63,56 @@ my %universal_features =
     'Person'   => ['1', '2', '3'],
     'Negative' => ['Pos', 'Neg']
 );
+my %languages =
+(
+    'am'  => 'Amharic',
+    'grc' => 'Ancient Greek',
+    'ar'  => 'Arabic',
+    'eu'  => 'Basque',
+    'bg'  => 'Bulgarian',
+    'ca'  => 'Catalan',
+    'hr'  => 'Croatian',
+    'cs'  => 'Czech',
+    'da'  => 'Danish',
+    'nl'  => 'Dutch',
+    'en'  => 'English',
+    'et'  => 'Estonian',
+    'fi'  => 'Finnish',
+    'fr'  => 'French',
+    'de'  => 'German',
+    'got' => 'Gothic',
+    'el'  => 'Greek',
+    'he'  => 'Hebrew',
+    'hi'  => 'Hindi',
+    'hu'  => 'Hungarian',
+    'id'  => 'Indonesian',
+    'ga'  => 'Irish',
+    'it'  => 'Italian',
+    'ja'  => 'Japanese',
+    'kk'  => 'Kazakh',
+    'ko'  => 'Korean',
+    'la'  => 'Latin',
+    'no'  => 'Norwegian',
+    'cu'  => 'Old Church Slavonic',
+    'fa'  => 'Persian',
+    'pl'  => 'Polish',
+    'pt'  => 'Portuguese',
+    'ro'  => 'Romanian',
+    'ru'  => 'Russian',
+    'sk'  => 'Slovak',
+    'sl'  => 'Slovenian',
+    'es'  => 'Spanish',
+    'sv'  => 'Swedish',
+    'ta'  => 'Tamil',
+    'tr'  => 'Turkish',
+    'uk'  => 'Ukrainian',
+);
+if(!exists($languages{$konfig{langcode}}))
+{
+    die("Unknown language code '$konfig{langcode}'");
+}
+@ARGV = glob("$konfig{datapath}/UD_$languages{$konfig{langcode}}/*.conllu");
+print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
 
 my $ntok = 0;
 my $nfus = 0;
@@ -803,7 +862,15 @@ sub get_detailed_statistics_feature
     if(scalar(@agreement) > 0)
     {
         $page .= "## Relations with Agreement in `$feature`\n\n";
-        $page .= "The $limit most frequent relations where parent and child node agree in `$feature`: ".join(', ', map {my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_}); "`$_` ($agreement{$feature}{$_}; $p)"} (@agreement)).".\n\n";
+        $page .= "The $limit most frequent relations where parent and child node agree in `$feature`:\n";
+        $page .= join(",\n", map
+        {
+            my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_});
+            my $link = $_;
+            $link =~ s/--\[(.*)?\]--/--[<a href="..\/dep\/$1.html">$1<\/a>]--/;
+            "<tt>$link</tt> ($agreement{$feature}{$_}; $p)"
+        }
+        (@agreement)).".\n\n";
     }
     return $page;
 }
