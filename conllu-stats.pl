@@ -137,6 +137,44 @@ sub process_treebank
     local $nword = 0;
     local $nsent = 0;
     local @sentence;
+    # Counters visible to the summarizing functions.
+    local %words;
+    local %lemmas;
+    local %tagset;
+    local %tlw;
+    local %examples;
+    local %wordtag;
+    local %lemmatag;
+    local %exentwt;
+    local %exentlt;
+    local %tfset;
+    local %tfsetjoint;
+    local %fvset;
+    local %upos;
+    local %tfv;
+    local %featureset;
+    local %tf;
+    local %ft;
+    local %fw;
+    local %fl;
+    local %paradigm;
+    local %fv;
+    local %deprelset;
+    local %ltrdeprel;
+    local %deprellen;
+    local %tagdeprel;
+    local %parenttag;
+    local %depreltags;
+    local %exentdtt;
+    local %exconlludtt;
+    local %exentlt;
+    local %maxtagdegree;
+    local %nchildren;
+    local %tagdegree;
+    local %childtag;
+    local %childtagdeprel;
+    local %agreement;
+    local %disagreement;
     while(<>)
     {
         # Skip comment lines (new in CoNLL-U).
