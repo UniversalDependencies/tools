@@ -65,53 +65,53 @@ my %universal_features =
 );
 my %languages =
 (
-    'am'  => 'Amharic',
-    'grc' => 'Ancient Greek',
-    'ar'  => 'Arabic',
-    'eu'  => 'Basque',
-    'bg'  => 'Bulgarian',
-    'ca'  => 'Catalan',
-    'hr'  => 'Croatian',
-    'cs'  => 'Czech',
-    'da'  => 'Danish',
-    'nl'  => 'Dutch',
-    'en'  => 'English',
-    'et'  => 'Estonian',
-    'fi'  => 'Finnish',
-    'fr'  => 'French',
-    'de'  => 'German',
-    'got' => 'Gothic',
-    'el'  => 'Greek',
-    'he'  => 'Hebrew',
-    'hi'  => 'Hindi',
-    'hu'  => 'Hungarian',
-    'id'  => 'Indonesian',
-    'ga'  => 'Irish',
-    'it'  => 'Italian',
-    'ja'  => 'Japanese',
-    'kk'  => 'Kazakh',
-    'ko'  => 'Korean',
-    'la'  => 'Latin',
-    'no'  => 'Norwegian',
-    'cu'  => 'Old Church Slavonic',
-    'fa'  => 'Persian',
-    'pl'  => 'Polish',
-    'pt'  => 'Portuguese',
-    'ro'  => 'Romanian',
-    'ru'  => 'Russian',
-    'sk'  => 'Slovak',
-    'sl'  => 'Slovenian',
-    'es'  => 'Spanish',
-    'sv'  => 'Swedish',
-    'ta'  => 'Tamil',
-    'tr'  => 'Turkish',
-    'uk'  => 'Ukrainian',
+    'am'  => {'name' => 'Amharic',    'i' => 0, 'c' => ','},
+    'grc' => {'name' => 'Ancient Greek', 'i' => 1, 'c' => ','},
+    'ar'  => {'name' => 'Arabic',     'i' => 0, 'c' => '،'},
+    'eu'  => {'name' => 'Basque',     'i' => 1, 'c' => ','},
+    'bg'  => {'name' => 'Bulgarian',  'i' => 1, 'c' => ','},
+    'ca'  => {'name' => 'Catalan',    'i' => 1, 'c' => ','},
+    'hr'  => {'name' => 'Croatian',   'i' => 1, 'c' => ','},
+    'cs'  => {'name' => 'Czech',      'i' => 1, 'c' => ','},
+    'da'  => {'name' => 'Danish',     'i' => 1, 'c' => ','},
+    'nl'  => {'name' => 'Dutch',      'i' => 1, 'c' => ','},
+    'en'  => {'name' => 'English',    'i' => 1, 'c' => ','},
+    'et'  => {'name' => 'Estonian',   'i' => 1, 'c' => ','},
+    'fi'  => {'name' => 'Finnish',    'i' => 1, 'c' => ','},
+    'fr'  => {'name' => 'French',     'i' => 1, 'c' => ','},
+    'de'  => {'name' => 'German',     'i' => 1, 'c' => ','},
+    'got' => {'name' => 'Gothic',     'i' => 1, 'c' => ','},
+    'el'  => {'name' => 'Greek',      'i' => 1, 'c' => ','},
+    'he'  => {'name' => 'Hebrew',     'i' => 0, 'c' => ','},
+    'hi'  => {'name' => 'Hindi',      'i' => 0, 'c' => ','},
+    'hu'  => {'name' => 'Hungarian',  'i' => 1, 'c' => ','},
+    'id'  => {'name' => 'Indonesian', 'i' => 1, 'c' => ','},
+    'ga'  => {'name' => 'Irish',      'i' => 1, 'c' => ','},
+    'it'  => {'name' => 'Italian',    'i' => 1, 'c' => ','},
+    'ja'  => {'name' => 'Japanese',   'i' => 0, 'c' => ','},
+    'kk'  => {'name' => 'Kazakh',     'i' => 1, 'c' => ','},
+    'ko'  => {'name' => 'Korean',     'i' => 0, 'c' => ','},
+    'la'  => {'name' => 'Latin',      'i' => 1, 'c' => ','},
+    'no'  => {'name' => 'Norwegian',  'i' => 1, 'c' => ','},
+    'cu'  => {'name' => 'Old Church Slavonic', 'i' => 1, 'c' => ','},
+    'fa'  => {'name' => 'Persian',    'i' => 0, 'c' => '،'},
+    'pl'  => {'name' => 'Polish',     'i' => 1, 'c' => ','},
+    'pt'  => {'name' => 'Portuguese', 'i' => 1, 'c' => ','},
+    'ro'  => {'name' => 'Romanian',   'i' => 1, 'c' => ','},
+    'ru'  => {'name' => 'Russian',    'i' => 1, 'c' => ','},
+    'sk'  => {'name' => 'Slovak',     'i' => 1, 'c' => ','},
+    'sl'  => {'name' => 'Slovenian',  'i' => 1, 'c' => ','},
+    'es'  => {'name' => 'Spanish',    'i' => 1, 'c' => ','},
+    'sv'  => {'name' => 'Swedish',    'i' => 1, 'c' => ','},
+    'ta'  => {'name' => 'Tamil',      'i' => 0, 'c' => ','},
+    'tr'  => {'name' => 'Turkish',    'i' => 1, 'c' => ','},
+    'uk'  => {'name' => 'Ukrainian',  'i' => 1, 'c' => ','},
 );
 if(!exists($languages{$konfig{langcode}}))
 {
     die("Unknown language code '$konfig{langcode}'");
 }
-my $language = $languages{$konfig{langcode}};
+my $language = $languages{$konfig{langcode}}{name};
 $language =~ s/ /_/g;
 @treebanks = glob("$konfig{datapath}/UD_$language*");
 print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
@@ -560,26 +560,26 @@ sub get_detailed_statistics_tag
     $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
     $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
     my $examples = prepare_examples($examples{$tag.'-lemma'}, $limit);
-    $page .= "The $limit most frequent `$tag` lemmas: _${examples}_\n\n";
+    $page .= "The $limit most frequent `$tag` lemmas: ".fex($examples)."\n\n";
     $examples = prepare_examples($examples{$tag}, $limit);
-    $page .= "The $limit most frequent `$tag` types:  _${examples}_\n\n";
+    $page .= "The $limit most frequent `$tag` types:  ".fex($examples)."\n\n";
     # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
     my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}}));
     @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@examples, $limit);
-    @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); '_'.$l.'_ ('.join(', ', @t).')'} (@examples);
+    @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); fex($l).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
     # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
     @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}}));
     @examples = sort_and_truncate_examples($examples{$tag}, \@examples, $limit);
-    my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); '_'.$w.'_ ('.join(', ', @t).')'} (@examples);
+    my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); fex($w).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
     foreach my $example (@examples)
     {
-        $page .= '* _'.$example."_\n";
+        $page .= '* '.fex($example)."\n";
         my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
         foreach my $ambtag (@ambtags)
         {
-            $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: _$exentwt{$example}{$ambtag}_\n";
+            $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: ".fex($exentwt{$example}{$ambtag})."\n";
         }
     }
     $page .= "\n";
@@ -593,7 +593,7 @@ sub get_detailed_statistics_tag
         my @richest_paradigm = sort(keys(%{$tlw{$tag}{$mrich_lemmas[$i]}}));
         my $richness = scalar(@richest_paradigm);
         my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
-        $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: _".join(', ', @richest_paradigm)."_\n\n";
+        $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: ".fex(join(', ', @richest_paradigm)).".\n\n";
     }
     if(scalar(keys(%{$tf{$tag}})) > 0)
     {
@@ -611,7 +611,7 @@ sub get_detailed_statistics_tag
         #$escaped_featureset =~ s/\|/\\\|/g;
         $page .= "`$tag` occurs with $nfeaturesets feature combinations.\n";
         $page .= "The most frequent feature combination is `$escaped_featureset` ($tfset{$tag}{$featuresets[0]} tokens).\n";
-        $page .= "Examples: _${examples}_\n\n";
+        $page .= "Examples: ".fex($examples)."\n\n";
     }
     else
     {
@@ -878,7 +878,7 @@ sub get_detailed_statistics_feature
             $n = $tfv{$tag}{"$feature=$value"};
             $p = percent($n, $tf{$tag}{$feature});
             my $examples = prepare_examples($examples{"$tag\t$feature=$value"}, $limit);
-            $page .= "* `$value` ($n; $p of non-empty `$feature`): _${examples}_\n";
+            $page .= "* `$value` ($n; $p of non-empty `$feature`): ".fex($examples)."\n";
         }
         $n = $tagset{$tag} - $ft{$feature}{$tag};
         my $examples = prepare_examples($examples{"$tag\t$feature=EMPTY"}, $limit);
@@ -887,7 +887,7 @@ sub get_detailed_statistics_feature
         ###!!! Maybe we should use just general examples of the tag, and grep them for not having the feature set?
         if($examples)
         {
-            $page .= "* `EMPTY` ($n): _${examples}_\n";
+            $page .= "* `EMPTY` ($n): ".fex($examples)."\n";
         }
         $page .= "\n";
         # Show examples of lemmas for which all (or many) values of the feature have been observed.
@@ -904,7 +904,11 @@ sub get_detailed_statistics_feature
             $result
         }
         keys(%{$paradigm{$tag}{$feature}});
-        $page .= get_paradigm_table($paradigms[$i], $tag, $feature);
+        # Do not show the paradigm if the lemma is empty ('_'). There would be thousands of word forms and the table would not be interesting.
+        unless($paradigms[$i] eq '_')
+        {
+            $page .= get_paradigm_table($paradigms[$i], $tag, $feature);
+        }
         # How many $lemmas have only one value of this feature? Is the feature lexical?
         # Do this only for feature-tag combinations that appear with enough lemmas.
         my $total = scalar(@paradigms);
@@ -1036,7 +1040,7 @@ sub get_paradigm_table
                 my @vforms = sort {my $r = $vforms->{$b} <=> $vforms->{$a}; unless($r) {$r = $vforms->{$a} cmp $vforms->{$b}} $r} (keys(%{$vforms}));
                 if(scalar(@vforms) > 0)
                 {
-                    $page .= '<i>'.join(', ', @vforms).'</i>';
+                    $page .= fex(join(', ', @vforms));
                 }
                 $page .= "</td>";
             }
@@ -1187,6 +1191,42 @@ sub get_detailed_statistics_relation
 
 
 #------------------------------------------------------------------------------
+# Formats example word(s) using MarkDown. Normally this means just surrounding
+# the example by the markup for italics / emphasized. But italics is not used
+# with languages using certain writing systems.
+#------------------------------------------------------------------------------
+sub fex
+{
+    my $example = shift;
+    my $i = $languages{$konfig{langcode}}{i};
+    if($i)
+    {
+        # We could use underscores or asterisks instead of <em> (MarkDown instead of HTML).
+        # But <em> is safer. MarkDown syntax does not work in certain contexts.
+        $example = '<em>'.$example.'</em>';
+    }
+    return $example;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Joins a list of examples to one string, using comma and space as the
+# separator. Uses a language-specific comma character (Arabic does not use
+# ','). This function should not be used for lists where example words are
+# mixed with other stuff, e.g. counts in parentheses. The default comma should
+# be used in such cases.
+#------------------------------------------------------------------------------
+sub jcomma
+{
+    my @list = @_;
+    my $c = $languages{$konfig{langcode}}{c};
+    return join($c.' ', @list);
+}
+
+
+
+#------------------------------------------------------------------------------
 # Takes a hash of example words for a given phenomenon (e.g., for a POS tag).
 # Values in the hash are frequencies of the words. Returns the list (as string)
 # of the N most frequent examples, in descendeng order by frequency.
@@ -1197,7 +1237,7 @@ sub prepare_examples
     my $limit = shift; # how many most frequent examples shall be returned
     my @examples = keys(%{$examplehash});
     @examples = sort_and_truncate_examples($examplehash, \@examples, $limit);
-    return join(', ', @examples);
+    return jcomma(@examples);
 }
 
 
@@ -1281,6 +1321,7 @@ sub percent
 {
     my $part = shift;
     my $whole = shift;
+    return 0 if($whole == 0);
     return sprintf("%d%%", ($part/$whole)*100+0.5);
 }
 
