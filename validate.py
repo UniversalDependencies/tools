@@ -17,8 +17,8 @@ THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this scr
 
 #Constants for the column indices
 COLCOUNT=10
-ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
-COLNAMES=u"ID,FORM,LEMMA,CPOSTAG,POSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
+ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
+COLNAMES=u"ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
 
 error_counter={} #key: error type value: error count
 def warn(msg,error_type,lineno=True):
@@ -161,10 +161,10 @@ def validate_features(cols,tag_sets):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
 def validate_pos(cols,tag_sets):
-    if tag_sets[CPOSTAG] is not None and cols[CPOSTAG] not in tag_sets[CPOSTAG]:
-        warn(u"Unknown CPOS tag: %s"%cols[CPOSTAG],u"Morpho")
-    if tag_sets[POSTAG] is not None and cols[POSTAG] not in tag_sets[POSTAG]:
-        warn(u"Unknown POS tag: %s"%cols[POSTAG],u"Morpho")
+    if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
+        warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
+    if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
+        warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
     
 def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
@@ -185,14 +185,14 @@ def validate_deprels(cols,tag_sets):
 
 def validate_character_constraints(cols):
     """
-    Checks general constraints on valid characters, e.g. that CPOSTAG
+    Checks general constraints on valid characters, e.g. that UPOSTAG
     only contains [A-Z].
     """
     if not cols[ID].isdigit():
         return # skip multiword tokens
 
-    if not re.match(r"^[A-Z]+$", cols[CPOSTAG]):
-        warn("Invalid CPOSTAG value %s" % cols[CPOSTAG],u"Morpho")
+    if not re.match(r"^[A-Z]+$", cols[UPOSTAG]):
+        warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
     if not re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]):
         warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
     try:
@@ -473,7 +473,7 @@ if __name__=="__main__":
     if args.quiet:
         args.echo_input=False
 
-    tagsets={POSTAG:None,CPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
+    tagsets={XPOSTAG:None,UPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
 
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
@@ -483,7 +483,7 @@ if __name__=="__main__":
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
         if tagsets[FEATS] is None:
             warn(u"The language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s It's okay if the file is empty, but it must exist.\n \n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
-        tagsets[CPOSTAG]=load_set("cpos.ud",None)
+        tagsets[UPOSTAG]=load_set("cpos.ud",None)
 
     inp,out=file_util.in_out(args)
 
