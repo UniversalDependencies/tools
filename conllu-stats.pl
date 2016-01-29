@@ -107,12 +107,12 @@ my %languages =
     'tr'  => {'name' => 'Turkish',    'i' => 1, 'c' => ','},
     'uk'  => {'name' => 'Ukrainian',  'i' => 1, 'c' => ','},
 );
-if(!exists($languages{$konfig{langcode}}))
-{
-    die("Unknown language code '$konfig{langcode}'");
-}
 if($konfig{detailed})
 {
+    if(!exists($languages{$konfig{langcode}}))
+    {
+        die("Unknown language code '$konfig{langcode}'");
+    }
     my $language = $languages{$konfig{langcode}}{name};
     $language =~ s/ /_/g;
     @treebanks = glob("$konfig{datapath}/UD_$language*");
