@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Reads CoNLL(-U) data from STDIN, collects all features (FEAT column, delimited by vertical bars) and prints them sorted to STDOUT.
-# Copyright © 2013-2015 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2013-2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -111,29 +111,37 @@ if(!exists($languages{$konfig{langcode}}))
 {
     die("Unknown language code '$konfig{langcode}'");
 }
-my $language = $languages{$konfig{langcode}}{name};
-$language =~ s/ /_/g;
-@treebanks = glob("$konfig{datapath}/UD_$language*");
-print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
-$mode = '>';
-foreach my $treebank (@treebanks)
+if($konfig{detailed})
 {
-    local $treebank_id = $treebank;
-    $treebank_id =~ s-^.*/--;
-    @ARGV = glob("$treebank/*.conllu");
-    if(scalar(@ARGV)==0)
+    my $language = $languages{$konfig{langcode}}{name};
+    $language =~ s/ /_/g;
+    @treebanks = glob("$konfig{datapath}/UD_$language*");
+    print STDERR ("Treebanks to analyze: ", join(', ', @treebanks), "\n");
+    $mode = '>';
+    foreach my $treebank (@treebanks)
     {
-        print STDERR ("WARNING: No CoNLL-U files found in $treebank.\n");
-        next;
+        local $treebank_id = $treebank;
+        $treebank_id =~ s-^.*/--;
+        @ARGV = glob("$treebank/*.conllu");
+        if(scalar(@ARGV)==0)
+        {
+            print STDERR ("WARNING: No CoNLL-U files found in $treebank.\n");
+            next;
+        }
+        print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
+        my $target_path = "$konfig{docspath}/_includes/stats/$konfig{langcode}";
+        if(!-d $target_path)
+        {
+            mkdir($target_path) or die("Cannot create folder $target_path: $!");
+        }
+        process_treebank();
+        $mode = '>>';
     }
-    print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
-    my $target_path = "$konfig{docspath}/_includes/stats/$konfig{langcode}";
-    if(!-d $target_path)
-    {
-        mkdir($target_path) or die("Cannot create folder $target_path: $!");
-    }
+}
+else
+{
+    # Take either STDIN or the CoNLL-U files specified on the command line.
     process_treebank();
-    $mode = '>>';
 }
 
 
