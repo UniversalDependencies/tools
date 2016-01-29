@@ -1372,17 +1372,8 @@ EOF
     print("  <tags unique=\"".scalar(@tagset)."\">\n");
     foreach my $tag (@tagset)
     {
-        my @examples = sort
-        {
-            my $result = $examples{$tag}{$b} <=> $examples{$tag}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$tag}}));
-        splice(@examples, 10);
+        my @keys = keys(%{$examples{$tag.'-lemma'}});
+        my @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@keys, 10);
         print('    <tag name="'.$tag.'">'.$tagset{$tag}.'</tag><!-- ', join(', ', @examples), " -->\n");
     }
     print("  </tags>\n");
@@ -1391,17 +1382,8 @@ EOF
     print("  <feats unique=\"".scalar(@fvset)."\">\n");
     foreach my $feature (@fvset)
     {
-        my @examples = sort
-        {
-            my $result = $examples{$feature}{$b} <=> $examples{$feature}{$a};
-            unless($result)
-            {
-                $result = $a cmp $b;
-            }
-            $result
-        }
-        (keys(%{$examples{$feature}}));
-        splice(@examples, 10);
+        my @keys = keys(%{$examples{$feature}});
+        my @examples = sort_and_truncate_examples($examples{$feature}, \@keys, 10);
         my $upostags = join(',', sort(keys(%{$upos{$feature}})));
         my ($name, $value) = split(/=/, $feature);
         print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$fvset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
