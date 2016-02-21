@@ -2,5 +2,6 @@ AdpType=Prep
 Hyph=Yes
 Number[psor]=Plur
 Number[psor]=Sing
+NumForm=Digit
 PrepCase=Pre
 Typo=Yes
