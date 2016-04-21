@@ -233,11 +233,11 @@ sub process_treebank
         }
     }
     prune_examples(\%fusions);
-    local @fusions = sort {$fusions{$b} <=> $fusions{$a}} (keys(%fusions));
+    local @fusions = sort {my $r = $fusions{$b} <=> $fusions{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%fusions));
     prune_examples(\%words);
-    local @words = sort {$words{$b} <=> $words{$a}} (keys(%words));
+    local @words = sort {my $r = $words{$b} <=> $words{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%words));
     prune_examples(\%lemmas);
-    local @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
+    local @lemmas = sort {my $r = $lemmas{$b} <=> $lemmas{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%lemmas));
     # Sort the features alphabetically before printing them.
     local @tagset = sort(keys(%tagset));
     local @featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
