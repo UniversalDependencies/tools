@@ -1,3 +1,8 @@
-advmod:emph
+nsubj:cop
+csubj:cop
 compound:prt
-nummod:gov
+nmod:poss
+advmod:quant
+cc:preconj
+acl:relcl
+
