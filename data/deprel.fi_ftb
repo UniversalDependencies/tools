@@ -3,5 +3,6 @@ compound:nn
 compound:prt
 mark:comparator
 nmod:gobj
+nmod:gsubj
 nmod:own
 xcomp:ds
