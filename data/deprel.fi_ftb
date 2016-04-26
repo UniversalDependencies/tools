@@ -1,2 +1,7 @@
 advcl:compar
+compound:nn
+compound:prt
 mark:comparator
+nmod:gobj
+nmod:own
+xcomp:ds
