@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Checks files to be distributed as Universal Dependencies.
-# Copyright © 2015 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2015, 2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -21,6 +21,10 @@ my $pull = 0;
 my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
+# Path to the previous release is needed to compare the number of sentences and words.
+# zen:/net/data/universal-dependencies-1.2
+# mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
+my $oldpath = '/net/data/universal-dependencies-1.2';
 GetOptions
 (
     'future' => \$include_future,
@@ -278,10 +282,6 @@ my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b 
 #@contributors = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
-# Old release.
-# zen:/net/data/universal-dependencies-1.1
-# mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.1
-my $oldpath = 'C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.1';
 print("Collecting statistics of $oldpath...\n");
 my $stats11 = collect_statistics_about_ud_release($oldpath);
 my @languages11 = sort(keys(%{$stats11}));
