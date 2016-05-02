@@ -41,8 +41,8 @@ INIT
         push(@cyr, $pismeno);
     }
     my $cyr = join("<", @cyr);
-    $order{cs} = "0<1<2<3<4<5<6<7<8<9<a=A=á=Á=$a<b=B<c=C<č=Č<d=D=ď=Ď<e=E=é=É=ě=Ě=$e<f=F<g=G=$g<h=H<ch=Ch=CH<i=I=í=Í=$i<j=J<k=K<l=L<m=M<n=N=ň=Ň=$n<o=O=ó=Ó=$o<p=P<q=Q<r=R<ř=Ř<s=S<š=Š=ś=Ś<t=T=ť=Ť<u=U=ú=Ú=ů=Ů=$u<v=V<w=W<x=X<y=Y=ý=Ý<z=Z<ž=Ž=ż=Ż<$cyr";
-    $order{en} = "0<1<2<3<4<5<6<7<8<9<a=A=á=Á=$a<b=B<c=C=č=Č<d=D=ď=Ď<e=E=é=É=ě=Ě=$e<f=F<g=G=$g<h=H<i=I=í=Í=$i<j=J<k=K<l=L<m=M<n=N=ň=Ň=$n<o=O=ó=Ó=$o<p=P<q=Q<r=R=ř=Ř<s=S=š=Š=ś=Ś<t=T=ť=Ť<u=U=ú=Ú=ů=Ů=$u<v=V<w=W<x=X<y=Y=ý=Ý<z=Z=ž=Ž=ż=Ż";
+    $order{cs} = "0<1<2<3<4<5<6<7<8<9<a=A=á=Á=$a<b=B<c=C<č=Č=ç=Ç<d=D=ď=Ď<e=E=é=É=ě=Ě=$e<f=F<g=G=$g<h=H<ch=Ch=CH<i=I=í=Í=$i<j=J<k=K<l=L<m=M<n=N=ň=Ň=$n<o=O=ó=Ó=$o<p=P<q=Q<r=R<ř=Ř<s=S<š=Š=ś=Ś<t=T=ť=Ť<u=U=ú=Ú=ů=Ů=$u<v=V<w=W<x=X<y=Y=ý=Ý<z=Z<ž=Ž=ż=Ż<$cyr";
+    $order{en} = "0<1<2<3<4<5<6<7<8<9<a=A=á=Á=$a<b=B<c=C=č=Č=ç=Ç<d=D=ď=Ď<e=E=é=É=ě=Ě=$e<f=F<g=G=$g<h=H<i=I=í=Í=$i<j=J<k=K<l=L<m=M<n=N=ň=Ň=$n<o=O=ó=Ó=$o<p=P<q=Q<r=R=ř=Ř<s=S=š=Š=ś=Ś<t=T=ť=Ť<u=U=ú=Ú=ů=Ů=$u<v=V<w=W<x=X<y=Y=ý=Ý<z=Z=ž=Ž=ż=Ż";
     # Předzpracované popisy řazení uložit do globálního hashe.
     while(my ($klic, $hodnota) = each(%order))
     {

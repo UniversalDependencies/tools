@@ -121,7 +121,7 @@ foreach my $folder (@folders)
                 print("$folder: both README.txt and README.md are present\n");
                 $n_errors++;
             }
-            my $metadata = read_readme($folder);
+            my $metadata = read_readme($folder, $current_release);
             if(!$metadata->{release} && !$include_future)
             {
                 chdir('..') or die("Cannot return to the upper folder");
@@ -334,6 +334,7 @@ sub read_readme
     # Assumption: The current folder is a UD data repository.
     # Nevertheless, we want to know the folder name so we can use it in messages.
     my $folder = shift;
+    my $current_release = shift;
     my $filename = (-f 'README.txt') ? 'README.txt' : 'README.md';
     open(README, $filename) or return;
     binmode(README, ':utf8');
@@ -358,7 +359,7 @@ sub read_readme
             $metadata{$attribute} = $value;
             if($attribute eq 'Data available since')
             {
-                if($metadata{$attribute} =~ m/^UD v1\.(\d)$/ && $1 <= 2)
+                if($metadata{$attribute} =~ m/^UD\s+v(\d\.\d)$/ && $1 <= $current_release)
                 {
                     $metadata{'release'} = 1;
                 }
