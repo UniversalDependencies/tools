@@ -1,5 +1,6 @@
 PronType=Exc
 PronType=Clit
-VerbType=Aux
-VerbType=Cop
-VerbType=Mod
+PronType=Predet
+PronType=Ord
+NumType=Range
+
