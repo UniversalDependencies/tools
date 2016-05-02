@@ -100,7 +100,7 @@ foreach my $folder (@folders)
     my $language = '';
     my $treebank = '';
     my $langcode;
-    if($folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Z]+))?$/)
+    if($folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
     {
         $language = $1;
         $treebank = $2 if(defined($2));
