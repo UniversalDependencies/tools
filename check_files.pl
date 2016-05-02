@@ -160,7 +160,7 @@ foreach my $folder (@folders)
                     $n_folders_with_data++;
                     $languages_with_data{$language}++;
                 }
-                my $expected_n = $langcode eq 'cs' ? 6 : 3;
+                my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
                 unless($n==$expected_n)
                 {
                     print("$folder: expected $expected_n CoNLL-U files, found $n\n");
@@ -176,12 +176,12 @@ foreach my $folder (@folders)
                 my $key = $langcode;
                 $key .= '_'.lc($treebank) if($treebank ne '');
                 my $prefix = $key.'-ud';
-                if($langcode ne 'cs' && !-f "$prefix-train.conllu")
+                if(!($language eq 'Czech' && $treebank eq '') && !-f "$prefix-train.conllu")
                 {
                     print("$folder: missing $prefix-train.conllu\n");
                     $n_errors++;
                 }
-                elsif($langcode eq 'cs' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
+                elsif($language eq 'Czech' && $treebank eq '' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
                 {
                     print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
                     $n_errors++;
