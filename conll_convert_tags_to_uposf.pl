@@ -31,7 +31,10 @@ my $c = new Lingua::Interset::Converter ('from' => $tagset1, 'to' => 'mul::uposf
 # Read the CoNLL-X file from STDIN or from files given as arguments.
 while(<>)
 {
-    unless(m/^\s*$/)
+    # Skip comment lines before sentences.
+    # Skip empty lines after sentences.
+    # Skip initial lines of multi-word tokens.
+    unless(m/^#/ || m/^\s*$/ || m/^\d+-\d/)
     {
         chomp();
         my @f = split(/\t/, $_);

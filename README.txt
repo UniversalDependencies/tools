@@ -72,8 +72,16 @@ The source tagset is the identifier of the tagset used in your data and known to
 code followed by two colons and "conll", e.g. "sl::conll" for the Slovenian data of CoNLL 2006. See the tagset conversion
 tables at http://universaldependencies.github.io/docs/tagset-conversion/index.html for more tagset codes.
 
-It assumes the CoNLL-X (2006 and 2007) file format. If your data is in another format (including CoNLL 2008/2009, which
-is not identical to 2006/2007), you have to modify the data or the script.
+IMPORTANT:
+The script assumes the CoNLL-X (2006 and 2007) file format. If your data is in another format (most notably CoNLL-U, but
+also e.g. CoNLL 2008/2009, which is not identical to 2006/2007), you have to modify the data or the script. Furthermore,
+you have to know something about the tagset driver (-f source_tagset above) you are going to use. Some drivers do not
+expect to receive three values joined by TAB characters. Some expect two values and many expect just a single tag,
+perhaps the one you have in your POS column. These factors may also require you to adapt the script to your needs. You
+may want to consult the documentation at https://metacpan.org/pod/Lingua::Interset. Go to Browse / Interset / Tagset,
+look up your language code and tagset name, then locate the list() function in the source code. That will give you an
+idea of what the input tags should look like (usually the driver is able to decode even some tags that are not on the
+list but have the same structure and feature values).
 
 
 
