@@ -234,7 +234,14 @@ def validate_ID_sequence(tree):
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
         warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),u"Format",lineno=False)
-    #TODO: Check sanity of word intervals
+    #Check elementary sanity of word intervals
+    for (b,e) in tokens:
+        if e<b: #end before beginning
+            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            continue
+        if b<1 or e>len(words): #out of range
+            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            continue
                 
 def subset_to_words(tree):
     """
