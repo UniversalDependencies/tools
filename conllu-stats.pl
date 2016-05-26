@@ -64,13 +64,15 @@ my %universal_features =
     'Negative' => ['Pos', 'Neg']
 );
 my %languages =
-(
+(   # i ... should we use italics when displaying examples from this language?
+    # c ... the character to be used as example separating comma.
     'am'  => {'name' => 'Amharic',    'i' => 0, 'c' => ','},
     'grc' => {'name' => 'Ancient Greek', 'i' => 1, 'c' => ','},
     'ar'  => {'name' => 'Arabic',     'i' => 0, 'c' => '،'},
     'eu'  => {'name' => 'Basque',     'i' => 1, 'c' => ','},
     'bg'  => {'name' => 'Bulgarian',  'i' => 1, 'c' => ','},
     'ca'  => {'name' => 'Catalan',    'i' => 1, 'c' => ','},
+    'zh'  => {'name' => 'Chinese',    'i' => 0, 'c' => '、'},
     'hr'  => {'name' => 'Croatian',   'i' => 1, 'c' => ','},
     'cs'  => {'name' => 'Czech',      'i' => 1, 'c' => ','},
     'da'  => {'name' => 'Danish',     'i' => 1, 'c' => ','},
@@ -79,6 +81,7 @@ my %languages =
     'et'  => {'name' => 'Estonian',   'i' => 1, 'c' => ','},
     'fi'  => {'name' => 'Finnish',    'i' => 1, 'c' => ','},
     'fr'  => {'name' => 'French',     'i' => 1, 'c' => ','},
+    'gl'  => {'name' => 'Galician',   'i' => 1, 'c' => ','},
     'de'  => {'name' => 'German',     'i' => 1, 'c' => ','},
     'got' => {'name' => 'Gothic',     'i' => 1, 'c' => ','},
     'el'  => {'name' => 'Greek',      'i' => 1, 'c' => ','},
@@ -92,6 +95,7 @@ my %languages =
     'kk'  => {'name' => 'Kazakh',     'i' => 1, 'c' => ','},
     'ko'  => {'name' => 'Korean',     'i' => 0, 'c' => ','},
     'la'  => {'name' => 'Latin',      'i' => 1, 'c' => ','},
+    'lv'  => {'name' => 'Latvian',    'i' => 1, 'c' => ','},
     'no'  => {'name' => 'Norwegian',  'i' => 1, 'c' => ','},
     'cu'  => {'name' => 'Old Church Slavonic', 'i' => 1, 'c' => ','},
     'fa'  => {'name' => 'Persian',    'i' => 0, 'c' => '،'},
