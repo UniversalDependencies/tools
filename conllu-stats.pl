@@ -1365,20 +1365,29 @@ EOF
     print("  </size>\n");
     print('  <lemmas unique="', scalar(@lemmas), '" />');
     splice(@lemmas, 15);
-    print("<!-- ", join(', ', @lemmas), " -->\n");
+    # XML comment must not contain '--' but some treebanks do. Replace it by ndash.
+    my $ex = join(', ', @lemmas);
+    $ex =~ s/--/\x{2013}/g;
+    print("<!-- $ex -->\n");
     print('  <forms unique="', scalar(@words), '" />');
     splice(@words, 15);
-    print("<!-- ", join(', ', @words), " -->\n");
+    $ex = join(', ', @words);
+    $ex =~ s/--/\x{2013}/g;
+    print("<!-- $ex -->\n");
     print('  <fusions unique="', scalar(@fusions), '" />');
     splice(@fusions, 15);
-    print("<!-- ", join(', ', @fusions), " -->\n");
+    $ex = join(', ', @fusions);
+    $ex =~ s/--/\x{2013}/g;
+    print("<!-- $ex -->\n");
     print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
     print("  <tags unique=\"".scalar(@tagset)."\">\n");
     foreach my $tag (@tagset)
     {
         my @keys = keys(%{$examples{$tag.'-lemma'}});
         my @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@keys, 10);
-        print('    <tag name="'.$tag.'">'.$tagset{$tag}.'</tag><!-- ', join(', ', @examples), " -->\n");
+        $ex = join(', ', @examples);
+        $ex =~ s/--/\x{2013}/g;
+        print('    <tag name="'.$tag.'">'.$tagset{$tag}."</tag><!-- $ex -->\n");
     }
     print("  </tags>\n");
     # Print the list of features as an XML structure that can be used in the treebank description XML file.
@@ -1390,7 +1399,9 @@ EOF
         my @examples = sort_and_truncate_examples($examples{$feature}, \@keys, 10);
         my $upostags = join(',', sort(keys(%{$upos{$feature}})));
         my ($name, $value) = split(/=/, $feature);
-        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$fvset{$feature}.'</feat><!-- ', join(', ', @examples), " -->\n");
+        $ex = join(', ', @examples);
+        $ex =~ s/--/\x{2013}/g;
+        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$fvset{$feature}."</feat><!-- $ex -->\n");
     }
     print("  </feats>\n");
     # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
