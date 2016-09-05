@@ -1,4 +1,7 @@
 advmod:emph
+nmod:abl
 nmod:clas
+nmod:cmp
+nmod:ins
 nmod:loc
 nmod:poss
