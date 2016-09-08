@@ -67,6 +67,13 @@ my %langcodes =
     'Uyghur'              => 'ug',
     'Vietnamese'          => 'vi'
 );
+my %langnames;
+foreach my $language (keys(%langcodes))
+{
+    my $lnicename = $language;
+    $lnicename =~ s/_/ /g;
+    $langnames{$langcodes{$language}} = $lnicename;
+}
 # Look for deprels in the data.
 my %hash;
 foreach my $folder (@folders)
@@ -146,5 +153,77 @@ foreach my $deprel (@deprels)
     foreach my $folder (@folders)
     {
         print("$deprel\t$folder\t$hash{$deprel}{$folder}\n");
+        # Does documentation contain a corresponding page?
+        chdir('docs') or die("Cannot enter folder docs");
+        my $langcode = $folder;
+        $langcode =~ s/_.*//;
+        my $filename = $deprel;
+        $filename =~ s/:/-/;
+        my $docspath = '_'.$langcode.'-dep/'.$filename.'.md';
+        if($hash{$deprel}{$folder} !~ m/^ZERO/ && !-f $docspath)
+        {
+            my $template = <<EOF
+---
+layout: relation
+title: '$deprel'
+shortdef: '$deprel'
+---
+
+This document is a placeholder for the language-specific documentation
+for \`$deprel\`.
+EOF
+            ;
+            open(FILE, ">$docspath") or die("Cannot write $docspath: $!");
+            print FILE ($template);
+            close(FILE);
+            system("git add $docspath");
+        }
+        chdir('..');
     }
 }
+# Print the docs page with the list of language-specific deprel subtypes.
+my $markdown = <<EOF
+---
+layout: base
+title:  'Language-specific relations'
+---
+
+# Language-specific relations
+
+In addition to the universal dependency taxonomy, it is desirable to recognize grammatical relations that are particular to one language or a small group of related languages. Such language-specific relations are necessary to accurately capture the genius of a particular language but will not involve concepts that generalize broadly. These language-specific relations should always be regarded as a subtype of an existing UD relation.
+
+Labels of language-specific relations explictly encode the core UD relation that the language-specific relation is a subtype of, following the format *universal:extension*.
+EOF
+;
+# Get the list of universal relations that are involved in subtyping.
+my %udeprels;
+foreach my $deprel (@deprels)
+{
+    my $udeprel = $deprel;
+    $udeprel =~ s/:.*//;
+    $udeprels{$udeprel}++;
+}
+my @udeprels = sort(keys(%udeprels));
+foreach my $udeprel (@udeprels)
+{
+    $markdown .= "\n\n\n## $udeprel\n";
+    foreach my $deprel (@deprels)
+    {
+        if($deprel =~ m/^$udeprel:/)
+        {
+            $markdown .= "- \`$deprel\`:\n";
+            my @folders = sort(keys(%{$hash{$deprel}}));
+            my %mdlanguages;
+            foreach my $folder (@folders)
+            {
+                my $langcode = $folder;
+                $langcode =~ s/_.*//;
+                $mdlanguages{$langnames{$langcode}} = "[$langnames{$langcode}]($langcode-dep/$deprel)";
+            }
+            $markdown .= join(",\n", map {$mdlanguages{$_}} (sort(keys(%mdlanguages))))."\n";
+        }
+    }
+}
+open(FILE, ">docs/ext-dep-index.md") or die("Cannot write ext-dep-index.md: $!");
+print FILE ($markdown);
+close(FILE);
