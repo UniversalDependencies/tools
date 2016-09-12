@@ -1,9 +1,16 @@
+advcl:cond
 advmod:emph
+aux:q
+compound:lvc
+compound:redup
+dobj:cau
 nmod:abl
+nmod:cau
 nmod:clas
 nmod:cmp
 nmod:ins
 nmod:loc
+nmod:part
 nmod:poss
+nmod:tmod
 nsubj:cop
-
