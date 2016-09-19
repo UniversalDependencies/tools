@@ -134,9 +134,24 @@ if($konfig{detailed})
         }
         print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
         my $target_path = "$konfig{docspath}/_includes/stats/$konfig{langcode}";
-        if(!-d $target_path)
+        # We set mode '>' for the first treebank in the language but it is not enough.
+        # If a label occurs only in the second treebank, nothing will be written with the '>' mode and the new statistics will be appended to the old ones!
+        # And if a label was used in the past but has become obsolete now, we must remove the corresponding file.
+        # Therefore we will now remove the entire folder subtree and start from scratch.
+        if(-d $target_path)
+        {
+            # But do not remove the subtree after the first treebank has been processed.
+            if($mode eq '>')
+            {
+                system("rm -rf $target_path");
+            }
+        }
+        else
         {
             mkdir($target_path) or die("Cannot create folder $target_path: $!");
+            mkdir("$target_path/pos") or die("Cannot create folder $target_path/pos: $!");
+            mkdir("$target_path/feat") or die("Cannot create folder $target_path/feat: $!");
+            mkdir("$target_path/dep") or die("Cannot create folder $target_path/dep: $!");
         }
         process_treebank();
         $mode = '>>';
