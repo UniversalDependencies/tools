@@ -11,6 +11,10 @@ nmod:cmp
 nmod:ins
 nmod:loc
 nmod:part
+nmod:pass
 nmod:poss
+nmod:rel
 nmod:tmod
 nsubj:cop
+nsubj:pass
+
