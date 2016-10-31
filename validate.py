@@ -5,6 +5,7 @@ import os.path
 import logging
 import re
 import file_util
+import traceback
 
 try:
     import argparse
@@ -495,8 +496,12 @@ if __name__=="__main__":
     inp,out=file_util.in_out(args)
 
 
-
-    validate(inp,out,args,tagsets)
+    try:
+        validate(inp,out,args,tagsets)
+    except:
+        warn(u"Exception caught!",u"Format")
+        traceback.print_exc()
+        
     if not error_counter:
         if not args.quiet:
             print >> sys.stderr, "*** PASSED ***"
