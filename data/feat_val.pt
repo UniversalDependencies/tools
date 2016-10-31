@@ -7,3 +7,5 @@ NumForm=Digit
 NumForm=Roman
 PrepCase=Pre
 Typo=Yes
+Gender=Unsp
+Number=Unsp
