@@ -1,1 +1,2 @@
 Variant=Brev
+Variant=Full
