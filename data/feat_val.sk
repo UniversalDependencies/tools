@@ -1,6 +1,7 @@
 Abbr=Yes
 AdpType=Comprep
 AdpType=Prep
+AdpType=Preppron
 AdpType=Voc
 ConjType=Oper
 Foreign=Foreign
@@ -29,4 +30,5 @@ NameType=Oth
 Hyph=Yes
 Style=Arch
 Style=Coll
+Typo=Yes
 Variant=Short
