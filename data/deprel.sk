@@ -1,3 +1,5 @@
 advmod:emph
 auxpass:reflex
-compound:prt
+det:numgov
+det:nummod
+nummod:gov
