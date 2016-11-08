@@ -293,7 +293,7 @@ foreach my $contributor (@contributors)
     $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
 }
 my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
-#@contributors = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
+my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
 print("Collecting statistics of $oldpath...\n");
@@ -314,12 +314,12 @@ print("\n");
 # Then we may want to do this for treebanks whose size has not changed:
 # zeman@zen:/ha/home/zeman/network/unidep$ for i in UD_* ; do echo $i ; cd $i ; git pull ; cd .. ; done
 # zeman@zen:/net/data/universal-dependencies-1.1$ for i in German Greek English Finnish Finnish-FTB Irish Hebrew Croatian Hungarian Indonesian Swedish ; do for j in UD_$i/*.conllu ; do echo diff $j /net/work/people/zeman/unidep/$j ; ( diff $j /net/work/people/zeman/unidep/$j | head -2 ) ; done ; done
-my @languages = sort(keys(%stats));
+my @langcodes = sort(keys(%stats));
 my $ntok = 0;
 my $nword = 0;
 my $nfus = 0;
 my $nsent = 0;
-foreach my $l (@languages)
+foreach my $l (@langcodes)
 {
     print("$l\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
     $ntok += $stats{$l}{ntok};
@@ -328,12 +328,9 @@ foreach my $l (@languages)
     $nsent += $stats{$l}{nsent};
 }
 print("TOTAL\tt=$ntok\tw=$nword\tf=$nfus\ts=$nsent\n");
-print("TODO FOR THE NEXT RELEASE: EXTEND THIS SCRIPT TO DRAFT THE ANNOUNCEMENT JOAKIM WILL SEND\n");
-#DZ: AND ADD REFERENCE TO THE LREC PAPER
-#We are very happy to announce the fourth release of annotated treebanks in Universal Dependencies, v1.3, available at http://universaldependencies.org.
-#Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective. The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
-#The 54 treebanks in v1.3 are annotated according to version 1 of the UD guidelines and represent the following 40 languages: Ancient Greek, Arabic, Basque, Bulgarian, Catalan, Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Gothic, Greek, Hebrew, Hindi, Hungarian, Indonesian, Irish, Italian, Japanese, Kazakh, Latin, Latvian, Norwegian, Old Church Slavonic, Persian, Polish, Portuguese, Romanian, Russian, Slovenian, Spanish, Swedish, Tamil and Turkish. Depending on the language, the treebanks range in size from about 9,000 tokens to well over 1.5 million tokens. We expect the next release to be available in November 2016.
-#Joakim Nivre, Željko Agić, Lars Ahrenberg, Maria Jesus Aranzabe, Masayuki Asahara, Aitziber Atutxa, Miguel Ballesteros, John Bauer, Kepa Bengoetxea, Yevgeni Berzak, Riyaz Ahmad Bhat, Cristina Bosco, Gosse Bouma, Sam Bowman, Gülşen Cebiroğlu Eryiğit, Giuseppe G. A. Celano, Çağrı Çöltekin, Miriam Connor, Marie-Catherine de Marneffe, Arantza Diaz de Ilarraza, Kaja Dobrovoljc, Timothy Dozat, Kira Droganova, Tomaž Erjavec, Richárd Farkas, Jennifer Foster, Daniel Galbraith, Sebastian Garza, Filip Ginter, Iakes Goenaga, Koldo Gojenola, Memduh Gokirmak, Yoav Goldberg, Berta Gonzáles Saavedra, Normunds Grūzītis, Bruno Guillaume, Xavier Gómez Guinovart, Jan Hajič, Dag Haug, Barbora Hladká, Radu Ion, Elena Irimia, Anders Johannsen, Hiroshi Kanayama, Jenna Kanerva, Boris Katz, Hüner Kaşıkara, Jessica Kenney, Simon Krek, Veronika Laippala, Lucia Lam, Alessandro Lenci, Nikola Ljubešić, Olga Lyashevskaya, Teresa Lynn, Aibek Makazhanov, Christopher Manning, David Mareček, Héctor Martínez Alonso, Yuji Matsumoto, Jan Mašek, Ryan McDonald, Anna Missilä, Verginica Mititelu, Yusuke Miyao, Simonetta Montemagni, Keiko Sophie Mori, Shunsuke Mori, Kadri Muischnek, Nina Mustafina, Kaili Müürisep, Cătălina Mărănduc, Vitaly Nikolaev, Joakim Nivre, Hanna Nurmi, Petya Osenova, Lilja Øvrelid, lena Pascual, Marco Passarotti, Cenel-Augusto Perez, Slav Petrov, Jussi Piitulainen, Barbara Plank, Martin Popel, Lauma Pretkalniņa, Tiina Puolakainen, Sampo Pyysalo, Loganathan Ramasamy, Laura Rituma, Rudolf Rosa, Shadi Saleh, Baiba Saulīte, Sebastian Schuster, Wolfgang Seeker, Mojgan Seraji, Lena Shakurova, Mo Shen, Natalia Silveira, Maria Simi, Radu Simionescu, Katalin Simkó, Kiril Simov, Aaron Smith, Carolyn Spadine, Alane Suhr, Umut Sulubacak, Zsolt Szántó, Takaaki Tanaka, Reut Tsarfaty, Francis Tyers, Sumire Uematsu, Larraitz Uria, Gertjan van Noord, Viktor Varga, Veronika Vincze, Jing Xian Wang, Jonathan North Washington, Zdeněk Žabokrtský, Daniel Zeman, Hanzhi Zhu
+print("--------------------------------------------------------------------------------\n");
+my $announcement = get_announcement(1.4, $n_folders_with_data, \@languages, 'less than 1,000 tokens', 'well over 1.5 million tokens', 'March 2017', \@contributors_firstlast);
+print($announcement);
 
 
 
@@ -550,4 +547,66 @@ sub collect_statistics_about_ud_treebank
         'nword' => $nword
     };
     return $stats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Generates the announcement of the release, listing all languages and
+# contributors.
+#------------------------------------------------------------------------------
+sub get_announcement
+{
+    my $release = shift; # 1.4
+    my $n_treebanks = shift; # 63
+    my $langlistref = shift;
+    my $min_size = shift; # 'about 9,000 tokens'
+    my $max_size = shift; # 'well over 1.5 million tokens'
+    my $next_release_available_in = shift; # 'March 2017'
+    my $contlistref = shift;
+    my @release_list = (1.0, 1.1, 1.2, 1.3, 1.4, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 2.12, 2.13, 2.14);
+    my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
+    my $nth;
+    for(my $i = 0; $i<=$#release_list; $i++)
+    {
+        if($release_list[$i]==$release)
+        {
+            $nth = $nth_vocabulary[$i];
+        }
+        last if($release_list[$i]>=$release);
+    }
+    $nth = "WARNING: UNKNOWN RELEASE '$release'" if(!defined($nth));
+    my $guidelines_version = int($release);
+    my @languages = @{$langlistref};
+    my $n_languages = scalar(@languages);
+    my $languages = join(', ', @languages);
+    $languages =~ s/, ([^,]+)$/ and $1/;
+    my @contributors = @{$contlistref};
+    my $contributors = join(', ', @contributors);
+    my $text = <<EOF
+We are very happy to announce the $nth release of annotated treebanks in Universal Dependencies, v$release, available at http://universaldependencies.org/.
+
+Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective (Nivre et al., 2016). The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
+
+The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
+
+$contributors
+
+
+References
+
+Marie-Catherine de Marneffe, Bill MacCartney, and Christopher D. Manning. 2006. Generating typed dependency parses from phrase structure parses. In Proceedings of LREC.
+
+Marie-Catherine de Marneffe and Christopher D. Manning. 2008. The Stanford typed dependencies representation. In COLING Workshop on Cross-framework and Cross-domain Parser Evaluation.
+
+Marie-Catherine de Marneffe, Timothy Dozat, Natalia Silveira, Katri Haverinen, Filip Ginter, Joakim Nivre, and Christopher Manning. 2014. Universal Stanford Dependencies: A cross-linguistic typology. In Proceedings of LREC.
+
+Joakim Nivre, Marie-Catherine de Marneffe, Filip Ginter, Yoav Goldberg, Jan Hajič, Christopher D. Manning, Ryan McDonald, Slav Petrov, Sampo Pyysalo, Natalia Silveira, Reut Tsarfaty, Daniel Zeman. 2016. Universal Dependencies v1: A Multilingual Treebank Collection. In Proceedings of LREC.
+
+Slav Petrov, Dipanjan Das, and Ryan McDonald. 2012. A universal part-of-speech tagset. In Proceedings of LREC.
+
+Daniel Zeman. 2008. Reusable Tagset Conversion Using Tagset Drivers. In Proceedings of LREC.
+EOF
+    ;
+    return $text;
 }
