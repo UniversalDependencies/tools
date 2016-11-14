@@ -474,7 +474,7 @@ sub collect_statistics_about_ud_release
         my $language = '';
         my $treebank = '';
         my $langcode;
-        if(-d "$release_path/$folder" && $folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Z]+))?$/)
+        if(-d "$release_path/$folder" && $folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
         {
             $language = $1;
             $treebank = $2 if(defined($2));
