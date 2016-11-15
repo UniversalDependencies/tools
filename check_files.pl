@@ -282,6 +282,8 @@ print("Found ", scalar(@folders), " repositories.\n");
 print("$n_folders_with_data are git repositories and contain data.\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
+my @langcodes = sort(keys(%stats));
+print("Language codes: ", join(' ', @langcodes), "\n\n");
 my @licenses = sort(keys(%licenses));
 print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n\n");
 my @genres = sort(keys(%genres));
@@ -314,7 +316,6 @@ print("\n");
 # Then we may want to do this for treebanks whose size has not changed:
 # zeman@zen:/ha/home/zeman/network/unidep$ for i in UD_* ; do echo $i ; cd $i ; git pull ; cd .. ; done
 # zeman@zen:/net/data/universal-dependencies-1.1$ for i in German Greek English Finnish Finnish-FTB Irish Hebrew Croatian Hungarian Indonesian Swedish ; do for j in UD_$i/*.conllu ; do echo diff $j /net/work/people/zeman/unidep/$j ; ( diff $j /net/work/people/zeman/unidep/$j | head -2 ) ; done ; done
-my @langcodes = sort(keys(%stats));
 my $ntok = 0;
 my $nword = 0;
 my $nfus = 0;
