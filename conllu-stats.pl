@@ -73,6 +73,7 @@ my %languages =
     'bg'  => {'name' => 'Bulgarian',  'i' => 1, 'c' => ','},
     'ca'  => {'name' => 'Catalan',    'i' => 1, 'c' => ','},
     'zh'  => {'name' => 'Chinese',    'i' => 0, 'c' => '、'},
+    'cop' => {'name' => 'Coptic',     'i' => 0, 'c' => ','},
     'hr'  => {'name' => 'Croatian',   'i' => 1, 'c' => ','},
     'cs'  => {'name' => 'Czech',      'i' => 1, 'c' => ','},
     'da'  => {'name' => 'Danish',     'i' => 1, 'c' => ','},
@@ -103,13 +104,18 @@ my %languages =
     'pt'  => {'name' => 'Portuguese', 'i' => 1, 'c' => ','},
     'ro'  => {'name' => 'Romanian',   'i' => 1, 'c' => ','},
     'ru'  => {'name' => 'Russian',    'i' => 1, 'c' => ','},
+    'sa'  => {'name' => 'Sanskrit',   'i' => 0, 'c' => ','},
     'sk'  => {'name' => 'Slovak',     'i' => 1, 'c' => ','},
     'sl'  => {'name' => 'Slovenian',  'i' => 1, 'c' => ','},
     'es'  => {'name' => 'Spanish',    'i' => 1, 'c' => ','},
     'sv'  => {'name' => 'Swedish',    'i' => 1, 'c' => ','},
+    'swl' => {'name' => 'Swedish Sign Language', 'i' => 1, 'c' => ','},
     'ta'  => {'name' => 'Tamil',      'i' => 0, 'c' => ','},
     'tr'  => {'name' => 'Turkish',    'i' => 1, 'c' => ','},
     'uk'  => {'name' => 'Ukrainian',  'i' => 1, 'c' => ','},
+    'ur'  => {'name' => 'Urdu',       'i' => 0, 'c' => '،'},
+    'ug'  => {'name' => 'Uyghur',     'i' => 0, 'c' => '،'},
+    'vi'  => {'name' => 'Vietnamese', 'i' => 1, 'c' => ','},
 );
 if($konfig{detailed})
 {
@@ -144,6 +150,7 @@ if($konfig{detailed})
             if($mode eq '>')
             {
                 system("rm -rf $target_path");
+                mkdir($target_path) or die("Cannot create folder $target_path: $!");
             }
         }
         else
