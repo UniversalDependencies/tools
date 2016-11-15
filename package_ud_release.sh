@@ -5,6 +5,8 @@
 
 RELEASE=1.4
 
+echo WARNING! This script currently does not detect repositories that contain data but their README says they should not be released yet!
+
 # Create the release folder, copy there the repositories that contain .conllu data (skip empty repositories!)
 mkdir release-$RELEASE
 cd release-$RELEASE
