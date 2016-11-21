@@ -89,7 +89,7 @@ sub get_ud_files_and_codes
         'tcode'  => $tcode,
         $section => $files[0]
     );
-    print STDERR ("$udfolder\tlname $langname\ttname $tbkext\tcode $code\tlcode $lcode\ttcode $tcode\t$section $files[0]\n");
+    #print STDERR ("$udfolder\tlname $langname\ttname $tbkext\tcode $code\tlcode $lcode\ttcode $tcode\t$section $files[0]\n");
     return \%record;
 }
 
