@@ -5,22 +5,49 @@
 
 RELEASE=1.4
 
+
+
+#------------------------------------------------------------------------------
+# Copies one UD treebank to the current folder (only files that shall be
+# released). We assume that the current folder is where we build the release.
+# We also assume that the source folder with all the repos is "../..".
+#------------------------------------------------------------------------------
+function copy_data_repo
+{
+    local dstdir=release-$RELEASE/ud-treebanks-v$RELEASE
+    echo Copying $1 to $dstdir
+    rm -rf $dstdir/$1
+    cp -r $1 $dstdir
+    # Erase files that should not be released (.gitignore, .git, not-to-release).
+    rm -rf $dstdir/$1/.git* $dstdir/$1/not-to-release
+    # The training data in UD_Czech is split to four files because it is too large for Github.
+    # However, it can be one file in our release, so join the files again in the release copy.
+    if [ "$1" = "UD_Czech" ]; then
+        cat $dstdir/$1/cs-ud-train-*.conllu > $dstdir/$1/cs-ud-train.conllu
+        rm $dstdir/$1/cs-ud-train-*.conllu
+    fi
+}
+
+#------------------------------------------------------------------------------
+
+
+
+echo RELEASE $RELEASE
 echo WARNING! This script currently does not detect repositories that contain data but their README says they should not be released yet!
 
-# Create the release folder, copy there the repositories that contain .conllu data (skip empty repositories!)
-mkdir release-$RELEASE
+# Create the release folder.
+mkdir -p release-$RELEASE/ud-treebanks-v$RELEASE
+
+# If we received an argument, interpret it as a repository name and process only that repository.
+# This is useful if maintainers of a treebank ask us to incorporate last-minute fixes.
+if [ ! -z "$1" ] ; then
+    copy_data_repo $1
+    exit
+fi
+
+# Copy there the repositories that contain .conllu data (skip empty repositories!)
+for i in UD_* ; do if [ -f $i/*-ud-train*.conllu ] ; then copy_data_repo $i ; fi ; done
 cd release-$RELEASE
-mkdir ud-treebanks-v$RELEASE
-cd ud-treebanks-v$RELEASE
-for i in ../../UD_* ; do if [ -f $i/*-ud-train.conllu ] ; then echo $i ; cp -r $i . ; fi ; done
-# The training data in UD_Czech is split to four files because it is too large for Github.
-# However, it can be one file in our release, so join the files again in the release copy.
-cp -r ../../UD_Czech .
-cat UD_Czech/cs-ud-train-*.conllu > UD_Czech/cs-ud-train.conllu
-rm UD_Czech/cs-ud-train-*.conllu
-# Erase files that should not be released (.gitignore, .git, not-to-release).
-rm -rf UD_*/.git* UD_*/not-to-release
-cd ..
 tar czf ud-treebanks-v$RELEASE.tgz ud-treebanks-v$RELEASE
 cd ..
 
