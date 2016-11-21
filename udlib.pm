@@ -7,12 +7,14 @@ package udlib;
 
 
 #------------------------------------------------------------------------------
-# Returns list of UD_* folders in the current folder.
+# Returns list of UD_* folders in a given folder. Default: the current folder.
 #------------------------------------------------------------------------------
 sub list_ud_folders
 {
-    opendir(DIR, '.') or die("Cannot read the contents of the working folder: $!");
-    my @folders = sort(grep {-d $_ && m/^UD_.+/} (readdir(DIR)));
+    my $path = shift;
+    $path = '.' if(!defined($path));
+    opendir(DIR, $path) or die("Cannot read the contents of '$path': $!");
+    my @folders = sort(grep {-d "$path/$_" && m/^UD_.+/} (readdir(DIR)));
     closedir(DIR);
     return @folders;
 }
@@ -26,12 +28,14 @@ sub list_ud_folders
 sub get_ud_files_and_codes
 {
     my $udfolder = shift; # e.g. "UD_Czech"; not the full path; but it should exist in the current folder
+    my $name;
     my $langname;
     my $tbkext;
-    if($udfolder =~ m/^UD_([^-]+)(?:-(.+))?$/)
+    if($udfolder =~ m/^UD_(([^-]+)(?:-(.+))?)$/)
     {
-        $langname = $1;
-        $tbkext = $2;
+        $name = $1;
+        $langname = $2;
+        $tbkext = $3;
         $langname =~ s/_/ /g;
     }
     else
@@ -75,6 +79,7 @@ sub get_ud_files_and_codes
     my %record =
     (
         'folder' => $udfolder,
+        'name'   => $name,
         'lname'  => $langname,
         'tname'  => $tbkext,
         'code'   => $code,
@@ -84,6 +89,61 @@ sub get_ud_files_and_codes
     );
     print STDERR ("$udfolder\tlname $langname\ttname $tbkext\tcode $code\tlcode $lcode\ttcode $tcode\t$section $files[0]\n");
     return \%record;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Reads the README file of a treebank and finds the metadata lines. Example:
+#=== Machine-readable metadata ================================================
+#Documentation status: partial
+#Data source: automatic
+#Data available since: UD v1.2
+#License: CC BY-NC-SA 2.5
+#Genre: fiction
+#Contributors: Celano, Giuseppe G. A.; Zeman, Daniel
+#==============================================================================
+#------------------------------------------------------------------------------
+sub read_readme
+{
+    my $folder = shift;
+    my $filename = (-f "$folder/README.txt") ? "$folder/README.txt" : "$folder/README.md";
+    open(README, $filename) or return;
+    binmode(README, ':utf8');
+    my %metadata;
+    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors');
+    my $attributes_re = join('|', @attributes);
+    while(<README>)
+    {
+        s/\r?\n$//;
+        s/^\s+//;
+        s/\s+$//;
+        s/\s+/ /g;
+        if(m/^($attributes_re):\s*(.*)$/i)
+        {
+            my $attribute = $1;
+            my $value = $2;
+            $value = '' if(!defined($value));
+            if(exists($metadata{$attribute}))
+            {
+                print("WARNING: Repeated definition of '$attribute' in $folder/$filename\n");
+            }
+            $metadata{$attribute} = $value;
+            if($attribute eq 'Data available since')
+            {
+                if($metadata{$attribute} =~ m/^UD v1\.(\d)$/ && $1 <= 3)
+                {
+                    $metadata{'release'} = 1;
+                }
+            }
+        }
+        elsif(m/change\s*log/i)
+        {
+            $metadata{'changelog'} = 1;
+        }
+    }
+    close(README);
+    return \%metadata;
 }
 
 
