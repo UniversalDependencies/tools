@@ -27,7 +27,9 @@ sub list_ud_folders
 #------------------------------------------------------------------------------
 sub get_ud_files_and_codes
 {
-    my $udfolder = shift; # e.g. "UD_Czech"; not the full path; but it should exist in the current folder
+    my $udfolder = shift; # e.g. "UD_Czech"; not the full path
+    my $path = shift; # path to the superordinate folder; default: the current folder
+    $path = '.' if(!defined($path));
     my $name;
     my $langname;
     my $tbkext;
@@ -51,8 +53,8 @@ sub get_ud_files_and_codes
         'development' => 'dev',
         'test'        => 'test'
     );
-    opendir(DIR, $udfolder) or die("Cannot read the contents of '$udfolder': $!");
-    my @files = sort(grep {-f "$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));
+    opendir(DIR, "$path/$udfolder") or die("Cannot read the contents of '$path/$udfolder': $!");
+    my @files = sort(grep {-f "$path/$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));
     closedir(DIR);
     my $n = scalar(@files);
     my $code;
@@ -60,13 +62,13 @@ sub get_ud_files_and_codes
     my $tcode;
     if($n==0)
     {
-        print STDERR ("WARNING: No $section data found in '$udfolder'\n");
+        print STDERR ("WARNING: No $section data found in '$path/$udfolder'\n");
     }
     else
     {
         if($n>1)
         {
-            print STDERR ("WARNING: Folder '$udfolder' contains multiple ($n) files that look like $section data.\n");
+            print STDERR ("WARNING: Folder '$path/$udfolder' contains multiple ($n) files that look like $section data.\n");
         }
         $files[0] =~ m/^(.+)-ud-$section_re{$section}\.conllu$/;
         $lcode = $code = $1;
