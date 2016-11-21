@@ -131,11 +131,12 @@ sub read_readme
                 print("WARNING: Repeated definition of '$attribute' in $folder/$filename\n");
             }
             $metadata{$attribute} = $value;
+            # Make it easier to check the number of the first release (we need to know whether this dataset is planned for future and shall be excluded now).
             if($attribute eq 'Data available since')
             {
-                if($metadata{$attribute} =~ m/^UD v1\.(\d)$/ && $1 <= 3)
+                if($metadata{$attribute} =~ m/^UD\s*v?(\d+\.\d+)$/i)
                 {
-                    $metadata{'release'} = 1;
+                    $metadata{'firstrelease'} = $1;
                 }
             }
         }
