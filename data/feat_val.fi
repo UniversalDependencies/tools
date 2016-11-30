@@ -1,4 +1,3 @@
-Abbr=Yes
 AdpType=Post
 AdpType=Prep
 Clitic=Han
@@ -21,8 +20,6 @@ Derivation=Ttaa
 Derivation=Ttain
 Derivation=U
 Derivation=Vs
-Foreign=Foreign
-Foreign=Fscript
 InfForm=1
 InfForm=2
 InfForm=3

@@ -1,3 +1,4 @@
+Abbr=Yes
 Animacy=Anim
 Animacy=Inan
 Animacy=Nhum
@@ -43,6 +44,7 @@ Degree=Cmp
 Degree=Pos
 Degree=Sup
 Degree=Abs
+Foreign=Yes
 Gender=Com
 Gender=Fem
 Gender=Masc

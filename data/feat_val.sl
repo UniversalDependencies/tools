@@ -1,4 +1,3 @@
-Foreign=Foreign
 Gender[psor]=Fem
 Gender[psor]=Masc
 Gender[psor]=Neut

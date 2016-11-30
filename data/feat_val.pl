@@ -1,4 +1,3 @@
-Abbr=Yes
 AdpType=Prep
 Hyph=Yes
 PrepCase=Npr

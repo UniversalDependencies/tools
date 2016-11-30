@@ -3,7 +3,6 @@ AdpType=Post
 AdpType=Prep
 AdpType=Preppron
 AdvType=Ex
-Foreign=Foreign
 Number[psor]=Plur
 Number[psor]=Sing
 NumForm=Digit

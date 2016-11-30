@@ -1,11 +1,7 @@
-Abbr=Yes
 AdpType=Comprep
 AdpType=Prep
 AdpType=Voc
 ConjType=Oper
-Foreign=Foreign
-Foreign=Fscript
-Foreign=Tscript
 NumForm=Digit
 NumForm=Roman
 NumForm=Word
