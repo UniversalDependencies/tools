@@ -7,7 +7,6 @@ NumForm=Word
 PartType=Inf
 Position=Postnom
 Position=Prenom
-PronType=Emp
 Strength=Strong
 Strength=Weak
 Variant=Short
