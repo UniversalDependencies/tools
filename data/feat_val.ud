@@ -64,7 +64,6 @@ Number=Sing
 NumType=Card
 NumType=Dist
 NumType=Frac
-NumType=Gen
 NumType=Mult
 NumType=Ord
 NumType=Sets
