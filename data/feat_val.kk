@@ -16,5 +16,4 @@ PronType=Qnt
 PronType=Ref
 Tense=Aor
 Tense=Prs
-VerbForm=Coverb
 Voice=Coop
