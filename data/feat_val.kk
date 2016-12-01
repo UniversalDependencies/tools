@@ -5,7 +5,6 @@ NumType=Coll
 Person[psor]=1
 Person[psor]=2
 Person[psor]=3
-Polarity=Neg
 PronType=Qnt
 PronType=Ref
 Tense=Aor
