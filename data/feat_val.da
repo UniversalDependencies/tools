@@ -1,9 +1,8 @@
 AdpType=Prep
 Variant=Long
 PartType=Inf
-Variant=Short
 Number[psor]=Sing
 Number[psor]=Plur
 Style=Arch
 Style=Form
-Polite=Pol
+Variant=Short
