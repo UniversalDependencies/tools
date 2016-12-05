@@ -14,8 +14,6 @@ ccomp:obj
 ccomp:obl
 ccomp:pred
 compound:preverb
-dobj:lvc
-name:hu
 nmod:att
 nmod:attlvc
 nmod:obl

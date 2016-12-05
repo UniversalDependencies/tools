@@ -1,5 +1,5 @@
 advmod:emph
-auxpass:reflex
+expl:pass
 det:numgov
 det:nummod
 nummod:gov

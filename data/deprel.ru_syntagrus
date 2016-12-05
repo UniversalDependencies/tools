@@ -1,7 +1,7 @@
 acl:relcl
 cc:preconj
-nmod:agent
 nmod:gobj
 nmod:tmod
 nummod:entity
 nummod:gov
+obl:agent
