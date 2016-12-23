@@ -1,8 +1,7 @@
-nsubj:cop
-csubj:cop
-compound:prt
-nmod:poss
+acl:relcl
 advmod:quant
 cc:preconj
-acl:relcl
-
+compound:prt
+csubj:cop
+nmod:poss
+nsubj:cop

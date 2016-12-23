@@ -3,7 +3,6 @@ advmod:emph
 aux:q
 compound:lvc
 compound:redup
-dobj:cau
 nmod:abl
 nmod:cau
 nmod:clas
@@ -17,4 +16,4 @@ nmod:ref
 nmod:tmod
 nsubj:cop
 nsubj:pass
-
+obj:cau

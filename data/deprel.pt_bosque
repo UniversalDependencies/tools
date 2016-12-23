@@ -1,5 +1,8 @@
 advmod:emph
-auxpass:reflex
 acl:relcl
+expl:pass
 nmod:tmod
 nmod:npmod
+flat:name
+aux:pass
+nsubj:pass

@@ -1,5 +1,5 @@
 advmod:emph
-auxpass:reflex
 acl:relcl
+expl:pass
 nmod:tmod
 nmod:npmod
