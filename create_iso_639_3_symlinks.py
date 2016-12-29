@@ -7877,6 +7877,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Create ISO-639-3 3-letter code symlinks to UD languages. This program only prints the necessary commands, so pipe its output to bash to have the links actually created.')
     parser.add_argument('UDDIR', metavar='UDDIR', nargs=1, help='A directory holding UD languages as subdirectories.')
     parser.add_argument('TARGETDIR', metavar='TARGETDIR', nargs=1, help='A directory which will hold the symlinks.')
+    parser.add_argument('--copy', dest="command", action="store_const", const="cp", default="ln -s", help="Copy instead of symlinking")
     args = parser.parse_args()
 
     all_repos=sorted(glob.glob(os.path.join(args.UDDIR[0],"UD_*"))) #Match everything starting with UD_  (note: could have things like "UD_tools and UD_v2)
@@ -7922,7 +7923,7 @@ if __name__=="__main__":
         for f,match in files_to_link:
             if match.group(3): #treebank name in file name
                 assert match.group(3)==tbank.lower() #...should match treebank name in repo
-            print("ln -s {} {}".format(os.path.abspath(f),os.path.abspath(os.path.join(target,"{}-ud-{}.conllu".format(lcode,match.group(4))))))
+            print(args.command,os.path.abspath(f),os.path.abspath(os.path.join(target,"{}-ud-{}.conllu".format(lcode,match.group(4)))))
     print()
     print("# Pipe the output to bash to have these directories and symlinks created")
     print()
