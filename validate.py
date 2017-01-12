@@ -20,6 +20,7 @@ THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this scr
 COLCOUNT=10
 ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES=u"ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
+TOKENSWSPACE=MISC+1 #one extra constant
 
 error_counter={} #key: error type value: error count
 def warn(msg,error_type,lineno=True):
@@ -98,7 +99,7 @@ def validate_cols(cols,tag_sets,args):
     All tests that can run on a single line. Done as soon as the line is read,
     called from trees()
     """
-    validate_whitespace(cols)
+    validate_whitespace(cols,tag_sets)
     validate_token_empty_vals(cols)
     if not cols[ID].isdigit():
         return #The stuff below applies to words and not tokens
@@ -108,15 +109,36 @@ def validate_cols(cols,tag_sets,args):
     validate_character_constraints(cols)
 
 whitespace_re=re.compile(ur".*\s",re.U)
-def validate_whitespace(cols):
+def validate_whitespace(cols,tag_sets):
     """
     Checks a single line for disallowed whitespace.
     """
-    for col_idx in range(MISC+1): #...all columns up to and including MISC (i.e. all columns ;)
+    for col_idx in range(MISC+1):
+        #Must never be empty
         if not cols[col_idx]:
             warn(u"Empty value in column %s"%(COLNAMES[col_idx]),u"Format")
+        else:
+            #Must never have initial/trailing whitespace
+            if cols[col_idx][0].isspace():
+                warn(u"Initial whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
+            if cols[col_idx][-1].isspace():
+                warn(u"Trailing whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
+    ## These columns must not have whitespace
+    for col_idx in (ID,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS):
+        if whitespace_re.match(cols[col_idx]):
+            warn(u"White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx],cols[col_idx]),u"Format")
+
+    ## Now yet check word and lemma against the lists
+    for col_idx in (FORM,LEMMA):
         if whitespace_re.match(cols[col_idx]) is not None:
-            warn(u"Column %s is not allowed to contain whitespace: '%s'"%(COLNAMES[col_idx],cols[col_idx]),u"Format")
+            #Whitespace found - does it pass?
+            for regex in tag_sets[TOKENSWSPACE]:
+                match=regex.match(cols[col_idx])
+                if match and match.group(0)==cols[col_idx]:
+                    break #We have a full match from beginning to end
+            else:
+                warn(u"'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.ud and data/tokens_w_space.LANG files)."%(cols[col_idx],COLNAMES[col_idx]),u"Format")
+
 
 def validate_token_empty_vals(cols):
     """
@@ -481,7 +503,7 @@ if __name__=="__main__":
     if args.quiet:
         args.echo_input=False
 
-    tagsets={XPOSTAG:None,UPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None} #sets of tags for every column that needs to be checked
+    tagsets={XPOSTAG:None,UPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
 
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
@@ -492,6 +514,13 @@ if __name__=="__main__":
         if tagsets[FEATS] is None:
             warn(u"The language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s It's okay if the file is empty, but it must exist.\n \n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[UPOSTAG]=load_set("cpos.ud",None)
+
+        tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
+        if tagsets[TOKENSWSPACE]==None:
+           tagsets[TOKENSWSPACE]=[] #Do not complain on missing
+        else: #So this is now a test of regular expressions
+            tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
+                    
 
     inp,out=file_util.in_out(args)
 
