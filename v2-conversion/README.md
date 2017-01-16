@@ -10,7 +10,7 @@ This script performs the following automatic updates to a treebank to be complia
 * Rename the `dobj` relation to `obj`.
 * Rename the `(nsubj|csubj|aux)pass` relations to `(nsubj|csubj|aux):pass`.
 * Change some `nmod` relations to `obl` (wherever appropriate). Note that in some cases, 
-  it is ambiguous whether an nmod relation should be nmod or obl. If this is the case, the script  
+  it is ambiguous whether an `nmod` relation should be `nmod` or `obl`. If this is the case, the script  
   adds the property `ManualCheck=Yes` to the `MISC` column of the relation.
 * Reattach coordinating conjunctions and commas to the succeeding conjunct.
 * (Designed only for English!) Change `neg` relations to `advmod` or `det`. 
@@ -29,7 +29,7 @@ IMPORTANT: I only tested this script on the English treebank. It should also wor
 
 ## Usage
 
-The script requires python3. You can run the script with the following command.
+The script requires Python 3. You can run the script with the following command.
 
 ```
 python convert.py PATH_TO_CONLLU_FILE > OUTPUT_PATH
