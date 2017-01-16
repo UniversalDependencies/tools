@@ -24,7 +24,7 @@ Note that this script does NOT perform all required changes. In particular, it d
 * Changes to copular constructions.
 * Changes to POS tags beyond renaming `CONJ` to `CCONJ`.
 
-IMPORTANT: I only tested this script on the English treebank. It should also work for other languages, but if you run this script on any other treebank, make sure to do thorough manual checks.
+**IMPORTANT**: I only tested this script on the English treebank. It should also work for other languages, but if you run this script on any other treebank, make sure to do thorough manual checks.
 
 
 ## Usage
