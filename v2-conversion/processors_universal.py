@@ -71,25 +71,35 @@ class NmodUpdateProcessor(UpdateProcessor):
         for edge in graph.edges:
             if edge.relation == "nmod":
                 gov_node = graph.nodes[edge.gov]
-                
+                dep_node = graph.nodes[edge.dep]
+
+                ambiguous = False
+
+
                 #check whether gov node is a nominal
-                if gov_node.upos in ["NOUN","PRON", "PROPN"]:
+                # also include NUM for examples such as "one of the guys"
+                # and DET for examples such as "some/all of them"
+                if gov_node.upos in ["NOUN","PRON", "PROPN", "NUM", "DET"]:
                     #check whether nominal is a predicate (either has a nsubj/csubj dependendent
                     # or a copula dependent)
-                    ambiguous = False
                     for gov_edge in graph.outgoingedges[gov_node.index]:
                         if gov_edge[1] in ["nsubj", "csubj", "nsubjpass", "csubjpass", "nsubj:pass", "csubj:pass", "cop"]:
                             ambiguous = True
-                            dep_node = graph.nodes[edge.dep]
                             break
-                                                
-                    # Don't change the relation but add comment to MISC column for manual check.
-                    if ambiguous:
-                        dep_node.misc = dep_node.misc + "|ManualCheck=Yes" if dep_node.misc != "_" else "ManualCheck=Yes"
                 
-                else:
+                elif gov_node.upos in ["VERB","AUX", "ADJ", "ADV"]:
                     # Change dependents of predicate to "obl".
                     edge_changes.append((edge.gov, edge.dep, edge.relation))
+                
+                else:
+                    ambiguous = True
+
+
+                # Don't change the relation but add comment to MISC column for manual check.
+                if ambiguous:
+                    dep_node.misc = dep_node.misc + "|ManualCheck=Yes" if dep_node.misc != "_" else "ManualCheck=Yes"
+
+
             
         for (old_gov, old_dep, old_reln) in edge_changes:            
             graph.remove_edge(old_gov, old_dep, old_reln)
