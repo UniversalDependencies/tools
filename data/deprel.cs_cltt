@@ -1,4 +1,5 @@
 advmod:emph
+aux:pass
 csubj:pass
 det:numgov
 det:nummod
