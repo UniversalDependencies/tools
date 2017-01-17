@@ -1,5 +1,9 @@
 acl:inf
 acl:part
 acl:relcl
+aux:pass
+csubj:pass
 det:poss
+expl:pv
+nsubj:pass
 xcomp:adj
