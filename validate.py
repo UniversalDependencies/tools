@@ -23,6 +23,7 @@ COLNAMES=u"ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u","
 TOKENSWSPACE=MISC+1 #one extra constant
 
 error_counter={} #key: error type value: error count
+warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, feat_val, tokens_w_space)
 def warn(msg,error_type,lineno=True):
     """
     Print the warning. If lineno is True, print the exact line, otherwise
@@ -137,6 +138,7 @@ def validate_whitespace(cols,tag_sets):
                 if match and match.group(0)==cols[col_idx]:
                     break #We have a full match from beginning to end
             else:
+                warn_on_missing_files.add("tokens_w_space")
                 warn(u"'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.ud and data/tokens_w_space.LANG files)."%(cols[col_idx],COLNAMES[col_idx]),u"Format")
 
 
@@ -179,6 +181,7 @@ def validate_features(cols,tag_sets):
                 if not val_re.match(v):
                     warn(u"Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f),u"Morpho")
                 if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
+                    warn_on_missing_files.add("feat_val")
                     warn(u"Unknown attribute-value pair %s=%s"%(attr,v),u"Morpho")
     if len(attr_set)!=len(feat_list):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
@@ -186,6 +189,7 @@ def validate_features(cols,tag_sets):
 def validate_pos(cols,tag_sets):
     if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
         warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
+    # XPOSTAG is always None -> not checked atm
     if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
         warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
     
@@ -195,6 +199,7 @@ def lspec2ud(deprel):
 
 def validate_deprels(cols,tag_sets):
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
+        warn_on_missing_files.add("deprel")
         warn(u"Unknown UD DEPREL: %s"%cols[DEPREL],u"Syntax")
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
@@ -204,6 +209,7 @@ def validate_deprels(cols,tag_sets):
                 warn(u"Malformed head:deprel pair '%s'"%head_deprel,u"Syntax")
                 continue
             if lspec2ud(deprel) not in tag_sets[DEPS]:
+                warn_on_missing_files.add("deprel")
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
 
 def validate_character_constraints(cols):
@@ -458,12 +464,10 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
     allow language-specific extensions. Set validate_langspec=True when loading dependencies.
     That way the language speciic deps will be checked to be truly extensions of UD ones"
     """
-    if f_name_langspec is not None and not os.path.exists(os.path.join(THISDIR,"data",f_name_langspec)):
-        return None #No lang-spec file but would expect one, do no checking
     res=load_file(os.path.join(THISDIR,"data",f_name_ud))
     #Now res holds UD
     #Next load and optionally check the langspec extensions
-    if f_name_langspec is not None:
+    if f_name_langspec is not None and f_name_langspec!=f_name_ud and os.path.exists(os.path.join(THISDIR,"data",f_name_langspec)):
         l_spec=load_file(os.path.join(THISDIR,"data",f_name_langspec))
         for v in l_spec:
             if validate_langspec:
@@ -507,19 +511,16 @@ if __name__=="__main__":
 
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
-        if tagsets[DEPREL] is None:
-            warn(u"The language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations. It's okay if the file is empty, but it must exist.\n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
+#        if tagsets[DEPREL] is None:
+#            warn(u"The language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations. It's okay if the file is empty, but it must exist.\n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[DEPS]=tagsets[DEPREL]
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
-        if tagsets[FEATS] is None:
-            warn(u"The language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s It's okay if the file is empty, but it must exist.\n \n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
+#        if tagsets[FEATS] is None:
+#            warn(u"The language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s It's okay if the file is empty, but it must exist.\n \n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[UPOSTAG]=load_set("cpos.ud",None)
 
         tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
-        if tagsets[TOKENSWSPACE]==None:
-           tagsets[TOKENSWSPACE]=[] #Do not complain on missing
-        else: #So this is now a test of regular expressions
-            tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
+        tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
                     
 
     inp,out=file_util.in_out(args)
@@ -540,5 +541,10 @@ if __name__=="__main__":
             print >> sys.stderr, "*** FAILED *** with %d errors"%sum(v for k,v in error_counter.iteritems())
             for k,v in sorted(error_counter.items()):
                 print >> sys.stderr, k, "errors:", v
+        for f_name in sorted(warn_on_missing_files):
+            if not os.path.exists(os.path.join(THISDIR,"data",f_name+"."+args.lang)):
+                print >> sys.stderr, "The language-specific file %s does not exist."
+                if f_name=="feat_val":
+                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s"
         sys.exit(1)
     
