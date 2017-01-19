@@ -1,6 +1,7 @@
 #!/bin/bash
 
 RESTORE=$(echo -en '\033[0m')
+BOLD=$(echo -en '\033[1m')
 RED=$(echo -en '\033[00;31m')
 GREEN=$(echo -en '\033[00;32m')
 YELLOW=$(echo -en '\033[00;33m')
@@ -22,7 +23,7 @@ WHITE=$(echo -en '\033[01;37m')
 
 # Run test cases through CoNLL-U validator.
 
-set -u
+#set -u
 
 VALIDATOR="python validate.py --lang=testsuite"
 VALID_DIR="test-cases/valid"
@@ -48,11 +49,16 @@ for validf in true false; do
 	fi
 	if [ "$validf" = "$validv" ]; then
 	    success=$((success+1))
-	    echo ${LGREEN}PASS${RESTORE} $f
+	    echo ${LGREEN}${BOLD}PASS $f${RESTORE}
 	else
 	    failure=$((failure+1))
-	    echo ${LRED}FAIL${RESTORE} "$f valid: $validf validated: $validv" >&2;
+	    echo ${LRED}${BOLD}FAIL "$f valid: $validf validated: $validv" ${RESTORE}
 	fi
+	if [[ "$1" == "-v" ]]
+	then
+	    echo -en "$OUTP" | grep -v '* PASSED *' | grep -v '* FAILED *' | grep -Pv 'errors: [0-9]'
+	    echo
+        fi
     done
 done
 
