@@ -1,2 +1,12 @@
 Number[psor]=Plur
-
+Gen=M
+Num=N
+Gen=F
+Num=S
+Mod=P
+Number[psor]=Sing
+Tens=Pres
+Num=Plur
+Num=Sing
+Per=3
+Per=1

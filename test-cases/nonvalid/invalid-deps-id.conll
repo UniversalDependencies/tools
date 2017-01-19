@@ -1,4 +1,4 @@
 # not valid: HEAD must reference a valid ID
 1	have	have	VERB	VB	Tens=Pres	0	root	3:nsubj	_
-2	.	.	.	FS	_	1	punct	_	_
+2	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 

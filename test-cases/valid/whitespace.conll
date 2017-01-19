@@ -1,0 +1,6 @@
+# valid: numbers can have space
+# (http://universaldependencies.github.io/docs/u/overview/morphology.html#layered-features)
+1	layered	layered	NOUN	N	_	0	root	_	_
+2	100 000	100 000	NOUN	N	_	1	nsubj	_	_
+3	50 000	50 000	NOUN	N	_	1	nsubj	_	_
+

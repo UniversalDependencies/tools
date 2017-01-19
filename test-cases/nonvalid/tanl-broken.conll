@@ -1,18 +1,18 @@
 1	LONDRA	Londra	NOUN	SP	_	0	root	_	_
-2	.	.	.	FS	_	1	p	_	_
+2	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 
 
 # This is a comment
 
 1	Gas	gas	NOU	X	num=n|gen=f	0	root	2:nsubq|3:nsubj	_
 2-3	dalla	_	_	_	_	_	_	_	_
-2	da	da	ADP	EA	_	1	adpmod	_	_
+2	da	da	ADP	EA	_	1	nmod	_	_
 3	la	la	DET	RD	gen=m,f|num=s	4	det	_	_
-4	sta tua	statua	NOUN	S	gen=f|num=s	2	adpobj	_	_
-6	.	.	.	FS	_	1	p	_	_
+4	sta tua	statua	NOUN	S	gen=f|num=s	2	nmod	_	_
+6	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 
-1	Evacuata	evacuare	VERB	V	gen=f|mod=p|num=s	3	partmod	_	_
+1	Evacuata	evacuare	VERB	V	gen=f|mod=p|num=s	3	advcl	_	_
 2	la	il	DET	RD	gen=f|num=s	3	det	_	_
 3	Tate	Tate	NOUN	SP	_	0	root	_	_
-4	Gallery	Gallery	NOUN	SP	_	3	mwe	_	_
-5	.	.	.	FS	_	3	p	_	_
+4	Gallery	Gallery	NOUN	SP	_	3	fixed	_	_
+5	PUNCT	.	PUNCT	FS	_	3	punct	_	_
