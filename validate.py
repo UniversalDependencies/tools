@@ -117,10 +117,17 @@ def validate_cols(cols,tag_sets,args):
         validate_pos(cols,tag_sets)
         validate_deprels(cols,tag_sets)
         validate_character_constraints(cols)
+    elif is_empty_node(cols):
+        validate_features(cols,tag_sets)
+        # TODO check also the following:
+        # - DEPREL 'root' iff HEAD == 0 in DEPS
+        # - ID references are sane and ID sequences valid
+        # - HEAD / DEPREL are correct for empty nodes
+        # - validate_character_constraints()
+        # - DEPS are connected and non-acyclic
+        # (more, what?)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
-    elif is_empty_node(cols):
-        pass # TODO
     else:
         warn(u"Unexpected ID format %s" % cols[ID], u"Format")
 
