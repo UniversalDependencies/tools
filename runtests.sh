@@ -56,7 +56,7 @@ for validf in true false; do
 	fi
 	if [[ "$1" == "-v" ]]
 	then
-	    echo -en "$OUTP" | grep -v '* PASSED *' | grep -v '* FAILED *' | grep -Pv 'errors: [0-9]'
+	    echo -en "$OUTP" | egrep -v ' PASSED ' | egrep -v ' FAILED ' | egrep -v 'errors: [0-9]'
 	    echo
         fi
     done
