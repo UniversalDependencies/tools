@@ -5,7 +5,7 @@
 set -u
 
 # TODO: include a subset of tests run without --no-lists
-VALIDATOR="python validate.py --quiet --no-lists"
+VALIDATOR="python validate.py --lang=testsuite"
 VALID_DIR="test-cases/valid"
 NONVALID_DIR="test-cases/nonvalid"
 
@@ -21,7 +21,7 @@ for validf in true false; do
     fi
     
     for f in $d/*.conll; do 
-	$VALIDATOR < $f
+	OUTP=$($VALIDATOR < $f 2>&1)
 	if [ $? -eq 0 ]; then
 	    validv=true
 	else
