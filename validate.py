@@ -56,7 +56,7 @@ def trees(inp,tag_sets,args):
     """
     `inp` a file-like object yielding lines as unicode
     `tag_sets` and `args` are needed for choosing the tests
-    
+
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
     """
@@ -93,6 +93,17 @@ def trees(inp,tag_sets,args):
             warn(u"Missing empty line after the last tree.",u"Format")
             yield comments, lines
 
+###### Support functions
+
+def is_word(cols):
+    return re.match(r"^[0-9]+$", cols[ID])
+
+def is_multiword_token(cols):
+    return re.match(r"^[0-9]+-[0-9]+$", cols[ID])
+
+def is_empty_node(cols):
+    return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
+
 ###### Tests applicable to a single row indpendently of the others
 
 def validate_cols(cols,tag_sets,args):
@@ -101,13 +112,17 @@ def validate_cols(cols,tag_sets,args):
     called from trees()
     """
     validate_whitespace(cols,tag_sets)
-    validate_token_empty_vals(cols)
-    if not cols[ID].isdigit():
-        return #The stuff below applies to words and not tokens
-    validate_features(cols,tag_sets)
-    validate_pos(cols,tag_sets)
-    validate_deprels(cols,tag_sets)
-    validate_character_constraints(cols)
+    if is_word(cols):
+        validate_features(cols,tag_sets)
+        validate_pos(cols,tag_sets)
+        validate_deprels(cols,tag_sets)
+        validate_character_constraints(cols)
+    elif is_multiword_token(cols):
+        validate_token_empty_vals(cols)
+    elif is_empty_node(cols):
+        pass # TODO
+    else:
+        warn(u"Unexpected ID format %s" % cols[ID], u"Format")
 
 whitespace_re=re.compile(ur".*\s",re.U)
 def validate_whitespace(cols,tag_sets):
@@ -146,12 +161,11 @@ def validate_token_empty_vals(cols):
     """
     Checks that a token only has _ empty values in all fields except MISC.
     """
-    if cols[ID].isdigit(): #not a token line
-        return 
+    assert is_multiword_token(cols), 'internal error'
     for col_idx in range(LEMMA,MISC): #all columns in the LEMMA-DEPS range
         if cols[col_idx]!=u"_":
             warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
-        
+
 
 attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
 val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
@@ -163,7 +177,7 @@ def validate_features(cols,tag_sets):
     #the lower() thing is to be on the safe side, since all features must start with [A-Z0-9] anyway
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
         warn(u"Morphological features must be sorted: '%s'"%feats,u"Morpho")
-    attr_set=set() #I'll gather the set of attributes here to check later than none is repeated 
+    attr_set=set() #I'll gather the set of attributes here to check later than none is repeated
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
@@ -192,7 +206,7 @@ def validate_pos(cols,tag_sets):
     # XPOSTAG is always None -> not checked atm
     if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
         warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
-    
+
 def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
 
@@ -217,8 +231,8 @@ def validate_character_constraints(cols):
     Checks general constraints on valid characters, e.g. that UPOSTAG
     only contains [A-Z].
     """
-    if not cols[ID].isdigit():
-        return # skip multiword tokens
+    if not is_word(cols):
+        return # skip multiword tokens and empty nodes
 
     if not re.match(r"^[A-Z]+$", cols[UPOSTAG]):
         warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
@@ -244,13 +258,13 @@ def validate_ID_sequence(tree):
     words=[]
     tokens=[]
     for cols in tree:
-        if cols[ID].isdigit():
+        if is_word(cols):
             t_id=int(cols[ID])
             words.append(t_id)
             #Not covered by the previous interval?
             if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
                 tokens.append((t_id,t_id)) #nope - let's make a default interval for it
-        else:
+        elif is_multiword_token(cols):
             match=interval_re.match(cols[ID]) #Check the interval against the regex
             if not match:
                 warn(u"Spurious token interval definition: '%s'."%cols[ID],u"Format",lineno=False)
@@ -260,6 +274,8 @@ def validate_ID_sequence(tree):
                 warn(u"Multiword range not before its first word",u"Format")
                 continue
             tokens.append((beg,end))
+        elif is_empty_node(cols):
+            pass    # TODO
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
         warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),u"Format",lineno=False)
@@ -271,12 +287,18 @@ def validate_ID_sequence(tree):
         if b<1 or e>len(words): #out of range
             warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
             continue
-                
+
 def subset_to_words(tree):
     """
-    Only picks the word lines, skips token lines.
+    Only picks the word lines, skips multiword token and empty node lines.
     """
-    return [cols for cols in tree if cols[ID].isdigit()]
+    return [cols for cols in tree if is_word(cols)]
+
+def subset_to_words_and_empty_nodes(tree):
+    """
+    Only picks word and empty node lines, skips multiword token lines.
+    """
+    return [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
 
 def deps_list(cols):
     if cols[DEPS] == u'_':
@@ -292,14 +314,17 @@ def validate_ID_references(tree):
     Validates that HEAD and DEPRELS reference existing IDs.
     """
 
-    word_tree = subset_to_words(tree)
+    word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
 
     def valid_id(i):
         return i in ids or i == u'0'
 
+    def valid_empty_head(cols):
+        return cols[HEAD] == '_' and is_empty_node(cols)
+
     for cols in word_tree:
-        if not valid_id(cols[HEAD]):
+        if not (valid_id(cols[HEAD]) or valid_empty_head(cols)):
             warn(u"Undefined ID in HEAD: %s" % cols[HEAD],u"Format")
         try:
             deps = deps_list(cols)
@@ -333,7 +358,7 @@ def validate_token_ranges(tree):
     covered = set()
 
     for cols in tree:
-        if cols[ID].isdigit(): # not a multiword token
+        if not is_multiword_token(cols):
             continue
 
         m = interval_re.match(cols[ID])
@@ -359,7 +384,7 @@ def validate_root(tree):
     """
     Validates that DEPREL is "root" iff HEAD is 0.
     """
-    for cols in subset_to_words(tree):
+    for cols in subset_to_words_and_empty_nodes(tree):
         if cols[HEAD] == u'0':
             if cols[DEPREL] != u'root':
                 warn(u'DEPREL must be "root" if HEAD is 0',u"Syntax")
@@ -372,20 +397,20 @@ def validate_deps(tree):
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS.
     """
-    for cols in subset_to_words(tree):
+    for cols in subset_to_words_and_empty_nodes(tree):
         try:
             deps = deps_list(cols)
-            heads = [int(h) for h, d in deps]
+            heads = [float(h) for h, d in deps]
         except ValueError:
-            warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Format")
+            warn(u"Failed to parse DEPS: %s" % cols[DEPS],u"Format")
             return
         if heads != sorted(heads):
             warn(u"DEPS not sorted by head index: %s" % cols[DEPS],u"Format")
 
         try:
-            id_ = int(cols[ID])
+            id_ = float(cols[ID])
         except ValueError:
-            warn(u"Non-integer ID: %s" % cols[ID],u"Format")
+            warn(u"Non-numeric ID: %s" % cols[ID],u"Format")
             return
         if id_ in heads:
             warn(u"ID in DEPS for %s" % cols[ID],u"Format")
@@ -428,7 +453,7 @@ def validate_tree(tree):
 def validate_newlines(inp):
     if inp.newlines and inp.newlines!='\n':
         warn("Only the unix-style LF line terminator is allowed",u"Format")
-    
+
 def validate(inp,out,args,tag_sets):
     global tree_counter
     for comments,tree in trees(inp,tag_sets,args):
@@ -521,7 +546,7 @@ if __name__=="__main__":
 
         tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
         tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
-                    
+
 
     inp,out=file_util.in_out(args)
 
@@ -531,7 +556,7 @@ if __name__=="__main__":
     except:
         warn(u"Exception caught!",u"Format")
         traceback.print_exc()
-        
+
     if not error_counter:
         if not args.quiet:
             print >> sys.stderr, "*** PASSED ***"
@@ -547,4 +572,3 @@ if __name__=="__main__":
                 if f_name=="feat_val":
                     print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s"
         sys.exit(1)
-    
