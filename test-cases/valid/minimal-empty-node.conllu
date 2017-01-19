@@ -1,0 +1,5 @@
+# valid: empty nodes may have contain underscored for all fields except ID and DEPS.
+1	This	this	PRON	_	_	2	orphan	2:nsubj	_
+1.1	_	_	_	_	_	_	_	2:cop	_
+2	valid	valid	ADJ	_	_	0	root	0:root	_
+
