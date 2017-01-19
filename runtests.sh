@@ -40,7 +40,7 @@ for validf in true false; do
 	d="$NONVALID_DIR";
     fi
     
-    for f in $d/*.conll; do 
+    for f in $d/*.conllu; do 
 	OUTP=$($VALIDATOR < $f 2>&1)
 	if [ $? -eq 0 ]; then
 	    validv=true
