@@ -96,7 +96,7 @@ def trees(inp,tag_sets,args):
 ###### Support functions
 
 def is_word(cols):
-    return re.match(r"^[0-9]+$", cols[ID])
+    return re.match(r"^[1-9][0-9]*$", cols[ID])
 
 def is_multiword_token(cols):
     return re.match(r"^[0-9]+-[0-9]+$", cols[ID])
