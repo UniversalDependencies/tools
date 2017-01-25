@@ -15,6 +15,17 @@ to check that they are valid, too.
 
 
 ==============================
+check_sentence_ids.pl
+==============================
+
+Reads CoNLL-U files from STDIN and verifies that every sentence has a unique id in the sent_id comment. All files of
+one treebank (repository) must be supplied at once in order to test treebank-wide id uniqueness.
+
+  cat *.conllu | perl check_sentence_ids.pl
+
+
+
+==============================
 conllu-stats.py
 conllu-stats.pl
 ==============================
