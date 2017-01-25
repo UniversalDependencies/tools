@@ -1,12 +1,12 @@
-[B|b]l a
-[D|d] v s
-[E|e] d
-[F|f] n
-[F|f]r o m
-[M|m] fl
-[M|m] m
-[O|o] s v
-[S|s] k
-[T|t] ex
-[T|t] o m
-[T|t] v
+[Bb]l a
+[Dd] v s
+[Ee] d
+[Ff] n
+[Ff]r o m
+[Mm] fl
+[Mm] m
+[Oo] s v
+[Ss] k
+[Tt] ex
+[Tt] o m
+[Tt] v
