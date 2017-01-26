@@ -118,6 +118,7 @@ def validate_cols(cols,tag_sets,args):
         validate_deprels(cols,tag_sets)
         validate_character_constraints(cols)
     elif is_empty_node(cols):
+        validate_empty_node_empty_vals(cols)
         validate_features(cols,tag_sets)
         validate_pos(cols,tag_sets)
         # TODO check also the following:
@@ -174,6 +175,14 @@ def validate_token_empty_vals(cols):
         if cols[col_idx]!=u"_":
             warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
+def validate_empty_node_empty_vals(cols):
+    """
+    Checks that an empty node only has _ empty values in HEAD and DEPREL.
+    """
+    assert is_empty_node(cols), 'internal error'
+    for col_idx in (HEAD, DEPREL):
+        if cols[col_idx]!=u"_":
+            warn(u"An empty node must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
 attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
 val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
