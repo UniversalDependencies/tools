@@ -119,6 +119,7 @@ def validate_cols(cols,tag_sets,args):
         validate_character_constraints(cols)
     elif is_empty_node(cols):
         validate_features(cols,tag_sets)
+        validate_pos(cols,tag_sets)
         # TODO check also the following:
         # - DEPREL 'root' iff HEAD == 0 in DEPS
         # - ID references are sane and ID sequences valid
@@ -207,16 +208,23 @@ def validate_features(cols,tag_sets):
     if len(attr_set)!=len(feat_list):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
-def validate_pos(cols,tag_sets):
+def validate_upos(cols,tag_sets):
     if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
         warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
+
+def validate_xpos(cols,tag_sets):
     # XPOSTAG is always None -> not checked atm
     if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
         warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
 
+def validate_pos(cols,tag_sets):
+    if not (is_empty_node(cols) and cols[UPOSTAG] == '_'):
+        validate_upos(cols, tag_sets)
+    if not (is_empty_node(cols) and cols[XPOSTAG] == '_'):
+        validate_xpos(cols, tag_sets)
+
 def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
-
 
 def validate_deprels(cols,tag_sets):
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
