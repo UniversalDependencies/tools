@@ -1,4 +1,4 @@
 # not valid: DEPREL must be "root" iff HEAD is 0.
 1	valid	valid	NOUN	_	_	0	root	_	_
-2	.	.	PUNCT	_	_	1	root	_	_
+2	PUNCT	.	PUNCT	_	_	1	root	_	_
 

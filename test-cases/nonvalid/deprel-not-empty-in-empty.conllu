@@ -1,0 +1,5 @@
+# not valid: empty nodes must have empty DEPREL (issue #402)
+1	This	this	PRON	_	_	0	root	1.1:nsubj	_
+1.1	_	_	_	_	_	_	orphan	0:root	_
+2	holes	hole	NOUN	_	_	1	orphan	1.1:obj	_
+

@@ -1,4 +1,4 @@
 # not valid: dependency relations must have the form [a-z][a-z_-]* also in DEPS
 1	valid	valid	NOUN	_	_	0	root	_	_
-2	.	.	PUNCT	_	_	1	punct	1:Dep	_
+2	PUNCT	.	PUNCT	_	_	1	punct	1:Dep	_
 

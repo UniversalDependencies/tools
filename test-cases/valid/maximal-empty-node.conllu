@@ -1,0 +1,5 @@
+# valid: empty nodes may have non-empty FORM, LEMMA, UPOSTAG, XPOSTAG, FEATS and MISC
+1	This	this	PRON	_	_	0	root	1.1:nsubj	_
+1.1	has	have	VERB	VBZ	Tense=Pres	_	_	0:root	Empty=Yes
+2	holes	hole	NOUN	_	_	1	orphan	1.1:obj	_
+

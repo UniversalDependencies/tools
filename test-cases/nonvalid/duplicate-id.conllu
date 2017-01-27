@@ -1,4 +1,4 @@
 # not valid: IDs must be sequential integers (1, 2, ...)
 1	valid	valid	NOUN	SP	_	0	root	_	_
-3	.	.	.	FS	_	1	p	_	_
+1	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 
