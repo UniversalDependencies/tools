@@ -26,6 +26,16 @@ Perl, are independent of each other. The statistics they collect overlap but are
 
 
 ==============================
+mwtoken-stats.pl
+==============================
+
+Reads a CoNLL-U file, collects statistics of multi-word tokens and prints them.
+
+  cat *.conllu | perl mwtoken-stats.pl > mwtoken-stats.txt
+
+
+
+==============================
 overlap.py
 ==============================
 
