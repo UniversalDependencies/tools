@@ -1,7 +1,10 @@
 advcl:tcl
 advcl:tmod
 advmod:tmod
+aux:pass
 cc:preconj
+ccomp:pmod
+csubj:pass
 expl:impers
 expl:pass
 expl:poss
@@ -9,4 +12,4 @@ expl:pv
 nmod:agent
 nmod:pmod
 nmod:tmod
-ccomp:pmod
+nsubj:pass
