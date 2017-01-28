@@ -3,3 +3,5 @@ conj:extend
 discourse:filler
 parataxis:restart
 parataxis:discourse
+flat:foreign
+flat:name
