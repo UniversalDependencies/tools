@@ -112,24 +112,24 @@ def validate_cols(cols,tag_sets,args):
     called from trees()
     """
     validate_whitespace(cols,tag_sets)
-    if is_word(cols):
+
+    if is_word(cols) or is_empty_node(cols):
         validate_features(cols,tag_sets)
         validate_pos(cols,tag_sets)
-        validate_deprels(cols,tag_sets)
         validate_character_constraints(cols)
-    elif is_empty_node(cols):
-        validate_features(cols,tag_sets)
-        # TODO check also the following:
-        # - DEPREL 'root' iff HEAD == 0 in DEPS
-        # - ID references are sane and ID sequences valid
-        # - HEAD / DEPREL are correct for empty nodes
-        # - validate_character_constraints()
-        # - DEPS are connected and non-acyclic
-        # (more, what?)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     else:
         warn(u"Unexpected ID format %s" % cols[ID], u"Format")
+
+    if is_word(cols):
+        validate_deprels(cols,tag_sets)
+    elif is_empty_node(cols):
+        validate_empty_node_empty_vals(cols)
+        # TODO check also the following:
+        # - ID references are sane and ID sequences valid
+        # - DEPS are connected and non-acyclic
+        # (more, what?)
 
 whitespace_re=re.compile(ur".*\s",re.U)
 def validate_whitespace(cols,tag_sets):
@@ -173,6 +173,14 @@ def validate_token_empty_vals(cols):
         if cols[col_idx]!=u"_":
             warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
+def validate_empty_node_empty_vals(cols):
+    """
+    Checks that an empty node only has _ empty values in HEAD and DEPREL.
+    """
+    assert is_empty_node(cols), 'internal error'
+    for col_idx in (HEAD, DEPREL):
+        if cols[col_idx]!=u"_":
+            warn(u"An empty node must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
 attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
 val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
@@ -195,7 +203,7 @@ def validate_features(cols,tag_sets):
             attr_set.add(attr)
             values=match.group(2).split(u",")
             if len(values)!=len(set(values)):
-                warn(u"Repeated features values are disallowed: %s"%feats,u"Morpho")
+                warn(u"Repeated feature values are disallowed: %s"%feats,u"Morpho")
             if [v.lower() for v in values]!=sorted(v.lower() for v in values):
                 warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f,u"Morpho")
             for v in values:
@@ -207,16 +215,23 @@ def validate_features(cols,tag_sets):
     if len(attr_set)!=len(feat_list):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
-def validate_pos(cols,tag_sets):
+def validate_upos(cols,tag_sets):
     if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
         warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
+
+def validate_xpos(cols,tag_sets):
     # XPOSTAG is always None -> not checked atm
     if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
         warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
 
+def validate_pos(cols,tag_sets):
+    if not (is_empty_node(cols) and cols[UPOSTAG] == '_'):
+        validate_upos(cols, tag_sets)
+    if not (is_empty_node(cols) and cols[XPOSTAG] == '_'):
+        validate_xpos(cols, tag_sets)
+
 def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
-
 
 def validate_deprels(cols,tag_sets):
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
@@ -238,12 +253,14 @@ def validate_character_constraints(cols):
     Checks general constraints on valid characters, e.g. that UPOSTAG
     only contains [A-Z].
     """
-    if not is_word(cols):
-        return # skip multiword tokens and empty nodes
+    if is_multiword_token(cols):
+        return
 
-    if not re.match(r"^[A-Z]+$", cols[UPOSTAG]):
+    if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
+            (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
         warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
-    if not re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]):
+    if not (re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]) or
+            (is_empty_node(cols) and cols[DEPREL] == u"_")):
         warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
     try:
         deps = deps_list(cols)
