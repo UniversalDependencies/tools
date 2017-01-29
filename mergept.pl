@@ -52,11 +52,11 @@ while(1)
     }
     last if(scalar(@as)==0 || scalar(@ds)==0);
     $n++;
-    my @at = grep {m/^\#\s*text\s+/} (@as);
+    my @at = grep {m/^\#\s*text\s*=\s*/} (@as);
     my @dt = grep {m/^\#\s*text\s*=\s*/} (@ds);
     my $at = $at[0];
     my $dt = $dt[0];
-    $at =~ s/^\#\s*text\s+//;
+    $at =~ s/^\#\s*text\s*=\s*//;
     $dt =~ s/^\#\s*text\s*=\s*//;
     $at =~ s/\s+$//;
     $dt =~ s/\s+$//;
@@ -69,7 +69,7 @@ while(1)
     # The output will be based on Dan's version but certain approved parts will be taken from Alex's version.
     # Print Dan's text. Add the other sentence comments (including sent_id) from Alex.
     print("\# text = $dt\n");
-    my @ac = map {s/\#\s*sent_id\s+/\# sent_id = /; $_} (grep {m/^\#/ && !m/^\#\s*text\s+/} (@as));
+    my @ac = grep {m/^\#/ && !m/^\#\s*text\s+/} (@as);
     foreach my $comment (@ac)
     {
         print($comment);
