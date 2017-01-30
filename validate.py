@@ -115,12 +115,15 @@ def is_empty_node(cols):
 ###### Metadata tests #########
 
 sentid_re=re.compile(ur"^# sent_id\s*=\s*(\S+)$")
-def validate_sent_id(comments,known_ids):
+def validate_sent_id(comments,known_ids,lcode):
     matched=[]
     for c in comments:
         match=sentid_re.match(c)
         if match:
             matched.append(match)
+        else:
+            if c.startswith(u"# sent_id") or c.startswith(u"#sent_id"):
+                warn(u"Spurious sent_id line: '%s' Should look like '# sent_id = xxxxxx' where xxxx is not whitespace. Forward slash reserved for special purposes." %c,u"Metadata")
     if not matched:
         warn(u"Missing the sent_id attribute.",u"Metadata")
     elif len(matched)>1:
@@ -129,6 +132,8 @@ def validate_sent_id(comments,known_ids):
         sid=matched[0].group(1)
         if sid in known_ids:
             warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
+        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud"):
+            warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
         known_ids.add(sid)
 
 text_re=re.compile(ur"^# text\s*=\s*(.+)$")
@@ -175,11 +180,7 @@ def validate_text_meta(comments,tree):
                     stext=stext.lstrip()
         if stext:
             warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
-            
-            
-                
-            
-                
+
 ###### Tests applicable to a single row indpendently of the others
 
 def validate_cols(cols,tag_sets,args):
@@ -566,7 +567,7 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
         validate_root(tree)
         validate_deps(tree)
         validate_tree(tree)
-        validate_sent_id(comments,known_sent_ids)
+        validate_sent_id(comments,known_sent_ids,args.lang)
         validate_text_meta(comments,tree)
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
