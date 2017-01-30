@@ -115,7 +115,7 @@ def is_empty_node(cols):
 ###### Metadata tests #########
 
 sentid_re=re.compile(ur"^# sent_id\s*=\s*(\S+)$")
-def validate_sent_id(comments,known_ids):
+def validate_sent_id(comments,known_ids,lcode):
     matched=[]
     for c in comments:
         match=sentid_re.match(c)
@@ -132,6 +132,8 @@ def validate_sent_id(comments,known_ids):
         sid=matched[0].group(1)
         if sid in known_ids:
             warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
+        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud"):
+            warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
         known_ids.add(sid)
 
 text_re=re.compile(ur"^# text\s*=\s*(.+)$")
@@ -565,7 +567,7 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
         validate_root(tree)
         validate_deps(tree)
         validate_tree(tree)
-        validate_sent_id(comments,known_sent_ids)
+        validate_sent_id(comments,known_sent_ids,args.lang)
         validate_text_meta(comments,tree)
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
