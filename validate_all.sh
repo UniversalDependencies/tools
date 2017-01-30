@@ -12,7 +12,7 @@ then
 fi
 
 declare -A lang_config
-lang_config["cs"]="--multi"
+#lang_config["cs"]="--multi"
 
 for D in $*
 do
