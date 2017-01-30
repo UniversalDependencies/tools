@@ -1,3 +1,4 @@
 # not valid: feature definition is malformed / ambiguous (two "=" characters)
+# sent_id = test-1
 1	non-valid	non-valid	NOUN	SP	A=B=C	0	root	_	_
 

@@ -104,6 +104,25 @@ def is_multiword_token(cols):
 def is_empty_node(cols):
     return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
 
+###### Metadata tests #########
+
+sentid_re=re.compile(ur"^# sent_id\s*=\s*([a-zA-Z0-9_-]+)$")
+def validate_sent_id(comments,known_ids):
+    matched=[]
+    for c in comments:
+        match=sentid_re.match(c)
+        if match:
+            matched.append(match)
+    if not matched:
+        warn(u"Missing the sent_id attribute.",u"Metadata")
+    elif len(matched)>1:
+        warn(u"Multiple sent_id attribute.",u"Metadata")
+    else:
+        sid=matched[0].group(1)
+        if sid in known_ids:
+            warn(u"Non-unique sent_id the sent_id attribute.",u"Metadata")
+        known_ids.add(sid)
+
 ###### Tests applicable to a single row indpendently of the others
 
 def validate_cols(cols,tag_sets,args):
@@ -478,7 +497,7 @@ def validate_newlines(inp):
     if inp.newlines and inp.newlines!='\n':
         warn("Only the unix-style LF line terminator is allowed",u"Format")
 
-def validate(inp,out,args,tag_sets):
+def validate(inp,out,args,tag_sets,known_sent_ids):
     global tree_counter
     for comments,tree in trees(inp,tag_sets,args):
         tree_counter+=1
@@ -490,6 +509,7 @@ def validate(inp,out,args,tag_sets):
         validate_root(tree)
         validate_deps(tree)
         validate_tree(tree)
+        validate_sent_id(comments,known_sent_ids)
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
     validate_newlines(inp)
@@ -576,7 +596,8 @@ if __name__=="__main__":
 
 
     try:
-        validate(inp,out,args,tagsets)
+        known_sent_ids=set()
+        validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn(u"Exception caught!",u"Format")
         traceback.print_exc()

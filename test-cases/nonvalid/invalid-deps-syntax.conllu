@@ -1,4 +1,5 @@
 # not valid: DEPS must be 'HEAD:REL' pairs separated by bars ('|')
+# sent_id = test-25
 1	have	have	VERB	VB	Tens=Pres	0	root	2	_
 2	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 

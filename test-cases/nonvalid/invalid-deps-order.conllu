@@ -1,4 +1,5 @@
 # not valid: DEPS must be sorted by HEAD index.
+# sent_id = test-24
 1	They	they	PRON	PRN	Case=Nom|Num=Plur	2	nsubj	4:nsubj|2:xsubj	_
 2	buy	buy	VERB	VBP	Num=Plur|Per=3|Tense=Pres	0	root	_	_
 3	and	and	CONJ	CC	_	2	cc	_	_
