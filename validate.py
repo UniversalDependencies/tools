@@ -114,7 +114,7 @@ def is_empty_node(cols):
 
 ###### Metadata tests #########
 
-sentid_re=re.compile(ur"^# sent_id\s*=\s*([a-zA-Z0-9_-]+)$")
+sentid_re=re.compile(ur"^# sent_id\s*=\s*(\S+)$")
 def validate_sent_id(comments,known_ids):
     matched=[]
     for c in comments:
