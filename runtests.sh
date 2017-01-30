@@ -41,7 +41,7 @@ for validf in true false; do
     fi
     
     for f in $d/*.conllu; do 
-	OUTP=$($VALIDATOR < $f 2>&1)
+	OUTP=$($VALIDATOR $f 2>&1)
 	if [ $? -eq 0 ]; then
 	    validv=true
 	else
@@ -61,5 +61,21 @@ for validf in true false; do
         fi
     done
 done
+
+# Test the multiple ID thing over several files
+OUTP=$($VALIDATOR $VALID_DIR/id_test_part*.conllu 2>&1)
+if [ $? -eq 0 ]; then
+    echo ${LRED}${BOLD}FAIL "Several files with id duplication across files not caught" ${RESTORE}
+    failure=$((failure+1))
+else
+    echo ${LGREEN}${BOLD}PASS "Several files with id duplication across files" ${RESTORE}
+    success=$((success+1))
+    if [[ "$1" == "-v" ]]
+    then
+	echo -en "$OUTP" | egrep -v ' PASSED ' | egrep -v ' FAILED ' | egrep -v 'errors: [0-9]'
+	echo
+    fi
+fi
+
 
 echo "passed $success/$((success+failure)) tests."

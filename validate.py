@@ -1,4 +1,5 @@
 #! /usr/bin/python
+import fileinput
 import sys
 import codecs
 import os.path
@@ -29,7 +30,7 @@ def warn(msg,error_type,lineno=True):
     Print the warning. If lineno is True, print the exact line, otherwise
     print the line on which the current tree starts.
     """
-    global curr_line, sentence_line, error_counter, tree_counter, args
+    global curr_fname,curr_line, sentence_line, error_counter, tree_counter, args
     error_counter[error_type]=error_counter.get(error_type,0)+1
     if not args.quiet:
         if args.max_err>0 and error_counter[error_type]==args.max_err:
@@ -37,10 +38,17 @@ def warn(msg,error_type,lineno=True):
         elif args.max_err>0 and error_counter[error_type]>args.max_err:
             pass #suppressed
         else:
-            if lineno:
-                print >> sys.stderr, (u"[Line                   %d]: %s"%(curr_line,msg)).encode(args.err_enc)
+            if len(args.input)>1: #several files, should report which one
+                if curr_fname=="-":
+                    fn="(in STDIN) "
+                else:
+                    fn="(in "+os.path.basename(curr_fname)+") "
             else:
-                print >> sys.stderr, (u"[Tree number %d on line %d]: %s"%(tree_counter,sentence_line,msg)).encode(args.err_enc)
+                fn=""
+            if lineno:
+                print >> sys.stderr, (u"[%sLine                   %d]: %s"%(fn,curr_line,msg)).encode(args.err_enc)
+            else:
+                print >> sys.stderr, (u"[%sTree number %d on line %d]: %s"%(fn,tree_counter,sentence_line,msg)).encode(args.err_enc)
 
     ## I think this is no longer needed here
     # if args.max_err>0:
@@ -120,7 +128,7 @@ def validate_sent_id(comments,known_ids):
     else:
         sid=matched[0].group(1)
         if sid in known_ids:
-            warn(u"Non-unique sent_id the sent_id attribute.",u"Metadata")
+            warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
         known_ids.add(sid)
 
 ###### Tests applicable to a single row indpendently of the others
@@ -560,8 +568,9 @@ if __name__=="__main__":
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail. Implies --noecho.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
     io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)s. Note that the CoNLL-U output is by definition always utf-8.')
-    io_group.add_argument('input', nargs='?', help='Input file name, or "-" or nothing for standard input.')
-    io_group.add_argument('output', nargs='?', help='Output file name, or "-" or nothing for standard output.')
+    io_group.add_argument('input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
+    #I don't think output makes much sense now that we allow multiple inputs, so it will default to /dev/stdout
+    #io_group.add_argument('output', nargs='', help='Output file name, or "-" or nothing for standard output.')
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
@@ -592,12 +601,23 @@ if __name__=="__main__":
         tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
 
 
-    inp,out=file_util.in_out(args)
+    out=codecs.getwriter("utf-8")(sys.stdout) # hard-coding - does this ever need to be anything else?
+    #inp,out=file_util.in_out(args)
 
 
     try:
         known_sent_ids=set()
-        validate(inp,out,args,tagsets,known_sent_ids)
+        open_files=[]
+        if args.input==[]:
+            args.input.append("-")
+        for fname in args.input:
+            if fname=="-":
+                open_files.append(codecs.getreader("utf-8")(os.fdopen(0,"U")))
+            else:
+                inp_raw=open(fname,mode="U")
+                open_files.append(codecs.getreader("utf-8")(inp_raw))
+        for curr_fname,inp in zip(args.input,open_files):
+            validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn(u"Exception caught!",u"Format")
         traceback.print_exc()
