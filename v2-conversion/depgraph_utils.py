@@ -56,6 +56,14 @@ class DependencyGraph(object):
             gov = int(gov)
             self.add_edge(gov, idx, reln)
          
+    def get_gov(self, dep):
+        gov_edges = self.incomingedges[dep]
+        if len(gov_edges) < 1:
+            raise RuntimeError
+        for edge in gov_edges:
+            gov, reln = edge
+            return gov
+        
          
     def add_edge(self, gov, dep, reln):
         edge = DependencyGraphEdge(gov, dep, reln)
