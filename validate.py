@@ -131,26 +131,24 @@ def validate_cols(cols,tag_sets,args):
     called from trees()
     """
     validate_whitespace(cols,tag_sets)
-    if is_word(cols):
+
+    if is_word(cols) or is_empty_node(cols):
         validate_features(cols,tag_sets)
         validate_pos(cols,tag_sets)
-        validate_deprels(cols,tag_sets)
         validate_character_constraints(cols)
-    elif is_empty_node(cols):
-        validate_empty_node_empty_vals(cols)
-        validate_features(cols,tag_sets)
-        validate_pos(cols,tag_sets)
-        # TODO check also the following:
-        # - DEPREL 'root' iff HEAD == 0 in DEPS
-        # - ID references are sane and ID sequences valid
-        # - HEAD / DEPREL are correct for empty nodes
-        # - validate_character_constraints()
-        # - DEPS are connected and non-acyclic
-        # (more, what?)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     else:
         warn(u"Unexpected ID format %s" % cols[ID], u"Format")
+
+    if is_word(cols):
+        validate_deprels(cols,tag_sets)
+    elif is_empty_node(cols):
+        validate_empty_node_empty_vals(cols)
+        # TODO check also the following:
+        # - ID references are sane and ID sequences valid
+        # - DEPS are connected and non-acyclic
+        # (more, what?)
 
 whitespace_re=re.compile(ur".*\s",re.U)
 def validate_whitespace(cols,tag_sets):
@@ -224,7 +222,7 @@ def validate_features(cols,tag_sets):
             attr_set.add(attr)
             values=match.group(2).split(u",")
             if len(values)!=len(set(values)):
-                warn(u"Repeated features values are disallowed: %s"%feats,u"Morpho")
+                warn(u"Repeated feature values are disallowed: %s"%feats,u"Morpho")
             if [v.lower() for v in values]!=sorted(v.lower() for v in values):
                 warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f,u"Morpho")
             for v in values:
@@ -274,12 +272,14 @@ def validate_character_constraints(cols):
     Checks general constraints on valid characters, e.g. that UPOSTAG
     only contains [A-Z].
     """
-    if not is_word(cols):
-        return # skip multiword tokens and empty nodes
+    if is_multiword_token(cols):
+        return
 
-    if not re.match(r"^[A-Z]+$", cols[UPOSTAG]):
+    if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
+            (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
         warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
-    if not re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]):
+    if not (re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]) or
+            (is_empty_node(cols) and cols[DEPREL] == u"_")):
         warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
     try:
         deps = deps_list(cols)

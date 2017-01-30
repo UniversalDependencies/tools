@@ -135,7 +135,7 @@ class CoordinationReattachmentProcessor(UpdateProcessor):
                         f = True
                         break
                 
-                if self.verbose and not f:
+                if self.verbose and not f and edge.gov < edge.dep:
                     print("WARNING: No reattachement of cc!", file=sys.stderr)
                     graph.print_conllu(f=sys.stderr)
             
