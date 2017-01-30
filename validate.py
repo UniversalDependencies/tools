@@ -131,6 +131,55 @@ def validate_sent_id(comments,known_ids):
             warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
         known_ids.add(sid)
 
+text_re=re.compile(ur"^# text\s*=\s*(.+)$")
+def validate_text_meta(comments,tree):
+    matched=[]
+    for c in comments:
+        match=text_re.match(c)
+        if match:
+            matched.append(match)
+    if not matched:
+        warn(u"Missing the text attribute.",u"Metadata")
+    elif len(matched)>1:
+        warn(u"Multiple text attributes.",u"Metadata")
+    else:
+        stext=matched[0].group(1)
+        if stext[-1].isspace():
+            warn(u"The text attribute must not end with a whitespace",u"Metadata")
+        #let's try to validate the text then... :)
+        skip_words=set()
+        for cols in tree:
+            if u"NoSpaceAfter=Yes" in cols[MISC]:
+                warn(u"NoSpaceAfter=Yes should be replaced with SpaceAfter=No",u"Metadata")
+            if u"." in cols[ID]: #empty word
+                if u"SpaceAfter=No" in cols[MISC]:
+                    warn(u"There should not be a SpaceAfter=No entry for empty words",u"Metadata")
+                continue
+            elif u"-" in cols[ID]: #we have a token
+                beg,end=cols[ID].split(u"-")
+                for i in range(int(beg),int(end)+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
+                    skip_words.add(unicode(i))
+            elif cols[ID] in skip_words:
+                if u"SpaceAfter=No" in cols[MISC]:
+                    warn(u"There should not be a SpaceAfter=No entry for words which are a part of a token",u"Metadata")
+                continue
+            else:
+                #err, I guess we have nothing to do here. :)
+                pass
+            #So now we have either a token or a word which is also a token in its entirety
+            if not stext.startswith(cols[FORM]):
+                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata")
+            else:
+                stext=stext[len(cols[FORM]):] #eat the form
+                if u"SpaceAfter=No" not in cols[MISC]:
+                    stext=stext.lstrip()
+        if stext:
+            warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
+            
+            
+                
+            
+                
 ###### Tests applicable to a single row indpendently of the others
 
 def validate_cols(cols,tag_sets,args):
@@ -518,6 +567,7 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
         validate_deps(tree)
         validate_tree(tree)
         validate_sent_id(comments,known_sent_ids)
+        validate_text_meta(comments,tree)
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
     validate_newlines(inp)
