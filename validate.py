@@ -602,8 +602,6 @@ if __name__=="__main__":
 
 
     out=codecs.getwriter("utf-8")(sys.stdout) # hard-coding - does this ever need to be anything else?
-    #inp,out=file_util.in_out(args)
-
 
     try:
         known_sent_ids=set()
