@@ -123,7 +123,7 @@ def validate_sent_id(comments,known_ids,lcode):
             matched.append(match)
         else:
             if c.startswith(u"# sent_id") or c.startswith(u"#sent_id"):
-                warn(u"Spurious sent_id line: '%s' Should look like '# sent_id = xxxxxx' where xxxx is not whitespace. Forward slash reserved for special purposes.",u"Metadata")
+                warn(u"Spurious sent_id line: '%s' Should look like '# sent_id = xxxxxx' where xxxx is not whitespace. Forward slash reserved for special purposes." %c,u"Metadata")
     if not matched:
         warn(u"Missing the sent_id attribute.",u"Metadata")
     elif len(matched)>1:
@@ -180,7 +180,7 @@ def validate_text_meta(comments,tree):
                     stext=stext.lstrip()
         if stext:
             warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
-                
+
 ###### Tests applicable to a single row indpendently of the others
 
 def validate_cols(cols,tag_sets,args):
