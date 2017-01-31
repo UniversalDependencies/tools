@@ -1,11 +1,11 @@
 AdpType=Prep
 AdpType=Preppron
+Gender=Unsp
 Hyph=Yes
 Number[psor]=Plur
 Number[psor]=Sing
+Number=Unsp
 NumForm=Digit
 NumForm=Roman
 PrepCase=Pre
 Typo=Yes
-Gender=Unsp
-Number=Unsp

@@ -1,11 +1,10 @@
-advmod:emph
 acl:relcl
+advmod:emph
 aux:pass
-csubj:pass
 expl:pass
 flat:foreign
 flat:name
-nmod:tmod
 nmod:npmod
+nmod:tmod
 nsubj:pass
 obl:agent
