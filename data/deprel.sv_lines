@@ -1,4 +1,7 @@
+nmod:poss
 acl:relcl
 compound:prt
-nmod:poss
+nsubj:pass
+aux:pass
 obl:agent
+csubj:pass
