@@ -1,7 +1,14 @@
 acl:relcl
 aux:caus
+aux:pass
 case:aspect
 case:dec
 case:pref
 case:suff
+csubj:pass
+flat:foreign
+mark:advb
+mark:comp
+mark:relcl
 nmod:tmod
+nsubj:pass

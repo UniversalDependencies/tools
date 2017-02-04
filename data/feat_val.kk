@@ -9,3 +9,4 @@ PronType=Qnt
 PronType=Ref
 Tense=Aor
 Voice=Coop
+VerbForm=Cov
