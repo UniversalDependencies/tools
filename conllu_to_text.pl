@@ -19,11 +19,13 @@ GetOptions
 my $chinese = $language =~ m/^(zh|ja)(_|$)/;
 
 my @sentence = ();
-my $text = '';
+my $text = ''; # from the text attribute of the sentence
+my $ftext = ''; # from the word forms of the tokens
 my $newpar = 0;
 my $newdoc = 0;
 my $buffer = '';
 my $start = 1;
+my $mwtlast;
 while(<>)
 {
     push(@sentence, $_);
@@ -39,38 +41,79 @@ while(<>)
     {
         $newdoc = 1;
     }
+    elsif(m/^\d+-(\d+)\t/)
+    {
+        $mwtlast = $1;
+        my @f = split(/\t/, $_);
+        # Paragraphs may start in the middle of a sentence (bulleted lists, verse etc.)
+        # The first token of the new paragraph has "NewPar=Yes" in the MISC column.
+        # Multi-word tokens have this in the token-introducing line.
+        if($f[9] =~ m/NewPar=Yes/)
+        {
+            # Empty line between documents and paragraphs. (There may have been
+            # a paragraph break before the first part of this sentence as well!)
+            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
+            $buffer .= $ftext;
+            # Line breaks at word boundaries after at most 80 characters.
+            $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+            print("$buffer\n\n");
+            $buffer = '';
+            # Start is only true until we write the first sentence of the input stream.
+            $start = 0;
+            $newdoc = 0;
+            $newpar = 0;
+            $text = '';
+            $ftext = '';
+        }
+        $ftext .= $f[1];
+        $ftext .= ' ' unless($f[9] =~ m/SpaceAfter=No/);
+    }
+    elsif(m/^(\d+)\t/ && !(defined($mwtlast) && $1<$mwtlast))
+    {
+        $mwtlast = undef;
+        my @f = split(/\t/, $_);
+        # Paragraphs may start in the middle of a sentence (bulleted lists, verse etc.)
+        # The first token of the new paragraph has "NewPar=Yes" in the MISC column.
+        # Multi-word tokens have this in the token-introducing line.
+        if($f[9] =~ m/NewPar=Yes/)
+        {
+            # Empty line between documents and paragraphs. (There may have been
+            # a paragraph break before the first part of this sentence as well!)
+            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
+            $buffer .= $ftext;
+            # Line breaks at word boundaries after at most 80 characters.
+            $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+            print("$buffer\n\n");
+            $buffer = '';
+            # Start is only true until we write the first sentence of the input stream.
+            $start = 0;
+            $newdoc = 0;
+            $newpar = 0;
+            $text = '';
+            $ftext = '';
+        }
+        $ftext .= $f[1];
+        $ftext .= ' ' unless($f[9] =~ m/SpaceAfter=No/);
+    }
     elsif(m/^\s*$/)
     {
+        # In a valid CoNLL-U file, $text should be equal to $ftext except for the
+        # space after the last token. However, if there have been intra-sentential
+        # paragraph breaks, $ftext contains only the part after the last such
+        # break, and $text is empty. Hence we currently use $ftext everywhere
+        # and ignore $text, even though we note it when seeing the text attribute.
+        # $text .= ' ' unless($chinese);
         # Empty line between documents and paragraphs.
-        if(!$start && ($newdoc || $newpar))
-        {
-            if($buffer ne '')
-            {
-                print("$buffer\n");
-                $buffer = '';
-            }
-            print("\n");
-        }
-        # Add space between sentences.
-        if($buffer ne '' && !$chinese)
-        {
-            $buffer .= ' ';
-        }
-        $buffer .= $text;
+        $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
+        $buffer .= $ftext;
         # Line breaks at word boundaries after at most 80 characters.
-        if($chinese)
-        {
-            $buffer = print_chinese_lines_from_buffer($buffer, 80);
-        }
-        else
-        {
-            $buffer = print_lines_from_buffer($buffer, 80);
-        }
+        $buffer = print_lines_from_buffer($buffer, 80, $chinese);
         # Start is only true until we write the first sentence of the input stream.
         $start = 0;
         $newdoc = 0;
         $newpar = 0;
         $text = '';
+        $ftext = '';
     }
 }
 # There may be unflushed buffer contents after the last sentence, less than 80 characters
@@ -78,6 +121,30 @@ while(<>)
 if($buffer ne '')
 {
     print("$buffer\n");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether we have to print an extra line to separate paragraphs. Does it
+# if necessary. Returns the updated buffer.
+#------------------------------------------------------------------------------
+sub print_new_paragraph_if_needed
+{
+    my $start = shift;
+    my $newdoc = shift;
+    my $newpar = shift;
+    my $buffer = shift;
+    if(!$start && ($newdoc || $newpar))
+    {
+        if($buffer ne '')
+        {
+            print("$buffer\n");
+            $buffer = '';
+        }
+        print("\n");
+    }
+    return $buffer;
 }
 
 
@@ -95,6 +162,12 @@ sub print_lines_from_buffer
     # on one line.
     # Note that this algorithm is not suitable for Chinese and Japanese.
     my $limit = shift;
+    # We need a different algorithm for Chinese and Japanese.
+    my $chinese = shift;
+    if($chinese)
+    {
+        return print_chinese_lines_from_buffer($buffer, $limit);
+    }
     if(length($buffer) >= $limit)
     {
         my @cbuffer = split(//, $buffer);
