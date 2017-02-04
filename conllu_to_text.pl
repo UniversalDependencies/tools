@@ -8,6 +8,15 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Getopt::Long;
+
+# Language code 'zh' or 'ja' will trigger Chinese-like text formatting.
+my $language = 'en';
+GetOptions
+(
+    'language=s' => \$language
+);
+my $chinese = $language =~ m/^(zh|ja)(_|$)/;
 
 my @sentence = ();
 my $text = '';
@@ -43,45 +52,19 @@ while(<>)
             print("\n");
         }
         # Add space between sentences.
-        ###!!! We must not do this in languages like Chinese and Japanese!
-        if($buffer ne '')
+        if($buffer ne '' && !$chinese)
         {
             $buffer .= ' ';
         }
         $buffer .= $text;
         # Line breaks at word boundaries after at most 80 characters.
-        # Only if there is a word longer than 80 characters, it will make a long line.
-        ###!!! In Chinese and Japanese, we must break between characters! (But probably not between a normal character and punctuation.)
-        if(length($buffer)>=80)
+        if($chinese)
         {
-            my @cbuffer = split(//, $buffer);
-            while(scalar(@cbuffer)>=80)
-            {
-                my $i;
-                my $ilastspace;
-                for($i = 0; $i<=$#cbuffer; $i++)
-                {
-                    if($i>80 && defined($ilastspace))
-                    {
-                        last;
-                    }
-                    if($cbuffer[$i] =~ m/\s/)
-                    {
-                        $ilastspace = $i;
-                    }
-                }
-                if(defined($ilastspace) && $ilastspace>0)
-                {
-                    my @out = @cbuffer[0..($ilastspace-1)];
-                    splice(@cbuffer, 0, $ilastspace+1);
-                    print(join('', @out), "\n");
-                }
-                else
-                {
-                    print(join('', @cbuffer), "\n");
-                }
-            }
-            $buffer = join('', @cbuffer);
+            $buffer = print_chinese_lines_from_buffer($buffer, 80);
+        }
+        else
+        {
+            $buffer = print_lines_from_buffer($buffer, 80);
         }
         # Start is only true until we write the first sentence of the input stream.
         $start = 0;
@@ -95,4 +78,80 @@ while(<>)
 if($buffer ne '')
 {
     print("$buffer\n");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints as many complete lines of text as there are in the buffer. Returns the
+# remaining contents of the buffer.
+#------------------------------------------------------------------------------
+sub print_lines_from_buffer
+{
+    my $buffer = shift;
+    # Maximum number of characters allowed on one line, not counting the line
+    # break character(s), which also replace any number of trailing spaces.
+    # Exception: If there is a word longer than the limit, it will be printed
+    # on one line.
+    # Note that this algorithm is not suitable for Chinese and Japanese.
+    my $limit = shift;
+    if(length($buffer) >= $limit)
+    {
+        my @cbuffer = split(//, $buffer);
+        # There may be more than one new line waiting in the buffer.
+        while(scalar(@cbuffer) >= $limit)
+        {
+            ###!!! We could make it simpler if we ignored multi-space sequences
+            ###!!! between words. It sounds OK to ignore them because at the
+            ###!!! line break we do not respect original spacing anyway.
+            my $i;
+            my $ilastspace;
+            for($i = 0; $i<=$#cbuffer; $i++)
+            {
+                if($i>$limit && defined($ilastspace))
+                {
+                    last;
+                }
+                if($cbuffer[$i] =~ m/\s/)
+                {
+                    $ilastspace = $i;
+                }
+            }
+            if(defined($ilastspace) && $ilastspace>0)
+            {
+                my @out = @cbuffer[0..($ilastspace-1)];
+                splice(@cbuffer, 0, $ilastspace+1);
+                print(join('', @out), "\n");
+            }
+            else
+            {
+                print(join('', @cbuffer), "\n");
+                splice(@cbuffer);
+            }
+        }
+        $buffer = join('', @cbuffer);
+    }
+    return $buffer;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints as many complete lines of text as there are in the buffer. Returns the
+# remaining contents of the buffer. Assumes that there are no spaces between
+# words and lines can be broken between any two characters, as is the custom in
+# Chinese and Japanese.
+#------------------------------------------------------------------------------
+sub print_chinese_lines_from_buffer
+{
+    my $buffer = shift;
+    # Maximum number of characters allowed on one line, not counting the line
+    # break character(s).
+    my $limit = shift;
+    while(length($buffer) >= $limit)
+    {
+        print(substr($buffer, 0, $limit), "\n");
+        $buffer = substr($buffer, $limit, length($buffer)-$limit);
+    }
+    return $buffer;
 }
