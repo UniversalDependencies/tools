@@ -148,10 +148,29 @@ sub print_chinese_lines_from_buffer
     # Maximum number of characters allowed on one line, not counting the line
     # break character(s).
     my $limit = shift;
-    while(length($buffer) >= $limit)
+    # We cannot simply print the first $limit characters from the buffer,
+    # followed by a line break. There could be embedded Latin words or
+    # numbers and we do not want to insert a line break in the middle of
+    # a foreign word.
+    my @cbuffer = split(//, $buffer);
+    while(scalar(@cbuffer) >= $limit)
     {
-        print(substr($buffer, 0, $limit), "\n");
-        $buffer = substr($buffer, $limit, length($buffer)-$limit);
+        my $nprint = 0;
+        for(my $i = 0; $i <= $#cbuffer; $i++)
+        {
+            if($i > $limit && $nprint > 0)
+            {
+                last;
+            }
+            unless($i < $#cbuffer && $cbuffer[$i] =~ m/[\p{Latin}0-9]/ && $cbuffer[$i+1] =~ m/[\p{Latin}0-9]/)
+            {
+                $nprint = $i+1;
+            }
+        }
+        my @out = @cbuffer[0..($nprint-1)];
+        splice(@cbuffer, 0, $nprint);
+        print(join('', @out), "\n");
     }
+    $buffer = join('', @cbuffer);
     return $buffer;
 }
