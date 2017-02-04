@@ -68,7 +68,7 @@ while(<>)
         $ftext .= $f[1];
         $ftext .= ' ' unless($f[9] =~ m/SpaceAfter=No/);
     }
-    elsif(m/^(\d+)\t/ && !(defined($mwtlast) && $1<$mwtlast))
+    elsif(m/^(\d+)\t/ && !(defined($mwtlast) && $1<=$mwtlast))
     {
         $mwtlast = undef;
         my @f = split(/\t/, $_);
