@@ -73,6 +73,25 @@ CoNLL-X as their input. Usage:
 
 
 ==============================
+conllu_to_text.pl
+==============================
+
+Converts a file in the CoNLL-U format to plain text, word-wrapped to lines of 80 characters (but the output line will
+be longer if there is a word that is longer than the limit). The script can use either the sentence-level text
+attribute, or the word forms plus the SpaceAfter=No MISC attribute to output detokenized text. It also observes the
+sentence-level newdoc and newpar attributes, and the NewPar=Yes MISC attribute, if they are present, and prints an
+empty line between paragraphs or documents.
+
+Optionally, the script takes the language code as a parameter. Codes 'zh' and 'ja' will trigger a different
+word-wrapping algorithm that is more suitable for Chinese and Japanese.
+
+Usage:
+
+  perl conllu_to_text.pl --lang zh < file.conllu > file.txt
+
+
+
+==============================
 conll_convert_tags_to_uposf.pl
 ==============================
 

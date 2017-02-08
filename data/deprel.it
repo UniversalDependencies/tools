@@ -3,3 +3,10 @@ det:poss
 det:predet
 expl:impers
 expl:pass
+aux:pass
+nsubj:pass
+csubj:pass
+obl:agent
+flat:name
+flat:foreign
+

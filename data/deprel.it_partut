@@ -1,7 +1,13 @@
 acl:relcl
 aux:pass
 csubj:pass
+det:poss
+det:predet
+expl:impers
+expl:pass
 flat:foreign
 flat:name
-nmod:poss
 nsubj:pass
+obl:agent
+
+
