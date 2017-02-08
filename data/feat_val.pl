@@ -1,5 +1,7 @@
 AdpType=Prep
 Hyph=Yes
+Number[psor]=Plur
+Number[psor]=Sing
 PrepCase=Npr
 PrepCase=Pre
 Typo=Yes
