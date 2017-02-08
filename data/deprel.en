@@ -5,3 +5,7 @@ det:predet
 nmod:npmod
 nmod:poss
 nmod:tmod
+nsubj:pass
+aux:pass
+csubj:pass
+flat:foreign
