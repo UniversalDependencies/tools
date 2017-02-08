@@ -1,4 +1,7 @@
 acl:relcl
-nmod:own
+obl:own
 nmod:poss
 iobj:caus
+flat:name
+compound:lvc
+acl:poss
