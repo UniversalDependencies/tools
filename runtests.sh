@@ -25,7 +25,7 @@ WHITE=$(echo -en '\033[01;37m')
 
 #set -u
 
-VALIDATOR="python validate.py --lang=testsuite"
+VALIDATOR="python validate.py --lang=testsuite --no-tree-text"
 VALID_DIR="test-cases/valid"
 NONVALID_DIR="test-cases/nonvalid"
 
