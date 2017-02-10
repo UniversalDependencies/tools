@@ -1,4 +1,5 @@
-# sent_id = id_test_part1
+# sent_id = id_test_part
+# The sent_id is intentionally same here and in the id_test_part2.conllu file.
 # text = layered 100 000 50 000
 # valid: numbers can have space
 # (http://universaldependencies.github.io/docs/u/overview/morphology.html#layered-features)
