@@ -136,6 +136,9 @@ def validate_sent_id(comments,known_ids,lcode):
             warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
         known_ids.add(sid)
 
+def shorten(string):
+    return string if len(string) < 25 else string[:20]+'[...]'
+
 text_re=re.compile(ur"^# text\s*=\s*(.+)$")
 def validate_text_meta(comments,tree):
     matched=[]
@@ -177,6 +180,8 @@ def validate_text_meta(comments,tree):
             else:
                 stext=stext[len(cols[FORM]):] #eat the form
                 if u"SpaceAfter=No" not in cols[MISC]:
+                    if args.check_space_after and (stext) and not stext[0].isspace():
+                        warn(u"SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'"%(cols[ID],shorten(cols[FORM]+stext)),u"Metadata")
                     stext=stext.lstrip()
         if stext:
             warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
@@ -629,9 +634,10 @@ if __name__=="__main__":
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
-    
+
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
     meta_group.add_argument("--no-tree-text", action="store_false", default=True, dest="check_tree_text", help="Do not test tree text. For internal use only, this test is required and on by default.")
+    meta_group.add_argument("--no-space-after", action="store_false", default=True, dest="check_space_after", help="Do not test presence of SpaceAfter=No.")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} #Incremented by warn()  {key: error type value: its count}
