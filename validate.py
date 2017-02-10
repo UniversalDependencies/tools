@@ -568,7 +568,8 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
         validate_deps(tree)
         validate_tree(tree)
         validate_sent_id(comments,known_sent_ids,args.lang)
-        validate_text_meta(comments,tree)
+        if args.check_tree_text:
+            validate_text_meta(comments,tree)
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
     validate_newlines(inp)
@@ -628,6 +629,9 @@ if __name__=="__main__":
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
+    
+    meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
+    meta_group.add_argument("--no-tree-text", action="store_false", default=True, dest="check_tree_text", help="Do not test tree text. For internal use only, this test is required and on by default.")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} #Incremented by warn()  {key: error type value: its count}
