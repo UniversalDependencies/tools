@@ -691,8 +691,9 @@ if __name__=="__main__":
             for k,v in sorted(error_counter.items()):
                 print >> sys.stderr, k, "errors:", v
         for f_name in sorted(warn_on_missing_files):
-            if not os.path.exists(os.path.join(THISDIR,"data",f_name+"."+args.lang)):
-                print >> sys.stderr, "The language-specific file %s does not exist."
+            filepath = os.path.join(THISDIR,"data",f_name+"."+args.lang)
+            if not os.path.exists(filepath):
+                print >> sys.stderr, "The language-specific file %s does not exist."%filepath
                 if f_name=="feat_val":
-                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s"
+                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > " + filepath
         sys.exit(1)
