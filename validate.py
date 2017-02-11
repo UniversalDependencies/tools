@@ -165,7 +165,12 @@ def validate_text_meta(comments,tree):
                 continue
             elif u"-" in cols[ID]: #we have a token
                 beg,end=cols[ID].split(u"-")
-                for i in range(int(beg),int(end)+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
+                try:
+                    begi,endi = int(beg),int(end)
+                except ValueError as e:
+                    warn(u"Non-integer range %s-%s (%s)"%(beg,end,e),u"Format")
+                    begi,endi=1,0
+                for i in range(begi,endi+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
                     skip_words.add(unicode(i))
             elif cols[ID] in skip_words:
                 if u"SpaceAfter=No" in cols[MISC]:
