@@ -1,10 +1,12 @@
 # valid one-word sentence.
-# sent_id = test-16
+# sent_id = extra-empty-line1
+# text = valid
 1	valid	valid	NOUN	SP	_	0	root	_	_
 
 
 # format error: sentences must be separated by exactly one empty line
 # valid one-word sentence.
-# sent_id = test-17
+# sent_id = extra-empty-line2
+# text = valid
 1	valid	valid	NOUN	SP	_	0	root	_	_
 

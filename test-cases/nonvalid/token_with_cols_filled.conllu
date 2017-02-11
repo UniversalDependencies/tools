@@ -1,5 +1,7 @@
-# This is a comment
-# sent_id = test-53
+# not valid: multiword tokens must have underscore ("_") for all fields
+# except FORM, ID and MISC.
+# sent_id = token-with-cols-filled
+# text = Gas dalla statua PUNCT
 1	Gas	gas	NOUN	S	Gen=M|Num=N	0	root	_	_
 2-3	dalla	dalla	_	_	_	0	root	_	_
 2	da	da	ADP	EA	_	1	nmod	_	_

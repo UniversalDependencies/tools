@@ -1,5 +1,6 @@
 # not valid: HEAD and DEPREL must encode a dependency tree over words.
-# sent_id = test-48
+# sent_id = self-cycle-head
+# text = cycle cycle
 1	cycle	cycle	VERB	_	_	0	root	_	_
 2	cycle	cycle	VERB	_	_	2	nsubj	_	_
 

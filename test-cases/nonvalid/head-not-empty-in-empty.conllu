@@ -1,5 +1,6 @@
 # not valid: empty nodes must have empty HEAD (issue #402)
-# sent_id = test-21
+# sent_id = head-not-empty-in-empty
+# text = This holes
 1	This	this	PRON	_	_	0	root	1.1:nsubj	_
 1.1	_	_	_	_	_	1	_	0:root	_
 2	holes	hole	NOUN	_	_	1	orphan	1.1:obj	_

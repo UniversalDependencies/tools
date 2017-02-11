@@ -1,4 +1,5 @@
+# sent_id = head-0-deprel-not-root
+# text = word
 # not valid: DEPREL must be "root" iff HEAD is 0.
-# sent_id = test-19
 1	word	word	NOUN	_	_	0	nsubj	_	_
 
