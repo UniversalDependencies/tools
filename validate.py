@@ -279,6 +279,7 @@ def validate_features(cols,tag_sets):
         match=attr_val_re.match(f)
         if match is None:
             warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f,u"Morpho")
+            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
