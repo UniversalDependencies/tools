@@ -1,3 +1,9 @@
+aux:pass
+compound:svc
+csubj:pass
 det:numgov
 det:nummod
+flat:foreign
+flat:name
+nsubj:pass
 nummod:gov
