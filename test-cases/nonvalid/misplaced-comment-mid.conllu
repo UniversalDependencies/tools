@@ -1,5 +1,6 @@
 # not valid: comment lines inside sentences are disallowed.
-# sent_id = test-42
+# sent_id = misplaced-comment-mid
+# text = I haven't a clue PUNCT
 1	I	I	PRON	PRN	Num=Sing|Per=1	2	nsubj	_	_
 2-3	haven't	_	_	_	_	_	_	_	_
 # this comment should not be here

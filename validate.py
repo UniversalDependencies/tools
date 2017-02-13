@@ -136,6 +136,9 @@ def validate_sent_id(comments,known_ids,lcode):
             warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
         known_ids.add(sid)
 
+def shorten(string):
+    return string if len(string) < 25 else string[:20]+'[...]'
+
 text_re=re.compile(ur"^# text\s*=\s*(.+)$")
 def validate_text_meta(comments,tree):
     matched=[]
@@ -162,7 +165,12 @@ def validate_text_meta(comments,tree):
                 continue
             elif u"-" in cols[ID]: #we have a token
                 beg,end=cols[ID].split(u"-")
-                for i in range(int(beg),int(end)+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
+                try:
+                    begi,endi = int(beg),int(end)
+                except ValueError as e:
+                    warn(u"Non-integer range %s-%s (%s)"%(beg,end,e),u"Format")
+                    begi,endi=1,0
+                for i in range(begi,endi+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
                     skip_words.add(unicode(i))
             elif cols[ID] in skip_words:
                 if u"SpaceAfter=No" in cols[MISC]:
@@ -177,6 +185,8 @@ def validate_text_meta(comments,tree):
             else:
                 stext=stext[len(cols[FORM]):] #eat the form
                 if u"SpaceAfter=No" not in cols[MISC]:
+                    if args.check_space_after and (stext) and not stext[0].isspace():
+                        warn(u"SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'"%(cols[ID],shorten(cols[FORM]+stext)),u"Metadata")
                     stext=stext.lstrip()
         if stext:
             warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
@@ -274,6 +284,7 @@ def validate_features(cols,tag_sets):
         match=attr_val_re.match(f)
         if match is None:
             warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f,u"Morpho")
+            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
@@ -629,9 +640,10 @@ if __name__=="__main__":
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
-    
+
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
     meta_group.add_argument("--no-tree-text", action="store_false", default=True, dest="check_tree_text", help="Do not test tree text. For internal use only, this test is required and on by default.")
+    meta_group.add_argument("--no-space-after", action="store_false", default=True, dest="check_space_after", help="Do not test presence of SpaceAfter=No.")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} #Incremented by warn()  {key: error type value: its count}
@@ -685,8 +697,9 @@ if __name__=="__main__":
             for k,v in sorted(error_counter.items()):
                 print >> sys.stderr, k, "errors:", v
         for f_name in sorted(warn_on_missing_files):
-            if not os.path.exists(os.path.join(THISDIR,"data",f_name+"."+args.lang)):
-                print >> sys.stderr, "The language-specific file %s does not exist."
+            filepath = os.path.join(THISDIR,"data",f_name+"."+args.lang)
+            if not os.path.exists(filepath):
+                print >> sys.stderr, "The language-specific file %s does not exist."%filepath
                 if f_name=="feat_val":
-                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s"
+                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > " + filepath
         sys.exit(1)

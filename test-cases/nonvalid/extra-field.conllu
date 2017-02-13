@@ -1,4 +1,5 @@
 # not valid: 11 TAB-separated fields
-# sent_id = test-18
+# sent_id = extra-field
+# text = non-valid
 1	non-valid	non-valid	NOUN	SP	_	0	root	_	_	extra
 

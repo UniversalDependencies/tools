@@ -1,5 +1,6 @@
 # not valid: multiword token ranges may not overlap
-# sent_id = test-46
+# sent_id = overlapping-multiword
+# text = I haven't nota clue PUNCT
 1	I	I	PRON	PRN	Num=Sing|Per=1	2	nsubj	_	_
 2-3	haven't	_	_	_	_	_	_	_	_
 2	have	have	VERB	VB	Tens=Pres	0	root	_	_

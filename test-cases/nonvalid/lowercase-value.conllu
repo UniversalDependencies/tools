@@ -1,5 +1,6 @@
+# sent_id = lowercase-value
+# text = non-valid
 # not valid: feature values must have format '[A-Z0-9][a-zA-Z0-9]*'
 # (see http://universaldependencies.github.io/docs/features.html)
-# sent_id = test-34
 1	non-valid	non-valid	NOUN	_	Lower=nonvalid	0	root	_	_
 
