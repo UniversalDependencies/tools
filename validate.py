@@ -622,6 +622,10 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
             res.add(v)
     return res
 
+# TODO switch to Python 3 and use html.escape instead
+def escape(string):
+    return string.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
 
@@ -685,7 +689,8 @@ if __name__=="__main__":
             validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn(u"Exception caught!",u"Format")
-        #traceback.print_exc() #traceback breaks validatio.html
+        #traceback.print_exc() #traceback can contain e.g. "<module>" which breaks validation.html
+        print(escape(traceback.format_exc()))
 
     if not error_counter:
         if not args.quiet:
