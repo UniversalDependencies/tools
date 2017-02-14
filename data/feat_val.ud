@@ -86,6 +86,7 @@ NumType=Dist
 NumType=Frac
 NumType=Mult
 NumType=Ord
+NumType=Range
 NumType=Sets
 Person=0
 Person=1
