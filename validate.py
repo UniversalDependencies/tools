@@ -181,7 +181,7 @@ def validate_text_meta(comments,tree):
                 pass
             #So now we have either a token or a word which is also a token in its entirety
             if not stext.startswith(cols[FORM]):
-                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata")
+                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata",False)
             else:
                 stext=stext[len(cols[FORM]):] #eat the form
                 if u"SpaceAfter=No" not in cols[MISC]:
