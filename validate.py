@@ -685,7 +685,7 @@ if __name__=="__main__":
             validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn(u"Exception caught!",u"Format")
-        traceback.print_exc()
+        #traceback.print_exc() #traceback breaks validatio.html
 
     if not error_counter:
         if not args.quiet:
