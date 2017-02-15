@@ -30,7 +30,7 @@ def warn(msg,error_type,lineno=True):
     Print the warning. If lineno is True, print the exact line, otherwise
     print the line on which the current tree starts.
     """
-    global curr_fname,curr_line, sentence_line, error_counter, tree_counter, args
+    global curr_fname, curr_line, sentence_line, error_counter, tree_counter, args
     error_counter[error_type]=error_counter.get(error_type,0)+1
     if not args.quiet:
         if args.max_err>0 and error_counter[error_type]==args.max_err:
@@ -636,19 +636,23 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
     res=load_file(os.path.join(THISDIR,"data",f_name_ud))
     #Now res holds UD
     #Next load and optionally check the langspec extensions
-    if f_name_langspec is not None and f_name_langspec!=f_name_ud and os.path.exists(os.path.join(THISDIR,"data",f_name_langspec)):
-        l_spec=load_file(os.path.join(THISDIR,"data",f_name_langspec))
-        for v in l_spec:
-            if validate_langspec:
-                try:
-                    ud_v,l_v=v.split(u":")
-                    if ud_v not in res:
+    if f_name_langspec is not None and f_name_langspec!=f_name_ud:
+        path_langspec = os.path.join(THISDIR,"data",f_name_langspec)
+        if os.path.exists(path_langspec):
+            global curr_fname
+            curr_fname = path_langspec # so warn() does not fail on undefined curr_fname
+            l_spec=load_file(path_langspec)
+            for v in l_spec:
+                if validate_langspec:
+                    try:
+                        ud_v,l_v=v.split(u":")
+                        if ud_v not in res:
+                            warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
+                            continue
+                    except:
                         warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
                         continue
-                except:
-                    warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
-                    continue
-            res.add(v)
+                res.add(v)
     return res
 
 # TODO switch to Python 3 and use html.escape instead
