@@ -1,5 +1,6 @@
 # not valid: HEAD must reference a valid ID
-# sent_id = test-26
+# sent_id = invalid-head
+# text = have PUNCT
 1	have	have	VERB	VB	Tens=Pres	0	root	_	_
 2	PUNCT	.	PUNCT	FS	_	3	punct	_	_
 

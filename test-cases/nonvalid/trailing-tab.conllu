@@ -1,4 +1,5 @@
 # not valid: extra TAB before newline
-# sent_id = test-54
+# sent_id = trailing-tab
+# text = non-valid
 1	non-valid	non-valid	NOUN	SP	_	0	root	_	_	
 

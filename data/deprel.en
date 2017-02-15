@@ -3,8 +3,10 @@ cc:preconj
 compound:prt
 det:predet
 nmod:npmod
+obl:npmod
 nmod:poss
 nmod:tmod
+obl:tmod
 nsubj:pass
 aux:pass
 csubj:pass

@@ -1,6 +1,9 @@
 acl:relcl
 aux:pass
+csubj:pass
+flat:foreign
 nmod:gobj
 nmod:tmod
+nsubj:pass
 nummod:gov
 obl:agent

@@ -1,2 +1,2 @@
-Variant=Brev
-Variant=Full
+Variant=Short
+

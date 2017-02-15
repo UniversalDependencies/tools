@@ -1,4 +1,5 @@
+# sent_id = duplicate-layered-feature
+# text = layered
 # not valid: layered feature occurs twice
-# sent_id = test-10
 1	layered	layered	NOUN	N	Number=Sing|Number[psor]=Plur|Number[psor]=Sing	0	root	_	_
 

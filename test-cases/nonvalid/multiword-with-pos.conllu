@@ -1,6 +1,7 @@
 # not valid: multiword tokens must have underscore ("_") for all fields
-# except FORM.
-# sent_id = test-44
+# except FORM, ID and MISC.
+# sent_id = multiword-with-pos
+# text = I haven't a clue PUNCT
 1	I	I	PRON	PRN	Num=Sing|Per=1	2	nsubj	_	_
 2-3	haven't	_	VERB	_	_	_	_	_	_
 2	have	have	VERB	VB	Tens=Pres	0	root	_	_
