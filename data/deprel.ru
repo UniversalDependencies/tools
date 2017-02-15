@@ -1,10 +1,7 @@
 acl:relcl
 aux:pass
 cc:preconj
-csubj:pass
-nmod:gobj
-nmod:tmod
+flat:foreign
 nsubj:pass
 obl:agent
 nummod:gov
-nummod:entity

@@ -1,7 +1,5 @@
 acl:relcl
-advmod:emph
 aux:pass
-expl:pass
 flat:foreign
 flat:name
 nmod:npmod

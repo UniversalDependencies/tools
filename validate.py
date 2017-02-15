@@ -181,7 +181,7 @@ def validate_text_meta(comments,tree):
                 pass
             #So now we have either a token or a word which is also a token in its entirety
             if not stext.startswith(cols[FORM]):
-                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata")
+                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata",False)
             else:
                 stext=stext[len(cols[FORM]):] #eat the form
                 if u"SpaceAfter=No" not in cols[MISC]:
@@ -224,6 +224,9 @@ def validate_whitespace(cols,tag_sets):
     Checks a single line for disallowed whitespace.
     """
     for col_idx in range(MISC+1):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+
         #Must never be empty
         if not cols[col_idx]:
             warn(u"Empty value in column %s"%(COLNAMES[col_idx]),u"Format")
@@ -235,11 +238,17 @@ def validate_whitespace(cols,tag_sets):
                 warn(u"Trailing whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
     ## These columns must not have whitespace
     for col_idx in (ID,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+
         if whitespace_re.match(cols[col_idx]):
             warn(u"White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
     ## Now yet check word and lemma against the lists
     for col_idx in (FORM,LEMMA):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+
         if whitespace_re.match(cols[col_idx]) is not None:
             #Whitespace found - does it pass?
             for regex in tag_sets[TOKENSWSPACE]:
@@ -272,6 +281,8 @@ def validate_empty_node_empty_vals(cols):
 attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
 val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
 def validate_features(cols,tag_sets):
+    if FEATS >= len(cols):
+        return # this has been already reported in trees()
     feats=cols[FEATS]
     if feats==u"_":
         return True
@@ -304,10 +315,14 @@ def validate_features(cols,tag_sets):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
 def validate_upos(cols,tag_sets):
+    if UPOSTAG >= len(cols):
+        return # this has been already reported in trees()
     if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
         warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
 
 def validate_xpos(cols,tag_sets):
+    if XPOSTAG >= len(cols):
+        return # this has been already reported in trees()
     # XPOSTAG is always None -> not checked atm
     if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
         warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
@@ -322,6 +337,8 @@ def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
 
 def validate_deprels(cols,tag_sets):
+    if DEPREL >= len(cols):
+        return # this has been already reported in trees()
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
         warn_on_missing_files.add("deprel")
         warn(u"Unknown UD DEPREL: %s"%cols[DEPREL],u"Syntax")
@@ -343,6 +360,8 @@ def validate_character_constraints(cols):
     """
     if is_multiword_token(cols):
         return
+    if UPOSTAG >= len(cols):
+        return # this has been already reported in trees()
 
     if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
             (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
@@ -413,6 +432,8 @@ def subset_to_words_and_empty_nodes(tree):
     return [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
 
 def deps_list(cols):
+    if DEPS >= len(cols):
+        return # this has been already reported in trees()
     if cols[DEPS] == u'_':
         deps = []
     else:
@@ -435,6 +456,8 @@ def validate_ID_references(tree):
     def valid_empty_head(cols):
         return cols[HEAD] == '_' and is_empty_node(cols)
 
+    if HEAD >= len(cols):
+        return # this has been already reported in trees()
     for cols in word_tree:
         if not (valid_id(cols[HEAD]) or valid_empty_head(cols)):
             warn(u"Undefined ID in HEAD: %s" % cols[HEAD],u"Format")
@@ -497,6 +520,8 @@ def validate_root(tree):
     Validates that DEPREL is "root" iff HEAD is 0.
     """
     for cols in subset_to_words_and_empty_nodes(tree):
+        if HEAD >= len(cols):
+            continue # this has been already reported in trees()
         if cols[HEAD] == u'0':
             if cols[DEPREL] != u'root':
                 warn(u'DEPREL must be "root" if HEAD is 0',u"Syntax")
@@ -510,6 +535,8 @@ def validate_deps(tree):
     self-loops in DEPS.
     """
     for cols in subset_to_words_and_empty_nodes(tree):
+        if DEPS >= len(cols):
+            continue # this has been already reported in trees()
         try:
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
@@ -535,6 +562,8 @@ def validate_tree(tree):
     deps={} #node -> set of children
     word_tree=subset_to_words(tree)
     for cols in word_tree:
+        if HEAD >= len(cols):
+            continue # this has been already reported in trees()
         if cols[HEAD]==u"_":
             warn(u"Empty head for word ID %s" % cols[ID], u"Format", lineno=False)
             continue
@@ -622,6 +651,10 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
             res.add(v)
     return res
 
+# TODO switch to Python 3 and use html.escape instead
+def escape(string):
+    return string.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
 
@@ -685,7 +718,8 @@ if __name__=="__main__":
             validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn(u"Exception caught!",u"Format")
-        traceback.print_exc()
+        #traceback.print_exc() #traceback can contain e.g. "<module>" which breaks validation.html
+        print(escape(traceback.format_exc()))
 
     if not error_counter:
         if not args.quiet:
