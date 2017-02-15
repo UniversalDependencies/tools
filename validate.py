@@ -639,6 +639,8 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
     if f_name_langspec is not None and f_name_langspec!=f_name_ud:
         path_langspec = os.path.join(THISDIR,"data",f_name_langspec)
         if os.path.exists(path_langspec):
+            global curr_fname
+            curr_fname = path_langspec # so warn() does not fail on undefined curr_fname
             l_spec=load_file(path_langspec)
             for v in l_spec:
                 if validate_langspec:
