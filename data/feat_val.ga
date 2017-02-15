@@ -1,8 +1,9 @@
+Case=NomAcc
 Dialect=Connaught
 Dialect=Munster
 Dialect=Ulster
 Form=Ecl
-Form=Emph
+Form=Emp
 Form=HPref
 Form=Len
 Form=VF
