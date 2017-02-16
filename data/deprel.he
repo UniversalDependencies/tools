@@ -5,10 +5,11 @@ advmod:phrase
 aux:q
 case:acc
 case:gen
+compound:smixut
 conj:discourse
 det:def
 det:quant
+flat:name
 nmod:poss
-nmod:smixut
-nmod:tmod
 nsubj:cop
+obl:tmod
