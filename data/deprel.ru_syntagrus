@@ -8,3 +8,4 @@ nmod:tmod
 nsubj:pass
 nummod:gov
 obl:agent
+nummod:entity
