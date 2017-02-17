@@ -3,9 +3,5 @@ aux:pass
 csubj:pass
 flat:foreign
 flat:name
-nmod:gobj
-nmod:tmod
+nmod:poss
 nsubj:pass
-nummod:gov
-obl:agent
-nummod:entity

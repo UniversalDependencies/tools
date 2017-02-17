@@ -22,7 +22,7 @@ class Stats(object):
         self.deprel_counter={} #key:deprel value: count
         
     def count_cols(self,cols):
-        if cols[0].isdigit(): #word
+        if cols[0].isdigit() or u"." in cols[0]: #word or empty word
             self.word_count+=1
             self.token_count+=1 #every word is also a one-word token
         else: #token
