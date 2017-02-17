@@ -160,6 +160,13 @@ foreach my $folder (@folders)
             {
                 print("Not a git repository: $folder\n");
             }
+            ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
+            ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
+            ###!!! This is a new category in v2.0: treebanks that were released in the past but are not valid in the new version.
+            elsif($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
+            {
+                print("Listed as invalid in UD v2: $folder\n");
+            }
             else
             {
                 # This is a git repository with data.
