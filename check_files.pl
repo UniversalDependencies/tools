@@ -335,7 +335,7 @@ foreach my $l (@langcodes)
 }
 print("TOTAL\tt=$ntok\tw=$nword\tf=$nfus\ts=$nsent\n");
 print("--------------------------------------------------------------------------------\n");
-my $announcement = get_announcement(1.4, $n_folders_with_data, \@languages, 'less than 1,000 tokens', 'well over 1.5 million tokens', 'March 2017', \@contributors_firstlast);
+my $announcement = get_announcement($current_release, $n_folders_with_data, \@languages, 'less than 1,000 tokens', 'well over 1.5 million tokens', 'November 2017', \@contributors_firstlast);
 print($announcement);
 
 
