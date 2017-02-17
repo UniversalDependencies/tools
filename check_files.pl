@@ -26,7 +26,7 @@ my $current_release = 2.0;
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-1.3';
+my $oldpath = '/net/data/universal-dependencies-1.4';
 GetOptions
 (
     'future' => \$include_future,
