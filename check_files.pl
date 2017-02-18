@@ -223,7 +223,7 @@ foreach my $folder (@folders)
                     print("$folder: missing $prefix-dev.conllu\n");
                     $n_errors++;
                 }
-                if(!-f "$prefix-test.conllu")
+                if(0 && !-f "$prefix-test.conllu") ###!!! but we should check for the test file in the separate folder instead!
                 {
                     print("$folder: missing $prefix-test.conllu\n");
                     $n_errors++;
