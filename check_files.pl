@@ -191,8 +191,10 @@ foreach my $folder (@folders)
             # Count it and check it for possible problems.
             $n_folders_with_data++;
             $languages_with_data{$language}++;
+            my $is_in_shared_task = 1;
             unless($folder =~ m/^UD_($not_in_shared_task)$/)
             {
+                $is_in_shared_task = 0;
                 $n_folders_conll++;
                 $languages_conll{$language}++;
             }
@@ -204,7 +206,7 @@ foreach my $folder (@folders)
             # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
             #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
             my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 5 : 2;
-            if($folder =~ m/^UD_($not_in_shared_task)$/)
+            if(!$is_in_shared_task)
             {
                 $expected_n++;
             }
@@ -238,7 +240,8 @@ foreach my $folder (@folders)
                 print("$folder: missing $prefix-dev.conllu\n");
                 $n_errors++;
             }
-            if(0 && !-f "$prefix-test.conllu") ###!!! but we should check for the test file in the separate folder instead!
+            # Treebanks that do not take part in the shared task should release their test sets.
+            if(!$is_in_shared_task && !-f "$prefix-test.conllu") ###!!! but we should check for the test file in the separate folder instead!
             {
                 print("$folder: missing $prefix-test.conllu\n");
                 $n_errors++;
