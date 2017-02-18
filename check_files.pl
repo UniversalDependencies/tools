@@ -387,7 +387,19 @@ foreach my $l (@langcodes)
 }
 print("TOTAL\tt=$ntok\tw=$nword\tf=$nfus\ts=$nsent\n");
 print("--------------------------------------------------------------------------------\n");
-my $announcement = get_announcement($current_release, $n_folders_with_data, \@languages, 'less than 1,000 tokens', 'well over 1.5 million tokens', 'November 2017', \@contributors_firstlast);
+my $announcement = get_announcement
+(
+    $current_release,
+    $n_folders_with_data,
+    \@languages,
+    'less than 1,000 tokens',
+    'well over 1.5 million tokens',
+    'November 2017', # expected next release
+    \@contributors_firstlast,
+    # Temporary for UD 2.0: shared task information
+    $n_folders_conll,
+    \@languages_conll
+);
 print($announcement);
 
 
@@ -622,6 +634,8 @@ sub get_announcement
     my $max_size = shift; # 'well over 1.5 million tokens'
     my $next_release_available_in = shift; # 'March 2017'
     my $contlistref = shift;
+    my $n_conll = shift;
+    my $langlistconllref = shift;
     my @release_list = (1.0, 1.1, 1.2, 1.3, 1.4, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 2.12, 2.13, 2.14);
     my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
     my $nth;
@@ -639,6 +653,10 @@ sub get_announcement
     my $n_languages = scalar(@languages);
     my $languages = join(', ', @languages);
     $languages =~ s/, ([^,]+)$/ and $1/;
+    my @languages_conll = @{$langlistconllref};
+    my $n_languages_conll = scalar(@languages_conll);
+    my $languages_conll = join(', ', @languages_conll);
+    $languages_conll =~ s/, ([^,]+)$/ and $1/;
     my @contributors = @{$contlistref};
     my $contributors = join(', ', @contributors);
     my $text = <<EOF
@@ -647,6 +665,8 @@ We are very happy to announce the $nth release of annotated treebanks in Univers
 Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective (Nivre et al., 2016). The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
 
 The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
+
+This release is special in that the treebanks will be used as training/development data in the CoNLL 2017 shared task (http://universaldependencies.org/conll17/). Test data are not released, except for the few treebanks that do not take part in the shared task. $n_conll treebanks will be in the shared task, and they correspond to the following $n_languages_conll languages: $languages_conll. Registration of shared task participants is still open!
 
 $contributors
 
