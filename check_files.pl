@@ -160,6 +160,15 @@ foreach my $folder (@folders)
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
+            ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
+            ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
+            ###!!! This is a new category in v2.0: treebanks that were released in the past but are not valid in the new version.
+            if($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
+            {
+                push(@invalid_folders, $folder);
+                chdir('..') or die("Cannot return to the upper folder");
+                next;
+            }
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             if(!-f 'README.txt' && !-f 'README.md')
             {
@@ -178,125 +187,116 @@ foreach my $folder (@folders)
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
+            # If we are here, we know that this folder is going to be released.
+            # Count it and check it for possible problems.
+            $n_folders_with_data++;
+            $languages_with_data{$language}++;
+            unless($folder =~ m/^UD_($not_in_shared_task)$/)
+            {
+                $n_folders_conll++;
+                $languages_conll{$language}++;
+            }
             if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
             {
                 print("$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
                 $n_errors++;
             }
-            ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
-            ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
-            ###!!! This is a new category in v2.0: treebanks that were released in the past but are not valid in the new version.
-            if($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
+            # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
+            #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
+            my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 5 : 2;
+            if($folder =~ m/^UD_($not_in_shared_task)$/)
             {
-                print("Listed as invalid in UD v2: $folder\n");
-                push(@invalid_folders, $folder);
+                $expected_n++;
             }
-            else
+            unless($n==$expected_n)
             {
-                $n_folders_with_data++;
-                $languages_with_data{$language}++;
-                unless($folder =~ m/^UD_($not_in_shared_task)$/)
+                print("$folder: expected $expected_n CoNLL-U files, found $n\n");
+                $n_errors++;
+            }
+            if(!-f 'LICENSE.txt')
+            {
+                print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
+                generate_license($metadata->{License});
+                $n_errors++;
+            }
+            # Check the names of the data files.
+            my $key = $langcode;
+            $key .= '_'.lc($treebank) if($treebank ne '');
+            my $prefix = $key.'-ud';
+            if(!($language eq 'Czech' && $treebank eq '') && !-f "$prefix-train.conllu")
+            {
+                print("$folder: missing $prefix-train.conllu\n");
+                $n_errors++;
+            }
+            elsif($language eq 'Czech' && $treebank eq '' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
+            {
+                print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+                $n_errors++;
+            }
+            if(!-f "$prefix-dev.conllu")
+            {
+                print("$folder: missing $prefix-dev.conllu\n");
+                $n_errors++;
+            }
+            if(0 && !-f "$prefix-test.conllu") ###!!! but we should check for the test file in the separate folder instead!
+            {
+                print("$folder: missing $prefix-test.conllu\n");
+                $n_errors++;
+            }
+            $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
+            # Look for additional files. (Do we want to include them in the release package?)
+            my @extrafiles = map
+            {
+                $_ .= '/' if(-d $_);
+                $_
+            }
+            grep
+            {
+                !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
+            }
+            (@files);
+            if(scalar(@extrafiles)>0)
+            {
+                print("$folder extra files: ", join(', ', sort(@extrafiles)), "\n");
+            }
+            # Summarize metadata.
+            if($metadata->{'License'} ne '')
+            {
+                $licenses{$metadata->{'License'}}++;
+            }
+            if($metadata->{'Genre'} ne '')
+            {
+                my @genres = split(/\s+/, $metadata->{'Genre'});
+                foreach my $genre (@genres)
                 {
-                    $n_folders_conll++;
-                    $languages_conll{$language}++;
+                    $genres{$genre}++;
                 }
-                # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
-                #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
-                my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 5 : 2;
-                if($folder =~ m/^UD_($not_in_shared_task)$/)
+            }
+            if($metadata->{'Contributors'} ne '')
+            {
+                my @contributors = split(/;\s*/, $metadata->{'Contributors'});
+                foreach my $contributor (@contributors)
                 {
-                    $expected_n++;
+                    $contributor =~ s/^\s+//;
+                    $contributor =~ s/\s+$//;
+                    $contributors{$contributor}++;
                 }
-                unless($n==$expected_n)
+            }
+            # Recompute statistics of the treebank and push it back to Github.
+            if($recompute_stats)
+            {
+                print("Recomputing statistics of $folder...\n");
+                system('cat *.conllu | ../tools/conllu-stats.pl > stats.xml');
+                print("Pushing statistics to Github...\n");
+                system('git add stats.xml');
+                system('git commit -m "Updated statistics."');
+                if($tag ne '')
                 {
-                    print("$folder: expected $expected_n CoNLL-U files, found $n\n");
-                    $n_errors++;
+                    print("Tagging $folder $tag\n");
+                    system("git tag $tag");
                 }
-                if(!-f 'LICENSE.txt')
-                {
-                    print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
-                    generate_license($metadata->{License});
-                    $n_errors++;
-                }
-                # Check the names of the data files.
-                my $key = $langcode;
-                $key .= '_'.lc($treebank) if($treebank ne '');
-                my $prefix = $key.'-ud';
-                if(!($language eq 'Czech' && $treebank eq '') && !-f "$prefix-train.conllu")
-                {
-                    print("$folder: missing $prefix-train.conllu\n");
-                    $n_errors++;
-                }
-                elsif($language eq 'Czech' && $treebank eq '' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
-                {
-                    print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
-                    $n_errors++;
-                }
-                if(!-f "$prefix-dev.conllu")
-                {
-                    print("$folder: missing $prefix-dev.conllu\n");
-                    $n_errors++;
-                }
-                if(0 && !-f "$prefix-test.conllu") ###!!! but we should check for the test file in the separate folder instead!
-                {
-                    print("$folder: missing $prefix-test.conllu\n");
-                    $n_errors++;
-                }
-                $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
-                # Look for additional files. (Do we want to include them in the release package?)
-                my @extrafiles = map
-                {
-                    $_ .= '/' if(-d $_);
-                    $_
-                }
-                grep
-                {
-                    !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
-                }
-                (@files);
-                if(scalar(@extrafiles)>0)
-                {
-                    print("$folder extra files: ", join(', ', sort(@extrafiles)), "\n");
-                }
-                # Summarize metadata.
-                if($metadata->{'License'} ne '')
-                {
-                    $licenses{$metadata->{'License'}}++;
-                }
-                if($metadata->{'Genre'} ne '')
-                {
-                    my @genres = split(/\s+/, $metadata->{'Genre'});
-                    foreach my $genre (@genres)
-                    {
-                        $genres{$genre}++;
-                    }
-                }
-                if($metadata->{'Contributors'} ne '')
-                {
-                    my @contributors = split(/;\s*/, $metadata->{'Contributors'});
-                    foreach my $contributor (@contributors)
-                    {
-                        $contributor =~ s/^\s+//;
-                        $contributor =~ s/\s+$//;
-                        $contributors{$contributor}++;
-                    }
-                }
-                # Recompute statistics of the treebank and push it back to Github.
-                if($recompute_stats)
-                {
-                    print("Recomputing statistics of $folder...\n");
-                    system('cat *.conllu | ../tools/conllu-stats.pl > stats.xml');
-                    print("Pushing statistics to Github...\n");
-                    system('git add stats.xml');
-                    system('git commit -m "Updated statistics."');
-                    if($tag ne '')
-                    {
-                        print("Tagging $folder $tag\n");
-                        system("git tag $tag");
-                    }
-                    system('git push');
-                    system('git push --tags');
-                }
+                system('git push');
+                system('git push --tags');
             }
             closedir(DIR);
             chdir('..') or die("Cannot return to the upper folder");
