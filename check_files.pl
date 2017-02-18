@@ -136,6 +136,7 @@ foreach my $folder (@folders)
             if(!-d '.git')
             {
                 push(@nongit_folders, $folder);
+                chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
             # Skip folders that do not contain any data, i.e. CoNLL-U files.
@@ -146,6 +147,7 @@ foreach my $folder (@folders)
             if($n==0)
             {
                 push(@empty_folders, $folder);
+                chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
