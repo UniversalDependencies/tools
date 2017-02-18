@@ -23,6 +23,8 @@ my $recompute_stats = 0;
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
 my $current_release = 2.0;
+# There are different requirements for treebanks that are released but are not in the CoNLL 2017 shared task.
+my $not_in_shared_task = 'Arabic-NYUAD|Belarusian|Coptic|Sanskrit|Tamil';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
@@ -111,7 +113,8 @@ my %genres;
 my %contributors;
 my %stats;
 my @unknown_folders; # cannot parse folder name or unknown language
-my @ignored_folders; # is not a git repository or does not contain data
+my @nongit_folders; # folder is not a git repository
+my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 foreach my $folder (@folders)
@@ -129,7 +132,23 @@ foreach my $folder (@folders)
         {
             $langcode = $langcodes{$language};
             chdir($folder) or die("Cannot enter folder $folder");
-            # Read the README file first. We need to know whether this repository is scheduled for the upcoming release.
+            # Skip folders that are not Git repositories even if they otherwise look OK.
+            if(!-d '.git')
+            {
+                push(@nongit_folders, $folder);
+                next;
+            }
+            # Skip folders that do not contain any data, i.e. CoNLL-U files.
+            opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
+            my @files = readdir(DIR);
+            my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
+            my $n = scalar(@conllufiles);
+            if($n==0)
+            {
+                push(@empty_folders, $folder);
+                next;
+            }
+            # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             if(!-f 'README.txt' && !-f 'README.md')
             {
                 print("$folder: missing README.txt|md\n");
@@ -152,25 +171,10 @@ foreach my $folder (@folders)
                 print("$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
                 $n_errors++;
             }
-            # Look for the other files in the repository.
-            opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
-            my @files = readdir(DIR);
-            my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-            my $n = scalar(@conllufiles);
-            if($n==0)
-            {
-                print("No data in $folder\n");
-                push(@ignored_folders, $folder);
-            }
-            elsif(!-d '.git')
-            {
-                print("Not a git repository: $folder\n");
-                push(@ignored_folders, $folder);
-            }
             ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
             ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
             ###!!! This is a new category in v2.0: treebanks that were released in the past but are not valid in the new version.
-            elsif($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
+            if($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
             {
                 print("Listed as invalid in UD v2: $folder\n");
                 push(@invalid_folders, $folder);
@@ -304,9 +308,13 @@ if(scalar(@unknown_folders) > 0)
 {
     print(scalar(@unknown_folders), " folders skipped because their language cannot be identified: ", join(', ', @unknown_folders), "\n");
 }
-if(scalar(@ignored_folders) > 0)
+if(scalar(@nongit_folders) > 0)
 {
-    print(scalar(@ignored_folders), " folders ignored because they are empty or are not git repositories: ", join(', ', @ignored_folders), "\n");
+    print(scalar(@nongit_folders), " folders ignored because they are not git repositories: ", join(', ', @nongit_folders), "\n");
+}
+if(scalar(@empty_folders) > 0)
+{
+    print(scalar(@empty_folders), " folders ignored because they are empty: ", join(', ', @empty_folders), "\n");
 }
 if(scalar(@future_folders) > 0)
 {
