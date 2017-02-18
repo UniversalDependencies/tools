@@ -106,8 +106,10 @@ my %langcodes =
     'Vietnamese'            => 'vi'
 );
 my $n_folders_with_data = 0;
+my $n_folders_conll = 0;
 my $n_errors = 0;
 my %languages_with_data;
+my %languages_conll;
 my %licenses;
 my %genres;
 my %contributors;
@@ -138,6 +140,14 @@ foreach my $folder (@folders)
                 push(@nongit_folders, $folder);
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
+            }
+            # This is a git repository with data.
+            # Make sure it is up-to-date.
+            if($pull)
+            {
+                print("git pull $folder\n");
+                system('git pull --tags');
+                print(`git status`);
             }
             # Skip folders that do not contain any data, i.e. CoNLL-U files.
             opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
@@ -183,18 +193,12 @@ foreach my $folder (@folders)
             }
             else
             {
-                # This is a git repository with data.
-                # Make sure it is up-to-date.
-                if($pull)
+                $n_folders_with_data++;
+                $languages_with_data{$language}++;
+                unless($folder =~ m/^UD_($not_in_shared_task)$/)
                 {
-                    print("git pull $folder\n");
-                    system('git pull --tags');
-                    print(`git status`);
-                }
-                if($n>0)
-                {
-                    $n_folders_with_data++;
-                    $languages_with_data{$language}++;
+                    $n_folders_conll++;
+                    $languages_conll{$language}++;
                 }
                 # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
                 #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
@@ -326,9 +330,12 @@ if(scalar(@invalid_folders) > 0)
 {
     print(scalar(@invalid_folders), " folders ignored because at least one file does not pass validation: ", join(', ', @invalid_folders), "\n");
 }
-print("$n_folders_with_data are git repositories and contain valid data.\n");
+print("$n_folders_with_data folders are git repositories and contain valid data.\n");
+print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
-print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
+print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
+my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
+print(scalar(@languages_conll), " languages in the shared task: ", join(', ', @languages_conll), "\n\n");
 my @langcodes = sort(keys(%stats));
 print("Treebank codes: ", join(' ', @langcodes), "\n\n");
 my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@langcodes);
