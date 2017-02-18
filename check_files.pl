@@ -312,9 +312,9 @@ if(scalar(@future_folders) > 0)
 }
 if(scalar(@invalid_folders) > 0)
 {
-    print(scalar(@invalid_folders), " folders ignored because at least one conllu file in them does not pass validation: ", join(', ', @invalid_folders), "\n");
+    print(scalar(@invalid_folders), " folders ignored because at least one file does not pass validation: ", join(', ', @invalid_folders), "\n");
 }
-print("$n_folders_with_data are git repositories and contain data.\n");
+print("$n_folders_with_data are git repositories and contain valid data.\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
 my @langcodes = sort(keys(%stats));
