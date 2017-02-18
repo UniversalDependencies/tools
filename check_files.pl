@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Checks files to be distributed as Universal Dependencies.
-# Copyright © 2015, 2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2015, 2016, 2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -110,6 +110,8 @@ my %licenses;
 my %genres;
 my %contributors;
 my %stats;
+my @ignored_folders; # is not a git repository or does not contain data
+my @invalid_folders; # at least one .conllu file does not pass validation
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -155,10 +157,12 @@ foreach my $folder (@folders)
             if($n==0)
             {
                 print("No data in $folder\n");
+                push(@ignored_folders, $folder);
             }
             elsif(!-d '.git')
             {
                 print("Not a git repository: $folder\n");
+                push(@ignored_folders, $folder);
             }
             ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
             ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
@@ -166,6 +170,7 @@ foreach my $folder (@folders)
             elsif($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
             {
                 print("Listed as invalid in UD v2: $folder\n");
+                push(@invalid_folders, $folder);
             }
             else
             {
@@ -289,6 +294,14 @@ foreach my $folder (@folders)
 }
 print("Found ", scalar(@folders), " repositories.\n");
 print("$n_folders_with_data are git repositories and contain data.\n");
+if(scalar(@ignored_folders) > 0)
+{
+    print(scalar(@ignored_folders), " folders ignored because they are empty or are not git repositories: ", join(', ', @ignored_folders), "\n");
+}
+if(scalar(@invalid_folders) > 0)
+{
+    print(scalar(@invalid_folders), " folders ignored because at least one conllu file in them does not pass validation: ", join(', ', @invalid_folders), "\n");
+}
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
 my @langcodes = sort(keys(%stats));
