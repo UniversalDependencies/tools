@@ -110,6 +110,7 @@ my %licenses;
 my %genres;
 my %contributors;
 my %stats;
+my @unknown_folders; # cannot parse folder name or unknown language
 my @ignored_folders; # is not a git repository or does not contain data
 my @invalid_folders; # at least one .conllu file does not pass validation
 foreach my $folder (@folders)
@@ -285,15 +286,20 @@ foreach my $folder (@folders)
         else
         {
             print("Unknown language $language.\n");
+            push(@unknown_folders, $folder);
         }
     }
     else
     {
         print("Cannot parse folder name $folder.\n");
+        push(@unknown_folders, $folder);
     }
 }
-print("Found ", scalar(@folders), " repositories.\n");
-print("$n_folders_with_data are git repositories and contain data.\n");
+print("Found ", scalar(@folders), " folders.\n");
+if(scalar(@unknown_folders) > 0)
+{
+    print(scalar(@unknown_folders), " folders skipped because their language cannot be identified: ", join(', ', @unknown_folders), "\n");
+}
 if(scalar(@ignored_folders) > 0)
 {
     print(scalar(@ignored_folders), " folders ignored because they are empty or are not git repositories: ", join(', ', @ignored_folders), "\n");
@@ -302,6 +308,7 @@ if(scalar(@invalid_folders) > 0)
 {
     print(scalar(@invalid_folders), " folders ignored because at least one conllu file in them does not pass validation: ", join(', ', @invalid_folders), "\n");
 }
+print("$n_folders_with_data are git repositories and contain data.\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
 my @langcodes = sort(keys(%stats));
