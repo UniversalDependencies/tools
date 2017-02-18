@@ -203,6 +203,10 @@ foreach my $folder (@folders)
                 # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
                 #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
                 my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 5 : 2;
+                if($folder =~ m/^UD_($not_in_shared_task)$/)
+                {
+                    $expected_n++;
+                }
                 unless($n==$expected_n)
                 {
                     print("$folder: expected $expected_n CoNLL-U files, found $n\n");
