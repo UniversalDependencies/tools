@@ -112,6 +112,7 @@ my %contributors;
 my %stats;
 my @unknown_folders; # cannot parse folder name or unknown language
 my @ignored_folders; # is not a git repository or does not contain data
+my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 foreach my $folder (@folders)
 {
@@ -142,6 +143,7 @@ foreach my $folder (@folders)
             my $metadata = read_readme($folder, $current_release);
             if(!$metadata->{release} && !$include_future)
             {
+                push(@future_folders, $folder);
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
@@ -303,6 +305,10 @@ if(scalar(@unknown_folders) > 0)
 if(scalar(@ignored_folders) > 0)
 {
     print(scalar(@ignored_folders), " folders ignored because they are empty or are not git repositories: ", join(', ', @ignored_folders), "\n");
+}
+if(scalar(@future_folders) > 0)
+{
+    print(scalar(@future_folders), " folders ignored because their README says they should be released later: ", join(', ', @future_folders), "\n");
 }
 if(scalar(@invalid_folders) > 0)
 {
