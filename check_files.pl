@@ -240,11 +240,30 @@ foreach my $folder (@folders)
                 print("$folder: missing $prefix-dev.conllu\n");
                 $n_errors++;
             }
-            # Treebanks that do not take part in the shared task should release their test sets.
-            if(!$is_in_shared_task && !-f "$prefix-test.conllu") ###!!! but we should check for the test file in the separate folder instead!
+            # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
+            if($is_in_shared_task)
             {
-                print("$folder: missing $prefix-test.conllu\n");
-                $n_errors++;
+                if(-f "$prefix-test.conllu")
+                {
+                    print("$folder: contains $prefix-test.conllu, which must not be released!\n");
+                    $n_errors++;
+                }
+                ###!!! Even if the test set exists, we must check that it is valid and contains at least 10000 nodes!
+                ###!!! See the script testsets/validate.sh.
+                if(!-f "../testsets/$prefix-test.conllu")
+                {
+                    print("$folder: missing testsets/$prefix-test.conllu\n");
+                    $n_errors++;
+                }
+            }
+            # Treebanks that do not take part in the shared task should release their test sets.
+            else
+            {
+                if(!-f "$prefix-test.conllu")
+                {
+                    print("$folder: missing $prefix-test.conllu\n");
+                    $n_errors++;
+                }
             }
             $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
             # Look for additional files. (Do we want to include them in the release package?)
