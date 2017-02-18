@@ -191,10 +191,10 @@ foreach my $folder (@folders)
             # Count it and check it for possible problems.
             $n_folders_with_data++;
             $languages_with_data{$language}++;
-            my $is_in_shared_task = 1;
+            my $is_in_shared_task = 0;
             unless($folder =~ m/^UD_($not_in_shared_task)$/)
             {
-                $is_in_shared_task = 0;
+                $is_in_shared_task = 1;
                 $n_folders_conll++;
                 $languages_conll{$language}++;
             }
