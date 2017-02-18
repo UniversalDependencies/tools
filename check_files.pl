@@ -203,6 +203,11 @@ foreach my $folder (@folders)
                 print("$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
                 $n_errors++;
             }
+            if($metadata->{Contact} !~ m/\@/)
+            {
+                print("$folder: Missing contact e-mail: '$metadata->{Contact}'\n");
+                $n_errors++;
+            }
             # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
             #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
             my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 5 : 2;
@@ -335,6 +340,7 @@ foreach my $folder (@folders)
         push(@unknown_folders, $folder);
     }
 }
+print("$n_errors errors must be fixed.\n\n") if($n_errors>0);
 print("Found ", scalar(@folders), " folders.\n");
 if(scalar(@unknown_folders) > 0)
 {
@@ -380,7 +386,6 @@ foreach my $contributor (@contributors)
 my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
-print("$n_errors errors must be fixed.\n") if($n_errors>0);
 print("Collecting statistics of $oldpath...\n");
 my $stats11 = collect_statistics_about_ud_release($oldpath);
 my @languages11 = sort(keys(%{$stats11}));
@@ -451,7 +456,7 @@ sub read_readme
     open(README, $filename) or return;
     binmode(README, ':utf8');
     my %metadata;
-    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors');
+    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors', 'Contact');
     my $attributes_re = join('|', @attributes);
     while(<README>)
     {
