@@ -245,6 +245,16 @@ foreach my $folder (@folders)
                 print("$folder: missing $prefix-dev.conllu\n");
                 $n_errors++;
             }
+            # Dev tests of treebanks in the shared task should contain at least 10000 words (exception: Kazakh, Uyghur and Swedish).
+            elsif($is_in_shared_task)
+            {
+                my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
+                if($stats->{nword} < 10000)
+                {
+                    print("$folder: $prefix-dev.conllu contains only $stats->{nword} words\n");
+                    $n_errors++;
+                }
+            }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
