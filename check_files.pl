@@ -81,6 +81,7 @@ my %langcodes =
     'Kurmanji'              => 'kmr',
     'Latin'                 => 'la',
     'Latvian'               => 'lv',
+    'Lithuanian'            => 'lt',
     'Marathi'               => 'mr',
     'Norwegian'             => 'no',
     'Old_Church_Slavonic'   => 'cu',
