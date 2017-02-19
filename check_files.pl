@@ -260,6 +260,15 @@ foreach my $folder (@folders)
                     print("$folder: missing testsets/$prefix-test.conllu\n");
                     $n_errors++;
                 }
+                else
+                {
+                    my $stats = collect_statistics_about_ud_file("testsets/$prefix-test.conllu");
+                    if($stats->{nword} < 10000)
+                    {
+                        print("$folder: testsets/$prefix-test.conllu contains only $stats->{nword} words\n");
+                        $n_errors++;
+                    }
+                }
             }
             # Treebanks that do not take part in the shared task should release their test sets.
             else
@@ -444,6 +453,7 @@ print($announcement);
 #License: CC BY-NC-SA 2.5
 #Genre: fiction
 #Contributors: Celano, Giuseppe G. A.; Zeman, Daniel
+#Contact: zeman@ufal.mff.cuni.cz
 #==============================================================================
 #------------------------------------------------------------------------------
 sub read_readme
@@ -613,33 +623,60 @@ sub collect_statistics_about_ud_treebank
     my $nword = 0;
     foreach my $file (@files)
     {
-        open(CONLLU, "$treebank_path/$file") or die("Cannot read file $treebank_path/$file");
-        while(<CONLLU>)
-        {
-            # Skip comment lines.
-            next if(m/^\#/);
-            # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
-            if(m/^\s*$/)
-            {
-                $nsent++;
-            }
-            # Lines with fused tokens do not contain features but we want to count the fusions.
-            elsif(m/^(\d+)-(\d+)\t(\S+)/)
-            {
-                my $i0 = $1;
-                my $i1 = $2;
-                my $size = $i1-$i0+1;
-                $ntok -= $size-1;
-                $nfus++;
-            }
-            else
-            {
-                $ntok++;
-                $nword++;
-            }
-        }
-        close(CONLLU);
+        my $stats = collect_statistics_about_ud_file("$treebank_path/$file");
+        $nsent += $stats->{nsent};
+        $ntok += $stats->{ntok};
+        $nfus += $stats->{nfus};
+        $nword += $stats->{nword};
     }
+    my $stats =
+    {
+        'nsent' => $nsent,
+        'ntok'  => $ntok,
+        'nfus'  => $nfus,
+        'nword' => $nword
+    };
+    return $stats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Counts the number of tokens in a .conllu file.
+#------------------------------------------------------------------------------
+sub collect_statistics_about_ud_file
+{
+    my $file_path = shift;
+    my $nsent = 0;
+    my $ntok = 0;
+    my $nfus = 0;
+    my $nword = 0;
+    open(CONLLU, $file_path) or die("Cannot read file $file_path: $!");
+    while(<CONLLU>)
+    {
+        # Skip comment lines.
+        next if(m/^\#/);
+        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
+        if(m/^\s*$/)
+        {
+            $nsent++;
+        }
+        # Lines with fused tokens do not contain features but we want to count the fusions.
+        elsif(m/^(\d+)-(\d+)\t(\S+)/)
+        {
+            my $i0 = $1;
+            my $i1 = $2;
+            my $size = $i1-$i0+1;
+            $ntok -= $size-1;
+            $nfus++;
+        }
+        else
+        {
+            $ntok++;
+            $nword++;
+        }
+    }
+    close(CONLLU);
     my $stats =
     {
         'nsent' => $nsent,
