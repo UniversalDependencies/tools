@@ -262,7 +262,7 @@ foreach my $folder (@folders)
                 }
                 else
                 {
-                    my $stats = collect_statistics_about_ud_file("testsets/$prefix-test.conllu");
+                    my $stats = collect_statistics_about_ud_file("../testsets/$prefix-test.conllu");
                     if($stats->{nword} < 10000)
                     {
                         print("$folder: testsets/$prefix-test.conllu contains only $stats->{nword} words\n");
