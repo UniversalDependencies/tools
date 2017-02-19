@@ -210,7 +210,7 @@ foreach my $folder (@folders)
             }
             # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
             #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
-            my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 5 : 2;
+            my $expected_n = $folder eq 'UD_Czech' ? 5 : $folder =~ m/^UD_(Kazakh|Uyghur)$/ ? 1 : 2;
             if(!$is_in_shared_task)
             {
                 $expected_n++;
@@ -230,12 +230,12 @@ foreach my $folder (@folders)
             my $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $prefix = $key.'-ud';
-            if(!($language eq 'Czech' && $treebank eq '') && !-f "$prefix-train.conllu")
+            if($folder !~ m/^UD_(Czech|Kazakh|Uyghur)$/ && !-f "$prefix-train.conllu")
             {
                 print("$folder: missing $prefix-train.conllu\n");
                 $n_errors++;
             }
-            elsif($language eq 'Czech' && $treebank eq '' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
+            elsif($folder eq 'UD_Czech' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
             {
                 print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
                 $n_errors++;
