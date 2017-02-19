@@ -246,7 +246,9 @@ foreach my $folder (@folders)
                 $n_errors++;
             }
             # Dev tests of treebanks in the shared task should contain at least 10000 words (exception: Kazakh, Uyghur and Swedish).
-            elsif($is_in_shared_task)
+            # We do not have more Kazakh and Uyghur data (there is no training data).
+            # For Swedish, there is almost 10000 dev words and over 10000 test words, so it is better to keep the old data split.
+            elsif($is_in_shared_task && $folder !~ m/^UD_(Kazakh|Uyghur|Swedish)$/)
             {
                 my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
                 if($stats->{nword} < 10000)
