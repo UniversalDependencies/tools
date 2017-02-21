@@ -114,6 +114,7 @@ my %languages_conll;
 my %licenses;
 my %genres;
 my %contributors;
+my %contacts;
 my %stats;
 my @unknown_folders; # cannot parse folder name or unknown language
 my @nongit_folders; # folder is not a git repository
@@ -331,6 +332,16 @@ foreach my $folder (@folders)
                     $contributors{$contributor}++;
                 }
             }
+            if($metadata->{'Contact'} ne '')
+            {
+                my @contacts = split(/,\s*/, $metadata->{'Contact'});
+                foreach my $contact (@contacts)
+                {
+                    $contact =~ s/^\s+//;
+                    $contact =~ s/\s+$//;
+                    $contacts{$contact}++;
+                }
+            }
             # Recompute statistics of the treebank and push it back to Github.
             if($recompute_stats)
             {
@@ -408,6 +419,8 @@ foreach my $contributor (@contributors)
 my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
+my @contacts = sort(keys(%contacts));
+print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
 print("Collecting statistics of $oldpath...\n");
 my $stats11 = collect_statistics_about_ud_release($oldpath);
 my @languages11 = sort(keys(%{$stats11}));
