@@ -373,7 +373,8 @@ foreach my $folder (@folders)
         push(@unknown_folders, $folder);
     }
 }
-print("$n_errors errors must be fixed.\n\n") if($n_errors>0);
+print("$n_errors errors must be fixed.\n") if($n_errors>0);
+print("\n");
 print("Found ", scalar(@folders), " folders.\n");
 if(scalar(@unknown_folders) > 0)
 {
