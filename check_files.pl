@@ -334,7 +334,7 @@ foreach my $folder (@folders)
             }
             if($metadata->{'Contact'} ne '')
             {
-                my @contacts = split(/,\s*/, $metadata->{'Contact'});
+                my @contacts = split(/[,;]\s*/, $metadata->{'Contact'});
                 foreach my $contact (@contacts)
                 {
                     $contact =~ s/^\s+//;
