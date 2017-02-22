@@ -165,7 +165,7 @@ foreach my $folder (@folders)
             ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
             ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
             ###!!! This is a new category in v2.0: treebanks that were released in the past but are not valid in the new version.
-            if($folder =~ m/^UD_(English-ESL|Galician|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
+            if($folder =~ m/^UD_(English-ESL|Hungarian|Japanese-KTC|Swedish_Sign_Language)$/)
             {
                 push(@invalid_folders, $folder);
                 chdir('..') or die("Cannot return to the upper folder");
