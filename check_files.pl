@@ -121,6 +121,7 @@ my @nongit_folders; # folder is not a git repository
 my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
+my @released_folders;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -192,6 +193,7 @@ foreach my $folder (@folders)
             # If we are here, we know that this folder is going to be released.
             # Count it and check it for possible problems.
             $n_folders_with_data++;
+            push(@released_folders, $folder);
             $languages_with_data{$language}++;
             my $is_in_shared_task = 0;
             unless($folder =~ m/^UD_($not_in_shared_task)$/)
@@ -396,7 +398,8 @@ if(scalar(@invalid_folders) > 0)
 {
     print(scalar(@invalid_folders), " folders ignored because at least one file does not pass validation: ", join(', ', @invalid_folders), "\n");
 }
-print("$n_folders_with_data folders are git repositories and contain valid data.\n");
+# Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
+print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");
 print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
