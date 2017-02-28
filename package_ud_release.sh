@@ -1,16 +1,24 @@
 #!/bin/bash
 # Prepares a UD release.
-# Copyright © 2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016, 2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
-RELEASE=1.4
+if [ "$RELEASE" = "" ] || [ "$1" = "" ]; then
+  echo "Usage: RELEASE=2.0 tools/package_ud_release.sh UD_Ancient_Greek UD_Ancient_Greek-PROIEL ..."
+  echo "       UD repositories to be included in the release must be listed as arguments."
+  echo "       Repositories without dev data will be skipped even if they are given as arguments."
+  echo "       Use tools/check_files.pl to get the list of releasable repositories."
+  echo "Usage: RELEASE=2.0 tools/package_ud_release.sh --update UD_X UD_Y"
+  echo "       Only update the repositories UD_X and UD_Y in an already existing release folder."
+  echo "       The option --update must be the first item after the script name."
+  exit 255
+fi
 
 
 
 #------------------------------------------------------------------------------
 # Copies one UD treebank to the current folder (only files that shall be
-# released). We assume that the current folder is where we build the release.
-# We also assume that the source folder with all the repos is "../..".
+# released). We assume that the current folder the parent of the source dir.
 #------------------------------------------------------------------------------
 function copy_data_repo
 {
@@ -26,6 +34,14 @@ function copy_data_repo
         cat $dstdir/$1/cs-ud-train-*.conllu > $dstdir/$1/cs-ud-train.conllu
         rm $dstdir/$1/cs-ud-train-*.conllu
     fi
+    # Generate raw text files from CoNLL-U files. At present we do not maintain
+    # the raw text files in Github repositories and only generate them for the release.
+    # Also we want one cs-ud-train.txt and not four (see above).
+    local lcode=$(ls $1 | grep ud-dev.conllu | perl -e '$x=<STDIN>; $x =~ m/(\S+)-ud-dev\.conllu/; print $1;')
+    if [ "$lcode" = "" ] ; then echo Unknown language code ; fi
+    for j in $dstdir/$1/*.conllu ; do
+      tools/conllu_to_text.pl --lang $lcode < $j > $dstdir/$1/$(basename $j .conllu).txt
+    done
 }
 
 #------------------------------------------------------------------------------
@@ -33,23 +49,28 @@ function copy_data_repo
 
 
 echo RELEASE $RELEASE
-echo WARNING! This script currently does not detect repositories that contain data but their README says they should not be released yet!
 
-# Create the release folder.
+# Create the release folder if it does not exist yet.
 mkdir -p release-$RELEASE/ud-treebanks-v$RELEASE
 
-# If we received an argument, interpret it as a repository name and process only that repository.
-# This is useful if maintainers of a treebank ask us to incorporate last-minute fixes.
-if [ ! -z "$1" ] ; then
-    copy_data_repo $1
-    exit
+# If the first argument is --update, we will only update the listed treebanks but we will not do anything with docs and tools.
+if [ "$1" == "--update" ] ; then
+    ONLY_UPDATE_TREEBANKS=YES
+    shift
+else
+    ONLY_UPDATE_TREEBANKS=NO
 fi
 
 # Copy there the repositories that contain .conllu data (skip empty repositories!)
-for i in UD_* ; do if [ -f $i/*-ud-train*.conllu ] ; then copy_data_repo $i ; fi ; done
+for i in $@ ; do if [ -f $i/*-ud-dev.conllu ] ; then copy_data_repo $i ; fi ; done
 cd release-$RELEASE
+echo Packing all treebanks in one TGZ archive...
 tar czf ud-treebanks-v$RELEASE.tgz ud-treebanks-v$RELEASE
 cd ..
+
+if [ "$ONLY_UPDATE_TREEBANKS" == "YES" ] ; then
+    exit
+fi
 
 # Prepare the current content of the tools repository as a separate package, also without .git and .gitignore.
 pushd tools ; git pull --no-edit ; popd
