@@ -33,14 +33,14 @@ silent=false
 success=0
 failure=0
 
-for validf in true false; do 
+for validf in true false; do
     if [ "$validf" = true ]; then
 	d="$VALID_DIR"
     else
 	d="$NONVALID_DIR";
     fi
-    
-    for f in $d/*.conllu; do 
+
+    for f in $d/*.conllu; do
 	OUTP=$($VALIDATOR $f 2>&1)
 	if [ $? -eq 0 ]; then
 	    validv=true

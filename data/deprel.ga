@@ -3,8 +3,10 @@ case:voc
 compound:prt
 csubj:cleft
 csubj:cop
+flat:foreign
+flat:name
 mark:prt
 nmod:poss
-nmod:prep
-nmod:tmod
+obl:prep
+obl:tmod
 xcomp:pred

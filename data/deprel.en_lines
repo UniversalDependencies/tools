@@ -1,7 +1,11 @@
 acl:relcl
 cc:preconj
 compound:prt
+csubj:pass
 det:predet
 nmod:npmod
 nmod:poss
 nmod:tmod
+nsubj:pass
+obl:agent
+

@@ -8,4 +8,6 @@ Person[psor]=3
 PronType=Qnt
 PronType=Ref
 Tense=Aor
+Tense=FutPlan
 Voice=Coop
+VerbForm=Cov

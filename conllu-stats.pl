@@ -70,6 +70,7 @@ my %languages =
     'grc' => {'name' => 'Ancient Greek', 'i' => 1, 'c' => ','},
     'ar'  => {'name' => 'Arabic',     'i' => 0, 'c' => '،'},
     'eu'  => {'name' => 'Basque',     'i' => 1, 'c' => ','},
+    'be'  => {'name' => 'Belarusian', 'i' => 1, 'c' => ','},
     'bg'  => {'name' => 'Bulgarian',  'i' => 1, 'c' => ','},
     'ca'  => {'name' => 'Catalan',    'i' => 1, 'c' => ','},
     'zh'  => {'name' => 'Chinese',    'i' => 0, 'c' => '、'},
@@ -97,6 +98,7 @@ my %languages =
     'ko'  => {'name' => 'Korean',     'i' => 0, 'c' => ','},
     'la'  => {'name' => 'Latin',      'i' => 1, 'c' => ','},
     'lv'  => {'name' => 'Latvian',    'i' => 1, 'c' => ','},
+    'lt'  => {'name' => 'Lithuanian', 'i' => 1, 'c' => ','},
     'no'  => {'name' => 'Norwegian',  'i' => 1, 'c' => ','},
     'cu'  => {'name' => 'Old Church Slavonic', 'i' => 1, 'c' => ','},
     'fa'  => {'name' => 'Persian',    'i' => 0, 'c' => '،'},
@@ -254,7 +256,9 @@ sub process_treebank
             # Get rid of the line break.
             s/\r?\n$//;
             # Split line into columns.
-            my @columns = split(/\s+/, $_);
+            # Since UD 2.0 the FORM and LEMMA may contain the space character,
+            # hence we cannot split on /\s+/ but we must use /\t/ only!
+            my @columns = split(/\t/, $_);
             push(@sentence, \@columns);
         }
     }

@@ -1,1 +1,12 @@
-VerbForm=Imps
+Animacy[gram]=Anim
+Animacy[gram]=Inan
+Hyph=Yes
+NameType=Giv
+NameType=Pat
+NameType=Sur
+PrepCase=Pre
+Style=Coll
+Style=Odd
+Style=Rare
+Variant=Short
+Variant=Uncontr

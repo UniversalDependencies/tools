@@ -1,0 +1,6 @@
+# sent_id = missing-space-after
+# text = Dog.
+# not valid: there must be an empty line also after the last sentence.
+1	Dog	dog	NOUN	N	_	0	root	_	_
+2	.	.	PUNCT	P	_	1	punct	_	_
+

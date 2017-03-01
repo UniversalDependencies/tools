@@ -1,3 +1,4 @@
+aux:pass
 acl:relcl
 cc:preconj
 compound:nn
@@ -5,7 +6,9 @@ compound:prt
 csubj:cop
 nmod:gobj
 nmod:gsubj
-nmod:own
 nmod:poss
 nsubj:cop
 xcomp:ds
+flat:name
+flat:foreign
+cop:own

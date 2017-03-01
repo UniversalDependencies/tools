@@ -1,0 +1,9 @@
+advmod:emph
+expl:pass
+obj:dir
+aux:pass
+nsubj:pass
+csubj:pass
+obl:agent
+flat:name
+flat:foreign

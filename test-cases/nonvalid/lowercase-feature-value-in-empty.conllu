@@ -1,5 +1,6 @@
+# sent_id = lowercase-feature-value-in-empty
+# text = This holes
 # not valid: feature values must have the form [A-Z0-9][a-zA-Z0-9]*
-# sent_id = test-31
 1	This	this	PRON	_	_	0	root	1.1:nsubj	_
 1.1	_	_	_	_	Tense=pres	_	_	0:root	_
 2	holes	hole	NOUN	_	_	1	orphan	1.1:obj	_

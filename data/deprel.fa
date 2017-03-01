@@ -1,7 +1,12 @@
 acl:relcl
+aux:pass
 cc:preconj
 compound:lvc
 compound:prt
+csubj:pass
 det:predet
+flat:foreign
 nmod:poss
 nsubj:nc
+nsubj:pass
+

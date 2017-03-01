@@ -1,5 +1,6 @@
+# sent_id = misordered-layered-feature
+# text = layered
 # not valid: features with a [layer] must appear after the corresponding
 # non-layered feature (alphabetical order)
-# sent_id = test-39
 1	layered	layered	NOUN	N	Number[psor]=Plur|Number=Sing	0	root	_	_
 

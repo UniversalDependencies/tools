@@ -1,7 +1,11 @@
 acl:relcl
-cc:preconj
+aux:pass
+csubj:pass
+flat:foreign
+flat:name
 nmod:gobj
 nmod:tmod
-nummod:entity
+nsubj:pass
 nummod:gov
 obl:agent
+nummod:entity
