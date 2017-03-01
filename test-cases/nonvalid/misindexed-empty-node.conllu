@@ -1,4 +1,4 @@
-# sent_id = nonsequential-empty-node-id
+# sent_id = misindexed-empty-node
 # text = This holes
 # not valid: empty nodes indexed i.1, i.2, etc. after word with index i
 1	This	this	PRON	_	_	0	root	2.2:nsubj	_
