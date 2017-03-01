@@ -207,6 +207,29 @@ foreach my $folder (@folders)
                 print("$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
                 $n_errors++;
             }
+            # Check that all required metadata items are present in the README file.
+            # New contributors sometimes forget to add it. Old contributors sometimes modify it for no good reason ('Data available since' should never change!)
+            # And occasionally people delete the metadata section completely, despite being told not to do so (Hebrew team in the last minute of UD 2.0!)
+            if($metadata->{'Data available since'} !~ m/UD\s*v([0-9]+\.[0-9]+)/)
+            {
+                print("$folder: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
+                $n_errors++;
+            }
+            if($metadata->{Genre} !~ m/\w/)
+            {
+                print("$folder: Missing list of genres: '$metadata->{Genre}'\n");
+                $n_errors++;
+            }
+            if($metadata->{License} !~ m/\w/)
+            {
+                print("$folder: Missing identification of license in README: '$metadata->{License}'\n");
+                $n_errors++;
+            }
+            if($metadata->{Contributors} !~ m/\w/)
+            {
+                print("$folder: Missing list of contributors: '$metadata->{Contributors}'\n");
+                $n_errors++;
+            }
             if($metadata->{Contact} !~ m/\@/)
             {
                 print("$folder: Missing contact e-mail: '$metadata->{Contact}'\n");
