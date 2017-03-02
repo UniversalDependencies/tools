@@ -48,8 +48,6 @@ def verify_req_files(args):
 # verify metadata section of README
 def verify_readme_metadata(args):
     READMES = ['README.md', 'README.txt']
-    PREFIX = "=== Machine-readable metadata (DO NOT REMOVE!) ================================"
-    POSTFIX = "==============================================================================="
     CHANGELOG = "changelog"
     REQUIRED_FIELDS = {
         'Documentation status': ['complete', 'partial', 'stub'],
@@ -88,7 +86,7 @@ def verify_readme_metadata(args):
                 return ("Line %d: Found more than one metadata section, there should only be one" % i, 2)
             prefix_found = True
             continue
-        if "===" in line:
+        if "=====" in line:
             postfix_found = True
             continue
         if prefix_found and not postfix_found:
