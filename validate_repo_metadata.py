@@ -14,14 +14,15 @@ from io import open
 import os
 import sys
 import re
-
+import argparse
+import glob
 
 CURRENT_RELEASE = "UD v2.0"
 
 
 # verify non-README files exist
-def verify_req_files():
-    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+def verify_req_files(args):
+    files = [f for f in os.listdir(args.repodir[0]) if os.path.isfile(os.path.join(args.repodir[0],f))]
     found_train = False
     found_dev = False
     found_license = False
@@ -45,7 +46,7 @@ def verify_req_files():
 
 
 # verify metadata section of README
-def verify_readme_metadata():
+def verify_readme_metadata(args):
     READMES = ['README.md', 'README.txt']
     PREFIX = "=== Machine-readable metadata (DO NOT REMOVE!) ================================"
     POSTFIX = "==============================================================================="
@@ -61,7 +62,7 @@ def verify_readme_metadata():
     }
 
     # look for README
-    files = [f for f in os.listdir('.') if os.path.isfile(f) and f in READMES]
+    files = [f for f in os.listdir(args.repodir[0]) if os.path.isfile(os.path.join(args.repodir[0],f)) and f in READMES]
     if len(files) == 0:
         return ("No README file found, expected one of [%s]" % ', '.join(READMES), 1)
     if len(files) > 1:
@@ -69,7 +70,7 @@ def verify_readme_metadata():
 
     README = []
     try:
-        f = open(files[0], 'rt')
+        f = open(os.path.join(args.repodir[0],files[0]), 'rt')
         README = [line.strip() for line in f.readlines()]
     except:
         return ("Failed reading README file %s" % files[0], 1)
@@ -82,12 +83,12 @@ def verify_readme_metadata():
     postfix_found = False
     changelog_line_num = 0
     for i, line in enumerate(README, start=1):
-        if line == PREFIX:
+        if "Machine-readable metadata" in line:
             if prefix_found:
                 return ("Line %d: Found more than one metadata section, there should only be one" % i, 2)
             prefix_found = True
             continue
-        if line == POSTFIX:
+        if "===" in line:
             postfix_found = True
             continue
         if prefix_found and not postfix_found:
@@ -125,13 +126,22 @@ def verify_readme_metadata():
     return (None, 0)
 
 
-TESTS = [verify_req_files, verify_readme_metadata]
+if __name__=="__main__":
+    parser = argparse.ArgumentParser(description='Validate a UD repository for metadata')
+    parser.add_argument('repodir', nargs=1, help='The directory where the repo resides')
+    args = parser.parse_args()
 
-for test_func in TESTS:
-    (reason, err_code) = test_func()
-    if err_code != 0:
-        print("***ERROR: pre-commit hook found a missing requirement, failing commit***")
-        print(reason)
-        sys.exit(err_code)
+    TESTS = [verify_req_files, verify_readme_metadata]
 
-sys.exit(0)
+    passed=True
+    for test_func in TESTS:
+        (reason, err_code) = test_func(args=args)
+        if err_code != 0:
+            print("*** Repository metadata errors ***")
+            print(reason)
+            passed=False
+
+    if passed:
+        sys.exit(0)
+    else:
+        sys.exit(1)
