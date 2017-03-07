@@ -1,0 +1,7 @@
+# sent_id = misindexed-empty-node
+# text = This holes
+# not valid: empty nodes indexed i.1, i.2, etc. after word with index i
+1	This	this	PRON	_	_	0	root	2.2:nsubj	_
+2.2	_	_	_	_	_	_	_	0:root	_
+2	holes	hole	NOUN	_	_	1	orphan	2.2:obj	_
+
