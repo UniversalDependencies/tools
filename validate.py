@@ -426,10 +426,10 @@ def validate_ID_sequence(tree):
     #Check elementary sanity of word intervals
     for (b,e) in tokens:
         if e<b: #end before beginning
-            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
             continue
         if b<1 or e>len(words): #out of range
-            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
             continue
 
 def subset_to_words(tree):
