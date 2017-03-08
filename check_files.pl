@@ -122,6 +122,8 @@ my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
+my @shared_task_large_folders; # larger training data than development data
+my @shared_task_small_folders; # less training data; we will merge train+dev and call it train for the shared task
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -253,40 +255,83 @@ foreach my $folder (@folders)
                 generate_license($metadata->{License});
                 $n_errors++;
             }
-            # Check the names of the data files.
+            # Check the names and sizes of the data files.
             my $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $prefix = $key.'-ud';
-            if($folder !~ m/^UD_(Czech|Kazakh|Uyghur)$/ && !-f "$prefix-train.conllu")
+            my $nwtrain = 0;
+            my $nwdev = 0;
+            my $nwtest = 0;
+            # Verify training data where expected.
+            if($folder =~ m/^UD_(Kazakh|Uyghur)$/)
             {
-                print("$folder: missing $prefix-train.conllu\n");
-                $n_errors++;
+                # No training data expected because there is too little data. We will remove the test when the situation changes.
+                if(-f "$prefix-train.conllu")
+                {
+                    print("$folder: assuming that there are no training data, nevertheless found $prefix-train.conllu\n");
+                    $n_errors++;
+                }
             }
-            elsif($folder eq 'UD_Czech' && (!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu"))
+            elsif($folder eq 'UD_Czech')
             {
-                print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
-                $n_errors++;
+                # The data is split into four files because of the size limits.
+                if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
+                {
+                        print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+                        $n_errors++;
+                }
+                my $stats = collect_statistics_about_ud_file("$prefix-train-c.conllu");
+                $nwtrain = $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-l.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-m.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-v.conllu");
+                $nwtrain += $stats->{nword};
             }
+            else # all other treebanks
+            {
+                if(!-f "$prefix-train.conllu")
+                {
+                        print("$folder: missing $prefix-train.conllu\n");
+                        $n_errors++;
+                }
+                else
+                {
+                    my $stats = collect_statistics_about_ud_file("$prefix-train.conllu");
+                    $nwtrain = $stats->{nword};
+                }
+            }
+            # Verify development data (expected in all released treebanks).
             if(!-f "$prefix-dev.conllu")
             {
                 print("$folder: missing $prefix-dev.conllu\n");
                 $n_errors++;
             }
-            # Dev tests of treebanks in the shared task should contain at least 10000 words (exception: Kazakh, Uyghur and Swedish).
-            # We do not have more Kazakh and Uyghur data (there is no training data).
-            # For Swedish, there is almost 10000 dev words and over 10000 test words, so it is better to keep the old data split.
-            elsif($is_in_shared_task && $folder !~ m/^UD_(Kazakh|Uyghur|Swedish)$/)
+            else
             {
                 my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
-                if($stats->{nword} < 10000)
+                $nwdev = $stats->{nword};
+                # Dev tests of treebanks in the shared task should contain at least 10000 words (exception: Kazakh, Uyghur and Swedish).
+                # We do not have more Kazakh and Uyghur data (there is no training data).
+                # For Swedish, there is almost 10000 dev words and over 10000 test words, so it is better to keep the old data split.
+                if($is_in_shared_task && $folder !~ m/^UD_(Kazakh|Uyghur|Swedish)$/ && $nwdev < 10000)
                 {
-                    print("$folder: $prefix-dev.conllu contains only $stats->{nword} words\n");
+                    print("$folder: $prefix-dev.conllu contains only $nwdev words\n");
                     $n_errors++;
                 }
             }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
+                if($nwtrain < $nwdev)
+                {
+                    push(@shared_task_small_folders, $folder);
+                }
+                else
+                {
+                    push(@shared_task_large_folders, $folder);
+                }
                 if(-f "$prefix-test.conllu")
                 {
                     print("$folder: contains $prefix-test.conllu, which must not be released!\n");
@@ -424,6 +469,10 @@ if(scalar(@invalid_folders) > 0)
 # Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
 print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");
 print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
+my $n_shared_task_large = scalar(@shared_task_large_folders);
+my $n_shared_task_small = scalar(@shared_task_small_folders);
+print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
+print("$n_shared_task_small of them are considered small and their dev+train data will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
 my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
