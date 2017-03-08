@@ -4,6 +4,7 @@ UDPATH=/net/work/people/zeman/unidep
 SRCREL=$UDPATH/release-2.0/ud-treebanks-conll2017
 SRCTST=$UDPATH/testsets
 DST=$UDPATH/conll2017data-tira
+rm -rf $DST
 mkdir -p $DST/conll2017-training-data
 mkdir -p $DST/conll2017-dev-data-gold
 mkdir -p $DST/conll2017-dev-data-input
@@ -22,10 +23,12 @@ for i in UD_* ; do
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
   echo '  {"name":"'$i'", "ltcode":"'$ltcode'", "lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "goldfile":"'$ltcode'.conllu", "preprocessed": [{"udpipe":"'$ltcode'-udpipe.conllu"}], "outfile":"'$ltcode'.conllu"},' >> $DST/metadata.json
+  chmod 644 $i/$ltcode-ud-train.conllu
   cp $i/$ltcode-ud-train.conllu $DST/conll2017-training-data/$ltcode.conllu
   cp $i/$ltcode-ud-train.txt    $DST/conll2017-training-data/$ltcode.txt
   # Some small treebanks do not have any dev set.
   if [ -f $i/$ltcode-ud-dev.conllu ] ; then
+    chmod 644 $i/$ltcode-ud-dev.conllu
     cp $i/$ltcode-ud-dev.conllu   $DST/conll2017-dev-data-gold/$ltcode.conllu
     cp $i/$ltcode-ud-dev.txt      $DST/conll2017-dev-data-input/$ltcode.txt
   fi
