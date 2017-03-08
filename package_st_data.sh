@@ -24,8 +24,11 @@ for i in UD_* ; do
   echo '  {"name":"'$i'", "ltcode":"'$ltcode'", "lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "goldfile":"'$ltcode'.conllu", "preprocessed": [{"udpipe":"'$ltcode'-udpipe.conllu"}], "outfile":"'$ltcode'.conllu"}' >> $DST/metadata.json
   cp $i/$ltcode-ud-train.conllu $DST/conll2017-training-data/$ltcode.conllu
   cp $i/$ltcode-ud-train.txt    $DST/conll2017-training-data/$ltcode.txt
-  cp $i/$ltcode-ud-dev.conllu   $DST/conll2017-dev-data-gold/$ltcode.conllu
-  cp $i/$ltcode-ud-dev.txt      $DST/conll2017-dev-data-input/$ltcode.txt
+  # Some small treebanks do not have any dev set.
+  if [ -f $i/$ltcode-ud-dev.conllu ] ; then
+    cp $i/$ltcode-ud-dev.conllu   $DST/conll2017-dev-data-gold/$ltcode.conllu
+    cp $i/$ltcode-ud-dev.txt      $DST/conll2017-dev-data-input/$ltcode.txt
+  fi
   cp $SRCTST/$ltcode-ud-test.conllu $DST/conll2017-test-data-gold/$ltcode.conllu
   ../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DST/conll2017-test-data-input/$ltcode.txt
   # Create a micro-dataset for debugging purposes.
