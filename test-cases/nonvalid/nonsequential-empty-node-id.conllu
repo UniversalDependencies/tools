@@ -1,0 +1,7 @@
+# sent_id = nonsequential-empty-node-id
+# text = This holes
+# not valid: empty nodes must be indexed i.1, i.2, etc. (issue #428)
+1	This	this	PRON	_	_	0	root	1.2:nsubj	_
+1.2	_	_	_	_	_	_	_	0:root	_
+2	holes	hole	NOUN	_	_	1	orphan	1.2:obj	_
+

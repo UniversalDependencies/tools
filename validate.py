@@ -112,6 +112,11 @@ def is_multiword_token(cols):
 def is_empty_node(cols):
     return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
 
+def parse_empty_node_id(cols):
+    m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
+    assert m, 'parse_empty_node_id with non-empty node'
+    return m.groups()
+
 ###### Metadata tests #########
 
 sentid_re=re.compile(ur"^# sent_id\s*=\s*(\S+)$")
@@ -388,9 +393,13 @@ def validate_ID_sequence(tree):
     """
     words=[]
     tokens=[]
+    current_word_id, next_empty_id = 0, 1
     for cols in tree:
+        if not is_empty_node(cols):
+            next_empty_id = 1    # reset sequence
         if is_word(cols):
             t_id=int(cols[ID])
+            current_word_id = t_id
             words.append(t_id)
             #Not covered by the previous interval?
             if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
@@ -406,17 +415,21 @@ def validate_ID_sequence(tree):
                 continue
             tokens.append((beg,end))
         elif is_empty_node(cols):
-            pass    # TODO
+            word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
+            if word_id != current_word_id or empty_id != next_empty_id:
+                warn(u"Empty node id %s, expected %d.%d" %
+                     (cols[ID], current_word_id, next_empty_id), u"Format")
+            next_empty_id += 1
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
         warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),u"Format",lineno=False)
     #Check elementary sanity of word intervals
     for (b,e) in tokens:
         if e<b: #end before beginning
-            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
             continue
         if b<1 or e>len(words): #out of range
-            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
             continue
 
 def subset_to_words(tree):
