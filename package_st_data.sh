@@ -36,7 +36,7 @@ for i in UD_* ; do
   ../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DST/conll2017-test-data-input/$ltcode.txt
   # Create a micro-dataset for debugging purposes.
   if [ "$i" = "UD_English" ] || [ "$i" = "UD_Turkish" ] || [ "$i" = "UD_Arabic" ] || [ "$i" = "UD_Chinese" ] || [ "$i" = "UD_Vietnamese" ] ; then
-    split_conll.pl -head 50 $i/$ltcode-ud-dev.conllu $DST/conll2017-micro-data-gold/$ltcode.conllu /dev/null
+    split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DST/conll2017-micro-data-gold/$ltcode.conllu /dev/null
     ../../tools/conllu_to_text.pl --lang $lcode < $DST/conll2017-micro-data-gold/$ltcode.conllu > $DST/conll2017-micro-data-input/$ltcode.txt
   fi
 done
