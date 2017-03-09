@@ -5,16 +5,17 @@ SRCREL=$UDPATH/release-2.0/ud-treebanks-conll2017
 SRCTST=$UDPATH/testsets
 DST=$UDPATH/conll2017data-tira
 rm -rf $DST
-mkdir -p $DST/conll2017-training-data
-mkdir -p $DST/conll2017-dev-data-gold
-mkdir -p $DST/conll2017-dev-data-input
-mkdir -p $DST/conll2017-dev-data-output
-mkdir -p $DST/conll2017-test-data-gold
-mkdir -p $DST/conll2017-test-data-input
-mkdir -p $DST/conll2017-test-data-output
-mkdir -p $DST/conll2017-micro-data-gold
-mkdir -p $DST/conll2017-micro-data-input
-mkdir -p $DST/conll2017-micro-data-output
+PRFX=""
+mkdir -p $DST/${PRFX}training-data
+mkdir -p $DST/${PRFX}dev-data-gold
+mkdir -p $DST/${PRFX}dev-data-input
+mkdir -p $DST/${PRFX}dev-data-output
+mkdir -p $DST/${PRFX}test-data-gold
+mkdir -p $DST/${PRFX}test-data-input
+mkdir -p $DST/${PRFX}test-data-output
+mkdir -p $DST/${PRFX}micro-data-gold
+mkdir -p $DST/${PRFX}micro-data-input
+mkdir -p $DST/${PRFX}micro-data-output
 cd $SRCREL
 echo '[' > $DST/metadata.json
 for i in UD_* ; do
@@ -24,20 +25,20 @@ for i in UD_* ; do
   echo $ltcode
   echo '  {"name":"'$i'", "ltcode":"'$ltcode'", "lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "goldfile":"'$ltcode'.conllu", "preprocessed": [{"udpipe":"'$ltcode'-udpipe.conllu"}], "outfile":"'$ltcode'.conllu"},' >> $DST/metadata.json
   chmod 644 $i/$ltcode-ud-train.conllu
-  cp $i/$ltcode-ud-train.conllu $DST/conll2017-training-data/$ltcode.conllu
-  cp $i/$ltcode-ud-train.txt    $DST/conll2017-training-data/$ltcode.txt
+  cp $i/$ltcode-ud-train.conllu $DST/${PRFX}training-data/$ltcode.conllu
+  cp $i/$ltcode-ud-train.txt    $DST/${PRFX}training-data/$ltcode.txt
   # Some small treebanks do not have any dev set.
   if [ -f $i/$ltcode-ud-dev.conllu ] ; then
     chmod 644 $i/$ltcode-ud-dev.conllu
-    cp $i/$ltcode-ud-dev.conllu   $DST/conll2017-dev-data-gold/$ltcode.conllu
-    cp $i/$ltcode-ud-dev.txt      $DST/conll2017-dev-data-input/$ltcode.txt
+    cp $i/$ltcode-ud-dev.conllu   $DST/${PRFX}dev-data-gold/$ltcode.conllu
+    cp $i/$ltcode-ud-dev.txt      $DST/${PRFX}dev-data-input/$ltcode.txt
   fi
-  cp $SRCTST/$ltcode-ud-test.conllu $DST/conll2017-test-data-gold/$ltcode.conllu
-  ../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DST/conll2017-test-data-input/$ltcode.txt
+  cp $SRCTST/$ltcode-ud-test.conllu $DST/${PRFX}test-data-gold/$ltcode.conllu
+  ../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DST/${PRFX}test-data-input/$ltcode.txt
   # Create a micro-dataset for debugging purposes.
   if [ "$i" = "UD_English" ] || [ "$i" = "UD_Turkish" ] || [ "$i" = "UD_Arabic" ] || [ "$i" = "UD_Chinese" ] || [ "$i" = "UD_Vietnamese" ] ; then
-    split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DST/conll2017-micro-data-gold/$ltcode.conllu /dev/null
-    ../../tools/conllu_to_text.pl --lang $lcode < $DST/conll2017-micro-data-gold/$ltcode.conllu > $DST/conll2017-micro-data-input/$ltcode.txt
+    split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DST/${PRFX}micro-data-gold/$ltcode.conllu /dev/null
+    ../../tools/conllu_to_text.pl --lang $lcode < $DST/${PRFX}micro-data-gold/$ltcode.conllu > $DST/${PRFX}micro-data-input/$ltcode.txt
   fi
 done
 echo ']' >> $DST/metadata.json
