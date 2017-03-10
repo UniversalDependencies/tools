@@ -22,6 +22,10 @@ while(<>)
     {
         s/\r?\n$//;
         my @fields = split(/\t/, $_);
+        # CoNLL-U v2 (December 2016) allows spaces in FORM and LEMMA but older tools may not survive it.
+        # Replace spaces by underscores.
+        $fields[1] =~ s/ /_/g;
+        $fields[2] =~ s/ /_/g;
         # CoNLL-X specification did not allow POSTAG to be empty if there was CPOSTAG, and some tools rely on it.
         # Also, some tools rely on POSTAG being a fine-grained version of CPOSTAG, i.e. CPOSTAG should be always
         # inferrable from POSTAG. This is not an explicit requirement in the format specification but we will
