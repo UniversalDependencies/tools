@@ -50,6 +50,7 @@ sub buffer
         print("$line\n");
     }
     # We must not forget to flush the rest of the buffer at the end!
+    return $buffer;
 }
 
 
@@ -62,7 +63,7 @@ sub process_plain_text
     my $buffer;
     while(<>)
     {
-        buffer($buffer, $_);
+        $buffer = buffer($buffer, $_);
     }
     print("$buffer\n");
 }
@@ -79,7 +80,7 @@ sub process_conllu_sentence_text
     {
         if(m/^\#\s*text\s*=\s*(.+)$/)
         {
-            buffer($buffer, $1);
+            $buffer = buffer($buffer, $1);
         }
     }
     print("$buffer\n");
@@ -99,12 +100,12 @@ sub process_conllu_forms
         if(m/^\d+-(\d+)\t(.+?)\t/)
         {
             $mwtlast = $1;
-            buffer($buffer, $2);
+            $buffer = buffer($buffer, $2);
         }
         elsif(m/^(\d+)\t(.+?)\t/ && !(defined($mwtlast) && $1<=$mwtlast))
         {
             $mwtlast = undef;
-            buffer($buffer, $2);
+            $buffer = buffer($buffer, $2);
         }
         elsif(m/^\D/)
         {
