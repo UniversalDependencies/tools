@@ -114,6 +114,7 @@ while(<>)
         $newpar = 0;
         $text = '';
         $ftext = '';
+        $mwtlast = undef;
     }
 }
 # There may be unflushed buffer contents after the last sentence, less than 80 characters
