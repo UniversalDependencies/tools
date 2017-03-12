@@ -15,11 +15,11 @@ GetOptions
 (
     'input=s' => \$input
 );
-if($input =~ m/^conlluform/i)
+if($input =~ m/^conllu?form/i)
 {
     process_conllu_forms();
 }
-elsif($input =~ m/^conllutext/i)
+elsif($input =~ m/^conllu?text/i)
 {
     process_conllu_sentence_text();
 }
