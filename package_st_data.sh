@@ -1,9 +1,10 @@
 #!/bin/bash
 # Scans the contents of the release-2.0/ud-treebanks-conll2017 folder and copies the shared task files into folders that should appear in TIRA.
 UDPATH=/net/work/people/zeman/unidep
-SRCREL=$UDPATH/release-2.0/ud-treebanks-conll2017
+SRCREL=$UDPATH/release-2.0.1/ud-treebanks-conll2017
 SRCTST=$UDPATH/testsets
-DST=$UDPATH/conll2017data-tira
+DSTFOLDER=conll2017data-tira
+DST=$UDPATH/$DSTFOLDER
 rm -rf $DST
 PRFX=""
 mkdir -p $DST/${PRFX}training-data
@@ -42,7 +43,9 @@ for i in UD_* ; do
   fi
 done
 echo ']' >> $DST/metadata.json
-
+cd $DST/..
+rm tira.zip
+zip -r tira.zip $DSTFOLDER
 
 ###!!! Mohl by Milan pro dev a test data alternativně vyrobit verze, které ani segmentaci nemají ruční?
 #cp $i/$lt od Milana s morfologií, ale zaslepenou syntaxí!
