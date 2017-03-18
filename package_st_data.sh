@@ -100,12 +100,6 @@ for i in UD_* ; do
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
-  if [ -z "$firstdev" ] ; then
-    firstdev="nolonger"
-  else
-    echo , >> $DSTDEVI/metadata.json
-  fi
-  echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-psegmor.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTDEVI/metadata.json
   chmod 644 $i/$ltcode-ud-train.conllu
   cp $i/$ltcode-ud-train.conllu         $DSTTRAING/$ltcode.conllu
   cp $i/$ltcode-ud-train.conllu         $DSTTRAINI/$ltcode.conllu
@@ -113,6 +107,12 @@ for i in UD_* ; do
   cp $i/$ltcode-ud-train.txt            $DSTTRAINI/$ltcode.txt
   # Some small treebanks do not have any dev set.
   if [ -f $i/$ltcode-ud-dev.conllu ] ; then
+    if [ -z "$firstdev" ] ; then
+      firstdev="nolonger"
+    else
+      echo , >> $DSTDEVI/metadata.json
+    fi
+    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-psegmor.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTDEVI/metadata.json
     chmod 644 $i/$ltcode-ud-dev.conllu
     cp $i/$ltcode-ud-dev.conllu         $DSTDEVG/$ltcode.conllu
     cp $i/$ltcode-ud-dev.conllu         $DSTDEVI/$ltcode.conllu
