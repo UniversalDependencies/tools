@@ -58,7 +58,7 @@ cp $DSTTRAINI/README.txt $DSTDEVI/README.txt
 # In the folders that the system can get as input, we will create metadata.json.
 # The system should use it to identify what files it is supposed to process and
 # how. Metadata fields:
-echo << EOF > $DST/README-metadata.txt
+cat << EOF > $DST/README-metadata.txt
 
 The system must read metadata.json to obtain the list of test sets it is
 supposed to process. Each test set has a record in the list, and the fields in
@@ -145,5 +145,5 @@ echo ']' >> $DSTTRIALI/metadata.json
 cd $DST/..
 rm tira.zip
 cd $DST
-zip -r ../tira.zip $DSTFOLDER
+zip -r ../tira.zip *
 
