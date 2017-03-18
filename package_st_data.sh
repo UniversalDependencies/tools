@@ -96,5 +96,6 @@ done
 ###!!!echo ']' >> $DST/metadata.json
 cd $DST/..
 rm tira.zip
-zip -r tira.zip $DSTFOLDER
+cd $DST
+zip -r ../tira.zip $DSTFOLDER
 
