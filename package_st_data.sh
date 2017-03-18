@@ -3,50 +3,98 @@
 UDPATH=/net/work/people/zeman/unidep
 SRCREL=$UDPATH/release-2.0.1/ud-treebanks-conll2017
 SRCTST=$UDPATH/testsets
-DSTFOLDER=conll2017data-tira
+SRCMOR=/home/straka/troja/conll2017-models-final/ud-2.0-conll17-crossfold-morphology
+DSTFOLDER=data-for-tira
 DST=$UDPATH/$DSTFOLDER
+# Expected folder structure at TIRA: Datasets are mounted under /media/*. Each
+# of the following folders has subfolders for all shared tasks hosted at TIRA.
+# Ours is called "universal-dependency-learning", its subfolders could be
+# datasets of various years/rounds, but we currently have only CoNLL 2017. All
+# subfolders of "universal-dependency-learning" start with "conll17-universal-dependency-learning-",
+# which seems unnecessarily long. We should ask Martin Potthast to shorten it.
+# /media/training-datasets: Only this folder can be accessed by the participants.
+#     It contains the training data (just in case they want to train something
+#     here?), the development data (participants can access the development data
+#     directly from their virtual machine, and they can run their system through
+#     the web interface with the development data as input), and trial data
+#     (a small subset of the development data, used for fast debugging).
+#     These datasets may include the gold standard so that the participants can
+#     access it when they experiment in their virtual machine; but a copy of the
+#     gold standard must also exist in the "truth" folder mentioned below.
+# /media/training-datasets-truth: Not accessible by the participants, although
+#     the other tasks seem to have just a copy of the training and development
+#     data here. This is probably the place where the evaluation script takes
+#     the gold standard from.
+# /media/test-datasets: Blind test data used as input for the systems. The
+#     participants normally do not see it, their system only can access it when
+#     the virtual machine is "sandboxed", to prevent information leaks.
+#     Of course this folder must not contain gold-standard data.
+# /media/test-datasets-truth: Gold standard test data used by the evaluation
+#     script.
+TASK="universal-dependency-learning/conll17-ud"
+DATE="2017-03-18"
+DSTTRAINI="$DST/training-datasets/$TASK-training-$DATE"
+DSTTRAING="$DST/training-datasets-truth/$TASK-training-$DATE"
+DSTDEVI="$DST/training-datasets/$TASK-development-$DATE"
+DSTDEVG="$DST/training-datasets-truth/$TASK-development-$DATE"
+DSTTRIALI="$DST/training-datasets/$TASK-trial-$DATE"
+DSTTRIALG="$DST/training-datasets-truth/$TASK-trial-$DATE"
+###!!! We will not upload test data until they are complete!
+DSTTESTI="$DST/test-datasets/$TASK-test-$DATE"
+DSTTESTG="$DST/test-datasets-truth/$TASK-test-$DATE"
+# Generate the folders.
 rm -rf $DST
-PRFX=""
-mkdir -p $DST/${PRFX}training-data
-mkdir -p $DST/${PRFX}dev-data-gold
-mkdir -p $DST/${PRFX}dev-data-input
-mkdir -p $DST/${PRFX}dev-data-output
-mkdir -p $DST/${PRFX}test-data-gold
-mkdir -p $DST/${PRFX}test-data-input
-mkdir -p $DST/${PRFX}test-data-output
-mkdir -p $DST/${PRFX}micro-data-gold
-mkdir -p $DST/${PRFX}micro-data-input
-mkdir -p $DST/${PRFX}micro-data-output
+mkdir -p $DSTTRAINI
+mkdir -p $DSTTRAING
+mkdir -p $DSTDEVI
+mkdir -p $DSTDEVG
+mkdir -p $DSTTRIALI
+mkdir -p $DSTTRIALG
+echo code.conllu ........... gold standard data > $DSTTRAINI/README.txt
+echo code-pmor.conllu ...... gold segmentation and syntax, predicted morphology >> $DSTTRAINI/README.txt
+echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRAINI/README.txt
+echo code.txt .............. raw text input >> $DSTTRAINI/README.txt
+cp $DSTTRAINI/README.txt $DSTDEVI/README.txt
+echo Small subset of the development data, intended for debugging. > $DSTTRIALI/README.txt
+echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRIALI/README.txt
+echo code.txt .............. raw text input >> $DSTTRIALI/README.txt
+# Copy the data to the folders.
 cd $SRCREL
-echo '[' > $DST/metadata.json
+###!!!echo '[' > $DST/metadata.json
 for i in UD_* ; do
   ltcode=$(ls $i | grep train.conllu | perl -pe 's/-ud-train\.conllu$//')
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
-  echo '  {"name":"'$i'", "ltcode":"'$ltcode'", "lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "goldfile":"'$ltcode'.conllu", "preprocessed": [{"udpipe":"'$ltcode'-udpipe.conllu"}], "outfile":"'$ltcode'.conllu"},' >> $DST/metadata.json
+  ###!!!echo '  {"name":"'$i'", "ltcode":"'$ltcode'", "lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "goldfile":"'$ltcode'.conllu", "preprocessed": [{"udpipe":"'$ltcode'-udpipe.conllu"}], "outfile":"'$ltcode'.conllu"},' >> $DST/metadata.json
   chmod 644 $i/$ltcode-ud-train.conllu
-  cp $i/$ltcode-ud-train.conllu $DST/${PRFX}training-data/$ltcode.conllu
-  cp $i/$ltcode-ud-train.txt    $DST/${PRFX}training-data/$ltcode.txt
+  cp $i/$ltcode-ud-train.conllu         $DSTTRAING/$ltcode.conllu
+  cp $i/$ltcode-ud-train.conllu         $DSTTRAINI/$ltcode.conllu
+  cp $SRCMOR/$i/$ltcode-ud-train.conllu $DSTTRAINI/$ltcode-pmor.conllu
+  cp $i/$ltcode-ud-train.txt            $DSTTRAINI/$ltcode.txt
   # Some small treebanks do not have any dev set.
   if [ -f $i/$ltcode-ud-dev.conllu ] ; then
     chmod 644 $i/$ltcode-ud-dev.conllu
-    cp $i/$ltcode-ud-dev.conllu   $DST/${PRFX}dev-data-gold/$ltcode.conllu
-    cp $i/$ltcode-ud-dev.txt      $DST/${PRFX}dev-data-input/$ltcode.txt
+    cp $i/$ltcode-ud-dev.conllu         $DSTDEVG/$ltcode.conllu
+    cp $i/$ltcode-ud-dev.conllu         $DSTDEVI/$ltcode.conllu
+    cp $SRCMOR/$i/$ltcode-ud-dev.conllu $DSTDEVI/$ltcode-pmor.conllu
+    ###!!! We also need $DSTDEVI/$ltcode-psegmor.conllu. That should be available also for the test data.
+    cp $i/$ltcode-ud-dev.txt            $DSTDEVI/$ltcode.txt
   fi
-  cp $SRCTST/$ltcode-ud-test.conllu $DST/${PRFX}test-data-gold/$ltcode.conllu
-  ../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DST/${PRFX}test-data-input/$ltcode.txt
-  # Create a micro-dataset for debugging purposes.
+  # Create a trial dataset for debugging purposes.
+  # Unlike the development data, we will not provide the gold-standard file in the input folder.
+  # The purpose is to make the setting as similar to the test data as possible.
   if [ "$i" = "UD_English" ] || [ "$i" = "UD_Turkish" ] || [ "$i" = "UD_Arabic" ] || [ "$i" = "UD_Chinese" ] || [ "$i" = "UD_Vietnamese" ] ; then
-    split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DST/${PRFX}micro-data-gold/$ltcode.conllu /dev/null
-    ../../tools/conllu_to_text.pl --lang $lcode < $DST/${PRFX}micro-data-gold/$ltcode.conllu > $DST/${PRFX}micro-data-input/$ltcode.txt
+    split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DSTTRIALG/$ltcode.conllu /dev/null
+    ###!!! We also need $DSTTRIALI/$ltcode-psegmor.conllu.
+    ../../tools/conllu_to_text.pl --lang $lcode < $DSTTRIALG/$ltcode.conllu > $DSTTRIALI/$ltcode.txt
   fi
+  ###!!!cp $SRCTST/$ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
+  ###!!!../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
+  ###!!! We also need $DSTTESTI/$ltcode-psegmor.conllu.
 done
-echo ']' >> $DST/metadata.json
+###!!!echo ']' >> $DST/metadata.json
 cd $DST/..
 rm tira.zip
 zip -r tira.zip $DSTFOLDER
 
-###!!! Mohl by Milan pro dev a test data alternativně vyrobit verze, které ani segmentaci nemají ruční?
-#cp $i/$lt od Milana s morfologií, ale zaslepenou syntaxí!
-###!!! od Milana s morfologií test sety zatím nemáme! A pro některé test sety se bude muset morfologie získávat zvláštním způsobem!
