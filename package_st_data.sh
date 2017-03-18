@@ -55,18 +55,57 @@ echo code-pmor.conllu ...... gold segmentation and syntax, predicted morphology 
 echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRAINI/README.txt
 echo code.txt .............. raw text input >> $DSTTRAINI/README.txt
 cp $DSTTRAINI/README.txt $DSTDEVI/README.txt
+# In the folders that the system can get as input, we will create metadata.json.
+# The system should use it to identify what files it is supposed to process and
+# how. Metadata fields:
+echo << EOF > $DST/README-metadata.txt
+
+The system must read metadata.json to obtain the list of test sets it is
+supposed to process. Each test set has a record in the list, and the fields in
+the record are interpreted as follows:
+
+* lcode ..... language code (for UD languages same as in UD; but other
+              languages may appear here too)
+* tcode ..... treebank code (first UD treebank for the language: "0";
+              additional UD treebank: as in UD; extra non-UD treebanks may
+              appear here too)
+* rawfile ... name of raw text file (input of systems that do their own
+              segmentation)
+* psegmorfile ... name of CoNLL-U file with segmentation and morphology
+              predicted by UDPipe
+* outfile ... name of the corresponding CoNLL-U file that the system must
+              generate in the output folder
+
+Extra fields not needed by the participating system:
+
+* goldfile ... name of the corresponding gold-standard file to be used by the
+               evaluation script (in a separate folder)
+* ltcode ..... language_treebank code as in UD data (i.e. no "_0" for first
+               treebanks)
+* name ....... name of the corresponding UD repository, e.g.
+               "UD_Ancient_Greek-PROIEL"
+EOF
+cat $DST/README-metadata.txt >> $DSTDEVI/README.txt
 echo Small subset of the development data, intended for debugging. > $DSTTRIALI/README.txt
 echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRIALI/README.txt
 echo code.txt .............. raw text input >> $DSTTRIALI/README.txt
+cat $DST/README-metadata.txt >> $DSTTRIALI/README.txt
+rm $DST/README-metadata.txt
 # Copy the data to the folders.
 cd $SRCREL
-###!!!echo '[' > $DST/metadata.json
+echo '[' > $DSTDEVI/metadata.json
+echo '[' > $DSTTRIALI/metadata.json
 for i in UD_* ; do
   ltcode=$(ls $i | grep train.conllu | perl -pe 's/-ud-train\.conllu$//')
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
-  ###!!!echo '  {"name":"'$i'", "ltcode":"'$ltcode'", "lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "goldfile":"'$ltcode'.conllu", "preprocessed": [{"udpipe":"'$ltcode'-udpipe.conllu"}], "outfile":"'$ltcode'.conllu"},' >> $DST/metadata.json
+  if [ -z "$firstdev" ] ; then
+    firstdev="nolonger"
+  else
+    echo , >> $DSTDEVI/metadata.json
+  fi
+  echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-psegmor.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTDEVI/metadata.json
   chmod 644 $i/$ltcode-ud-train.conllu
   cp $i/$ltcode-ud-train.conllu         $DSTTRAING/$ltcode.conllu
   cp $i/$ltcode-ud-train.conllu         $DSTTRAINI/$ltcode.conllu
@@ -85,6 +124,12 @@ for i in UD_* ; do
   # Unlike the development data, we will not provide the gold-standard file in the input folder.
   # The purpose is to make the setting as similar to the test data as possible.
   if [ "$i" = "UD_English" ] || [ "$i" = "UD_Turkish" ] || [ "$i" = "UD_Arabic" ] || [ "$i" = "UD_Chinese" ] || [ "$i" = "UD_Vietnamese" ] ; then
+    if [ -z "$firsttrial" ] ; then
+      firsttrial="nolonger"
+    else
+      echo , >> $DSTTRIALI/metadata.json
+    fi
+    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-psegmor.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTTRIALI/metadata.json
     split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DSTTRIALG/$ltcode.conllu /dev/null
     ###!!! We also need $DSTTRIALI/$ltcode-psegmor.conllu.
     ../../tools/conllu_to_text.pl --lang $lcode < $DSTTRIALG/$ltcode.conllu > $DSTTRIALI/$ltcode.txt
@@ -93,7 +138,10 @@ for i in UD_* ; do
   ###!!!../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
   ###!!! We also need $DSTTESTI/$ltcode-psegmor.conllu.
 done
-###!!!echo ']' >> $DST/metadata.json
+echo >> $DSTDEVI/metadata.json
+echo >> $DSTTRIALI/metadata.json
+echo ']' >> $DSTDEVI/metadata.json
+echo ']' >> $DSTTRIALI/metadata.json
 cd $DST/..
 rm tira.zip
 cd $DST
