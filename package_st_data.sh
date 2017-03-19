@@ -38,7 +38,7 @@ DST=$UDPATH/$DSTFOLDER
 # /media/test-datasets-truth: Gold standard test data used by the evaluation
 #     script.
 TASK="universal-dependency-learning/conll17-ud"
-DATE="2017-03-18"
+DATE="2017-03-19"
 DSTTRAINI="$DST/training-datasets/$TASK-training-$DATE"
 DSTTRAING="$DST/training-datasets-truth/$TASK-training-$DATE"
 DSTDEVI="$DST/training-datasets/$TASK-development-$DATE"
