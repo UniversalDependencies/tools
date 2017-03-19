@@ -3,7 +3,13 @@
 UDPATH=/net/work/people/zeman/unidep
 SRCREL=$UDPATH/release-2.0.1/ud-treebanks-conll2017
 SRCTST=$UDPATH/testsets
+# SRCMOR: UDPipe morphology, gold segmentation and syntax. This has been released in Lindat.
+# SRCPSM: UDPipe segmentation and morphology, no syntax. Preprocessing for participants who do not want to do this on their own.
+# This folder contains a pipeline that Milan created for this. The script process-tira-devel-trial.sh runs it on devel and trial.
+# The script takes its input from my $DST folder (see below), thus it must be re-run if we change the data here. But right now
+# the results are there, in folders development and trial, called code-udpipe.conllu.
 SRCMOR=/home/straka/troja/conll2017-models-final/ud-2.0-conll17-crossfold-morphology
+SRCPSM=/home/straka/troja/conll2017-tira/udpipe-preprocess
 DSTFOLDER=data-for-tira
 DST=$UDPATH/$DSTFOLDER
 # Expected folder structure at TIRA: Datasets are mounted under /media/*. Each
@@ -50,10 +56,10 @@ mkdir -p $DSTDEVI
 mkdir -p $DSTDEVG
 mkdir -p $DSTTRIALI
 mkdir -p $DSTTRIALG
-echo code.conllu ........... gold standard data > $DSTTRAINI/README.txt
-echo code-pmor.conllu ...... gold segmentation and syntax, predicted morphology >> $DSTTRAINI/README.txt
-echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRAINI/README.txt
-echo code.txt .............. raw text input >> $DSTTRAINI/README.txt
+echo code.conllu .......... gold standard data > $DSTTRAINI/README.txt
+echo code-pmor.conllu ..... gold segmentation and syntax, predicted morphology >> $DSTTRAINI/README.txt
+echo code-udpipe.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRAINI/README.txt
+echo code.txt ............. raw text input >> $DSTTRAINI/README.txt
 cp $DSTTRAINI/README.txt $DSTDEVI/README.txt
 # In the folders that the system can get as input, we will create metadata.json.
 # The system should use it to identify what files it is supposed to process and
@@ -72,7 +78,7 @@ the record are interpreted as follows:
 * rawfile ... name of raw text file (input of systems that do their own
               segmentation)
 * psegmorfile ... name of CoNLL-U file with segmentation and morphology
-              predicted by UDPipe
+              predicted by a baseline system (currently UDPipe)
 * outfile ... name of the corresponding CoNLL-U file that the system must
               generate in the output folder
 
@@ -112,13 +118,13 @@ for i in UD_* ; do
     else
       echo , >> $DSTDEVI/metadata.json
     fi
-    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-psegmor.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTDEVI/metadata.json
+    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTDEVI/metadata.json
     chmod 644 $i/$ltcode-ud-dev.conllu
-    cp $i/$ltcode-ud-dev.conllu         $DSTDEVG/$ltcode.conllu
-    cp $i/$ltcode-ud-dev.conllu         $DSTDEVI/$ltcode.conllu
-    cp $SRCMOR/$i/$ltcode-ud-dev.conllu $DSTDEVI/$ltcode-pmor.conllu
-    ###!!! We also need $DSTDEVI/$ltcode-psegmor.conllu. That should be available also for the test data.
-    cp $i/$ltcode-ud-dev.txt            $DSTDEVI/$ltcode.txt
+    cp $i/$ltcode-ud-dev.conllu                  $DSTDEVG/$ltcode.conllu
+    cp $i/$ltcode-ud-dev.conllu                  $DSTDEVI/$ltcode.conllu
+    cp $SRCMOR/$i/$ltcode-ud-dev.conllu          $DSTDEVI/$ltcode-pmor.conllu
+    cp $SRCPSM/development/$ltcode-udpipe.conllu $DSTDEVI/$ltcode-udpipe.conllu
+    cp $i/$ltcode-ud-dev.txt                     $DSTDEVI/$ltcode.txt
   fi
   # Create a trial dataset for debugging purposes.
   # Unlike the development data, we will not provide the gold-standard file in the input folder.
@@ -129,14 +135,14 @@ for i in UD_* ; do
     else
       echo , >> $DSTTRIALI/metadata.json
     fi
-    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-psegmor.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTTRIALI/metadata.json
+    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTTRIALI/metadata.json
     split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DSTTRIALG/$ltcode.conllu /dev/null
-    ###!!! We also need $DSTTRIALI/$ltcode-psegmor.conllu.
     ../../tools/conllu_to_text.pl --lang $lcode < $DSTTRIALG/$ltcode.conllu > $DSTTRIALI/$ltcode.txt
+    cp $SRCPSM/trial/$ltcode-udpipe.conllu $DSTTRIALI/$ltcode-udpipe.conllu
   fi
   ###!!!cp $SRCTST/$ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   ###!!!../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
-  ###!!! We also need $DSTTESTI/$ltcode-psegmor.conllu.
+  ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu.
 done
 echo >> $DSTDEVI/metadata.json
 echo >> $DSTTRIALI/metadata.json
