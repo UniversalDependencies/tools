@@ -8,7 +8,10 @@ SRCTST=$UDPATH/testsets
 # This folder contains a pipeline that Milan created for this. The script process-tira-devel-trial.sh runs it on devel and trial.
 # The script takes its input from my $DST folder (see below), thus it must be re-run if we change the data here. But right now
 # the results are there, in folders development and trial, called code-udpipe.conllu.
-SRCMOR=/home/straka/troja/conll2017-models-final/ud-2.0-conll17-crossfold-morphology
+# Milan has removed the unpacked SRCMOR folder from his home, thus I created
+# a copy.
+#SRCMOR=/home/straka/troja/conll2017-models-final/ud-2.0-conll17-crossfold-morphology
+SRCMOR=/net/work/people/zeman/unidep/ud-2.0-conll17-crossfold-morphology
 SRCPSM=/home/straka/troja/conll2017-tira/udpipe-preprocess
 DSTFOLDER=data-for-tira
 DST=$UDPATH/$DSTFOLDER
