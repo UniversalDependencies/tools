@@ -73,6 +73,17 @@ CoNLL-X as their input. Usage:
 
 
 ==============================
+restore_conllu_lines.pl
+==============================
+
+Merges a CoNLL-X and a CoNLL-U file, taking only the CoNLL-U-specific lines from CoNLL-U. Can be used to merge the
+output of an old parser that only works with CoNLL-X with the original annotation that the parser could not read.
+
+  restore_conllu_lines.pl file-parsed.conll file.conllu
+
+
+
+==============================
 conllu_to_text.pl
 ==============================
 
