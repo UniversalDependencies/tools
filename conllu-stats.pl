@@ -22,12 +22,14 @@ binmode(STDERR, ':utf8');
 use Getopt::Long;
 
 # Read options.
+$konfig{relative} = 0; # relative frequencies of POS tags instead of absolute counts
 $konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 GetOptions
 (
+    'relative'   => \$konfig{relative},
     'detailed'   => \$konfig{detailed},
     'data=s'     => \$konfig{datapath},
     'docs=s'     => \$konfig{docspath},
@@ -1405,6 +1407,9 @@ EOF
     $ex = join(', ', @fusions);
     $ex =~ s/--/\x{2013}/g;
     print("<!-- $ex -->\n");
+    # CoNLL 2017 shared task, surprise languages: I want to make some statistics public together with the language names
+    # but I do not want to reveal the number of tokens in the test set (the participants have to do the tokenization themselves).
+    # Therefore the POS tag statistics should not give absolute counts (number of tokens is a simple sum of the counts).
     print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
     print("  <tags unique=\"".scalar(@tagset)."\">\n");
     foreach my $tag (@tagset)
@@ -1413,7 +1418,10 @@ EOF
         my @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@keys, 10);
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
-        print('    <tag name="'.$tag.'">'.$tagset{$tag}."</tag><!-- $ex -->\n");
+        # Absolute or relative count?
+        my $c = $tagset{$tag};
+        $c /= $ntok if($konfig{relative});
+        print('    <tag name="'.$tag.'">'.$c."</tag><!-- $ex -->\n");
     }
     print("  </tags>\n");
     # Print the list of features as an XML structure that can be used in the treebank description XML file.
