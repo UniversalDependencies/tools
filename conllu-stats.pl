@@ -22,7 +22,7 @@ binmode(STDERR, ':utf8');
 use Getopt::Long;
 
 # Read options.
-$konfig{relative} = 0; # relative frequencies of POS tags instead of absolute counts
+$konfig{relative} = 0; # relative frequencies of POS tags instead of absolute counts (affects only simple XML statistics)
 $konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
@@ -1435,7 +1435,10 @@ EOF
         my ($name, $value) = split(/=/, $feature);
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
-        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$fvset{$feature}."</feat><!-- $ex -->\n");
+        # Absolute or relative count?
+        my $c = $fvset{$feature};
+        $c /= $ntok if($konfig{relative});
+        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$c."</feat><!-- $ex -->\n");
     }
     print("  </feats>\n");
     # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
@@ -1443,7 +1446,10 @@ EOF
     print("  <deps unique=\"".scalar(@deprelset)."\">\n");
     foreach my $deprel (@deprelset)
     {
-        print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}."</dep>\n");
+        # Absolute or relative count?
+        my $c = $deprelset{$deprel};
+        $c /= $ntok if($konfig{relative});
+        print('    <dep name="'.$deprel.'">'.$c."</dep>\n");
     }
     print("  </deps>\n");
     print("</treebank>\n");
