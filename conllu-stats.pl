@@ -1410,7 +1410,7 @@ EOF
     # CoNLL 2017 shared task, surprise languages: I want to make some statistics public together with the language names
     # but I do not want to reveal the number of tokens in the test set (the participants have to do the tokenization themselves).
     # Therefore the POS tag statistics should not give absolute counts (number of tokens is a simple sum of the counts).
-    print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
+    print("  <!-- Statistics of universal POS tags. The comments show the most frequent lemmas. -->\n");
     print("  <tags unique=\"".scalar(@tagset)."\">\n");
     foreach my $tag (@tagset)
     {
@@ -1425,7 +1425,7 @@ EOF
     }
     print("  </tags>\n");
     # Print the list of features as an XML structure that can be used in the treebank description XML file.
-    print("  <!-- Statistics of features and values. The comments with the most frequent word forms are optional (but easy to obtain). -->\n");
+    print("  <!-- Statistics of features and values. The comments show the most frequent word forms. -->\n");
     print("  <feats unique=\"".scalar(@fvset)."\">\n");
     foreach my $feature (@fvset)
     {
