@@ -62,6 +62,21 @@ that a previously training sentence is now in test or vice versa. That is someth
 
 
 ==============================
+find_duplicate_sentences.pl
+remove_duplicate_sentences.pl
+==============================
+
+Similar to overlap.py but it works with the sentence-level
+attribute “text”. It remembers all sentences from STDIN or from
+input files whose names are given as arguments. The find script
+prints the duplicate sentences (ordered by length and number of
+occurrences) to STDOUT. The remove script works as a filter: it
+prints the CoNLL-U data from the input, except for the second and
+any subsequent occurrence of the duplicate sentences.
+
+
+
+==============================
 conllu_to_conllx.pl
 ==============================
 
