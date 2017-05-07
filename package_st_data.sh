@@ -58,6 +58,8 @@ mkdir -p $DSTDEVI
 mkdir -p $DSTDEVG
 mkdir -p $DSTTRIALI
 mkdir -p $DSTTRIALG
+mkdir -p $DSTTESTI
+mkdir -p $DSTTESTG
 echo code.conllu .......... gold standard data > $DSTTRAINI/README.txt
 echo code-pmor.conllu ..... gold segmentation and syntax, predicted morphology >> $DSTTRAINI/README.txt
 echo code-udpipe.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRAINI/README.txt
@@ -99,11 +101,15 @@ echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >>
 echo code.txt .............. raw text input >> $DSTTRIALI/README.txt
 cat $DST/README-metadata.txt >> $DSTTRIALI/README.txt
 rm $DST/README-metadata.txt
+
+
+
 # Copy the data to the folders.
 cd $SRCREL
 echo '[' > $DSTDEVI/metadata.json
 echo '[' > $DSTTRIALI/metadata.json
-for i in UD_* ; do
+###!!! Hack: temporarily blocking generation of training/development/trial data: UUUUD
+for i in UUUUD_* ; do
   ltcode=$(ls $i | grep train.conllu | perl -pe 's/-ud-train\.conllu$//')
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
