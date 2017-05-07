@@ -41,14 +41,13 @@ DST=$UDPATH/$DSTFOLDER
 # /media/test-datasets-truth: Gold standard test data used by the evaluation
 #     script.
 TASK="universal-dependency-learning/conll17-ud"
-DATE="2017-03-19"
+DATE="2017-05-07"
 DSTTRAINI="$DST/training-datasets/$TASK-training-$DATE"
 DSTTRAING="$DST/training-datasets-truth/$TASK-training-$DATE"
 DSTDEVI="$DST/training-datasets/$TASK-development-$DATE"
 DSTDEVG="$DST/training-datasets-truth/$TASK-development-$DATE"
 DSTTRIALI="$DST/training-datasets/$TASK-trial-$DATE"
 DSTTRIALG="$DST/training-datasets-truth/$TASK-trial-$DATE"
-###!!! We will not upload test data until they are complete!
 DSTTESTI="$DST/test-datasets/$TASK-test-$DATE"
 DSTTESTG="$DST/test-datasets-truth/$TASK-test-$DATE"
 # Generate the folders.
@@ -143,14 +142,33 @@ for i in UD_* ; do
     ../../tools/conllu_to_text.pl --lang $lcode < $DSTTRIALG/$ltcode.conllu > $DSTTRIALI/$ltcode.txt
     cp $SRCPSM/trial/$ltcode-udpipe.conllu $DSTTRIALI/$ltcode-udpipe.conllu
   fi
-  ###!!!cp $SRCTST/$ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
-  ###!!!../../tools/conllu_to_text.pl --lang $lcode < $SRCTST/$ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
-  ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu.
 done
 echo >> $DSTDEVI/metadata.json
 echo >> $DSTTRIALI/metadata.json
 echo ']' >> $DSTDEVI/metadata.json
 echo ']' >> $DSTTRIALI/metadata.json
+
+
+
+# Copy the test data to the folders.
+# We cannot do this in the UD_ loop above because there are test sets that do not have corresponding training sets.
+cd $SRCTST
+echo '[' > $DSTTESTI/metadata.json
+for i in *-ud-test.conllu ; do
+  ltcode=$(echo $i | perl -pe 's/-ud-test\.conllu$//')
+  lcode=$(echo $ltcode | perl -pe 's/_.*//')
+  tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
+  echo $ltcode
+  chmod 644 $i/$ltcode-ud-test.conllu
+  cp $ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
+  ../tools/conllu_to_text.pl --lang $lcode < $ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
+  ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu
+done
+echo >> $DSTTESTI/metadata.json
+echo ']' >> $DSTTESTI/metadata.json
+
+
+
 cd $DST/..
 rm tira.zip
 cd $DST
