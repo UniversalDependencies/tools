@@ -100,6 +100,9 @@ echo Small subset of the development data, intended for debugging. > $DSTTRIALI/
 echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRIALI/README.txt
 echo code.txt .............. raw text input >> $DSTTRIALI/README.txt
 cat $DST/README-metadata.txt >> $DSTTRIALI/README.txt
+echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax > $DSTTESTI/README.txt
+echo code.txt .............. raw text input >> $DSTTESTI/README.txt
+cat $DST/README-metadata.txt >> $DSTTESTI/README.txt
 rm $DST/README-metadata.txt
 
 
@@ -165,6 +168,12 @@ for i in *-ud-test.conllu ; do
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
+  if [ -z "$firsttest" ] ; then
+    firsttest="nolonger"
+  else
+    echo , >> $DSTTESTI/metadata.json
+  fi
+  echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "ltcode":"'$ltcode'"}' >> $DSTTESTI/metadata.json
   chmod 644 $ltcode-ud-test.conllu
   cp $ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   ../tools/conllu_to_text.pl --lang $lcode < $ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
