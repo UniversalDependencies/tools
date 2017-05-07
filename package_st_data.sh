@@ -165,7 +165,7 @@ for i in *-ud-test.conllu ; do
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
-  chmod 644 $i/$ltcode-ud-test.conllu
+  chmod 644 $ltcode-ud-test.conllu
   cp $ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   ../tools/conllu_to_text.pl --lang $lcode < $ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
   ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu
