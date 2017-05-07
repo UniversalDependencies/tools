@@ -65,6 +65,12 @@ echo code-pmor.conllu ..... gold segmentation and syntax, predicted morphology >
 echo code-udpipe.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRAINI/README.txt
 echo code.txt ............. raw text input >> $DSTTRAINI/README.txt
 cp $DSTTRAINI/README.txt $DSTDEVI/README.txt
+echo Small subset of the development data, intended for debugging. > $DSTTRIALI/README.txt
+echo code-udpipe.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRIALI/README.txt
+echo code.txt ............. raw text input >> $DSTTRIALI/README.txt
+echo code-udpipe.conllu ... predicted segmentation and morphology, no syntax > $DSTTESTI/README.txt
+echo code.txt ............. raw text input >> $DSTTESTI/README.txt
+
 # In the folders that the system can get as input, we will create metadata.json.
 # The system should use it to identify what files it is supposed to process and
 # how. Metadata fields:
@@ -96,12 +102,7 @@ Extra fields not needed by the participating system:
                "UD_Ancient_Greek-PROIEL"
 EOF
 cat $DST/README-metadata.txt >> $DSTDEVI/README.txt
-echo Small subset of the development data, intended for debugging. > $DSTTRIALI/README.txt
-echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax >> $DSTTRIALI/README.txt
-echo code.txt .............. raw text input >> $DSTTRIALI/README.txt
 cat $DST/README-metadata.txt >> $DSTTRIALI/README.txt
-echo code-psegmor.conllu ... predicted segmentation and morphology, no syntax > $DSTTESTI/README.txt
-echo code.txt .............. raw text input >> $DSTTESTI/README.txt
 cat $DST/README-metadata.txt >> $DSTTESTI/README.txt
 rm $DST/README-metadata.txt
 
@@ -178,6 +179,9 @@ for i in *-ud-test.conllu ; do
   cp $ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   ../tools/conllu_to_text.pl --lang $lcode < $ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
   ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu
+  if [ "$ltcode" = "bxr" ] || [ "$ltcode" = "kmr" ] || [ "$ltcode" = "sme" ] || [ "$ltcode" = "hsb" ] ; then
+    cp ../surprise-zzz-processed/$ltcode/$ltcode-ud-test.processed.conllu $DSTTESTI/$ltcode-udpipe.conllu
+  fi
 done
 echo >> $DSTTESTI/metadata.json
 echo ']' >> $DSTTESTI/metadata.json
