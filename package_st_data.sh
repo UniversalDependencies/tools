@@ -157,6 +157,8 @@ echo >> $DSTDEVI/metadata.json
 echo >> $DSTTRIALI/metadata.json
 echo ']' >> $DSTDEVI/metadata.json
 echo ']' >> $DSTTRIALI/metadata.json
+cp $DSTDEVI/metadata.json $DSTDEVG/metadata.json
+cp $DSTTRIALI/metadata.json $DSTTRIALG/metadata.json
 
 
 
@@ -188,6 +190,17 @@ for i in *-ud-test.conllu ; do
 done
 echo >> $DSTTESTI/metadata.json
 echo ']' >> $DSTTESTI/metadata.json
+cp $DSTTESTI/metadata.json $DSTTESTG/metadata.json
+
+
+
+###!!! NO DEV TRAIN THIS TIME!
+rm -rf $DSTTRAINI
+rm -rf $DSTTRAING
+rm -rf $DSTDEVI
+rm -rf $DSTDEVG
+rm -rf $DSTTRIALI
+rm -rf $DSTTRIALG
 
 
 
