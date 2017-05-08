@@ -181,6 +181,8 @@ for i in *-ud-test.conllu ; do
   ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu
   if [ "$ltcode" = "bxr" ] || [ "$ltcode" = "kmr" ] || [ "$ltcode" = "sme" ] || [ "$ltcode" = "hsb" ] ; then
     cp ../surprise-zzz-processed/$ltcode/$ltcode-ud-test.processed.conllu $DSTTESTI/$ltcode-udpipe.conllu
+  else
+    cp /home/popel/udapi/parallel-treebanks/parsed/$ltcode-udpipe.conllu $DSTTESTI/$ltcode-udpipe.conllu
   fi
 done
 echo >> $DSTTESTI/metadata.json
