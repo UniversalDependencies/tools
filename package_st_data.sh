@@ -182,7 +182,8 @@ for i in *-ud-test.conllu ; do
   if [ "$ltcode" = "bxr" ] || [ "$ltcode" = "kmr" ] || [ "$ltcode" = "sme" ] || [ "$ltcode" = "hsb" ] ; then
     cp ../surprise-zzz-processed/$ltcode/$ltcode-ud-test.processed.conllu $DSTTESTI/$ltcode-udpipe.conllu
   else
-    cp /home/popel/udapi/parallel-treebanks/parsed/$ltcode-udpipe.conllu $DSTTESTI/$ltcode-udpipe.conllu
+    # Erase newdoc with nonsense id, add newdoc without id.
+    cat /home/popel/udapi/parallel-treebanks/parsed/$ltcode-udpipe.conllu | tail -n +2 | (echo "# newdoc"; cat) > $DSTTESTI/$ltcode-udpipe.conllu
   fi
 done
 echo >> $DSTTESTI/metadata.json
