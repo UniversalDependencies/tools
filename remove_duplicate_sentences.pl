@@ -33,7 +33,7 @@ if (defined($train))
         push(@sentence, $_);
         if(m/^\s*$/)
         {
-            process_sentence(@sentence, 0);
+            process_sentence(0, @sentence);
             @sentence = ();
         }
     }
@@ -44,7 +44,7 @@ while(<>)
     push(@sentence, $_);
     if(m/^\s*$/)
     {
-        process_sentence(@sentence, 1);
+        process_sentence(1, @sentence);
         @sentence = ();
     }
 }
@@ -56,8 +56,8 @@ while(<>)
 #------------------------------------------------------------------------------
 sub process_sentence
 {
-    my @s = @_;
     my $print = shift;
+    my @s = @_;
     # Get the sentence text.
     my $text;
     foreach my $line (@s)
