@@ -180,13 +180,11 @@ for i in *-ud-test.conllu ; do
   chmod 644 $ltcode-ud-test.conllu
   cp $ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   ../tools/conllu_to_text.pl --lang $lcode < $ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
-  ###!!! We also need $DSTTESTI/$ltcode-udpipe.conllu
-  if [ "$ltcode" = "bxr" ] || [ "$ltcode" = "kmr" ] || [ "$ltcode" = "sme" ] || [ "$ltcode" = "hsb" ] ; then
-    cp ../surprise-zzz-processed/$ltcode/$ltcode-ud-test.processed.conllu $DSTTESTI/$ltcode-udpipe.conllu
-  else
-    # Erase newdoc with nonsense id, add newdoc without id.
-    cat /home/popel/udapi/parallel-treebanks/parsed/$ltcode-udpipe.conllu | tail -n +2 | (echo "# newdoc"; cat) > $DSTTESTI/$ltcode-udpipe.conllu
-  fi
+  # Erase newdoc with nonsense id, add newdoc without id.
+  # newdoc id = /net/work/people/zeman/unidep/data-for-tira/test-datasets/universal-dependency-learning/conll17-ud-test-2017-05-07/it.txt
+  # WARNING! This command assumes that the first line is always a newdoc! At present this holds even for the surprise languages, although
+  # their newdoc looks different.
+  cat $ltcode-udpipe.conllu | tail -n +2 | (echo "# newdoc"; cat) > $DSTTESTI/$ltcode-udpipe.conllu
 done
 echo >> $DSTTESTI/metadata.json
 echo ']' >> $DSTTESTI/metadata.json
