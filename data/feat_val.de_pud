@@ -1,0 +1,9 @@
+Gender[psor]=Masc
+Gender[psor]=Fem
+Gender[psor]=Neut
+Number[psor]=Sing
+Number[psor]=Plur
+Typo=Yes
+Person[psor]=1
+Person[psor]=2
+Person[psor]=3

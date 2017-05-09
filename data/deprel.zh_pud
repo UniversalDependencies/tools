@@ -1,0 +1,14 @@
+acl:relcl
+aux:pass
+case:loc
+discourse:sp
+flat:name
+mark:adv
+mark:prt
+mark:relcl
+nmod:poss
+nmod:tmod
+nsubj:pass
+obl:agent
+obl:patient
+obl:tmod

@@ -1,0 +1,6 @@
+Variant=Short
+Variant=Long
+Gender[psor]=Masc
+Gender[psor]=Fem
+Number[psor]=Sing
+Number[psor]=Plur
