@@ -1,0 +1,10 @@
+acl:relcl
+aux:pass
+csubj:pass
+flat:foreign
+flat:name
+nmod:poss
+nsubj:pass
+nmod:tmod
+det:predet
+obl:tmod
