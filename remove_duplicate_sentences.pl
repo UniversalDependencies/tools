@@ -8,15 +8,43 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Getopt::Long;
+
+# An extra file can be designated as "training" data. This is useful if we are
+# not concerned about duplicates within one file but rather about overlap
+# between training and test file. The sentences from the training file will not
+# be printed but they will be remembered and used to check for duplicates when
+# filtering the sentences from the normal input ("test data"). If we want to
+# remove overlapping sentences from the training data, just swap training and
+# test when calling this script.
+my $train;
+GetOptions
+(
+    'train=s' => \$train
+);
 
 my %h;
 my @sentence;
+if (defined($train))
+{
+    open(TRAIN, $train) or die("Cannot read $train: $!");
+    while(<TRAIN>)
+    {
+        push(@sentence, $_);
+        if(m/^\s*$/)
+        {
+            process_sentence(@sentence, 0);
+            @sentence = ();
+        }
+    }
+    close(TRAIN);
+}
 while(<>)
 {
     push(@sentence, $_);
     if(m/^\s*$/)
     {
-        process_sentence(@sentence);
+        process_sentence(@sentence, 1);
         @sentence = ();
     }
 }
@@ -29,6 +57,7 @@ while(<>)
 sub process_sentence
 {
     my @s = @_;
+    my $print = shift;
     # Get the sentence text.
     my $text;
     foreach my $line (@s)
@@ -48,9 +77,12 @@ sub process_sentence
     unless(exists($h{$text}))
     {
         $h{$text}++;
-        foreach my $line (@s)
+        if ($print)
         {
-            print($line);
+            foreach my $line (@s)
+            {
+                print($line);
+            }
         }
     }
 }
