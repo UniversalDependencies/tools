@@ -11,6 +11,9 @@ binmode(STDERR, ':utf8');
 use Getopt::Long;
 # Dan's sorting library
 use csort;
+# If this script is called from the parent folder, how can it find the UD library?
+use lib 'tools';
+use udlib;
 
 # Include reports on future repositories (not scheduled for the upcoming release)?
 # (If there is no README file, we will include the repository in the report and complain about the missing README.)
@@ -43,6 +46,9 @@ opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
+###!!! We are now able to read the lcodes.json file from the docs repository.
+###!!! Temporarily we still keep the hardcoded list here; but we will probably drop it in the future.
+my $langcodes_from_json = udlib::get_lcode_hash();
 my %langcodes =
 (
     'Amharic'               => 'am',
@@ -115,6 +121,26 @@ my %langcodes =
     'Uyghur'                => 'ug',
     'Vietnamese'            => 'vi'
 );
+###!!! DEBUG: Compare language lists.
+my $error = 0;
+foreach my $key (sort(keys(%langcodes)))
+{
+    if (!exists($langcodes_from_json->{$key}))
+    {
+        print STDERR ("Hardcoded list contains language '$key' which is not found in JSON.\n");
+        $error++;
+    }
+}
+foreach my $key (sort(keys(%{$langcodes_from_json})))
+{
+    if (!exists($langcodes{$key}))
+    {
+        print STDERR ("JSON list contains language '$key' which is not found in the hardcoded list.\n");
+        $error++;
+    }
+}
+die if($error);
+###!!! DEBUG END
 my $n_folders_with_data = 0;
 my $n_folders_conll = 0;
 my $n_errors = 0;
