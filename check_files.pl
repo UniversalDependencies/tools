@@ -22,13 +22,13 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.0;
+my $current_release = 2.1;
 # There are different requirements for treebanks that are released but are not in the CoNLL 2017 shared task.
 my $not_in_shared_task = 'Arabic-NYUAD|Belarusian|Coptic|Lithuanian|Sanskrit|Tamil';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-1.4';
+my $oldpath = '/net/data/universal-dependencies-2.0';
 GetOptions
 (
     'future' => \$include_future,
