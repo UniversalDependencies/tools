@@ -237,13 +237,7 @@ foreach my $folder (@folders)
                 print("$folder: Missing contact e-mail: '$metadata->{Contact}'\n");
                 $n_errors++;
             }
-            # The test set must not be released for treebanks that are in the CoNLL 2017 shared task.
-            #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
-            my $expected_n = $folder eq 'UD_Czech' ? 5 : $folder =~ m/^UD_(Kazakh|Uyghur)$/ ? 1 : 2;
-            if(!$is_in_shared_task)
-            {
-                $expected_n++;
-            }
+            my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
             unless($n==$expected_n)
             {
                 print("$folder: expected $expected_n CoNLL-U files, found $n\n");
@@ -331,11 +325,6 @@ foreach my $folder (@folders)
                 else
                 {
                     push(@shared_task_large_folders, $folder);
-                }
-                if(-f "$prefix-test.conllu")
-                {
-                    print("$folder: contains $prefix-test.conllu, which must not be released!\n");
-                    $n_errors++;
                 }
                 ###!!! Even if the test set exists, we must check that it is valid and contains at least 10000 nodes!
                 ###!!! See the script testsets/validate.sh.
