@@ -12,6 +12,7 @@ use JSON::Parse 'json_file_to_perl';
 # Returns reference to hash of known UD treebank codes (key = treebank name,
 # without the UD_ prefix but with underscores instead of spaces; value =
 # language_treebank code). Reads the JSON file in the docs repository.
+# Takes the path to the main UD folder (contains docs as subfolder). Default: .
 #------------------------------------------------------------------------------
 sub get_ltcode_hash
 {

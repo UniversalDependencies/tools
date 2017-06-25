@@ -55,4 +55,3 @@ docs/_build/
 
 # PyBuilder
 target/
-conllu_to_text.pl
