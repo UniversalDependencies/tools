@@ -137,7 +137,7 @@ def validate_sent_id(comments,known_ids,lcode):
         sid=matched[0].group(1)
         if sid in known_ids:
             warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
-        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud"):
+        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud" and lcode!=u"shopen"):
             warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
         known_ids.add(sid)
 
