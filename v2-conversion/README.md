@@ -1,6 +1,7 @@
 # UD v2 conversion script
 Author: Sebastian Schuster (sebschu@stanford.edu) 
 
+**NOTICE**: There is [a newer conversion script](https://github.com/udapi/udapi-python/tree/master/udapi/block/ud), which supports e.g. FEATS changes and `remnant`→`orphan`, in addition to all the changes supported by this script.
 
 This script performs the following automatic updates to a treebank to be compliant with the v2 guidlines:
 
