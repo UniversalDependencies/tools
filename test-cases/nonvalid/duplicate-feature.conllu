@@ -1,4 +1,5 @@
+# sent_id = duplicate-feature
+# text = non-valid
 # not valid: feature name occurs twice
-# sent_id = test-7
 1	non-valid	non-valid	NOUN	SP	Gen=M|Gen=M	0	root	_	_
 

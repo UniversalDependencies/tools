@@ -1,11 +1,13 @@
-# sent_id = test-50
+# sent_id = tanl-broken1
+# text = LONDRA PUNCT
 1	LONDRA	Londra	NOUN	SP	_	0	root	_	_
 2	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 
 
 # This is a comment
 
-# sent_id = test-51
+# sent_id = tanl-broken2
+# text = Gas dalla sta tua PUNCT
 1	Gas	gas	NOU	X	num=n|gen=f	0	root	2:nsubq|3:nsubj	_
 2-3	dalla	_	_	_	_	_	_	_	_
 2	da	da	ADP	EA	_	1	nmod	_	_
@@ -13,7 +15,8 @@
 4	sta tua	statua	NOUN	S	gen=f|num=s	2	nmod	_	_
 6	PUNCT	.	PUNCT	FS	_	1	punct	_	_
 
-# sent_id = test-52
+# sent_id = tanl-broken3
+# text = Evacuata la Tate Gallery PUNCT
 1	Evacuata	evacuare	VERB	V	gen=f|mod=p|num=s	3	advcl	_	_
 2	la	il	DET	RD	gen=f|num=s	3	det	_	_
 3	Tate	Tate	NOUN	SP	_	0	root	_	_

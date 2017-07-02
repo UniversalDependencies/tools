@@ -4,6 +4,69 @@
 
 package udlib;
 
+use JSON::Parse 'json_file_to_perl';
+
+
+
+#------------------------------------------------------------------------------
+# Returns reference to hash of known UD treebank codes (key = treebank name,
+# without the UD_ prefix but with underscores instead of spaces; value =
+# language_treebank code). Reads the JSON file in the docs repository.
+# Takes the path to the main UD folder (contains docs as subfolder). Default: .
+#------------------------------------------------------------------------------
+sub get_ltcode_hash
+{
+    my $path = shift;
+    $path = '.' if(!defined($path));
+    if (-d "$path/docs")
+    {
+        $path .= '/docs';
+    }
+    my $lcodes;
+    if (-f "$path/gen_index/lcodes.json")
+    {
+        $lcodes = json_file_to_perl("$path/gen_index/lcodes.json");
+        # For example:
+        # $lcodes->{'Finnish-FTB'} eq 'fi_ftb'
+    }
+    die("Cannot find or read $path/docs/gen_index/lcodes.json") if (!defined($lcodes));
+    return $lcodes;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Same as get_ltcode_hash() but collects only language names/codes, without the
+# optional treebank identifier.
+#------------------------------------------------------------------------------
+sub get_lcode_hash
+{
+    my $path = shift;
+    my $ltcodes = get_ltcode_hash($path);
+    my %lcodes;
+    foreach my $key (keys(%{$ltcodes}))
+    {
+        my $lkey = $key;
+        my $lcode = $ltcodes->{$lkey};
+        # Remove treebank name/code if any. Keep only language name/code.
+        $lkey =~ s/-.*//;
+        $lcode =~ s/_.*//;
+        if(!exists($lcodes{$lkey}))
+        {
+            $lcodes{$lkey} = $lcode;
+        }
+        # Sanity check: all treebanks with one language name should use the same language code.
+        else
+        {
+            if($lcodes{$lkey} ne $lcode)
+            {
+                die("Code conflict for language '$lkey': old code '$lcodes{$lkey}', new code '$lcode'");
+            }
+        }
+    }
+    return \%lcodes;
+}
+
 
 
 #------------------------------------------------------------------------------
@@ -45,13 +108,14 @@ sub get_ud_files_and_codes
         print STDERR ("WARNING: Unexpected folder name '$udfolder'\n");
     }
     # Look for training, development or test data.
-    my $section = 'training'; # training|development|test
+    my $section = 'any'; # training|development|test|any
     my %section_re =
     (
         # Training data in UD_Czech are split to four files.
         'training'    => 'train(-[clmv])?',
         'development' => 'dev',
-        'test'        => 'test'
+        'test'        => 'test',
+        'any'         => '(train(-[clmv])?|dev|test)'
     );
     opendir(DIR, "$path/$udfolder") or die("Cannot read the contents of '$path/$udfolder': $!");
     my @files = sort(grep {-f "$path/$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));

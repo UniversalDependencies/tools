@@ -1,0 +1,10 @@
+acl:relcl
+aux:pass
+cc:preconj
+cc:postconj
+compound:prt
+compound:redup
+compound:svc
+mark:relcl
+nsubj:pass
+obl:arg

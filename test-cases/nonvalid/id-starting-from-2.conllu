@@ -1,7 +1,10 @@
+# sent_id = id-starting-from-2a
+# text = valid
 # valid one-word sentence.
-# sent_id = test-22
 1	valid	valid	NOUN	SP	_	0	root	_	_
 
+# sent_id = id-starting-from-2b
+# text = valid
 # not valid: ID must start at 1 for each new sentence
 2	valid	valid	NOUN	SP	_	0	root	_	_
 

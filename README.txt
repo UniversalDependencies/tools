@@ -62,6 +62,21 @@ that a previously training sentence is now in test or vice versa. That is someth
 
 
 ==============================
+find_duplicate_sentences.pl
+remove_duplicate_sentences.pl
+==============================
+
+Similar to overlap.py but it works with the sentence-level
+attribute “text”. It remembers all sentences from STDIN or from
+input files whose names are given as arguments. The find script
+prints the duplicate sentences (ordered by length and number of
+occurrences) to STDOUT. The remove script works as a filter: it
+prints the CoNLL-U data from the input, except for the second and
+any subsequent occurrence of the duplicate sentences.
+
+
+
+==============================
 conllu_to_conllx.pl
 ==============================
 
@@ -69,6 +84,17 @@ Converts a file in the CoNLL-U format to the old CoNLL-X format. Useful with old
 CoNLL-X as their input. Usage:
 
   perl conllu_to_conllx.pl < file.conllu > file.conll
+
+
+
+==============================
+restore_conllu_lines.pl
+==============================
+
+Merges a CoNLL-X and a CoNLL-U file, taking only the CoNLL-U-specific lines from CoNLL-U. Can be used to merge the
+output of an old parser that only works with CoNLL-X with the original annotation that the parser could not read.
+
+  restore_conllu_lines.pl file-parsed.conll file.conllu
 
 
 

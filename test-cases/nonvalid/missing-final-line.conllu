@@ -1,3 +1,4 @@
 # format error: there must be an empty line also after the last sentence.
-# sent_id = test-43
+# sent_id = missing-final-line
+# text = valid
 1	valid	valid	NOUN	SP	_	0	root	_	_

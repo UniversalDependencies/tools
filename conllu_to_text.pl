@@ -33,11 +33,11 @@ while(<>)
     {
         $text = $1;
     }
-    elsif(m/^\#\s*newpar(\s|$)/)
+    elsif(m/^\#\s*newpar(\s|$)/i)
     {
         $newpar = 1;
     }
-    elsif(m/^\#\s*newdoc(\s|$)/)
+    elsif(m/^\#\s*newdoc(\s|$)/i)
     {
         $newdoc = 1;
     }
@@ -48,7 +48,7 @@ while(<>)
         # Paragraphs may start in the middle of a sentence (bulleted lists, verse etc.)
         # The first token of the new paragraph has "NewPar=Yes" in the MISC column.
         # Multi-word tokens have this in the token-introducing line.
-        if($f[9] =~ m/NewPar=Yes/)
+        if($f[9] =~ m/NewPar=Yes/i)
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
@@ -75,7 +75,7 @@ while(<>)
         # Paragraphs may start in the middle of a sentence (bulleted lists, verse etc.)
         # The first token of the new paragraph has "NewPar=Yes" in the MISC column.
         # Multi-word tokens have this in the token-introducing line.
-        if($f[9] =~ m/NewPar=Yes/)
+        if($f[9] =~ m/NewPar=Yes/i)
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
@@ -114,6 +114,7 @@ while(<>)
         $newpar = 0;
         $text = '';
         $ftext = '';
+        $mwtlast = undef;
     }
 }
 # There may be unflushed buffer contents after the last sentence, less than 80 characters

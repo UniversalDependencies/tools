@@ -30,7 +30,7 @@ def warn(msg,error_type,lineno=True):
     Print the warning. If lineno is True, print the exact line, otherwise
     print the line on which the current tree starts.
     """
-    global curr_fname,curr_line, sentence_line, error_counter, tree_counter, args
+    global curr_fname, curr_line, sentence_line, error_counter, tree_counter, args
     error_counter[error_type]=error_counter.get(error_type,0)+1
     if not args.quiet:
         if args.max_err>0 and error_counter[error_type]==args.max_err:
@@ -112,6 +112,11 @@ def is_multiword_token(cols):
 def is_empty_node(cols):
     return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
 
+def parse_empty_node_id(cols):
+    m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
+    assert m, 'parse_empty_node_id with non-empty node'
+    return m.groups()
+
 ###### Metadata tests #########
 
 sentid_re=re.compile(ur"^# sent_id\s*=\s*(\S+)$")
@@ -132,9 +137,12 @@ def validate_sent_id(comments,known_ids,lcode):
         sid=matched[0].group(1)
         if sid in known_ids:
             warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
-        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud"):
+        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud" and lcode!=u"shopen"):
             warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
         known_ids.add(sid)
+
+def shorten(string):
+    return string if len(string) < 25 else string[:20]+'[...]'
 
 text_re=re.compile(ur"^# text\s*=\s*(.+)$")
 def validate_text_meta(comments,tree):
@@ -162,7 +170,12 @@ def validate_text_meta(comments,tree):
                 continue
             elif u"-" in cols[ID]: #we have a token
                 beg,end=cols[ID].split(u"-")
-                for i in range(int(beg),int(end)+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
+                try:
+                    begi,endi = int(beg),int(end)
+                except ValueError as e:
+                    warn(u"Non-integer range %s-%s (%s)"%(beg,end,e),u"Format")
+                    begi,endi=1,0
+                for i in range(begi,endi+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
                     skip_words.add(unicode(i))
             elif cols[ID] in skip_words:
                 if u"SpaceAfter=No" in cols[MISC]:
@@ -173,10 +186,12 @@ def validate_text_meta(comments,tree):
                 pass
             #So now we have either a token or a word which is also a token in its entirety
             if not stext.startswith(cols[FORM]):
-                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata")
+                warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata",False)
             else:
                 stext=stext[len(cols[FORM]):] #eat the form
                 if u"SpaceAfter=No" not in cols[MISC]:
+                    if args.check_space_after and (stext) and not stext[0].isspace():
+                        warn(u"SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'"%(cols[ID],shorten(cols[FORM]+stext)),u"Metadata")
                     stext=stext.lstrip()
         if stext:
             warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
@@ -214,6 +229,9 @@ def validate_whitespace(cols,tag_sets):
     Checks a single line for disallowed whitespace.
     """
     for col_idx in range(MISC+1):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+
         #Must never be empty
         if not cols[col_idx]:
             warn(u"Empty value in column %s"%(COLNAMES[col_idx]),u"Format")
@@ -225,11 +243,17 @@ def validate_whitespace(cols,tag_sets):
                 warn(u"Trailing whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
     ## These columns must not have whitespace
     for col_idx in (ID,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+
         if whitespace_re.match(cols[col_idx]):
             warn(u"White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx],cols[col_idx]),u"Format")
 
     ## Now yet check word and lemma against the lists
     for col_idx in (FORM,LEMMA):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+
         if whitespace_re.match(cols[col_idx]) is not None:
             #Whitespace found - does it pass?
             for regex in tag_sets[TOKENSWSPACE]:
@@ -262,6 +286,8 @@ def validate_empty_node_empty_vals(cols):
 attr_val_re=re.compile(ur"^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$",re.U)
 val_re=re.compile(ur"^[A-Z0-9][A-Z0-9a-z]*",re.U)
 def validate_features(cols,tag_sets):
+    if FEATS >= len(cols):
+        return # this has been already reported in trees()
     feats=cols[FEATS]
     if feats==u"_":
         return True
@@ -274,6 +300,7 @@ def validate_features(cols,tag_sets):
         match=attr_val_re.match(f)
         if match is None:
             warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f,u"Morpho")
+            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             #Check that the values are sorted as well
             attr=match.group(1)
@@ -293,10 +320,14 @@ def validate_features(cols,tag_sets):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
 def validate_upos(cols,tag_sets):
+    if UPOSTAG >= len(cols):
+        return # this has been already reported in trees()
     if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
         warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
 
 def validate_xpos(cols,tag_sets):
+    if XPOSTAG >= len(cols):
+        return # this has been already reported in trees()
     # XPOSTAG is always None -> not checked atm
     if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
         warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
@@ -311,6 +342,8 @@ def lspec2ud(deprel):
     return deprel.split(u":",1)[0]
 
 def validate_deprels(cols,tag_sets):
+    if DEPREL >= len(cols):
+        return # this has been already reported in trees()
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
         warn_on_missing_files.add("deprel")
         warn(u"Unknown UD DEPREL: %s"%cols[DEPREL],u"Syntax")
@@ -332,6 +365,8 @@ def validate_character_constraints(cols):
     """
     if is_multiword_token(cols):
         return
+    if UPOSTAG >= len(cols):
+        return # this has been already reported in trees()
 
     if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
             (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
@@ -358,9 +393,13 @@ def validate_ID_sequence(tree):
     """
     words=[]
     tokens=[]
+    current_word_id, next_empty_id = 0, 1
     for cols in tree:
+        if not is_empty_node(cols):
+            next_empty_id = 1    # reset sequence
         if is_word(cols):
             t_id=int(cols[ID])
+            current_word_id = t_id
             words.append(t_id)
             #Not covered by the previous interval?
             if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
@@ -376,17 +415,21 @@ def validate_ID_sequence(tree):
                 continue
             tokens.append((beg,end))
         elif is_empty_node(cols):
-            pass    # TODO
+            word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
+            if word_id != current_word_id or empty_id != next_empty_id:
+                warn(u"Empty node id %s, expected %d.%d" %
+                     (cols[ID], current_word_id, next_empty_id), u"Format")
+            next_empty_id += 1
     #Now let's do some basic sanity checks on the sequences
     if words!=range(1,len(words)+1): #Words should form a sequence 1,2,...
         warn(u"Words do not form a sequence. Got: %s."%(u",".join(unicode(x) for x in words)),u"Format",lineno=False)
     #Check elementary sanity of word intervals
     for (b,e) in tokens:
         if e<b: #end before beginning
-            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
             continue
         if b<1 or e>len(words): #out of range
-            warn(u"Suprious token interval %d-%d"%(b,e),u"Format")
+            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
             continue
 
 def subset_to_words(tree):
@@ -402,6 +445,8 @@ def subset_to_words_and_empty_nodes(tree):
     return [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
 
 def deps_list(cols):
+    if DEPS >= len(cols):
+        return # this has been already reported in trees()
     if cols[DEPS] == u'_':
         deps = []
     else:
@@ -424,6 +469,8 @@ def validate_ID_references(tree):
     def valid_empty_head(cols):
         return cols[HEAD] == '_' and is_empty_node(cols)
 
+    if HEAD >= len(cols):
+        return # this has been already reported in trees()
     for cols in word_tree:
         if not (valid_id(cols[HEAD]) or valid_empty_head(cols)):
             warn(u"Undefined ID in HEAD: %s" % cols[HEAD],u"Format")
@@ -486,6 +533,8 @@ def validate_root(tree):
     Validates that DEPREL is "root" iff HEAD is 0.
     """
     for cols in subset_to_words_and_empty_nodes(tree):
+        if HEAD >= len(cols):
+            continue # this has been already reported in trees()
         if cols[HEAD] == u'0':
             if cols[DEPREL] != u'root':
                 warn(u'DEPREL must be "root" if HEAD is 0',u"Syntax")
@@ -499,6 +548,8 @@ def validate_deps(tree):
     self-loops in DEPS.
     """
     for cols in subset_to_words_and_empty_nodes(tree):
+        if DEPS >= len(cols):
+            continue # this has been already reported in trees()
         try:
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
@@ -524,6 +575,8 @@ def validate_tree(tree):
     deps={} #node -> set of children
     word_tree=subset_to_words(tree)
     for cols in word_tree:
+        if HEAD >= len(cols):
+            continue # this has been already reported in trees()
         if cols[HEAD]==u"_":
             warn(u"Empty head for word ID %s" % cols[ID], u"Format", lineno=False)
             continue
@@ -596,20 +649,28 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
     res=load_file(os.path.join(THISDIR,"data",f_name_ud))
     #Now res holds UD
     #Next load and optionally check the langspec extensions
-    if f_name_langspec is not None and f_name_langspec!=f_name_ud and os.path.exists(os.path.join(THISDIR,"data",f_name_langspec)):
-        l_spec=load_file(os.path.join(THISDIR,"data",f_name_langspec))
-        for v in l_spec:
-            if validate_langspec:
-                try:
-                    ud_v,l_v=v.split(u":")
-                    if ud_v not in res:
+    if f_name_langspec is not None and f_name_langspec!=f_name_ud:
+        path_langspec = os.path.join(THISDIR,"data",f_name_langspec)
+        if os.path.exists(path_langspec):
+            global curr_fname
+            curr_fname = path_langspec # so warn() does not fail on undefined curr_fname
+            l_spec=load_file(path_langspec)
+            for v in l_spec:
+                if validate_langspec:
+                    try:
+                        ud_v,l_v=v.split(u":")
+                        if ud_v not in res:
+                            warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
+                            continue
+                    except:
                         warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
                         continue
-                except:
-                    warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
-                    continue
-            res.add(v)
+                res.add(v)
     return res
+
+# TODO switch to Python 3 and use html.escape instead
+def escape(string):
+    return string.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
@@ -629,9 +690,10 @@ if __name__=="__main__":
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
-    
+
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
     meta_group.add_argument("--no-tree-text", action="store_false", default=True, dest="check_tree_text", help="Do not test tree text. For internal use only, this test is required and on by default.")
+    meta_group.add_argument("--no-space-after", action="store_false", default=True, dest="check_space_after", help="Do not test presence of SpaceAfter=No.")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} #Incremented by warn()  {key: error type value: its count}
@@ -673,7 +735,8 @@ if __name__=="__main__":
             validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn(u"Exception caught!",u"Format")
-        traceback.print_exc()
+        #traceback.print_exc() #traceback can contain e.g. "<module>" which breaks validation.html
+        print(escape(traceback.format_exc()))
 
     if not error_counter:
         if not args.quiet:
@@ -685,8 +748,9 @@ if __name__=="__main__":
             for k,v in sorted(error_counter.items()):
                 print >> sys.stderr, k, "errors:", v
         for f_name in sorted(warn_on_missing_files):
-            if not os.path.exists(os.path.join(THISDIR,"data",f_name+"."+args.lang)):
-                print >> sys.stderr, "The language-specific file %s does not exist."
+            filepath = os.path.join(THISDIR,"data",f_name+"."+args.lang)
+            if not os.path.exists(filepath):
+                print >> sys.stderr, "The language-specific file %s does not exist."%filepath
                 if f_name=="feat_val":
-                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s"
+                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > " + filepath
         sys.exit(1)

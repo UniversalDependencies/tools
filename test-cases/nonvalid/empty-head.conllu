@@ -1,4 +1,5 @@
 # not valid: HEAD must not be empty
-# sent_id = test-13
+# sent_id = empty-head
+# text = have
 1	have	have	VERB	VB	Tens=Pres		root	_	_
 

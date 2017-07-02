@@ -22,12 +22,14 @@ binmode(STDERR, ':utf8');
 use Getopt::Long;
 
 # Read options.
+$konfig{relative} = 0; # relative frequencies of POS tags instead of absolute counts (affects only simple XML statistics)
 $konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 GetOptions
 (
+    'relative'   => \$konfig{relative},
     'detailed'   => \$konfig{detailed},
     'data=s'     => \$konfig{datapath},
     'docs=s'     => \$konfig{docspath},
@@ -70,6 +72,7 @@ my %languages =
     'grc' => {'name' => 'Ancient Greek', 'i' => 1, 'c' => ','},
     'ar'  => {'name' => 'Arabic',     'i' => 0, 'c' => '،'},
     'eu'  => {'name' => 'Basque',     'i' => 1, 'c' => ','},
+    'be'  => {'name' => 'Belarusian', 'i' => 1, 'c' => ','},
     'bg'  => {'name' => 'Bulgarian',  'i' => 1, 'c' => ','},
     'ca'  => {'name' => 'Catalan',    'i' => 1, 'c' => ','},
     'zh'  => {'name' => 'Chinese',    'i' => 0, 'c' => '、'},
@@ -97,6 +100,7 @@ my %languages =
     'ko'  => {'name' => 'Korean',     'i' => 0, 'c' => ','},
     'la'  => {'name' => 'Latin',      'i' => 1, 'c' => ','},
     'lv'  => {'name' => 'Latvian',    'i' => 1, 'c' => ','},
+    'lt'  => {'name' => 'Lithuanian', 'i' => 1, 'c' => ','},
     'no'  => {'name' => 'Norwegian',  'i' => 1, 'c' => ','},
     'cu'  => {'name' => 'Old Church Slavonic', 'i' => 1, 'c' => ','},
     'fa'  => {'name' => 'Persian',    'i' => 0, 'c' => '،'},
@@ -254,7 +258,9 @@ sub process_treebank
             # Get rid of the line break.
             s/\r?\n$//;
             # Split line into columns.
-            my @columns = split(/\s+/, $_);
+            # Since UD 2.0 the FORM and LEMMA may contain the space character,
+            # hence we cannot split on /\s+/ but we must use /\t/ only!
+            my @columns = split(/\t/, $_);
             push(@sentence, \@columns);
         }
     }
@@ -1401,7 +1407,10 @@ EOF
     $ex = join(', ', @fusions);
     $ex =~ s/--/\x{2013}/g;
     print("<!-- $ex -->\n");
-    print("  <!-- Statistics of universal POS tags. The comments with the most frequent lemmas are optional (but easy to obtain). -->\n");
+    # CoNLL 2017 shared task, surprise languages: I want to make some statistics public together with the language names
+    # but I do not want to reveal the number of tokens in the test set (the participants have to do the tokenization themselves).
+    # Therefore the POS tag statistics should not give absolute counts (number of tokens is a simple sum of the counts).
+    print("  <!-- Statistics of universal POS tags. The comments show the most frequent lemmas. -->\n");
     print("  <tags unique=\"".scalar(@tagset)."\">\n");
     foreach my $tag (@tagset)
     {
@@ -1409,11 +1418,14 @@ EOF
         my @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@keys, 10);
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
-        print('    <tag name="'.$tag.'">'.$tagset{$tag}."</tag><!-- $ex -->\n");
+        # Absolute or relative count?
+        my $c = $tagset{$tag};
+        $c /= $ntok if($konfig{relative});
+        print('    <tag name="'.$tag.'">'.$c."</tag><!-- $ex -->\n");
     }
     print("  </tags>\n");
     # Print the list of features as an XML structure that can be used in the treebank description XML file.
-    print("  <!-- Statistics of features and values. The comments with the most frequent word forms are optional (but easy to obtain). -->\n");
+    print("  <!-- Statistics of features and values. The comments show the most frequent word forms. -->\n");
     print("  <feats unique=\"".scalar(@fvset)."\">\n");
     foreach my $feature (@fvset)
     {
@@ -1423,7 +1435,10 @@ EOF
         my ($name, $value) = split(/=/, $feature);
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
-        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$fvset{$feature}."</feat><!-- $ex -->\n");
+        # Absolute or relative count?
+        my $c = $fvset{$feature};
+        $c /= $ntok if($konfig{relative});
+        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$c."</feat><!-- $ex -->\n");
     }
     print("  </feats>\n");
     # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
@@ -1431,7 +1446,10 @@ EOF
     print("  <deps unique=\"".scalar(@deprelset)."\">\n");
     foreach my $deprel (@deprelset)
     {
-        print('    <dep name="'.$deprel.'">'.$deprelset{$deprel}."</dep>\n");
+        # Absolute or relative count?
+        my $c = $deprelset{$deprel};
+        $c /= $ntok if($konfig{relative});
+        print('    <dep name="'.$deprel.'">'.$c."</dep>\n");
     }
     print("  </deps>\n");
     print("</treebank>\n");
