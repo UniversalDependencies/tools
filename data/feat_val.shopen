@@ -1,4 +1,5 @@
 Agent=Yes
+Animacy[obj]=Inan
 Contrast=Yes
 Focus=Yes
 Gender[psor]=Masc
@@ -22,4 +23,6 @@ Person[psor]=2
 Person[psor]=3
 Topic=Yes
 VerbForm=Rel
-Voice=Invol
+Voice=Agf
+Voice=Insf
+Voice=Paf
