@@ -51,6 +51,8 @@ my %universal_features =
     'NumType'  => ['Card', 'Ord', 'Mult', 'Frac', 'Sets', 'Dist', 'Range', 'Gen'],
     'Poss'     => ['Yes'],
     'Reflex'   => ['Yes'],
+    'Foreign'  => ['Yes'],
+    'Abbr'     => ['Yes'],
     'Gender'   => ['Masc', 'Fem', 'Neut', 'Com'],
     'Animacy'  => ['Anim', 'Nhum', 'Inan'],
     'Number'   => ['Sing', 'Coll', 'Dual', 'Plur', 'Ptan'],
@@ -62,8 +64,10 @@ my %universal_features =
     'Tense'    => ['Pres', 'Fut', 'Past', 'Imp', 'Nar', 'Pqp'],
     'Aspect'   => ['Imp', 'Perf', 'Pro', 'Prog'],
     'Voice'    => ['Act', 'Pass', 'Rcp', 'Cau'],
+    'Evident'  => ['Nfh'],
     'Person'   => ['1', '2', '3'],
-    'Negative' => ['Pos', 'Neg']
+    'Polite'   => ['Infm', 'Form'],
+    'Polarity' => ['Pos', 'Neg'],
 );
 my %languages =
 (   # i ... should we use italics when displaying examples from this language?
