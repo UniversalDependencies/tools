@@ -268,6 +268,16 @@ sub process_treebank
             push(@sentence, \@columns);
         }
     }
+    # Process the last sentence even if it is not correctly terminated.
+    if(@sentence)
+    {
+        print STDERR ("WARNING! The last sentence is not properly terminated by an empty line.\n");
+        print STDERR ("         (An empty line means two consecutive LF characters, not just one!)\n");
+        print STDERR ("         Counting the words from the bad sentence anyway.\n");
+        process_sentence(@sentence);
+        $nsent++;
+        splice(@sentence);
+    }
     prune_examples(\%fusions);
     local @fusions = sort {my $r = $fusions{$b} <=> $fusions{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%fusions));
     prune_examples(\%words);
