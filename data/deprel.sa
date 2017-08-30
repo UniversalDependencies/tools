@@ -1,4 +1,5 @@
 acl:relcl
+nmod:poss
 nsubj:cop
 nsubj:pass
 nummod:gov
