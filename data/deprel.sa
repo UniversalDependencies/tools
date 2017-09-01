@@ -3,4 +3,5 @@ nmod:poss
 nsubj:cop
 nsubj:pass
 nummod:gov
+obl:agent
 obl:arg
