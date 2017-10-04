@@ -1,6 +1,7 @@
 Agent=Yes
 Animacy[obj]=Inan
 Contrast=Yes
+Definite[obj]=Def
 Focus=Yes
 Gender[obj]=Masc
 Gender[obj]=Fem
