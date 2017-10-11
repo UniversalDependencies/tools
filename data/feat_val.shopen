@@ -20,6 +20,7 @@ Number[obj]=Plur
 Number[psor]=Sing
 Number[psor]=Plur
 PartType=Dir
+PartType=Emph
 PartType=Int
 Person[acc]=1
 Person[acc]=2
