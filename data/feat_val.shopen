@@ -1,5 +1,7 @@
 Agent=Yes
 Animacy[obj]=Inan
+Clusivity=Ex
+Clusivity=In
 Contrast=Yes
 Definite[obj]=Def
 Focus=Yes
