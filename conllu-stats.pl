@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Reads CoNLL(-U) data from STDIN, collects all features (FEAT column, delimited by vertical bars) and prints them sorted to STDOUT.
-# Copyright © 2013-2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2013-2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -180,21 +180,46 @@ else
 
 
 
+#==============================================================================
+# We collect counts and examples of a large number of phenomena. This is an
+# attempt to keep them all in one large hash.
+#
+# %stats
+#   Absolute count of some sort of unit:
+#     {nsent} ... number of sentences (trees) in the corpus
+#     {ntok} .... number of tokens in the corpus
+#     {nfus} .... number of fused multi-word tokens in the corpus
+#     {nword} ... number of syntactic words (nodes) in the corpus
+#   Inventories of individual data items and their frequencies
+#   (hashes: item => frequency):
+#     {words} ... inventory of word forms
+#     {lemmas} ... inventory of lemmas
+#     {tags} ... inventory of UPOS tags
+#==============================================================================
+sub reset_counters
+{
+    my $stats = shift;
+    $stats->{nsent} = 0;
+    $stats->{ntok} = 0;
+    $stats->{nfus} = 0;
+    $stats->{nword} = 0;
+    $stats->{words} = {};
+    $stats->{lemmas} = {};
+    $stats->{tags} = {};
+}
+
+
+
 #------------------------------------------------------------------------------
 # Reads the standard input (simple stats) or all CoNLL-U files in one treebank
 # (detailed stats) and analyzes them.
 #------------------------------------------------------------------------------
 sub process_treebank
 {
-    local $ntok = 0;
-    local $nfus = 0;
-    local $nword = 0;
-    local $nsent = 0;
+    local %stats;
+    reset_counters(\%stats);
     local @sentence;
     # Counters visible to the summarizing functions.
-    local %words;
-    local %lemmas;
-    local %tagset;
     local %tlw;
     local %examples;
     local %wordtag;
@@ -240,7 +265,7 @@ sub process_treebank
             {
                 process_sentence(@sentence);
             }
-            $nsent++;
+            $stats{nsent}++;
             splice(@sentence);
         }
         # Lines with fused tokens do not contain features but we want to count the fusions.
@@ -250,15 +275,15 @@ sub process_treebank
             my $i1 = $2;
             my $fusion = $3;
             my $size = $i1-$i0+1;
-            $ntok -= $size-1;
-            $nfus++;
+            $stats{ntok} -= $size-1;
+            $stats{nfus}++;
             # Remember the occurrence of the fusion.
             $fusions{$fusion}++ unless($fusion eq '_');
         }
         else
         {
-            $ntok++;
-            $nword++;
+            $stats{ntok}++;
+            $stats{nword}++;
             # Get rid of the line break.
             s/\r?\n$//;
             # Split line into columns.
@@ -275,17 +300,17 @@ sub process_treebank
         print STDERR ("         (An empty line means two consecutive LF characters, not just one!)\n");
         print STDERR ("         Counting the words from the bad sentence anyway.\n");
         process_sentence(@sentence);
-        $nsent++;
+        $stats{nsent}++;
         splice(@sentence);
     }
     prune_examples(\%fusions);
     local @fusions = sort {my $r = $fusions{$b} <=> $fusions{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%fusions));
-    prune_examples(\%words);
-    local @words = sort {my $r = $words{$b} <=> $words{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%words));
-    prune_examples(\%lemmas);
-    local @lemmas = sort {my $r = $lemmas{$b} <=> $lemmas{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%lemmas));
+    prune_examples($stats{words});
+    local @words = sort {my $r = $stats{words}{$b} <=> $stats{words}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{words}}));
+    prune_examples($stats{lemmas});
+    local @lemmas = sort {my $r = $stats{lemmas}{$b} <=> $stats{lemmas}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{lemmas}}));
     # Sort the features alphabetically before printing them.
-    local @tagset = sort(keys(%tagset));
+    local @tagset = sort(keys(%{$stats{tags}}));
     local @featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
     local @fvset = sort {lc($a) cmp lc($b)} (keys(%fvset));
     local @deprelset = sort(keys(%deprelset));
@@ -357,11 +382,11 @@ sub process_sentence
         my $deprel = $node->[7];
         my @children = @{$node->[10]};
         # Remember the occurrence of the word form (syntactic word).
-        $words{$word}++ unless($word eq '_');
+        $stats{words}{$word}++ unless($word eq '_');
         # Remember the occurrence of the lemma.
-        $lemmas{$lemma}++ unless($lemma eq '_');
+        $stats{lemmas}{$lemma}++ unless($lemma eq '_');
         # Remember the occurrence of the universal POS tag.
-        $tagset{$tag}++;
+        $stats{tags}{$tag}++;
         $tlw{$tag}{$lemma}{$word}++;
         # We can also print example forms and lemmas that had the tag.
         $examples{$tag}{$word}++;
@@ -526,7 +551,7 @@ sub detailed_statistics_tags
     local $nlemmas_total = 0;
     foreach my $tag (@tagset)
     {
-        $ntokens_total += $tagset{$tag};
+        $ntokens_total += $stats{tags}{$tag};
         $ntypes{$tag} = scalar(keys(%{$examples{$tag}}));
         $ntypes_total += $ntypes{$tag};
         $nlemmas{$tag} = scalar(keys(%{$examples{$tag.'-lemma'}}));
@@ -535,7 +560,7 @@ sub detailed_statistics_tags
     local $flratio = $ntypes_total/$nlemmas_total;
     # Rank tags by number of lemmas, types and tokens.
     local %rtokens;
-    local @tags = sort {$tagset{$b} <=> $tagset{$a}} (@tagset);
+    local @tags = sort {$stats{tags}{$b} <=> $stats{tags}{$a}} (@tagset);
     for(my $i = 0; $i <= $#tags; $i++)
     {
         $rtokens{$tags[$i]} = $i + 1;
@@ -607,7 +632,7 @@ sub get_detailed_statistics_tag
     my $page;
     $page .= "\n\n--------------------------------------------------------------------------------\n\n";
     $page .= "## Treebank Statistics ($treebank_id)\n\n";
-    my $ntokens = $tagset{$tag};
+    my $ntokens = $stats{tags}{$tag};
     my $ptokens = percent($ntokens, $ntokens_total);
     my $ptypes = percent($ntypes{$tag}, $ntypes_total);
     my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
@@ -651,7 +676,7 @@ sub get_detailed_statistics_tag
     }
     if(scalar(keys(%{$tf{$tag}})) > 0)
     {
-        my ($list, $n) = list_keys_with_counts($tf{$tag}, $tagset{$tag}, "$langcode-feat/");
+        my ($list, $n) = list_keys_with_counts($tf{$tag}, $stats{tags}{$tag}, "$langcode-feat/");
         $page .= "`$tag` occurs with $n features: $list\n\n";
         my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
         my $nfeaturepairs = scalar(@featurepairs);
@@ -674,27 +699,27 @@ sub get_detailed_statistics_tag
     $page .= "\n";
     # Dependency relations.
     $page .= "## Relations\n\n";
-    my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $tagset{$tag}, "$langcode-dep/");
+    my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $stats{tags}{$tag}, "$langcode-dep/");
     $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
-    ($list, $n) = list_keys_with_counts($parenttag{$tag}, $tagset{$tag}, '');
+    ($list, $n) = list_keys_with_counts($parenttag{$tag}, $stats{tags}{$tag}, '');
     $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
     my $n0c = $tagdegree{$tag}{0} // 0;
-    my $p0c = percent($n0c, $tagset{$tag});
+    my $p0c = percent($n0c, $stats{tags}{$tag});
     $page .= "$n0c ($p0c) `$tag` nodes are leaves.\n\n";
     if($maxtagdegree{$tag} > 0)
     {
         my $n1c = $tagdegree{$tag}{1} // 0;
-        my $p1c = percent($n1c, $tagset{$tag});
+        my $p1c = percent($n1c, $stats{tags}{$tag});
         $page .= "$n1c ($p1c) `$tag` nodes have one child.\n\n";
         if($maxtagdegree{$tag} > 1)
         {
             my $n2c = $tagdegree{$tag}{2} // 0;
-            my $p2c = percent($n2c, $tagset{$tag});
+            my $p2c = percent($n2c, $stats{tags}{$tag});
             $page .= "$n2c ($p2c) `$tag` nodes have two children.\n\n";
             if($maxtagdegree{$tag} > 2)
             {
                 my $n3c = $tagdegree{$tag}{3} // 0;
-                my $p3c = percent($n3c, $tagset{$tag});
+                my $p3c = percent($n3c, $stats{tags}{$tag});
                 $page .= "$n3c ($p3c) `$tag` nodes have three or more children.\n\n";
             }
         }
@@ -864,7 +889,7 @@ sub get_detailed_statistics_feature
         $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"[$layers{$base_feature}{$_}]()"} (@layers)).".\n\n";
     }
     my $n = $featureset{$feature};
-    my $p = percent($n, $nword);
+    my $p = percent($n, $stats{nword});
     $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
     $n = scalar(keys($fw{$feature}));
     $p = percent($n, scalar(@words));
@@ -873,18 +898,18 @@ sub get_detailed_statistics_feature
     $p = percent($n, scalar(@lemmas));
     $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
     # List part-of-speech tags with which this feature occurs.
-    my $list; ($list, $n) = list_keys_with_counts($ft{$feature}, $nword, "$langcode-pos/");
+    my $list; ($list, $n) = list_keys_with_counts($ft{$feature}, $stats{nword}, "$langcode-pos/");
     $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
     my @tags = sort {$ft{$feature}{$b} <=> $ft{$feature}{$a}} (keys(%{$ft{$feature}}));
     foreach my $tag (@tags)
     {
         $page .= "### `$tag`\n\n";
         $n = $ft{$feature}{$tag};
-        $p = percent($n, $tagset{$tag});
+        $p = percent($n, $stats{tags}{$tag});
         $page .= "$n [$langcode-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
         # Is this feature used exclusively with some other feature?
         # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
-        my @other_features = grep {$tf{$tag}{$_} / $tagset{$tag} > 0.1} (keys(%{$tf{$tag}}));
+        my @other_features = grep {$tf{$tag}{$_} / $stats{tags}{$tag} > 0.1} (keys(%{$tf{$tag}}));
         # Get all feature combinations observed with the current tag.
         my @fsets_packed = keys(%{$tfset{$tag}});
         my %other_features;
@@ -934,7 +959,7 @@ sub get_detailed_statistics_feature
             my $examples = prepare_examples($examples{"$tag\t$feature=$value"}, $limit);
             $page .= "* `$value` ($n; $p of non-empty `$feature`): ".fex($examples)."\n";
         }
-        $n = $tagset{$tag} - $ft{$feature}{$tag};
+        $n = $stats{tags}{$tag} - $ft{$feature}{$tag};
         my $examples = prepare_examples($examples{"$tag\t$feature=EMPTY"}, $limit);
         # There might be no examples even if $n > 0. We collect examples only for universal features, not for language-specific ones.
         ###!!! We may want to collect them for language-specific features. But we do not know in advance what these features are!
@@ -1207,7 +1232,7 @@ sub get_detailed_statistics_relation
     $page .= "\n";
     # Counts.
     my $n = $deprelset{$deprel};
-    my $p = percent($n, $nword);
+    my $p = percent($n, $stats{nword});
     $page .= "$n nodes ($p) are attached to their parents as `$deprel`.\n\n";
     my $nltr = $ltrdeprel{$deprel};
     my $nrtl = $n - $nltr;
@@ -1399,7 +1424,7 @@ sub simple_xml_statistics
 EOF
     ;
     print("  <size>\n");
-    print("    <total><sentences>$nsent</sentences><tokens>$ntok</tokens><words>$nword</words><fused>$nfus</fused></total>\n");
+    print("    <total><sentences>$stats{nsent}</sentences><tokens>$stats{ntok}</tokens><words>$stats{nword}</words><fused>$stats{nfus}</fused></total>\n");
     ###!!! We do not know what part of the data is for training, development or testing. We would have to change the calling syntax.
     #print("    <train></train>\n");
     #print("    <dev></dev>\n");
@@ -1433,8 +1458,8 @@ EOF
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
         # Absolute or relative count?
-        my $c = $tagset{$tag};
-        $c /= $ntok if($konfig{relative});
+        my $c = $stats{tags}{$tag};
+        $c /= $stats{ntok} if($konfig{relative});
         print('    <tag name="'.$tag.'">'.$c."</tag><!-- $ex -->\n");
     }
     print("  </tags>\n");
@@ -1451,7 +1476,7 @@ EOF
         $ex =~ s/--/\x{2013}/g;
         # Absolute or relative count?
         my $c = $fvset{$feature};
-        $c /= $ntok if($konfig{relative});
+        $c /= $stats{ntok} if($konfig{relative});
         print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$c."</feat><!-- $ex -->\n");
     }
     print("  </feats>\n");
@@ -1462,7 +1487,7 @@ EOF
     {
         # Absolute or relative count?
         my $c = $deprelset{$deprel};
-        $c /= $ntok if($konfig{relative});
+        $c /= $stats{ntok} if($konfig{relative});
         print('    <dep name="'.$deprel.'">'.$c."</dep>\n");
     }
     print("  </deps>\n");
