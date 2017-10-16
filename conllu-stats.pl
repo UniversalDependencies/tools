@@ -13,6 +13,8 @@ sub usage
     print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
     print STDERR ("    data = parent folder of the data repositories, e.g. of UD_English\n");
     print STDERR ("    The script will analyze all treebanks of the given language.\n");
+    print STDERR ("cat *.conllu | perl conllu-stats.pl --hub\n");
+    print STDERR ("... generates statistics parallel to the language-specific documentation hub.\n");
 }
 
 use open ':utf8';
@@ -22,14 +24,18 @@ binmode(STDERR, ':utf8');
 use Getopt::Long;
 
 # Read options.
+$konfig{format} = '';
 $konfig{relative} = 0; # relative frequencies of POS tags instead of absolute counts (affects only simple XML statistics)
+$konfig{hub} = 0; # default: generate stats.xml; hub statistics are for language-specific documentation hub on Github
 $konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 GetOptions
 (
+    'format=s'   => \$konfig{format},
     'relative'   => \$konfig{relative},
+    'hub'        => \$konfig{hub},
     'detailed'   => \$konfig{detailed},
     'data=s'     => \$konfig{datapath},
     'docs=s'     => \$konfig{docspath},
@@ -42,9 +48,8 @@ if($konfig{detailed} && $konfig{langcode} eq '')
     usage();
     die("Missing language code for detailed analysis");
 }
-# Argument "2009" toggles the CoNLL 2009 data format.
-my $format = shift;
-my $i_feat_column = $format eq '2009' ? 6 : 5;
+# Format "2009" toggles the CoNLL 2009 data format.
+my $i_feat_column = $konfig{format} eq '2009' ? 6 : 5;
 my %universal_features =
 (
     'PronType' => ['Prs', 'Rcp', 'Art', 'Int', 'Rel', 'Dem', 'Tot', 'Neg', 'Ind'],
@@ -175,6 +180,14 @@ if($konfig{detailed})
 else
 {
     # Take either STDIN or the CoNLL-U files specified on the command line.
+    if(scalar(@ARGV)>0)
+    {
+        print STDERR ("The following files will be processed: ", join(', ', @ARGV), "\n");
+    }
+    else
+    {
+        print STDERR ("No command-line arguments found. Standard input will be processed.\n");
+    }
     process_treebank();
 }
 
@@ -188,24 +201,33 @@ else
 #   Absolute count of some sort of unit:
 #     {nsent} ... number of sentences (trees) in the corpus
 #     {ntok} .... number of tokens in the corpus
+#     {ntoksano} ... number of tokens not followed by a space
 #     {nfus} .... number of fused multi-word tokens in the corpus
 #     {nword} ... number of syntactic words (nodes) in the corpus
 #   Inventories of individual data items and their frequencies
 #   (hashes: item => frequency):
 #     {words} ... inventory of word forms
+#     {fusions} ... inventory of multi-word token forms
 #     {lemmas} ... inventory of lemmas
 #     {tags} ... inventory of UPOS tags
+#   Examples of words that appeared with a particular property. Right now we
+#   have just one huge hash but it might be useful to split it in the future
+#   (hash: property => {exampleWord => frequency}):
+#     {example}{tag} ... inventory of words that occurred with a particular tag
 #==============================================================================
 sub reset_counters
 {
     my $stats = shift;
     $stats->{nsent} = 0;
     $stats->{ntok} = 0;
+    $stats->{ntoksano} = 0;
     $stats->{nfus} = 0;
     $stats->{nword} = 0;
     $stats->{words} = {};
+    $stats->{fusions} = {};
     $stats->{lemmas} = {};
     $stats->{tags} = {};
+    $stats->{examples} = {};
 }
 
 
@@ -221,7 +243,6 @@ sub process_treebank
     local @sentence;
     # Counters visible to the summarizing functions.
     local %tlw;
-    local %examples;
     local %wordtag;
     local %lemmatag;
     local %exentwt;
@@ -276,9 +297,10 @@ sub process_treebank
             my $fusion = $3;
             my $size = $i1-$i0+1;
             $stats{ntok} -= $size-1;
+            $stats{ntoksano}++ if(m/SpaceAfter=No/);
             $stats{nfus}++;
             # Remember the occurrence of the fusion.
-            $fusions{$fusion}++ unless($fusion eq '_');
+            $stats{fusions}{$fusion}++ unless($fusion eq '_');
         }
         else
         {
@@ -303,8 +325,8 @@ sub process_treebank
         $stats{nsent}++;
         splice(@sentence);
     }
-    prune_examples(\%fusions);
-    local @fusions = sort {my $r = $fusions{$b} <=> $fusions{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%fusions));
+    prune_examples($stats{fusions});
+    local @fusions = sort {my $r = $stats{fusions}{$b} <=> $stats{fusions}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{fusions}}));
     prune_examples($stats{words});
     local @words = sort {my $r = $stats{words}{$b} <=> $stats{words}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{words}}));
     prune_examples($stats{lemmas});
@@ -316,15 +338,15 @@ sub process_treebank
     local @deprelset = sort(keys(%deprelset));
     # Examples may contain uppercase letters only if all-lowercase version does not exist.
     my @ltagset = map {$_.'-lemma'} (@tagset);
-    foreach my $key (keys(%examples))
+    foreach my $key (keys(%{$stats{examples}}))
     {
-        my @examples = keys(%{$examples{$key}});
+        my @examples = keys(%{$stats{examples}{$key}});
         foreach my $example (@examples)
         {
-            if(lc($example) ne $example && exists($examples{$key}{lc($example)}))
+            if(lc($example) ne $example && exists($stats{examples}{$key}{lc($example)}))
             {
-                $examples{$key}{lc($example)} += $examples{$key}{$example};
-                delete($examples{$key}{$example});
+                $stats{examples}{$key}{lc($example)} += $stats{examples}{$key}{$example};
+                delete($stats{examples}{$key}{$example});
             }
         }
     }
@@ -336,7 +358,11 @@ sub process_treebank
             prune_examples($tlw{$tag}{$lemma});
         }
     }
-    if($konfig{detailed})
+    if($konfig{hub})
+    {
+        hub_statistics();
+    }
+    elsif($konfig{detailed})
     {
         detailed_statistics_tags();
         detailed_statistics_features();
@@ -381,6 +407,7 @@ sub process_sentence
         my $head = $node->[6];
         my $deprel = $node->[7];
         my @children = @{$node->[10]};
+        $stats{ntoksano}++ if($node->[9] =~ m/SpaceAfter=No/);
         # Remember the occurrence of the word form (syntactic word).
         $stats{words}{$word}++ unless($word eq '_');
         # Remember the occurrence of the lemma.
@@ -389,8 +416,8 @@ sub process_sentence
         $stats{tags}{$tag}++;
         $tlw{$tag}{$lemma}{$word}++;
         # We can also print example forms and lemmas that had the tag.
-        $examples{$tag}{$word}++;
-        $examples{$tag.'-lemma'}{$lemma}++;
+        $stats{examples}{$tag}{$word}++;
+        $stats{examples}{$tag.'-lemma'}{$lemma}++;
         # How many times is a particular form or lemma classified as a particular part of speech?
         $wordtag{$word}{$tag}++;
         $lemmatag{$lemma}{$tag}++;
@@ -403,7 +430,7 @@ sub process_sentence
         my $tagfeatures = "$tag\t$features";
         $tfset{$tag}{$features}++;
         $tfsetjoint{$tagfeatures}++;
-        $examples{$tagfeatures}{$word}++;
+        $stats{examples}{$tagfeatures}{$word}++;
         # Skip if there are no features.
         my %features_found_here;
         unless($features eq '_')
@@ -416,8 +443,8 @@ sub process_sentence
                 $upos{$fv}{$tag}++;
                 $tfv{$tag}{$fv}++;
                 # We can also print example words that had the feature.
-                $examples{$fv}{$word}++;
-                $examples{"$tag\t$fv"}{$word}++;
+                $stats{examples}{$fv}{$word}++;
+                $stats{examples}{"$tag\t$fv"}{$word}++;
                 # Aggregate feature names over all values.
                 my ($f, $v) = split(/=/, $fv);
                 $featureset{$f}++;
@@ -437,7 +464,7 @@ sub process_sentence
         {
             if(!exists($features_found_here{$f}))
             {
-                $examples{"$tag\t$f=EMPTY"}{$word}++;
+                $stats{examples}{"$tag\t$f=EMPTY"}{$word}++;
             }
         }
         # Remember the occurrence of each dependency relation.
@@ -552,9 +579,9 @@ sub detailed_statistics_tags
     foreach my $tag (@tagset)
     {
         $ntokens_total += $stats{tags}{$tag};
-        $ntypes{$tag} = scalar(keys(%{$examples{$tag}}));
+        $ntypes{$tag} = scalar(keys(%{$stats{examples}{$tag}}));
         $ntypes_total += $ntypes{$tag};
-        $nlemmas{$tag} = scalar(keys(%{$examples{$tag.'-lemma'}}));
+        $nlemmas{$tag} = scalar(keys(%{$stats{examples}{$tag.'-lemma'}}));
         $nlemmas_total += $nlemmas{$tag};
     }
     local $flratio = $ntypes_total/$nlemmas_total;
@@ -638,18 +665,18 @@ sub get_detailed_statistics_tag
     my $plemmas = percent($nlemmas{$tag}, $nlemmas_total);
     $page .= "There are $nlemmas{$tag} `$tag` lemmas ($plemmas), $ntypes{$tag} `$tag` types ($ptypes) and $ntokens `$tag` tokens ($ptokens).\n";
     $page .= "Out of $ntags observed tags, the rank of `$tag` is: $rlemmas{$tag} in number of lemmas, $rtypes{$tag} in number of types and $rtokens{$tag} in number of tokens.\n\n";
-    my $examples = prepare_examples($examples{$tag.'-lemma'}, $limit);
+    my $examples = prepare_examples($stats{examples}{$tag.'-lemma'}, $limit);
     $page .= "The $limit most frequent `$tag` lemmas: ".fex($examples)."\n\n";
-    $examples = prepare_examples($examples{$tag}, $limit);
+    $examples = prepare_examples($stats{examples}{$tag}, $limit);
     $page .= "The $limit most frequent `$tag` types:  ".fex($examples)."\n\n";
     # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
-    my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$examples{$tag.'-lemma'}}));
-    @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@examples, $limit);
+    my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$stats{examples}{$tag.'-lemma'}}));
+    @examples = sort_and_truncate_examples($stats{examples}{$tag.'-lemma'}, \@examples, $limit);
     @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); fex($l).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
     # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
-    @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$examples{$tag}}));
-    @examples = sort_and_truncate_examples($examples{$tag}, \@examples, $limit);
+    @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$stats{examples}{$tag}}));
+    @examples = sort_and_truncate_examples($stats{examples}{$tag}, \@examples, $limit);
     my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); fex($w).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
     foreach my $example (@examples)
@@ -683,7 +710,7 @@ sub get_detailed_statistics_tag
         $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
         my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
         my $nfeaturesets = scalar(@featuresets);
-        $examples = prepare_examples($examples{$tag."\t".$featuresets[0]}, $limit);
+        $examples = prepare_examples($stats{examples}{$tag."\t".$featuresets[0]}, $limit);
         # The vertical bar separates table columns in Markdown. We must escape it if we are generating content for Github pages.
         # Update: The vertical bar is not treated as a special character if it is inside `code text`.
         my $escaped_featureset = $featuresets[0];
@@ -956,11 +983,11 @@ sub get_detailed_statistics_feature
         {
             $n = $tfv{$tag}{"$feature=$value"};
             $p = percent($n, $tf{$tag}{$feature});
-            my $examples = prepare_examples($examples{"$tag\t$feature=$value"}, $limit);
+            my $examples = prepare_examples($stats{examples}{"$tag\t$feature=$value"}, $limit);
             $page .= "* `$value` ($n; $p of non-empty `$feature`): ".fex($examples)."\n";
         }
         $n = $stats{tags}{$tag} - $ft{$feature}{$tag};
-        my $examples = prepare_examples($examples{"$tag\t$feature=EMPTY"}, $limit);
+        my $examples = prepare_examples($stats{examples}{"$tag\t$feature=EMPTY"}, $limit);
         # There might be no examples even if $n > 0. We collect examples only for universal features, not for language-specific ones.
         ###!!! We may want to collect them for language-specific features. But we do not know in advance what these features are!
         ###!!! Maybe we should use just general examples of the tag, and grep them for not having the feature set?
@@ -1453,8 +1480,8 @@ EOF
     print("  <tags unique=\"".scalar(@tagset)."\">\n");
     foreach my $tag (@tagset)
     {
-        my @keys = keys(%{$examples{$tag.'-lemma'}});
-        my @examples = sort_and_truncate_examples($examples{$tag.'-lemma'}, \@keys, 10);
+        my @keys = keys(%{$stats{examples}{$tag.'-lemma'}});
+        my @examples = sort_and_truncate_examples($stats{examples}{$tag.'-lemma'}, \@keys, 10);
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
         # Absolute or relative count?
@@ -1468,8 +1495,8 @@ EOF
     print("  <feats unique=\"".scalar(@fvset)."\">\n");
     foreach my $feature (@fvset)
     {
-        my @keys = keys(%{$examples{$feature}});
-        my @examples = sort_and_truncate_examples($examples{$feature}, \@keys, 10);
+        my @keys = keys(%{$stats{examples}{$feature}});
+        my @examples = sort_and_truncate_examples($stats{examples}{$feature}, \@keys, 10);
         my $upostags = join(',', sort(keys(%{$upos{$feature}})));
         my ($name, $value) = split(/=/, $feature);
         $ex = join(', ', @examples);
@@ -1492,4 +1519,74 @@ EOF
     }
     print("  </deps>\n");
     print("</treebank>\n");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints statistics of phenomena that should be mentioned at the language-
+# specific documentation hub on Github.
+#------------------------------------------------------------------------------
+sub hub_statistics
+{
+    print("\#\# Tokenization and Word Segmentation\n\n");
+    if($stats{nfus} == 0)
+    {
+        print("* This corpus contains $stats{nsent} sentences and $stats{ntok} tokens.\n");
+    }
+    else
+    {
+        print("* This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.\n");
+    }
+    if($stats{ntoksano} > 0)
+    {
+        my $percentage = $stats{ntoksano} / $stats{ntok} * 100;
+        printf("* This corpus contains $stats{ntoksano} tokens (%d%%) that are not followed by a space.\n", $percentage+0.5);
+    }
+    # Words with spaces.
+    my @words_with_spaces = sort(grep {m/\s/} keys(%{$stats{words}}));
+    my $n_wws = scalar(@words_with_spaces);
+    if($n_wws > 0)
+    {
+        print("* This corpus contains $n_wws types of words with spaces: ", join(', ', @words_with_spaces), "\n");
+    }
+    else
+    {
+        print("* This corpus does not contain words with spaces.\n");
+    }
+    # Words combining letters and punctuation.
+    my @words_with_punctuation = sort(grep {m/\pP\pL|\pL\pP/} keys(%{$stats{words}}));
+    my $n_wwp = scalar(@words_with_punctuation);
+    if($n_wwp > 0)
+    {
+        print("* This corpus contains $n_wwp types of words that contain both letters and punctuation: ", join(', ', @words_with_punctuation), "\n");
+    }
+    else
+    {
+        print("* This corpus does not contain words that contain both letters and punctuation.\n");
+    }
+    # Multi-word tokens.
+    if($stats{nfus} > 0)
+    {
+        my $avgsize = ($stats{nword} - $stats{ntok} + $stats{nfus}) / $stats{nfus};
+        printf("* This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.\n", $avgsize);
+        my @fusion_examples = sort(keys(%{$stats{fusions}}));
+        my $n_types_mwt = scalar(@fusion_examples);
+        print("* There are $n_types_mwt types of multi-word tokens: ", join(', ', @fusion_examples), ".\n");
+    }
+    print("\n");
+    print("\#\# Morphology\n\n");
+    my $n_tags_used = scalar(@tagset);
+    print("* This corpus uses $n_tags_used UPOS tags out of 17 possible: ", join(', ', @tagset), "\n");
+    if($n_tags_used < 17)
+    {
+        my @unused_tags = grep {!exists($stats{tags}{$_})} ('NOUN', 'PROPN', 'PRON', 'ADJ', 'DET', 'NUM', 'VERB', 'AUX', 'ADV', 'ADP', 'SCONJ', 'CCONJ', 'PART', 'INTJ', 'SYM', 'PUNCT', 'X');
+        print("* This corpus does not use the following tags: ", join(', ', @unused_tags), "\n");
+    }
+    if(exists($stats{tags}{PART}))
+    {
+        my @part_examples = sort(keys(%{$stats{examples}{PART}}));
+        my $n_types_part = scalar(@part_examples);
+        print("* This corpus contains $n_types_part word types tagged as particles (PART): ", join(', ', @part_examples), "\n");
+    }
 }
