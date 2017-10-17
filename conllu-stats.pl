@@ -269,6 +269,7 @@ else
 #     {ft}{$feature}{$tag} ... feature name + tag
 #     {fvt}{$fvpair}{$tag} ... feature-value pair + tag
 #     {fvtverbform}{$fvpair}{$tag} ... feature-value pair with UPOS tag and VerbForm if nonempty
+#     {dtt}{$deprel}{"$ptag-$ctag"} ... deprel + parent tag and child tag
 #==============================================================================
 sub reset_counters
 {
@@ -297,6 +298,7 @@ sub reset_counters
     $stats->{ft} = {};
     $stats->{fvt} = {};
     $stats->{fvtverbform} = {};
+    $stats->{dtt} = {};
 }
 
 
@@ -322,7 +324,6 @@ sub process_treebank
     local %ltrdeprel;
     local %deprellen;
     local %parenttag;
-    local %depreltags;
     local %exentdtt;
     local %exconlludtt;
     local %exentlt;
@@ -548,7 +549,7 @@ sub process_sentence
         $stats{examples}{$deprel.'-lemma'}{$lemma}++;
         my $parent_tag = ($head==0) ? 'ROOT' : $sentence[$head-1][3];
         $parenttag{$tag}{$parent_tag}++;
-        $depreltags{$deprel}{"$parent_tag-$tag"}++;
+        $stats{dtt}{$deprel}{"$parent_tag-$tag"}++;
         if(!exists($exentdtt{$deprel}{$parent_tag}{$tag}) || length($exentdtt{$deprel}{$parent_tag}{$tag}) > 80 && $slength < length($exentdtt{$deprel}{$parent_tag}{$tag}))
         {
             $exentdtt{$deprel}{$parent_tag}{$tag} = join(' ', map {($_->[0] == $id || $_->[0] == $head) ? "<b>$_->[1]</b>" : $_->[1]} (@sentence));
@@ -1351,10 +1352,10 @@ sub get_detailed_statistics_relation
     $page .= "Average distance between parent and child is $avglen.\n\n";
     # Word types, lemmas, tags and features.
     my $list;
-    ($list, $n) = list_keys_with_counts($depreltags{$deprel}, $stats{deprels}{$deprel}, "$langcode-pos/");
+    ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, "$langcode-pos/");
     $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
     ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
-    my @tagpairs = sort {$depreltags{$deprel}{$b} <=> $depreltags{$deprel}{$a}} (keys(%{$depreltags{$deprel}}));
+    my @tagpairs = sort {$stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a}} (keys(%{$stats{dtt}{$deprel}}));
     for(my $i = 0; $i < 3; $i++)
     {
         last if($i > $#tagpairs);
@@ -1773,6 +1774,17 @@ sub hub_statistics
     $cell = '';
     $cell .= "<h3>Core Arguments, Oblique Arguments and Adjuncts</h3>\n\n";
     $cell .= "TBD\n";
+    $cell .= "<ul>\n";
+    $cell .= "  <li>nsubj\n";
+    $cell .= "    <ul>\n";
+    my @tagpairs = sort(keys(%{$stats{dtt}}));
+    foreach my $tt (@tagpairs)
+    {
+        $cell .= "      <li>$tt</li>\n";
+    }
+    $cell .= "    </ul>\n";
+    $cell .= "  </li>\n";
+    $cell .= "</ul>\n";
     push(@table, $cell);
     $cell = '';
     $cell .= "<h3>Relations Overview</h3>\n\n";
