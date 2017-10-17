@@ -179,6 +179,16 @@ if($konfig{oformat} eq 'detailed')
 }
 elsif($konfig{oformat} eq 'hubcompare')
 {
+    print <<EOF
+---
+layout: base
+title:  'Comparison of Treebank Statistics'
+permalink: cs/overview/cs-hub-comparison.html
+udver: '2'
+---
+
+EOF
+    ;
     my @treebanks = @ARGV;
     my @tbkhubs;
     my $max_cells = 0;
@@ -188,6 +198,7 @@ elsif($konfig{oformat} eq 'hubcompare')
         print STDERR ("Processing $treebank...\n");
         @ARGV = ($treebank);
         my @cells = process_treebank();
+        unshift(@cells, "<h1>$treebank</h1>\n");
         push(@tbkhubs, \@cells);
         $max_cells = scalar(@cells) if(scalar(@cells) > $max_cells);
     }
@@ -197,7 +208,7 @@ elsif($konfig{oformat} eq 'hubcompare')
         print("<tr>\n");
         foreach my $hub (@tbkhubs)
         {
-            print("  <td>\n");
+            print("  <td valign=\"top\">\n");
             print("$hub->[$i]\n");
             print("  </td>\n");
         }
@@ -1586,131 +1597,132 @@ sub hub_statistics
 {
     my @table;
     my $cell = '';
-    $cell .= "\#\# Tokenization and Word Segmentation\n\n";
+    # We have to generate HTML instead of MarkDown because the MarkDown syntax is not recognized inside HTML tables.
+    $cell .= "<h2>Tokenization and Word Segmentation</h2>\n\n";
+    $cell .= "<ul>\n";
     if($stats{nfus} == 0)
     {
-        $cell .= "* This corpus contains $stats{nsent} sentences and $stats{ntok} tokens.\n";
+        $cell .= "<li>This corpus contains $stats{nsent} sentences and $stats{ntok} tokens.</li>\n";
     }
     else
     {
-        $cell .= "* This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.\n";
+        $cell .= "<li>This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.</li>\n";
     }
     if($stats{ntoksano} > 0)
     {
         my $percentage = $stats{ntoksano} / $stats{ntok} * 100;
-        $cell .= sprintf("* This corpus contains $stats{ntoksano} tokens (%d%%) that are not followed by a space.\n", $percentage+0.5);
+        $cell .= sprintf("<li>This corpus contains $stats{ntoksano} tokens (%d%%) that are not followed by a space.</li>\n", $percentage+0.5);
     }
     # Words with spaces.
     my @words_with_spaces = sort(grep {m/\s/} keys(%{$stats{words}}));
     my $n_wws = scalar(@words_with_spaces);
     if($n_wws > 0)
     {
-        $cell .= "* This corpus contains $n_wws types of words with spaces: ".join(', ', @words_with_spaces)."\n";
+        $cell .= "<li>This corpus contains $n_wws types of words with spaces: ".join(', ', @words_with_spaces)."</li>\n";
     }
     else
     {
-        $cell .= "* This corpus does not contain words with spaces.\n";
+        $cell .= "<li>This corpus does not contain words with spaces.</li>\n";
     }
     # Words combining letters and punctuation.
     my @words_with_punctuation = sort(grep {m/\pP\pL|\pL\pP/} keys(%{$stats{words}}));
     my $n_wwp = scalar(@words_with_punctuation);
     if($n_wwp > 0)
     {
-        $cell .= "* This corpus contains $n_wwp types of words that contain both letters and punctuation: ".join(', ', @words_with_punctuation)."\n";
+        $cell .= "<li>This corpus contains $n_wwp types of words that contain both letters and punctuation: ".join(', ', @words_with_punctuation)."</li>\n";
     }
     else
     {
-        $cell .= "* This corpus does not contain words that contain both letters and punctuation.\n";
+        $cell .= "<li>This corpus does not contain words that contain both letters and punctuation.</li>\n";
     }
     # Multi-word tokens.
     if($stats{nfus} > 0)
     {
         my $avgsize = ($stats{nword} - $stats{ntok} + $stats{nfus}) / $stats{nfus};
-        $cell .= sprintf("* This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.\n", $avgsize);
+        $cell .= sprintf("<li>This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.</li>\n", $avgsize);
         my @fusion_examples = sort(keys(%{$stats{fusions}}));
         my $n_types_mwt = scalar(@fusion_examples);
-        $cell .= "* There are $n_types_mwt types of multi-word tokens: ".join(', ', @fusion_examples).".\n";
+        $cell .= "<li>There are $n_types_mwt types of multi-word tokens: ".join(', ', @fusion_examples).".</li>\n";
     }
+    $cell .= "</ul>\n";
     push(@table, $cell);
     $cell = '';
     # Morphology and part-of-speech tags.
-    $cell .= "\#\# Morphology\n\n";
+    $cell .= "<h2>Morphology</h2>\n\n";
+    $cell .= "<ul>\n";
     my $n_tags_used = scalar(@tagset);
-    $cell .= "* This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', @tagset)."\n";
+    $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', @tagset)."</li>\n";
     if($n_tags_used < 17)
     {
         my @unused_tags = grep {!exists($stats{tags}{$_})} ('NOUN', 'PROPN', 'PRON', 'ADJ', 'DET', 'NUM', 'VERB', 'AUX', 'ADV', 'ADP', 'SCONJ', 'CCONJ', 'PART', 'INTJ', 'SYM', 'PUNCT', 'X');
-        $cell .= "* This corpus does not use the following tags: ".join(', ', @unused_tags)."\n";
+        $cell .= "<li>This corpus does not use the following tags: ".join(', ', @unused_tags)."</li>\n";
     }
     if(exists($stats{tags}{PART}))
     {
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
         my $n_types_part = scalar(@part_examples);
-        $cell .= "* This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples).".\n";
+        $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples).".</li>\n";
     }
     # Verb forms.
     my @verbforms = sort(map {my $x = $_; $x =~ s/^VerbForm=//; $x} (grep {m/^VerbForm=/} (keys(%{$stats{fvpairs}}))));
     my $n_verbforms = scalar(@verbforms);
     if($n_verbforms > 0)
     {
-        $cell .= "* There are $n_verbforms (de)verbal forms:\n";
+        $cell .= "<li>There are $n_verbforms (de)verbal forms:\n";
+        $cell .= "<ul>\n";
         foreach my $verbform (@verbforms)
         {
             my $fvpair = "VerbForm=$verbform";
             my @upostags = sort(keys(%{$stats{fvt}{$fvpair}}));
-            #my @keys = keys(%{$stats{examples}{$fvpair}});
-            #my @examples = sort_and_truncate_examples($stats{examples}{$fvpair}, \@keys, 10);
-            #print("  * $verbform (", join(', ', @upostags), "): ", join(', ', @examples), "\n");
-            $cell .= "  * $verbform\n";
+            $cell .= "  <li>$verbform\n";
+            $cell .= "  <ul>\n";
             foreach my $upos (@upostags)
             {
                 my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
                 my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
-                $cell .= "    * $upos: ".join(', ', @examples)."\n";
+                $cell .= "    <li>$upos: ".join(', ', @examples)."</li>\n";
             }
+            $cell .= "  </ul>\n";
+            $cell .= "  </li>\n";
         }
+        $cell .= "</ul>\n";
+        $cell .= "</li>\n";
     }
     else
     {
-        $cell .= "* This corpus does not use the VerbForm feature.\n";
+        $cell .= "<li>This corpus does not use the VerbForm feature.</li>\n";
     }
     push(@table, $cell);
     $cell = '';
-    $cell .= "\#\#\# Nominal Features\n\n";
-    $cell .= summarize_feature_for_hub('Gender');
-    $cell .= summarize_feature_for_hub('Animacy');
-    $cell .= summarize_feature_for_hub('Number');
-    $cell .= summarize_feature_for_hub('Case');
-    $cell .= summarize_feature_for_hub('PrepCase');
-    $cell .= summarize_feature_for_hub('Definite');
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "\#\#\# Degree and Polarity\n\n";
-    $cell .= summarize_feature_for_hub('Degree');
-    $cell .= summarize_feature_for_hub('Polarity');
-    $cell .= summarize_feature_for_hub('Variant');
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "\#\#\# Verbal Features\n\n";
-    $cell .= summarize_feature_for_hub('Aspect');
-    $cell .= summarize_feature_for_hub('Mood');
-    $cell .= summarize_feature_for_hub('Tense');
-    $cell .= summarize_feature_for_hub('Voice');
-    $cell .= summarize_feature_for_hub('Evident');
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "\#\#\# Pronouns, Determiners, Quantifiers\n\n";
-    $cell .= summarize_feature_for_hub('PronType');
-    $cell .= summarize_feature_for_hub('NumType');
-    $cell .= summarize_feature_for_hub('Poss');
-    $cell .= summarize_feature_for_hub('Reflex');
-    $cell .= summarize_feature_for_hub('Person');
-    $cell .= summarize_feature_for_hub('Polite');
-    $cell .= summarize_feature_for_hub('Gender[psor]');
-    $cell .= summarize_feature_for_hub('Number[psor]');
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "\#\#\# Other Features\n\n";
+    $cell .= "<h3>Nominal Features</h3>\n\n";
+    foreach my $feature (qw(Gender Animacy Number Case PrepCase Definite))
+    {
+        $cell .= summarize_feature_for_hub($feature);
+        push(@table, $cell);
+        $cell = '';
+    }
+    $cell .= "<h3>Degree and Polarity</h3>\n\n";
+    foreach my $feature (qw(Degree Polarity Variant))
+    {
+        $cell .= summarize_feature_for_hub($feature);
+        push(@table, $cell);
+        $cell = '';
+    }
+    $cell .= "<h3>Verbal Features</h3>\n\n";
+    foreach my $feature (qw(Aspect Mood Tense Voice Evident))
+    {
+        $cell .= summarize_feature_for_hub($feature);
+        push(@table, $cell);
+        $cell = '';
+    }
+    $cell .= "<h3>Pronouns, Determiners, Quantifiers</h3>\n\n";
+    foreach my $feature ('PronType', 'NumType', 'Poss', 'Reflex', 'Person', 'Polite', 'Gender[psor]', 'Number[psor]')
+    {
+        $cell .= summarize_feature_for_hub($feature);
+        push(@table, $cell);
+        $cell = '';
+    }
+    $cell .= "<h3>Other Features</h3>\n\n";
     my @otherfeatures = grep {!m/^(Gender|Animacy|Number|Case|PrepCase|Definite|Degree|Polarity|Variant|VerbForm|Mood|Aspect|Tense|Voice|Evident|PronType|NumType|Poss|Reflex|Person|Polite|Gender\[psor\]|Number\[psor\]|)$/} (@featureset);
     foreach my $feature (@otherfeatures)
     {
@@ -1719,41 +1731,44 @@ sub hub_statistics
     push(@table, $cell);
     # Syntax.
     $cell = '';
-    $cell .= "\#\# Syntax\n\n";
-    $cell .= "\#\#\# Auxiliary Verbs and Copula\n\n";
+    $cell .= "<h2>Syntax</h2>\n\n";
+    $cell .= "<h3>Auxiliary Verbs and Copula</h3>\n\n";
+    $cell .= "<ul>\n";
     if(exists($stats{deprels}{cop}))
     {
         my @cop_lemmas = sort(keys(%{$stats{examples}{'cop-lemma'}}));
         my $n_lemmas_cop = scalar(@cop_lemmas);
-        $cell .= "* This corpus uses $n_lemmas_cop lemmas as copulas (cop): ".join(', ', @cop_lemmas).".\n";
+        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (cop): ".join(', ', @cop_lemmas).".</li>\n";
     }
     else
     {
-        $cell .= "* This corpus does not contain copulas.\n";
+        $cell .= "<li>This corpus does not contain copulas.</li>\n";
     }
     if(exists($stats{deprels}{aux}))
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "* This corpus uses $n_lemmas_aux lemmas as auxiliaries (aux): ".join(', ', @aux_lemmas).".\n";
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (aux): ".join(', ', @aux_lemmas).".</li>\n";
     }
     if(exists($stats{deprels}{'aux:pass'}))
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux:pass-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "* This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (aux:pass): ".join(', ', @aux_lemmas).".\n";
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (aux:pass): ".join(', ', @aux_lemmas).".</li>\n";
     }
     if(!exists($stats{deprels}{aux}) && !exists($stats{deprels}{'aux:pass'}))
     {
-        $cell .= "* This corpus does not contain auxiliaries.\n";
+        $cell .= "<li>This corpus does not contain auxiliaries.</li>\n";
     }
+    $cell .= "</ul>\n";
     push(@table, $cell);
     $cell = '';
-    $cell .= "\#\#\# Core Arguments, Oblique Arguments and Adjuncts\n\n";
+    $cell .= "<h3>Core Arguments, Oblique Arguments and Adjuncts</h3>\n\n";
     $cell .= "TBD\n";
     push(@table, $cell);
     $cell = '';
-    $cell .= "\#\#\# Relations Overview\n\n";
+    $cell .= "<h3>Relations Overview</h3>\n\n";
+    $cell .= "<ul>\n";
     my @deprel_subtypes = grep {m/:/} (@deprelset);
     my %supertypes;
     foreach my $deprel (@deprel_subtypes)
@@ -1764,26 +1779,27 @@ sub hub_statistics
     my $n_deprel_subtypes = scalar(@deprel_subtypes);
     if($n_deprel_subtypes > 0)
     {
-        $cell .= "* This corpus uses $n_deprel_subtypes relation subtypes: ".join(', ', @deprel_subtypes)."\n";
+        $cell .= "<li>This corpus uses $n_deprel_subtypes relation subtypes: ".join(', ', @deprel_subtypes)."</li>\n";
         # Are there main types that only occur as part of subtypes?
         my @supertypes = sort(grep {!exists($stats{deprels}{$_})} (keys(%supertypes)));
         my $n = scalar(@supertypes);
         if($n > 0)
         {
-            $cell .= "* The following $n main types are not used alone, they are always subtyped: ".join(', ', @supertypes)."\n";
+            $cell .= "<li>The following $n main types are not used alone, they are always subtyped: ".join(', ', @supertypes)."</li>\n";
         }
     }
     else
     {
-        $cell .= "* This corpus does not use relation subtypes.\n";
+        $cell .= "<li>This corpus does not use relation subtypes.</li>\n";
     }
     my @udeprels = qw(nsubj obj iobj csubj ccomp xcomp obl vocative expl dislocated advcl advmod discourse aux cop mark nmod appos nummod acl amod det clf case conj cc fixed flat compound list parataxis orphan goeswith reparandum punct root dep);
     my @unused = grep {!exists($stats{deprels}{$_}) && !exists($supertypes{$_})} (@udeprels);
     my $n_unused = scalar(@unused);
     if($n_unused > 0)
     {
-        $cell .= "* The following $n_unused relation types are not used in this corpus at all: ".join(', ', @unused)."\n";
+        $cell .= "<li>The following $n_unused relation types are not used in this corpus at all: ".join(', ', @unused)."</li>\n";
     }
+    $cell .= "</ul>\n";
     push(@table, $cell);
     # Return the list of cells to the caller. They may want to combine it with reports on other treebanks before printing it.
     return @table;
@@ -1796,19 +1812,25 @@ sub summarize_feature_for_hub
     my $n_values = scalar(@values);
     if($n_values > 0)
     {
-        $markdown .= "* $feature\n";
+        $markdown .= "<li>$feature\n";
+        $markdown .= "  <ul>\n";
         foreach my $value (@values)
         {
             my $fvpair = "$feature=$value";
             my @upostags = sort(keys(%{$stats{fvtverbform}{$fvpair}}));
-            $markdown .= "  * $value\n";
+            $markdown .= "    <li>$value\n";
+            $markdown .= "      <ul>\n";
             foreach my $upos (@upostags)
             {
                 my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
                 my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
-                $markdown .= "    * $upos: ".join(', ', @examples)."\n";
+                $markdown .= "        <li>$upos: ".join(', ', @examples)."</li>\n";
             }
+            $markdown .= "      </ul>\n";
+            $markdown .= "    </li>\n";
         }
+        $markdown .= "  </ul>\n";
+        $markdown .= "</li>\n";
     }
     return $markdown;
 }
