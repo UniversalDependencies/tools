@@ -190,6 +190,8 @@ udver: '2'
 EOF
     ;
     my @treebanks = @ARGV;
+    my $n_treebanks = scalar(@treebanks);
+    my $width_percent = sprintf("%d", 100/$n_treebanks);
     my @tbkhubs;
     my $max_cells = 0;
     print STDERR ("The following treebanks will be compared: ", join(', ', @treebanks), "\n");
@@ -208,7 +210,7 @@ EOF
         print("<tr>\n");
         foreach my $hub (@tbkhubs)
         {
-            print("  <td valign=\"top\">\n");
+            print("  <td width=\"$width_percent\%\" valign=\"top\">\n");
             print("$hub->[$i]\n");
             print("  </td>\n");
         }
