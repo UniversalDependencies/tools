@@ -263,6 +263,7 @@ else
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
 #     {tf}{$tag}{$feature} ... tag + feature name
 #     {tfv}{$tag}{$fvpair} ... tag + feature-value pair
+#     {td}{$tag}{$deprel} ... tag + deprel
 #     {fw}{$feature}{$word} ... feature name + word
 #     {fl}{$feature}{$lemma} ... feature name + lemma
 #     {ft}{$feature}{$tag} ... feature name + tag
@@ -290,6 +291,7 @@ sub reset_counters
     $stats->{tlw} = {};
     $stats->{tf} = {};
     $stats->{tfv} = {};
+    $stats->{td} = {};
     $stats->{fw} = {};
     $stats->{fl} = {};
     $stats->{ft} = {};
@@ -319,7 +321,6 @@ sub process_treebank
     local %fv;
     local %ltrdeprel;
     local %deprellen;
-    local %tagdeprel;
     local %parenttag;
     local %depreltags;
     local %exentdtt;
@@ -543,7 +544,7 @@ sub process_sentence
         $stats{deprels}{$deprel}++;
         $ltrdeprel{$deprel}++ if($head < $id);
         $deprellen{$deprel} += abs($id - $head);
-        $tagdeprel{$tag}{$deprel}++;
+        $stats{td}{$tag}{$deprel}++;
         $stats{examples}{$deprel.'-lemma'}{$lemma}++;
         my $parent_tag = ($head==0) ? 'ROOT' : $sentence[$head-1][3];
         $parenttag{$tag}{$parent_tag}++;
@@ -799,7 +800,7 @@ sub get_detailed_statistics_tag
     $page .= "\n";
     # Dependency relations.
     $page .= "## Relations\n\n";
-    my ($list, $n) = list_keys_with_counts($tagdeprel{$tag}, $stats{tags}{$tag}, "$langcode-dep/");
+    my ($list, $n) = list_keys_with_counts($stats{td}{$tag}, $stats{tags}{$tag}, "$langcode-dep/");
     $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
     ($list, $n) = list_keys_with_counts($parenttag{$tag}, $stats{tags}{$tag}, '');
     $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
