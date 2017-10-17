@@ -17,6 +17,7 @@ sub usage
     print STDERR ("... generates statistics parallel to the language-specific documentation hub.\n");
     print STDERR ("perl conllu-stats.pl --oformat hubcompare cs_pdt.conllu cs_cac.conllu sv.conllu\n");
     print STDERR ("... similar to hub but compares two or more treebanks side-by-side.\n");
+    print STDERR ("... each treebank is either one CoNLL-U file, or a folder with CoNLL-U files.\n");
 }
 
 use open ':utf8';
@@ -198,7 +199,17 @@ EOF
     foreach my $treebank (@treebanks)
     {
         print STDERR ("Processing $treebank...\n");
-        @ARGV = ($treebank);
+        # If the path leads to a folder, read all CoNLL-U files in that folder. Otherwise it is just one CoNLL-U file.
+        if(-d $treebank)
+        {
+            opendir(DIR, $treebank) or die("Cannot read folder $treebank: $!");
+            @ARGV = map {"$treebank/$_"} (grep {m/\.conllu$/} (readdir(DIR)));
+            closedir(DIR);
+        }
+        else
+        {
+            @ARGV = ($treebank);
+        }
         my @cells = process_treebank();
         unshift(@cells, "<h1>$treebank</h1>\n");
         push(@tbkhubs, \@cells);
