@@ -1781,7 +1781,7 @@ sub hub_statistics
     my @tagpairs = sort(grep {!m/^(PROPN|PART|PUNCT|SYM|X)-/} (keys(%{$stats{dtt}{nsubj}})));
     foreach my $tt (@tagpairs)
     {
-        $cell .= "      <li>$tt</li>\n";
+        $cell .= "      <li>$tt ($stats{dtt}{nsubj}{$tt})</li>\n";
     }
     $cell .= "    </ul>\n";
     $cell .= "  </li>\n";
