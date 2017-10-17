@@ -1777,7 +1777,7 @@ sub hub_statistics
     $cell .= "<ul>\n";
     $cell .= "  <li>nsubj\n";
     $cell .= "    <ul>\n";
-    my @tagpairs = sort(keys(%{$stats{dtt}}));
+    my @tagpairs = sort(keys(%{$stats{dtt}{nsubj}}));
     foreach my $tt (@tagpairs)
     {
         $cell .= "      <li>$tt</li>\n";
