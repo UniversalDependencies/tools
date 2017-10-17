@@ -270,6 +270,7 @@ else
 #     {fvt}{$fvpair}{$tag} ... feature-value pair + tag
 #     {fvtverbform}{$fvpair}{$tag} ... feature-value pair with UPOS tag and VerbForm if nonempty
 #     {dtt}{$deprel}{"$ptag-$ctag"} ... deprel + parent tag and child tag
+#     {dtvftcase}{$deprel}{$tag}{$tag} ... deprel + parent tag with VerbForm + child tag with Case
 #==============================================================================
 sub reset_counters
 {
@@ -299,6 +300,7 @@ sub reset_counters
     $stats->{fvt} = {};
     $stats->{fvtverbform} = {};
     $stats->{dtt} = {};
+    $stats->{dtvftcase} = {};
 }
 
 
@@ -469,6 +471,7 @@ sub process_sentence
         my $word = $node->[1];
         my $lemma = $node->[2];
         my $tag = $node->[3];
+        my $tagcase = $tag;
         my $features = $node->[$i_feat_column];
         my $head = $node->[6];
         my $deprel = $node->[7];
@@ -531,6 +534,10 @@ sub process_sentence
                 $paradigm{$tag}{$f}{$lemma}{$v}{$other_features}{$word}++;
                 $fv{$f}{$v}++;
                 $features_found_here{$f}++;
+                if($f eq 'Case')
+                {
+                    $tagcase .= '-'.$v;
+                }
             }
         }
         # Remember examples of empty values of features.
@@ -547,7 +554,16 @@ sub process_sentence
         $deprellen{$deprel} += abs($id - $head);
         $stats{td}{$tag}{$deprel}++;
         $stats{examples}{$deprel.'-lemma'}{$lemma}++;
-        my $parent_tag = ($head==0) ? 'ROOT' : $sentence[$head-1][3];
+        my $parent_tag = 'ROOT';
+        my $parent_tag_vf = $parent_tag;
+        if($head != 0)
+        {
+            $parent_tag = $parent_tag_vf = $sentence[$head-1][3];
+            if($sentence[$head-1][5] =~ m/VerbForm=(.+?)(\||$)/)
+            {
+                $parent_tag_vf .= '-'.$1;
+            }
+        }
         $parenttag{$tag}{$parent_tag}++;
         $stats{dtt}{$deprel}{"$parent_tag-$tag"}++;
         if(!exists($exentdtt{$deprel}{$parent_tag}{$tag}) || length($exentdtt{$deprel}{$parent_tag}{$tag}) > 80 && $slength < length($exentdtt{$deprel}{$parent_tag}{$tag}))
@@ -567,6 +583,7 @@ sub process_sentence
         $nchildren{$tag} += $nchildren;
         $nchildren = 3 if($nchildren > 3);
         $tagdegree{$tag}{$nchildren}++;
+        my @casedeps;
         foreach my $child (@children)
         {
             my $cnode = $sentence[$child-1];
@@ -574,7 +591,16 @@ sub process_sentence
             my $cdeprel = $cnode->[7];
             $childtag{$tag}{$ctag}++;
             $childtagdeprel{$tag}{$cdeprel}++;
+            if($cdeprel eq 'case')
+            {
+                push(@casedeps, "ADP($cnode->[2])");
+            }
         }
+        if(scalar(@casedeps) > 0)
+        {
+            $tagcase .= '-'.join('-', @casedeps);
+        }
+        $stats{dtvftcase}{$deprel}{$parent_tag_vf}{$tagcase}++;
         # Feature agreement between parent and child.
         unless($head==0)
         {
@@ -1773,21 +1799,27 @@ sub hub_statistics
     push(@table, $cell);
     $cell = '';
     $cell .= "<h3>Core Arguments, Oblique Arguments and Adjuncts</h3>\n\n";
-    $cell .= "TBD\n";
-    $cell .= "Ignoring arguments headed by PROPN, PART, PUNCT, SYM, X.\n";
-    $cell .= "<ul>\n";
-    $cell .= "  <li>nsubj\n";
-    $cell .= "    <ul>\n";
-    my @tagpairs = sort(grep {!m/^(PROPN|PART|PUNCT|SYM|X)-/} (keys(%{$stats{dtt}{nsubj}})));
-    foreach my $tt (@tagpairs)
+    $cell .= "Here we consider only relations between verbs (parent) and nouns or pronouns (child).\n";
+    foreach my $deprel ('nsubj', 'obj', 'iobj')
     {
-        $cell .= "      <li>$tt ($stats{dtt}{nsubj}{$tt})</li>\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>$deprel\n";
+        $cell .= "    <ul>\n";
+        my @parenttags = sort(grep {m/^VERB/} (keys(%{$stats{dtvftcase}{$deprel}})));
+        foreach my $pt (@parenttags)
+        {
+            my @childtags = sort(grep {m/^(NOUN|PRON)/} (keys(%{$stats{dtvftcase}{$deprel}{$pt}})));
+            foreach my $ct (@childtags)
+            {
+                $cell .= "      <li>$pt--$ct ($stats{dtvftcase}{$deprel}{$pt}{$ct})</li>\n";
+            }
+        }
+        $cell .= "    </ul>\n";
+        $cell .= "  </li>\n";
+        $cell .= "</ul>\n";
+        push(@table, $cell);
+        $cell = '';
     }
-    $cell .= "    </ul>\n";
-    $cell .= "  </li>\n";
-    $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
     $cell .= "<h3>Relations Overview</h3>\n\n";
     $cell .= "<ul>\n";
     my @deprel_subtypes = grep {m/:/} (@deprelset);
