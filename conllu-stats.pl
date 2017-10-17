@@ -1774,10 +1774,11 @@ sub hub_statistics
     $cell = '';
     $cell .= "<h3>Core Arguments, Oblique Arguments and Adjuncts</h3>\n\n";
     $cell .= "TBD\n";
+    $cell .= "Ignoring arguments headed by PROPN, PART, PUNCT, SYM, X.\n";
     $cell .= "<ul>\n";
     $cell .= "  <li>nsubj\n";
     $cell .= "    <ul>\n";
-    my @tagpairs = sort(keys(%{$stats{dtt}{nsubj}}));
+    my @tagpairs = sort(grep {!m/^(PROPN|PART|PUNCT|SYM|X)-/} (keys(%{$stats{dtt}{nsubj}})));
     foreach my $tt (@tagpairs)
     {
         $cell .= "      <li>$tt</li>\n";
