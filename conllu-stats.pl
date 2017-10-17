@@ -15,6 +15,8 @@ sub usage
     print STDERR ("    The script will analyze all treebanks of the given language.\n");
     print STDERR ("cat *.conllu | perl conllu-stats.pl --oformat hub\n");
     print STDERR ("... generates statistics parallel to the language-specific documentation hub.\n");
+    print STDERR ("perl conllu-stats.pl --oformat hubcompare cs_pdt.conllu cs_cac.conllu sv.conllu\n");
+    print STDERR ("... similar to hub but compares two or more treebanks side-by-side.\n");
 }
 
 use open ':utf8';
@@ -174,6 +176,34 @@ if($konfig{oformat} eq 'detailed')
         process_treebank();
         $mode = '>>';
     }
+}
+elsif($konfig{oformat} eq 'hubcompare')
+{
+    my @treebanks = @ARGV;
+    my @tbkhubs;
+    my $max_cells = 0;
+    print STDERR ("The following treebanks will be compared: ", join(', ', @treebanks), "\n");
+    foreach my $treebank (@treebanks)
+    {
+        print STDERR ("Processing $treebank...\n");
+        @ARGV = ($treebank);
+        my @cells = process_treebank();
+        push(@tbkhubs, \@cells);
+        $max_cells = scalar(@cells) if(scalar(@cells) > $max_cells);
+    }
+    print("<table>\n");
+    for(my $i = 0; $i < $max_cells; $i++)
+    {
+        print("<tr>\n");
+        foreach my $hub (@tbkhubs)
+        {
+            print("  <td>\n");
+            print("$hub->[$i]\n");
+            print("  </td>\n");
+        }
+        print("</tr>\n");
+    }
+    print("</table>\n");
 }
 else
 {
@@ -369,7 +399,14 @@ sub process_treebank
     }
     if($konfig{oformat} eq 'hub')
     {
-        hub_statistics();
+        # The hub_statistics() function returns a list of MarkDown sections.
+        print(join("\n", hub_statistics()));
+    }
+    elsif($konfig{oformat} eq 'hubcompare')
+    {
+        # Only collect a structured report and return it.
+        # Multiple treebanks will be scanned and their reports combined by the caller.
+        return hub_statistics();
     }
     elsif($konfig{oformat} eq 'detailed')
     {
@@ -1748,11 +1785,8 @@ sub hub_statistics
         $cell .= "* The following $n_unused relation types are not used in this corpus at all: ".join(', ', @unused)."\n";
     }
     push(@table, $cell);
-    # Print all table cells to the standard output.
-    foreach my $cell (@table)
-    {
-        print("$cell\n");
-    }
+    # Return the list of cells to the caller. They may want to combine it with reports on other treebanks before printing it.
+    return @table;
 }
 sub summarize_feature_for_hub
 {
