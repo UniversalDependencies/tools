@@ -9,11 +9,11 @@ sub usage
 {
     print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
     print STDERR ("... generates the basic statistics that accompany each treebank.\n");
-    print STDERR ("perl conllu-stats.pl --detailed --data .. --docs ../docs --lang pt\n");
+    print STDERR ("perl conllu-stats.pl --oformat detailed --data .. --docs ../docs --lang pt\n");
     print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
     print STDERR ("    data = parent folder of the data repositories, e.g. of UD_English\n");
     print STDERR ("    The script will analyze all treebanks of the given language.\n");
-    print STDERR ("cat *.conllu | perl conllu-stats.pl --hub\n");
+    print STDERR ("cat *.conllu | perl conllu-stats.pl --oformat hub\n");
     print STDERR ("... generates statistics parallel to the language-specific documentation hub.\n");
 }
 
@@ -24,32 +24,30 @@ binmode(STDERR, ':utf8');
 use Getopt::Long;
 
 # Read options.
-$konfig{format} = '';
+$konfig{iformat} = '';
+$konfig{oformat} = 'simple'; # simple = stats.xml; hub = markdown one-page summary; detailed = markdown, separate page for each tag/feat/rel
 $konfig{relative} = 0; # relative frequencies of POS tags instead of absolute counts (affects only simple XML statistics)
-$konfig{hub} = 0; # default: generate stats.xml; hub statistics are for language-specific documentation hub on Github
-$konfig{detailed} = 0; # default: generate stats.xml; detailed statistics are for Github documentation
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 GetOptions
 (
-    'format=s'   => \$konfig{format},
+    'iformat=s'  => \$konfig{iformat},
+    'oformat=s'  => \$konfig{oformat},
     'relative'   => \$konfig{relative},
-    'hub'        => \$konfig{hub},
-    'detailed'   => \$konfig{detailed},
     'data=s'     => \$konfig{datapath},
     'docs=s'     => \$konfig{docspath},
     'language=s' => \$konfig{langcode},
     'help'       => \$konfig{help}
 );
 exit(usage()) if($konfig{help});
-if($konfig{detailed} && $konfig{langcode} eq '')
+if($konfig{oformat} eq 'detailed' && $konfig{langcode} eq '')
 {
     usage();
     die("Missing language code for detailed analysis");
 }
 # Format "2009" toggles the CoNLL 2009 data format.
-my $i_feat_column = $konfig{format} eq '2009' ? 6 : 5;
+my $i_feat_column = $konfig{iformat} eq '2009' ? 6 : 5;
 my %universal_features =
 (
     'PronType' => ['Prs', 'Rcp', 'Art', 'Int', 'Rel', 'Dem', 'Tot', 'Neg', 'Ind'],
@@ -130,7 +128,7 @@ my %languages =
     'ug'  => {'name' => 'Uyghur',     'i' => 0, 'c' => '،'},
     'vi'  => {'name' => 'Vietnamese', 'i' => 1, 'c' => ','},
 );
-if($konfig{detailed})
+if($konfig{oformat} eq 'detailed')
 {
     if(!exists($languages{$konfig{langcode}}))
     {
@@ -210,10 +208,18 @@ else
 #     {fusions} ... inventory of multi-word token forms
 #     {lemmas} ... inventory of lemmas
 #     {tags} ... inventory of UPOS tags
+#     {features} ... inventory of feature names
+#     {fvpairs} ... inventory of feature-value pairs
+#     {deprels} ... inventory of dependency relation labels
 #   Examples of words that appeared with a particular property. Right now we
 #   have just one huge hash but it might be useful to split it in the future
 #   (hash: property => {exampleWord => frequency}):
 #     {example}{tag} ... inventory of words that occurred with a particular tag
+#   Combinations of annotation items and their frequencies
+#   (hashes: item1 => item2 ... => frequency):
+#     {fvt}{$fvpair}{$tag} ... feature-value pair with UPOS tag
+#     {fvtverbform}{$fvpair}{$tag} ... feature-value pair with UPOS tag and VerbForm if nonempty
+#     {tfv}{$tag}{$fvpair} ... UPOS tag with feature-value pair
 #==============================================================================
 sub reset_counters
 {
@@ -227,7 +233,15 @@ sub reset_counters
     $stats->{fusions} = {};
     $stats->{lemmas} = {};
     $stats->{tags} = {};
+    $stats->{features} = {};
+    $stats->{fvpairs} = {};
+    $stats->{deprels} = {};
+    # example words and lemmas
     $stats->{examples} = {};
+    # combinations
+    $stats->{fvt} = {};
+    $stats->{fvtverbform} = {};
+    $stats->{tfv} = {};
 }
 
 
@@ -249,17 +263,12 @@ sub process_treebank
     local %exentlt;
     local %tfset;
     local %tfsetjoint;
-    local %fvset;
-    local %upos;
-    local %tfv;
-    local %featureset;
     local %tf;
     local %ft;
     local %fw;
     local %fl;
     local %paradigm;
     local %fv;
-    local %deprelset;
     local %ltrdeprel;
     local %deprellen;
     local %tagdeprel;
@@ -333,9 +342,9 @@ sub process_treebank
     local @lemmas = sort {my $r = $stats{lemmas}{$b} <=> $stats{lemmas}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{lemmas}}));
     # Sort the features alphabetically before printing them.
     local @tagset = sort(keys(%{$stats{tags}}));
-    local @featureset = sort {lc($a) cmp lc($b)} (keys(%featureset));
-    local @fvset = sort {lc($a) cmp lc($b)} (keys(%fvset));
-    local @deprelset = sort(keys(%deprelset));
+    local @featureset = sort {lc($a) cmp lc($b)} (keys(%{$stats{features}}));
+    local @fvset = sort {lc($a) cmp lc($b)} (keys(%{$stats{fvpairs}}));
+    local @deprelset = sort(keys(%{$stats{deprels}}));
     # Examples may contain uppercase letters only if all-lowercase version does not exist.
     my @ltagset = map {$_.'-lemma'} (@tagset);
     foreach my $key (keys(%{$stats{examples}}))
@@ -358,11 +367,11 @@ sub process_treebank
             prune_examples($tlw{$tag}{$lemma});
         }
     }
-    if($konfig{hub})
+    if($konfig{oformat} eq 'hub')
     {
         hub_statistics();
     }
-    elsif($konfig{detailed})
+    elsif($konfig{oformat} eq 'detailed')
     {
         detailed_statistics_tags();
         detailed_statistics_features();
@@ -436,18 +445,26 @@ sub process_sentence
         unless($features eq '_')
         {
             my @features = split(/\|/, $features);
+            my $tagverbform = $tag;
+            my @verbforms = map {my $x = $_; $x =~ s/^VerbForm=//; $x} (grep {m/^VerbForm=/} (@features));
+            if(scalar(@verbforms) > 0)
+            {
+                $tagverbform .= "-$verbforms[0]";
+            }
             foreach my $fv (@features)
             {
-                $fvset{$fv}++;
+                $stats{fvpairs}{$fv}++;
                 # We can also list tags with which the feature occurred.
-                $upos{$fv}{$tag}++;
-                $tfv{$tag}{$fv}++;
+                $stats{fvt}{$fv}{$tag}++;
+                $stats{fvtverbform}{$fv}{$tagverbform}++;
+                $stats{tfv}{$tag}{$fv}++;
                 # We can also print example words that had the feature.
                 $stats{examples}{$fv}{$word}++;
                 $stats{examples}{"$tag\t$fv"}{$word}++;
+                $stats{examples}{"$tagverbform\t$fv"}{$word}++ if($tagverbform ne $tag);
                 # Aggregate feature names over all values.
                 my ($f, $v) = split(/=/, $fv);
-                $featureset{$f}++;
+                $stats{features}{$f}++;
                 $tf{$tag}{$f}++;
                 $ft{$f}{$tag}++;
                 $fw{$f}{$word}++;
@@ -468,10 +485,11 @@ sub process_sentence
             }
         }
         # Remember the occurrence of each dependency relation.
-        $deprelset{$deprel}++;
+        $stats{deprels}{$deprel}++;
         $ltrdeprel{$deprel}++ if($head < $id);
         $deprellen{$deprel} += abs($id - $head);
         $tagdeprel{$tag}{$deprel}++;
+        $stats{examples}{$deprel.'-lemma'}{$lemma}++;
         my $parent_tag = ($head==0) ? 'ROOT' : $sentence[$head-1][3];
         $parenttag{$tag}{$parent_tag}++;
         $depreltags{$deprel}{"$parent_tag-$tag"}++;
@@ -705,7 +723,7 @@ sub get_detailed_statistics_tag
     {
         my ($list, $n) = list_keys_with_counts($tf{$tag}, $stats{tags}{$tag}, "$langcode-feat/");
         $page .= "`$tag` occurs with $n features: $list\n\n";
-        my @featurepairs = map {"`$_`"} (sort(keys(%{$tfv{$tag}})));
+        my @featurepairs = map {"`$_`"} (sort(keys(%{$stats{tfv}{$tag}})));
         my $nfeaturepairs = scalar(@featurepairs);
         $page .= "`$tag` occurs with $nfeaturepairs feature-value pairs: ".join(', ', @featurepairs)."\n\n";
         my @featuresets = sort {$tfset{$tag}{$b} <=> $tfset{$tag}{$a}} (keys(%{$tfset{$tag}}));
@@ -915,7 +933,7 @@ sub get_detailed_statistics_feature
         # We are linking e.g. from pt/feat/Number.html to u/overview/feat-layers.html.
         $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"[$layers{$base_feature}{$_}]()"} (@layers)).".\n\n";
     }
-    my $n = $featureset{$feature};
+    my $n = $stats{features}{$feature};
     my $p = percent($n, $stats{nword});
     $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
     $n = scalar(keys($fw{$feature}));
@@ -978,10 +996,10 @@ sub get_detailed_statistics_feature
         }
         # List values of the feature with this tag.
         $page .= "`$tag` tokens may have the following values of `$feature`:\n\n";
-        my @values = sort(map {s/^$feature=//; $_} (grep {m/^$feature=/} (keys(%{$tfv{$tag}}))));
+        my @values = sort(map {s/^$feature=//; $_} (grep {m/^$feature=/} (keys(%{$stats{tfv}{$tag}}))));
         foreach my $value (@values)
         {
-            $n = $tfv{$tag}{"$feature=$value"};
+            $n = $stats{tfv}{$tag}{"$feature=$value"};
             $p = percent($n, $tf{$tag}{$feature});
             my $examples = prepare_examples($stats{examples}{"$tag\t$feature=$value"}, $limit);
             $page .= "* `$value` ($n; $p of non-empty `$feature`): ".fex($examples)."\n";
@@ -1258,7 +1276,7 @@ sub get_detailed_statistics_relation
     }
     $page .= "\n";
     # Counts.
-    my $n = $deprelset{$deprel};
+    my $n = $stats{deprels}{$deprel};
     my $p = percent($n, $stats{nword});
     $page .= "$n nodes ($p) are attached to their parents as `$deprel`.\n\n";
     my $nltr = $ltrdeprel{$deprel};
@@ -1277,7 +1295,7 @@ sub get_detailed_statistics_relation
     $page .= "Average distance between parent and child is $avglen.\n\n";
     # Word types, lemmas, tags and features.
     my $list;
-    ($list, $n) = list_keys_with_counts($depreltags{$deprel}, $deprelset{$deprel}, "$langcode-pos/");
+    ($list, $n) = list_keys_with_counts($depreltags{$deprel}, $stats{deprels}{$deprel}, "$langcode-pos/");
     $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
     ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
     my @tagpairs = sort {$depreltags{$deprel}{$b} <=> $depreltags{$deprel}{$a}} (keys(%{$depreltags{$deprel}}));
@@ -1497,12 +1515,12 @@ EOF
     {
         my @keys = keys(%{$stats{examples}{$feature}});
         my @examples = sort_and_truncate_examples($stats{examples}{$feature}, \@keys, 10);
-        my $upostags = join(',', sort(keys(%{$upos{$feature}})));
+        my $upostags = join(',', sort(keys(%{$stats{fvt}{$feature}})));
         my ($name, $value) = split(/=/, $feature);
         $ex = join(', ', @examples);
         $ex =~ s/--/\x{2013}/g;
         # Absolute or relative count?
-        my $c = $fvset{$feature};
+        my $c = $stats{fvpairs}{$feature};
         $c /= $stats{ntok} if($konfig{relative});
         print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$c."</feat><!-- $ex -->\n");
     }
@@ -1513,7 +1531,7 @@ EOF
     foreach my $deprel (@deprelset)
     {
         # Absolute or relative count?
-        my $c = $deprelset{$deprel};
+        my $c = $stats{deprels}{$deprel};
         $c /= $stats{ntok} if($konfig{relative});
         print('    <dep name="'.$deprel.'">'.$c."</dep>\n");
     }
@@ -1529,64 +1547,234 @@ EOF
 #------------------------------------------------------------------------------
 sub hub_statistics
 {
-    print("\#\# Tokenization and Word Segmentation\n\n");
+    my @table;
+    my $cell = '';
+    $cell .= "\#\# Tokenization and Word Segmentation\n\n";
     if($stats{nfus} == 0)
     {
-        print("* This corpus contains $stats{nsent} sentences and $stats{ntok} tokens.\n");
+        $cell .= "* This corpus contains $stats{nsent} sentences and $stats{ntok} tokens.\n";
     }
     else
     {
-        print("* This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.\n");
+        $cell .= "* This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.\n";
     }
     if($stats{ntoksano} > 0)
     {
         my $percentage = $stats{ntoksano} / $stats{ntok} * 100;
-        printf("* This corpus contains $stats{ntoksano} tokens (%d%%) that are not followed by a space.\n", $percentage+0.5);
+        $cell .= sprintf("* This corpus contains $stats{ntoksano} tokens (%d%%) that are not followed by a space.\n", $percentage+0.5);
     }
     # Words with spaces.
     my @words_with_spaces = sort(grep {m/\s/} keys(%{$stats{words}}));
     my $n_wws = scalar(@words_with_spaces);
     if($n_wws > 0)
     {
-        print("* This corpus contains $n_wws types of words with spaces: ", join(', ', @words_with_spaces), "\n");
+        $cell .= "* This corpus contains $n_wws types of words with spaces: ".join(', ', @words_with_spaces)."\n";
     }
     else
     {
-        print("* This corpus does not contain words with spaces.\n");
+        $cell .= "* This corpus does not contain words with spaces.\n";
     }
     # Words combining letters and punctuation.
     my @words_with_punctuation = sort(grep {m/\pP\pL|\pL\pP/} keys(%{$stats{words}}));
     my $n_wwp = scalar(@words_with_punctuation);
     if($n_wwp > 0)
     {
-        print("* This corpus contains $n_wwp types of words that contain both letters and punctuation: ", join(', ', @words_with_punctuation), "\n");
+        $cell .= "* This corpus contains $n_wwp types of words that contain both letters and punctuation: ".join(', ', @words_with_punctuation)."\n";
     }
     else
     {
-        print("* This corpus does not contain words that contain both letters and punctuation.\n");
+        $cell .= "* This corpus does not contain words that contain both letters and punctuation.\n";
     }
     # Multi-word tokens.
     if($stats{nfus} > 0)
     {
         my $avgsize = ($stats{nword} - $stats{ntok} + $stats{nfus}) / $stats{nfus};
-        printf("* This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.\n", $avgsize);
+        $cell .= sprintf("* This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.\n", $avgsize);
         my @fusion_examples = sort(keys(%{$stats{fusions}}));
         my $n_types_mwt = scalar(@fusion_examples);
-        print("* There are $n_types_mwt types of multi-word tokens: ", join(', ', @fusion_examples), ".\n");
+        $cell .= "* There are $n_types_mwt types of multi-word tokens: ".join(', ', @fusion_examples).".\n";
     }
-    print("\n");
-    print("\#\# Morphology\n\n");
+    push(@table, $cell);
+    $cell = '';
+    # Morphology and part-of-speech tags.
+    $cell .= "\#\# Morphology\n\n";
     my $n_tags_used = scalar(@tagset);
-    print("* This corpus uses $n_tags_used UPOS tags out of 17 possible: ", join(', ', @tagset), "\n");
+    $cell .= "* This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', @tagset)."\n";
     if($n_tags_used < 17)
     {
         my @unused_tags = grep {!exists($stats{tags}{$_})} ('NOUN', 'PROPN', 'PRON', 'ADJ', 'DET', 'NUM', 'VERB', 'AUX', 'ADV', 'ADP', 'SCONJ', 'CCONJ', 'PART', 'INTJ', 'SYM', 'PUNCT', 'X');
-        print("* This corpus does not use the following tags: ", join(', ', @unused_tags), "\n");
+        $cell .= "* This corpus does not use the following tags: ".join(', ', @unused_tags)."\n";
     }
     if(exists($stats{tags}{PART}))
     {
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
         my $n_types_part = scalar(@part_examples);
-        print("* This corpus contains $n_types_part word types tagged as particles (PART): ", join(', ', @part_examples), "\n");
+        $cell .= "* This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples).".\n";
     }
+    # Verb forms.
+    my @verbforms = sort(map {my $x = $_; $x =~ s/^VerbForm=//; $x} (grep {m/^VerbForm=/} (keys(%{$stats{fvpairs}}))));
+    my $n_verbforms = scalar(@verbforms);
+    if($n_verbforms > 0)
+    {
+        $cell .= "* There are $n_verbforms (de)verbal forms:\n";
+        foreach my $verbform (@verbforms)
+        {
+            my $fvpair = "VerbForm=$verbform";
+            my @upostags = sort(keys(%{$stats{fvt}{$fvpair}}));
+            #my @keys = keys(%{$stats{examples}{$fvpair}});
+            #my @examples = sort_and_truncate_examples($stats{examples}{$fvpair}, \@keys, 10);
+            #print("  * $verbform (", join(', ', @upostags), "): ", join(', ', @examples), "\n");
+            $cell .= "  * $verbform\n";
+            foreach my $upos (@upostags)
+            {
+                my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
+                my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
+                $cell .= "    * $upos: ".join(', ', @examples)."\n";
+            }
+        }
+    }
+    else
+    {
+        $cell .= "* This corpus does not use the VerbForm feature.\n";
+    }
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Nominal Features\n\n";
+    $cell .= summarize_feature_for_hub('Gender');
+    $cell .= summarize_feature_for_hub('Animacy');
+    $cell .= summarize_feature_for_hub('Number');
+    $cell .= summarize_feature_for_hub('Case');
+    $cell .= summarize_feature_for_hub('PrepCase');
+    $cell .= summarize_feature_for_hub('Definite');
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Degree and Polarity\n\n";
+    $cell .= summarize_feature_for_hub('Degree');
+    $cell .= summarize_feature_for_hub('Polarity');
+    $cell .= summarize_feature_for_hub('Variant');
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Verbal Features\n\n";
+    $cell .= summarize_feature_for_hub('Aspect');
+    $cell .= summarize_feature_for_hub('Mood');
+    $cell .= summarize_feature_for_hub('Tense');
+    $cell .= summarize_feature_for_hub('Voice');
+    $cell .= summarize_feature_for_hub('Evident');
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Pronouns, Determiners, Quantifiers\n\n";
+    $cell .= summarize_feature_for_hub('PronType');
+    $cell .= summarize_feature_for_hub('NumType');
+    $cell .= summarize_feature_for_hub('Poss');
+    $cell .= summarize_feature_for_hub('Reflex');
+    $cell .= summarize_feature_for_hub('Person');
+    $cell .= summarize_feature_for_hub('Polite');
+    $cell .= summarize_feature_for_hub('Gender[psor]');
+    $cell .= summarize_feature_for_hub('Number[psor]');
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Other Features\n\n";
+    my @otherfeatures = grep {!m/^(Gender|Animacy|Number|Case|PrepCase|Definite|Degree|Polarity|Variant|VerbForm|Mood|Aspect|Tense|Voice|Evident|PronType|NumType|Poss|Reflex|Person|Polite|Gender\[psor\]|Number\[psor\]|)$/} (@featureset);
+    foreach my $feature (@otherfeatures)
+    {
+        $cell .= summarize_feature_for_hub($feature);
+    }
+    push(@table, $cell);
+    # Syntax.
+    $cell = '';
+    $cell .= "\#\# Syntax\n\n";
+    $cell .= "\#\#\# Auxiliary Verbs and Copula\n\n";
+    if(exists($stats{deprels}{cop}))
+    {
+        my @cop_lemmas = sort(keys(%{$stats{examples}{'cop-lemma'}}));
+        my $n_lemmas_cop = scalar(@cop_lemmas);
+        $cell .= "* This corpus uses $n_lemmas_cop lemmas as copulas (cop): ".join(', ', @cop_lemmas).".\n";
+    }
+    else
+    {
+        $cell .= "* This corpus does not contain copulas.\n";
+    }
+    if(exists($stats{deprels}{aux}))
+    {
+        my @aux_lemmas = sort(keys(%{$stats{examples}{'aux-lemma'}}));
+        my $n_lemmas_aux = scalar(@aux_lemmas);
+        $cell .= "* This corpus uses $n_lemmas_aux lemmas as auxiliaries (aux): ".join(', ', @aux_lemmas).".\n";
+    }
+    if(exists($stats{deprels}{'aux:pass'}))
+    {
+        my @aux_lemmas = sort(keys(%{$stats{examples}{'aux:pass-lemma'}}));
+        my $n_lemmas_aux = scalar(@aux_lemmas);
+        $cell .= "* This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (aux:pass): ".join(', ', @aux_lemmas).".\n";
+    }
+    if(!exists($stats{deprels}{aux}) && !exists($stats{deprels}{'aux:pass'}))
+    {
+        $cell .= "* This corpus does not contain auxiliaries.\n";
+    }
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Core Arguments, Oblique Arguments and Adjuncts\n\n";
+    $cell .= "TBD\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "\#\#\# Relations Overview\n\n";
+    my @deprel_subtypes = grep {m/:/} (@deprelset);
+    my %supertypes;
+    foreach my $deprel (@deprel_subtypes)
+    {
+        $deprel =~ m/^(.+?):/;
+        $supertypes{$1}++;
+    }
+    my $n_deprel_subtypes = scalar(@deprel_subtypes);
+    if($n_deprel_subtypes > 0)
+    {
+        $cell .= "* This corpus uses $n_deprel_subtypes relation subtypes: ".join(', ', @deprel_subtypes)."\n";
+        # Are there main types that only occur as part of subtypes?
+        my @supertypes = sort(grep {!exists($stats{deprels}{$_})} (keys(%supertypes)));
+        my $n = scalar(@supertypes);
+        if($n > 0)
+        {
+            $cell .= "* The following $n main types are not used alone, they are always subtyped: ".join(', ', @supertypes)."\n";
+        }
+    }
+    else
+    {
+        $cell .= "* This corpus does not use relation subtypes.\n";
+    }
+    my @udeprels = qw(nsubj obj iobj csubj ccomp xcomp obl vocative expl dislocated advcl advmod discourse aux cop mark nmod appos nummod acl amod det clf case conj cc fixed flat compound list parataxis orphan goeswith reparandum punct root dep);
+    my @unused = grep {!exists($stats{deprels}{$_}) && !exists($supertypes{$_})} (@udeprels);
+    my $n_unused = scalar(@unused);
+    if($n_unused > 0)
+    {
+        $cell .= "* The following $n_unused relation types are not used in this corpus at all: ".join(', ', @unused)."\n";
+    }
+    push(@table, $cell);
+    # Print all table cells to the standard output.
+    foreach my $cell (@table)
+    {
+        print("$cell\n");
+    }
+}
+sub summarize_feature_for_hub
+{
+    my $feature = shift; # only feature name
+    my $markdown = '';
+    my @values = sort(map {my $x = $_; $x =~ s/^\Q$feature=//; $x} (grep {m/^\Q$feature=/} (keys(%{$stats{fvpairs}}))));
+    my $n_values = scalar(@values);
+    if($n_values > 0)
+    {
+        $markdown .= "* $feature\n";
+        foreach my $value (@values)
+        {
+            my $fvpair = "$feature=$value";
+            my @upostags = sort(keys(%{$stats{fvtverbform}{$fvpair}}));
+            $markdown .= "  * $value\n";
+            foreach my $upos (@upostags)
+            {
+                my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
+                my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
+                $markdown .= "    * $upos: ".join(', ', @examples)."\n";
+            }
+        }
+    }
+    return $markdown;
 }
