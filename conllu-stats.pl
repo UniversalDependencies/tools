@@ -261,9 +261,13 @@ else
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
-#     {fvt}{$fvpair}{$tag} ... feature-value pair with UPOS tag
+#     {tf}{$tag}{$feature} ... tag + feature name
+#     {tfv}{$tag}{$fvpair} ... tag + feature-value pair
+#     {fw}{$feature}{$word} ... feature name + word
+#     {fl}{$feature}{$lemma} ... feature name + lemma
+#     {ft}{$feature}{$tag} ... feature name + tag
+#     {fvt}{$fvpair}{$tag} ... feature-value pair + tag
 #     {fvtverbform}{$fvpair}{$tag} ... feature-value pair with UPOS tag and VerbForm if nonempty
-#     {tfv}{$tag}{$fvpair} ... UPOS tag with feature-value pair
 #==============================================================================
 sub reset_counters
 {
@@ -284,9 +288,13 @@ sub reset_counters
     $stats->{examples} = {};
     # combinations
     $stats->{tlw} = {};
+    $stats->{tf} = {};
+    $stats->{tfv} = {};
+    $stats->{fw} = {};
+    $stats->{fl} = {};
+    $stats->{ft} = {};
     $stats->{fvt} = {};
     $stats->{fvtverbform} = {};
-    $stats->{tfv} = {};
 }
 
 
@@ -307,10 +315,6 @@ sub process_treebank
     local %exentlt;
     local %tfset;
     local %tfsetjoint;
-    local %tf;
-    local %ft;
-    local %fw;
-    local %fl;
     local %paradigm;
     local %fv;
     local %ltrdeprel;
@@ -516,10 +520,10 @@ sub process_sentence
                 # Aggregate feature names over all values.
                 my ($f, $v) = split(/=/, $fv);
                 $stats{features}{$f}++;
-                $tf{$tag}{$f}++;
-                $ft{$f}{$tag}++;
-                $fw{$f}{$word}++;
-                $fl{$f}{$lemma}++;
+                $stats{tf}{$tag}{$f}++;
+                $stats{ft}{$f}{$tag}++;
+                $stats{fw}{$f}{$word}++;
+                $stats{fl}{$f}{$lemma}++;
                 my @other_features = grep {!m/$f/} (@features);
                 my $other_features = scalar(@other_features) > 0 ? join('|', @other_features) : '_';
                 $paradigm{$tag}{$f}{$lemma}{$v}{$other_features}{$word}++;
@@ -770,9 +774,9 @@ sub get_detailed_statistics_tag
         my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
         $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: ".fex(join(', ', @richest_paradigm)).".\n\n";
     }
-    if(scalar(keys(%{$tf{$tag}})) > 0)
+    if(scalar(keys(%{$stats{tf}{$tag}})) > 0)
     {
-        my ($list, $n) = list_keys_with_counts($tf{$tag}, $stats{tags}{$tag}, "$langcode-feat/");
+        my ($list, $n) = list_keys_with_counts($stats{tf}{$tag}, $stats{tags}{$tag}, "$langcode-feat/");
         $page .= "`$tag` occurs with $n features: $list\n\n";
         my @featurepairs = map {"`$_`"} (sort(keys(%{$stats{tfv}{$tag}})));
         my $nfeaturepairs = scalar(@featurepairs);
@@ -987,25 +991,25 @@ sub get_detailed_statistics_feature
     my $n = $stats{features}{$feature};
     my $p = percent($n, $stats{nword});
     $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
-    $n = scalar(keys($fw{$feature}));
+    $n = scalar(keys($stats{fw}{$feature}));
     $p = percent($n, scalar(@words));
     $page .= "$n types ($p) occur at least once with a non-empty value of `$feature`.\n";
-    $n = scalar(keys($fl{$feature}));
+    $n = scalar(keys($stats{fl}{$feature}));
     $p = percent($n, scalar(@lemmas));
     $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
     # List part-of-speech tags with which this feature occurs.
-    my $list; ($list, $n) = list_keys_with_counts($ft{$feature}, $stats{nword}, "$langcode-pos/");
+    my $list; ($list, $n) = list_keys_with_counts($stats{ft}{$feature}, $stats{nword}, "$langcode-pos/");
     $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
-    my @tags = sort {$ft{$feature}{$b} <=> $ft{$feature}{$a}} (keys(%{$ft{$feature}}));
+    my @tags = sort {$stats{ft}{$feature}{$b} <=> $stats{ft}{$feature}{$a}} (keys(%{$stats{ft}{$feature}}));
     foreach my $tag (@tags)
     {
         $page .= "### `$tag`\n\n";
-        $n = $ft{$feature}{$tag};
+        $n = $stats{ft}{$feature}{$tag};
         $p = percent($n, $stats{tags}{$tag});
         $page .= "$n [$langcode-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
         # Is this feature used exclusively with some other feature?
         # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
-        my @other_features = grep {$tf{$tag}{$_} / $stats{tags}{$tag} > 0.1} (keys(%{$tf{$tag}}));
+        my @other_features = grep {$stats{tf}{$tag}{$_} / $stats{tags}{$tag} > 0.1} (keys(%{$stats{tf}{$tag}}));
         # Get all feature combinations observed with the current tag.
         my @fsets_packed = keys(%{$tfset{$tag}});
         my %other_features;
@@ -1030,7 +1034,7 @@ sub get_detailed_statistics_feature
             }
         }
         # Report feature-value pairs whose frequency exceeds 50% of the occurrences of the current feature.
-        my @frequent_pairs = sort {$other_features{$b} <=> $other_features{$a}} (grep {$other_features{$_} / $ft{$feature}{$tag} > 0.5} (keys(%other_features)));
+        my @frequent_pairs = sort {$other_features{$b} <=> $other_features{$a}} (grep {$other_features{$_} / $stats{ft}{$feature}{$tag} > 0.5} (keys(%other_features)));
         if(scalar(@frequent_pairs) > 0)
         {
             splice(@frequent_pairs, $limit);
@@ -1038,7 +1042,7 @@ sub get_detailed_statistics_feature
             {
                 my $x = $_;
                 my $n = $other_features{$x};
-                my $p = percent($n, $ft{$feature}{$tag});
+                my $p = percent($n, $stats{ft}{$feature}{$tag});
                 $x =~ s/^(.+)=(.+)$/<tt><a href="$1.html">$1<\/a>=$2<\/tt>/;
                 "$x ($n; $p)"
             }
@@ -1051,11 +1055,11 @@ sub get_detailed_statistics_feature
         foreach my $value (@values)
         {
             $n = $stats{tfv}{$tag}{"$feature=$value"};
-            $p = percent($n, $tf{$tag}{$feature});
+            $p = percent($n, $stats{tf}{$tag}{$feature});
             my $examples = prepare_examples($stats{examples}{"$tag\t$feature=$value"}, $limit);
             $page .= "* `$value` ($n; $p of non-empty `$feature`): ".fex($examples)."\n";
         }
-        $n = $stats{tags}{$tag} - $ft{$feature}{$tag};
+        $n = $stats{tags}{$tag} - $stats{ft}{$feature}{$tag};
         my $examples = prepare_examples($stats{examples}{"$tag\t$feature=EMPTY"}, $limit);
         # There might be no examples even if $n > 0. We collect examples only for universal features, not for language-specific ones.
         ###!!! We may want to collect them for language-specific features. But we do not know in advance what these features are!
