@@ -260,6 +260,7 @@ else
 #     {example}{tag} ... inventory of words that occurred with a particular tag
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
+#     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
 #     {fvt}{$fvpair}{$tag} ... feature-value pair with UPOS tag
 #     {fvtverbform}{$fvpair}{$tag} ... feature-value pair with UPOS tag and VerbForm if nonempty
 #     {tfv}{$tag}{$fvpair} ... UPOS tag with feature-value pair
@@ -282,6 +283,7 @@ sub reset_counters
     # example words and lemmas
     $stats->{examples} = {};
     # combinations
+    $stats->{tlw} = {};
     $stats->{fvt} = {};
     $stats->{fvtverbform} = {};
     $stats->{tfv} = {};
@@ -299,7 +301,6 @@ sub process_treebank
     reset_counters(\%stats);
     local @sentence;
     # Counters visible to the summarizing functions.
-    local %tlw;
     local %wordtag;
     local %lemmatag;
     local %exentwt;
@@ -404,10 +405,10 @@ sub process_treebank
     }
     foreach my $tag (@tagset)
     {
-        my @lemmas = keys(%{$tlw{$tag}});
+        my @lemmas = keys(%{$stats{tlw}{$tag}});
         foreach my $lemma (@lemmas)
         {
-            prune_examples($tlw{$tag}{$lemma});
+            prune_examples($stats{tlw}{$tag}{$lemma});
         }
     }
     if($konfig{oformat} eq 'hub')
@@ -473,7 +474,7 @@ sub process_sentence
         $stats{lemmas}{$lemma}++ unless($lemma eq '_');
         # Remember the occurrence of the universal POS tag.
         $stats{tags}{$tag}++;
-        $tlw{$tag}{$lemma}{$word}++;
+        $stats{tlw}{$tag}{$lemma}{$word}++;
         # We can also print example forms and lemmas that had the tag.
         $stats{examples}{$tag}{$word}++;
         $stats{examples}{$tag.'-lemma'}{$lemma}++;
@@ -760,11 +761,11 @@ sub get_detailed_statistics_tag
     # Morphological richness.
     $page .= "## Morphology\n\n";
     $page .= sprintf("The form / lemma ratio of `$tag` is %f (the average of all parts of speech is %f).\n\n", $ntypes{$tag}/$nlemmas{$tag}, $flratio);
-    my @mrich_lemmas = sort {my $v = scalar(keys(%{$tlw{$tag}{$b}})) <=> scalar(keys(%{$tlw{$tag}{$a}})); $v = $a cmp $b unless($v); $v} (keys(%{$tlw{$tag}}));
+    my @mrich_lemmas = sort {my $v = scalar(keys(%{$stats{tlw}{$tag}{$b}})) <=> scalar(keys(%{$stats{tlw}{$tag}{$a}})); $v = $a cmp $b unless($v); $v} (keys(%{$stats{tlw}{$tag}}));
     for(my $i = 0; $i < 3; $i++)
     {
         last unless(defined($mrich_lemmas[$i]));
-        my @richest_paradigm = sort(keys(%{$tlw{$tag}{$mrich_lemmas[$i]}}));
+        my @richest_paradigm = sort(keys(%{$stats{tlw}{$tag}{$mrich_lemmas[$i]}}));
         my $richness = scalar(@richest_paradigm);
         my $rank = ($i+1).($i==0 ? 'st' : $i==1 ? 'nd' : $i==2 ? 'rd' : 'th');
         $page .= "The $rank highest number of forms ($richness) was observed with the lemma “$mrich_lemmas[$i]”: ".fex(join(', ', @richest_paradigm)).".\n\n";
@@ -1806,6 +1807,13 @@ sub hub_statistics
     # Return the list of cells to the caller. They may want to combine it with reports on other treebanks before printing it.
     return @table;
 }
+
+
+
+#------------------------------------------------------------------------------
+# Generates HTML statistics about a feature, its values, parts of speech and
+# example words.
+#------------------------------------------------------------------------------
 sub summarize_feature_for_hub
 {
     my $feature = shift; # only feature name
