@@ -1786,7 +1786,7 @@ sub hub_statistics
     {
         my @cop_lemmas = sort(keys(%{$stats{examples}{'cop-lemma'}}));
         my $n_lemmas_cop = scalar(@cop_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (cop): ".join(', ', @cop_lemmas).".</li>\n";
+        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (<a>cop</a>): ".join(', ', @cop_lemmas).".</li>\n";
     }
     else
     {
@@ -1796,13 +1796,13 @@ sub hub_statistics
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (aux): ".join(', ', @aux_lemmas).".</li>\n";
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (<a>aux</a>): ".join(', ', @aux_lemmas).".</li>\n";
     }
     if(exists($stats{deprels}{'aux:pass'}))
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux:pass-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (aux:pass): ".join(', ', @aux_lemmas).".</li>\n";
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (<a>aux:pass</a>): ".join(', ', @aux_lemmas).".</li>\n";
     }
     if(!exists($stats{deprels}{aux}) && !exists($stats{deprels}{'aux:pass'}))
     {
@@ -1816,7 +1816,7 @@ sub hub_statistics
     foreach my $deprel ('nsubj', 'obj', 'iobj')
     {
         $cell .= "<ul>\n";
-        $cell .= "  <li>$deprel\n";
+        $cell .= "  <li><a>$deprel</a>\n";
         $cell .= "    <ul>\n";
         my @parenttags = sort(grep {m/^VERB/} (keys(%{$stats{dtvftcase}{$deprel}})));
         foreach my $pt (@parenttags)
@@ -1845,13 +1845,13 @@ sub hub_statistics
     my $n_deprel_subtypes = scalar(@deprel_subtypes);
     if($n_deprel_subtypes > 0)
     {
-        $cell .= "<li>This corpus uses $n_deprel_subtypes relation subtypes: ".join(', ', @deprel_subtypes)."</li>\n";
+        $cell .= "<li>This corpus uses $n_deprel_subtypes relation subtypes: ".join(', ', map {"<a>$_</a>"} (@deprel_subtypes))."</li>\n";
         # Are there main types that only occur as part of subtypes?
         my @supertypes = sort(grep {!exists($stats{deprels}{$_})} (keys(%supertypes)));
         my $n = scalar(@supertypes);
         if($n > 0)
         {
-            $cell .= "<li>The following $n main types are not used alone, they are always subtyped: ".join(', ', @supertypes)."</li>\n";
+            $cell .= "<li>The following $n main types are not used alone, they are always subtyped: ".join(', ', map {"<a>$_</a>"} (@supertypes))."</li>\n";
         }
     }
     else
@@ -1863,7 +1863,7 @@ sub hub_statistics
     my $n_unused = scalar(@unused);
     if($n_unused > 0)
     {
-        $cell .= "<li>The following $n_unused relation types are not used in this corpus at all: ".join(', ', @unused)."</li>\n";
+        $cell .= "<li>The following $n_unused relation types are not used in this corpus at all: ".join(', ', map {"<a>$_</a>"} (@unused))."</li>\n";
     }
     $cell .= "</ul>\n";
     push(@table, $cell);
