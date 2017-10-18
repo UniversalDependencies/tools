@@ -1711,6 +1711,10 @@ sub hub_statistics
         my $n_types_part = scalar(@part_examples);
         $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples)."</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
     # Verb forms.
     my @verbforms = sort(map {my $x = $_; $x =~ s/^VerbForm=//; $x} (grep {m/^VerbForm=/} (keys(%{$stats{fvpairs}}))));
     my $n_verbforms = scalar(@verbforms);
@@ -1740,6 +1744,7 @@ sub hub_statistics
     {
         $cell .= "<li>This corpus does not use the VerbForm feature.</li>\n";
     }
+    $cell .= "</ul>\n";
     push(@table, $cell);
     $cell = '';
     $cell .= "<h3>Nominal Features</h3>\n\n";
