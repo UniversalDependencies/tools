@@ -1696,7 +1696,7 @@ sub hub_statistics
     $cell .= "<h2>Morphology</h2>\n\n";
     $cell .= "<ul>\n";
     my $n_tags_used = scalar(@tagset);
-    $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', @tagset)."</li>\n";
+    $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', map {"[$_]()"} (@tagset))."</li>\n";
     if($n_tags_used < 17)
     {
         my @unused_tags = grep {!exists($stats{tags}{$_})} ('NOUN', 'PROPN', 'PRON', 'ADJ', 'DET', 'NUM', 'VERB', 'AUX', 'ADV', 'ADP', 'SCONJ', 'CCONJ', 'PART', 'INTJ', 'SYM', 'PUNCT', 'X');
@@ -1706,7 +1706,7 @@ sub hub_statistics
     {
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
         my $n_types_part = scalar(@part_examples);
-        $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples).".</li>\n";
+        $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples)."</li>\n";
     }
     # Verb forms.
     my @verbforms = sort(map {my $x = $_; $x =~ s/^VerbForm=//; $x} (grep {m/^VerbForm=/} (keys(%{$stats{fvpairs}}))));
