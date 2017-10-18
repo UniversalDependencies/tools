@@ -15,7 +15,7 @@ sub usage
     print STDERR ("    The script will analyze all treebanks of the given language.\n");
     print STDERR ("cat *.conllu | perl conllu-stats.pl --oformat hub\n");
     print STDERR ("... generates statistics parallel to the language-specific documentation hub.\n");
-    print STDERR ("perl conllu-stats.pl --oformat hubcompare cs_pdt.conllu cs_cac.conllu sv.conllu\n");
+    print STDERR ("perl conllu-stats.pl --oformat hubcompare --permalink cs/overview/cs-hub-comparison.html UD_Czech UD_Czech-CAC > docs/_cs_overview/cs-hub-comparison.md\n");
     print STDERR ("... similar to hub but compares two or more treebanks side-by-side.\n");
     print STDERR ("... each treebank is either one CoNLL-U file, or a folder with CoNLL-U files.\n");
 }
@@ -33,15 +33,17 @@ $konfig{relative} = 0; # relative frequencies of POS tags instead of absolute co
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
+$konfig{permalink} = 'cs/overview/cs-hub-comparison.html'; # permalink property of the generated hub page, otherwise Jekyll will not generate the HTML page at the correct location
 GetOptions
 (
-    'iformat=s'  => \$konfig{iformat},
-    'oformat=s'  => \$konfig{oformat},
-    'relative'   => \$konfig{relative},
-    'data=s'     => \$konfig{datapath},
-    'docs=s'     => \$konfig{docspath},
-    'language=s' => \$konfig{langcode},
-    'help'       => \$konfig{help}
+    'iformat=s'   => \$konfig{iformat},
+    'oformat=s'   => \$konfig{oformat},
+    'relative'    => \$konfig{relative},
+    'data=s'      => \$konfig{datapath},
+    'docs=s'      => \$konfig{docspath},
+    'language=s'  => \$konfig{langcode},
+    'permalink=s' => \$konfig{permalink},
+    'help'        => \$konfig{help}
 );
 exit(usage()) if($konfig{help});
 if($konfig{oformat} eq 'detailed' && $konfig{langcode} eq '')
@@ -184,6 +186,7 @@ elsif($konfig{oformat} eq 'hubcompare')
 ---
 layout: base
 title:  'Comparison of Treebank Statistics'
+permalink: cs/overview/cs-hub-comparison.html
 udver: '2'
 ---
 
