@@ -177,14 +177,24 @@ sub read_readme
     open(README, $filename) or return;
     binmode(README, ':utf8');
     my %metadata;
-    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors');
+    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors',
+        'Includes text', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact', 'Paragraphs to web');
     my $attributes_re = join('|', @attributes);
+    my $ipar = 0;
     while(<README>)
     {
+        if(defined($ipar0) && defined($ipar1) && $ipar >= $ipar0 && $ipar <= $ipar1)
+        {
+            $metadata{description} .= $_;
+        }
         s/\r?\n$//;
         s/^\s+//;
         s/\s+$//;
         s/\s+/ /g;
+        if(m/^$/)
+        {
+            $ipar++;
+        }
         if(m/^($attributes_re):\s*(.*)$/i)
         {
             my $attribute = $1;
@@ -202,6 +212,12 @@ sub read_readme
                 {
                     $metadata{'firstrelease'} = $1;
                 }
+            }
+            # Metadata can be followed by one or more paragraphs that constitute the description of the treebank suitable for the web.
+            if($attribute eq 'Paragraphs to web' && $value =~ m/^\d+$/)
+            {
+                $ipar0 = $ipar+1;
+                $ipar1 = $ipar+$value;
             }
         }
         elsif(m/change\s*log/i)
