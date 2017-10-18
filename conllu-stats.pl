@@ -1716,7 +1716,7 @@ sub hub_statistics
     my $n_verbforms = scalar(@verbforms);
     if($n_verbforms > 0)
     {
-        $cell .= "<li>There are $n_verbforms (de)verbal forms:\n";
+        $cell .= "<li>There are $n_verbforms <a href=\"../feat/VerbForm.html\">(de)verbal forms:</a>\n";
         $cell .= "<ul>\n";
         foreach my $verbform (@verbforms)
         {
@@ -1885,7 +1885,7 @@ sub summarize_feature_for_hub
     my $n_values = scalar(@values);
     if($n_values > 0)
     {
-        $markdown .= "<li>$feature\n";
+        $markdown .= "<li><a>$feature</a>\n";
         $markdown .= "  <ul>\n";
         foreach my $value (@values)
         {
