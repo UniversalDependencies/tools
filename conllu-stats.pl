@@ -1699,7 +1699,7 @@ sub hub_statistics
     $cell .= "<h2>Morphology</h2>\n\n";
     $cell .= "<ul>\n";
     my $n_tags_used = scalar(@tagset);
-    $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', map {"[$_]()"} (@tagset))."</li>\n";
+    $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', map {"<a>$_</a>"} (@tagset))."</li>\n";
     if($n_tags_used < 17)
     {
         my @unused_tags = grep {!exists($stats{tags}{$_})} ('NOUN', 'PROPN', 'PRON', 'ADJ', 'DET', 'NUM', 'VERB', 'AUX', 'ADV', 'ADP', 'SCONJ', 'CCONJ', 'PART', 'INTJ', 'SYM', 'PUNCT', 'X');
