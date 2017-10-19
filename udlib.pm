@@ -151,6 +151,7 @@ sub get_ud_files_and_codes
         'code'   => $code,
         'lcode'  => $lcode,
         'tcode'  => $tcode,
+        'files'  => \@files,
         $section => $files[0]
     );
     #print STDERR ("$udfolder\tlname $langname\ttname $tbkext\tcode $code\tlcode $lcode\ttcode $tcode\t$section $files[0]\n");

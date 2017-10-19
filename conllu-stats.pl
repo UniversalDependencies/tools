@@ -18,6 +18,8 @@ sub usage
     print STDERR ("perl conllu-stats.pl --oformat hubcompare --permalink cs/overview/cs-hub-comparison.html UD_Czech UD_Czech-CAC > docs/_cs_overview/cs-hub-comparison.md\n");
     print STDERR ("... similar to hub but compares two or more treebanks side-by-side.\n");
     print STDERR ("... each treebank is either one CoNLL-U file, or a folder with CoNLL-U files.\n");
+    print STDERR ("perl conllu-stats.pl --oformat newdetailed --treebank UD_Czech --docs docs\n");
+    print STDERR ("... generates a number of treebank-specific files in docs/treebanks.\n");
 }
 
 use open ':utf8';
@@ -25,6 +27,19 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
+# Make sure that the tools folder is searched for Perl modules. Then use udlib from there.
+# Without it, we could not run this script from other folders.
+BEGIN
+{
+    print $0, "\n";
+    our $toolsdir = $0;
+    unless($toolsdir =~ s:[/\\][^/\\]*$::)
+    {
+        $toolsdir = '.';
+    }
+}
+use lib "$toolsdir";
+use udlib;
 
 # Read options.
 $konfig{iformat} = '';
@@ -42,6 +57,7 @@ GetOptions
     'data=s'      => \$konfig{datapath},
     'docs=s'      => \$konfig{docspath},
     'language=s'  => \$konfig{langcode},
+    'treebank=s'  => \$konfig{treebank},
     'permalink=s' => \$konfig{permalink},
     'help'        => \$konfig{help}
 );
@@ -178,6 +194,29 @@ if($konfig{oformat} eq 'detailed')
         }
         process_treebank();
         $mode = '>>';
+    }
+}
+elsif($konfig{oformat} eq 'newdetailed')
+{
+    if(!defined($konfig{treebank}))
+    {
+        usage();
+        die("Missing treebank option.\n");
+    }
+    local $treebank_id = $konfig{treebank};
+    $treebank_id =~ s-^.*/--;
+    local $tbkrecord = udlib::get_ud_files_and_codes($konfig{treebank});
+    @ARGV = map {"$konfig{treebank}/$_"} (@{$tbkrecord->{files}});
+    if(scalar(@ARGV)==0)
+    {
+        print STDERR ("WARNING: No CoNLL-U files found in $konfig{treebank}.\n");
+    }
+    else
+    {
+        print STDERR ("Files to read: ", join(', ', @ARGV), "\n");
+        my $target_path = "$konfig{docspath}/treebanks/$tbkrecord->{code}";
+        $mode = '>';
+        process_treebank();
     }
 }
 elsif($konfig{oformat} eq 'hubcompare')
@@ -443,11 +482,35 @@ sub process_treebank
         # Multiple treebanks will be scanned and their reports combined by the caller.
         return hub_statistics();
     }
-    elsif($konfig{oformat} eq 'detailed')
+    elsif($konfig{oformat} eq 'detailed' || $konfig{oformat} eq 'newdetailed')
     {
         detailed_statistics_tags();
         detailed_statistics_features();
         detailed_statistics_relations();
+        if($konfig{oformat} eq 'newdetailed')
+        {
+            my $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-index-pfd.md";
+            print STDERR ("Writing $file\n");
+            open(PAGE, ">$file") or die("Cannot write $file: $!");
+            print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $konfig{treebank}'
+udver: '2'
+---
+
+# Statistics of $konfig{treebank}
+
+EOF
+            ;
+            print PAGE ("\#\# POS Tags\n\n");
+            print PAGE (join(' – ', map {"[$_]($tbkrecord->{code}-pos-$_.html)"} (@tagset)), "\n\n");
+            print PAGE ("\#\# Features\n\n");
+            print PAGE (join(' – ', map {my $x = $_; $x =~ s/\[(.*)\]/-$1/; "[$_]($tbkrecord->{code}-feat-$x.html)"} (@featureset)), "\n\n");
+            print PAGE ("\#\# Relations\n\n");
+            print PAGE (join(' – ', map {my $x = $_; $x =~ s/:/-/g; "[$_]($tbkrecord->{code}-dep-$x.html)"} (@deprelset)), "\n\n");
+            close(PAGE);
+        }
     }
     else # stats.xml
     {
@@ -726,9 +789,22 @@ sub detailed_statistics_tags
         mkdir($path) unless(-d $path);
         my $file = "$path/$tag.md";
         $file =~ s/AUX\.md/AUX_.md/;
+        if($konfig{oformat} eq 'newdetailed')
+        {
+            $file = "$docspath/treebanks/$tbkrecord->{code}-pos-$tag.md";
+        }
         my $page = get_detailed_statistics_tag($tag);
         print STDERR ("Writing $file\n");
         open(PAGE, "$mode$file") or die("Cannot write $file: $!");
+        print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $tag in $konfig{treebank}'
+udver: '2'
+---
+
+EOF
+        ;
         print PAGE ($page);
         close(PAGE);
     }
@@ -910,11 +986,24 @@ sub detailed_statistics_features
         my $path = "$docspath/_includes/stats/$langcode/feat";
         mkdir($path) unless(-d $path);
         my $file = "$path/$feature.md";
+        if($konfig{oformat} eq 'newdetailed')
+        {
+            $file = "$docspath/treebanks/$tbkrecord->{code}-feat-$feature.md";
+        }
         # Layered features do not have the brackets in their file names.
         $file =~ s/\[(.+)\]/-$1/;
         my $page = get_detailed_statistics_feature($feature);
         print STDERR ("Writing $file\n");
         open(PAGE, "$mode$file") or die("Cannot write $file: $!");
+        print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $feature in $konfig{treebank}'
+udver: '2'
+---
+
+EOF
+        ;
         print PAGE ($page);
         close(PAGE);
     }
@@ -1305,12 +1394,28 @@ sub detailed_statistics_relations
         my $path = "$docspath/_includes/stats/$langcode/dep";
         mkdir($path) unless(-d $path);
         my $file = "$path/$deprel.md";
+        if($konfig{oformat} eq 'newdetailed')
+        {
+            $file = "$docspath/treebanks/$tbkrecord->{code}-dep-$deprel.md";
+        }
+        else
+        {
+            $file =~ s/aux\.md/aux_.md/;
+        }
         # Language-specific relations do not have the colon in their file names.
         $file =~ s/:/-/;
-        $file =~ s/aux\.md/aux_.md/;
         my $page = get_detailed_statistics_relation($deprel);
         print STDERR ("Writing $file\n");
         open(PAGE, "$mode$file") or die("Cannot write $file: $!");
+        print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $deprel in $konfig{treebank}'
+udver: '2'
+---
+
+EOF
+        ;
         print PAGE ($page);
         close(PAGE);
     }
