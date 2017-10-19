@@ -131,7 +131,7 @@ sub get_ud_files_and_codes
     }
     else
     {
-        if($n>1)
+        if($n>1 && $section ne 'any')
         {
             print STDERR ("WARNING: Folder '$path/$udfolder' contains multiple ($n) files that look like $section data.\n");
         }
