@@ -590,6 +590,8 @@ EOF
             print PAGE (join(' – ', map {my $x = $_; $x =~ s/\[(.*)\]/-$1/; "[$_]($tbkrecord->{code}-feat-$x.html)"} (@featureset)), "\n\n");
             print PAGE ("\#\# Relations\n\n");
             print PAGE (join(' – ', map {my $x = $_; $x =~ s/:/-/g; "[$_]($tbkrecord->{code}-dep-$x.html)"} (@deprelset)), "\n\n");
+            # The hub_statistics() function returns a list of MarkDown sections.
+            print PAGE (join("\n", hub_statistics()));
             close(PAGE);
         }
     }
