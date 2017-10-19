@@ -31,7 +31,6 @@ use Getopt::Long;
 # Without it, we could not run this script from other folders.
 BEGIN
 {
-    print $0, "\n";
     our $toolsdir = $0;
     unless($toolsdir =~ s:[/\\][^/\\]*$::)
     {
@@ -478,17 +477,21 @@ sub process_treebank
     local %doclinks;
     foreach my $tag (@tagset)
     {
-        $statlinks{$tag} = "[$tag]($tbkrecord->{code}-pos-$tag.html)";
+        $statlinks{$tag} = "<tt><a href=\"$tbkrecord->{code}-pos-$tag.html\">$tag</a></tt>";
         $doclinks{$tag} = "[$tag]()";
     }
     foreach my $feature (@featureset)
     {
-        $statlinks{$feature} = "[$feature]($tbkrecord->{code}-feat-$feature.html)";
+        my $feature1 = $feature;
+        $feature1 =~ s/\[(.+?)\]/-$1/;
+        $statlinks{$feature} = "<tt><a href=\"$tbkrecord->{code}-feat-$feature1.html\">$feature</a></tt>";
         $doclinks{$feature} = "[$feature]()";
     }
     foreach my $deprel (@deprelset)
     {
-        $statlinks{$deprel} = "[$deprel]($tbkrecord->{code}-dep-$deprel.html)";
+        my $deprel1 = $deprel;
+        $deprel1 =~ s/:/-/g;
+        $statlinks{$deprel} = "<tt><a href=\"$tbkrecord->{code}-dep-$deprel1.html\">$deprel</a></tt>";
         $doclinks{$deprel} = "[$deprel]()";
     }
     # Actual generation of output starts here.
@@ -951,12 +954,12 @@ sub get_detailed_statistics_tag
     # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
     my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$stats{examples}{$tag.'-lemma'}}));
     @examples = sort_and_truncate_examples($stats{examples}{$tag.'-lemma'}, \@examples, $limit);
-    @examples = map {my $l = $_; my @t = map {"[$_]() $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); fex($l).' ('.join(', ', @t).')'} (@examples);
+    @examples = map {my $l = $_; my @t = map {"$statlinks{$_} $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); fex($l).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
     # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
     @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$stats{examples}{$tag}}));
     @examples = sort_and_truncate_examples($stats{examples}{$tag}, \@examples, $limit);
-    my @examples1 = map {my $w = $_; my @t = map {"[$_]() $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); fex($w).' ('.join(', ', @t).')'} (@examples);
+    my @examples1 = map {my $w = $_; my @t = map {"$statlinks{$_} $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); fex($w).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
     foreach my $example (@examples)
     {
@@ -964,7 +967,7 @@ sub get_detailed_statistics_tag
         my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
         foreach my $ambtag (@ambtags)
         {
-            $page .= "  * [$ambtag]() $wordtag{$example}{$ambtag}: ".fex($exentwt{$example}{$ambtag})."\n";
+            $page .= "  * $statlinks{$ambtag} $wordtag{$example}{$ambtag}: ".fex($exentwt{$example}{$ambtag})."\n";
         }
     }
     $page .= "\n";
@@ -982,7 +985,7 @@ sub get_detailed_statistics_tag
     }
     if(scalar(keys(%{$stats{tf}{$tag}})) > 0)
     {
-        my ($list, $n) = list_keys_with_counts($stats{tf}{$tag}, $stats{tags}{$tag}, "$konfig{langcode}-feat/");
+        my ($list, $n) = list_keys_with_counts($stats{tf}{$tag}, $stats{tags}{$tag}, 'feat');
         $page .= "`$tag` occurs with $n features: $list\n\n";
         my @featurepairs = map {"`$_`"} (sort(keys(%{$stats{tfv}{$tag}})));
         my $nfeaturepairs = scalar(@featurepairs);
@@ -1005,7 +1008,7 @@ sub get_detailed_statistics_tag
     $page .= "\n";
     # Dependency relations.
     $page .= "## Relations\n\n";
-    my ($list, $n) = list_keys_with_counts($stats{td}{$tag}, $stats{tags}{$tag}, "$konfig{langcode}-dep/");
+    my ($list, $n) = list_keys_with_counts($stats{td}{$tag}, $stats{tags}{$tag}, 'dep');
     $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
     ($list, $n) = list_keys_with_counts($parenttag{$tag}, $stats{tags}{$tag}, '');
     $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
@@ -1033,7 +1036,7 @@ sub get_detailed_statistics_tag
     $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
     if($maxtagdegree{$tag} > 0)
     {
-        ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$konfig{langcode}-dep/");
+        ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, 'dep');
         $page .= "Children of `$tag` nodes are attached using $n different relations: $list\n\n";
         ($list, $n) = list_keys_with_counts($childtag{$tag}, $nchildren{$tag}, '');
         $page .= "Children of `$tag` nodes belong to $n different parts of speech: $list\n\n";
@@ -1183,7 +1186,7 @@ sub get_detailed_statistics_feature
     if(scalar(@layers) > 1)
     {
         # We are linking e.g. from pt/feat/Number.html to u/overview/feat-layers.html.
-        $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"[$layers{$base_feature}{$_}]()"} (@layers)).".\n\n";
+        $page .= 'This is a <a href="../../u/overview/feat-layers.html">layered feature</a> with the following layers: '.join(', ', map {"$statlinks{$layers{$base_feature}{$_}}"} (@layers)).".\n\n";
     }
     my $n = $stats{features}{$feature};
     my $p = percent($n, $stats{nword});
@@ -1195,7 +1198,7 @@ sub get_detailed_statistics_feature
     $p = percent($n, scalar(@lemmas));
     $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
     # List part-of-speech tags with which this feature occurs.
-    my $list; ($list, $n) = list_keys_with_counts($stats{ft}{$feature}, $stats{nword}, "$konfig{langcode}-pos/");
+    my $list; ($list, $n) = list_keys_with_counts($stats{ft}{$feature}, $stats{nword}, 'pos');
     $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
     my @tags = sort {$stats{ft}{$feature}{$b} <=> $stats{ft}{$feature}{$a}} (keys(%{$stats{ft}{$feature}}));
     foreach my $tag (@tags)
@@ -1240,7 +1243,7 @@ sub get_detailed_statistics_feature
                 my $x = $_;
                 my $n = $other_features{$x};
                 my $p = percent($n, $stats{ft}{$feature}{$tag});
-                $x =~ s/^(.+)=(.+)$/<tt><a href="$1.html">$1<\/a>=$2<\/tt>/;
+                $x =~ s/^(.+)=(.+)$/$statlinks{$1}<tt>=$2<\/tt>/;
                 "$x ($n; $p)"
             }
             (@frequent_pairs);
@@ -1316,7 +1319,7 @@ sub get_detailed_statistics_feature
         {
             my $p = percent($agreement{$feature}{$_}, $agreement{$feature}{$_}+$disagreement{$feature}{$_});
             my $link = $_;
-            $link =~ s/--\[(.*)?\]--/--[<a href="..\/dep\/$1.html">$1<\/a>]--/;
+            $link =~ s/--\[(.*)?\]--/--[$statlinks{$1}]--/;
             "<tt>$link</tt> ($agreement{$feature}{$_}; $p)"
         }
         (@agreement)).".\n\n";
@@ -1406,7 +1409,7 @@ sub get_paradigm_table
             # Do not display other features that occur in all combinations.
             my @of = split(/\|/, $of);
             @of = grep {$map_other_features{$_} < scalar(@other_features)} (@of);
-            my $showof = join('|', map {s/^(.+)=(.+)$/<a href="$1.html">$1<\/a>=$2/; $_} (@of));
+            my $showof = join('|', map {s/^(.+)=(.+)$/$statlinks{$1}<tt>=$2<\/tt>/; $_} (@of));
             $page .= "  <tr><td><tt>$showof</tt></td>";
             foreach my $v (@values)
             {
@@ -1500,19 +1503,19 @@ sub get_detailed_statistics_relation
         if($nsubtypes > 0)
         {
             $page .= "There are $nsubtypes language-specific subtypes of `$deprel`: ";
-            $page .= join(', ', map {"[$_]()"} (@subtypes));
+            $page .= join(', ', map {"$statlinks{$_}"} (@subtypes));
             $page .= ".\n";
         }
     }
     else
     {
         my $base = $base_relations{$deprel};
-        $page .= "This relation is a language-specific subtype of [$base]().\n";
+        $page .= "This relation is a language-specific subtype of $statlinks{$base}.\n";
         my $nsubtypes = scalar(@subtypes) - 1;
         if($nsubtypes > 0)
         {
             $page .= "There are also $nsubtypes other language-specific subtypes of `$base`: ";
-            $page .= join(', ', map {"[$_]()"} (grep {$_ ne $deprel} (@subtypes)));
+            $page .= join(', ', map {"$statlinks{$_}"} (grep {$_ ne $deprel} (@subtypes)));
             $page .= ".\n";
         }
     }
@@ -1537,7 +1540,7 @@ sub get_detailed_statistics_relation
     $page .= "Average distance between parent and child is $avglen.\n\n";
     # Word types, lemmas, tags and features.
     my $list;
-    ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, "$konfig{langcode}-pos/");
+    ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, 'pos');
     $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
     ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
     my @tagpairs = sort {$stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a}} (keys(%{$stats{dtt}{$deprel}}));
@@ -1645,7 +1648,7 @@ sub list_keys_with_counts
 {
     my $freqhash = shift; # gives frequency for each key
     my $totalcount = shift; # total frequency of all keys (inefficient to compute here because it is typically already known) ###!!! OR NO?
-    my $linkprefix = shift; # for links from POS to dependency relations, "$konfig{langcode}-dep/" must be prepended; for link from POS to POS, the prefix is empty
+    my $type = shift; # pos|feat|dep
     my @keys = sort
     {
         my $result = $freqhash->{$b} <=> $freqhash->{$a};
@@ -1657,21 +1660,19 @@ sub list_keys_with_counts
     }
     (keys(%{$freqhash}));
     my $n = scalar(@keys);
-    my $linkprefix_is_pos = $linkprefix =~ m/-pos/;
     my $list = join(', ', map
     {
         my $x = $_;
         my $p = percent($freqhash->{$_}, $totalcount);
         my $link;
-        if($linkprefix_is_pos && $x =~ m/-/)
+        # If the key is a pair of tags instead of just one tag.
+        if($type eq 'pos' && $x =~ m/-/)
         {
             my ($a, $b) = split(/-/, $x);
-            $link = "[$linkprefix$a]()-[$linkprefix$b]()";
+            $link = "$statlinks{$a}-$statlinks{$b}";
         }
         else
         {
-            ###!!! Ty linky musíme opravit pořádně, zejména pokud jde o tu if větev nad námi!
-            #$link = "[$linkprefix$x]()";
             $link = $statlinks{$x};
         }
         "$link ($freqhash->{$x}; $p instances)"

@@ -12,7 +12,6 @@ binmode(STDERR, ':utf8');
 # Without it, we could not run this script from other folders.
 BEGIN
 {
-    print $0, "\n";
     our $toolsdir = $0;
     unless($toolsdir =~ s:[/\\][^/\\]*$::)
     {
