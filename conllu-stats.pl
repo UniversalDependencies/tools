@@ -484,9 +484,90 @@ sub process_treebank
     }
     elsif($konfig{oformat} eq 'detailed' || $konfig{oformat} eq 'newdetailed')
     {
-        detailed_statistics_tags();
-        detailed_statistics_features();
-        detailed_statistics_relations();
+        my $pages = detailed_statistics_tags();
+        foreach my $tag (keys(%{$pages}))
+        {
+            my $path = "$konfig{docspath}/_includes/stats/$konfig{langcode}/pos";
+            mkdir($path) unless(-d $path);
+            my $file = "$path/$tag.md";
+            $file =~ s/AUX\.md/AUX_.md/;
+            if($konfig{oformat} eq 'newdetailed')
+            {
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-pos-$tag.md";
+            }
+            my $page = $pages->{$tag};
+            print STDERR ("Writing $file\n");
+            open(PAGE, "$mode$file") or die("Cannot write $file: $!");
+            print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $tag in $konfig{treebank}'
+udver: '2'
+---
+
+EOF
+            ;
+            print PAGE ($page);
+            close(PAGE);
+        }
+        $pages = detailed_statistics_features();
+        foreach my $feature (keys(%{$pages}))
+        {
+            my $path = "$konfig{docspath}/_includes/stats/$konfig{langcode}/feat";
+            mkdir($path) unless(-d $path);
+            my $file = "$path/$feature.md";
+            if($konfig{oformat} eq 'newdetailed')
+            {
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-feat-$feature.md";
+            }
+            # Layered features do not have the brackets in their file names.
+            $file =~ s/\[(.+)\]/-$1/;
+            my $page = $pages->{$feature};
+            print STDERR ("Writing $file\n");
+            open(PAGE, "$mode$file") or die("Cannot write $file: $!");
+            print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $feature in $konfig{treebank}'
+udver: '2'
+---
+
+EOF
+            ;
+            print PAGE ($page);
+            close(PAGE);
+        }
+        $pages = detailed_statistics_relations();
+        foreach my $deprel (@deprelset)
+        {
+            my $path = "$konfig{docspath}/_includes/stats/$konfig{langcode}/dep";
+            mkdir($path) unless(-d $path);
+            my $file = "$path/$deprel.md";
+            if($konfig{oformat} eq 'newdetailed')
+            {
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-dep-$deprel.md";
+            }
+            else
+            {
+                $file =~ s/aux\.md/aux_.md/;
+            }
+            # Language-specific relations do not have the colon in their file names.
+            $file =~ s/:/-/;
+            my $page = $pages->{$deprel};
+            print STDERR ("Writing $file\n");
+            open(PAGE, "$mode$file") or die("Cannot write $file: $!");
+            print PAGE <<EOF
+---
+layout: base
+title:  'Statistics of $deprel in $konfig{treebank}'
+udver: '2'
+---
+
+EOF
+            ;
+            print PAGE ($page);
+            close(PAGE);
+        }
         if($konfig{oformat} eq 'newdetailed')
         {
             my $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-index-pfd.md";
@@ -741,12 +822,10 @@ sub prune_examples
 #------------------------------------------------------------------------------
 # Extended statistics could be used to substitute documentation if it does not
 # exist. This function generates statistics of all part-of-speech tags and
-# saves them in the docs repository.
+# returns them in a hash (tag => MarkDown document).
 #------------------------------------------------------------------------------
 sub detailed_statistics_tags
 {
-    local $docspath = $konfig{docspath};
-    local $langcode = $konfig{langcode};
     # We have to see all tags before we can compute percentage of each tag.
     local %ntypes; # hash{$tag}
     local %nlemmas; # hash{$tag}
@@ -783,31 +862,12 @@ sub detailed_statistics_tags
     }
     local $ntags = scalar(@tagset);
     local $limit = 10;
+    my %pages;
     foreach my $tag (@tagset)
     {
-        my $path = "$docspath/_includes/stats/$langcode/pos";
-        mkdir($path) unless(-d $path);
-        my $file = "$path/$tag.md";
-        $file =~ s/AUX\.md/AUX_.md/;
-        if($konfig{oformat} eq 'newdetailed')
-        {
-            $file = "$docspath/treebanks/$tbkrecord->{code}-pos-$tag.md";
-        }
-        my $page = get_detailed_statistics_tag($tag);
-        print STDERR ("Writing $file\n");
-        open(PAGE, "$mode$file") or die("Cannot write $file: $!");
-        print PAGE <<EOF
----
-layout: base
-title:  'Statistics of $tag in $konfig{treebank}'
-udver: '2'
----
-
-EOF
-        ;
-        print PAGE ($page);
-        close(PAGE);
+        $pages{$tag} = get_detailed_statistics_tag($tag);
     }
+    return \%pages;
 }
 
 
@@ -893,7 +953,7 @@ sub get_detailed_statistics_tag
     }
     if(scalar(keys(%{$stats{tf}{$tag}})) > 0)
     {
-        my ($list, $n) = list_keys_with_counts($stats{tf}{$tag}, $stats{tags}{$tag}, "$langcode-feat/");
+        my ($list, $n) = list_keys_with_counts($stats{tf}{$tag}, $stats{tags}{$tag}, "$konfig{langcode}-feat/");
         $page .= "`$tag` occurs with $n features: $list\n\n";
         my @featurepairs = map {"`$_`"} (sort(keys(%{$stats{tfv}{$tag}})));
         my $nfeaturepairs = scalar(@featurepairs);
@@ -916,7 +976,7 @@ sub get_detailed_statistics_tag
     $page .= "\n";
     # Dependency relations.
     $page .= "## Relations\n\n";
-    my ($list, $n) = list_keys_with_counts($stats{td}{$tag}, $stats{tags}{$tag}, "$langcode-dep/");
+    my ($list, $n) = list_keys_with_counts($stats{td}{$tag}, $stats{tags}{$tag}, "$konfig{langcode}-dep/");
     $page .= "`$tag` nodes are attached to their parents using $n different relations: $list\n\n";
     ($list, $n) = list_keys_with_counts($parenttag{$tag}, $stats{tags}{$tag}, '');
     $page .= "Parents of `$tag` nodes belong to $n different parts of speech: $list\n\n";
@@ -944,7 +1004,7 @@ sub get_detailed_statistics_tag
     $page .= "The highest child degree of a `$tag` node is $maxtagdegree{$tag}.\n\n";
     if($maxtagdegree{$tag} > 0)
     {
-        ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$langcode-dep/");
+        ($list, $n) = list_keys_with_counts($childtagdeprel{$tag}, $nchildren{$tag}, "$konfig{langcode}-dep/");
         $page .= "Children of `$tag` nodes are attached using $n different relations: $list\n\n";
         ($list, $n) = list_keys_with_counts($childtag{$tag}, $nchildren{$tag}, '');
         $page .= "Children of `$tag` nodes belong to $n different parts of speech: $list\n\n";
@@ -955,12 +1015,11 @@ sub get_detailed_statistics_tag
 
 
 #------------------------------------------------------------------------------
-# Generates statistics of all features and saves them in the docs repository.
+# Generates statistics of all features and returns them in a hash
+# (feature => MarkDown document).
 #------------------------------------------------------------------------------
 sub detailed_statistics_features
 {
-    local $docspath = $konfig{docspath};
-    local $langcode = $konfig{langcode};
     local $limit = 10;
     # Identify layered features.
     local %layers;
@@ -981,32 +1040,12 @@ sub detailed_statistics_features
         $layers{$base}{$layer} = $feature;
         $base_features{$feature} = $base;
     }
+    my %pages;
     foreach my $feature (@featureset)
     {
-        my $path = "$docspath/_includes/stats/$langcode/feat";
-        mkdir($path) unless(-d $path);
-        my $file = "$path/$feature.md";
-        if($konfig{oformat} eq 'newdetailed')
-        {
-            $file = "$docspath/treebanks/$tbkrecord->{code}-feat-$feature.md";
-        }
-        # Layered features do not have the brackets in their file names.
-        $file =~ s/\[(.+)\]/-$1/;
-        my $page = get_detailed_statistics_feature($feature);
-        print STDERR ("Writing $file\n");
-        open(PAGE, "$mode$file") or die("Cannot write $file: $!");
-        print PAGE <<EOF
----
-layout: base
-title:  'Statistics of $feature in $konfig{treebank}'
-udver: '2'
----
-
-EOF
-        ;
-        print PAGE ($page);
-        close(PAGE);
+        $pages{$feature} = get_detailed_statistics_feature($feature);
     }
+    return \%pages;
 }
 
 
@@ -1128,7 +1167,7 @@ sub get_detailed_statistics_feature
     $p = percent($n, scalar(@lemmas));
     $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
     # List part-of-speech tags with which this feature occurs.
-    my $list; ($list, $n) = list_keys_with_counts($stats{ft}{$feature}, $stats{nword}, "$langcode-pos/");
+    my $list; ($list, $n) = list_keys_with_counts($stats{ft}{$feature}, $stats{nword}, "$konfig{langcode}-pos/");
     $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
     my @tags = sort {$stats{ft}{$feature}{$b} <=> $stats{ft}{$feature}{$a}} (keys(%{$stats{ft}{$feature}}));
     foreach my $tag (@tags)
@@ -1136,7 +1175,7 @@ sub get_detailed_statistics_feature
         $page .= "### `$tag`\n\n";
         $n = $stats{ft}{$feature}{$tag};
         $p = percent($n, $stats{tags}{$tag});
-        $page .= "$n [$langcode-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
+        $page .= "$n [$konfig{langcode}-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
         # Is this feature used exclusively with some other feature?
         # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
         my @other_features = grep {$stats{tf}{$tag}{$_} / $stats{tags}{$tag} > 0.1} (keys(%{$stats{tf}{$tag}}));
@@ -1363,12 +1402,11 @@ sub get_paradigm_table
 
 
 #------------------------------------------------------------------------------
-# Generates statistics of all relations and saves them in the docs repository.
+# Generates statistics of all relations and returns them in a hash
+# (relation => MarkDown document).
 #------------------------------------------------------------------------------
 sub detailed_statistics_relations
 {
-    local $docspath = $konfig{docspath};
-    local $langcode = $konfig{langcode};
     local $limit = 10;
     # Identify clusters of universal relations and their language-specific subtypes.
     local %clusters;
@@ -1389,36 +1427,12 @@ sub detailed_statistics_relations
         $clusters{$base}{$extension} = $deprel;
         $base_relations{$deprel} = $base;
     }
+    my %pages;
     foreach my $deprel (@deprelset)
     {
-        my $path = "$docspath/_includes/stats/$langcode/dep";
-        mkdir($path) unless(-d $path);
-        my $file = "$path/$deprel.md";
-        if($konfig{oformat} eq 'newdetailed')
-        {
-            $file = "$docspath/treebanks/$tbkrecord->{code}-dep-$deprel.md";
-        }
-        else
-        {
-            $file =~ s/aux\.md/aux_.md/;
-        }
-        # Language-specific relations do not have the colon in their file names.
-        $file =~ s/:/-/;
-        my $page = get_detailed_statistics_relation($deprel);
-        print STDERR ("Writing $file\n");
-        open(PAGE, "$mode$file") or die("Cannot write $file: $!");
-        print PAGE <<EOF
----
-layout: base
-title:  'Statistics of $deprel in $konfig{treebank}'
-udver: '2'
----
-
-EOF
-        ;
-        print PAGE ($page);
-        close(PAGE);
+        $pages{$deprel} = get_detailed_statistics_relation($deprel);
     }
+    return \%pages;
 }
 
 
@@ -1496,7 +1510,7 @@ sub get_detailed_statistics_relation
     $page .= "Average distance between parent and child is $avglen.\n\n";
     # Word types, lemmas, tags and features.
     my $list;
-    ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, "$langcode-pos/");
+    ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, "$konfig{langcode}-pos/");
     $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
     ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
     my @tagpairs = sort {$stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a}} (keys(%{$stats{dtt}{$deprel}}));
@@ -1604,7 +1618,7 @@ sub list_keys_with_counts
 {
     my $freqhash = shift; # gives frequency for each key
     my $totalcount = shift; # total frequency of all keys (inefficient to compute here because it is typically already known) ###!!! OR NO?
-    my $linkprefix = shift; # for links from POS to dependency relations, "$langcode-dep/" must be prepended; for link from POS to POS, the prefix is empty
+    my $linkprefix = shift; # for links from POS to dependency relations, "$konfig{langcode}-dep/" must be prepended; for link from POS to POS, the prefix is empty
     my @keys = sort
     {
         my $result = $freqhash->{$b} <=> $freqhash->{$a};
