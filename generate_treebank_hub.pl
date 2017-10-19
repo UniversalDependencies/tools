@@ -21,7 +21,7 @@ BEGIN
 use lib "$toolsdir";
 use udlib;
 
-my $folder = 'UD_Czech';
+my $folder = shift(@ARGV);
 my $treebank_name = $folder;
 $treebank_name =~ s/[-_]/ /g;
 my $language_name = $folder;
