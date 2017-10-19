@@ -570,20 +570,27 @@ EOF
         }
         if($konfig{oformat} eq 'newdetailed')
         {
-            my $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-index-pfd.md";
+            my $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-index.md";
             print STDERR ("Writing $file\n");
             open(PAGE, ">$file") or die("Cannot write $file: $!");
+            my $treebank_name = $konfig{treebank};
+            $treebank_name =~ s/[-_]/ /g;
             print PAGE <<EOF
 ---
 layout: base
-title:  'Statistics of $konfig{treebank}'
+title:  '$konfig{treebank}'
 udver: '2'
 ---
 
-# Statistics of $konfig{treebank}
+<!-- This page is automatically generated from the README file and from
+     the data files in the latest release.
+
+     Please do not edit this page directly. -->
 
 EOF
             ;
+            print PAGE (udlib::generate_markdown_treebank_overview($konfig{treebank}));
+            print PAGE ("\# Statistics of $treebank_name\n\n");
             print PAGE ("\#\# POS Tags\n\n");
             print PAGE (join(' – ', map {"[$_]($tbkrecord->{code}-pos-$_.html)"} (@tagset)), "\n\n");
             print PAGE ("\#\# Features\n\n");

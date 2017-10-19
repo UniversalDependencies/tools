@@ -5,6 +5,7 @@
 package udlib;
 
 use JSON::Parse 'json_file_to_perl';
+use utf8;
 
 
 
@@ -228,6 +229,95 @@ sub read_readme
     }
     close(README);
     return \%metadata;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Generates a human-readable information about a treebank, based on README and
+# data, intended for the UD web (i.e. using MarkDown syntax).
+#------------------------------------------------------------------------------
+sub generate_markdown_treebank_overview
+{
+    my $folder = shift;
+    my $treebank_name = $folder;
+    $treebank_name =~ s/[-_]/ /g;
+    my $language_name = $folder;
+    $language_name =~ s/^UD_//;
+    $language_name =~ s/-.*//;
+    $language_name =~ s/_/ /g;
+    my $filescan = get_ud_files_and_codes($folder);
+    my $metadata = read_readme($folder);
+    my $md = "\# $treebank_name\n\n";
+    $md .= "Language: [$language_name](../$filescan->{lcode}/overview/$filescan->{lcode}-hub.html) (code: `$filescan->{lcode}`)\n\n";
+    $md .= "This treebank has been part of Universal Dependencies since the $metadata->{'Data available since'} release.\n\n";
+    $md .= "The following people have contributed to making this treebank part of UD: ";
+    $md .= join(', ', map {my $x = $_; if($x =~ m/^(.+),\s*(.+)$/) {$x = "$2 $1"} $x} (split(/\s*;\s*/, $metadata->{Contributors})));
+    $md .= ".\n\n";
+    $md .= "Repository: [$folder](https://github.com/UniversalDependencies/$folder)\n\n";
+    $md .= "License: $metadata->{License}";
+    $md .= ". The underlying text is not included; the user must obtain it separately and then merge with the UD annotation using a script distributed with UD" if($metadata->{'Includes text'} eq 'no');
+    $md .= "\n\n";
+    $md .= "Genre: ";
+    $md .= join(', ', split(/\s+/, $metadata->{Genre}));
+    $md .= "\n\n";
+    my $scrambled_email = $metadata->{Contact};
+    $scrambled_email =~ s/\@/&nbsp;(æt)&nbsp;/g;
+    $scrambled_email =~ s/\./&nbsp;•&nbsp;/g;
+    $md .= "Questions, comments?\n";
+    $md .= "General annotation questions (either $language_name-specific or cross-linguistic) can be raised in the [main UD issue tracker](https://github.com/UniversalDependencies/docs/issues).\n";
+    $md .= "You can report bugs in this treebank in the [treebank-specific issue tracker on Github](https://github.com/UniversalDependencies/$folder/issues).\n";
+    $md .= "If you want to collaborate, please contact [$scrambled_email].\n";
+    if($metadata->{Contributing} eq 'here')
+    {
+        $md .= "Development of the treebank happens directly in the UD repository, so you may submit bug fixes as pull requests against the dev branch.\n";
+    }
+    elsif($metadata->{Contributing} eq 'elsewhere')
+    {
+        $md .= "Development of the treebank happens outside the UD repository.\n";
+        $md .= "If there are bugs, either the original data source or the conversion procedure must be fixed.\n";
+        $md .= "Do not submit pull requests against the UD repository.\n";
+    }
+    elsif($metadata->{Contributing} eq 'to be adopted')
+    {
+        $md .= "The UD version of this treebank currently does not have a maintainer.\n";
+        $md .= "If you know the language and want to help, please consider adopting the treebank.\n";
+    }
+    $md .= "\n";
+    $md .= "| Annotation | Source |\n";
+    $md .= "|------------|--------|\n";
+    foreach my $annotation (qw(Lemmas UPOS XPOS Features Relations))
+    {
+        $md .= "| $annotation | ";
+        if($metadata->{$annotation} eq 'manual native')
+        {
+            $md .= "annotated manually";
+            unless($annotation eq 'XPOS')
+            {
+                $md .= ", natively in UD style";
+            }
+            $md .= " |\n";
+        }
+        elsif($metadata->{$annotation} eq 'converted from manual')
+        {
+            $md .= "annotated manually in non-UD style, automatically converted to UD |\n";
+        }
+        elsif($metadata->{$annotation} eq 'automatic')
+        {
+            $md .= "assigned by a program, not checked manually |\n";
+        }
+        elsif($metadata->{$annotation} eq 'not available')
+        {
+            $md .= "not available |\n";
+        }
+        else
+        {
+            $md .= "(undocumented) |\n";
+        }
+    }
+    $md .= "\n";
+    $md .= "$metadata->{description}\n\n";
+    return $md;
 }
 
 
