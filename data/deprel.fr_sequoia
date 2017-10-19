@@ -6,3 +6,7 @@ flat:foreign
 flat:name
 nmod:poss
 nsubj:pass
+obl:agent
+obl:caus
+nsubj:caus
+obj:caus
