@@ -471,6 +471,27 @@ sub process_treebank
             prune_examples($stats{tlw}{$tag}{$lemma});
         }
     }
+    # Prepare MarkDown hyperlinks that can be used in the generated pages.
+    # Statlinks lead to pages with statistics from the current treebank.
+    # Doclinks lead to pages with universal documentation.
+    local %statlinks;
+    local %doclinks;
+    foreach my $tag (@tagset)
+    {
+        $statlinks{$tag} = "[$tag]($tbkrecord->{code}-pos-$tag.html)";
+        $doclinks{$tag} = "[$tag]()";
+    }
+    foreach my $feature (@featureset)
+    {
+        $statlinks{$feature} = "[$feature]($tbkrecord->{code}-feat-$feature.html)";
+        $doclinks{$feature} = "[$feature]()";
+    }
+    foreach my $deprel (@deprelset)
+    {
+        $statlinks{$deprel} = "[$deprel]($tbkrecord->{code}-dep-$deprel.html)";
+        $doclinks{$deprel} = "[$deprel]()";
+    }
+    # Actual generation of output starts here.
     if($konfig{oformat} eq 'hub')
     {
         # The hub_statistics() function returns a list of MarkDown sections.
@@ -916,8 +937,7 @@ sub get_detailed_statistics_tag
 {
     my $tag = shift;
     my $page;
-    $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-    $page .= "## Treebank Statistics ($treebank_id)\n\n";
+    $page .= "## Treebank Statistics: $treebank_id: POS Tags: `$tag`\n\n";
     my $ntokens = $stats{tags}{$tag};
     my $ptokens = percent($ntokens, $ntokens_total);
     my $ptypes = percent($ntypes{$tag}, $ntypes_total);
@@ -1102,8 +1122,7 @@ sub get_detailed_statistics_feature
 {
     my $feature = shift;
     my $page;
-    $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-    $page .= "## Treebank Statistics ($treebank_id)\n\n";
+    $page .= "## Treebank Statistics: $treebank_id: Features: `$feature`\n\n";
     # Count values. Dissolve multivalues.
     my @values = sort(keys(%{$fv{$feature}}));
     my %svalues;
@@ -1184,7 +1203,7 @@ sub get_detailed_statistics_feature
         $page .= "### `$tag`\n\n";
         $n = $stats{ft}{$feature}{$tag};
         $p = percent($n, $stats{tags}{$tag});
-        $page .= "$n [$konfig{langcode}-pos/$tag]() tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
+        $page .= "$n $statlinks{$tag} tokens ($p of all `$tag` tokens) have a non-empty value of `$feature`.\n\n";
         # Is this feature used exclusively with some other feature?
         # We are interested in features that can be non-empty with the current tag in a significant percentage of cases.
         my @other_features = grep {$stats{tf}{$tag}{$_} / $stats{tags}{$tag} > 0.1} (keys(%{$stats{tf}{$tag}}));
@@ -1470,8 +1489,7 @@ sub get_detailed_statistics_relation
 {
     my $deprel = shift;
     my $page;
-    $page .= "\n\n--------------------------------------------------------------------------------\n\n";
-    $page .= "## Treebank Statistics ($treebank_id)\n\n";
+    $page .= "## Treebank Statistics: $treebank_id: Relations: `$deprel`\n\n";
     # Universal versus language-specific.
     my $cluster = $clusters{$base_relations{$deprel}};
     my @subtypes = map {$cluster->{$_}} (grep {$_ ne ''} (sort(keys(%{$cluster}))));
@@ -1652,7 +1670,9 @@ sub list_keys_with_counts
         }
         else
         {
-            $link = "[$linkprefix$x]()";
+            ###!!! Ty linky musíme opravit pořádně, zejména pokud jde o tu if větev nad námi!
+            #$link = "[$linkprefix$x]()";
+            $link = $statlinks{$x};
         }
         "$link ($freqhash->{$x}; $p instances)"
     }
