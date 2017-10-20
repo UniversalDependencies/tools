@@ -94,7 +94,7 @@ my %universal_features =
 );
 my %languages =
 (   # i ... should we use italics when displaying examples from this language?
-    # c ... the character to be used as example separating comma.
+    # c ... the character to be used as example-separating comma.
     'am'  => {'name' => 'Amharic',    'i' => 0, 'c' => ','},
     'grc' => {'name' => 'Ancient Greek', 'i' => 1, 'c' => ','},
     'ar'  => {'name' => 'Arabic',     'i' => 0, 'c' => '،'},
@@ -205,6 +205,8 @@ elsif($konfig{oformat} eq 'newdetailed')
     local $treebank_id = $konfig{treebank};
     $treebank_id =~ s-^.*/--;
     local $tbkrecord = udlib::get_ud_files_and_codes($konfig{treebank});
+    # The language code is used downstream to decide about italics and the correct comma character.
+    $konfig{langcode} = $tbkrecord->{lcode};
     @ARGV = map {"$konfig{treebank}/$_"} (@{$tbkrecord->{files}});
     if(scalar(@ARGV)==0)
     {
