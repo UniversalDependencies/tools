@@ -47,7 +47,7 @@ $konfig{relative} = 0; # relative frequencies of POS tags instead of absolute co
 $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (of UD_$language).
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
-$konfig{permalink} = 'cs/overview/cs-hub-comparison.html'; # permalink property of the generated hub page, otherwise Jekyll will not generate the HTML page at the correct location
+$konfig{permalink} = ''; # permalink property of the generated hub page; only needed if the path to the MarkDown source is different from the path to the HTML page
 GetOptions
 (
     'iformat=s'   => \$konfig{iformat},
