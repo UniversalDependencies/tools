@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Reads CoNLL(-U) data from STDIN, collects all features (FEAT column, delimited by vertical bars) and prints them sorted to STDOUT.
 # Copyright © 2013-2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
@@ -1371,9 +1371,16 @@ sub get_paradigm_table
                 $ofsort =~ s/Gender=Fem/Gender=2Fem/;
                 $ofsort =~ s/Gender=Com/Gender=3Com/;
                 $ofsort =~ s/Gender=Neut/Gender=4Neut/;
+                $ofsort =~ s/Gender\[psor\]=Masc/Gender[psor]=1Masc/;
+                $ofsort =~ s/Gender\[psor\]=Fem/Gender[psor]=2Fem/;
+                $ofsort =~ s/Gender\[psor\]=Com/Gender[psor]=3Com/;
+                $ofsort =~ s/Gender\[psor\]=Neut/Gender[psor]=4Neut/;
                 $ofsort =~ s/Number=Sing/Number=1Sing/;
                 $ofsort =~ s/Number=Dual/Number=2Dual/;
                 $ofsort =~ s/Number=Plur/Number=3Plur/;
+                $ofsort =~ s/Number\[psor\]=Sing/Number[psor]=1Sing/;
+                $ofsort =~ s/Number\[psor\]=Dual/Number[psor]=2Dual/;
+                $ofsort =~ s/Number\[psor\]=Plur/Number[psor]=3Plur/;
                 $ofsort =~ s/Degree=Pos/Degree=1Pos/;
                 $ofsort =~ s/Degree=Cmp/Degree=2Cmp/;
                 $ofsort =~ s/Degree=Sup/Degree=3Sup/;
@@ -1811,6 +1818,10 @@ sub hub_statistics
     {
         my $percentage = $stats{ntoksano} / $stats{ntok} * 100;
         $cell .= sprintf("<li>This corpus contains $stats{ntoksano} tokens (%d%%) that are not followed by a space.</li>\n", $percentage+0.5);
+    }
+    else
+    {
+        $cell .= "<li>All tokens in this corpus are followed by a space.</li>\n";
     }
     # Words with spaces.
     my @words_with_spaces = sort(grep {m/\s/} keys(%{$stats{words}}));
