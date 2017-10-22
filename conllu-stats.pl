@@ -275,11 +275,11 @@ else
     # Take either STDIN or the CoNLL-U files specified on the command line.
     if(scalar(@ARGV)>0)
     {
-        print STDERR ("The following files will be processed: ", join(', ', @ARGV), "\n");
+        print STDERR ("[conllu-stats] The following files will be processed: ", join(', ', @ARGV), "\n");
     }
     else
     {
-        print STDERR ("No command-line arguments found. Standard input will be processed.\n");
+        print STDERR ("[conllu-stats] No command-line arguments found. Standard input will be processed.\n");
     }
     process_treebank();
 }
