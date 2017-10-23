@@ -1,12 +1,11 @@
-compound:lvc
 nmod:poss
 obl:tmod
-nmod:tmod
 compound:svc
+compound:lvc
 nsubj:nc
 acl:relcl
-nmod:cmp
 advcl:cond
 compound:redup
+nmod:tmod
+nmod:cmp
 obl:cau
-
