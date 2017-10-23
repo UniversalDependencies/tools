@@ -8,4 +8,5 @@ expl:pv
 flat:foreign
 nsubj:pass
 nummod:gov
+obl:agent
 obl:arg
