@@ -1,2 +1,4 @@
 acl:relcl
 nmod:pass
+compound:svc
+compound:prt
