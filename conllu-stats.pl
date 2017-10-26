@@ -1551,7 +1551,16 @@ sub get_detailed_statistics_relation
     ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, 'pos');
     $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
     ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
-    my @tagpairs = sort {$stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a}} (keys(%{$stats{dtt}{$deprel}}));
+    my @tagpairs = sort
+    {
+        my $result = $stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$stats{dtt}{$deprel}}));
     for(my $i = 0; $i < 3; $i++)
     {
         last if($i > $#tagpairs);
