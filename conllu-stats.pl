@@ -1858,6 +1858,7 @@ sub hub_statistics
     $cell = '';
     # Morphology and part-of-speech tags.
     $cell .= "<h2>Morphology</h2>\n\n";
+    $cell .= "<h3>Tags</h3>\n\n";
     $cell .= "<ul>\n";
     my $n_tags_used = scalar(@tagset);
     $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', map {"<a>$_</a>"} (@tagset))."</li>\n";
@@ -1871,6 +1872,60 @@ sub hub_statistics
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
         my $n_types_part = scalar(@part_examples);
         $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples)."</li>\n";
+    }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    # Pronouns vs. determiners.
+    my @pron_examples = sort(keys(%{$stats{examples}{'PRON-lemma'}}));
+    my $n_types_pron = scalar(@pron_examples);
+    $cell .= "<li>This corpus contains $n_types_pron lemmas tagged as pronouns (PRON): ".join(', ', @pron_examples)."</li>\n";
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    my @det_examples = sort(keys(%{$stats{examples}{'DET-lemma'}}));
+    my $n_types_det = scalar(@det_examples);
+    $cell .= "<li>This corpus contains $n_types_det lemmas tagged as determiners (DET): ".join(', ', @det_examples)."</li>\n";
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    my %det_examples;
+    foreach my $det (@det_examples)
+    {
+        $det_examples{$det}++;
+    }
+    my @pron_det_intersection = grep {exists($det_examples{$_})} (@pron_examples);
+    my $n_types_pron_det = scalar(@pron_det_intersection);
+    if($n_types_pron_det > 0)
+    {
+        $cell .= "<li>Out of the above, $n_types_pron_det lemmas occurred sometimes as PRON and sometimes as DET: ".join(', ', @pron_det_intersection)."</li>\n";
+    }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    # Auxiliary vs. main verbs.
+    my @aux_examples = sort(keys(%{$stats{examples}{'AUX-lemma'}}));
+    my $n_types_aux = scalar(@aux_examples);
+    $cell .= "<li>This corpus contains $n_types_aux lemmas tagged as auxiliaries (AUX): ".join(', ', @aux_examples)."</li>\n";
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    my %aux_examples;
+    foreach my $aux (@aux_examples)
+    {
+        $aux_examples{$aux}++;
+    }
+    my @verb_examples = sort(keys(%{$stats{examples}{'VERB-lemma'}}));
+    my @aux_verb_intersection = grep {exists($aux_examples{$_})} (@verb_examples);
+    my $n_types_aux_verb = scalar(@aux_verb_intersection);
+    if($n_types_aux_verb > 0)
+    {
+        $cell .= "<li>Out of the above, $n_types_aux_verb lemmas occurred sometimes as AUX and sometimes as VERB: ".join(', ', @aux_verb_intersection)."</li>\n";
     }
     $cell .= "</ul>\n";
     push(@table, $cell);
