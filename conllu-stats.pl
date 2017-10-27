@@ -240,12 +240,16 @@ EOF
     foreach my $treebank (@treebanks)
     {
         print STDERR ("Processing $treebank...\n");
+        local $tbkrecord;
         # If the path leads to a folder, read all CoNLL-U files in that folder. Otherwise it is just one CoNLL-U file.
         if(-d $treebank)
         {
             opendir(DIR, $treebank) or die("Cannot read folder $treebank: $!");
             @ARGV = map {"$treebank/$_"} (grep {m/\.conllu$/} (readdir(DIR)));
             closedir(DIR);
+            # The language code is used downstream to decide about italics and the correct comma character.
+            $tbkrecord = udlib::get_ud_files_and_codes($treebank);
+            $konfig{langcode} = $tbkrecord->{lcode};
         }
         else
         {
@@ -2081,7 +2085,7 @@ sub hub_statistics
         my $examples = prepare_examples($stats{pverbs}, 50);
         $cell .= "<h3>Reflexive Verbs</h3>\n\n";
         $cell .= "<ul>\n";
-        $cell .= "  <li>This corpus contains $n_pverbs lemmas that occur at least once with an `expl:pv` child. Examples: $examples</li>\n";
+        $cell .= "  <li>This corpus contains $n_pverbs lemmas that occur at least once with an <a>expl:pv</a> child. Examples: $examples</li>\n";
         $cell .= "</ul>\n";
     }
     push(@table, $cell);
