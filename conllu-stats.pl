@@ -318,6 +318,7 @@ else
 #     {example}{tag} ... inventory of words that occurred with a particular tag
 #     {pverbs}{word + expl:pv children} ... pronominal, i.e., inherently reflexive verbs
 #     {expass}{word + expl:pass children} ... reflexive passive verbs
+#     {rflobj}{word + reflexive children} ... verbs with reflexive core object
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
@@ -351,6 +352,7 @@ sub reset_counters
     $stats->{examples} = {};
     $stats->{pverbs} = {};
     $stats->{expass} = {};
+    $stats->{rflobj} = {};
     # combinations
     $stats->{tlw} = {};
     $stats->{tf} = {};
@@ -787,6 +789,7 @@ sub process_sentence
         my @casedeps;
         my @explpvdeps;
         my @explpassdeps;
+        my @rflobjdeps;
         foreach my $child (@children)
         {
             my $cnode = $sentence[$child-1];
@@ -806,6 +809,10 @@ sub process_sentence
             {
                 push(@explpassdeps, lc($cnode->[1]));
             }
+            elsif($cdeprel =~ m/obj/ && $cnode->[5] =~ m/Reflex=Yes/)
+            {
+                push(@rflobjdeps, lc($cnode->[1]));
+            }
         }
         if(scalar(@casedeps) > 0)
         {
@@ -819,6 +826,10 @@ sub process_sentence
         if(scalar(@explpassdeps) > 0)
         {
             $stats{expass}{join(' ', ($lemma, sort(@explpassdeps)))}++;
+        }
+        if(scalar(@rflobjdeps) > 0)
+        {
+            $stats{rflobj}{join(' ', ($lemma, sort(@rflobjdeps)))}++;
         }
         # Feature agreement between parent and child.
         unless($head==0)
@@ -2111,6 +2122,18 @@ sub hub_statistics
         $cell .= "<h3>Reflexive Passive</h3>\n\n";
         $cell .= "<ul>\n";
         $cell .= "  <li>This corpus contains $n_expass lemmas that occur at least once with an <a>expl:pass</a> child. Examples: $examples</li>\n";
+        $cell .= "</ul>\n";
+    }
+    push(@table, $cell);
+    $cell = '';
+    my @rflobj = keys(%{$stats{rflobj}});
+    my $n_rflobj = scalar(@rflobj);
+    if($n_rflobj > 0)
+    {
+        my $examples = prepare_examples($stats{rflobj}, 50);
+        $cell .= "<h3>Verbs with Reflexive Core Objects</h3>\n\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>This corpus contains $n_rflobj lemmas that occur at least once with a reflexive core object (<a>obj</a> or <a>iobj</a>). Examples: $examples</li>\n";
         $cell .= "</ul>\n";
     }
     push(@table, $cell);
