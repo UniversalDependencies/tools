@@ -2074,13 +2074,14 @@ sub hub_statistics
         push(@table, $cell);
         $cell = '';
     }
-    my @pverbs = sort(keys(%{$stats{pverbs}}));
+    my @pverbs = keys(%{$stats{pverbs}});
     my $n_pverbs = scalar(@pverbs);
     if($n_pverbs > 0)
     {
+        my $examples = prepare_examples($stats{pverbs}, 50);
         $cell .= "<h3>Reflexive Verbs</h3>\n\n";
         $cell .= "<ul>\n";
-        $cell .= "  <li>This corpus contains $n_pverbs word types that occur at least once with an `expl:pv` child: ".join(', ', @pverbs)."</li>\n";
+        $cell .= "  <li>This corpus contains $n_pverbs lemmas that occur at least once with an `expl:pv` child. Examples: $examples</li>\n";
         $cell .= "</ul>\n";
     }
     push(@table, $cell);
