@@ -317,6 +317,7 @@ else
 #   (hash: property => {exampleWord => frequency}):
 #     {example}{tag} ... inventory of words that occurred with a particular tag
 #     {pverbs}{word + expl:pv children} ... pronominal, i.e., inherently reflexive verbs
+#     {expass}{word + expl:pass children} ... reflexive passive verbs
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
@@ -349,6 +350,7 @@ sub reset_counters
     # example words and lemmas
     $stats->{examples} = {};
     $stats->{pverbs} = {};
+    $stats->{expass} = {};
     # combinations
     $stats->{tlw} = {};
     $stats->{tf} = {};
@@ -784,6 +786,7 @@ sub process_sentence
         $tagdegree{$tag}{$nchildren}++;
         my @casedeps;
         my @explpvdeps;
+        my @explpassdeps;
         foreach my $child (@children)
         {
             my $cnode = $sentence[$child-1];
@@ -799,6 +802,10 @@ sub process_sentence
             {
                 push(@explpvdeps, lc($cnode->[1]));
             }
+            elsif($cdeprel eq 'expl:pass')
+            {
+                push(@explpassdeps, lc($cnode->[1]));
+            }
         }
         if(scalar(@casedeps) > 0)
         {
@@ -808,6 +815,10 @@ sub process_sentence
         if(scalar(@explpvdeps) > 0)
         {
             $stats{pverbs}{join(' ', ($lemma, sort(@explpvdeps)))}++;
+        }
+        if(scalar(@explpassdeps) > 0)
+        {
+            $stats{expass}{join(' ', ($lemma, sort(@explpassdeps)))}++;
         }
         # Feature agreement between parent and child.
         unless($head==0)
@@ -2088,6 +2099,18 @@ sub hub_statistics
         $cell .= "<h3>Reflexive Verbs</h3>\n\n";
         $cell .= "<ul>\n";
         $cell .= "  <li>This corpus contains $n_pverbs lemmas that occur at least once with an <a>expl:pv</a> child. Examples: $examples</li>\n";
+        $cell .= "</ul>\n";
+    }
+    push(@table, $cell);
+    $cell = '';
+    my @expass = keys(%{$stats{expass}});
+    my $n_expass = scalar(@expass);
+    if($n_expass > 0)
+    {
+        my $examples = prepare_examples($stats{expass}, 50);
+        $cell .= "<h3>Reflexive Passive</h3>\n\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>This corpus contains $n_expass lemmas that occur at least once with an <a>expl:pass</a> child. Examples: $examples</li>\n";
         $cell .= "</ul>\n";
     }
     push(@table, $cell);
