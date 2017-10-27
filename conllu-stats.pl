@@ -310,6 +310,7 @@ else
 #   have just one huge hash but it might be useful to split it in the future
 #   (hash: property => {exampleWord => frequency}):
 #     {example}{tag} ... inventory of words that occurred with a particular tag
+#     {pverbs}{word + expl:pv children} ... pronominal, i.e., inherently reflexive verbs
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
@@ -341,6 +342,7 @@ sub reset_counters
     $stats->{deprels} = {};
     # example words and lemmas
     $stats->{examples} = {};
+    $stats->{pverbs} = {};
     # combinations
     $stats->{tlw} = {};
     $stats->{tf} = {};
@@ -775,6 +777,7 @@ sub process_sentence
         $nchildren = 3 if($nchildren > 3);
         $tagdegree{$tag}{$nchildren}++;
         my @casedeps;
+        my @explpvdeps;
         foreach my $child (@children)
         {
             my $cnode = $sentence[$child-1];
@@ -786,12 +789,20 @@ sub process_sentence
             {
                 push(@casedeps, "ADP($cnode->[2])");
             }
+            elsif($cdeprel eq 'expl:pv')
+            {
+                push(@explpvdeps, lc($cnode->[1]));
+            }
         }
         if(scalar(@casedeps) > 0)
         {
             $tagcase .= '-'.join('-', @casedeps);
         }
         $stats{dtvftcase}{$deprel}{$parent_tag_vf}{$tagcase}++;
+        if(scalar(@explpvdeps) > 0)
+        {
+            $stats{pverbs}{join(' ', ($lemma, sort(@explpvdeps)))}++;
+        }
         # Feature agreement between parent and child.
         unless($head==0)
         {
@@ -2063,6 +2074,17 @@ sub hub_statistics
         push(@table, $cell);
         $cell = '';
     }
+    my @pverbs = sort(keys(%{$stats{pverbs}}));
+    my $n_pverbs = scalar(@pverbs);
+    if($n_pverbs > 0)
+    {
+        $cell .= "<h3>Reflexive Verbs</h3>\n\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>This corpus contains $n_pverbs word types that occur at least once with an `expl:pv` child: ".join(', ', @pverbs)."</li>\n";
+        $cell .= "</ul>\n";
+    }
+    push(@table, $cell);
+    $cell = '';
     $cell .= "<h3>Relations Overview</h3>\n\n";
     $cell .= "<ul>\n";
     my @deprel_subtypes = grep {m/:/} (@deprelset);
