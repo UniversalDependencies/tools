@@ -1,6 +1,7 @@
 acl:cleft
 acl:relcl
 aux:pass
+ccomp:cleft
 csubj:pass
 det:poss
 det:predet
