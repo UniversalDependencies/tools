@@ -1871,22 +1871,24 @@ sub hub_statistics
         $cell .= "<li>All tokens in this corpus are followed by a space.</li>\n";
     }
     # Words with spaces.
-    my @words_with_spaces = sort(grep {m/\s/} keys(%{$stats{words}}));
+    my @words_with_spaces = grep {m/\s/} (keys(%{$stats{words}}));
     my $n_wws = scalar(@words_with_spaces);
     if($n_wws > 0)
     {
-        $cell .= "<li>This corpus contains $n_wws types of words with spaces: ".join(', ', @words_with_spaces)."</li>\n";
+        @words_with_spaces = sort_and_truncate_examples($stats{words}, \@words_with_spaces, 50);
+        $cell .= "<li>This corpus contains $n_wws types of words with spaces. Examples: ".join(', ', @words_with_spaces)."</li>\n";
     }
     else
     {
         $cell .= "<li>This corpus does not contain words with spaces.</li>\n";
     }
     # Words combining letters and punctuation.
-    my @words_with_punctuation = sort(grep {m/\pP\pL|\pL\pP/} keys(%{$stats{words}}));
+    my @words_with_punctuation = grep {m/\pP\pL|\pL\pP/} (keys(%{$stats{words}}));
     my $n_wwp = scalar(@words_with_punctuation);
     if($n_wwp > 0)
     {
-        $cell .= "<li>This corpus contains $n_wwp types of words that contain both letters and punctuation: ".join(', ', @words_with_punctuation)."</li>\n";
+        @words_with_punctuation = sort_and_truncate_examples($stats{words}, \@words_with_punctuation, 50);
+        $cell .= "<li>This corpus contains $n_wwp types of words that contain both letters and punctuation. Examples: ".join(', ', @words_with_punctuation)."</li>\n";
     }
     else
     {
@@ -1899,7 +1901,8 @@ sub hub_statistics
         $cell .= sprintf("<li>This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.</li>\n", $avgsize);
         my @fusion_examples = sort(keys(%{$stats{fusions}}));
         my $n_types_mwt = scalar(@fusion_examples);
-        $cell .= "<li>There are $n_types_mwt types of multi-word tokens: ".join(', ', @fusion_examples).".</li>\n";
+        $fusion_examples = prepare_examples($stats{fusions}, 50);
+        $cell .= "<li>There are $n_types_mwt types of multi-word tokens. Examples: $fusion_examples.</li>\n";
     }
     $cell .= "</ul>\n";
     push(@table, $cell);
