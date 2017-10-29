@@ -2058,7 +2058,8 @@ sub hub_statistics
     {
         my @cop_lemmas = sort(keys(%{$stats{examples}{'cop-lemma'}}));
         my $n_lemmas_cop = scalar(@cop_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (<a>cop</a>): ".join(', ', @cop_lemmas).".</li>\n";
+        my $examples = prepare_examples($stats{examples}{'cop-lemma'}, 50);
+        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (<a>cop</a>). Examples: $examples.</li>\n";
     }
     else
     {
@@ -2068,13 +2069,15 @@ sub hub_statistics
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (<a>aux</a>): ".join(', ', @aux_lemmas).".</li>\n";
+        my $examples = prepare_examples($stats{examples}{'aux-lemma'}, 50);
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (<a>aux</a>). Examples: $examples.</li>\n";
     }
     if(exists($stats{deprels}{'aux:pass'}))
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux:pass-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (<a>aux:pass</a>): ".join(', ', @aux_lemmas).".</li>\n";
+        my $examples = prepare_examples($stats{examples}{'aux:pass-lemma'}, 50);
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (<a>aux:pass</a>). Examples: $examples.</li>\n";
     }
     if(!exists($stats{deprels}{aux}) && !exists($stats{deprels}{'aux:pass'}))
     {
