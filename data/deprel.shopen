@@ -7,5 +7,6 @@ compound:prt
 compound:redup
 compound:svc
 mark:relcl
+nmod:poss
 nsubj:pass
 obl:arg

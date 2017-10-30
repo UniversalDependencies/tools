@@ -136,6 +136,7 @@ my %languages =
     'ro'  => {'name' => 'Romanian',   'i' => 1, 'c' => ','},
     'ru'  => {'name' => 'Russian',    'i' => 1, 'c' => ','},
     'sa'  => {'name' => 'Sanskrit',   'i' => 0, 'c' => ','},
+    'sr'  => {'name' => 'Serbian',    'i' => 1, 'c' => ','},
     'sk'  => {'name' => 'Slovak',     'i' => 1, 'c' => ','},
     'sl'  => {'name' => 'Slovenian',  'i' => 1, 'c' => ','},
     'es'  => {'name' => 'Spanish',    'i' => 1, 'c' => ','},
@@ -144,6 +145,7 @@ my %languages =
     'ta'  => {'name' => 'Tamil',      'i' => 0, 'c' => ','},
     'tr'  => {'name' => 'Turkish',    'i' => 1, 'c' => ','},
     'uk'  => {'name' => 'Ukrainian',  'i' => 1, 'c' => ','},
+    'hsb' => {'name' => 'Upper Sorbian', 'i' => 1, 'c' => ','},
     'ur'  => {'name' => 'Urdu',       'i' => 0, 'c' => '،'},
     'ug'  => {'name' => 'Uyghur',     'i' => 0, 'c' => '،'},
     'vi'  => {'name' => 'Vietnamese', 'i' => 1, 'c' => ','},
@@ -240,12 +242,16 @@ EOF
     foreach my $treebank (@treebanks)
     {
         print STDERR ("Processing $treebank...\n");
+        local $tbkrecord;
         # If the path leads to a folder, read all CoNLL-U files in that folder. Otherwise it is just one CoNLL-U file.
         if(-d $treebank)
         {
             opendir(DIR, $treebank) or die("Cannot read folder $treebank: $!");
             @ARGV = map {"$treebank/$_"} (grep {m/\.conllu$/} (readdir(DIR)));
             closedir(DIR);
+            # The language code is used downstream to decide about italics and the correct comma character.
+            $tbkrecord = udlib::get_ud_files_and_codes($treebank);
+            $konfig{langcode} = $tbkrecord->{lcode};
         }
         else
         {
@@ -275,11 +281,11 @@ else
     # Take either STDIN or the CoNLL-U files specified on the command line.
     if(scalar(@ARGV)>0)
     {
-        print STDERR ("The following files will be processed: ", join(', ', @ARGV), "\n");
+        print STDERR ("[conllu-stats] The following files will be processed: ", join(', ', @ARGV), "\n");
     }
     else
     {
-        print STDERR ("No command-line arguments found. Standard input will be processed.\n");
+        print STDERR ("[conllu-stats] No command-line arguments found. Standard input will be processed.\n");
     }
     process_treebank();
 }
@@ -310,6 +316,9 @@ else
 #   have just one huge hash but it might be useful to split it in the future
 #   (hash: property => {exampleWord => frequency}):
 #     {example}{tag} ... inventory of words that occurred with a particular tag
+#     {pverbs}{word + expl:pv children} ... pronominal, i.e., inherently reflexive verbs
+#     {expass}{word + expl:pass children} ... reflexive passive verbs
+#     {rflobj}{word + reflexive children} ... verbs with reflexive core object
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
@@ -341,6 +350,9 @@ sub reset_counters
     $stats->{deprels} = {};
     # example words and lemmas
     $stats->{examples} = {};
+    $stats->{pverbs} = {};
+    $stats->{expass} = {};
+    $stats->{rflobj} = {};
     # combinations
     $stats->{tlw} = {};
     $stats->{tf} = {};
@@ -775,6 +787,9 @@ sub process_sentence
         $nchildren = 3 if($nchildren > 3);
         $tagdegree{$tag}{$nchildren}++;
         my @casedeps;
+        my @explpvdeps;
+        my @explpassdeps;
+        my @rflobjdeps;
         foreach my $child (@children)
         {
             my $cnode = $sentence[$child-1];
@@ -786,12 +801,36 @@ sub process_sentence
             {
                 push(@casedeps, "ADP($cnode->[2])");
             }
+            elsif($cdeprel eq 'expl:pv')
+            {
+                push(@explpvdeps, lc($cnode->[1]));
+            }
+            elsif($cdeprel eq 'expl:pass')
+            {
+                push(@explpassdeps, lc($cnode->[1]));
+            }
+            elsif($cdeprel =~ m/obj/ && $cnode->[5] =~ m/Reflex=Yes/)
+            {
+                push(@rflobjdeps, lc($cnode->[1]));
+            }
         }
         if(scalar(@casedeps) > 0)
         {
             $tagcase .= '-'.join('-', @casedeps);
         }
         $stats{dtvftcase}{$deprel}{$parent_tag_vf}{$tagcase}++;
+        if(scalar(@explpvdeps) > 0)
+        {
+            $stats{pverbs}{join(' ', ($lemma, sort(@explpvdeps)))}++;
+        }
+        if(scalar(@explpassdeps) > 0)
+        {
+            $stats{expass}{join(' ', ($lemma, sort(@explpassdeps)))}++;
+        }
+        if(scalar(@rflobjdeps) > 0)
+        {
+            $stats{rflobj}{join(' ', ($lemma, sort(@rflobjdeps)))}++;
+        }
         # Feature agreement between parent and child.
         unless($head==0)
         {
@@ -1551,7 +1590,16 @@ sub get_detailed_statistics_relation
     ($list, $n) = list_keys_with_counts($stats{dtt}{$deprel}, $stats{deprels}{$deprel}, 'pos');
     $page .= "The following $n pairs of parts of speech are connected with `$deprel`: $list.\n\n";
     ###!!! Maybe we should not have used list_keys_with_counts() above because now we have to sort the same list again.
-    my @tagpairs = sort {$stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a}} (keys(%{$stats{dtt}{$deprel}}));
+    my @tagpairs = sort
+    {
+        my $result = $stats{dtt}{$deprel}{$b} <=> $stats{dtt}{$deprel}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$stats{dtt}{$deprel}}));
     for(my $i = 0; $i < 3; $i++)
     {
         last if($i > $#tagpairs);
@@ -1823,22 +1871,24 @@ sub hub_statistics
         $cell .= "<li>All tokens in this corpus are followed by a space.</li>\n";
     }
     # Words with spaces.
-    my @words_with_spaces = sort(grep {m/\s/} keys(%{$stats{words}}));
+    my @words_with_spaces = grep {m/\s/} (keys(%{$stats{words}}));
     my $n_wws = scalar(@words_with_spaces);
     if($n_wws > 0)
     {
-        $cell .= "<li>This corpus contains $n_wws types of words with spaces: ".join(', ', @words_with_spaces)."</li>\n";
+        @words_with_spaces = sort_and_truncate_examples($stats{words}, \@words_with_spaces, 50);
+        $cell .= "<li>This corpus contains $n_wws types of words with spaces. Examples: ".join(', ', @words_with_spaces)."</li>\n";
     }
     else
     {
         $cell .= "<li>This corpus does not contain words with spaces.</li>\n";
     }
     # Words combining letters and punctuation.
-    my @words_with_punctuation = sort(grep {m/\pP\pL|\pL\pP/} keys(%{$stats{words}}));
+    my @words_with_punctuation = grep {m/\pP\pL|\pL\pP/} (keys(%{$stats{words}}));
     my $n_wwp = scalar(@words_with_punctuation);
     if($n_wwp > 0)
     {
-        $cell .= "<li>This corpus contains $n_wwp types of words that contain both letters and punctuation: ".join(', ', @words_with_punctuation)."</li>\n";
+        @words_with_punctuation = sort_and_truncate_examples($stats{words}, \@words_with_punctuation, 50);
+        $cell .= "<li>This corpus contains $n_wwp types of words that contain both letters and punctuation. Examples: ".join(', ', @words_with_punctuation)."</li>\n";
     }
     else
     {
@@ -1851,13 +1901,15 @@ sub hub_statistics
         $cell .= sprintf("<li>This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.</li>\n", $avgsize);
         my @fusion_examples = sort(keys(%{$stats{fusions}}));
         my $n_types_mwt = scalar(@fusion_examples);
-        $cell .= "<li>There are $n_types_mwt types of multi-word tokens: ".join(', ', @fusion_examples).".</li>\n";
+        $fusion_examples = prepare_examples($stats{fusions}, 50);
+        $cell .= "<li>There are $n_types_mwt types of multi-word tokens. Examples: $fusion_examples.</li>\n";
     }
     $cell .= "</ul>\n";
     push(@table, $cell);
     $cell = '';
     # Morphology and part-of-speech tags.
     $cell .= "<h2>Morphology</h2>\n\n";
+    $cell .= "<h3>Tags</h3>\n\n";
     $cell .= "<ul>\n";
     my $n_tags_used = scalar(@tagset);
     $cell .= "<li>This corpus uses $n_tags_used UPOS tags out of 17 possible: ".join(', ', map {"<a>$_</a>"} (@tagset))."</li>\n";
@@ -1871,6 +1923,60 @@ sub hub_statistics
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
         my $n_types_part = scalar(@part_examples);
         $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples)."</li>\n";
+    }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    # Pronouns vs. determiners.
+    my @pron_examples = sort(keys(%{$stats{examples}{'PRON-lemma'}}));
+    my $n_types_pron = scalar(@pron_examples);
+    $cell .= "<li>This corpus contains $n_types_pron lemmas tagged as pronouns (PRON): ".join(', ', @pron_examples)."</li>\n";
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    my @det_examples = sort(keys(%{$stats{examples}{'DET-lemma'}}));
+    my $n_types_det = scalar(@det_examples);
+    $cell .= "<li>This corpus contains $n_types_det lemmas tagged as determiners (DET): ".join(', ', @det_examples)."</li>\n";
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    my %det_examples;
+    foreach my $det (@det_examples)
+    {
+        $det_examples{$det}++;
+    }
+    my @pron_det_intersection = grep {exists($det_examples{$_})} (@pron_examples);
+    my $n_types_pron_det = scalar(@pron_det_intersection);
+    if($n_types_pron_det > 0)
+    {
+        $cell .= "<li>Out of the above, $n_types_pron_det lemmas occurred sometimes as PRON and sometimes as DET: ".join(', ', @pron_det_intersection)."</li>\n";
+    }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    # Auxiliary vs. main verbs.
+    my @aux_examples = sort(keys(%{$stats{examples}{'AUX-lemma'}}));
+    my $n_types_aux = scalar(@aux_examples);
+    $cell .= "<li>This corpus contains $n_types_aux lemmas tagged as auxiliaries (AUX): ".join(', ', @aux_examples)."</li>\n";
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
+    my %aux_examples;
+    foreach my $aux (@aux_examples)
+    {
+        $aux_examples{$aux}++;
+    }
+    my @verb_examples = sort(keys(%{$stats{examples}{'VERB-lemma'}}));
+    my @aux_verb_intersection = grep {exists($aux_examples{$_})} (@verb_examples);
+    my $n_types_aux_verb = scalar(@aux_verb_intersection);
+    if($n_types_aux_verb > 0)
+    {
+        $cell .= "<li>Out of the above, $n_types_aux_verb lemmas occurred sometimes as AUX and sometimes as VERB: ".join(', ', @aux_verb_intersection)."</li>\n";
     }
     $cell .= "</ul>\n";
     push(@table, $cell);
@@ -1952,7 +2058,8 @@ sub hub_statistics
     {
         my @cop_lemmas = sort(keys(%{$stats{examples}{'cop-lemma'}}));
         my $n_lemmas_cop = scalar(@cop_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (<a>cop</a>): ".join(', ', @cop_lemmas).".</li>\n";
+        my $examples = prepare_examples($stats{examples}{'cop-lemma'}, 50);
+        $cell .= "<li>This corpus uses $n_lemmas_cop lemmas as copulas (<a>cop</a>). Examples: $examples.</li>\n";
     }
     else
     {
@@ -1962,13 +2069,15 @@ sub hub_statistics
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (<a>aux</a>): ".join(', ', @aux_lemmas).".</li>\n";
+        my $examples = prepare_examples($stats{examples}{'aux-lemma'}, 50);
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as auxiliaries (<a>aux</a>). Examples: $examples.</li>\n";
     }
     if(exists($stats{deprels}{'aux:pass'}))
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux:pass-lemma'}}));
         my $n_lemmas_aux = scalar(@aux_lemmas);
-        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (<a>aux:pass</a>): ".join(', ', @aux_lemmas).".</li>\n";
+        my $examples = prepare_examples($stats{examples}{'aux:pass-lemma'}, 50);
+        $cell .= "<li>This corpus uses $n_lemmas_aux lemmas as passive auxiliaries (<a>aux:pass</a>). Examples: $examples.</li>\n";
     }
     if(!exists($stats{deprels}{aux}) && !exists($stats{deprels}{'aux:pass'}))
     {
@@ -1999,6 +2108,42 @@ sub hub_statistics
         push(@table, $cell);
         $cell = '';
     }
+    my @pverbs = keys(%{$stats{pverbs}});
+    my $n_pverbs = scalar(@pverbs);
+    if($n_pverbs > 0)
+    {
+        my $examples = prepare_examples($stats{pverbs}, 50);
+        $cell .= "<h3>Reflexive Verbs</h3>\n\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>This corpus contains $n_pverbs lemmas that occur at least once with an <a>expl:pv</a> child. Examples: $examples</li>\n";
+        $cell .= "</ul>\n";
+    }
+    push(@table, $cell);
+    $cell = '';
+    my @expass = keys(%{$stats{expass}});
+    my $n_expass = scalar(@expass);
+    if($n_expass > 0)
+    {
+        my $examples = prepare_examples($stats{expass}, 50);
+        $cell .= "<h3>Reflexive Passive</h3>\n\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>This corpus contains $n_expass lemmas that occur at least once with an <a>expl:pass</a> child. Examples: $examples</li>\n";
+        $cell .= "</ul>\n";
+    }
+    push(@table, $cell);
+    $cell = '';
+    my @rflobj = keys(%{$stats{rflobj}});
+    my $n_rflobj = scalar(@rflobj);
+    if($n_rflobj > 0)
+    {
+        my $examples = prepare_examples($stats{rflobj}, 50);
+        $cell .= "<h3>Verbs with Reflexive Core Objects</h3>\n\n";
+        $cell .= "<ul>\n";
+        $cell .= "  <li>This corpus contains $n_rflobj lemmas that occur at least once with a reflexive core object (<a>obj</a> or <a>iobj</a>). Examples: $examples</li>\n";
+        $cell .= "</ul>\n";
+    }
+    push(@table, $cell);
+    $cell = '';
     $cell .= "<h3>Relations Overview</h3>\n\n";
     $cell .= "<ul>\n";
     my @deprel_subtypes = grep {m/:/} (@deprelset);

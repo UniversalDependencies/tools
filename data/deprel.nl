@@ -1,3 +1,5 @@
+flat:name
+aux:pass
+nsubj:pass
 compound:prt
-det:nummod
-expl:pv
+acl:relcl
