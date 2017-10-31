@@ -1,9 +1,16 @@
-aux:pass
+advcl:sp
+advcl:svc
 compound:svc
+conj:svc
 csubj:pass
 det:numgov
 det:nummod
 flat:foreign
 flat:name
+flat:repeat
+flat:title
 nsubj:pass
 nummod:gov
+parataxis:discourse
+parataxis:newsent
+xcomp:sp
