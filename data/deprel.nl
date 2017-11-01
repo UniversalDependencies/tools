@@ -1,5 +1,6 @@
-flat:name
-aux:pass
-nsubj:pass
-compound:prt
 acl:relcl
+aux:pass
+compound:prt
+flat:name
+nmod:poss
+nsubj:pass
