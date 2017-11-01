@@ -4,9 +4,8 @@ aux:pass
 csubj:pass
 flat:foreign
 flat:name
-nmod:poss
-nsubj:pass
-obl:agent
-nsubj:caus
-obj:agent
 iobj:agent
+nsubj:caus
+nsubj:pass
+obj:agent
+obl:agent
