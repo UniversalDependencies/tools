@@ -1,0 +1,12 @@
+AdpType=Prep
+Number[psor]=Plur
+Number[psor]=Sing
+NumForm=Roman
+NumForm=Word
+PartType=Inf
+Position=Postnom
+Position=Prenom
+Strength=Strong
+Strength=Weak
+Variant=Short
+NumForm=Digit
