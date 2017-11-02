@@ -163,39 +163,61 @@ sub get_ud_files_and_codes
 
 #------------------------------------------------------------------------------
 # Reads the README file of a treebank and finds the metadata lines. Example:
-#=== Machine-readable metadata ================================================
-#Documentation status: partial
-#Data source: automatic
-#Data available since: UD v1.2
-#License: CC BY-NC-SA 2.5
-#Genre: fiction
-#Contributors: Celano, Giuseppe G. A.; Zeman, Daniel
-#==============================================================================
+#=== Machine-readable metadata (DO NOT REMOVE!) ================================
+#Data available since: UD v1.0
+#License: CC BY-NC-SA 3.0
+#Includes text: yes
+#Genre: news
+#Lemmas: converted from manual
+#UPOS: converted from manual
+#XPOS: manual native
+#Features: converted from manual
+#Relations: converted from manual
+#Contributors: Zeman, Daniel; Hajič, Jan
+#Contributing: elsewhere
+#Contact: zeman@ufal.mff.cuni.cz
+#===============================================================================
 #------------------------------------------------------------------------------
 sub read_readme
 {
     my $folder = shift;
     my $filename = (-f "$folder/README.txt") ? "$folder/README.txt" : "$folder/README.md";
-    open(README, $filename) or return;
+    open(README, $filename) or return undef;
     binmode(README, ':utf8');
     my %metadata;
-    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors',
-        'Includes text', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact', 'Paragraphs to web');
+    my @attributes = ('Data available since', 'License', 'Genre', 'Contributors',
+        'Includes text', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact');
     my $attributes_re = join('|', @attributes);
-    my $ipar = 0;
+    my $current_section_heading = '';
+    my $current_section_text = '';
     while(<README>)
     {
-        if(defined($ipar0) && defined($ipar1) && $ipar >= $ipar0 && $ipar <= $ipar1)
-        {
-            $metadata{description} .= $_;
-        }
+        # Remove leading and trailing whitespace characters.
         s/\r?\n$//;
         s/^\s+//;
         s/\s+$//;
         s/\s+/ /g;
-        if(m/^$/)
+        # Is this a top-level section heading?
+        # Note: We regard the machine-readable metadata as a section of its own; it does not have a proper heading but starts with "===".
+        if(m/^\#([^\#]+|$)/ || m/^===\s*(.*?)\s*=+/)
         {
-            $ipar++;
+            my $heading = lc($1);
+            $heading =~ s/^\s+//;
+            # Collapse "acknowledgments" and "acknowledgements", both are correct.
+            $heading =~ s/acknowledge?ments?/acknowledgments/;
+            # Save the previous section before starting a new one.
+            if($current_section_heading ne '' && $current_section_text ne '')
+            {
+                $metadata{sections}{$current_section_heading} = $current_section_text;
+            }
+            # Clear the buffer for the next section.
+            $current_section_heading = $heading;
+            $current_section_text = '';
+        }
+        # We do not include the heading line in the text of the section, but we do include everything else, including empty lines.
+        else
+        {
+            $current_section_text .= "$_\n";
         }
         if(m/^($attributes_re):\s*(.*)$/i)
         {
@@ -214,12 +236,6 @@ sub read_readme
                 {
                     $metadata{'firstrelease'} = $1;
                 }
-            }
-            # Metadata can be followed by one or more paragraphs that constitute the description of the treebank suitable for the web.
-            if($attribute eq 'Paragraphs to web' && $value =~ m/^\d+$/)
-            {
-                $ipar0 = $ipar+1;
-                $ipar1 = $ipar+$value;
             }
         }
         elsif(m/change\s*log/i)
@@ -249,6 +265,11 @@ sub generate_markdown_treebank_overview
     my $filescan = get_ud_files_and_codes($folder);
     my $metadata = read_readme($folder);
     my $md = "\# $treebank_name\n\n";
+    if(!defined($metadata))
+    {
+        $md .= "<b>ERROR:</b> Cannot read the README file: $!";
+        return $md;
+    }
     $md .= "Language: [$language_name](../$filescan->{lcode}/overview/$filescan->{lcode}-hub.html) (code: `$filescan->{lcode}`)\n\n";
     $md .= "This treebank has been part of Universal Dependencies since the $metadata->{'Data available since'} release.\n\n";
     $md .= "The following people have contributed to making this treebank part of UD: ";
@@ -316,7 +337,9 @@ sub generate_markdown_treebank_overview
         }
     }
     $md .= "\n";
-    $md .= "$metadata->{description}\n\n";
+    $md .= "\#\# Summary\n".$metadata->{sections}{summary};
+    $md .= "\#\# Introduction\n".$metadata->{sections}{introduction};
+    $md .= "\#\# Acknowledgments\n".$metadata->{sections}{acknowledgments};
     return $md;
 }
 

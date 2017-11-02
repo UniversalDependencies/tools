@@ -41,8 +41,6 @@ udver: '2'
 <!-- This page is automatically generated from the README file and from the data files in the latest release.
      Please do not edit this page directly. -->
 
-\# $treebank_name
-
 EOF
 ;
-print PAGE (udlib::generate_markdown_treebank_overview($folder));
+print(udlib::generate_markdown_treebank_overview($folder));
