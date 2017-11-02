@@ -337,8 +337,8 @@ sub generate_markdown_treebank_overview
         }
     }
     $md .= "\n";
-    $md .= "\#\# Summary\n".$metadata->{sections}{summary};
-    $md .= "\#\# Introduction\n".$metadata->{sections}{introduction};
+    $md .= "\#\# Description\n".$metadata->{sections}{summary};
+    $md .= "\n".$metadata->{sections}{introduction};
     $md .= "\#\# Acknowledgments\n".$metadata->{sections}{acknowledgments};
     return $md;
 }
