@@ -1022,7 +1022,16 @@ sub get_detailed_statistics_tag
     foreach my $example (@examples)
     {
         $page .= '* '.fex($example)."\n";
-        my @ambtags = sort {$wordtag{$example}{$b} <=> $wordtag{$example}{$a}} (keys(%{$wordtag{$example}}));
+        my @ambtags = sort
+        {
+            my $result = $wordtag{$example}{$b} <=> $wordtag{$example}{$a};
+            unless($result)
+            {
+                $result = $a cmp $b;
+            }
+            $result
+        }
+        (keys(%{$wordtag{$example}}));
         foreach my $ambtag (@ambtags)
         {
             $page .= "  * $statlinks{$ambtag} $wordtag{$example}{$ambtag}: ".fex($exentwt{$example}{$ambtag})."\n";
