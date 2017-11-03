@@ -1240,7 +1240,16 @@ sub get_detailed_statistics_feature
     # List part-of-speech tags with which this feature occurs.
     my $list; ($list, $n) = list_keys_with_counts($stats{ft}{$feature}, $stats{nword}, 'pos');
     $page .= "The feature is used with $n part-of-speech tags: $list.\n\n";
-    my @tags = sort {$stats{ft}{$feature}{$b} <=> $stats{ft}{$feature}{$a}} (keys(%{$stats{ft}{$feature}}));
+    my @tags = sort
+    {
+        my $result = $stats{ft}{$feature}{$b} <=> $stats{ft}{$feature}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$stats{ft}{$feature}}));
     foreach my $tag (@tags)
     {
         $page .= "### `$tag`\n\n";
