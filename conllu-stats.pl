@@ -1358,7 +1358,16 @@ sub get_detailed_statistics_feature
     }
     # Agreement in this feature between parent and child of a relation.
     my @agreement = grep {$agreement{$feature}{$_} > $disagreement{$feature}{$_}} (keys(%{$agreement{$feature}}));
-    @agreement = sort {$agreement{$feature}{$b} <=> $agreement{$feature}{$a}} (@agreement);
+    @agreement = sort
+    {
+        my $result = $agreement{$feature}{$b} <=> $agreement{$feature}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (@agreement);
     splice(@agreement, $limit);
     if(scalar(@agreement) > 0)
     {
