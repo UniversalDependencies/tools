@@ -1274,7 +1274,16 @@ sub get_detailed_statistics_feature
             }
         }
         # Report feature-value pairs whose frequency exceeds 50% of the occurrences of the current feature.
-        my @frequent_pairs = sort {$other_features{$b} <=> $other_features{$a}} (grep {$other_features{$_} / $stats{ft}{$feature}{$tag} > 0.5} (keys(%other_features)));
+        my @frequent_pairs = sort
+        {
+            my $result = $other_features{$b} <=> $other_features{$a};
+            unless($result)
+            {
+                $result = $a cmp $b;
+            }
+            $result
+        }
+        (grep {$other_features{$_} / $stats{ft}{$feature}{$tag} > 0.5} (keys(%other_features)));
         if(scalar(@frequent_pairs) > 0)
         {
             splice(@frequent_pairs, $limit);
