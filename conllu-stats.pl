@@ -994,12 +994,30 @@ sub get_detailed_statistics_tag
     # Examples of ambiguous lemmas that can be this part of speech or at least one other part of speech.
     my @examples = grep {scalar(keys(%{$lemmatag{$_}})) > 1} (keys(%{$stats{examples}{$tag.'-lemma'}}));
     @examples = sort_and_truncate_examples($stats{examples}{$tag.'-lemma'}, \@examples, $limit);
-    @examples = map {my $l = $_; my @t = map {"$statlinks{$_} $lemmatag{$l}{$_}"} (sort {$lemmatag{$l}{$b} <=> $lemmatag{$l}{$a}} (keys(%{$lemmatag{$l}}))); fex($l).' ('.join(', ', @t).')'} (@examples);
+    @examples = map {my $l = $_; my @t = map {"$statlinks{$_} $lemmatag{$l}{$_}"} (sort
+    {
+        my $result = $lemmatag{$l}{$b} <=> $lemmatag{$l}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$lemmatag{$l}}))); fex($l).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous lemmas: ".join(', ', @examples)."\n\n";
     # Examples of ambiguous types that can be this part of speech or at least one other part of speech.
     @examples = grep {scalar(keys(%{$wordtag{$_}})) > 1} (keys(%{$stats{examples}{$tag}}));
     @examples = sort_and_truncate_examples($stats{examples}{$tag}, \@examples, $limit);
-    my @examples1 = map {my $w = $_; my @t = map {"$statlinks{$_} $wordtag{$w}{$_}"} (sort {$wordtag{$w}{$b} <=> $wordtag{$w}{$a}} (keys(%{$wordtag{$w}}))); fex($w).' ('.join(', ', @t).')'} (@examples);
+    my @examples1 = map {my $w = $_; my @t = map {"$statlinks{$_} $wordtag{$w}{$_}"} (sort
+    {
+        my $result = $wordtag{$w}{$b} <=> $wordtag{$w}{$a};
+        unless($result)
+        {
+            $result = $a cmp $b;
+        }
+        $result
+    }
+    (keys(%{$wordtag{$w}}))); fex($w).' ('.join(', ', @t).')'} (@examples);
     $page .= "The $limit most frequent ambiguous types:  ".join(', ', @examples1)."\n\n\n";
     foreach my $example (@examples)
     {
