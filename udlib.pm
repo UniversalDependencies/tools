@@ -293,6 +293,12 @@ sub generate_markdown_treebank_overview
     {
         $md .= "Development of the treebank happens directly in the UD repository, so you may submit bug fixes as pull requests against the dev branch.\n";
     }
+    elsif($metadata->{Contributing} eq 'here source')
+    {
+        $md .= "Development of the treebank happens in the UD repository but not directly in the final CoNLL-U files.\n";
+        $md .= "You may submit bug fixes as pull requests against the dev branch but you have to go to the folder called `not-to-release` and locate the source files there.\n";
+        $md .= "Contact the treebank maintainers if in doubt.\n";
+    }
     elsif($metadata->{Contributing} eq 'elsewhere')
     {
         $md .= "Development of the treebank happens outside the UD repository.\n";
@@ -323,13 +329,25 @@ sub generate_markdown_treebank_overview
         {
             $md .= "annotated manually in non-UD style, automatically converted to UD |\n";
         }
+        elsif($metadata->{$annotation} eq 'converted with corrections')
+        {
+            $md .= "annotated manually in non-UD style, automatically converted to UD, with some manual corrections of the conversion |\n";
+        }
         elsif($metadata->{$annotation} eq 'automatic')
         {
             $md .= "assigned by a program, not checked manually |\n";
         }
+        elsif($metadata->{$annotation} eq 'automatic with corrections')
+        {
+            $md .= "assigned by a program, with some manual corrections, but not a full manual verification |\n";
+        }
         elsif($metadata->{$annotation} eq 'not available')
         {
             $md .= "not available |\n";
+        }
+        elsif($metadata->{$annotation} =~ m/\w/)
+        {
+            $md .= "(unrecognized value: \"$metadata->{$annotation}\") |\n";
         }
         else
         {
