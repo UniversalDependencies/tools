@@ -5,7 +5,22 @@
 package udlib;
 
 use JSON::Parse 'json_file_to_perl';
+use YAML qw(LoadFile);
 use utf8;
+
+
+
+#------------------------------------------------------------------------------
+# Reads the YAML file with information about languages from the repository
+# docs-automation. Returns a reference to a hash indexed by the English names
+# of the languages, with sub-fields 'flag', 'lcode', 'family'.
+#------------------------------------------------------------------------------
+sub get_language_hash
+{
+    my $path = shift;
+    $path = 'docs-automation/codes_and_flags.yaml' if(!defined($path));
+    return LoadFile($path);
+}
 
 
 
@@ -270,7 +285,15 @@ sub generate_markdown_treebank_overview
         $md .= "<b>ERROR:</b> Cannot read the README file: $!";
         return $md;
     }
-    $md .= "Language: [$language_name](../$filescan->{lcode}/overview/$filescan->{lcode}-hub.html) (code: `$filescan->{lcode}`)\n\n";
+    $md .= "Language: [$language_name](../$filescan->{lcode}/overview/$filescan->{lcode}-hub.html) (code: `$filescan->{lcode}`)";
+    my $language_data = get_language_hash(); # we could supply path to the yaml file; but let the function try the default path now
+    if(defined($language_data) && exists($language_data->{$language_name}{family}))
+    {
+        my $family = $language_data->{$language_name}{family};
+        $family =~ s/^IE,/Indo-European,/;
+        $md .= "<br/>\nFamily: $family";
+    }
+    $md .= "\n\n";
     $md .= "This treebank has been part of Universal Dependencies since the $metadata->{'Data available since'} release.\n\n";
     $md .= "The following people have contributed to making this treebank part of UD: ";
     $md .= join(', ', map {my $x = $_; if($x =~ m/^(.+),\s*(.+)$/) {$x = "$2 $1"} $x} (split(/\s*;\s*/, $metadata->{Contributors})));
