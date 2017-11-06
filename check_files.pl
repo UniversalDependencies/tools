@@ -207,17 +207,13 @@ foreach my $folder (@folders)
             my $nwtrain = 0;
             my $nwdev = 0;
             my $nwtest = 0;
-            # Verify training data where expected.
-            if($folder =~ m/^UD_(Kazakh|Uyghur)$/)
-            {
-                # No training data expected because there is too little data. We will remove the test when the situation changes.
-                if(-f "$prefix-train.conllu")
-                {
-                    print("$folder: assuming that there are no training data, nevertheless found $prefix-train.conllu\n");
-                    $n_errors++;
-                }
-            }
-            elsif($folder eq 'UD_Czech')
+            # In general, every treebank should have at least the test data.
+            # If there are more data files, zero or one of each of the following is expected: train, dev, sample.
+            # Exception: Czech has four train files: train-c, train-l, train-m, train-v.
+            # No other CoNLL-U files are expected.
+            # It is also expected that if there is dev, there is also train.
+            # And if there is train, it should be same size or larger (in words) than both dev and test.
+            if($folder eq 'UD_Czech')
             {
                 # The data is split into four files because of the size limits.
                 if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
@@ -236,35 +232,17 @@ foreach my $folder (@folders)
             }
             else # all other treebanks
             {
-                if(!-f "$prefix-train.conllu")
-                {
-                        print("$folder: missing $prefix-train.conllu\n");
-                        $n_errors++;
-                }
-                else
+                if(-f "$prefix-train.conllu")
                 {
                     my $stats = collect_statistics_about_ud_file("$prefix-train.conllu");
                     $nwtrain = $stats->{nword};
                 }
             }
-            # Verify development data (expected in all released treebanks).
-            if(!-f "$prefix-dev.conllu")
-            {
-                print("$folder: missing $prefix-dev.conllu\n");
-                $n_errors++;
-            }
-            else
+            # Look for development data.
+            if(-f "$prefix-dev.conllu")
             {
                 my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
                 $nwdev = $stats->{nword};
-                # Dev tests of treebanks in the shared task should contain at least 10000 words (exception: Kazakh, Uyghur and Swedish).
-                # We do not have more Kazakh and Uyghur data (there is no training data).
-                # For Swedish, there is almost 10000 dev words and over 10000 test words, so it is better to keep the old data split.
-                if($is_in_shared_task && $folder !~ m/^UD_(Kazakh|Uyghur|Swedish)$/ && $nwdev < 10000)
-                {
-                    print("$folder: $prefix-dev.conllu contains only $nwdev words\n");
-                    $n_errors++;
-                }
             }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
