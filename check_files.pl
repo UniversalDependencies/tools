@@ -281,6 +281,14 @@ foreach my $folder (@folders)
                 !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(sample|train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
             }
             (@files);
+            # Some treebanks have exceptional extra files that have been approved and released previously.
+            @extrafiles = grep
+            {!(
+                $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
+                $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
+                $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux'
+            )}
+            (@extrafiles);
             if(scalar(@extrafiles)>0)
             {
                 print("$folder extra files: ", join(', ', sort(@extrafiles)), "\n");
