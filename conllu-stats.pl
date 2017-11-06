@@ -633,6 +633,7 @@ udver: '2'
 EOF
             ;
             print PAGE (udlib::generate_markdown_treebank_overview($konfig{treebank}));
+            print PAGE ("\n");
             print PAGE ("\# Statistics of $treebank_name\n\n");
             print PAGE ("\#\# POS Tags\n\n");
             print PAGE (join(' – ', map {"[$_]($tbkrecord->{code}-pos-$_.html)"} (@tagset)), "\n\n");
