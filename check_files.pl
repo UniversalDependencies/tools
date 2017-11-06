@@ -127,7 +127,7 @@ foreach my $folder (@folders)
                 print("$folder: both README.txt and README.md are present\n");
                 $n_errors++;
             }
-            my $metadata = read_readme($folder, $current_release);
+            my $metadata = udlib::read_readme($folder, $current_release);
             if(!$metadata->{release} && !$include_future)
             {
                 push(@future_folders, $folder);
@@ -474,98 +474,6 @@ my $announcement = get_announcement
     \@languages_conll
 );
 print($announcement);
-
-
-
-#------------------------------------------------------------------------------
-# Reads the README file of a treebank and finds the metadata lines. Example:
-#=== Machine-readable metadata ================================================
-#Documentation status: partial
-#Data source: automatic
-#Data available since: UD v1.2
-#License: CC BY-NC-SA 2.5
-#Genre: fiction
-#Contributors: Celano, Giuseppe G. A.; Zeman, Daniel
-#Contact: zeman@ufal.mff.cuni.cz
-#==============================================================================
-#------------------------------------------------------------------------------
-sub read_readme
-{
-    # Assumption: The current folder is a UD data repository.
-    # Nevertheless, we want to know the folder name so we can use it in messages.
-    my $folder = shift;
-    my $current_release = shift;
-    my $filename = (-f 'README.txt') ? 'README.txt' : 'README.md';
-    open(README, $filename) or return;
-    binmode(README, ':utf8');
-    my %metadata;
-    my @attributes = ('Documentation status', 'Data source', 'Data available since', 'License', 'Genre', 'Contributors', 'Contact');
-    my $attributes_re = join('|', @attributes);
-    while(<README>)
-    {
-        s/\r?\n$//;
-        s/^\s+//;
-        s/\s+$//;
-        s/\s+/ /g;
-        if(m/^($attributes_re):\s*(.*)$/i)
-        {
-            my $attribute = $1;
-            my $value = $2;
-            $value = '' if(!defined($value));
-            if(exists($metadata{$attribute}))
-            {
-                print("WARNING: Repeated definition of '$attribute' in $folder/$filename\n");
-            }
-            $metadata{$attribute} = $value;
-            if($attribute eq 'Data available since')
-            {
-                if($metadata{$attribute} =~ m/^UD\s+v(\d\.\d)$/ && $1 <= $current_release)
-                {
-                    $metadata{'release'} = 1;
-                }
-            }
-        }
-        elsif(m/change(\s|-)*log/i)
-        {
-            $metadata{'changelog'} = 1;
-        }
-    }
-    close(README);
-    if(!$metadata{'release'} && !$include_future)
-    {
-        return;
-    }
-    # Check the values of the metadata.
-    foreach my $attribute (@attributes)
-    {
-        if(!exists($metadata{$attribute}))
-        {
-            print("WARNING: Attribute '$attribute' not defined in $folder/$filename\n");
-        }
-        elsif($attribute eq 'License')
-        {
-            if($metadata{$attribute} eq '')
-            {
-                print("WARNING: unknown license in $folder/$filename\n");
-            }
-        }
-        elsif($attribute eq 'Genre')
-        {
-            if($metadata{$attribute} eq '')
-            {
-                print("WARNING: unknown genre in $folder/$filename\n");
-            }
-        }
-        elsif($attribute eq 'Contributors')
-        {
-            if($metadata{$attribute} eq '')
-            {
-                print("WARNING: unknown contributors in $folder/$filename\n");
-            }
-        }
-    }
-    return \%metadata;
-}
 
 
 
