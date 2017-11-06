@@ -127,7 +127,14 @@ foreach my $folder (@folders)
                 print("$folder: both README.txt and README.md are present\n");
                 $n_errors++;
             }
-            my $metadata = udlib::read_readme($folder, $current_release);
+            my $metadata = udlib::read_readme($folder);
+            if(exists($metadata->{'Data available since'}))
+            {
+                if($metadata->{'Data available since'} =~ m/^UD\s+v(\d\.\d)$/ && $1 <= $current_release)
+                {
+                    $metadata->{release} = 1;
+                }
+            }
             if(!$metadata->{release} && !$include_future)
             {
                 push(@future_folders, $folder);
