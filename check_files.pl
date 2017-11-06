@@ -127,13 +127,15 @@ foreach my $folder (@folders)
                 print("$folder: both README.txt and README.md are present\n");
                 $n_errors++;
             }
-            my $metadata = udlib::read_readme($folder);
-            if(exists($metadata->{'Data available since'}))
+            my $metadata = udlib::read_readme('.');
+            if(!defined($metadata))
             {
-                if($metadata->{'Data available since'} =~ m/^UD\s+v(\d\.\d)$/ && $1 <= $current_release)
-                {
-                    $metadata->{release} = 1;
-                }
+                print("$folder: cannot read the README file: $!\n");
+                $n_errors++;
+            }
+            if(exists($metadata->{firstrelease}) && $metadata->{firstrelease} <= $current_release)
+            {
+                $metadata->{release} = 1;
             }
             if(!$metadata->{release} && !$include_future)
             {
