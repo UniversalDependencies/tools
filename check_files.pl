@@ -286,7 +286,8 @@ foreach my $folder (@folders)
             {!(
                 $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
                 $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
-                $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux'
+                $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
+                $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
             )}
             (@extrafiles);
             if(scalar(@extrafiles)>0)
