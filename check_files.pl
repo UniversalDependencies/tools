@@ -190,12 +190,12 @@ foreach my $folder (@folders)
             }
             ###!!! Since UD 2.1 we allow that a treebank has only the test file.
             ###!!! But maybe we should require that there is training, dev and test if the total size is 30,000 words or more.
-            my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 1;
-            unless($n==$expected_n)
-            {
-                print("$folder: expected $expected_n CoNLL-U files, found $n\n");
-                $n_errors++;
-            }
+            #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
+            #unless($n==$expected_n)
+            #{
+            #    print("$folder: expected $expected_n CoNLL-U files, found $n\n");
+            #    $n_errors++;
+            #}
             if(!-f 'LICENSE.txt')
             {
                 print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
