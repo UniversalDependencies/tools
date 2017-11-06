@@ -536,7 +536,7 @@ sub process_treebank
             $file =~ s/AUX\.md/AUX_.md/;
             if($konfig{oformat} eq 'newdetailed')
             {
-                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/pos-$tag.md";
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/$tbkrecord->{code}-pos-$tag.md";
             }
             my $page = $pages->{$tag};
             print STDERR ("Writing $file\n");
@@ -561,7 +561,7 @@ EOF
             my $file = "$path/$feature.md";
             if($konfig{oformat} eq 'newdetailed')
             {
-                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/feat-$feature.md";
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/$tbkrecord->{code}-feat-$feature.md";
             }
             # Layered features do not have the brackets in their file names.
             $file =~ s/\[(.+)\]/-$1/;
@@ -588,7 +588,7 @@ EOF
             my $file = "$path/$deprel.md";
             if($konfig{oformat} eq 'newdetailed')
             {
-                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/dep-$deprel.md";
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/$tbkrecord->{code}-dep-$deprel.md";
             }
             else
             {
