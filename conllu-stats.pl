@@ -521,6 +521,12 @@ sub process_treebank
     }
     elsif($konfig{oformat} eq 'detailed' || $konfig{oformat} eq 'newdetailed')
     {
+        # All generated files about one treebank will reside in one folder.
+        # Make sure that the folder exists.
+        unless(-d "$konfig{docspath}/treebanks/$tbkrecord->{code}")
+        {
+            mkdir("$konfig{docspath}/treebanks/$tbkrecord->{code}") or die("Cannot create folder $konfig{docspath}/treebanks/$tbkrecord->{code}: $!");
+        }
         my $pages = detailed_statistics_tags();
         foreach my $tag (keys(%{$pages}))
         {
@@ -530,7 +536,7 @@ sub process_treebank
             $file =~ s/AUX\.md/AUX_.md/;
             if($konfig{oformat} eq 'newdetailed')
             {
-                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-pos-$tag.md";
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/pos-$tag.md";
             }
             my $page = $pages->{$tag};
             print STDERR ("Writing $file\n");
@@ -555,7 +561,7 @@ EOF
             my $file = "$path/$feature.md";
             if($konfig{oformat} eq 'newdetailed')
             {
-                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-feat-$feature.md";
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/feat-$feature.md";
             }
             # Layered features do not have the brackets in their file names.
             $file =~ s/\[(.+)\]/-$1/;
@@ -582,7 +588,7 @@ EOF
             my $file = "$path/$deprel.md";
             if($konfig{oformat} eq 'newdetailed')
             {
-                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-dep-$deprel.md";
+                $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/dep-$deprel.md";
             }
             else
             {
@@ -607,7 +613,7 @@ EOF
         }
         if($konfig{oformat} eq 'newdetailed')
         {
-            my $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}-index.md";
+            my $file = "$konfig{docspath}/treebanks/$tbkrecord->{code}/index.md";
             print STDERR ("Writing $file\n");
             open(PAGE, ">$file") or die("Cannot write $file: $!");
             my $treebank_name = $konfig{treebank};
