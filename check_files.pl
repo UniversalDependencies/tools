@@ -252,6 +252,18 @@ foreach my $folder (@folders)
                     $n_errors++;
                 }
             }
+            # Look for test data.
+            if(-f "$prefix-test.conllu")
+            {
+                my $stats = collect_statistics_about_ud_file("$prefix-test.conllu");
+                $nwtest = $stats->{nword};
+                ###!!! EXPERIMENTAL: RUNNING VALIDATOR
+                if(!is_valid_conllu("$prefix-test.conllu", $key))
+                {
+                    print("$folder: invalid file $prefix-test.conllu\n");
+                    $n_errors++;
+                }
+            }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
