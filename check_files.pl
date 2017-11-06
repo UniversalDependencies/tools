@@ -277,22 +277,8 @@ foreach my $folder (@folders)
                 {
                     push(@shared_task_large_folders, $folder);
                 }
-                ###!!! Even if the test set exists, we must check that it is valid and contains at least 10000 nodes!
-                ###!!! See the script testsets/validate.sh.
-                if(!-f "../testsets/$prefix-test.conllu")
-                {
-                    print("$folder: missing testsets/$prefix-test.conllu\n");
-                    $n_errors++;
-                }
-                else
-                {
-                    my $stats = collect_statistics_about_ud_file("../testsets/$prefix-test.conllu");
-                    if($stats->{nword} < 10000)
-                    {
-                        print("$folder: testsets/$prefix-test.conllu contains only $stats->{nword} words\n");
-                        $n_errors++;
-                    }
-                }
+                ###!!! UD 2.1: Unlike in 2.0, the test sets are not hidden, so the following test is commented out.
+                ###!!! $n_errors += check_hidden_test_set($folder, $prefix);
             }
             # Treebanks that do not take part in the shared task should release their test sets.
             else
@@ -708,4 +694,34 @@ Daniel Zeman. 2008. Reusable Tagset Conversion Using Tagset Drivers. In Proceedi
 EOF
     ;
     return $text;
+}
+
+
+
+#------------------------------------------------------------------------------
+# For the sake of the shared task, check that the test set exists in a special
+# folder and that it is large enough.
+#------------------------------------------------------------------------------
+sub check_hidden_test_set
+{
+    my $folder = shift;
+    my $prefix = shift;
+    my $n_errors = 0;
+    ###!!! Even if the test set exists, we must check that it is valid and contains at least 10000 nodes!
+    ###!!! See the script testsets/validate.sh.
+    if(!-f "../testsets/$prefix-test.conllu")
+    {
+        print("$folder: missing testsets/$prefix-test.conllu\n");
+        $n_errors++;
+    }
+    else
+    {
+        my $stats = collect_statistics_about_ud_file("../testsets/$prefix-test.conllu");
+        if($stats->{nword} < 10000)
+        {
+            print("$folder: testsets/$prefix-test.conllu contains only $stats->{nword} words\n");
+            $n_errors++;
+        }
+    }
+    return $n_errors;
 }
