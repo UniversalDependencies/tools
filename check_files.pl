@@ -245,6 +245,12 @@ foreach my $folder (@folders)
             {
                 my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
                 $nwdev = $stats->{nword};
+                ###!!! EXPERIMENTAL: RUNNING VALIDATOR
+                if(!is_valid_conllu("$prefix-dev.conllu", $key))
+                {
+                    print("$folder: invalid file $prefix-dev.conllu\n");
+                    $n_errors++;
+                }
             }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
@@ -713,4 +719,36 @@ sub check_hidden_test_set
         }
     }
     return $n_errors;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Runs the external validator on a CoNLL-U file. Returns 1 when the file passes
+# the validation, 0 otherwise.
+#------------------------------------------------------------------------------
+sub is_valid_conllu
+{
+    my $path = shift;
+    my $lcode = shift;
+    # This script is always run from the main UD folder.
+    # But it steps in the individual repositories and back up again; this function does not know where the tools are.
+    system("validate.py $path --lang $lcode >& /dev/null");
+    # The external program does not exist, is not executable or the execution failed for other reasons.
+    die("ERROR: Failed to execute validate.py: $!") if($?==-1);
+    # We were able to start the external program but its execution failed.
+    if($? & 127)
+    {
+        printf STDERR ("ERROR: Execution of: $command\n  died with signal %d, %s coredump\n",
+            ($? & 127), ($? & 128) ? 'with' : 'without');
+        die;
+    }
+    else
+    {
+        my $exitcode = $? >> 8;
+        # Exit code 0 means successful validation. Nonzero means an error.
+        print STDERR ("Exit code: $exitcode\n") if($exitcode);
+        return ! $exitcode;
+    }
+    # We should never arrive here.
 }
