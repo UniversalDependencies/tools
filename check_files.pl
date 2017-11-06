@@ -733,7 +733,7 @@ sub is_valid_conllu
     my $lcode = shift;
     # This script is always run from the main UD folder.
     # But it steps in the individual repositories and back up again; this function does not know where the tools are.
-    system("validate.py $path --lang $lcode >& /dev/null");
+    system("validate.py $path --lang $lcode 2> /dev/null");
     # The external program does not exist, is not executable or the execution failed for other reasons.
     die("ERROR: Failed to execute validate.py: $!") if($?==-1);
     # We were able to start the external program but its execution failed.
