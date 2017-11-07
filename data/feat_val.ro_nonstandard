@@ -1,4 +1,5 @@
 AdpType=Prep
+Compound=Yes
 Number[psor]=Plur
 Number[psor]=Sing
 NumForm=Roman
