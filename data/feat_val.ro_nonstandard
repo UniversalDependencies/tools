@@ -5,6 +5,7 @@ Number[psor]=Sing
 NumForm=Roman
 NumForm=Word
 PartType=Inf
+PartType=Sub
 Position=Postnom
 Position=Prenom
 Strength=Strong
