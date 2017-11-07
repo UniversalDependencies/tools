@@ -286,6 +286,13 @@ foreach my $folder (@folders)
                     $n_errors++;
                 }
             }
+            # For small and growing treebanks, we expect the files to appear roughly in the following order:
+            # 1. small sample (if at all present); 2. test (>=10K tokens if possible); 3. train (if it can be larger than test); 4. dev (if it can be at least 5K tokens and if train is larger than both test and dev).
+            if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
+            {
+                print("$folder: train or dev exists but there is no test\n");
+                $n_errors++;
+            }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
