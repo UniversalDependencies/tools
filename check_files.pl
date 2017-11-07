@@ -238,6 +238,12 @@ foreach my $folder (@folders)
                 {
                     my $stats = collect_statistics_about_ud_file("$prefix-train.conllu");
                     $nwtrain = $stats->{nword};
+                    ###!!! EXPERIMENTAL: RUNNING VALIDATOR
+                    if(!is_valid_conllu("$prefix-train.conllu", $key))
+                    {
+                        print("$folder: invalid file $prefix-train.conllu\n");
+                        $n_errors++;
+                    }
                 }
             }
             # Look for development data.
@@ -745,13 +751,13 @@ sub is_valid_conllu
     my $lcode = shift;
     # This script is always run from the main UD folder.
     # But it steps in the individual repositories and back up again; this function does not know where the tools are.
-    system("validate.py $path --lang $lcode 2> /dev/null");
+    system("validate.py $path --lang $lcode >/dev/null 2>&1");
     # The external program does not exist, is not executable or the execution failed for other reasons.
     die("ERROR: Failed to execute validate.py: $!") if($?==-1);
     # We were able to start the external program but its execution failed.
     if($? & 127)
     {
-        printf STDERR ("ERROR: Execution of: $command\n  died with signal %d, %s coredump\n",
+        printf STDERR ("ERROR: Execution of validate.py\n  died with signal %d, %s coredump\n",
             ($? & 127), ($? & 128) ? 'with' : 'without');
         die;
     }
