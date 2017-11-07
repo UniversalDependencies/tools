@@ -20,6 +20,8 @@ use udlib;
 my $include_future = 0;
 # Pull the latest changes from Github and show git status of each repository?
 my $pull = 0;
+# Validate all CoNLL-U files and report invalid ones?
+my $validate = 0;
 # Recompute statistics of all treebanks and push them to Github?
 my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
@@ -34,10 +36,11 @@ my $not_in_shared_task = 'Arabic-NYUAD|Belarusian|Coptic|Lithuanian|Sanskrit|Tam
 my $oldpath = '/net/data/universal-dependencies-2.0';
 GetOptions
 (
-    'future' => \$include_future,
-    'pull'   => \$pull,
-    'stats'  => \$recompute_stats,
-    'tag=s'  => \$tag
+    'future'   => \$include_future,
+    'pull'     => \$pull,
+    'validate' => \$validate,
+    'stats'    => \$recompute_stats,
+    'tag=s'    => \$tag
 );
 
 # This script expects to be invoked in the folder in which all the UD_folders
@@ -209,6 +212,7 @@ foreach my $folder (@folders)
             my $nwtrain = 0;
             my $nwdev = 0;
             my $nwtest = 0;
+            my $nwsample = 0;
             # In general, every treebank should have at least the test data.
             # If there are more data files, zero or one of each of the following is expected: train, dev, sample.
             # Exception: Czech has four train files: train-c, train-l, train-m, train-v.
@@ -238,8 +242,8 @@ foreach my $folder (@folders)
                 {
                     my $stats = collect_statistics_about_ud_file("$prefix-train.conllu");
                     $nwtrain = $stats->{nword};
-                    ###!!! EXPERIMENTAL: RUNNING VALIDATOR
-                    if(!is_valid_conllu("$prefix-train.conllu", $key))
+                    # If required, check that the file is valid.
+                    if($validate && !is_valid_conllu("$prefix-train.conllu", $key))
                     {
                         print("$folder: invalid file $prefix-train.conllu\n");
                         $n_errors++;
@@ -251,8 +255,8 @@ foreach my $folder (@folders)
             {
                 my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
                 $nwdev = $stats->{nword};
-                ###!!! EXPERIMENTAL: RUNNING VALIDATOR
-                if(!is_valid_conllu("$prefix-dev.conllu", $key))
+                # If required, check that the file is valid.
+                if($validate && !is_valid_conllu("$prefix-dev.conllu", $key))
                 {
                     print("$folder: invalid file $prefix-dev.conllu\n");
                     $n_errors++;
@@ -263,10 +267,22 @@ foreach my $folder (@folders)
             {
                 my $stats = collect_statistics_about_ud_file("$prefix-test.conllu");
                 $nwtest = $stats->{nword};
-                ###!!! EXPERIMENTAL: RUNNING VALIDATOR
-                if(!is_valid_conllu("$prefix-test.conllu", $key))
+                # If required, check that the file is valid.
+                if($validate && !is_valid_conllu("$prefix-test.conllu", $key))
                 {
                     print("$folder: invalid file $prefix-test.conllu\n");
+                    $n_errors++;
+                }
+            }
+            # Look for sample data.
+            if(-f "$prefix-sample.conllu")
+            {
+                my $stats = collect_statistics_about_ud_file("$prefix-sample.conllu");
+                $nwsample = $stats->{nword};
+                # If required, check that the file is valid.
+                if($validate && !is_valid_conllu("$prefix-sample.conllu", $key))
+                {
+                    print("$folder: invalid file $prefix-sample.conllu\n");
                     $n_errors++;
                 }
             }
