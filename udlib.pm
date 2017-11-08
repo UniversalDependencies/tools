@@ -241,6 +241,7 @@ sub read_readme
             $value = '' if(!defined($value));
             if(exists($metadata{$attribute}))
             {
+                print(`pwd`) if($folder !~ m/^UD_/);
                 print("WARNING: Repeated definition of '$attribute' in $folder/$filename\n");
             }
             $metadata{$attribute} = $value;
