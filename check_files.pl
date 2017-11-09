@@ -157,8 +157,6 @@ foreach my $folder (@folders)
             unless($folder =~ m/^UD_($not_in_shared_task)$/)
             {
                 $is_in_shared_task = 1;
-                $n_folders_conll++;
-                $languages_conll{$language}++;
             }
             if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
             {
@@ -321,6 +319,8 @@ foreach my $folder (@folders)
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
+                $n_folders_conll++;
+                $languages_conll{$language}++;
                 if($nwtrain<$nwdev || $nwtrain+$nwdev<$nwtest)
                 {
                     push(@shared_task_small_folders, $folder);
