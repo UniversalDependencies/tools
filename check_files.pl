@@ -53,10 +53,13 @@ closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 my $langcodes_from_json = udlib::get_lcode_hash();
 my %langcodes = %{$langcodes_from_json};
+# There is now also the new list of languages in YAML in docs-automation; this one has also language families.
+my $languages_from_yaml = udlib::get_language_hash();
 my $n_folders_with_data = 0;
 my $n_folders_conll = 0;
 my $n_errors = 0;
 my %languages_with_data;
+my %families_with_data;
 my %languages_conll;
 my %licenses;
 my %genres;
@@ -153,6 +156,14 @@ foreach my $folder (@folders)
             $n_folders_with_data++;
             push(@released_folders, $folder);
             $languages_with_data{$language}++;
+            my $family = $languages_from_yaml->{$language}{family};
+            if(defined($family))
+            {
+                $family =~ s/^IE/Indo-European/;
+                # Keep only the family, discard the genus if present.
+                $family =~ s/,.*//;
+                $families_with_data{$family}++;
+            }
             my $is_in_shared_task = 0;
             unless($folder =~ m/^UD_($not_in_shared_task)$/)
             {
@@ -451,6 +462,8 @@ my $n_shared_task_large = scalar(@shared_task_large_folders);
 my $n_shared_task_small = scalar(@shared_task_small_folders);
 print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
 print("$n_shared_task_small of them are considered small and their dev+train data (if any) will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
+my @families = sort(keys(%families_with_data));
+print(scalar(@families), " families with data: ", join(', ', @families), "\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
 my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
