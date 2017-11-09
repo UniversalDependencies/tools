@@ -293,6 +293,17 @@ foreach my $folder (@folders)
                 print("$folder: train or dev exists but there is no test\n");
                 $n_errors++;
             }
+            my $nwall = $nwtrain+$nwdev+$nwtest+$nwsample;
+            if($nwall>20000 && $nwtrain<10000)
+            {
+                print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
+                $n_errors++;
+            }
+            if($nwall>30000 && $nwdev<10000)
+            {
+                print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwtrain words\n");
+                $n_errors++;
+            }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
