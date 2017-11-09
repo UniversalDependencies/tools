@@ -293,13 +293,15 @@ foreach my $folder (@folders)
                 print("$folder: train or dev exists but there is no test\n");
                 $n_errors++;
             }
+            # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
+            # Exception: ParTUT can have very small dev data. There are other limitations (sync across languages and with UD_Italian)
             my $nwall = $nwtrain+$nwdev+$nwtest+$nwsample;
-            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/-PUD$/)
+            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/-(PUD|ParTUT)$/)
             {
                 print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
                 $n_errors++;
             }
-            if($nwall>30000 && $nwdev<5000 && $folder !~ m/-PUD$/)
+            if($nwall>30000 && $nwdev<5000 && $folder !~ m/-(PUD|ParTUT)$/)
             {
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
