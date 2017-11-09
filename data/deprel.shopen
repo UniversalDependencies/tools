@@ -8,5 +8,6 @@ compound:redup
 compound:svc
 mark:relcl
 nmod:poss
+nsubj:cop
 nsubj:pass
 obl:arg
