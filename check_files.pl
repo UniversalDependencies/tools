@@ -463,9 +463,9 @@ my $n_shared_task_small = scalar(@shared_task_small_folders);
 print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
 print("$n_shared_task_small of them are considered small and their dev+train data (if any) will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
 my @families = sort(keys(%families_with_data));
-print(scalar(@families), " families with data: ", join(', ', @families), "\n");
+print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
-print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
+print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
 my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
 print(scalar(@languages_conll), " languages in the shared task: ", join(', ', @languages_conll), "\n\n");
 my @langcodes = sort(keys(%stats));
@@ -525,6 +525,7 @@ my $announcement = get_announcement
     $current_release,
     $n_folders_with_data,
     \@languages,
+    \@families,
     'less than 1,000 tokens',
     'well over 1.5 million tokens',
     'March 2018', # expected next release
@@ -699,6 +700,7 @@ sub get_announcement
     my $release = shift; # 1.4
     my $n_treebanks = shift; # 63
     my $langlistref = shift;
+    my $famlistref = shift;
     my $min_size = shift; # 'about 9,000 tokens'
     my $max_size = shift; # 'well over 1.5 million tokens'
     my $next_release_available_in = shift; # 'March 2017'
@@ -722,6 +724,10 @@ sub get_announcement
     my $n_languages = scalar(@languages);
     my $languages = join(', ', @languages);
     $languages =~ s/, ([^,]+)$/ and $1/;
+    my @families = @{$famlistref};
+    my $n_families = scalar(@families);
+    my $families = join(', ', @families);
+    $families =~ s/, ([^,]+)$/ and $1/;
     my @languages_conll = @{$langlistconllref};
     my $n_languages_conll = scalar(@languages_conll);
     my $languages_conll = join(', ', @languages_conll);
@@ -738,7 +744,7 @@ We are very happy to announce the $nth release of annotated treebanks in Univers
 
 Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective (Nivre et al., 2016). The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
 
-The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
+The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. The $n_languages belong to $n_families families: $families. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
 
 $contributors
 
