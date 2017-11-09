@@ -450,7 +450,7 @@ print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
 my $n_shared_task_large = scalar(@shared_task_large_folders);
 my $n_shared_task_small = scalar(@shared_task_small_folders);
 print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
-print("$n_shared_task_small of them are considered small and their dev+train data will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
+print("$n_shared_task_small of them are considered small and their dev+train data (if any) will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n");
 my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
@@ -514,7 +514,7 @@ my $announcement = get_announcement
     \@languages,
     'less than 1,000 tokens',
     'well over 1.5 million tokens',
-    'November 2017', # expected next release
+    'March 2018', # expected next release
     \@contributors_firstlast,
     # Temporary for UD 2.0: shared task information
     $n_folders_conll,
@@ -715,17 +715,17 @@ sub get_announcement
     $languages_conll =~ s/, ([^,]+)$/ and $1/;
     my @contributors = @{$contlistref};
     my $contributors = join(', ', @contributors);
+    # Extra text in 2.0 announcement, removed for 2.1 but kept commented for 2.2
+    #This release is special in that the treebanks will be used as training/development data in the CoNLL 2017 shared task (http://universaldependencies.org/conll17/). Test data are not released, except for the few treebanks that do not take part in the shared task. $n_conll treebanks will be in the shared task, and they correspond to the following $n_languages_conll languages: $languages_conll. Registration of shared task participants is still open!
+    #
+    #REMINDER: ADD ANNOUNCEMENT ABOUT THE RAW DATA, AND ABOUT THE BASELINE MODELS (UDPIPE + SYNTAXNET) WE WANT TO PUBLISH AROUND MID MARCH.
+    #BESIDES THE USUAL MAILING LISTS, SEND THIS ANNOUNCEMENT ALSO DIRECTLY TO ALL THE REGISTERED PARTICIPANTS.
     my $text = <<EOF
 We are very happy to announce the $nth release of annotated treebanks in Universal Dependencies, v$release, available at http://universaldependencies.org/.
 
 Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective (Nivre et al., 2016). The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
 
 The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
-
-This release is special in that the treebanks will be used as training/development data in the CoNLL 2017 shared task (http://universaldependencies.org/conll17/). Test data are not released, except for the few treebanks that do not take part in the shared task. $n_conll treebanks will be in the shared task, and they correspond to the following $n_languages_conll languages: $languages_conll. Registration of shared task participants is still open!
-
-REMINDER: ADD ANNOUNCEMENT ABOUT THE RAW DATA, AND ABOUT THE BASELINE MODELS (UDPIPE + SYNTAXNET) WE WANT TO PUBLISH AROUND MID MARCH.
-BESIDES THE USUAL MAILING LISTS, SEND THIS ANNOUNCEMENT ALSO DIRECTLY TO ALL THE REGISTERED PARTICIPANTS.
 
 $contributors
 
