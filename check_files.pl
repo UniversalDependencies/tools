@@ -294,12 +294,12 @@ foreach my $folder (@folders)
                 $n_errors++;
             }
             my $nwall = $nwtrain+$nwdev+$nwtest+$nwsample;
-            if($nwall>20000 && $nwtrain<10000)
+            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/-PUD$/)
             {
                 print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
                 $n_errors++;
             }
-            if($nwall>30000 && $nwdev<10000)
+            if($nwall>30000 && $nwdev<5000 && $folder !~ m/-PUD$/)
             {
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
