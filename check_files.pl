@@ -28,8 +28,10 @@ my $recompute_stats = 0;
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
 my $current_release = 2.1;
-# There are different requirements for treebanks that are released but are not in the CoNLL 2017 shared task.
-my $not_in_shared_task = 'Arabic-NYUAD|Belarusian|Coptic|Lithuanian|Sanskrit|Tamil';
+# There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
+# Here we list treebanks that cannot participate because of copyright. Other treebanks may be excluded because of their size.
+###!!! We could now recognize these treebanks by the metadata attribute 'Includes text: no'!
+my $not_in_shared_task = 'Arabic-NYUAD|English-ESL|French-FTB|Japanese-KTC';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
@@ -311,10 +313,15 @@ foreach my $folder (@folders)
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
             }
+            # If the treebank has less than 10000 test words, it cannot participate in the shared task.
+            if($nwtest<10000)
+            {
+                $is_in_shared_task = 0;
+            }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
             if($is_in_shared_task)
             {
-                if($nwtrain < $nwdev)
+                if($nwtrain<$nwdev || $nwtrain+$nwdev<$nwtest)
                 {
                     push(@shared_task_small_folders, $folder);
                 }
@@ -324,15 +331,6 @@ foreach my $folder (@folders)
                 }
                 ###!!! UD 2.1: Unlike in 2.0, the test sets are not hidden, so the following test is commented out.
                 ###!!! $n_errors += check_hidden_test_set($folder, $prefix);
-            }
-            # Treebanks that do not take part in the shared task should release their test sets.
-            else
-            {
-                if(!-f "$prefix-test.conllu")
-                {
-                    print("$folder: missing $prefix-test.conllu\n");
-                    $n_errors++;
-                }
             }
             $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
             # Look for additional files. (Do we want to include them in the release package?)
