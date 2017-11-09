@@ -301,7 +301,7 @@ foreach my $folder (@folders)
             }
             if($nwall>30000 && $nwdev<10000)
             {
-                print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwtrain words\n");
+                print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
             }
             # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
