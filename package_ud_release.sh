@@ -40,7 +40,7 @@ function copy_data_repo
     fi
     # If we are creating the special package for the CoNLL 2017 shared task,
     # and if this treebank is considered small, merge its training and development data.
-    local lcode=$(ls $1 | grep ud-dev.conllu | perl -e '$x=<STDIN>; $x =~ m/(\S+)-ud-dev\.conllu/; print $1;')
+    local lcode=$(ls $1 | grep ud-test.conllu | perl -e '$x=<STDIN>; $x =~ m/(\S+)-ud-test\.conllu/; print $1;')
     if [ "$STSET" == "SMALL" ] ; then
         echo This is a small treebank. Merging training and development data.
         if [ -f $dstdir/$1/$lcode-ud-train.conllu ] ; then
