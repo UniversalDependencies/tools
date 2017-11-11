@@ -6,7 +6,7 @@
 if [ "$RELEASE" = "" ] || [ "$1" = "" ]; then
   echo "Usage: RELEASE=2.0 tools/package_ud_release.sh UD_Ancient_Greek UD_Ancient_Greek-PROIEL ..."
   echo "       UD repositories to be included in the release must be listed as arguments."
-  echo "       Repositories without dev data will be skipped even if they are given as arguments."
+  echo "       Repositories without test data will be skipped even if they are given as arguments."
   echo "       Use tools/check_files.pl to get the list of releasable repositories."
   echo "Usage: RELEASE=2.0 tools/package_ud_release.sh --update UD_X UD_Y"
   echo "       Only update the repositories UD_X and UD_Y in an already existing release folder."
@@ -90,8 +90,10 @@ for i in $@ ; do
         STSET=SMALL
     elif [ "$i" == "--large" ] ; then
         STSET=LARGE
-    elif [ -f $i/*-ud-dev.conllu ] ; then
+    elif [ -f $i/*-ud-test.conllu ] ; then
         copy_data_repo $i
+    else
+        echo Skipping $i because no test data found.
     fi
 done
 cd release-$RELEASE
