@@ -14,6 +14,7 @@ Gender[obj]=Neut
 Gender[psor]=Masc
 Gender[psor]=Fem
 Mood=Int
+NounClass=10
 NounType=Loc
 NounType=Rel
 Number[acc]=Sing
