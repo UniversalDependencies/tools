@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Scans all UD treebanks for language-specific features and values.
-# Copyright © 2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016-2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
