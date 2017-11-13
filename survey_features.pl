@@ -186,37 +186,6 @@ foreach my $f (@features)
         }
     }
     my @folders = sort(keys(%ffolders));
-    foreach my $folder (@folders)
-    {
-        # Does documentation contain a corresponding page?
-        # (All values of a feature are describe on one page, so we are mainly concerned about entire new features.)
-        chdir('docs') or die("Cannot enter folder docs");
-        my $langcode = $folder;
-        $langcode =~ s/_.*//;
-        my $filename = $f;
-        # Number[psor] is described in Number-psor.html.
-        $filename =~ s/\[(.+)\]/-$1/;
-        my $docspath = '_'.$langcode.'-feat/'.$filename.'.md';
-        if($hash{$deprel}{$folder} !~ m/^ZERO/ && !-f $docspath)
-        {
-            my $template = <<EOF
----
-layout: feature
-title: '$f'
-shortdef: '$f'
----
-
-This document is a placeholder for the language-specific documentation
-for \`$f\`.
-EOF
-            ;
-            open(FILE, ">$docspath") or die("Cannot write $docspath: $!");
-            print FILE ($template);
-            close(FILE);
-            system("git add $docspath");
-        }
-        chdir('..');
-    }
 }
 if(0)
 {
