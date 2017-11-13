@@ -92,30 +92,34 @@ foreach my $folder (@folders)
         }
     }
 }
-# Check the permitted deprels in validator data. Are there types that do not occur in the data?
-chdir('tools/data') or die("Cannot enter folder tools/data");
-opendir(DIR, '.') or die("Cannot read the contents of the folder tools/data");
-my @files = readdir(DIR);
-closedir(DIR);
-my @deprelfiles = grep {-f $_ && m/^deprel\..+/} (@files);
-foreach my $file (@deprelfiles)
+###!!! We currently do not take deprels from validator data if they do not occur in the data.
+if(0)
 {
-    $file =~ m/^deprel\.(.+)$/;
-    my $key = $1;
-    next if($key eq 'ud');
-    open(FILE, $file) or die("Cannot read $file: $!");
-    while(<FILE>)
+    # Check the permitted deprels in validator data. Are there types that do not occur in the data?
+    chdir('tools/data') or die("Cannot enter folder tools/data");
+    opendir(DIR, '.') or die("Cannot read the contents of the folder tools/data");
+    my @files = readdir(DIR);
+    closedir(DIR);
+    my @deprelfiles = grep {-f $_ && m/^deprel\..+/} (@files);
+    foreach my $file (@deprelfiles)
     {
-        s/\r?\n$//;
-        my $deprel = $_;
-        if(!m/^\s*$/ && !exists($hash{$deprel}{$key}))
+        $file =~ m/^deprel\.(.+)$/;
+        my $key = $1;
+        next if($key eq 'ud');
+        open(FILE, $file) or die("Cannot read $file: $!");
+        while(<FILE>)
         {
-            $hash{$deprel}{$key} = 'ZERO BUT LISTED AS PERMITTED IN VALIDATOR DATA';
+            s/\r?\n$//;
+            my $deprel = $_;
+            if(!m/^\s*$/ && !exists($hash{$deprel}{$key}))
+            {
+                $hash{$deprel}{$key} = 'ZERO BUT LISTED AS PERMITTED IN VALIDATOR DATA';
+            }
         }
+        close(FILE);
     }
-    close(FILE);
+    chdir('../..');
 }
-chdir('../..');
 # Print the docs page with the list of language-specific deprel subtypes.
 my $markdown = <<EOF
 ---
