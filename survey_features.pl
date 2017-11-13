@@ -8,6 +8,9 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+# If this script is called from the parent folder, how can it find the UD library?
+use lib 'tools';
+use udlib;
 # In debugging mode, only the first three treebanks will be scanned.
 my $debug = 0;
 if(scalar(@ARGV)>=1 && $ARGV[0] eq 'debug')
@@ -21,66 +24,18 @@ opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
-my %langcodes =
-(
-    'Amharic'             => 'am',
-    'Ancient_Greek'       => 'grc',
-    'Arabic'              => 'ar',
-    'Basque'              => 'eu',
-    'Bulgarian'           => 'bg',
-    'Buryat'              => 'bxr',
-    'Catalan'             => 'ca',
-    'Chinese'             => 'zh',
-    'Coptic'              => 'cop',
-    'Croatian'            => 'hr',
-    'Czech'               => 'cs',
-    'Danish'              => 'da',
-    'Dutch'               => 'nl',
-    'English'             => 'en',
-    'Estonian'            => 'et',
-    'Faroese'             => 'fo',
-    'Finnish'             => 'fi',
-    'French'              => 'fr',
-    'Galician'            => 'gl',
-    'German'              => 'de',
-    'Gothic'              => 'got',
-    'Greek'               => 'el',
-    'Hebrew'              => 'he',
-    'Hindi'               => 'hi',
-    'Hungarian'           => 'hu',
-    'Indonesian'          => 'id',
-    'Irish'               => 'ga',
-    'Italian'             => 'it',
-    'Japanese'            => 'ja',
-    'Kazakh'              => 'kk',
-    'Korean'              => 'ko',
-    'Latin'               => 'la',
-    'Latvian'             => 'lv',
-    'Norwegian'           => 'no',
-    'Old_Church_Slavonic' => 'cu',
-    'Persian'             => 'fa',
-    'Polish'              => 'pl',
-    'Portuguese'          => 'pt',
-    'Romanian'            => 'ro',
-    'Russian'             => 'ru',
-    'Sanskrit'            => 'sa',
-    'Slovak'              => 'sk',
-    'Slovenian'           => 'sl',
-    'Spanish'             => 'es',
-    'Swedish'             => 'sv',
-    'Tamil'               => 'ta',
-    'Turkish'             => 'tr',
-    'Ukrainian'           => 'uk',
-    'Urdu'                => 'ur',
-    'Uyghur'              => 'ug',
-    'Vietnamese'          => 'vi'
-);
+# There is now also the new list of languages in YAML in docs-automation; this one has also language families.
+my $languages_from_yaml = udlib::get_language_hash();
 my %langnames;
-foreach my $language (keys(%langcodes))
+my %langcodes;
+foreach my $language (keys(%{$languages_from_yaml}))
 {
-    my $lnicename = $language;
-    $lnicename =~ s/_/ /g;
-    $langnames{$langcodes{$language}} = $lnicename;
+    # We need a mapping from language names in folder names (contain underscores instead of spaces) to language codes.
+    my $usname = $language;
+    $usname =~ s/ /_/g;
+    # Language names in the YAML file may contain spaces (not underscores).
+    $langcodes{$usname} = $languages_from_yaml->{$language}{lcode};
+    $langnames{$languages_from_yaml->{$language}{lcode}} = $language;
 }
 # Look for features in the data.
 my %hash;
