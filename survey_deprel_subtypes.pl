@@ -106,7 +106,7 @@ foreach my $file (@deprelfiles)
     open(FILE, $file) or die("Cannot read $file: $!");
     while(<FILE>)
     {
-        chomp();
+        s/\r?\n$//;
         my $deprel = $_;
         if(!m/^\s*$/ && !exists($hash{$deprel}{$key}))
         {
@@ -120,10 +120,10 @@ chdir('../..');
 my $markdown = <<EOF
 ---
 layout: base
-title:  'Language-specific relations'
+title:  'Language-Specific Relations'
 ---
 
-# Language-specific relations
+# Language-Specific Relations
 
 In addition to the universal dependency taxonomy, it is desirable to recognize grammatical relations that are particular to one language or a small group of related languages. Such language-specific relations are necessary to accurately capture the genius of a particular language but will not involve concepts that generalize broadly. These language-specific relations should always be regarded as a subtype of an existing UD relation.
 
@@ -147,16 +147,16 @@ foreach my $udeprel (@udeprels)
     {
         if($deprel =~ m/^$udeprel:/)
         {
-            $markdown .= "- \`$deprel\`:\n";
+            $markdown .= "- [$deprel]():\n";
             my @folders = sort(keys(%{$hash{$deprel}}));
-            my %mdlanguages;
+            my %mdlanguages; # use a hash to merge hits from different treebanks of one language
             foreach my $folder (@folders)
             {
                 my $langcode = $folder;
                 $langcode =~ s/_.*//;
-                $mdlanguages{$langnames{$langcode}} = "[$langnames{$langcode}]($langcode-dep/$deprel)";
+                $mdlanguages{$langnames{$langcode}}++;
             }
-            $markdown .= join(",\n", map {$mdlanguages{$_}} (sort(keys(%mdlanguages))))."\n";
+            $markdown .= join(",\n", sort(keys(%mdlanguages)))."\n";
         }
     }
 }
