@@ -8,6 +8,12 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+# In debugging mode, only the first three treebanks will be scanned.
+my $debug = 0;
+if(scalar(@ARGV)>=1 && $ARGV[0] eq 'debug')
+{
+    $debug = 1;
+}
 
 # This script expects to be invoked in the folder in which all the UD_folders
 # are placed.
@@ -78,6 +84,7 @@ foreach my $language (keys(%langcodes))
 }
 # Look for features in the data.
 my %hash;
+my $n_treebanks = 0;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -88,6 +95,11 @@ foreach my $folder (@folders)
     my $key;
     if($folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
     {
+        $n_treebanks++;
+        if($debug && $n_treebanks>3)
+        {
+            next;
+        }
         $language = $1;
         $treebank = $2 if(defined($2));
         if(exists($langcodes{$language}))
