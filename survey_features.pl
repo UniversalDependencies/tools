@@ -98,6 +98,7 @@ foreach my $folder (@folders)
         $n_treebanks++;
         if($debug && $n_treebanks>3)
         {
+            print STDERR ("$folder\n");
             next;
         }
         $language = $1;
