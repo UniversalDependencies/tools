@@ -3,6 +3,7 @@ advmod:emph
 aux:pass
 cc:preconj
 cc:postconj
+compound:dir
 compound:prt
 compound:redup
 compound:svc
