@@ -98,9 +98,9 @@ foreach my $folder (@folders)
         $n_treebanks++;
         if($debug && $n_treebanks>3)
         {
-            print STDERR ("$folder\n");
             next;
         }
+        print STDERR ("$folder\n");
         $language = $1;
         $treebank = $2 if(defined($2));
         if(exists($langcodes{$language}))
