@@ -132,63 +132,16 @@ foreach my $f (@features)
 {
     my %ffolders;
     my @values = sort(keys(%{$hash{$f}}));
+    print("\#\# $f\n\n");
+    print("[$f]()\n\n");
     foreach my $v (@values)
     {
         my @folders = sort(keys(%{$hash{$f}{$v}}));
         foreach my $folder (@folders)
         {
-            print("$f=$v\t$folder\t$hash{$f}{$v}{$folder}\n");
+            print("* $f=$v\t$folder\t$hash{$f}{$v}{$folder}\n");
             $ffolders{$folder}++;
         }
     }
-    my @folders = sort(keys(%ffolders));
-}
-if(0)
-{
-    # Print the docs page with the list of language-specific deprel subtypes.
-    my $markdown = <<EOF
-    ---
-    layout: base
-    title:  'Language-specific relations'
-    ---
-
-    # Language-specific relations
-
-    In addition to the universal dependency taxonomy, it is desirable to recognize grammatical relations that are particular to one language or a small group of related languages. Such language-specific relations are necessary to accurately capture the genius of a particular language but will not involve concepts that generalize broadly. These language-specific relations should always be regarded as a subtype of an existing UD relation.
-
-    Labels of language-specific relations explictly encode the core UD relation that the language-specific relation is a subtype of, following the format *universal:extension*.
-EOF
-    ;
-    # Get the list of universal relations that are involved in subtyping.
-    my %udeprels;
-    foreach my $deprel (@deprels)
-    {
-        my $udeprel = $deprel;
-        $udeprel =~ s/:.*//;
-        $udeprels{$udeprel}++;
-    }
-    my @udeprels = sort(keys(%udeprels));
-    foreach my $udeprel (@udeprels)
-    {
-        $markdown .= "\n\n\n## $udeprel\n";
-        foreach my $deprel (@deprels)
-        {
-            if($deprel =~ m/^$udeprel:/)
-            {
-                $markdown .= "- \`$deprel\`:\n";
-                my @folders = sort(keys(%{$hash{$deprel}}));
-                my %mdlanguages;
-                foreach my $folder (@folders)
-                {
-                    my $langcode = $folder;
-                    $langcode =~ s/_.*//;
-                    $mdlanguages{$langnames{$langcode}} = "[$langnames{$langcode}]($langcode-dep/$deprel)";
-                }
-                $markdown .= join(",\n", map {$mdlanguages{$_}} (sort(keys(%mdlanguages))))."\n";
-            }
-        }
-    }
-    open(FILE, ">docs/ext-dep-index.md") or die("Cannot write ext-dep-index.md: $!");
-    print FILE ($markdown);
-    close(FILE);
+    print("\n");
 }
