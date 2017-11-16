@@ -260,6 +260,13 @@ sub read_readme
             $metadata{'changelog'} = 1;
         }
     }
+    # The last section should be the metadata, which we do not need saved as section.
+    # But if the README does not follow the guidelines, a previous section may not
+    # be terminated properly and we have to save it now.
+    if($current_section_heading ne '' && $current_section_text ne '')
+    {
+        $metadata{sections}{$current_section_heading} = $current_section_text;
+    }
     close(README);
     return \%metadata;
 }
