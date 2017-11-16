@@ -218,8 +218,9 @@ sub read_readme
         {
             my $heading = lc($1);
             $heading =~ s/^\s+//;
+            $heading =~ s/\s+$//;
             # Collapse "acknowledgments" and "acknowledgements", both are correct.
-            $heading =~ s/acknowledge?ments?/acknowledgments/i;
+            $heading =~ s/acknowledge?ments?/acknowledgments/;
             # Save the previous section before starting a new one.
             if($current_section_heading ne '' && $current_section_text ne '')
             {
