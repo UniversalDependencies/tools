@@ -162,10 +162,10 @@ def validate_text_meta(comments,tree):
         #let's try to validate the text then... :)
         skip_words=set()
         for cols in tree:
-            if u"NoSpaceAfter=Yes" in cols[MISC]:
+            if u"NoSpaceAfter=Yes" in cols[MISC]: #I leave this without the split("|") to catch all
                 warn(u"NoSpaceAfter=Yes should be replaced with SpaceAfter=No",u"Metadata")
             if u"." in cols[ID]: #empty word
-                if u"SpaceAfter=No" in cols[MISC]:
+                if u"SpaceAfter=No" in cols[MISC]: #I leave this without the spliit("|") to catch all
                     warn(u"There should not be a SpaceAfter=No entry for empty words",u"Metadata")
                 continue
             elif u"-" in cols[ID]: #we have a token
@@ -189,7 +189,7 @@ def validate_text_meta(comments,tree):
                 warn(u"Mismatch between the text attribute and the FORM field. Form is '%s' but text is '%s...'"%(cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata",False)
             else:
                 stext=stext[len(cols[FORM]):] #eat the form
-                if u"SpaceAfter=No" not in cols[MISC]:
+                if u"SpaceAfter=No" not in cols[MISC].split("|"):
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         warn(u"SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'"%(cols[ID],shorten(cols[FORM]+stext)),u"Metadata")
                     stext=stext.lstrip()
