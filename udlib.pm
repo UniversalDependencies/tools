@@ -165,6 +165,7 @@ sub get_ud_files_and_codes
         'lname'  => $langname,
         'tname'  => $tbkext,
         'code'   => $code,
+        'ltcode' => $code, # for compatibility with some tools, this code is provided both as 'code' and as 'ltcode'
         'lcode'  => $lcode,
         'tcode'  => $tcode,
         'files'  => \@files,
