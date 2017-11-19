@@ -143,6 +143,7 @@ my %languages =
     'sv'  => {'name' => 'Swedish',    'i' => 1, 'c' => ','},
     'swl' => {'name' => 'Swedish Sign Language', 'i' => 1, 'c' => ','},
     'ta'  => {'name' => 'Tamil',      'i' => 0, 'c' => ','},
+    'te'  => {'name' => 'Telugu',     'i' => 0, 'c' => ','},
     'tr'  => {'name' => 'Turkish',    'i' => 1, 'c' => ','},
     'uk'  => {'name' => 'Ukrainian',  'i' => 1, 'c' => ','},
     'hsb' => {'name' => 'Upper Sorbian', 'i' => 1, 'c' => ','},
@@ -1684,7 +1685,11 @@ sub get_detailed_statistics_relation
 sub fex
 {
     my $example = shift;
-    my $i = $languages{$konfig{langcode}}{i};
+    my $i = 1;
+    if(exists($languages{$konfig{langcode}}))
+    {
+        $i = $languages{$konfig{langcode}}{i};
+    }
     if($i)
     {
         # We could use underscores or asterisks instead of <em> (MarkDown instead of HTML).
@@ -1706,7 +1711,11 @@ sub fex
 sub jcomma
 {
     my @list = @_;
-    my $c = $languages{$konfig{langcode}}{c};
+    my $c = ',';
+    if(exists($languages{$konfig{langcode}}))
+    {
+        $c = $languages{$konfig{langcode}}{c};
+    }
     return join($c.' ', @list);
 }
 
