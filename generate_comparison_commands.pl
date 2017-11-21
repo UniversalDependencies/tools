@@ -28,7 +28,8 @@ my @current_group;
 foreach my $folder (@folders)
 {
     # Skip empty folders.
-    next if(scalar(glob("$folder/*.conllu"))==0);
+    my $tbkrecord = udlib::get_ud_files_and_codes($folder);
+    next if(scalar(@{$tbkrecord->{files}})==0);
     my $language = $folder;
     $language =~ s/^UD_//;
     $language =~ s/-.*//;
