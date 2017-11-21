@@ -320,6 +320,7 @@ else
 #     {pverbs}{word + expl:pv children} ... pronominal, i.e., inherently reflexive verbs
 #     {expass}{word + expl:pass children} ... reflexive passive verbs
 #     {rflobj}{word + reflexive children} ... verbs with reflexive core object
+#     {norfl}{word} ... verbs without reflexive dependent (used to confirm that a reflexive verb never occurred without the reflexive)
 #   Combinations of annotation items and their frequencies
 #   (hashes: item1 => item2 ... => frequency):
 #     {tlw}{$tag}{$lemma}{$word} ... tag + lemma + word form
@@ -354,6 +355,7 @@ sub reset_counters
     $stats->{pverbs} = {};
     $stats->{expass} = {};
     $stats->{rflobj} = {};
+    $stats->{norfl} = {};
     # combinations
     $stats->{tlw} = {};
     $stats->{tf} = {};
@@ -838,6 +840,10 @@ sub process_sentence
         if(scalar(@rflobjdeps) > 0)
         {
             $stats{rflobj}{join(' ', ($lemma, sort(@rflobjdeps)))}++;
+        }
+        if(scalar(@explpvdeps)==0 && scalar(@explpassdeps)==0 && scalar(@rflobjdeps)==0)
+        {
+            $stats{norfl}{$lemma}++;
         }
         # Feature agreement between parent and child.
         unless($head==0)
@@ -2210,6 +2216,23 @@ sub hub_statistics
         $cell .= "<h3>Verbs with Reflexive Core Objects</h3>\n\n";
         $cell .= "<ul>\n";
         $cell .= "  <li>This corpus contains $n_rflobj lemmas that occur at least once with a reflexive core object (<a>obj</a> or <a>iobj</a>). Examples: $examples</li>\n";
+        my %rflobjalways;
+        foreach my $r (@rflobj)
+        {
+            my $verb = $r;
+            # Get rid of the reflexive pronoun, we need the verb lemma only.
+            $verb =~ s/ .*//;
+            $rflobjalways{$verb}++ if(!exists($stats{norfl}{$verb}));
+        }
+        my @rflobjalways = keys(%rflobjalways);
+        my $n_rflobjalways = scalar(@rflobjalways);
+        if($n_rflobjalways > 0)
+        {
+            my $examples = prepare_examples(\%rflobjalways, 50);
+            $cell .= "    <ul>\n";
+            $cell .= "      <li>Out of those, $n_rflobjalways lemmas never occurred without a reflexive dependent. Examples: $examples</li>\n";
+            $cell .= "    </ul>\n";
+        }
         $cell .= "</ul>\n";
     }
     push(@table, $cell);
