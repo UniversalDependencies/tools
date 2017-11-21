@@ -2224,13 +2224,13 @@ sub hub_statistics
             $verb =~ s/ .*//;
             $rflobjalways{$verb} += $stats{rflobj}{$r} if(!exists($stats{norfl}{$verb}));
         }
-        my @rflobjalways = keys(%rflobjalways);
+        my @rflobjalways = grep {$rflobjalways{$_}>1} (keys(%rflobjalways));
         my $n_rflobjalways = scalar(@rflobjalways);
         if($n_rflobjalways > 0)
         {
             my $examples = prepare_examples(\%rflobjalways, 50);
             $cell .= "    <ul>\n";
-            $cell .= "      <li>Out of those, $n_rflobjalways lemmas never occurred without a reflexive dependent. Examples: $examples</li>\n";
+            $cell .= "      <li>Out of those, $n_rflobjalways lemmas occurred more than once, but never without a reflexive dependent. Examples: $examples</li>\n";
             $cell .= "    </ul>\n";
         }
         $cell .= "</ul>\n";
