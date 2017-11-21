@@ -15,7 +15,7 @@ sub usage
     print STDERR ("    The script will analyze all treebanks of the given language.\n");
     print STDERR ("cat *.conllu | perl conllu-stats.pl --oformat hub\n");
     print STDERR ("... generates statistics parallel to the language-specific documentation hub.\n");
-    print STDERR ("perl conllu-stats.pl --oformat hubcompare --permalink cs/overview/cs-hub-comparison.html UD_Czech UD_Czech-CAC > docs/_cs_overview/cs-hub-comparison.md\n");
+    print STDERR ("perl conllu-stats.pl --oformat hubcompare UD_Czech UD_Czech-CAC > docs/treebanks/cs-comparison.md\n");
     print STDERR ("... similar to hub but compares two or more treebanks side-by-side.\n");
     print STDERR ("... each treebank is either one CoNLL-U file, or a folder with CoNLL-U files.\n");
     print STDERR ("perl conllu-stats.pl --oformat newdetailed --treebank UD_Czech --docs docs\n");
@@ -2224,7 +2224,15 @@ sub hub_statistics
             $verb =~ s/ .*//;
             $rflobjalways{$verb} += $stats{rflobj}{$r} if(!exists($stats{norfl}{$verb}));
         }
-        my @rflobjalways = grep {$rflobjalways{$_}>1} (keys(%rflobjalways));
+        # Remove verbs that occurred only once.
+        foreach my $r (keys(%rflobjalways))
+        {
+            if($rflobjalways{$r}<=1)
+            {
+                delete($rflobjalways{$r});
+            }
+        }
+        my @rflobjalways = keys(%rflobjalways);
         my $n_rflobjalways = scalar(@rflobjalways);
         if($n_rflobjalways > 0)
         {
