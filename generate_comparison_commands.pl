@@ -27,6 +27,8 @@ my $current_language;
 my @current_group;
 foreach my $folder (@folders)
 {
+    # Skip empty folders.
+    next if(scalar(glob("$folder/*.conllu"))==0);
     my $language = $folder;
     $language =~ s/^UD_//;
     $language =~ s/-.*//;
