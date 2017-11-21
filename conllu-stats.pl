@@ -2222,7 +2222,7 @@ sub hub_statistics
             my $verb = $r;
             # Get rid of the reflexive pronoun, we need the verb lemma only.
             $verb =~ s/ .*//;
-            $rflobjalways{$verb}++ if(!exists($stats{norfl}{$verb}));
+            $rflobjalways{$verb} += $stats{rflobj}{$r} if(!exists($stats{norfl}{$verb}));
         }
         my @rflobjalways = keys(%rflobjalways);
         my $n_rflobjalways = scalar(@rflobjalways);
