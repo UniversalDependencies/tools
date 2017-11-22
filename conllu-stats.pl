@@ -1943,7 +1943,8 @@ sub hub_statistics
     my $cell = '';
     # We have to generate HTML instead of MarkDown because the MarkDown syntax is not recognized inside HTML tables.
     $cell .= "<h2>Tokenization and Word Segmentation</h2>\n\n";
-    $cell .= "<ul>\n";
+    push(@table, $cell);
+    $cell = "<ul>\n";
     if($stats{nfus} == 0)
     {
         $cell .= "<li>This corpus contains $stats{nsent} sentences and $stats{ntok} tokens.</li>\n";
@@ -1952,6 +1953,9 @@ sub hub_statistics
     {
         $cell .= "<li>This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = "<ul>\n";
     if($stats{ntoksano} > 0)
     {
         my $percentage = $stats{ntoksano} / $stats{ntok} * 100;
@@ -1961,6 +1965,9 @@ sub hub_statistics
     {
         $cell .= "<li>All tokens in this corpus are followed by a space.</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = "<ul>\n";
     # Words with spaces.
     my @words_with_spaces = grep {m/\s/} (keys(%{$stats{words}}));
     my $n_wws = scalar(@words_with_spaces);
@@ -1973,6 +1980,9 @@ sub hub_statistics
     {
         $cell .= "<li>This corpus does not contain words with spaces.</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = "<ul>\n";
     # Words combining letters and punctuation.
     my @words_with_punctuation = grep {m/\pP\pL|\pL\pP/} (keys(%{$stats{words}}));
     my $n_wwp = scalar(@words_with_punctuation);
@@ -1985,6 +1995,9 @@ sub hub_statistics
     {
         $cell .= "<li>This corpus does not contain words that contain both letters and punctuation.</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = "<ul>\n";
     # Multi-word tokens.
     if($stats{nfus} > 0)
     {
