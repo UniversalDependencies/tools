@@ -1970,7 +1970,7 @@ sub hub_statistics
         # and enable line breaks.
         @words_with_punctuation = map
         {
-            if(length($_)>10)
+            if(length($_)>20)
             {
                 my @characters = split(//, $_);
                 $_ = join("\x{200B}", @characters);
