@@ -2009,6 +2009,10 @@ sub hub_statistics
         my @unused_tags = grep {!exists($stats{tags}{$_})} ('NOUN', 'PROPN', 'PRON', 'ADJ', 'DET', 'NUM', 'VERB', 'AUX', 'ADV', 'ADP', 'SCONJ', 'CCONJ', 'PART', 'INTJ', 'SYM', 'PUNCT', 'X');
         $cell .= "<li>This corpus does not use the following tags: ".join(', ', @unused_tags)."</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = '';
+    $cell .= "<ul>\n";
     if(exists($stats{tags}{PART}))
     {
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
