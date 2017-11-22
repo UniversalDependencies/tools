@@ -1966,14 +1966,14 @@ sub hub_statistics
         @words_with_punctuation = sort_and_truncate_examples($stats{words}, \@words_with_punctuation, 50);
         # Some treebanks (Czech CLTT) have very long tokens with punctuation.
         # Their column in the table is then wider than it deserves because the
-        # long tokens cannot be broken. Add zero-width spaces to the examples
+        # long tokens cannot be broken. Add zero-width non-joiners to the examples
         # and enable line breaks.
         @words_with_punctuation = map
         {
             if(length($_)>20)
             {
                 my @characters = split(//, $_);
-                $_ = join("\x{200B}", @characters);
+                $_ = join("\x{200C}", @characters);
             }
             $_
         }
