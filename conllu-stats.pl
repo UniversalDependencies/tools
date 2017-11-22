@@ -1769,14 +1769,14 @@ sub sort_and_truncate_examples
     # Some treebanks (Czech CLTT) have very tokens. If we put the statistics
     # of such a treebank to a table where multiple treebanks are compared
     # side-by-side, this treebank will have much wider column than it deserves
-    # because the long tokens cannot be broken. Add zero-width non-joiners to
+    # because the long tokens cannot be broken. Add zero-width spaces to
     # the examples and enable line breaks.
     @examples = map
     {
         if(length($_)>20)
         {
             my @characters = split(//, $_);
-            $_ = join("\x{200C}", @characters);
+            $_ = join("\x{200B}", @characters);
         }
         $_
     }
