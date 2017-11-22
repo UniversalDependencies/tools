@@ -1766,6 +1766,21 @@ sub sort_and_truncate_examples
     }
     (@{$selected_keys});
     splice(@examples, $limit);
+    # Some treebanks (Czech CLTT) have very tokens. If we put the statistics
+    # of such a treebank to a table where multiple treebanks are compared
+    # side-by-side, this treebank will have much wider column than it deserves
+    # because the long tokens cannot be broken. Add zero-width non-joiners to
+    # the examples and enable line breaks.
+    @examples = map
+    {
+        if(length($_)>20)
+        {
+            my @characters = split(//, $_);
+            $_ = join("\x{200C}", @characters);
+        }
+        $_
+    }
+    (@examples);
     return @examples;
 }
 
@@ -1964,20 +1979,6 @@ sub hub_statistics
     if($n_wwp > 0)
     {
         @words_with_punctuation = sort_and_truncate_examples($stats{words}, \@words_with_punctuation, 50);
-        # Some treebanks (Czech CLTT) have very long tokens with punctuation.
-        # Their column in the table is then wider than it deserves because the
-        # long tokens cannot be broken. Add zero-width non-joiners to the examples
-        # and enable line breaks.
-        @words_with_punctuation = map
-        {
-            if(length($_)>20)
-            {
-                my @characters = split(//, $_);
-                $_ = join("\x{200C}", @characters);
-            }
-            $_
-        }
-        (@words_with_punctuation);
         $cell .= "<li>This corpus contains $n_wwp types of words that contain both letters and punctuation. Examples: ".join(', ', @words_with_punctuation)."</li>\n";
     }
     else
@@ -1990,20 +1991,6 @@ sub hub_statistics
         my $avgsize = ($stats{nword} - $stats{ntok} + $stats{nfus}) / $stats{nfus};
         $cell .= sprintf("<li>This corpus contains $stats{nfus} multi-word tokens. On average, one multi-word token consists of %.2f syntactic words.</li>\n", $avgsize);
         my @fusion_examples = sort(keys(%{$stats{fusions}}));
-        # Some treebanks (Czech CLTT) have very long multi-word tokens.
-        # Their column in the table is then wider than it deserves because the
-        # long tokens cannot be broken. Add zero-width non-joiners to the examples
-        # and enable line breaks.
-        @fusion_examples = map
-        {
-            if(length($_)>20)
-            {
-                my @characters = split(//, $_);
-                $_ = join("\x{200C}", @characters);
-            }
-            $_
-        }
-        (@fusion_examples);
         my $n_types_mwt = scalar(@fusion_examples);
         $fusion_examples = prepare_examples($stats{fusions}, 50);
         $cell .= "<li>There are $n_types_mwt types of multi-word tokens. Examples: $fusion_examples.</li>\n";
