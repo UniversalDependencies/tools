@@ -2156,6 +2156,9 @@ sub hub_statistics
     {
         $cell .= "<li>This corpus does not contain copulas.</li>\n";
     }
+    $cell .= "</ul>\n";
+    push(@table, $cell);
+    $cell = "<ul>\n";
     if(exists($stats{deprels}{aux}))
     {
         my @aux_lemmas = sort(keys(%{$stats{examples}{'aux-lemma'}}));
