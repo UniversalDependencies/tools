@@ -2332,11 +2332,14 @@ sub summarize_feature_for_hub
     if($n_values > 0)
     {
         $markdown .= "<li><a>$feature</a>\n";
-        if($save_cells > 1)
-        {
-            add_cell($table, $markdown);
-            $markdown = '';
-        }
+    }
+    if($save_cells > 1)
+    {
+        add_cell($table, $markdown);
+        $markdown = '';
+    }
+    if($n_values > 0)
+    {
         $markdown .= "  <ul>\n";
         foreach my $value (@values)
         {
