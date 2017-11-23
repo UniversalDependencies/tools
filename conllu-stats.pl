@@ -2153,8 +2153,8 @@ sub hub_statistics
     {
         # This function saves its own cells in the table.
         $cell .= summarize_feature_for_hub($feature, $table, 0);
+        add_cell($table, $cell, $feature); #-------------------------------------------------
     }
-    add_cell($table, $cell); #-------------------------------------------------
     # Syntax.
     $cell = '';
     $cell .= "<h2>Syntax</h2>\n\n";
