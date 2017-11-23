@@ -238,7 +238,6 @@ EOF
     my $n_treebanks = scalar(@treebanks);
     my $width_percent = sprintf("%d", 100/$n_treebanks);
     my @tbkhubs;
-    my $max_cells = 0;
     print STDERR ("The following treebanks will be compared: ", join(', ', @treebanks), "\n");
     foreach my $treebank (@treebanks)
     {
@@ -258,19 +257,19 @@ EOF
         {
             @ARGV = ($treebank);
         }
-        my @cells = process_treebank();
-        unshift(@cells, "<h1>$treebank</h1>\n");
-        push(@tbkhubs, \@cells);
-        $max_cells = scalar(@cells) if(scalar(@cells) > $max_cells);
+        my $cells = process_treebank();
+        insert_heading_cell($cells, "<h1>$treebank</h1>\n");
+        push(@tbkhubs, $cells);
     }
+    my $table = create_table(@tbkhubs);
     print("<table>\n");
-    for(my $i = 0; $i < $max_cells; $i++)
+    foreach my $row (@{$table})
     {
         print("<tr>\n");
-        foreach my $hub (@tbkhubs)
+        foreach my $cell (@{$row})
         {
             print("  <td width=\"$width_percent\%\" valign=\"top\">\n");
-            print("$hub->[$i]\n");
+            print("$cell\n");
             print("  </td>\n");
         }
         print("</tr>\n");
@@ -513,8 +512,8 @@ sub process_treebank
     # Actual generation of output starts here.
     if($konfig{oformat} eq 'hub')
     {
-        # The hub_statistics() function returns a list of MarkDown sections.
-        print(join("\n", hub_statistics()));
+        # The hub_statistics() function returns a reference to an array of MarkDown sections.
+        print(join("\n", @{hub_statistics()}));
     }
     elsif($konfig{oformat} eq 'hubcompare')
     {
@@ -1939,11 +1938,11 @@ EOF
 #------------------------------------------------------------------------------
 sub hub_statistics
 {
-    my @table;
+    my $table = create_column();
     my $cell = '';
     # We have to generate HTML instead of MarkDown because the MarkDown syntax is not recognized inside HTML tables.
     $cell .= "<h2>Tokenization and Word Segmentation</h2>\n\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = "<ul>\n";
     if($stats{nfus} == 0)
     {
@@ -1954,7 +1953,7 @@ sub hub_statistics
         $cell .= "<li>This corpus contains $stats{nsent} sentences, $stats{ntok} tokens and $stats{nword} syntactic words.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = "<ul>\n";
     if($stats{ntoksano} > 0)
     {
@@ -1966,7 +1965,7 @@ sub hub_statistics
         $cell .= "<li>All tokens in this corpus are followed by a space.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = "<ul>\n";
     # Words with spaces.
     my @words_with_spaces = grep {m/\s/} (keys(%{$stats{words}}));
@@ -1981,7 +1980,7 @@ sub hub_statistics
         $cell .= "<li>This corpus does not contain words with spaces.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = "<ul>\n";
     # Words combining letters and punctuation.
     my @words_with_punctuation = grep {m/\pP\pL|\pL\pP/} (keys(%{$stats{words}}));
@@ -1996,7 +1995,7 @@ sub hub_statistics
         $cell .= "<li>This corpus does not contain words that contain both letters and punctuation.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = "<ul>\n";
     # Multi-word tokens.
     if($stats{nfus} > 0)
@@ -2009,7 +2008,7 @@ sub hub_statistics
         $cell .= "<li>There are $n_types_mwt types of multi-word tokens. Examples: $fusion_examples.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = '';
     # Morphology and part-of-speech tags.
     $cell .= "<h2>Morphology</h2>\n\n";
@@ -2023,9 +2022,8 @@ sub hub_statistics
         $cell .= "<li>This corpus does not use the following tags: ".join(', ', @unused_tags)."</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     if(exists($stats{tags}{PART}))
     {
         my @part_examples = sort(keys(%{$stats{examples}{PART}}));
@@ -2033,24 +2031,21 @@ sub hub_statistics
         $cell .= "<li>This corpus contains $n_types_part word types tagged as particles (PART): ".join(', ', @part_examples)."</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     # Pronouns vs. determiners.
     my @pron_examples = sort(keys(%{$stats{examples}{'PRON-lemma'}}));
     my $n_types_pron = scalar(@pron_examples);
     $cell .= "<li>This corpus contains $n_types_pron lemmas tagged as pronouns (PRON): ".join(', ', @pron_examples)."</li>\n";
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     my @det_examples = sort(keys(%{$stats{examples}{'DET-lemma'}}));
     my $n_types_det = scalar(@det_examples);
     $cell .= "<li>This corpus contains $n_types_det lemmas tagged as determiners (DET): ".join(', ', @det_examples)."</li>\n";
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     my %det_examples;
     foreach my $det (@det_examples)
     {
@@ -2063,17 +2058,15 @@ sub hub_statistics
         $cell .= "<li>Out of the above, $n_types_pron_det lemmas occurred sometimes as PRON and sometimes as DET: ".join(', ', @pron_det_intersection)."</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     # Auxiliary vs. main verbs.
     my @aux_examples = sort(keys(%{$stats{examples}{'AUX-lemma'}}));
     my $n_types_aux = scalar(@aux_examples);
     $cell .= "<li>This corpus contains $n_types_aux lemmas tagged as auxiliaries (AUX): ".join(', ', @aux_examples)."</li>\n";
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     my %aux_examples;
     foreach my $aux (@aux_examples)
     {
@@ -2087,9 +2080,8 @@ sub hub_statistics
         $cell .= "<li>Out of the above, $n_types_aux_verb lemmas occurred sometimes as AUX and sometimes as VERB: ".join(', ', @aux_verb_intersection)."</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<ul>\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<ul>\n";
     # Verb forms.
     my @verbforms = sort(map {my $x = $_; $x =~ s/^VerbForm=//; $x} (grep {m/^VerbForm=/} (keys(%{$stats{fvpairs}}))));
     my $n_verbforms = scalar(@verbforms);
@@ -2120,34 +2112,33 @@ sub hub_statistics
         $cell .= "<li>This corpus does not use the VerbForm feature.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<h3>Nominal Features</h3>\n\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<h3>Nominal Features</h3>\n\n";
     foreach my $feature (qw(Gender Animacy Number Case PrepCase Definite))
     {
         $cell .= summarize_feature_for_hub($feature);
-        push(@table, $cell);
+        add_cell($table, $cell); #-------------------------------------------------
         $cell = '';
     }
     $cell .= "<h3>Degree and Polarity</h3>\n\n";
     foreach my $feature (qw(Degree Polarity Variant))
     {
         $cell .= summarize_feature_for_hub($feature);
-        push(@table, $cell);
+        add_cell($table, $cell); #-------------------------------------------------
         $cell = '';
     }
     $cell .= "<h3>Verbal Features</h3>\n\n";
     foreach my $feature (qw(Aspect Mood Tense Voice Evident))
     {
         $cell .= summarize_feature_for_hub($feature);
-        push(@table, $cell);
+        add_cell($table, $cell); #-------------------------------------------------
         $cell = '';
     }
     $cell .= "<h3>Pronouns, Determiners, Quantifiers</h3>\n\n";
     foreach my $feature ('PronType', 'NumType', 'Poss', 'Reflex', 'Person', 'Polite', 'Gender[psor]', 'Number[psor]')
     {
         $cell .= summarize_feature_for_hub($feature);
-        push(@table, $cell);
+        add_cell($table, $cell); #-------------------------------------------------
         $cell = '';
     }
     $cell .= "<h3>Other Features</h3>\n\n";
@@ -2156,7 +2147,7 @@ sub hub_statistics
     {
         $cell .= summarize_feature_for_hub($feature);
     }
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     # Syntax.
     $cell = '';
     $cell .= "<h2>Syntax</h2>\n\n";
@@ -2174,7 +2165,7 @@ sub hub_statistics
         $cell .= "<li>This corpus does not contain copulas.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = "<ul>\n";
     if(exists($stats{deprels}{aux}))
     {
@@ -2195,9 +2186,8 @@ sub hub_statistics
         $cell .= "<li>This corpus does not contain auxiliaries.</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<h3>Core Arguments, Oblique Arguments and Adjuncts</h3>\n\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<h3>Core Arguments, Oblique Arguments and Adjuncts</h3>\n\n";
     $cell .= "Here we consider only relations between verbs (parent) and nouns or pronouns (child).\n";
     foreach my $deprel ('nsubj', 'obj', 'iobj')
     {
@@ -2216,7 +2206,7 @@ sub hub_statistics
         $cell .= "    </ul>\n";
         $cell .= "  </li>\n";
         $cell .= "</ul>\n";
-        push(@table, $cell);
+        add_cell($table, $cell); #-------------------------------------------------
         $cell = '';
     }
     my @pverbs = keys(%{$stats{pverbs}});
@@ -2229,7 +2219,7 @@ sub hub_statistics
         $cell .= "  <li>This corpus contains $n_pverbs lemmas that occur at least once with an <a>expl:pv</a> child. Examples: $examples</li>\n";
         $cell .= "</ul>\n";
     }
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = '';
     my @expass = keys(%{$stats{expass}});
     my $n_expass = scalar(@expass);
@@ -2241,7 +2231,7 @@ sub hub_statistics
         $cell .= "  <li>This corpus contains $n_expass lemmas that occur at least once with an <a>expl:pass</a> child. Examples: $examples</li>\n";
         $cell .= "</ul>\n";
     }
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     $cell = '';
     my @rflobj = keys(%{$stats{rflobj}});
     my $n_rflobj = scalar(@rflobj);
@@ -2278,9 +2268,8 @@ sub hub_statistics
         }
         $cell .= "</ul>\n";
     }
-    push(@table, $cell);
-    $cell = '';
-    $cell .= "<h3>Relations Overview</h3>\n\n";
+    add_cell($table, $cell); #-------------------------------------------------
+    $cell = "<h3>Relations Overview</h3>\n\n";
     $cell .= "<ul>\n";
     my @deprel_subtypes = grep {m/:/} (@deprelset);
     my %supertypes;
@@ -2313,9 +2302,9 @@ sub hub_statistics
         $cell .= "<li>The following $n_unused relation types are not used in this corpus at all: ".join(', ', map {"<a>$_</a>"} (@unused))."</li>\n";
     }
     $cell .= "</ul>\n";
-    push(@table, $cell);
+    add_cell($table, $cell); #-------------------------------------------------
     # Return the list of cells to the caller. They may want to combine it with reports on other treebanks before printing it.
-    return @table;
+    return $table;
 }
 
 
@@ -2353,4 +2342,70 @@ sub summarize_feature_for_hub
         $markdown .= "</li>\n";
     }
     return $markdown;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Initializes a data structure for table column that holds statistics about one
+# treebank. (Originally we had just a list of cells. But it turns out that we
+# want to align also individual feature values. And we don't know in advance
+# what values can occur.
+#------------------------------------------------------------------------------
+sub create_column
+{
+    my @column;
+    return \@column;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Adds a cell to a table column.
+#------------------------------------------------------------------------------
+sub add_cell
+{
+    my $column = shift;
+    my $cell = shift;
+    push(@{$column}, $cell);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Inserts a cell to the beginning of a column. We add the heading (name of the
+# treebank) after the column has been generated.
+#------------------------------------------------------------------------------
+sub insert_heading_cell
+{
+    my $column = shift;
+    my $cell = shift;
+    unshift(@{$column}, $cell);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a list of columns, returns a table (list of rows).
+#------------------------------------------------------------------------------
+sub create_table
+{
+    my @columns = @_;
+    my $max_cells = 0;
+    foreach my $column (@columns)
+    {
+        my $n_cells = scalar(@{$column});
+        $max_cells = $n_cells if($n_cells > $max_cells);
+    }
+    my @table;
+    for(my $i = 0; $i < $max_cells; $i++)
+    {
+        my @row;
+        foreach my $column (@columns)
+        {
+            push(@row, $column->[$i]);
+        }
+        push(@table, \@row);
+    }
+    return \@table;
 }
