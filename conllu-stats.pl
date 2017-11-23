@@ -2147,12 +2147,11 @@ sub hub_statistics
     }
     $cell .= "<h3>Other Features</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
-    $cell = '';
     my @otherfeatures = grep {!m/^(Gender|Animacy|Number|Case|PrepCase|Definite|Degree|Polarity|Variant|VerbForm|Mood|Aspect|Tense|Voice|Evident|PronType|NumType|Poss|Reflex|Person|Polite|Gender\[psor\]|Number\[psor\]|)$/} (@featureset);
     foreach my $feature (@otherfeatures)
     {
         # This function saves its own cells in the table.
-        $cell .= summarize_feature_for_hub($feature, $table, 0);
+        $cell = summarize_feature_for_hub($feature, $table, 0);
         add_cell($table, $cell, $feature); #-------------------------------------------------
     }
     # Syntax.
