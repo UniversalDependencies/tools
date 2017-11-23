@@ -2119,7 +2119,7 @@ sub hub_statistics
     foreach my $feature (qw(Gender Animacy Number Case PrepCase Definite))
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table);
+        summarize_feature_for_hub($feature, $table, 1);
     }
     $cell .= "<h3>Degree and Polarity</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2127,7 +2127,7 @@ sub hub_statistics
     foreach my $feature (qw(Degree Polarity Variant))
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table);
+        summarize_feature_for_hub($feature, $table, 1);
     }
     $cell .= "<h3>Verbal Features</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2135,7 +2135,7 @@ sub hub_statistics
     foreach my $feature (qw(Aspect Mood Tense Voice Evident))
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table);
+        summarize_feature_for_hub($feature, $table, 1);
     }
     $cell .= "<h3>Pronouns, Determiners, Quantifiers</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2143,7 +2143,7 @@ sub hub_statistics
     foreach my $feature ('PronType', 'NumType', 'Poss', 'Reflex', 'Person', 'Polite', 'Gender[psor]', 'Number[psor]')
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table);
+        summarize_feature_for_hub($feature, $table, 1);
     }
     $cell .= "<h3>Other Features</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2152,8 +2152,9 @@ sub hub_statistics
     foreach my $feature (@otherfeatures)
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table);
+        $cell .= summarize_feature_for_hub($feature, $table, 0);
     }
+    add_cell($table, $cell); #-------------------------------------------------
     # Syntax.
     $cell = '';
     $cell .= "<h2>Syntax</h2>\n\n";
@@ -2323,6 +2324,7 @@ sub summarize_feature_for_hub
 {
     my $feature = shift; # only feature name
     my $table = shift; # we may want to save multiple table cells
+    my $save_cells = shift; # 0 ... no. Return markdown instead; 1 ... yes, only one cell for the feature; 2 ... yes, one cell for every value
     my $markdown = '';
     my @values = sort(map {my $x = $_; $x =~ s/^\Q$feature=//; $x} (grep {m/^\Q$feature=/} (keys(%{$stats{fvpairs}}))));
     my $n_values = scalar(@values);
@@ -2348,7 +2350,11 @@ sub summarize_feature_for_hub
         $markdown .= "  </ul>\n";
         $markdown .= "</li>\n";
     }
-    add_cell($table, $markdown); #-------------------------------------------------
+    if($save_cells > 0)
+    {
+        add_cell($table, $markdown);
+    }
+    return $markdown;
 }
 
 
