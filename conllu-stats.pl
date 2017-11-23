@@ -2119,7 +2119,7 @@ sub hub_statistics
     foreach my $feature (qw(Gender Animacy Number Case PrepCase Definite))
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table, 1);
+        summarize_feature_for_hub($feature, $table, 2);
     }
     $cell .= "<h3>Degree and Polarity</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2127,7 +2127,7 @@ sub hub_statistics
     foreach my $feature (qw(Degree Polarity Variant))
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table, 1);
+        summarize_feature_for_hub($feature, $table, 2);
     }
     $cell .= "<h3>Verbal Features</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2135,7 +2135,7 @@ sub hub_statistics
     foreach my $feature (qw(Aspect Mood Tense Voice Evident))
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table, 1);
+        summarize_feature_for_hub($feature, $table, 2);
     }
     $cell .= "<h3>Pronouns, Determiners, Quantifiers</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2143,7 +2143,7 @@ sub hub_statistics
     foreach my $feature ('PronType', 'NumType', 'Poss', 'Reflex', 'Person', 'Polite', 'Gender[psor]', 'Number[psor]')
     {
         # This function saves its own cells in the table.
-        summarize_feature_for_hub($feature, $table, 1);
+        summarize_feature_for_hub($feature, $table, 2);
     }
     $cell .= "<h3>Other Features</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
@@ -2330,6 +2330,11 @@ sub summarize_feature_for_hub
     if($n_values > 0)
     {
         $markdown .= "<li><a>$feature</a>\n";
+        if($save_cells > 1)
+        {
+            add_cell($table, $markdown);
+            $markdown = '';
+        }
         $markdown .= "  <ul>\n";
         foreach my $value (@values)
         {
@@ -2345,6 +2350,12 @@ sub summarize_feature_for_hub
             }
             $markdown .= "      </ul>\n";
             $markdown .= "    </li>\n";
+            if($save_cells > 1)
+            {
+                $markdown .= "  </ul>\n";
+                add_cell($table, $markdown, $value);
+                $markdown = "  <ul>\n";
+            }
         }
         $markdown .= "  </ul>\n";
         $markdown .= "</li>\n";
