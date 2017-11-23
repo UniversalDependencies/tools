@@ -2087,25 +2087,7 @@ sub hub_statistics
     my $n_verbforms = scalar(@verbforms);
     if($n_verbforms > 0)
     {
-        $cell .= "<li>There are $n_verbforms <a href=\"../feat/VerbForm.html\">(de)verbal forms:</a>\n";
-        $cell .= "<ul>\n";
-        foreach my $verbform (@verbforms)
-        {
-            my $fvpair = "VerbForm=$verbform";
-            my @upostags = sort(keys(%{$stats{fvt}{$fvpair}}));
-            $cell .= "  <li>$verbform\n";
-            $cell .= "  <ul>\n";
-            foreach my $upos (@upostags)
-            {
-                my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
-                my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
-                $cell .= "    <li>$upos: ".join(', ', @examples)."</li>\n";
-            }
-            $cell .= "  </ul>\n";
-            $cell .= "  </li>\n";
-        }
-        $cell .= "</ul>\n";
-        $cell .= "</li>\n";
+        $cell .= "<li>There are $n_verbforms <a href=\"../feat/VerbForm.html\">(de)verbal forms:</a></li>\n";
     }
     else
     {
@@ -2113,6 +2095,26 @@ sub hub_statistics
     }
     $cell .= "</ul>\n";
     add_cell($table, $cell); #-------------------------------------------------
+    $cell = '';
+    foreach my $verbform (@verbforms)
+    {
+        my $fvpair = "VerbForm=$verbform";
+        my @upostags = sort(keys(%{$stats{fvt}{$fvpair}}));
+        $cell .= "<ul>\n";
+        $cell .= "  <li>$verbform\n";
+        $cell .= "  <ul>\n";
+        foreach my $upos (@upostags)
+        {
+            my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
+            my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
+            $cell .= "    <li>$upos: ".join(', ', @examples)."</li>\n";
+        }
+        $cell .= "  </ul>\n";
+        $cell .= "  </li>\n";
+        $cell .= "</ul>\n";
+        add_cell($table, $cell, $verbform);
+        $cell = '';
+    }
     $cell = "<h3>Nominal Features</h3>\n\n";
     add_cell($table, $cell); #-------------------------------------------------
     $cell = '';
