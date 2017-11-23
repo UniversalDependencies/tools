@@ -2354,11 +2354,11 @@ sub summarize_feature_for_hub
 #------------------------------------------------------------------------------
 sub create_column
 {
-    my @cells;
+    my %cells;
     my %column =
     (
         'counter' => 0,
-        'cells' => \@cells
+        'cells' => \%cells
     );
     return \%column;
 }
@@ -2372,8 +2372,22 @@ sub add_cell
 {
     my $column = shift;
     my $cell = shift;
-    $column->{counter}++;
-    push(@{$column->{cells}}, $cell);
+    my $label = shift;
+    # Labels within one section should be ordered alphabetically in the output.
+    # Unlabeled cells are new sections and should be ordered as they came in.
+    # So we will use the counter as their label. Sorting will be lexicographic,
+    # so we need some leading zeros; let's assume that the counter does not
+    # exceed 999.
+    if(defined($label))
+    {
+        $label = sprintf("%03d$label", $column->{counter});
+    }
+    else
+    {
+        $column->{counter}++;
+        $label = sprintf("%03d", $column->{counter});
+    }
+    $column->{cells}{$label} = $cell;
 }
 
 
@@ -2386,7 +2400,7 @@ sub insert_heading_cell
 {
     my $column = shift;
     my $cell = shift;
-    unshift(@{$column->{cells}}, $cell);
+    $column->{cells}{'000'} = $cell;
 }
 
 
@@ -2397,19 +2411,23 @@ sub insert_heading_cell
 sub create_table
 {
     my @columns = @_;
-    my $max_cells = 0;
+    my %labels;
     foreach my $column (@columns)
     {
-        my $n_cells = scalar(@{$column->{cells}});
-        $max_cells = $n_cells if($n_cells > $max_cells);
+        my @keys = keys(%{$column->{cells}});
+        foreach my $key (@keys)
+        {
+            $labels{$key}++;
+        }
     }
+    my @labels = sort(keys(%labels));
     my @table;
-    for(my $i = 0; $i < $max_cells; $i++)
+    foreach my $label (@labels)
     {
         my @row;
         foreach my $column (@columns)
         {
-            push(@row, $column->{cells}[$i]);
+            push(@row, $column->{cells}{$label});
         }
         push(@table, \@row);
     }
