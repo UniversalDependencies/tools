@@ -2354,8 +2354,13 @@ sub summarize_feature_for_hub
 #------------------------------------------------------------------------------
 sub create_column
 {
-    my @column;
-    return \@column;
+    my @cells;
+    my %column =
+    (
+        'counter' => 0,
+        'cells' => \@cells
+    );
+    return \%column;
 }
 
 
@@ -2367,7 +2372,8 @@ sub add_cell
 {
     my $column = shift;
     my $cell = shift;
-    push(@{$column}, $cell);
+    $column->{counter}++;
+    push(@{$column->{cells}}, $cell);
 }
 
 
@@ -2380,7 +2386,7 @@ sub insert_heading_cell
 {
     my $column = shift;
     my $cell = shift;
-    unshift(@{$column}, $cell);
+    unshift(@{$column->{cells}}, $cell);
 }
 
 
@@ -2394,7 +2400,7 @@ sub create_table
     my $max_cells = 0;
     foreach my $column (@columns)
     {
-        my $n_cells = scalar(@{$column});
+        my $n_cells = scalar(@{$column->{cells}});
         $max_cells = $n_cells if($n_cells > $max_cells);
     }
     my @table;
@@ -2403,7 +2409,7 @@ sub create_table
         my @row;
         foreach my $column (@columns)
         {
-            push(@row, $column->[$i]);
+            push(@row, $column->{cells}[$i]);
         }
         push(@table, \@row);
     }
