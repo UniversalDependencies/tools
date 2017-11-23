@@ -1770,6 +1770,13 @@ sub sort_and_truncate_examples
     # side-by-side, this treebank will have much wider column than it deserves
     # because the long tokens cannot be broken. Add zero-width spaces to
     # the examples and enable line breaks.
+    ###!!! Sampo:
+    # Just a minor technical suggestion: instead of inserting zero-width spaces,
+    # you may wish to try the CSS word-wrap / overflow-frap property, which
+    # could be either set as `style` for the element or in the global .css for
+    # some associated class, see e.g.
+    # https://www.w3schools.com/cssref/tryit.asp?filename=trycss3_word-wrap,
+    # https://caniuse.com/wordwrap/embed .
     @examples = map
     {
         if(length($_)>20)
