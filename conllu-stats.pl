@@ -513,7 +513,7 @@ sub process_treebank
     if($konfig{oformat} eq 'hub')
     {
         # The hub_statistics() function returns a reference to an array of MarkDown sections.
-        print(join("\n", @{hub_statistics()}));
+        print(get_column_text(hub_statistics()));
     }
     elsif($konfig{oformat} eq 'hubcompare')
     {
@@ -643,8 +643,8 @@ EOF
             print PAGE (join(' – ', map {my $x = $_; $x =~ s/\[(.*)\]/-$1/; "[$_]($tbkrecord->{code}-feat-$x.html)"} (@featureset)), "\n\n");
             print PAGE ("\#\# Relations\n\n");
             print PAGE (join(' – ', map {my $x = $_; $x =~ s/:/-/g; "[$_]($tbkrecord->{code}-dep-$x.html)"} (@deprelset)), "\n\n");
-            # The hub_statistics() function returns a list of MarkDown sections.
-            print PAGE (join("\n", hub_statistics()));
+            # The hub_statistics() function returns a column object with MarkDown sections inside.
+            print PAGE (get_column_text(hub_statistics()));
             close(PAGE);
         }
     }
@@ -2436,6 +2436,19 @@ sub insert_heading_cell
     my $column = shift;
     my $cell = shift;
     $column->{cells}{'000'} = $cell;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a column, returns the text (without table markup; this is used for the
+# single treebank statistics, without comparison to other treebanks).
+#------------------------------------------------------------------------------
+sub get_column_text
+{
+    my $column = shift;
+    my @keys = sort(keys(%{$column->{cells}}));
+    return join("\n", map {$column->{cells}{$_}} (@keys));
 }
 
 
