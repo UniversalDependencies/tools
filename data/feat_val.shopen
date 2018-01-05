@@ -13,6 +13,7 @@ Gender[obj]=Fem
 Gender[obj]=Neut
 Gender[psor]=Masc
 Gender[psor]=Fem
+Link=Yes
 Mood=Int
 NounClass=10
 NounType=Loc
