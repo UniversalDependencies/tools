@@ -1,5 +1,7 @@
+acl:cleft
 acl:relcl
 aux:pass
+ccomp:cleft
 csubj:pass
 det:poss
 det:predet
@@ -10,8 +12,12 @@ flat:foreign
 flat:name
 nsubj:pass
 obl:agent
+parataxis:appos
+parataxis:conj
+parataxis:discourse
 parataxis:hashtag
 parataxis:insert
-parataxis:obj
 parataxis:nsubj
+parataxis:obj
 vocative:mention
+
