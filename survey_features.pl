@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Scans all UD treebanks for language-specific features and values.
-# Copyright © 2016-2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016-2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -8,6 +8,12 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Getopt::Long;
+my $datapath = '.';
+GetOptions
+(
+    'datapath=s' => \$datapath
+);
 # If this script is called from the parent folder, how can it find the UD library?
 use lib 'tools';
 use udlib;
@@ -20,9 +26,13 @@ if(scalar(@ARGV)>=1 && $ARGV[0] eq 'debug')
 
 # This script expects to be invoked in the folder in which all the UD_folders
 # are placed.
-opendir(DIR, '.') or die('Cannot read the contents of the working folder');
+opendir(DIR, $datapath) or die("Cannot read the contents of '$datapath': $!");
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
+my $n = scalar(@folders);
+print STDERR ("Found $n UD folders in '$datapath'.\n");
+print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
+sleep(1);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 # There is now also the new list of languages in YAML in docs-automation; this one has also language families.
 my $languages_from_yaml = udlib::get_language_hash();
