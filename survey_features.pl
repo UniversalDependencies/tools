@@ -12,7 +12,7 @@ use Getopt::Long;
 my $datapath = '.';
 GetOptions
 (
-    'datapath=s' => \$datapath
+    'datapath=s' => \$datapath # UD_* folders will be sought in this folder
 );
 # If this script is called from the parent folder, how can it find the UD library?
 use lib 'tools';
@@ -32,7 +32,7 @@ closedir(DIR);
 my $n = scalar(@folders);
 print STDERR ("Found $n UD folders in '$datapath'.\n");
 print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
-sleep(1);
+sleep(5);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 # There is now also the new list of languages in YAML in docs-automation; this one has also language families.
 my $languages_from_yaml = udlib::get_language_hash();
@@ -138,6 +138,16 @@ foreach my $file (@featvalfiles)
 }
 chdir('../..');
 my @features = sort(keys(%hash));
+print <<EOF
+---
+layout: base
+title:  'Features and Values'
+udver: '2'
+---
+
+This is an automatically generated list of features and values (both universal and language-specific) that occur in the UD data.
+EOF
+;
 foreach my $f (@features)
 {
     my %ffolders;
