@@ -32,6 +32,10 @@ closedir(DIR);
 my $n = scalar(@folders);
 print STDERR ("Found $n UD folders in '$datapath'.\n");
 print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
+if($datapath eq '.')
+{
+    print STDERR ("Use the --datapath option to scan a different folder with UD treebanks.\n");
+}
 sleep(5);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 # There is now also the new list of languages in YAML in docs-automation; this one has also language families.
@@ -49,6 +53,7 @@ foreach my $language (keys(%{$languages_from_yaml}))
 }
 # Look for features in the data.
 my %hash;
+my %hittreebanks;
 my $n_treebanks = 0;
 foreach my $folder (@folders)
 {
@@ -73,6 +78,7 @@ foreach my $folder (@folders)
             $langcode = $langcodes{$language};
             $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
+            my $nhits = 0;
             chdir($folder) or die("Cannot enter folder $folder");
             # Look for the other files in the repository.
             opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
@@ -102,11 +108,17 @@ foreach my $folder (@folders)
                                 foreach my $v (@values)
                                 {
                                     $hash{$f}{$v}{$key}++;
+                                    $nhits++;
                                 }
                             }
                         }
                     }
                 }
+            }
+            # Remember treebanks where we found something.
+            if($nhits>0)
+            {
+                $hittreebanks{$key}++;
             }
             chdir('..') or die("Cannot return to the upper folder");
         }
@@ -123,6 +135,8 @@ foreach my $file (@featvalfiles)
     $file =~ m/^feat_val\.(.+)$/;
     my $key = $1;
     next if($key eq 'ud');
+    # Also skip treebanks where we did not find anything in the data (or did not find the data).
+    next if(!exists($hittreebanks{$key}));
     open(FILE, $file) or die("Cannot read $file: $!");
     while(<FILE>)
     {
