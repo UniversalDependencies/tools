@@ -1,12 +1,15 @@
 AdpType=Prep
+Compound=Yes
 Number[psor]=Plur
 Number[psor]=Sing
+NumForm=Digit
 NumForm=Roman
 NumForm=Word
 PartType=Inf
+PartType=Sub
 Position=Postnom
 Position=Prenom
 Strength=Strong
 Strength=Weak
+Variant=Long
 Variant=Short
-NumForm=Digit
