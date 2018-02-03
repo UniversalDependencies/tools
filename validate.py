@@ -209,6 +209,7 @@ def validate_cols(cols,tag_sets,args):
         validate_features(cols,tag_sets)
         validate_pos(cols,tag_sets)
         validate_character_constraints(cols)
+        validate_left_to_right_relations(cols)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     else:
@@ -382,6 +383,26 @@ def validate_character_constraints(cols):
     if any(deprel for head, deprel in deps_list(cols)
            if not re.match(r"^[a-z][a-z_-]*", deprel)):
         warn("Invalid value in DEPS: %s" % cols[DEPS],u"Syntax")
+
+
+##### Content-based tests (annotation guidelines)
+
+def validate_left_to_right_relations(cols):
+    """
+    Certain UD relations must always go left-to-right.
+    Here we currently check the rule for the basic dependencies.
+    The same should also be tested for the enhanced dependencies!
+    """
+    if is_multiword_token(cols):
+        return
+    if DEPREL >= len(cols):
+        return # this has been already reported in trees()
+    #if cols[DEPREL] == u"conj":
+    if re.match(r"^(conj|fixed|flat)", cols[DEPREL]):
+        ichild = int(cols[ID])
+        iparent = int(cols[HEAD])
+        if ichild < iparent:
+            warn(u"Violation of guidelines: relation %s must go left-to-right" % cols[DEPREL], u"Syntax")
 
 
 ##### Tests applicable to the whole tree
