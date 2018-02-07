@@ -18,14 +18,18 @@ if(!defined($folder))
 }
 my $record = get_ud_files_and_codes($folder);
 my $n = 0;
+my %lemmas;
 foreach my $file (@{$record->{files}})
 {
     open(FILE, "$folder/$file") or die("Cannot read $folder/$file: $!");
     while(<FILE>)
     {
-        if(m/^\d+\t/)
+        if(m/^\d+\t([^\t]+)\t([^\t]+)/)
         {
+            my $form = $1;
+            my $lemma = $2;
             $n++;
+            $lemmas{$lemma}++;
         }
     }
     close(FILE);
@@ -38,6 +42,9 @@ my $size = $lognn / log(1000000);
 #my $size = log($n*$n)/log(1000000000000);
 my $stars = sprintf("%d", $size*10+0.5)/2;
 #print("words = $n; size = $size (i.e. $stars stars)\n");
+# Lemmas. If the most frequent lemma is '_', we infer that the corpus does not annotate lemmas.
+my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
+my $lemmascore = $lemmas[0] eq '_' ? 0.01 : 1;
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
 ###!!! However, currently it is hardcoded here, based on language-treebank code.
@@ -52,7 +59,7 @@ elsif($record->{ltcode} eq 'fr_ftb')
     # This treebank is available for free but the user must obtain it separately.
     $availability = 0.1;
 }
-my $score = $availability * $size;
+my $score = $availability * (0.5 * $size + 0.5 * $lemmascore);
 $stars = sprintf("%d", $score*10+0.5)/2;
 #print("availability = $availability\n");
 #print("score = $score (i.e. $stars stars)\n");
