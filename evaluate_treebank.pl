@@ -44,7 +44,7 @@ my $stars = sprintf("%d", $size*10+0.5)/2;
 #print("words = $n; size = $size (i.e. $stars stars)\n");
 # Lemmas. If the most frequent lemma is '_', we infer that the corpus does not annotate lemmas.
 my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
-my $lemmascore = $lemmas[0] eq '_' ? 0.01 : 1;
+my $lemmascore = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : 1;
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
 ###!!! However, currently it is hardcoded here, based on language-treebank code.
