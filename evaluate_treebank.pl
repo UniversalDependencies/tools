@@ -63,7 +63,7 @@ elsif($record->{ltcode} eq 'fr_ftb')
 my $score = 0;
 if($n > 1)
 {
-    $score = $availability * (0.5 * $size + 0.5 * $lemmascore);
+    $score = $availability * (0.7 * $size + 0.3 * $lemmascore);
 }
 $stars = sprintf("%d", $score*10+0.5)/2;
 #print("availability = $availability\n");
