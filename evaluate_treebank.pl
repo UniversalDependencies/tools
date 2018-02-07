@@ -37,7 +37,7 @@ my $lognn = log(($n/1000)**2); $lognn = 0 if($lognn < 0);
 my $size = $lognn / log(1000000);
 #my $size = log($n*$n)/log(1000000000000);
 my $stars = sprintf("%d", $size*10+0.5)/2;
-print("words = $n; size = $size (i.e. $stars stars)\n");
+#print("words = $n; size = $size (i.e. $stars stars)\n");
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
 ###!!! However, currently it is hardcoded here, based on language-treebank code.
@@ -54,8 +54,9 @@ elsif($record->{ltcode} eq 'fr_ftb')
 }
 my $score = $availability * $size;
 $stars = sprintf("%d", $score*10+0.5)/2;
-print("availability = $availability\n");
-print("score = $score (i.e. $stars stars)\n");
+#print("availability = $availability\n");
+#print("score = $score (i.e. $stars stars)\n");
+print("$folder\t$score\t$stars\n");
 
 
 
