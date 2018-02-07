@@ -109,14 +109,6 @@ sub get_ud_files_and_codes
     my $tcode;
     if($n==0)
     {
-        if($section eq 'any')
-        {
-            print STDERR ("WARNING: No data found in '$path/$udfolder'\n");
-        }
-        else
-        {
-            print STDERR ("WARNING: No $section data found in '$path/$udfolder'\n");
-        }
     }
     else
     {
