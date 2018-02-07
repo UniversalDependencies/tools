@@ -59,7 +59,12 @@ elsif($record->{ltcode} eq 'fr_ftb')
     # This treebank is available for free but the user must obtain it separately.
     $availability = 0.1;
 }
-my $score = $availability * (0.5 * $size + 0.5 * $lemmascore);
+# Score of empty treebanks should be zero regardless of the other features.
+my $score = 0;
+if($n > 1)
+{
+    $score = $availability * (0.5 * $size + 0.5 * $lemmascore);
+}
 $stars = sprintf("%d", $score*10+0.5)/2;
 #print("availability = $availability\n");
 #print("score = $score (i.e. $stars stars)\n");
