@@ -92,6 +92,21 @@ $score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : $lsource;
 my $fsource = $metadata->{Features} eq 'manual native' ? 1 : $metadata->{Features} eq 'converted with corrections' ? 0.9 : $metadata->{Features} eq 'converted from manual' ? 0.8 : $metadata->{Features} eq 'automatic with corrections' ? 0.5 : 0.4;
 $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3*$fsource : $n_words_with_features<$n/2 ? 0.5*$fsource : 1*$fsource;
 #------------------------------------------------------------------------------
+# Udapi MarkBugs (does the content follow the guidelines?)
+# Measured only if udapy is found at the expected place.
+$score{udapi} = 1;
+if(-x 'udapi-python/bin/udapy')
+{
+    my $output = `(cat $folder/*.conllu | udapi-python/bin/udapy ud.MarkBugs 2>&1) | grep TOTAL`;
+    if($output =~ m/(\d+)/)
+    {
+        my $nbugs = $1;
+        $nbugs = $n if($nbugs>$n);
+        $score{udapi} = 1-$nbugs/$n;
+        $score{udapi} = 0.01 if($score{udapi}<0.01);
+    }
+}
+#------------------------------------------------------------------------------
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
 ###!!! However, currently it is hardcoded here, based on language-treebank code.
@@ -116,7 +131,8 @@ if($n > 1)
         'size'     => 7,
         'split'    => 1,
         'lemmas'   => 3,
-        'features' => 3
+        'features' => 3,
+        'udapi'    => 6
     );
     my @dimensions = sort(keys(%weights));
     my $wsum = 0;
