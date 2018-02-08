@@ -19,32 +19,47 @@ if(!defined($folder))
 my $record = get_ud_files_and_codes($folder);
 my $n = 0;
 my %lemmas;
+my $n_words_with_features = 0;
 foreach my $file (@{$record->{files}})
 {
     open(FILE, "$folder/$file") or die("Cannot read $folder/$file: $!");
     while(<FILE>)
     {
-        if(m/^\d+\t([^\t]+)\t([^\t]+)/)
+        if(m/^\d+\t/)
         {
-            my $form = $1;
-            my $lemma = $2;
+            s/\r?\n$//;
+            my @f = split(/\t/, $_);
+            my $form = $f[1];
+            my $lemma = $f[2];
+            my $feat = $f[5];
             $n++;
             $lemmas{$lemma}++;
+            $n_words_with_features++ if($feat ne '_');
         }
     }
     close(FILE);
 }
+# Compute partial scores.
+my %score;
+#------------------------------------------------------------------------------
 # Project size to the interval <0; 1>.
 $n = 1000000 if($n > 1000000);
 $n = 1 if($n <= 0);
 my $lognn = log(($n/1000)**2); $lognn = 0 if($lognn < 0);
-my $size = $lognn / log(1000000);
-#my $size = log($n*$n)/log(1000000000000);
-my $stars = sprintf("%d", $size*10+0.5)/2;
-#print("words = $n; size = $size (i.e. $stars stars)\n");
+$score{size} = $lognn / log(1000000);
+#------------------------------------------------------------------------------
 # Lemmas. If the most frequent lemma is '_', we infer that the corpus does not annotate lemmas.
 my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
-my $lemmascore = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : 1;
+$score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : 1;
+#------------------------------------------------------------------------------
+# Features. There is no universal rule how many features must be in every language.
+# It is only sure that every language can have some features. It may be misleading
+# to say that a treebank has features if at least one feature has been observed:
+# Some treebanks have just NumType=Card with every NUM but nothing else (and this
+# is just a consequence of how Interset works). Therefore we will distinguish several
+# very coarse-grained degrees.
+$score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3 : $n_words_with_features<$n/2 ? 0.5 : 1;
+#------------------------------------------------------------------------------
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
 ###!!! However, currently it is hardcoded here, based on language-treebank code.
@@ -59,15 +74,32 @@ elsif($record->{ltcode} eq 'fr_ftb')
     # This treebank is available for free but the user must obtain it separately.
     $availability = 0.1;
 }
+#------------------------------------------------------------------------------
 # Score of empty treebanks should be zero regardless of the other features.
 my $score = 0;
 if($n > 1)
 {
-    $score = $availability * (0.7 * $size + 0.3 * $lemmascore);
+    my %weights =
+    (
+        'size'     => 7,
+        'lemmas'   => 3,
+        'features' => 3
+    );
+    my @dimensions = keys(%weights);
+    my $wsum = 0;
+    foreach my $d (@dimensions)
+    {
+        $wsum += $weights{$d};
+    }
+    foreach my $d (@dimensions)
+    {
+        my $nweight = $weights{$d} / $wsum;
+        $score += $nweight * $score{$d};
+    }
+    # The availability dimension is a show stopper. Instead of weighted combination, we multiply the score by it.
+    $score *= $availability;
 }
-$stars = sprintf("%d", $score*10+0.5)/2;
-#print("availability = $availability\n");
-#print("score = $score (i.e. $stars stars)\n");
+my $stars = sprintf("%d", $score*10+0.5)/2;
 print("$folder\t$score\t$stars\n");
 
 
