@@ -24,7 +24,7 @@ if(!defined($folder))
 {
     die("Usage: $0 path-to-ud-folder");
 }
-my $record = get_ud_files_and_codes($folder);
+my $record = udlib::get_ud_files_and_codes($folder);
 my $n = 0;
 my $ntrain = 0;
 my $ndev = 0;
@@ -147,86 +147,3 @@ if($verbose)
     print STDERR ("STARS = $stars\n");
 }
 print("$folder\t$score\t$stars\n");
-
-
-
-#==============================================================================
-# The following functions are available in tools/udlib.pm. However, udlib uses
-# JSON::Parse, which is not installed on quest, so we cannot use it here.
-#==============================================================================
-
-
-
-#------------------------------------------------------------------------------
-# Scans a UD folder for CoNLL-U files. Uses the file names to guess the
-# language code.
-#------------------------------------------------------------------------------
-sub get_ud_files_and_codes
-{
-    my $udfolder = shift; # e.g. "UD_Czech"; not the full path
-    my $path = shift; # path to the superordinate folder; default: the current folder
-    $path = '.' if(!defined($path));
-    my $name;
-    my $langname;
-    my $tbkext;
-    if($udfolder =~ m/^UD_(([^-]+)(?:-(.+))?)$/)
-    {
-        $name = $1;
-        $langname = $2;
-        $tbkext = $3;
-        $langname =~ s/_/ /g;
-    }
-    else
-    {
-        print STDERR ("WARNING: Unexpected folder name '$udfolder'\n");
-    }
-    # Look for training, development or test data.
-    my $section = 'any'; # training|development|test|any
-    my %section_re =
-    (
-        # Training data in UD_Czech are split to four files.
-        'training'    => 'train(-[clmv])?',
-        'development' => 'dev',
-        'test'        => 'test',
-        'any'         => '(train(-[clmv])?|dev|test)'
-    );
-    opendir(DIR, "$path/$udfolder") or die("Cannot read the contents of '$path/$udfolder': $!");
-    my @files = sort(grep {-f "$path/$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));
-    closedir(DIR);
-    my $n = scalar(@files);
-    my $code;
-    my $lcode;
-    my $tcode;
-    if($n==0)
-    {
-    }
-    else
-    {
-        if($n>1 && $section ne 'any')
-        {
-            print STDERR ("WARNING: Folder '$path/$udfolder' contains multiple ($n) files that look like $section data.\n");
-        }
-        $files[0] =~ m/^(.+)-ud-$section_re{$section}\.conllu$/;
-        $lcode = $code = $1;
-        if($code =~ m/^([^_]+)_(.+)$/)
-        {
-            $lcode = $1;
-            $tcode = $2;
-        }
-    }
-    my %record =
-    (
-        'folder' => $udfolder,
-        'name'   => $name,
-        'lname'  => $langname,
-        'tname'  => $tbkext,
-        'code'   => $code,
-        'ltcode' => $code, # for compatibility with some tools, this code is provided both as 'code' and as 'ltcode'
-        'lcode'  => $lcode,
-        'tcode'  => $tcode,
-        'files'  => \@files,
-        $section => $files[0]
-    );
-    #print STDERR ("$udfolder\tlname $langname\ttname $tbkext\tcode $code\tlcode $lcode\ttcode $tcode\t$section $files[0]\n");
-    return \%record;
-}
