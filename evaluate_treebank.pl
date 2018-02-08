@@ -114,7 +114,7 @@ if($n > 1)
         'lemmas'   => 3,
         'features' => 3
     );
-    my @dimensions = keys(%weights);
+    my @dimensions = sort(keys(%weights));
     my $wsum = 0;
     foreach my $d (@dimensions)
     {
