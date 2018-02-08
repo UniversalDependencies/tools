@@ -101,8 +101,10 @@ if(-x 'udapi-python/bin/udapy')
     if($output =~ m/(\d+)/)
     {
         my $nbugs = $1;
-        $nbugs = $n if($nbugs>$n);
-        $score{udapi} = 1-$nbugs/$n;
+        # Evaluate the proportion of bugs to the size of the treebank.
+        # If half of the tokens (or more) have bugs, it is terrible enough; let's set the ceiling at 50%.
+        $nbugs = $n/2 if($nbugs>$n/2);
+        $score{udapi} = 1-$nbugs/($n/2);
         $score{udapi} = 0.01 if($score{udapi}<0.01);
     }
 }
