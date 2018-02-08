@@ -25,6 +25,7 @@ if(!defined($folder))
     die("Usage: $0 path-to-ud-folder");
 }
 my $record = udlib::get_ud_files_and_codes($folder);
+my $metadata = udlib::read_readme($folder);
 my $n = 0;
 my $ntrain = 0;
 my $ndev = 0;
@@ -79,7 +80,8 @@ $score{split} += 0.33 if($ntest >= 10000);
 #------------------------------------------------------------------------------
 # Lemmas. If the most frequent lemma is '_', we infer that the corpus does not annotate lemmas.
 my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
-$score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : 1;
+my $lsource = $metadata->{Lemmas} eq 'manual native' ? 1 : $metadata->{Lemmas} eq 'converted with corrections' ? 0.9 : $metadata->{Lemmas} eq 'converted from manual' ? 0.8 : $metadata->{Lemmas} eq 'automatic with corrections' ? 0.5 : 0.4;
+$score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : $lsource;
 #------------------------------------------------------------------------------
 # Features. There is no universal rule how many features must be in every language.
 # It is only sure that every language can have some features. It may be misleading
@@ -87,7 +89,8 @@ $score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : 1;
 # Some treebanks have just NumType=Card with every NUM but nothing else (and this
 # is just a consequence of how Interset works). Therefore we will distinguish several
 # very coarse-grained degrees.
-$score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3 : $n_words_with_features<$n/2 ? 0.5 : 1;
+my $fsource = $metadata->{Features} eq 'manual native' ? 1 : $metadata->{Features} eq 'converted with corrections' ? 0.9 : $metadata->{Features} eq 'converted from manual' ? 0.8 : $metadata->{Features} eq 'automatic with corrections' ? 0.5 : 0.4;
+$score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3*$fsource : $n_words_with_features<$n/2 ? 0.5*$fsource : 1*$fsource;
 #------------------------------------------------------------------------------
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
