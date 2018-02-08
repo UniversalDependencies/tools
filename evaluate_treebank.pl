@@ -18,6 +18,9 @@ if(!defined($folder))
 }
 my $record = get_ud_files_and_codes($folder);
 my $n = 0;
+my $ntrain = 0;
+my $ndev = 0;
+my $ntest = 0;
 my %lemmas;
 my $n_words_with_features = 0;
 foreach my $file (@{$record->{files}})
@@ -33,6 +36,18 @@ foreach my $file (@{$record->{files}})
             my $lemma = $f[2];
             my $feat = $f[5];
             $n++;
+            if($file =~ m/ud-train/)
+            {
+                $ntrain++;
+            }
+            elsif($file =~ m/ud-dev/)
+            {
+                $ndev++;
+            }
+            elsif($file =~ m/ud-test/)
+            {
+                $ntest++;
+            }
             $lemmas{$lemma}++;
             $n_words_with_features++ if($feat ne '_');
         }
@@ -42,11 +57,17 @@ foreach my $file (@{$record->{files}})
 # Compute partial scores.
 my %score;
 #------------------------------------------------------------------------------
-# Project size to the interval <0; 1>.
+# Size. Project size to the interval <0; 1>.
 $n = 1000000 if($n > 1000000);
 $n = 1 if($n <= 0);
 my $lognn = log(($n/1000)**2); $lognn = 0 if($lognn < 0);
 $score{size} = $lognn / log(1000000);
+#------------------------------------------------------------------------------
+# Split. This is also very much related to size, but per individual parts.
+$score{split} = 0.01;
+$score{split} += 0.33 if($ntrain > 10000);
+$score{split} += 0.33 if($ndev >= 10000);
+$score{split} += 0.33 if($ntest >= 10000);
 #------------------------------------------------------------------------------
 # Lemmas. If the most frequent lemma is '_', we infer that the corpus does not annotate lemmas.
 my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
@@ -82,6 +103,7 @@ if($n > 1)
     my %weights =
     (
         'size'     => 7,
+        'split'    => 1,
         'lemmas'   => 3,
         'features' => 3
     );
