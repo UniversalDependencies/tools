@@ -9,6 +9,13 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Getopt::Long;
+
+my $verbose = 0;
+GetOptions
+(
+    'verbose' => \$verbose
+);
 
 # Path to the local copy of the UD repository (e.g., UD_Czech).
 my $folder = $ARGV[0];
@@ -117,11 +124,27 @@ if($n > 1)
     {
         my $nweight = $weights{$d} / $wsum;
         $score += $nweight * $score{$d};
+        if($verbose)
+        {
+            print STDERR ("(weight=$nweight) * (score{$d}=$score{$d})\n");
+        }
     }
     # The availability dimension is a show stopper. Instead of weighted combination, we multiply the score by it.
+    if($verbose)
+    {
+        print STDERR ("(TOTAL score=$score) * (availability=$availability) = ");
+    }
     $score *= $availability;
+    if($verbose)
+    {
+        print STDERR ("$score\n");
+    }
 }
 my $stars = sprintf("%d", $score*10+0.5)/2;
+if($verbose)
+{
+    print STDERR ("STARS = $stars\n");
+}
 print("$folder\t$score\t$stars\n");
 
 
