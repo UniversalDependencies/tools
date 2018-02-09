@@ -23,6 +23,7 @@ Number[acc]=Plur
 Number[dat]=Sing
 Number[dat]=Plur
 Number[obj]=Sing
+Number[obj]=Dual
 Number[obj]=Plur
 Number[psor]=Sing
 Number[psor]=Plur
