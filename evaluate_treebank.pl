@@ -31,7 +31,9 @@ my $ntrain = 0;
 my $ndev = 0;
 my $ntest = 0;
 my %lemmas;
+my %tags;
 my $n_words_with_features = 0;
+my %udeprels;
 foreach my $file (@{$record->{files}})
 {
     open(FILE, "$folder/$file") or die("Cannot read $folder/$file: $!");
@@ -43,7 +45,10 @@ foreach my $file (@{$record->{files}})
             my @f = split(/\t/, $_);
             my $form = $f[1];
             my $lemma = $f[2];
+            my $upos = $f[3];
             my $feat = $f[5];
+            my $udeprel = $f[7];
+            $udeprel =~ s/:.*$//;
             $n++;
             if($file =~ m/ud-train/)
             {
@@ -58,7 +63,9 @@ foreach my $file (@{$record->{files}})
                 $ntest++;
             }
             $lemmas{$lemma}++;
+            $tags{$upos}++;
             $n_words_with_features++ if($feat ne '_');
+            $udeprels{$udeprel}++;
         }
     }
     close(FILE);
@@ -82,6 +89,13 @@ $score{split} += 0.33 if($ntest >= 10000);
 my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
 my $lsource = $metadata->{Lemmas} eq 'manual native' ? 1 : $metadata->{Lemmas} eq 'converted with corrections' ? 0.9 : $metadata->{Lemmas} eq 'converted from manual' ? 0.8 : $metadata->{Lemmas} eq 'automatic with corrections' ? 0.5 : 0.4;
 $score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : $lsource;
+#------------------------------------------------------------------------------
+# Tags. How many of the 17 universal POS tags have been seen at least once?
+# Some languages may not have use for some tags, and some tags may be very rare.
+# But for comparison within one language this is useful. If a tag exists in the
+# language but the corpus does not contain it, maybe it cannot distinguish it.
+$score{tags} = scalar(keys(%tags)) / 17;
+$score{tags} = 0.01 if($score{tags}<0.01);
 #------------------------------------------------------------------------------
 # Features. There is no universal rule how many features must be in every language.
 # It is only sure that every language can have some features. It may be misleading
@@ -133,6 +147,7 @@ if($n > 1)
         'size'     => 7,
         'split'    => 1,
         'lemmas'   => 3,
+        'tags'     => 3,
         'features' => 3,
         'udapi'    => 6
     );
