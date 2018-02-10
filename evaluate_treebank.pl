@@ -84,7 +84,7 @@ if($verbose)
 {
     print STDERR ("Size: $n words (nodes).\n");
     print STDERR ("Size: min(0, log((N/1000)**2)) = $lognn.\n");
-    print STDERR ("Size: maximum score is for 1000000 words or more.\n");
+    printf STDERR ("Size: maximum value %f is for 1000000 words or more.\n", log(1000000));
 }
 #------------------------------------------------------------------------------
 # Split. This is also very much related to size, but per individual parts.
@@ -202,7 +202,7 @@ if(-x 'udapi-python/bin/udapy')
     if($verbose)
     {
         print STDERR ("Udapi: found $nbugs bugs.\n");
-        print STDERR ("Udapi: worst expected case (threshold) is one bug per two tokens. There are $n tokens.\n");
+        print STDERR ("Udapi: worst expected case (threshold) is one bug per two words. There are $n words.\n");
     }
 }
 elsif($verbose)
