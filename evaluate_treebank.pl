@@ -111,7 +111,7 @@ $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/
 # some relations may be very rare. But for comparison within one language this
 # is useful. If a relation exists in the language but the corpus does not
 # contain it, maybe it cannot distinguish it.
-$score{udeprels} = scalar(keys(%udeprels)) / 17;
+$score{udeprels} = scalar(keys(%udeprels)) / 37;
 $score{udeprels} = 0.01 if($score{udeprels}<0.01);
 #------------------------------------------------------------------------------
 # Udapi MarkBugs (does the content follow the guidelines?)
