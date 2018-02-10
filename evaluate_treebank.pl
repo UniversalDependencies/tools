@@ -150,7 +150,7 @@ $score{tags} = (scalar(keys(%tags)) / $maxtags) * $tsource;
 $score{tags} = 0.01 if($score{tags}<0.01);
 if($verbose)
 {
-    print STDERR ("Universal POS tags: %d out of $maxtags found in the corpus.\n");
+    printf STDERR ("Universal POS tags: %d out of $maxtags found in the corpus.\n", scalar(keys(%tags)));
     print STDERR ("Universal POS tags: source of annotation (from README) factor is $tsource.\n");
 }
 #------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ $score{udeprels} = (scalar(keys(%udeprels)) / $maxudeprels) * $rsource;
 $score{udeprels} = 0.01 if($score{udeprels}<0.01);
 if($verbose)
 {
-    print STDERR ("Universal relations: %d out of $maxudeprels found in the corpus.\n");
+    printf STDERR ("Universal relations: %d out of $maxudeprels found in the corpus.\n", scalar(keys(%udeprels)));
     print STDERR ("Universal relations: source of annotation (from README) factor is $rsource.\n");
 }
 #------------------------------------------------------------------------------
