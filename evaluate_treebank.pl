@@ -185,7 +185,8 @@ if($n > 1)
         $score += $nweight * $score{$d};
         if($verbose)
         {
-            print STDERR ("(weight=$nweight) * (score{$d}=$score{$d})\n");
+            my $wscore = $nweight * $score{$d};
+            print STDERR ("(weight=$nweight) * (score{$d}=$score{$d}) = $wscore\n");
         }
     }
     # The availability dimension is a show stopper. Instead of weighted combination, we multiply the score by it.
