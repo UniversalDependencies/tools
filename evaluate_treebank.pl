@@ -80,25 +80,79 @@ $n = 1000000 if($n > 1000000);
 $n = 1 if($n <= 0);
 my $lognn = log(($n/1000)**2); $lognn = 0 if($lognn < 0);
 $score{size} = $lognn / log(1000000);
+if($verbose)
+{
+    print STDERR ("Size: $n words (nodes).\n");
+    print STDERR ("Size: min(0, log((N/1000)**2)) = $lognn.\n");
+    print STDERR ("Size: maximum score is for 1000000 words or more.\n");
+}
 #------------------------------------------------------------------------------
 # Split. This is also very much related to size, but per individual parts.
 $score{split} = 0.01;
 $score{split} += 0.33 if($ntrain > 10000);
 $score{split} += 0.33 if($ndev >= 10000);
 $score{split} += 0.33 if($ntest >= 10000);
+if($verbose)
+{
+    if($ntrain > 10000)
+    {
+        print STDERR ("Split: Found more than 10000 training words.\n");
+    }
+    else
+    {
+        print STDERR ("Split: Did not find more than 10000 training words.\n");
+    }
+    if($ndev >= 10000)
+    {
+        print STDERR ("Split: Found at least 10000 development words.\n");
+    }
+    else
+    {
+        print STDERR ("Split: Did not find at least 10000 development words.\n");
+    }
+    if($ntest >= 10000)
+    {
+        print STDERR ("Split: Found at least 10000 test words.\n");
+    }
+    else
+    {
+        print STDERR ("Split: Did not find at least 10000 test words.\n");
+    }
+}
 #------------------------------------------------------------------------------
 # Lemmas. If the most frequent lemma is '_', we infer that the corpus does not annotate lemmas.
 my @lemmas = sort {$lemmas{$b} <=> $lemmas{$a}} (keys(%lemmas));
 my $lsource = $metadata->{Lemmas} eq 'manual native' ? 1 : $metadata->{Lemmas} eq 'converted with corrections' ? 0.9 : $metadata->{Lemmas} eq 'converted from manual' ? 0.8 : $metadata->{Lemmas} eq 'automatic with corrections' ? 0.5 : 0.4;
 $score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : $lsource;
+if($verbose)
+{
+    if(scalar(@lemmas)<1)
+    {
+        print STDERR ("Lemmas: No lemmas found.\n");
+    }
+    elsif($lemmas[0] eq '_')
+    {
+        print STDERR ("Lemmas: '_' is the most frequent lemma.\n");
+    }
+    else
+    {
+        print STDERR ("Lemmas: source of annotation (from README) factor is $lsource.\n");
+    }
+}
 #------------------------------------------------------------------------------
 # Tags. How many of the 17 universal POS tags have been seen at least once?
 # Some languages may not have use for some tags, and some tags may be very rare.
 # But for comparison within one language this is useful. If a tag exists in the
 # language but the corpus does not contain it, maybe it cannot distinguish it.
 my $tsource = $metadata->{UPOS} eq 'manual native' ? 1 : $metadata->{UPOS} eq 'converted with corrections' ? 0.9 : $metadata->{UPOS} eq 'converted from manual' ? 0.8 : 0.1;
-$score{tags} = (scalar(keys(%tags)) / 17) * $tsource;
+my $maxtags = 17;
+$score{tags} = (scalar(keys(%tags)) / $maxtags) * $tsource;
 $score{tags} = 0.01 if($score{tags}<0.01);
+if($verbose)
+{
+    print STDERR ("Universal POS tags: %d out of $maxtags found in the corpus.\n");
+    print STDERR ("Universal POS tags: source of annotation (from README) factor is $tsource.\n");
+}
 #------------------------------------------------------------------------------
 # Features. There is no universal rule how many features must be in every language.
 # It is only sure that every language can have some features. It may be misleading
@@ -108,6 +162,11 @@ $score{tags} = 0.01 if($score{tags}<0.01);
 # very coarse-grained degrees.
 my $fsource = $metadata->{Features} eq 'manual native' ? 1 : $metadata->{Features} eq 'converted with corrections' ? 0.9 : $metadata->{Features} eq 'converted from manual' ? 0.8 : $metadata->{Features} eq 'automatic with corrections' ? 0.5 : 0.4;
 $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3*$fsource : $n_words_with_features<$n/2 ? 0.5*$fsource : 1*$fsource;
+if($verbose)
+{
+    print STDERR ("Features: $n_words_with_features out of $n total words has one or more features.\n");
+    print STDERR ("Features: source of annotation (from README) factor is $fsource.\n");
+}
 #------------------------------------------------------------------------------
 # Dependency relations. How many of the 37 universal relation types have been
 # seen at least once? Some languages may not have use for some relations, and
@@ -115,8 +174,14 @@ $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/
 # is useful. If a relation exists in the language but the corpus does not
 # contain it, maybe it cannot distinguish it.
 my $rsource = $metadata->{Relations} eq 'manual native' ? 1 : $metadata->{Relations} eq 'converted with corrections' ? 0.9 : $metadata->{Relations} eq 'converted from manual' ? 0.8 : 0.1;
-$score{udeprels} = (scalar(keys(%udeprels)) / 37) * $rsource;
+my $maxudeprels = 37;
+$score{udeprels} = (scalar(keys(%udeprels)) / $maxudeprels) * $rsource;
 $score{udeprels} = 0.01 if($score{udeprels}<0.01);
+if($verbose)
+{
+    print STDERR ("Universal relations: %d out of $maxudeprels found in the corpus.\n");
+    print STDERR ("Universal relations: source of annotation (from README) factor is $rsource.\n");
+}
 #------------------------------------------------------------------------------
 # Udapi MarkBugs (does the content follow the guidelines?)
 # Measured only if udapy is found at the expected place.
@@ -124,15 +189,25 @@ $score{udapi} = 1;
 if(-x 'udapi-python/bin/udapy')
 {
     my $output = `(cat $folder/*.conllu | udapi-python/bin/udapy ud.MarkBugs 2>&1) | grep TOTAL`;
+    my $nbugs = 0;
     if($output =~ m/(\d+)/)
     {
-        my $nbugs = $1;
+        $nbugs = $1;
         # Evaluate the proportion of bugs to the size of the treebank.
         # If half of the tokens (or more) have bugs, it is terrible enough; let's set the ceiling at 50%.
         $nbugs = $n/2 if($nbugs>$n/2);
         $score{udapi} = 1-$nbugs/($n/2);
         $score{udapi} = 0.01 if($score{udapi}<0.01);
     }
+    if($verbose)
+    {
+        print STDERR ("Udapi: found $nbugs bugs.\n");
+        print STDERR ("Udapi: worst expected case (threshold) is one bug per two tokens. There are $n tokens.\n");
+    }
+}
+elsif($verbose)
+{
+    print STDERR ("WARNING: Udapi not found. The content-based tests were not performed.\n");
 }
 #------------------------------------------------------------------------------
 # Genres. Idea: an attempt at a balance of many genres provides for a more
@@ -146,6 +221,10 @@ my @genres = grep {my $g = $_; scalar(grep {$_ eq $g} (@official_genres));} (spl
 my $ngenres = scalar(@genres);
 $ngenres = 1 if($ngenres<1);
 $score{genres} = $ngenres / scalar(@official_genres);
+if($verbose)
+{
+    printf STDERR ("Genres: found %d out of %d known.\n", $ngenres, scalar(@official_genres));
+}
 #------------------------------------------------------------------------------
 # Evaluate availability. If the most frequent form is '_', we infer that the
 # corpus does not contain the underlying text (which is done for copyright reasons;
@@ -154,6 +233,21 @@ my @forms = sort {$forms{$b} <=> $forms{$a}} (keys(%forms));
 # At the same time, such corpora should be also labeled in the README metadata
 # item "Includes text".
 my $availability = $metadata->{'Includes text'} !~ m/^yes$/i || scalar(@forms) < 1 || $forms[0] eq '_' ? 0.1 : 1;
+if($verbose)
+{
+    if($metadata->{'Includes text'} !~ m/^yes$/i)
+    {
+        print STDERR ("Availability: README does not say Includes text: yes\n");
+    }
+    if(scalar(@forms) < 1)
+    {
+        print STDERR ("Availability: No words found.\n");
+    }
+    elsif($forms[0] eq '_')
+    {
+        print STDERR ("Availability: '_' is the most frequent form.\n");
+    }
+}
 #------------------------------------------------------------------------------
 # Score of empty treebanks should be zero regardless of the other features.
 my $score = 0;
