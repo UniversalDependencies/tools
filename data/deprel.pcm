@@ -1,4 +1,5 @@
 acl:relcl
 advmod:emph
+compound:prt
 compound:redup
 compound:svc
