@@ -190,19 +190,20 @@ if(-x 'udapi-python/bin/udapy')
 {
     my $output = `(cat $folder/*.conllu | udapi-python/bin/udapy ud.MarkBugs 2>&1) | grep TOTAL`;
     my $nbugs = 0;
+    my $maxwordsperbug = 10; # if there are more bugs than every n-th word, we will count maximum error rate
     if($output =~ m/(\d+)/)
     {
         $nbugs = $1;
         # Evaluate the proportion of bugs to the size of the treebank.
         # If half of the tokens (or more) have bugs, it is terrible enough; let's set the ceiling at 50%.
-        $nbugs = $n/2 if($nbugs>$n/2);
-        $score{udapi} = 1-$nbugs/($n/2);
+        my $nbugs1 = $nbugs>$n/$maxwordsperbug ? $n/$maxwordsperbug : $nbugs;
+        $score{udapi} = 1-$nbugs1/($n/$maxwordsperbug);
         $score{udapi} = 0.01 if($score{udapi}<0.01);
     }
     if($verbose)
     {
         print STDERR ("Udapi: found $nbugs bugs.\n");
-        print STDERR ("Udapi: worst expected case (threshold) is one bug per two words. There are $n words.\n");
+        print STDERR ("Udapi: worst expected case (threshold) is one bug per $maxwordsperbug words. There are $n words.\n");
     }
 }
 elsif($verbose)
