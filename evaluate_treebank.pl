@@ -131,6 +131,18 @@ if(-x 'udapi-python/bin/udapy')
     }
 }
 #------------------------------------------------------------------------------
+# Genres. Idea: an attempt at a balance of many genres provides for a more
+# versatile dataset. Of course this is just an approximation. We cannot verify
+# how well the authors described the genres in their corpus and how much they
+# managed to make it balanced. We look only for the listed, "officially known"
+# genres. (Sometimes there are typos in the READMEs and besides "news", people
+# also use "new" or "newswire"; this is undesirable.)
+my @official_genres = ('academic', 'bible', 'blog', 'fiction', 'grammar-examples', 'legal', 'medical', 'news', 'nonfiction', 'reviews', 'social', 'spoken', 'web', 'wiki');
+my @genres = grep {my $g = $_; scalar(grep {$_ eq $g} (@official_genres));} (split(/\s+/, $metadata->{Genre}));
+my $ngenres = scalar(@genres);
+$ngenres = 1 if($ngenres<1);
+$score{genres} = $ngenres / scalar(@official_genres);
+#------------------------------------------------------------------------------
 # Evaluate availability.
 ###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
 ###!!! However, currently it is hardcoded here, based on language-treebank code.
@@ -158,7 +170,8 @@ if($n > 1)
         'tags'     => 3,
         'features' => 3,
         'udeprels' => 3,
-        'udapi'    => 9
+        'udapi'    => 12,
+        'genres'   => 6
     );
     my @dimensions = sort(keys(%weights));
     my $wsum = 0;
