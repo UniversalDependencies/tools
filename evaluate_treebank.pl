@@ -30,6 +30,7 @@ my $n = 0;
 my $ntrain = 0;
 my $ndev = 0;
 my $ntest = 0;
+my %forms;
 my %lemmas;
 my %tags;
 my $n_words_with_features = 0;
@@ -62,6 +63,7 @@ foreach my $file (@{$record->{files}})
             {
                 $ntest++;
             }
+            $forms{$form}++;
             $lemmas{$lemma}++;
             $tags{$upos}++;
             $n_words_with_features++ if($feat ne '_');
@@ -145,20 +147,13 @@ my $ngenres = scalar(@genres);
 $ngenres = 1 if($ngenres<1);
 $score{genres} = $ngenres / scalar(@official_genres);
 #------------------------------------------------------------------------------
-# Evaluate availability.
-###!!! We should read the information from the README file and verify in the data that '_' is not the most frequent word form!
-###!!! However, currently it is hardcoded here, based on language-treebank code.
-my $availability = 1;
-if($record->{ltcode} =~ m/^(ja_ktc|en_esl|ko_sejong|ar_nyuad)$/)
-{
-    # These treebanks are not available for free.
-    $availability = 0.01;
-}
-elsif($record->{ltcode} eq 'fr_ftb')
-{
-    # This treebank is available for free but the user must obtain it separately.
-    $availability = 0.1;
-}
+# Evaluate availability. If the most frequent form is '_', we infer that the
+# corpus does not contain the underlying text (which is done for copyright reasons;
+# the user must obtain the underlying text elsewhere and merge it with UD annotation).
+my @forms = sort {$forms{$b} <=> $forms{$a}} (keys(%forms));
+# At the same time, such corpora should be also labeled in the README metadata
+# item "Includes text".
+my $availability = $metadata->{'Includes text'} !~ m/^yes$/i || scalar(@forms) < 1 || $forms[0] eq '_' ? 0.1 : 1;
 #------------------------------------------------------------------------------
 # Score of empty treebanks should be zero regardless of the other features.
 my $score = 0;
