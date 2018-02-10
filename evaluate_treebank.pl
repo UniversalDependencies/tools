@@ -164,7 +164,7 @@ my $fsource = $metadata->{Features} eq 'manual native' ? 1 : $metadata->{Feature
 $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3*$fsource : $n_words_with_features<$n/2 ? 0.5*$fsource : 1*$fsource;
 if($verbose)
 {
-    print STDERR ("Features: $n_words_with_features out of $n total words has one or more features.\n");
+    print STDERR ("Features: $n_words_with_features out of $n total words have one or more features.\n");
     print STDERR ("Features: source of annotation (from README) factor is $fsource.\n");
 }
 #------------------------------------------------------------------------------
@@ -262,7 +262,7 @@ if($n > 1)
         'features' => 3,
         'udeprels' => 3,
         'udapi'    => 12,
-        'genres'   => 6
+        'genres'   => 3
     );
     my @dimensions = sort(keys(%weights));
     my $wsum = 0;
