@@ -94,7 +94,8 @@ $score{lemmas} = (scalar(@lemmas) < 1 || $lemmas[0] eq '_') ? 0.01 : $lsource;
 # Some languages may not have use for some tags, and some tags may be very rare.
 # But for comparison within one language this is useful. If a tag exists in the
 # language but the corpus does not contain it, maybe it cannot distinguish it.
-$score{tags} = scalar(keys(%tags)) / 17;
+my $tsource = $metadata->{UPOS} eq 'manual native' ? 1 : $metadata->{UPOS} eq 'converted with corrections' ? 0.9 : $metadata->{UPOS} eq 'converted from manual' ? 0.8 : 0.1;
+$score{tags} = (scalar(keys(%tags)) / 17) * $tsource;
 $score{tags} = 0.01 if($score{tags}<0.01);
 #------------------------------------------------------------------------------
 # Features. There is no universal rule how many features must be in every language.
@@ -111,7 +112,8 @@ $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/
 # some relations may be very rare. But for comparison within one language this
 # is useful. If a relation exists in the language but the corpus does not
 # contain it, maybe it cannot distinguish it.
-$score{udeprels} = scalar(keys(%udeprels)) / 37;
+my $rsource = $metadata->{Relations} eq 'manual native' ? 1 : $metadata->{Relations} eq 'converted with corrections' ? 0.9 : $metadata->{Relations} eq 'converted from manual' ? 0.8 : 0.1;
+$score{udeprels} = (scalar(keys(%udeprels)) / 37) * $rsource;
 $score{udeprels} = 0.01 if($score{udeprels}<0.01);
 #------------------------------------------------------------------------------
 # Udapi MarkBugs (does the content follow the guidelines?)
