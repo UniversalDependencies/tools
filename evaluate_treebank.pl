@@ -106,6 +106,14 @@ $score{tags} = 0.01 if($score{tags}<0.01);
 my $fsource = $metadata->{Features} eq 'manual native' ? 1 : $metadata->{Features} eq 'converted with corrections' ? 0.9 : $metadata->{Features} eq 'converted from manual' ? 0.8 : $metadata->{Features} eq 'automatic with corrections' ? 0.5 : 0.4;
 $score{features} = $n_words_with_features==0 ? 0.01 : $n_words_with_features<$n/3 ? 0.3*$fsource : $n_words_with_features<$n/2 ? 0.5*$fsource : 1*$fsource;
 #------------------------------------------------------------------------------
+# Dependency relations. How many of the 37 universal relation types have been
+# seen at least once? Some languages may not have use for some relations, and
+# some relations may be very rare. But for comparison within one language this
+# is useful. If a relation exists in the language but the corpus does not
+# contain it, maybe it cannot distinguish it.
+$score{udeprels} = scalar(keys(%udeprels)) / 17;
+$score{udeprels} = 0.01 if($score{udeprels}<0.01);
+#------------------------------------------------------------------------------
 # Udapi MarkBugs (does the content follow the guidelines?)
 # Measured only if udapy is found at the expected place.
 $score{udapi} = 1;
@@ -144,12 +152,13 @@ if($n > 1)
 {
     my %weights =
     (
-        'size'     => 7,
-        'split'    => 1,
+        'size'     => 10,
+        'split'    => 2,
         'lemmas'   => 3,
         'tags'     => 3,
         'features' => 3,
-        'udapi'    => 6
+        'udeprels' => 3,
+        'udapi'    => 9
     );
     my @dimensions = sort(keys(%weights));
     my $wsum = 0;
