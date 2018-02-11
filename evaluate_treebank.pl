@@ -24,6 +24,22 @@ if(!defined($folder))
 {
     die("Usage: $0 path-to-ud-folder");
 }
+if($verbose)
+{
+    print STDERR ("Running the following version of tools/evaluate_treebank.pl:\n");
+    system("cd tools ; (git log evaluate_treebank.pl | head -3 1>&2) ; cd ..");
+}
+# The ranking that we apply to the list of treebanks of a given language (on UD title page)
+# should be based on the most recent official release, i.e., on the master branch.
+###!!! At present we ignore the fact that multiple CGI processes may attempt to
+###!!! fiddle with the repository at the same time! When that happens, the output
+###!!! will be wrong!
+system("cd $folder ; git checkout master ; cd ..");
+if($verbose)
+{
+    print STDERR ("Evaluating the following revision of $folder:\n");
+    system("cd $folder ; (git log | head -3 1>&2) ; cd ..");
+}
 my $record = udlib::get_ud_files_and_codes($folder);
 my $metadata = udlib::read_readme($folder);
 my $n = 0;
@@ -72,6 +88,11 @@ foreach my $file (@{$record->{files}})
     }
     close(FILE);
 }
+# When we are done we must switch the repository back from master to the dev branch.
+###!!! At present we ignore the fact that multiple CGI processes may attempt to
+###!!! fiddle with the repository at the same time! When that happens, the output
+###!!! will be wrong!
+system("cd $folder ; git checkout dev ; cd ..");
 # Compute partial scores.
 my %score;
 #------------------------------------------------------------------------------
