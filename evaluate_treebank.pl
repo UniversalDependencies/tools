@@ -98,13 +98,15 @@ foreach my $file (@{$record->{files}})
 my %score;
 #------------------------------------------------------------------------------
 # Size. Project size to the interval <0; 1>.
-$n = 1000000 if($n > 1000000);
-$n = 1 if($n <= 0);
-my $lognn = log(($n/1000)**2); $lognn = 0 if($lognn < 0);
+# Do not modify the real number of words, $n. It will be needed in other metrics, too.
+my $ntrunc = $n;
+$ntrunc = 1000000 if($ntrunc > 1000000);
+$ntrunc = 1 if($ntrunc <= 0);
+my $lognn = log(($ntrunc/1000)**2); $lognn = 0 if($lognn < 0);
 $score{size} = $lognn / log(1000000);
 if($verbose)
 {
-    print STDERR ("Size: $n words (nodes).\n");
+    print STDERR ("Size: counted $ntrunc of $n words (nodes).\n");
     print STDERR ("Size: min(0, log((N/1000)**2)) = $lognn.\n");
     printf STDERR ("Size: maximum value %f is for 1000000 words or more.\n", log(1000000));
 }
