@@ -7,6 +7,7 @@ compound:dir
 compound:prt
 compound:redup
 compound:svc
+det:poss
 mark:relcl
 nmod:poss
 nsubj:cop
