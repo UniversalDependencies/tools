@@ -208,31 +208,38 @@ if($verbose)
 }
 #------------------------------------------------------------------------------
 # Udapi MarkBugs (does the content follow the guidelines?)
-# Measured only if udapy is found at the expected place.
-$score{udapi} = 1;
-if(-x './udapi-markbugs.sh')
+# Measured only if the corpus is not empty and if udapy is found at the expected place.
+if($n > 0)
 {
-    my $output = `(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL`;
-    my $nbugs = 0;
-    my $maxwordsperbug = 10; # if there are more bugs than every n-th word, we will count maximum error rate
-    if($output =~ m/(\d+)/)
+    $score{udapi} = 1;
+    if(-x './udapi-markbugs.sh')
     {
-        $nbugs = $1;
-        # Evaluate the proportion of bugs to the size of the treebank.
-        # If half of the tokens (or more) have bugs, it is terrible enough; let's set the ceiling at 50%.
-        my $nbugs1 = $nbugs>$n/$maxwordsperbug ? $n/$maxwordsperbug : $nbugs;
-        $score{udapi} = 1-$nbugs1/($n/$maxwordsperbug);
-        $score{udapi} = 0.01 if($score{udapi}<0.01);
+        my $output = `(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL`;
+        my $nbugs = 0;
+        my $maxwordsperbug = 10; # if there are more bugs than every n-th word, we will count maximum error rate
+        if($output =~ m/(\d+)/)
+        {
+            $nbugs = $1;
+            # Evaluate the proportion of bugs to the size of the treebank.
+            # If half of the tokens (or more) have bugs, it is terrible enough; let's set the ceiling at 50%.
+            my $nbugs1 = $nbugs>$n/$maxwordsperbug ? $n/$maxwordsperbug : $nbugs;
+            $score{udapi} = 1-$nbugs1/($n/$maxwordsperbug);
+            $score{udapi} = 0.01 if($score{udapi}<0.01);
+        }
+        if($verbose)
+        {
+            print STDERR ("Udapi: found $nbugs bugs.\n");
+            print STDERR ("Udapi: worst expected case (threshold) is one bug per $maxwordsperbug words. There are $n words.\n");
+        }
     }
-    if($verbose)
+    elsif($verbose)
     {
-        print STDERR ("Udapi: found $nbugs bugs.\n");
-        print STDERR ("Udapi: worst expected case (threshold) is one bug per $maxwordsperbug words. There are $n words.\n");
+        print STDERR ("WARNING: Udapi not found. The content-based tests were not performed.\n");
     }
 }
-elsif($verbose)
+else
 {
-    print STDERR ("WARNING: Udapi not found. The content-based tests were not performed.\n");
+    $score{udapi} = 0;
 }
 #------------------------------------------------------------------------------
 # Genres. Idea: an attempt at a balance of many genres provides for a more
