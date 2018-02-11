@@ -24,6 +24,12 @@ if(!defined($folder))
 {
     die("Usage: $0 path-to-ud-folder");
 }
+$folder =~ s:/$::;
+$folder =~ s:^\./::;
+if($folder =~ m:/:)
+{
+    print STDERR ("WARNING: argument '$folder' contains a slash, indicating that the treebank is not a direct subfolder of the current folder. Some tests will probably not work as expected!\n");
+}
 if($verbose)
 {
     print STDERR ("Running the following version of tools/evaluate_treebank.pl:\n");
@@ -271,6 +277,38 @@ if($verbose)
     }
 }
 #------------------------------------------------------------------------------
+# Evaluate validity. Formally invalid data should get a score close to zero.
+# Temporary measure: When launching treebank evaluation, the most recent UD
+# release is 2.1 (November 2017). We want to know whether the treebank was valid
+# at release time, judged by the version of validator that existed at that
+# moment. Instead of re-running the old validator, we simply use the list of
+# treebanks that were in release 2.1.
+###!!! We assume that $folder is just a repository name, not a longer path!
+###!!! If it contains slashes, it will not be recognized (see the warning above).
+my $r21 = 'UD_Afrikaans UD_Ancient_Greek UD_Ancient_Greek-PROIEL UD_Arabic UD_Arabic-NYUAD UD_Arabic-PUD UD_Basque UD_Belarusian UD_Bulgarian UD_Buryat UD_Cantonese UD_Catalan UD_Chinese UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD UD_Coptic UD_Croatian UD_Czech UD_Czech-CAC UD_Czech-CLTT UD_Czech-FicTree UD_Czech-PUD UD_Danish UD_Dutch UD_Dutch-LassySmall UD_English UD_English-LinES UD_English-PUD UD_English-ParTUT UD_Estonian UD_Finnish UD_Finnish-FTB UD_Finnish-PUD UD_French UD_French-FTB UD_French-PUD UD_French-ParTUT UD_French-Sequoia UD_Galician UD_Galician-TreeGal UD_German UD_German-PUD UD_Gothic UD_Greek UD_Hebrew UD_Hindi UD_Hindi-PUD UD_Hungarian UD_Indonesian UD_Irish UD_Italian UD_Italian-PUD UD_Italian-ParTUT UD_Italian-PoSTWITA UD_Japanese UD_Japanese-PUD UD_Kazakh UD_Korean UD_Kurmanji UD_Latin UD_Latin-ITTB UD_Latin-PROIEL UD_Latvian UD_Lithuanian UD_Marathi UD_North_Sami UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA UD_Old_Church_Slavonic UD_Persian UD_Polish UD_Portuguese UD_Portuguese-BR UD_Portuguese-PUD UD_Romanian UD_Romanian-Nonstandard UD_Russian UD_Russian-PUD UD_Russian-SynTagRus UD_Sanskrit UD_Serbian UD_Slovak UD_Slovenian UD_Slovenian-SST UD_Spanish UD_Spanish-AnCora UD_Spanish-PUD UD_Swedish UD_Swedish-LinES UD_Swedish-PUD UD_Swedish_Sign_Language UD_Tamil UD_Telugu UD_Turkish UD_Turkish-PUD UD_Ukrainian UD_Upper_Sorbian UD_Urdu UD_Uyghur UD_Vietnamese';
+my %r21;
+foreach my $treebank (split(/\s+/, $r21))
+{
+    $r21{$treebank}++;
+}
+# Some treebanks were renamed but we want to count them as valid and released.
+my %oldname =
+(
+    'UD_Chinese-GSD'    => 'UD_Chinese',
+    'UD_French-GSD'     => 'UD_French',
+    'UD_German-GSD'     => 'UD_German',
+    'UD_Indonesian-GSD' => 'UD_Indonesian',
+    'UD_Japanese-GSD'   => 'UD_Japanese',
+    'UD_Korean-GSD'     => 'UD_Korean',
+    'UD_Russian-GSD'    => 'UD_Russian',
+    'UD_Spanish-GSD'    => 'UD_Spanish'
+);
+my $validity = 0.01;
+if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$folder}}))
+{
+    $validity = 1;
+}
+#------------------------------------------------------------------------------
 # Score of empty treebanks should be zero regardless of the other features.
 my $score = 0;
 if($n > 1)
@@ -302,12 +340,12 @@ if($n > 1)
             print STDERR ("(weight=$nweight) * (score{$d}=$score{$d}) = $wscore\n");
         }
     }
-    # The availability dimension is a show stopper. Instead of weighted combination, we multiply the score by it.
+    # The availability and validity dimensions are show stoppers. Instead of weighted combination, we multiply the score by them.
     if($verbose)
     {
-        print STDERR ("(TOTAL score=$score) * (availability=$availability) = ");
+        print STDERR ("(TOTAL score=$score) * (availability=$availability) * (validity=$validity) = ");
     }
-    $score *= $availability;
+    $score *= $availability * $validity;
     if($verbose)
     {
         print STDERR ("$score\n");
