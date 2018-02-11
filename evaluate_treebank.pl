@@ -34,7 +34,7 @@ if($verbose)
 ###!!! At present we ignore the fact that multiple CGI processes may attempt to
 ###!!! fiddle with the repository at the same time! When that happens, the output
 ###!!! will be wrong!
-system("cd $folder ; git checkout master ; cd ..");
+system("cd $folder ; (git checkout master 1>&2) ; cd ..");
 if($verbose)
 {
     print STDERR ("Evaluating the following revision of $folder:\n");
@@ -92,7 +92,7 @@ foreach my $file (@{$record->{files}})
 ###!!! At present we ignore the fact that multiple CGI processes may attempt to
 ###!!! fiddle with the repository at the same time! When that happens, the output
 ###!!! will be wrong!
-system("cd $folder ; git checkout dev ; cd ..");
+system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
 # Compute partial scores.
 my %score;
 #------------------------------------------------------------------------------
