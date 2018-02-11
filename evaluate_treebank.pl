@@ -208,9 +208,9 @@ if($verbose)
 # Udapi MarkBugs (does the content follow the guidelines?)
 # Measured only if udapy is found at the expected place.
 $score{udapi} = 1;
-if(-x 'udapi-python/bin/udapy')
+if(-x './udapi-markbugs.sh')
 {
-    my $output = `(cat $folder/*.conllu | udapi-python/bin/udapy ud.MarkBugs 2>&1) | grep TOTAL`;
+    my $output = `(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL`;
     my $nbugs = 0;
     my $maxwordsperbug = 10; # if there are more bugs than every n-th word, we will count maximum error rate
     if($output =~ m/(\d+)/)
