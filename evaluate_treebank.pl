@@ -94,11 +94,6 @@ foreach my $file (@{$record->{files}})
     }
     close(FILE);
 }
-# When we are done we must switch the repository back from master to the dev branch.
-###!!! At present we ignore the fact that multiple CGI processes may attempt to
-###!!! fiddle with the repository at the same time! When that happens, the output
-###!!! will be wrong!
-system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
 # Compute partial scores.
 my %score;
 #------------------------------------------------------------------------------
@@ -357,3 +352,8 @@ if($verbose)
     print STDERR ("STARS = $stars\n");
 }
 print("$folder\t$score\t$stars\n");
+# When we are done we must switch the repository back from master to the dev branch.
+###!!! At present we ignore the fact that multiple CGI processes may attempt to
+###!!! fiddle with the repository at the same time! When that happens, the output
+###!!! will be wrong!
+system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
