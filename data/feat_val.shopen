@@ -18,6 +18,7 @@ Gender[psor]=Fem
 Link=Yes
 Mood=Int
 NounClass=10
+NounType=Clf
 NounType=Loc
 NounType=Rel
 Number[acc]=Sing

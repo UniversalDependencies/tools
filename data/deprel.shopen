@@ -4,6 +4,7 @@ aux:pass
 cc:preconj
 cc:postconj
 compound:dir
+compound:ext
 compound:prt
 compound:redup
 compound:svc
