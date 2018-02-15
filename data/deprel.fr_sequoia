@@ -9,3 +9,5 @@ nsubj:caus
 nsubj:pass
 obj:agent
 obl:agent
+obl:arg
+obl:mod
