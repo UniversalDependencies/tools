@@ -5,7 +5,6 @@ Aspect=Dur
 ConjType=Comp
 ConjType=Oper
 Echo=Ech
-Echo=Rdp
 Hyph=Yes
 NameType=Giv
 NameType=Sur
