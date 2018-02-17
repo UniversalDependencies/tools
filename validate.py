@@ -372,7 +372,7 @@ def validate_character_constraints(cols):
     if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
             (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
         warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
-    if not (re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]) or
+    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or
             (is_empty_node(cols) and cols[DEPREL] == u"_")):
         warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
     try:
@@ -678,6 +678,13 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
             l_spec=load_file(path_langspec)
             for v in l_spec:
                 if validate_langspec:
+                    # We are reading the list of language-specific dependency relations in the basic representation
+                    # (i.e., the DEPREL column, not DEPS). Make sure that they match the regular expression that
+                    # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
+                    # enhanced dependencies, which should be listed in a separate file.)
+                    if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
+                        warn(u"Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."%v,u"Syntax",lineno=False)
+                        continue
                     try:
                         ud_v,l_v=v.split(u":")
                         if ud_v not in res:
