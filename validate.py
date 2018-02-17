@@ -363,9 +363,22 @@ def validate_deprels(cols,tag_sets):
                 warn_on_missing_files.add("deprel")
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
 
+# Ll ... lowercase Unicode letters
+# Lm ... modifier Unicode letters (e.g., superscript h)
+# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+# M .... combining diacritical marks
+# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+edeprelpart_resrc = ur"[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*";
+# There must be always the universal part, consisting only of ASCII letters.
+# There can be up to three additional, colon-separated parts: subtype, preposition and case.
+# One of them, the preposition, may contain Unicode letters. We do not know which one it is
+# (only if there are all four parts, we know it is the third one).
+# ^[a-z]+(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?)?)?$
+edeprel_resrc = ur"^[a-z]+(:" + edeprelpart_resrc + ur"(:" + edeprelpart_resrc + ur"(:" + edeprelpart_resrc + ur")?)?)?$"
+edeprel_re = re.compile(edeprel_resrc, re.U)
 def validate_character_constraints(cols):
     """
-    Checks general constraints on valid characters, e.g. that UPOSTAG
+    Checks general constraints on valid characters, e.g. that UPOS
     only contains [A-Z].
     """
     if is_multiword_token(cols):
@@ -385,7 +398,7 @@ def validate_character_constraints(cols):
         warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Syntax")
         return
     if any(deprel for head, deprel in deps_list(cols)
-           if not re.match(r"^[a-z][a-z_-]*", deprel)):
+           if not edeprel_re.match(deprel)):
         warn("Invalid value in DEPS: %s" % cols[DEPS],u"Syntax")
 
 
@@ -662,19 +675,6 @@ def load_file(f_name):
             res.add(line)
     return res
 
-# Ll ... lowercase Unicode letters
-# Lm ... modifier Unicode letters (e.g., superscript h)
-# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
-# M .... combining diacritical marks
-# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
-deprelpart_resrc = ur"[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*";
-# There must be always the universal part, consisting only of ASCII letters.
-# There can be up to three additional, colon-separated parts: subtype, preposition and case.
-# One of them, the preposition, may contain Unicode letters. We do not know which one it is
-# (only if there are all four parts, we know it is the third one).
-# ^[a-z]+(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?)?)?$
-deprel_resrc = ur"^[a-z]+(:" + deprelpart_resrc + ur"(:" + deprelpart_resrc + ur"(:" + deprelpart_resrc + ur")?)?)?$"
-deprel_re = re.compile(deprel_resrc, re.U)
 def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced=False):
     """
     Loads a list of values from the two files, and returns their
@@ -701,7 +701,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     # We are reading the list of language-specific dependency relations in the enhanced representation
                     # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
                     # restricts enhanced dependencies.
-                    if not deprel_re.match(v):
+                    if not edeprel_re.match(v):
                         warn(u"Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations."%v,u"Syntax",lineno=False)
                         continue
                 elif validate_langspec:
