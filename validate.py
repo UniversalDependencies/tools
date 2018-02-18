@@ -373,8 +373,8 @@ edeprelpart_resrc = ur"[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*"
 # There can be up to three additional, colon-separated parts: subtype, preposition and case.
 # One of them, the preposition, may contain Unicode letters. We do not know which one it is
 # (only if there are all four parts, we know it is the third one).
-# ^[a-z]+(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?)?)?$
-edeprel_resrc = ur"^[a-z]+(:" + edeprelpart_resrc + ur"(:" + edeprelpart_resrc + ur"(:" + edeprelpart_resrc + ur")?)?)?$"
+# ^[a-z]+(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*(:[a-z]+)?)?)?$
+edeprel_resrc = ur"^[a-z]+(:" + edeprelpart_resrc + ur"(:" + edeprelpart_resrc + ur"(:[a-z]+)?)?)?$"
 edeprel_re = re.compile(edeprel_resrc, re.U)
 def validate_character_constraints(cols):
     """
