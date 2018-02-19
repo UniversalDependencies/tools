@@ -298,6 +298,7 @@ foreach my $treebank (split(/\s+/, $r21))
 # Some treebanks were renamed but we want to count them as valid and released.
 my %oldname =
 (
+    'UD_Bulgarian-BTB'  => 'UD_Bulgarian',
     'UD_Chinese-GSD'    => 'UD_Chinese',
     'UD_Czech-PDT'      => 'UD_Czech',
     'UD_French-GSD'     => 'UD_French',
