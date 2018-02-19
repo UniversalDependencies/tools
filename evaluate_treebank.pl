@@ -299,6 +299,7 @@ foreach my $treebank (split(/\s+/, $r21))
 my %oldname =
 (
     'UD_Bulgarian-BTB'  => 'UD_Bulgarian',
+    'UD_Catalan-AnCora' => 'UD_Catalan',
     'UD_Chinese-GSD'    => 'UD_Chinese',
     'UD_Czech-PDT'      => 'UD_Czech',
     'UD_English-EWT'    => 'UD_English',
