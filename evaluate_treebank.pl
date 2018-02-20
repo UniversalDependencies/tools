@@ -311,6 +311,7 @@ my %oldname =
     'UD_Indonesian-GSD'    => 'UD_Indonesian',
     'UD_Japanese-GSD'      => 'UD_Japanese',
     'UD_Korean-GSD'        => 'UD_Korean',
+    'UD_Polish-SZ'         => 'UD_Polish',
     'UD_Russian-GSD'       => 'UD_Russian',
     'UD_Spanish-GSD'       => 'UD_Spanish',
     'UD_Swedish-Talbanken' => 'UD_Swedish'
