@@ -298,26 +298,27 @@ foreach my $treebank (split(/\s+/, $r21))
 # Some treebanks were renamed but we want to count them as valid and released.
 my %oldname =
 (
-    'UD_Arabic-PADT'       => 'UD_Arabic',
-    'UD_Bulgarian-BTB'     => 'UD_Bulgarian',
-    'UD_Catalan-AnCora'    => 'UD_Catalan',
-    'UD_Chinese-GSD'       => 'UD_Chinese',
-    'UD_Czech-PDT'         => 'UD_Czech',
-    'UD_English-EWT'       => 'UD_English',
-    'UD_Finnish-TDT'       => 'UD_Finnish',
-    'UD_French-GSD'        => 'UD_French',
-    'UD_German-GSD'        => 'UD_German',
-    'UD_Greek-GDT'         => 'UD_Greek',
-    'UD_Indonesian-GSD'    => 'UD_Indonesian',
-    'UD_Japanese-GSD'      => 'UD_Japanese',
-    'UD_Korean-GSD'        => 'UD_Korean',
-    'UD_Polish-SZ'         => 'UD_Polish',
-    'UD_Russian-GSD'       => 'UD_Russian',
-    'UD_Sanskrit-UFAL'     => 'UD_Sanskrit',
-    'UD_Slovak-SNK'        => 'UD_Slovak',
-    'UD_Spanish-GSD'       => 'UD_Spanish',
-    'UD_Swedish-Talbanken' => 'UD_Swedish',
-    'UD_Tamil-TTB'         => 'UD_Tamil'
+    'UD_Arabic-PADT'        => 'UD_Arabic',
+    'UD_Bulgarian-BTB'      => 'UD_Bulgarian',
+    'UD_Catalan-AnCora'     => 'UD_Catalan',
+    'UD_Chinese-GSD'        => 'UD_Chinese',
+    'UD_Czech-PDT'          => 'UD_Czech',
+    'UD_English-EWT'        => 'UD_English',
+    'UD_Finnish-TDT'        => 'UD_Finnish',
+    'UD_French-GSD'         => 'UD_French',
+    'UD_German-GSD'         => 'UD_German',
+    'UD_Greek-GDT'          => 'UD_Greek',
+    'UD_Indonesian-GSD'     => 'UD_Indonesian',
+    'UD_Japanese-GSD'       => 'UD_Japanese',
+    'UD_Korean-GSD'         => 'UD_Korean',
+    'UD_Polish-SZ'          => 'UD_Polish',
+    'UD_Russian-GSD'        => 'UD_Russian',
+    'UD_Sanskrit-UFAL'      => 'UD_Sanskrit',
+    'UD_Slovak-SNK'         => 'UD_Slovak',
+    'UD_Spanish-GSD'        => 'UD_Spanish',
+    'UD_Swedish-Talbanken'  => 'UD_Swedish',
+    'UD_Tamil-TTB'          => 'UD_Tamil',
+    'UD_Upper_Sorbian-UFAL' => 'UD_Upper_Sorbian'
 );
 my $validity = 0.01;
 if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$folder}}))
