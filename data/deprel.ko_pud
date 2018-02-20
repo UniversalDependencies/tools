@@ -1,8 +1,0 @@
-acl:relcl
-det:poss
-nsubj:pass
-compound:prt
-nmod:poss
-nmod:tmod
-flat:name
-obl:tmod
