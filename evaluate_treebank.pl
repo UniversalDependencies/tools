@@ -313,6 +313,7 @@ my %oldname =
     'UD_Korean-GSD'        => 'UD_Korean',
     'UD_Polish-SZ'         => 'UD_Polish',
     'UD_Russian-GSD'       => 'UD_Russian',
+    'UD_Sanskrit-UFAL'     => 'UD_Sanskrit',
     'UD_Spanish-GSD'       => 'UD_Spanish',
     'UD_Swedish-Talbanken' => 'UD_Swedish'
 );
