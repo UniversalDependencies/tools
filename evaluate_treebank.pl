@@ -314,6 +314,7 @@ my %oldname =
     'UD_Polish-SZ'         => 'UD_Polish',
     'UD_Russian-GSD'       => 'UD_Russian',
     'UD_Sanskrit-UFAL'     => 'UD_Sanskrit',
+    'UD_Slovak-SNK'        => 'UD_Slovak',
     'UD_Spanish-GSD'       => 'UD_Spanish',
     'UD_Swedish-Talbanken' => 'UD_Swedish'
 );
