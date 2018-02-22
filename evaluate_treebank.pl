@@ -318,6 +318,7 @@ my %oldname =
     'UD_Slovak-SNK'         => 'UD_Slovak',
     'UD_Spanish-GSD'        => 'UD_Spanish',
     'UD_Swedish-Talbanken'  => 'UD_Swedish',
+    'UD_Tagalog-TRG'        => 'UD_Tagalog',
     'UD_Tamil-TTB'          => 'UD_Tamil',
     'UD_Upper_Sorbian-UFAL' => 'UD_Upper_Sorbian'
 );
