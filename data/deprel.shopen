@@ -13,5 +13,6 @@ mark:relcl
 nmod:poss
 nsubj:cop
 nsubj:pass
+obl:agent
 obl:arg
 obl:tmod
