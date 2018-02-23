@@ -764,7 +764,8 @@ if __name__=="__main__":
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
-        tagsets[DEPS]=tagsets[DEPREL]|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
+        # One of them, "ref", is universal and we currently list it directly in the code here, instead of creating a file "edeprel.ud".
+        tagsets[DEPS]=tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
         tagsets[UPOSTAG]=load_set("cpos.ud",None)
         tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
