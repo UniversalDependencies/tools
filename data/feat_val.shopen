@@ -1,5 +1,6 @@
 Agent=Yes
 Animacy[obj]=Inan
+Clitic=Yes
 Clusivity=Ex
 Clusivity=In
 Contrast=Yes
