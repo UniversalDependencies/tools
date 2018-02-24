@@ -4,7 +4,11 @@ import sys
 import codecs
 import os.path
 import logging
-import re
+# According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
+# the regex module has the same API as re but it can check Unicode character properties using \p{}
+# as in Perl.
+#import re
+import regex as re
 import file_util
 import traceback
 
@@ -24,7 +28,7 @@ COLNAMES=u"ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u","
 TOKENSWSPACE=MISC+1 #one extra constant
 
 error_counter={} #key: error type value: error count
-warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, feat_val, tokens_w_space)
+warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 def warn(msg,error_type,lineno=True):
     """
     Print the warning. If lineno is True, print the exact line, otherwise
@@ -359,9 +363,22 @@ def validate_deprels(cols,tag_sets):
                 warn_on_missing_files.add("deprel")
                 warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
 
+# Ll ... lowercase Unicode letters
+# Lm ... modifier Unicode letters (e.g., superscript h)
+# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+# M .... combining diacritical marks
+# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+edeprelpart_resrc = ur"[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*";
+# There must be always the universal part, consisting only of ASCII letters.
+# There can be up to three additional, colon-separated parts: subtype, preposition and case.
+# One of them, the preposition, may contain Unicode letters. We do not know which one it is
+# (only if there are all four parts, we know it is the third one).
+# ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
+edeprel_resrc = ur"^[a-z]+(:[a-z]+)?(:" + edeprelpart_resrc + ur")?(:[a-z]+)?$"
+edeprel_re = re.compile(edeprel_resrc, re.U)
 def validate_character_constraints(cols):
     """
-    Checks general constraints on valid characters, e.g. that UPOSTAG
+    Checks general constraints on valid characters, e.g. that UPOS
     only contains [A-Z].
     """
     if is_multiword_token(cols):
@@ -372,7 +389,7 @@ def validate_character_constraints(cols):
     if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
             (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
         warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
-    if not (re.match(r"^[a-z][a-z_-]*(:[a-z][a-z_-]*)?$", cols[DEPREL]) or
+    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or
             (is_empty_node(cols) and cols[DEPREL] == u"_")):
         warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
     try:
@@ -381,7 +398,7 @@ def validate_character_constraints(cols):
         warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Syntax")
         return
     if any(deprel for head, deprel in deps_list(cols)
-           if not re.match(r"^[a-z][a-z_-]*", deprel)):
+           if not edeprel_re.match(deprel)):
         warn("Invalid value in DEPS: %s" % cols[DEPS],u"Syntax")
 
 
@@ -658,14 +675,17 @@ def load_file(f_name):
             res.add(line)
     return res
 
-def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
+def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced=False):
     """
     Loads a list of values from the two files, and returns their
     set. If f_name_langspec doesn't exist, loads nothing and returns
     None (ie this taglist is not checked for the given language). If f_name_langspec
     is None, only loads the UD one. This is probably only useful for CPOS which doesn't
-    allow language-specific extensions. Set validate_langspec=True when loading dependencies.
-    That way the language speciic deps will be checked to be truly extensions of UD ones"
+    allow language-specific extensions. Set validate_langspec=True when loading basic dependencies.
+    That way the language specific deps will be checked to be truly extensions of UD ones.
+    Set validate_enhanced=True when loading enhanced dependencies. They will be checked to be
+    truly extensions of universal relations, too; but a more relaxed regular expression will
+    be checked because enhanced relations may contain stuff that is forbidden in the basic ones.
     """
     res=load_file(os.path.join(THISDIR,"data",f_name_ud))
     #Now res holds UD
@@ -677,7 +697,22 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False):
             curr_fname = path_langspec # so warn() does not fail on undefined curr_fname
             l_spec=load_file(path_langspec)
             for v in l_spec:
-                if validate_langspec:
+                if validate_enhanced:
+                    # We are reading the list of language-specific dependency relations in the enhanced representation
+                    # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
+                    # restricts enhanced dependencies.
+                    if not edeprel_re.match(v):
+                        warn(u"Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations."%v,u"Syntax",lineno=False)
+                        continue
+                elif validate_langspec:
+                    # We are reading the list of language-specific dependency relations in the basic representation
+                    # (i.e., the DEPREL column, not DEPS). Make sure that they match the regular expression that
+                    # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
+                    # enhanced dependencies, which should be listed in a separate file.)
+                    if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
+                        warn(u"Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."%v,u"Syntax",lineno=False)
+                        continue
+                if validate_langspec or validate_enhanced:
                     try:
                         ud_v,l_v=v.split(u":")
                         if ud_v not in res:
@@ -727,17 +762,14 @@ if __name__=="__main__":
 
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
-#        if tagsets[DEPREL] is None:
-#            warn(u"The language-specific file data/deprel.%s could not be found. Dependency relations will not be checked.\nPlease add the language-specific dependency relations using python conllu-stats.py --deprels=langspec yourdata/*.conllu > data/deprel.%s\n Also please check that file for errorneous relations. It's okay if the file is empty, but it must exist.\n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
-        tagsets[DEPS]=tagsets[DEPREL]
+        # All relations available in DEPREL are also allowed in DEPS.
+        # In addition, there might be relations that are only allowed in DEPS.
+        # One of them, "ref", is universal and we currently list it directly in the code here, instead of creating a file "edeprel.ud".
+        tagsets[DEPS]=tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
-#        if tagsets[FEATS] is None:
-#            warn(u"The language-specific file data/feat_val.%s could not be found. Feature=value pairs will not be checked.\nPlease add the language-specific pairs using python conllu-stats.py --catvals=langspec yourdata/*.conllu > data/feat_val.%s It's okay if the file is empty, but it must exist.\n \n\n"%(args.lang,args.lang),"Language specific data missing",lineno=False)
         tagsets[UPOSTAG]=load_set("cpos.ud",None)
-
         tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
         tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
-
 
     out=codecs.getwriter("utf-8")(sys.stdout) # hard-coding - does this ever need to be anything else?
 
