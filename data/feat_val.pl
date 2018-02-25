@@ -22,6 +22,7 @@ PunctType=Excl
 PunctType=Peri
 PunctType=Qest
 PunctType=Quot
+PunctType=Semi
 SubGender=Masc1
 SubGender=Masc2
 SubGender=Masc3
