@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Checks files to be distributed as Universal Dependencies.
-# Copyright © 2015, 2016, 2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2015, 2016, 2017, 2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -29,10 +29,6 @@ my $recompute_stats = 0;
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
 my $current_release = 2.2;
-# There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
-# Here we list treebanks that cannot participate because of copyright. Other treebanks may be excluded because of their size.
-###!!! We could now recognize these treebanks by the metadata attribute 'Includes text: no'!
-my $not_in_shared_task = 'Arabic-NYUAD|English-ESL|French-FTB|Japanese-KTC';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
@@ -66,6 +62,12 @@ foreach my $line (@validation_report)
     if($line =~ m/^(UD_.+?):\s*VALID/)
     {
         $valid{$1} = 1;
+    }
+    # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
+    # The validation report also tells us which valid treebanks will not take part in the task.
+    if($line =~ m/^(UD_.+?):.*not in shared task/)
+    {
+        $nist{$1} = 1;
     }
 }
 my $n_folders_with_data = 0;
@@ -172,7 +174,7 @@ foreach my $folder (@folders)
                 $families_with_data{$family}++;
             }
             my $is_in_shared_task = 0;
-            unless($folder =~ m/^UD_($not_in_shared_task)$/)
+            unless($nist{$folder})
             {
                 $is_in_shared_task = 1;
             }
@@ -535,7 +537,7 @@ my $announcement = get_announcement
     \@families,
     'less than 1,000 tokens',
     'well over 1.5 million tokens',
-    'March 2018', # expected next release
+    'November 2018', # expected next release
     \@contributors_firstlast,
     # Temporary for UD 2.0: shared task information
     $n_folders_conll,
@@ -711,7 +713,7 @@ sub get_announcement
     my $contlistref = shift;
     my $n_conll = shift;
     my $langlistconllref = shift;
-    my @release_list = (1.0, 1.1, 1.2, 1.3, 1.4, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 2.12, 2.13, 2.14);
+    my @release_list   =   (1.0,  1.1,   1.2,  1.3,   1.4,  2.0,  2.1,    2.2,   2.3,  2.4,  2.5,     2.6,    2.7,       2.8,       2.9,      2.10,     2.11,       2.12,      2.13,      2.14);
     my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
     my $nth;
     for(my $i = 0; $i<=$#release_list; $i++)
