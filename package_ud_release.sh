@@ -38,7 +38,7 @@ function copy_data_repo
         cat $dstdir/$1/cs_pdt-ud-train-*.conllu > $dstdir/$1/cs_pdt-ud-train.conllu
         rm $dstdir/$1/cs_pdt-ud-train-*.conllu
     fi
-    # If we are creating the special package for the CoNLL 2017 shared task,
+    # If we are creating the special package for the CoNLL 2018 shared task,
     # and if this treebank is considered small, merge its training and development data.
     local lcode=$(ls $1 | grep ud-test.conllu | perl -e '$x=<STDIN>; $x =~ m/(\S+)-ud-test\.conllu/; print $1;')
     if [ "$STSET" == "SMALL" ] ; then
@@ -99,7 +99,7 @@ done
 cd release-$RELEASE
 if [ ! -z "$STSET" ] ; then
     echo Packaging all shared task treebanks in one TGZ archive...
-    tar czf ud-treebanks-conll2017.tgz ud-treebanks-conll2017
+    tar czf ud-treebanks-conll2018.tgz ud-treebanks-conll2018
     cd ..
     exit
 fi
