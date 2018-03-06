@@ -305,6 +305,7 @@ my %oldname =
     'UD_Chinese-GSD'        => 'UD_Chinese',
     'UD_Coptic-Scriptorium' => 'UD_Coptic',
     'UD_Czech-PDT'          => 'UD_Czech',
+    'UD_Dutch-Alpino'       => 'UD_Dutch',
     'UD_English-EWT'        => 'UD_English',
     'UD_Finnish-TDT'        => 'UD_Finnish',
     'UD_French-GSD'         => 'UD_French',
