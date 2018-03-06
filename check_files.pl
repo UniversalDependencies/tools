@@ -9,6 +9,7 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
+use LWP::Simple;
 # Dan's sorting library
 use csort;
 # If this script is called from the parent folder, how can it find the UD library?
@@ -52,6 +53,21 @@ my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
 my $languages_from_yaml = udlib::get_language_hash();
+# Download the current validation report. (We could run the validator ourselves
+# but it would take a lot of time.)
+my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+if(scalar(@validation_report)==0)
+{
+    print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
+}
+my %valid;
+foreach my $line (@validation_report)
+{
+    if($line =~ m/^(UD_.+?):\s*VALID/)
+    {
+        $valid{$1} = 1;
+    }
+}
 my $n_folders_with_data = 0;
 my $n_folders_conll = 0;
 my $n_errors = 0;
@@ -109,10 +125,7 @@ foreach my $folder (@folders)
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
-            ###!!! We should either run the validator directly from here (but that would significantly slow down the run)
-            ###!!! or read the list of invalid treebanks from a file! But right now we just list them here (v2.0).
-            ###!!! This is a new category in v2.0: treebanks that were released in the past but are not valid in the new version.
-            if($folder =~ m/^UD_(English-ESL|Japanese-KTC)$/)
+            if(!$valid{$folder})
             {
                 push(@invalid_folders, $folder);
                 chdir('..') or die("Cannot return to the upper folder");
