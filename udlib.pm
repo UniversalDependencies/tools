@@ -33,6 +33,8 @@ sub get_language_hash
 sub get_ltcode_hash
 {
     my $path = shift;
+    print STDERR ("WARNING: udlib::get_ltcode_hash() is obsolete because the file lcodes.json in docs is no longer maintained!\n");
+    print STDERR ("WARNING: Use udlib::get_language_hash() instead, which reads docs-automation/codes_and_flags.yaml.\n");
     $path = '.' if(!defined($path));
     if (-d "$path/docs")
     {
