@@ -32,11 +32,11 @@ function copy_data_repo
     cp -r $1 $dstdir
     # Erase files that should not be released (.gitignore, .git, not-to-release).
     rm -rf $dstdir/$1/.git* $dstdir/$1/not-to-release
-    # The training data in UD_Czech is split to four files because it is too large for Github.
+    # The training data in UD_Czech-PDT is split to four files because it is too large for Github.
     # However, it can be one file in our release, so join the files again in the release copy.
-    if [ "$1" = "UD_Czech" ]; then
-        cat $dstdir/$1/cs-ud-train-*.conllu > $dstdir/$1/cs-ud-train.conllu
-        rm $dstdir/$1/cs-ud-train-*.conllu
+    if [ "$1" = "UD_Czech-PDT" ]; then
+        cat $dstdir/$1/cs_pdt-ud-train-*.conllu > $dstdir/$1/cs_pdt-ud-train.conllu
+        rm $dstdir/$1/cs_pdt-ud-train-*.conllu
     fi
     # If we are creating the special package for the CoNLL 2017 shared task,
     # and if this treebank is considered small, merge its training and development data.
@@ -52,7 +52,7 @@ function copy_data_repo
     fi
     # Generate raw text files from CoNLL-U files. At present we do not maintain
     # the raw text files in Github repositories and only generate them for the release.
-    # Also we want one cs-ud-train.txt and not four (see above).
+    # Also we want one cs_pdt-ud-train.txt and not four (see above).
     if [ "$lcode" = "" ] ; then echo Unknown language code ; fi
     for j in $dstdir/$1/*.conllu ; do
       tools/conllu_to_text.pl --lang $lcode < $j > $dstdir/$1/$(basename $j .conllu).txt
