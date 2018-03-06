@@ -1,4 +1,4 @@
-AdpType=Comprep
+AdpType=Comadp
 AdpType=Post
 AdpType=Prep
 Aspect=Dur
