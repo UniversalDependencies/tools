@@ -1,6 +1,6 @@
 #!/bin/bash
 # Prepares a UD release.
-# Copyright © 2016, 2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016, 2017, 2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 if [ "$RELEASE" = "" ] || [ "$1" = "" ]; then
@@ -24,7 +24,7 @@ function copy_data_repo
 {
     local dstdir=release-$RELEASE/ud-treebanks-v$RELEASE
     if [ ! -z "$STSET" ] ; then
-        dstdir=release-$RELEASE/ud-treebanks-conll2017
+        dstdir=release-$RELEASE/ud-treebanks-conll2018
     fi
     mkdir -p $dstdir
     echo Copying $1 to $dstdir
