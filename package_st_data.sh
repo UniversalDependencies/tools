@@ -1,5 +1,5 @@
 #!/bin/bash
-# Scans the contents of the release-2.0/ud-treebanks-conll2017 folder and copies the shared task files into folders that should appear in TIRA.
+# Scans the contents of the release folder and copies the shared task files into folders that should appear in TIRA.
 UDPATH=/net/work/people/zeman/unidep
 SRCREL=$UDPATH/release-2.0.1/ud-treebanks-conll2017
 SRCTST=$UDPATH/testsets
@@ -15,12 +15,23 @@ SRCMOR=/net/work/people/zeman/unidep/ud-2.0-conll17-crossfold-morphology
 SRCPSM=/home/straka/troja/conll2017-tira/udpipe-preprocess
 DSTFOLDER=data-for-tira
 DST=$UDPATH/$DSTFOLDER
-# Expected folder structure at TIRA: Datasets are mounted under /media/*. Each
-# of the following folders has subfolders for all shared tasks hosted at TIRA.
+# Expected folder structure at TIRA: Datasets are mounted under /media/*.
+# The top-level subfolders determine where, when and how the datasets are
+# accessible:
+# - training-datasets
+# - training-datasets-truth
+# - test-datasets
+# - test-datasets-truth
+# Each of these folders has subfolders for all shared tasks hosted at TIRA.
 # Ours is called "universal-dependency-learning", its subfolders could be
-# datasets of various years/rounds, but we currently have only CoNLL 2017. All
-# subfolders of "universal-dependency-learning" start with "conll17-universal-dependency-learning-",
-# which seems unnecessarily long. We should ask Martin Potthast to shorten it.
+# datasets of various years/rounds; we currently have CoNLL 2017 and 2018.
+# The subfolders of the 2017 task are:
+# - conll17-ud-trial-2017-03-19 (in training-datasets ==? training-datasets-truth; for ar, en, tr, vi, zh)
+# - conll17-ud-development-2017-03-19 (in training-datasets ==? training-datasets-truth)
+# - conll17-ud-test-2017-05-09 (in test-datasets and test-datasets-truth)
+# So we should now create for 2018:
+# - conll18-ud-trial-2018-03-06 (in training-datasets)
+# - later also conll18-ud-development and conll18-ud-test
 # /media/training-datasets: Only this folder can be accessed by the participants.
 #     It contains the training data (just in case they want to train something
 #     here?), the development data (participants can access the development data
@@ -40,8 +51,8 @@ DST=$UDPATH/$DSTFOLDER
 #     Of course this folder must not contain gold-standard data.
 # /media/test-datasets-truth: Gold standard test data used by the evaluation
 #     script.
-TASK="universal-dependency-learning/conll17-ud"
-DATE="2017-05-09"
+TASK="universal-dependency-learning/conll18-ud"
+DATE="2018-03-06"
 DSTTRAINI="$DST/training-datasets/$TASK-training-$DATE"
 DSTTRAING="$DST/training-datasets-truth/$TASK-training-$DATE"
 DSTDEVI="$DST/training-datasets/$TASK-development-$DATE"
@@ -82,9 +93,8 @@ the record are interpreted as follows:
 
 * lcode ..... language code (for UD languages same as in UD; but other
               languages may appear here too)
-* tcode ..... treebank code (first UD treebank for the language: "0";
-              additional UD treebank: as in UD; extra non-UD treebanks may
-              appear here too)
+* tcode ..... treebank code (for UD treebanks same as in UD; but extra non-UD
+              treebanks may appear here too)
 * rawfile ... name of raw text file (input of systems that do their own
               segmentation)
 * psegmorfile ... name of CoNLL-U file with segmentation and morphology
@@ -96,10 +106,6 @@ Extra fields not needed by the participating system:
 
 * goldfile ... name of the corresponding gold-standard file to be used by the
                evaluation script (in a separate folder)
-* ltcode ..... language_treebank code as in UD data (i.e. no "_0" for first
-               treebanks)
-* name ....... name of the corresponding UD repository, e.g.
-               "UD_Ancient_Greek-PROIEL"
 EOF
 cat $DST/README-metadata.txt >> $DSTDEVI/README.txt
 cat $DST/README-metadata.txt >> $DSTTRIALI/README.txt
@@ -130,7 +136,7 @@ for i in UUUUD_* ; do
     else
       echo , >> $DSTDEVI/metadata.json
     fi
-    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTDEVI/metadata.json
+    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu"}' >> $DSTDEVI/metadata.json
     chmod 644 $i/$ltcode-ud-dev.conllu
     cp $i/$ltcode-ud-dev.conllu                  $DSTDEVG/$ltcode.conllu
     cp $i/$ltcode-ud-dev.conllu                  $DSTDEVI/$ltcode.conllu
@@ -141,13 +147,13 @@ for i in UUUUD_* ; do
   # Create a trial dataset for debugging purposes.
   # Unlike the development data, we will not provide the gold-standard file in the input folder.
   # The purpose is to make the setting as similar to the test data as possible.
-  if [ "$i" = "UD_English" ] || [ "$i" = "UD_Turkish" ] || [ "$i" = "UD_Arabic" ] || [ "$i" = "UD_Chinese" ] || [ "$i" = "UD_Vietnamese" ] ; then
+  if [ "$i" = "UD_English-GUM" ] || [ "$i" = "UD_Czech-PDT" ] || [ "$i" = "UD_Arabic-PADT" ] || [ "$i" = "UD_Chinese-GSD" ] || [ "$i" = "UD_Swedish-Talbanken" ] ; then
     if [ -z "$firsttrial" ] ; then
       firsttrial="nolonger"
     else
       echo , >> $DSTTRIALI/metadata.json
     fi
-    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "name":"'$i'", "ltcode":"'$ltcode'"}' >> $DSTTRIALI/metadata.json
+    echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu"}' >> $DSTTRIALI/metadata.json
     split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DSTTRIALG/$ltcode.conllu /dev/null
     ../../tools/conllu_to_text.pl --lang $lcode < $DSTTRIALG/$ltcode.conllu > $DSTTRIALI/$ltcode.txt
     cp $SRCPSM/trial/$ltcode-udpipe.conllu $DSTTRIALI/$ltcode-udpipe.conllu
@@ -176,7 +182,7 @@ for i in *-ud-test.conllu ; do
   else
     echo , >> $DSTTESTI/metadata.json
   fi
-  echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu", "ltcode":"'$ltcode'"}' >> $DSTTESTI/metadata.json
+  echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu"}' >> $DSTTESTI/metadata.json
   chmod 644 $ltcode-ud-test.conllu
   cp $ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   ../tools/conllu_to_text.pl --lang $lcode < $ltcode-ud-test.conllu > $DSTTESTI/$ltcode.txt
@@ -193,12 +199,12 @@ cp $DSTTESTI/metadata.json $DSTTESTG/metadata.json
 
 
 ###!!! NO DEV TRAIN THIS TIME!
-rm -rf $DSTTRAINI
-rm -rf $DSTTRAING
-rm -rf $DSTDEVI
-rm -rf $DSTDEVG
-rm -rf $DSTTRIALI
-rm -rf $DSTTRIALG
+#rm -rf $DSTTRAINI
+#rm -rf $DSTTRAING
+#rm -rf $DSTDEVI
+#rm -rf $DSTDEVG
+#rm -rf $DSTTRIALI
+#rm -rf $DSTTRIALG
 
 
 
@@ -206,4 +212,3 @@ cd $DST/..
 rm tira.zip
 cd $DST
 zip -r ../tira.zip *
-
