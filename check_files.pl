@@ -50,10 +50,7 @@ GetOptions
 opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
-# We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
-my $langcodes_from_json = udlib::get_lcode_hash();
-my %langcodes = %{$langcodes_from_json};
-# There is now also the new list of languages in YAML in docs-automation; this one has also language families.
+# We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
 my $languages_from_yaml = udlib::get_language_hash();
 my $n_folders_with_data = 0;
 my $n_folders_conll = 0;
@@ -78,16 +75,13 @@ foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
     # Example: UD_Ancient_Greek-PROIEL
-    my $language = '';
-    my $treebank = '';
+    my ($language, $treebank) = udlib::decompose_repo_name($folder);
     my $langcode;
-    if($folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
+    if(defined($language))
     {
-        $language = $1;
-        $treebank = $2 if(defined($2));
-        if(exists($langcodes{$language}))
+        if(exists($languages_from_yaml->{$language}))
         {
-            $langcode = $langcodes{$language};
+            $langcode = $languages_from_yaml->{$language}{lcode};
             chdir($folder) or die("Cannot enter folder $folder");
             # Skip folders that are not Git repositories even if they otherwise look OK.
             if(!-d '.git')
@@ -582,18 +576,15 @@ sub collect_statistics_about_ud_release
     closedir(DIR);
     foreach my $folder (@folders)
     {
-        # The name of the folder: 'UD_' + language name + optional treebank identifier.
+        # The name of the folder: 'UD_' + language name + treebank identifier.
         # Example: UD_Ancient_Greek-PROIEL
-        my $language = '';
-        my $treebank = '';
+        my ($language, $treebank) = udlib::decompose_repo_name($folder);
         my $langcode;
-        if(-d "$release_path/$folder" && $folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
+        if(-d "$release_path/$folder" && defined($language))
         {
-            $language = $1;
-            $treebank = $2 if(defined($2));
-            if(exists($langcodes{$language}))
+            if(exists($languages_from_yaml->{$language}))
             {
-                $langcode = $langcodes{$language};
+                $langcode = $languages_from_yaml->{$language}{lcode};
                 my $key = $langcode;
                 $key .= '_'.lc($treebank) if($treebank ne '');
                 $stats{$key} = collect_statistics_about_ud_treebank("$release_path/$folder", $key);
