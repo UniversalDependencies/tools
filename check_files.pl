@@ -27,7 +27,7 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.1;
+my $current_release = 2.2;
 # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
 # Here we list treebanks that cannot participate because of copyright. Other treebanks may be excluded because of their size.
 ###!!! We could now recognize these treebanks by the metadata attribute 'Includes text: no'!
@@ -35,7 +35,7 @@ my $not_in_shared_task = 'Arabic-NYUAD|English-ESL|French-FTB|Japanese-KTC';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.0';
+my $oldpath = '/net/data/universal-dependencies-2.1';
 GetOptions
 (
     'future'   => \$include_future,
@@ -230,7 +230,7 @@ foreach my $folder (@folders)
             # No other CoNLL-U files are expected.
             # It is also expected that if there is dev, there is also train.
             # And if there is train, it should be same size or larger (in words) than both dev and test.
-            if($folder eq 'UD_Czech')
+            if($folder eq 'UD_Czech-PDT')
             {
                 # The data is split into four files because of the size limits.
                 if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
@@ -352,7 +352,7 @@ foreach my $folder (@folders)
             }
             grep
             {
-                !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(sample|train|dev|test)\.conllu|cs-ud-train-[clmv]\.conllu|stats\.xml)$/
+                !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(sample|train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
             }
             (@files);
             # Some treebanks have exceptional extra files that have been approved and released previously.
