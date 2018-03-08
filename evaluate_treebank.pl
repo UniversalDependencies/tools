@@ -313,6 +313,7 @@ my %oldname =
     'UD_French-GSD'          => 'UD_French',
     'UD_German-GSD'          => 'UD_German',
     'UD_Greek-GDT'           => 'UD_Greek',
+    'UD_Hindi-HDTB'          => 'UD_Hindi',
     'UD_Indonesian-GSD'      => 'UD_Indonesian',
     'UD_Irish-IDT'           => 'UD_Irish',
     'UD_Japanese-GSD'        => 'UD_Japanese',
@@ -328,7 +329,8 @@ my %oldname =
     'UD_Swedish-Talbanken'   => 'UD_Swedish',
     'UD_Tagalog-TRG'         => 'UD_Tagalog',
     'UD_Tamil-TTB'           => 'UD_Tamil',
-    'UD_Upper_Sorbian-UFAL'  => 'UD_Upper_Sorbian'
+    'UD_Upper_Sorbian-UFAL'  => 'UD_Upper_Sorbian',
+    'UD_Urdu-UDTB'           => 'UD_Urdu'
 );
 my $validity = 0.01;
 if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$folder}}))
