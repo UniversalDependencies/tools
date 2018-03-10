@@ -1,6 +1,11 @@
 acl:cleft
 acl:relcl
+advcl:periph
 advmod:emph
 compound:prt
 compound:redup
 compound:svc
+nsubj:expl
+obl:mod
+obl:periph
+parataxis:parenth
