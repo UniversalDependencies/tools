@@ -2,10 +2,15 @@ acl:cleft
 acl:relcl
 advcl:periph
 advmod:emph
+ccomp:cleft
 compound:prt
 compound:redup
 compound:svc
+conj:coord
+nmod:poss
 nsubj:expl
+obl:arg
 obl:mod
 obl:periph
+parataxis:conj
 parataxis:parenth
