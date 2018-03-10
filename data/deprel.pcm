@@ -7,10 +7,13 @@ compound:prt
 compound:redup
 compound:svc
 conj:coord
+conj:dicto
+det:predet
 nmod:poss
 nsubj:expl
 obl:arg
 obl:mod
 obl:periph
 parataxis:conj
+parataxis:discourse
 parataxis:parenth
