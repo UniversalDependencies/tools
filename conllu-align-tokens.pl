@@ -15,6 +15,10 @@ binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 
 # One file is considered gold standard, the other is a system's output.
+if(scalar(@ARGV) != 2)
+{
+    die("Usage: $0 goldfile systemfile");
+}
 my $goldpath = $ARGV[0];
 my $syspath = $ARGV[1];
 open(GOLD, $goldpath) or die("Cannot read $goldpath: $!");
@@ -27,8 +31,8 @@ my $sbuffer = '';
 while(my $goldline = <GOLD>)
 {
     $gli++;
+    my @goldlines = ($goldline);
     my $new_gold_token_read = 0;
-    my @gf = ();
     # Sentence-level comments start with '#'. Pass through gold comments, ignore system comments.
     # Empty nodes of the enhanced representation start with decimal numbers. Pass through gold, ignore system.
     # Empty line terminates every sentence. Pass through gold, ignore system.
@@ -37,7 +41,7 @@ while(my $goldline = <GOLD>)
     {
         my $from = $1;
         my $to = $2;
-        @gf = split(/\t/, $line);
+        my @gf = split(/\t/, $goldline);
         my $gform = $gf[1];
         # Word forms may contain spaces but we are interested in non-whitespace characters only.
         $gform =~ s/\s//g;
@@ -45,16 +49,16 @@ while(my $goldline = <GOLD>)
         # Read the syntactic words that belong to this multi-word token.
         for(my $i = $from; $i <= $to; $i++)
         {
-            print($goldline);
-            $goldline = <$fh>;
+            $goldline = <GOLD>;
             $gli++;
+            push(@goldlines, $goldline);
         }
         $new_gold_token_read = 1;
     }
     # Single-word token.
     elsif($goldline =~ m/^\d+\t/)
     {
-        @gf = split(/\t/, $goldline);
+        my @gf = split(/\t/, $goldline);
         my $gform = $gf[1];
         # Word forms may contain spaces but we are interested in non-whitespace characters only.
         $gform =~ s/\s//g;
@@ -63,10 +67,10 @@ while(my $goldline = <GOLD>)
     }
     if($new_gold_token_read)
     {
-        my $sysline;
+        my @syslines = ();
         while(length($gbuffer) > length($sbuffer))
         {
-            my $nr = read_token_to_buffer(*SYS, \$sli, \$sbuffer, \$sysline);
+            my $nr = read_token_to_buffer(*SYS, \$sli, \$sbuffer, \@syslines);
             if($nr == 0)
             {
                 die("The system output ended prematurely. Gold line no. $gli, offset $gboff, buffer '$gbuffer'. System line no. $sli, buffer '$sbuffer'.");
@@ -77,11 +81,18 @@ while(my $goldline = <GOLD>)
         {
             ###!!! The fact that the two buffers match does not entail that the last words match.
             ###!!! Nevertheless, we will now assume that it is the case, and copy the system lemma to the gold line.
-            my @sf = split(/\t/, $sysline);
-            if(defined($sf[2]) && $sf[2] ne '')
+            if(scalar(@syslines) == scalar(@goldlines))
             {
-                $gf[2] = $sf[2];
-                $goldline = join("\t", @gf);
+                for(my $i = 0; $i <= $#syslines; $i++)
+                {
+                    my @gf = split(/\t/, $goldlines[$i]);
+                    my @sf = split(/\t/, $syslines[$i]);
+                    if(defined($sf[2]) && $sf[2] ne '')
+                    {
+                        $gf[2] = $sf[2];
+                        $goldlines[$i] = join("\t", @gf);
+                    }
+                }
             }
             $gboff += length($gbuffer);
             $gbuffer = '';
@@ -101,7 +112,10 @@ while(my $goldline = <GOLD>)
             die("Non-whitespace character mismatch. Gold line no. $gli, offset $gboff, buffer '$gbuffer'. System line no. $sli, buffer '$sbuffer'.");
         }
     }
-    print($goldline);
+    foreach my $gl (@goldlines)
+    {
+        print($gl);
+    }
 }
 close(GOLD);
 close(SYS);
@@ -120,7 +134,7 @@ sub read_token_to_buffer
     my $fh = shift; # the handle of the open file
     my $li = shift; # reference to the current line number
     my $buffer = shift; # reference to the buffer
-    my $tokenline = shift; # reference to the variable where the line with the last token should be stored
+    my $tokenlines = shift; # reference to array where token and word lines should be stored (other lines are thrown away)
     # Read the next system token.
     my $form;
     while(my $line = <$fh>)
@@ -131,27 +145,28 @@ sub read_token_to_buffer
         {
             my $from = $1;
             my $to = $2;
+            push(@{$tokenlines}, $line);
             my @f = split(/\t/, $line);
             $form = $f[1];
             # Word forms may contain spaces but we are interested in non-whitespace characters only.
             $form =~ s/\s//g;
-            ${$tokenline} = $line;
             # Read the syntactic words that belong to this multi-word token.
             for(my $i = $from; $i <= $to; $i++)
             {
                 $line = <$fh>;
                 ${$li}++;
+                push(@{$tokenlines}, $line);
             }
             last;
         }
         # Single-word token.
         elsif($line =~ m/^\d+\t/)
         {
+            push(@{$tokenlines}, $line);
             my @f = split(/\t/, $line);
             $form = $f[1];
             # Word forms may contain spaces but we are interested in non-whitespace characters only.
             $form =~ s/\s//g;
-            ${$tokenline} = $line;
             last;
         }
     }
