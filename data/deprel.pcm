@@ -14,11 +14,13 @@ det:predet
 nmod:npmod
 nmod:poss
 nsubj:expl
+nsubj:pass
 nsubj:quasi
 obl:arg
 obl:mod
 obl:periph
 parataxis:conj
 parataxis:discourse
+parataxis:dislocated
 parataxis:obj
 parataxis:parenth
