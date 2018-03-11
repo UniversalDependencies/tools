@@ -16,8 +16,8 @@ my $verbose = 0;
 my $forcemaster = 1;
 GetOptions
 (
-    'verbose'     => \$verbose,
-    'forcemaster' => \$forcemaster
+    'verbose'      => \$verbose,
+    'forcemaster!' => \$forcemaster
 );
 
 # Path to the local copy of the UD repository (e.g., UD_Czech).
