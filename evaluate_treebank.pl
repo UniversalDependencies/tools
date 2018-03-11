@@ -13,9 +13,11 @@ use Getopt::Long;
 use udlib;
 
 my $verbose = 0;
+my $forcemaster = 1;
 GetOptions
 (
-    'verbose' => \$verbose
+    'verbose'     => \$verbose,
+    'forcemaster' => \$forcemaster
 );
 
 # Path to the local copy of the UD repository (e.g., UD_Czech).
@@ -37,10 +39,13 @@ if($verbose)
 }
 # The ranking that we apply to the list of treebanks of a given language (on UD title page)
 # should be based on the most recent official release, i.e., on the master branch.
-###!!! At present we ignore the fact that multiple CGI processes may attempt to
-###!!! fiddle with the repository at the same time! When that happens, the output
-###!!! will be wrong!
-system("cd $folder ; (git checkout master 1>&2) ; cd ..");
+if($forcemaster)
+{
+    ###!!! At present we ignore the fact that multiple CGI processes may attempt to
+    ###!!! fiddle with the repository at the same time! When that happens, the output
+    ###!!! will be wrong!
+    system("cd $folder ; (git checkout master 1>&2) ; cd ..");
+}
 if($verbose)
 {
     print STDERR ("Evaluating the following revision of $folder:\n");
@@ -387,7 +392,11 @@ if($verbose)
 }
 print("$folder\t$score\t$stars\n");
 # When we are done we must switch the repository back from master to the dev branch.
-###!!! At present we ignore the fact that multiple CGI processes may attempt to
-###!!! fiddle with the repository at the same time! When that happens, the output
-###!!! will be wrong!
-system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
+# (Provided we actually switched it to master. And ignoring the possibility that there is a third branch or that it already was in master when we came.)
+if($forcemaster)
+{
+    ###!!! At present we ignore the fact that multiple CGI processes may attempt to
+    ###!!! fiddle with the repository at the same time! When that happens, the output
+    ###!!! will be wrong!
+    system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
+}
