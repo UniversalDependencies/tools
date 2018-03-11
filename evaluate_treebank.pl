@@ -332,6 +332,7 @@ my %oldname =
     'UD_Latvian-LVTB'        => 'UD_Latvian',
     'UD_Persian-Seraji'      => 'UD_Persian',
     'UD_Polish-SZ'           => 'UD_Polish',
+    'UD_Romanian-RRT'        => 'UD_Romanian',
     'UD_Russian-GSD'         => 'UD_Russian',
     'UD_Sanskrit-UFAL'       => 'UD_Sanskrit',
     'UD_Slovak-SNK'          => 'UD_Slovak',
