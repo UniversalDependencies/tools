@@ -342,6 +342,13 @@ if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$f
 {
     $validity = 1;
 }
+if($verbose)
+{
+    print STDERR ("WARNING: At present, the 'validity' score does not reflect the output of the current validator on the current data.\n");
+    print STDERR ("         Instead, the presence of the treebank in the UD release 2.1 is checked (meaning that it was valid at release time).\n");
+    print STDERR ("         This is a temporary measure until UD release 2.2.\n");
+    print STDERR ("Validity: $validity\n");
+}
 #------------------------------------------------------------------------------
 # Score of empty treebanks should be zero regardless of the other features.
 my $score = 0;
