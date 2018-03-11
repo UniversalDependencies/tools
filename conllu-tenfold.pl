@@ -83,3 +83,5 @@ for(my $i = 1; $i <= 10; $i++)
     print STDERR ("$command\n");
     system($command);
 }
+# for i in 01 02 03 04 05 06 07 08 09 10 ; do udpipe --train --tokenizer=none --tagger=none model$i.udpipe train$i.conllu ; done
+# for i in 01 02 03 04 05 06 07 08 09 10 ; do udpipe --accuracy --parse model$i.udpipe $i.conllu ; done
