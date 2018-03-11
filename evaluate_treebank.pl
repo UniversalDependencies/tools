@@ -240,6 +240,11 @@ if($n > 0)
     elsif($verbose)
     {
         print STDERR ("WARNING: Udapi not found. The content-based tests were not performed.\n");
+        print STDERR ("         In order to get a full evaluation, you need to:\n");
+        print STDERR ("         1. Put this script in the current folder:\n");
+        print STDERR ("            https://github.com/UniversalDependencies/docs-automation/blob/master/valdan/udapi-markbugs.sh\n");
+        print STDERR ("         2. Install Python version of Udapi.\n");
+        print STDERR ("         3. Copy udapi-python and pythonlib to the current folder, as indicated in udapi-markbugs.sh.\n");
     }
 }
 else
