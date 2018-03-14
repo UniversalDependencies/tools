@@ -341,6 +341,7 @@ my %oldname =
     'UD_Swedish-Talbanken'   => 'UD_Swedish',
     'UD_Tagalog-TRG'         => 'UD_Tagalog',
     'UD_Tamil-TTB'           => 'UD_Tamil',
+    'UD_Ukrainian-IU'        => 'UD_Ukrainian',
     'UD_Upper_Sorbian-UFAL'  => 'UD_Upper_Sorbian',
     'UD_Urdu-UDTB'           => 'UD_Urdu'
 );
