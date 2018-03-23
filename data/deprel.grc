@@ -1,1 +1,7 @@
 advmod:emph
+nsubj:pass
+csubj:pass
+obl:agent
+flat:name
+flat:foreign
+aux:pass

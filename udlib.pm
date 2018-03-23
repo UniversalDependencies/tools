@@ -25,6 +25,31 @@ sub get_language_hash
 
 
 #------------------------------------------------------------------------------
+# Takes a name of a UD treebank repository, e.g., UD_Ancient_Greek-PROIEL.
+# Decomposes it into language name and treebank name and returns the two
+# strings. If language name contains underscores, they are replaced by spaces
+# (it looks better in reports and it is also the required name form to access
+# language information read from YAML by get_language_hash()).
+#------------------------------------------------------------------------------
+sub decompose_repo_name
+{
+    my $repo = shift;
+    $repo =~ s:/$::;
+    my $language;
+    my $treebank;
+    # Example: UD_Ancient_Greek-PROIEL
+    if($repo =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
+    {
+        $language = $1;
+        $treebank = $2;
+        $language =~ s/_/ /g;
+    }
+    return ($language, $treebank);
+}
+
+
+
+#------------------------------------------------------------------------------
 # Returns reference to hash of known UD treebank codes (key = treebank name,
 # without the UD_ prefix but with underscores instead of spaces; value =
 # language_treebank code). Reads the JSON file in the docs repository.
@@ -33,6 +58,8 @@ sub get_language_hash
 sub get_ltcode_hash
 {
     my $path = shift;
+    print STDERR ("WARNING: udlib::get_ltcode_hash() is obsolete because the file lcodes.json in docs is no longer maintained!\n");
+    print STDERR ("WARNING: Use udlib::get_language_hash() instead, which reads docs-automation/codes_and_flags.yaml.\n");
     $path = '.' if(!defined($path));
     if (-d "$path/docs")
     {

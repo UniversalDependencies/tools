@@ -13,9 +13,11 @@ use Getopt::Long;
 use udlib;
 
 my $verbose = 0;
+my $forcemaster = 1;
 GetOptions
 (
-    'verbose' => \$verbose
+    'verbose'      => \$verbose,
+    'forcemaster!' => \$forcemaster
 );
 
 # Path to the local copy of the UD repository (e.g., UD_Czech).
@@ -37,10 +39,13 @@ if($verbose)
 }
 # The ranking that we apply to the list of treebanks of a given language (on UD title page)
 # should be based on the most recent official release, i.e., on the master branch.
-###!!! At present we ignore the fact that multiple CGI processes may attempt to
-###!!! fiddle with the repository at the same time! When that happens, the output
-###!!! will be wrong!
-system("cd $folder ; (git checkout master 1>&2) ; cd ..");
+if($forcemaster)
+{
+    ###!!! At present we ignore the fact that multiple CGI processes may attempt to
+    ###!!! fiddle with the repository at the same time! When that happens, the output
+    ###!!! will be wrong!
+    system("cd $folder ; (git checkout master 1>&2) ; cd ..");
+}
 if($verbose)
 {
     print STDERR ("Evaluating the following revision of $folder:\n");
@@ -235,6 +240,11 @@ if($n > 0)
     elsif($verbose)
     {
         print STDERR ("WARNING: Udapi not found. The content-based tests were not performed.\n");
+        print STDERR ("         In order to get a full evaluation, you need to:\n");
+        print STDERR ("         1. Put this script in the current folder:\n");
+        print STDERR ("            https://github.com/UniversalDependencies/docs-automation/blob/master/valdan/udapi-markbugs.sh\n");
+        print STDERR ("         2. Install Python version of Udapi.\n");
+        print STDERR ("         3. Copy udapi-python and pythonlib to the current folder, as indicated in udapi-markbugs.sh.\n");
     }
 }
 else
@@ -298,37 +308,56 @@ foreach my $treebank (split(/\s+/, $r21))
 # Some treebanks were renamed but we want to count them as valid and released.
 my %oldname =
 (
-    'UD_Amharic-ATT'        => 'UD_Amharic',
-    'UD_Arabic-PADT'        => 'UD_Arabic',
-    'UD_Bulgarian-BTB'      => 'UD_Bulgarian',
-    'UD_Catalan-AnCora'     => 'UD_Catalan',
-    'UD_Chinese-GSD'        => 'UD_Chinese',
-    'UD_Coptic-Scriptorium' => 'UD_Coptic',
-    'UD_Czech-PDT'          => 'UD_Czech',
-    'UD_English-EWT'        => 'UD_English',
-    'UD_Finnish-TDT'        => 'UD_Finnish',
-    'UD_French-GSD'         => 'UD_French',
-    'UD_German-GSD'         => 'UD_German',
-    'UD_Greek-GDT'          => 'UD_Greek',
-    'UD_Indonesian-GSD'     => 'UD_Indonesian',
-    'UD_Japanese-GSD'       => 'UD_Japanese',
-    'UD_Korean-GSD'         => 'UD_Korean',
-    'UD_Latvian-LVTB'       => 'UD_Latvian',
-    'UD_Polish-SZ'          => 'UD_Polish',
-    'UD_Russian-GSD'        => 'UD_Russian',
-    'UD_Sanskrit-UFAL'      => 'UD_Sanskrit',
-    'UD_Slovak-SNK'         => 'UD_Slovak',
-    'UD_Slovenian-SSJ'      => 'UD_Slovenian',
-    'UD_Spanish-GSD'        => 'UD_Spanish',
-    'UD_Swedish-Talbanken'  => 'UD_Swedish',
-    'UD_Tagalog-TRG'        => 'UD_Tagalog',
-    'UD_Tamil-TTB'          => 'UD_Tamil',
-    'UD_Upper_Sorbian-UFAL' => 'UD_Upper_Sorbian'
+    'UD_Afrikaans-AfriBooms' => 'UD_Afrikaans',
+    'UD_Amharic-ATT'         => 'UD_Amharic',
+    'UD_Arabic-PADT'         => 'UD_Arabic',
+    'UD_Bulgarian-BTB'       => 'UD_Bulgarian',
+    'UD_Catalan-AnCora'      => 'UD_Catalan',
+    'UD_Chinese-GSD'         => 'UD_Chinese',
+    'UD_Coptic-Scriptorium'  => 'UD_Coptic',
+    'UD_Czech-PDT'           => 'UD_Czech',
+    'UD_Danish-DDT'          => 'UD_Danish',
+    'UD_Dutch-Alpino'        => 'UD_Dutch',
+    'UD_English-EWT'         => 'UD_English',
+    'UD_Finnish-TDT'         => 'UD_Finnish',
+    'UD_French-GSD'          => 'UD_French',
+    'UD_German-GSD'          => 'UD_German',
+    'UD_Greek-GDT'           => 'UD_Greek',
+    'UD_Hindi-HDTB'          => 'UD_Hindi',
+    'UD_Hungarian-Szeged'    => 'UD_Hungarian',
+    'UD_Indonesian-GSD'      => 'UD_Indonesian',
+    'UD_Irish-IDT'           => 'UD_Irish',
+    'UD_Japanese-GSD'        => 'UD_Japanese',
+    'UD_Korean-GSD'          => 'UD_Korean',
+    'UD_Latvian-LVTB'        => 'UD_Latvian',
+    'UD_Old_French-SRCMF'    => 'UD_Old_French',
+    'UD_Persian-Seraji'      => 'UD_Persian',
+    'UD_Polish-SZ'           => 'UD_Polish',
+    'UD_Portuguese-Bosque'   => 'UD_Portuguese',
+    'UD_Romanian-RRT'        => 'UD_Romanian',
+    'UD_Russian-GSD'         => 'UD_Russian',
+    'UD_Sanskrit-UFAL'       => 'UD_Sanskrit',
+    'UD_Slovak-SNK'          => 'UD_Slovak',
+    'UD_Slovenian-SSJ'       => 'UD_Slovenian',
+    'UD_Spanish-GSD'         => 'UD_Spanish',
+    'UD_Swedish-Talbanken'   => 'UD_Swedish',
+    'UD_Tagalog-TRG'         => 'UD_Tagalog',
+    'UD_Tamil-TTB'           => 'UD_Tamil',
+    'UD_Ukrainian-IU'        => 'UD_Ukrainian',
+    'UD_Upper_Sorbian-UFAL'  => 'UD_Upper_Sorbian',
+    'UD_Urdu-UDTB'           => 'UD_Urdu'
 );
 my $validity = 0.01;
 if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$folder}}))
 {
     $validity = 1;
+}
+if($verbose)
+{
+    print STDERR ("WARNING: At present, the 'validity' score does not reflect the output of the current validator on the current data.\n");
+    print STDERR ("         Instead, the presence of the treebank in the UD release 2.1 is checked (meaning that it was valid at release time).\n");
+    print STDERR ("         This is a temporary measure until UD release 2.2.\n");
+    print STDERR ("Validity: $validity\n");
 }
 #------------------------------------------------------------------------------
 # Score of empty treebanks should be zero regardless of the other features.
@@ -380,7 +409,11 @@ if($verbose)
 }
 print("$folder\t$score\t$stars\n");
 # When we are done we must switch the repository back from master to the dev branch.
-###!!! At present we ignore the fact that multiple CGI processes may attempt to
-###!!! fiddle with the repository at the same time! When that happens, the output
-###!!! will be wrong!
-system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
+# (Provided we actually switched it to master. And ignoring the possibility that there is a third branch or that it already was in master when we came.)
+if($forcemaster)
+{
+    ###!!! At present we ignore the fact that multiple CGI processes may attempt to
+    ###!!! fiddle with the repository at the same time! When that happens, the output
+    ###!!! will be wrong!
+    system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
+}

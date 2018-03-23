@@ -5,3 +5,5 @@ csubj:pass
 flat:foreign
 flat:name
 nsubj:pass
+parataxis:deletion
+discourse:filler

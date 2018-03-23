@@ -2,9 +2,11 @@ acl:relcl
 aux:caus
 aux:pass
 csubj:pass
+expl:pass
 flat:foreign
 flat:name
 iobj:agent
+nmod:range
 nsubj:caus
 nsubj:pass
 obj:agent
