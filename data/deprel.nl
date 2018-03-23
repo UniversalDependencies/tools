@@ -5,3 +5,4 @@ expl:pv
 flat:name
 nmod:poss
 nsubj:pass
+obl:agent
