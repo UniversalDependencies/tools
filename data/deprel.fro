@@ -12,3 +12,4 @@ obj:advmod
 obj:nsubj
 obl:mark
 obj:advneg
+mark:advmod
