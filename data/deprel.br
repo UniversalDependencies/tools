@@ -1,0 +1,12 @@
+acl:focus
+acl:relcl
+advmod:neg
+aux:pass
+fixed:name
+flat:name
+nmod:gen
+nmod:poss
+nsubj:appos
+nsubj:cop
+obl:agent
+obl:x
