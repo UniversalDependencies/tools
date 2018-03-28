@@ -1,6 +1,7 @@
 acl:relcl
 det:poss
 det:predet
+discourse:emo
 expl:impers
 expl:pass
 aux:pass
@@ -9,4 +10,11 @@ csubj:pass
 obl:agent
 flat:name
 flat:foreign
+parataxis:appos
+parataxis:discourse
+parataxis:hashtag
+parataxis:insert
+parataxis:nsubj
+parataxis:obj
+vocative:mention
 

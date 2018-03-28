@@ -3,3 +3,6 @@ aux:pass
 csubj:pass
 expl:pass
 nsubj:pass
+obl:agent
+flat:name
+flat:foreign

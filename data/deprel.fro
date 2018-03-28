@@ -1,0 +1,15 @@
+acl:relcl
+advmod:comp
+advmod:obj
+aux:pass
+case:det
+cc:nc
+mark:obj
+mark:obl
+nsubj:advmod
+nsubj:obj
+obj:advmod
+obj:nsubj
+obl:mark
+obj:advneg
+mark:advmod

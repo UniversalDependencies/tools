@@ -10,6 +10,3 @@ obl:agent
 compound:ext
 advmod:df
 compound:vo
-advcl:coverb
-compound:quant
-nsubj:periph
