@@ -313,6 +313,7 @@ my %oldname =
     'UD_Ancient_Greek-Perseus' => 'UD_Ancient_Greek',
     'UD_Arabic-PADT'           => 'UD_Arabic',
     'UD_Bulgarian-BTB'         => 'UD_Bulgarian',
+    'UD_Buryat-BDT'            => 'UD_Buryat',
     'UD_Catalan-AnCora'        => 'UD_Catalan',
     'UD_Chinese-GSD'           => 'UD_Chinese',
     'UD_Coptic-Scriptorium'    => 'UD_Coptic',
