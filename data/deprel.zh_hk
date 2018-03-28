@@ -6,7 +6,7 @@ obj:periph
 case:loc
 compound:dir
 obl:patient
-obl:periph
 obl:agent
 compound:ext
 advmod:df
+compound:vo
