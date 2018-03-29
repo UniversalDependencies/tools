@@ -28,3 +28,15 @@ mark:rel
 obl:agent
 obl:patient
 obl:tmod
+discourse:sp
+compound:vv
+obl:tmod
+mark:rel
+obj:periph
+case:loc
+compound:dir
+obl:patient
+obl:agent
+compound:ext
+advmod:df
+compound:vo
