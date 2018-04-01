@@ -10,6 +10,5 @@ nsubj:advmod
 nsubj:obj
 obj:advmod
 obj:advneg
-obj:nsubj
 obj:obl
 obl:advmod
