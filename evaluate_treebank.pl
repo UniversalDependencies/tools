@@ -368,6 +368,7 @@ my %oldname =
     'UD_Tagalog-TRG'                => 'UD_Tagalog',
     'UD_Tamil-TTB'                  => 'UD_Tamil',
     'UD_Telugu-MTG'                 => 'UD_Telugu',
+    'UD_Turkish-IMST'               => 'UD_Turkish',
     'UD_Ukrainian-IU'               => 'UD_Ukrainian',
     'UD_Upper_Sorbian-UFAL'         => 'UD_Upper_Sorbian',
     'UD_Urdu-UDTB'                  => 'UD_Urdu'
