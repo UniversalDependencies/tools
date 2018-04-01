@@ -342,6 +342,7 @@ my %oldname =
     'UD_Irish-IDT'                  => 'UD_Irish',
     'UD_Italian-ISDT'               => 'UD_Italian',
     'UD_Japanese-GSD'               => 'UD_Japanese',
+    'UD_Kazakh-KTB'                 => 'UD_Kazakh',
     'UD_Korean-GSD'                 => 'UD_Korean',
     'UD_Latin-Perseus'              => 'UD_Latin',
     'UD_Latvian-LVTB'               => 'UD_Latvian',
