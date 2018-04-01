@@ -312,6 +312,7 @@ my %oldname =
     'UD_Amharic-ATT'           => 'UD_Amharic',
     'UD_Ancient_Greek-Perseus' => 'UD_Ancient_Greek',
     'UD_Arabic-PADT'           => 'UD_Arabic',
+    'UD_Armenian-ArmTDP'       => 'UD_Armenian',
     'UD_Basque-BDT'            => 'UD_Basque',
     'UD_Breton-KEB'            => 'UD_Breton',
     'UD_Bulgarian-BTB'         => 'UD_Bulgarian',
