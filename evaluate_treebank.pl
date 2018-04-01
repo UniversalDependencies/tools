@@ -319,6 +319,7 @@ my %oldname =
     'UD_Breton-KEB'            => 'UD_Breton',
     'UD_Bulgarian-BTB'         => 'UD_Bulgarian',
     'UD_Buryat-BDT'            => 'UD_Buryat',
+    'UD_Cantonese-HK'          => 'UD_Cantonese',
     'UD_Catalan-AnCora'        => 'UD_Catalan',
     'UD_Chinese-GSD'           => 'UD_Chinese',
     'UD_Coptic-Scriptorium'    => 'UD_Coptic',
