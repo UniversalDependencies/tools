@@ -335,6 +335,7 @@ my %oldname =
     'UD_Korean-GSD'            => 'UD_Korean',
     'UD_Latin-Perseus'         => 'UD_Latin',
     'UD_Latvian-LVTB'          => 'UD_Latvian',
+    'UD_North_Sami-Giella'     => 'UD_North_Sami',
     'UD_Old_French-SRCMF'      => 'UD_Old_French',
     'UD_Persian-Seraji'        => 'UD_Persian',
     'UD_Polish-SZ'             => 'UD_Polish',
