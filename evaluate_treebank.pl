@@ -371,7 +371,8 @@ my %oldname =
     'UD_Turkish-IMST'               => 'UD_Turkish',
     'UD_Ukrainian-IU'               => 'UD_Ukrainian',
     'UD_Upper_Sorbian-UFAL'         => 'UD_Upper_Sorbian',
-    'UD_Urdu-UDTB'                  => 'UD_Urdu'
+    'UD_Urdu-UDTB'                  => 'UD_Urdu',
+    'UD_Uyghur-UDT'                 => 'UD_Uyghur'
 );
 my $validity = 0.01;
 if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$folder}}))
