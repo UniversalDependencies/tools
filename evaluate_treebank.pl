@@ -315,6 +315,7 @@ my %oldname =
     'UD_Armenian-ArmTDP'       => 'UD_Armenian',
     'UD_Bambara-CRB'           => 'UD_Bambara',
     'UD_Basque-BDT'            => 'UD_Basque',
+    'UD_Belarusian-HSE'        => 'UD_Belarusian',
     'UD_Breton-KEB'            => 'UD_Breton',
     'UD_Bulgarian-BTB'         => 'UD_Bulgarian',
     'UD_Buryat-BDT'            => 'UD_Buryat',
