@@ -323,6 +323,7 @@ my %oldname =
     'UD_Catalan-AnCora'        => 'UD_Catalan',
     'UD_Chinese-GSD'           => 'UD_Chinese',
     'UD_Coptic-Scriptorium'    => 'UD_Coptic',
+    'UD_Croatian-SET'          => 'UD_Croatian',
     'UD_Czech-PDT'             => 'UD_Czech',
     'UD_Danish-DDT'            => 'UD_Danish',
     'UD_Dutch-Alpino'          => 'UD_Dutch',
