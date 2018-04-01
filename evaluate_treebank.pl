@@ -367,6 +367,7 @@ my %oldname =
     'UD_Swedish_Sign_Language-SSLC' => 'UD_Swedish_Sign_Language',
     'UD_Tagalog-TRG'                => 'UD_Tagalog',
     'UD_Tamil-TTB'                  => 'UD_Tamil',
+    'UD_Telugu-MTG'                 => 'UD_Telugu',
     'UD_Ukrainian-IU'               => 'UD_Ukrainian',
     'UD_Upper_Sorbian-UFAL'         => 'UD_Upper_Sorbian',
     'UD_Urdu-UDTB'                  => 'UD_Urdu'
