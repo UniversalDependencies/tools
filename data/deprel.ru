@@ -1,8 +1,11 @@
 acl:relcl
 aux:pass
+csubj:pass
 flat:foreign
 flat:name
 nsubj:pass
 obl:agent
+nsubj:pass
 nummod:gov
 nummod:entity
+obl:agent
