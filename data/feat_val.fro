@@ -1,8 +1,5 @@
-Morph=ModA
-Morph=VPar
 Morph=VFin
 Morph=VInf
+Morph=VPar
+Polarity=Int
 PronType=Ord
-Morph=NV
-Morph=ModD
-Morph=RelC
