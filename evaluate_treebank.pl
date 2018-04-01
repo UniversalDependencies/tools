@@ -344,6 +344,7 @@ my %oldname =
     'UD_Japanese-GSD'               => 'UD_Japanese',
     'UD_Kazakh-KTB'                 => 'UD_Kazakh',
     'UD_Korean-GSD'                 => 'UD_Korean',
+    'UD_Kurmanji-MG'                => 'UD_Kurmanji',
     'UD_Latin-Perseus'              => 'UD_Latin',
     'UD_Latvian-LVTB'               => 'UD_Latvian',
     'UD_Lithuanian-HSE'             => 'UD_Lithuanian',
