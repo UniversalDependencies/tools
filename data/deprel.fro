@@ -13,3 +13,5 @@ obj:nsubj
 obl:mark
 obj:advneg
 mark:advmod
+obj:obl
+advmod:obl
