@@ -325,6 +325,7 @@ my %oldname =
     'UD_French-GSD'            => 'UD_French',
     'UD_German-GSD'            => 'UD_German',
     'UD_Greek-GDT'             => 'UD_Greek',
+    'UD_Hebrew-HTB'            => 'UD_Hebrew',
     'UD_Hindi-HDTB'            => 'UD_Hindi',
     'UD_Hungarian-Szeged'      => 'UD_Hungarian',
     'UD_Indonesian-GSD'        => 'UD_Indonesian',
