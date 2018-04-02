@@ -329,6 +329,7 @@ my %oldname =
     'UD_Dutch-Alpino'               => 'UD_Dutch',
     'UD_English-EWT'                => 'UD_English',
     'UD_Estonian-EDT'               => 'UD_Estonian',
+    'UD_Faroese-OFT'                => 'UD_Faroese',
     'UD_Finnish-TDT'                => 'UD_Finnish',
     'UD_French-GSD'                 => 'UD_French',
     'UD_Galician-CTG'               => 'UD_Galician',
