@@ -26,4 +26,5 @@ Register=Inf
 Tense=Aor
 Tense=AorPast
 Tense=FutPast
+VerbForm=Cov
 Voice=CauPass
