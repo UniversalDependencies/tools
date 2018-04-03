@@ -350,6 +350,7 @@ my %oldname =
     'UD_Latvian-LVTB'               => 'UD_Latvian',
     'UD_Lithuanian-HSE'             => 'UD_Lithuanian',
     'UD_Maltese-MUDT'               => 'UD_Maltese',
+    'UD_Marathi-UFAL'               => 'UD_Marathi',
     'UD_Naija-NSC'                  => 'UD_Naija',
     'UD_North_Sami-Giella'          => 'UD_North_Sami',
     'UD_Old_Church_Slavonic-PROIEL' => 'UD_Old_Church_Slavonic',
