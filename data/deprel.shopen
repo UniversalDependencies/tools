@@ -1,3 +1,4 @@
+acl:datsub
 acl:relcl
 advmod:emph
 aux:pass
@@ -15,4 +16,5 @@ nsubj:cop
 nsubj:pass
 obl:agent
 obl:arg
+obl:patient
 obl:tmod
