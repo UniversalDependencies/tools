@@ -22,18 +22,18 @@ while(<>)
         {
             @misc = split(/\|/, $f[9]);
         }
-        # Lemma should not contain a numerical suffix that disambiguates word senses.
-        # Such disambiguation, if desired, should go to the LId attribute in MISC.
-        if($form !~ m/\d/ && $lemma =~ m/(.*\D)-?\d+$/)
+        # Lemma of punctuation symbols should be the symbols themselves, as in most other treebanks.
+        if($form =~ m/^\pP+$/ && $lemma =~ m/\PP/)
         {
-            $f[2] = $1;
+            $f[2] = $form;
             @misc = grep {!m/^LId=/} (@misc);
             push(@misc, "LId=$lemma");
         }
-        # Lemma of punctuation symbols should be the symbols themselves, as in most other treebanks.
-        elsif($form =~ m/^\pP+$/ && $lemma =~ m/\PP/)
+        # Lemma should not contain a numerical suffix that disambiguates word senses.
+        # Such disambiguation, if desired, should go to the LId attribute in MISC.
+        elsif($form !~ m/\d/ && $lemma =~ m/(.*\D)-?\d+$/)
         {
-            $f[2] = $form;
+            $f[2] = $1;
             @misc = grep {!m/^LId=/} (@misc);
             push(@misc, "LId=$lemma");
         }
