@@ -26,6 +26,8 @@ use udlib;
 # UD_Russian-GSD
 # UD_Spanish-GSD
 # UD_Turkish-PUD
+# Note: After some discussion with Giuseppe, UD_Latin-Perseus will be fixed but not removed.
+# So we have 80 shared task treebanks: 62 large and 18 small.
 my @stlarge = qw(UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
 UD_Arabic-PADT UD_Basque-BDT UD_Bulgarian-BTB UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
 UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Danish-DDT UD_Dutch-Alpino UD_Dutch-LassySmall
