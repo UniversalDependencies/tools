@@ -16,6 +16,33 @@ use csort;
 use lib 'tools';
 use udlib;
 
+# Preliminary UD 2.2 release: only the training data of the shared task treebanks
+# (but their test data will be frozen as well, they just won't be released yet).
+# After we used this script to select the shared task treebanks automatically,
+# we are now freezing the list, and we may even do manual adjustments, such as
+# removing treebanks with unreliable lemmatization. From now on, the script will
+# work only with treebanks that have been approved for the shared task.
+my @stlarge = qw(UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
+UD_Arabic-PADT UD_Basque-BDT UD_Bulgarian-BTB UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
+UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Danish-DDT UD_Dutch-Alpino UD_Dutch-LassySmall
+UD_English-EWT UD_English-GUM UD_English-LinES UD_Estonian-EDT UD_Finnish-FTB UD_Finnish-TDT
+UD_French-GSD UD_French-Sequoia UD_French-Spoken UD_Galician-CTG UD_German-GSD UD_Gothic-PROIEL
+UD_Greek-GDT UD_Hebrew-HTB UD_Hindi-HDTB UD_Hungarian-Szeged UD_Indonesian-GSD
+UD_Italian-ISDT UD_Italian-PoSTWITA UD_Japanese-GSD UD_Korean-GSD UD_Latin-ITTB UD_Latin-PROIEL
+UD_Latvian-LVTB UD_North_Sami-Giella UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk
+UD_Old_Church_Slavonic-PROIEL UD_Persian-Seraji UD_Polish-LFG UD_Polish-SZ UD_Portuguese-Bosque
+UD_Romanian-RRT UD_Russian-GSD UD_Russian-SynTagRus UD_Russian-Taiga
+UD_Serbian-SET UD_Slovak-SNK UD_Slovenian-SSJ UD_Slovenian-SST
+UD_Spanish-AnCora UD_Spanish-GSD UD_Swedish-LinES UD_Swedish-Talbanken
+UD_Turkish-IMST UD_Ukrainian-IU UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
+my @stsmall = qw(UD_Armenian-ArmTDP UD_Breton-KEB UD_Buryat-BDT UD_Czech-PUD
+UD_English-PUD UD_Finnish-PUD UD_Galician-TreeGal UD_Irish-IDT UD_Japanese-Modern
+UD_Kazakh-KTB UD_Kurmanji-MG UD_Latin-Perseus UD_Naija-NSC UD_Norwegian-NynorskLIA
+UD_Old_French-SRCMF UD_Swedish-PUD UD_Thai-PUD UD_Turkish-PUD UD_Upper_Sorbian-UFAL);
+print('Pre-selected ', scalar(@stlarge), " large treebanks for the shared task.\n");
+print('Pre-selected ', scalar(@stsmall), " small treebanks for the shared task.\n");
+sleep(5);
+
 # Include reports on future repositories (not scheduled for the upcoming release)?
 # (If there is no README file, we will include the repository in the report and complain about the missing README.)
 my $include_future = 0;
