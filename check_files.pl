@@ -130,7 +130,7 @@ my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
-my @shared_task_large_folders; # train, dev and test exist, each at least 10K words, train is larger than either of the other two
+my @shared_task_large_folders; # train, dev and test exist, train is larger than either of the other two, test is at least 10K words, dev is at least 5K words
 my @shared_task_small_folders; # no dev, train may be smaller than test, test at least 10K words
 my @shared_task_other_folders; # outliers if any
 foreach my $folder (@folders)
@@ -367,12 +367,12 @@ foreach my $folder (@folders)
             {
                 $n_folders_conll++;
                 $languages_conll{$language}++;
-                # Large: it has train, dev and test, each at least 10K words, train is larger than each of the other two.
+                # Large: it has train, dev and test, train is larger than each of the other two, dev is at least 5K words, test is at least 10K words.
                 # Small: it does not have dev, train is at least 5K words, test is at least 10K words.
                 # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
                 # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
                 # Other: are there treebanks that do not fit in any of the above categories?
-                if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=10000 && $nwtest>=10000)
+                if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
                 {
                     push(@shared_task_large_folders, $folder);
                 }
@@ -504,7 +504,7 @@ my $n_shared_task_large = scalar(@shared_task_large_folders);
 my $n_shared_task_small = scalar(@shared_task_small_folders);
 my $n_shared_task_other = scalar(@shared_task_other_folders);
 print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
-print("$n_shared_task_small of them are considered small and their dev+train data (if any) will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
+print("$n_shared_task_small of them are considered small; they have training data but not development data:\n\n", join(' ', @shared_task_small_folders), "\n\n");
 print("$n_shared_task_other of them do not meet conditions of either large or small shared task treebanks:\n\n", join(' ', @shared_task_other_folders), "\n\n");
 my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
