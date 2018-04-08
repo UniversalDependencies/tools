@@ -468,7 +468,7 @@ foreach my $folder (sort(keys(%nw)))
         {
             push(@shared_task_extra_folders, $folder);
         }
-        elsif($nwtrain<5000 && $nwdev=0 && $nwtest>=10000 && !$languages_conll_large{$language})
+        elsif($nwtrain<5000 && $nwdev=0 && $nwtest>=10000 && $languages_conll_large{$language}==0)
         {
             push(@shared_task_lorsc_folders, $folder);
         }
