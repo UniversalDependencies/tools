@@ -452,7 +452,7 @@ foreach my $folder (sort(keys(%nw)))
     unless($nist{$folder})
     {
         # Large: it has train, dev and test, train is larger than each of the other two, dev is at least 5K words, test is at least 10K words.
-        # Small: it does not have dev, train is at least 5K words, test is at least 10K words.
+        # Small: it does not have dev, train is at least 3K words, test is at least 10K words.
         # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
         # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
         # Other: are there treebanks that do not fit in any of the above categories?
@@ -460,7 +460,7 @@ foreach my $folder (sort(keys(%nw)))
         {
             push(@shared_task_large_folders, $folder);
         }
-        elsif($nwtrain>=5000 && $nwdev==0 && $nwtest>=10000)
+        elsif($nwtrain>=3000 && $nwdev==0 && $nwtest>=10000)
         {
             push(@shared_task_small_folders, $folder);
         }
