@@ -275,9 +275,8 @@ foreach my $folder (@folders)
             my $nwtrain = 0;
             my $nwdev = 0;
             my $nwtest = 0;
-            my $nwsample = 0;
             # In general, every treebank should have at least the test data.
-            # If there are more data files, zero or one of each of the following is expected: train, dev, sample.
+            # If there are more data files, zero or one of each of the following is expected: train, dev.
             # Exception: Czech has four train files: train-c, train-l, train-m, train-v.
             # No other CoNLL-U files are expected.
             # It is also expected that if there is dev, there is also train.
@@ -337,20 +336,8 @@ foreach my $folder (@folders)
                     $n_errors++;
                 }
             }
-            # Look for sample data.
-            if(-f "$prefix-sample.conllu")
-            {
-                my $stats = collect_statistics_about_ud_file("$prefix-sample.conllu");
-                $nwsample = $stats->{nword};
-                # If required, check that the file is valid.
-                if($validate && !is_valid_conllu("$prefix-sample.conllu", $key))
-                {
-                    print("$folder: invalid file $prefix-sample.conllu\n");
-                    $n_errors++;
-                }
-            }
             # For small and growing treebanks, we expect the files to appear roughly in the following order:
-            # 1. small sample (if at all present); 2. test (>=10K tokens if possible); 3. train (if it can be larger than test); 4. dev (if it can be at least 5K tokens and if train is larger than both test and dev).
+            # 1. test (>=10K tokens if possible); 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample); 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
             if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
             {
                 print("$folder: train or dev exists but there is no test\n");
@@ -358,7 +345,7 @@ foreach my $folder (@folders)
             }
             # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
             # Exception: ParTUT can have very small dev data. There are other limitations (sync across languages and with UD_Italian)
-            my $nwall = $nwtrain+$nwdev+$nwtest+$nwsample;
+            my $nwall = $nwtrain+$nwdev+$nwtest;
             if($nwall>10000 && $nwtest<10000)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
@@ -404,7 +391,7 @@ foreach my $folder (@folders)
             }
             grep
             {
-                !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(sample|train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
+                !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
             }
             (@files);
             # Some treebanks have exceptional extra files that have been approved and released previously.
