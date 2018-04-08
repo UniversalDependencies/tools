@@ -114,25 +114,21 @@ foreach my $line (@validation_report)
     }
 }
 my $n_folders_with_data = 0;
-my $n_folders_conll = 0;
 my $n_errors = 0;
 my %languages_with_data;
 my %families_with_data;
-my %languages_conll;
 my %licenses;
 my %genres;
 my %contributors;
 my %contacts;
 my %stats;
+my %nw; # number of words in train|dev|test|all; indexed by folder name
 my @unknown_folders; # cannot parse folder name or unknown language
 my @nongit_folders; # folder is not a git repository
 my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
-my @shared_task_large_folders; # train, dev and test exist, train is larger than either of the other two, test is at least 10K words, dev is at least 5K words
-my @shared_task_small_folders; # no dev, train may be smaller than test, test at least 10K words
-my @shared_task_other_folders; # outliers if any
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -161,10 +157,8 @@ foreach my $folder (@folders)
                 print(`git status`);
             }
             # Skip folders that do not contain any data, i.e. CoNLL-U files.
-            opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
-            my @files = readdir(DIR);
-            my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-            my $n = scalar(@conllufiles);
+            my $files = get_files($folder, '.');
+            my $n = scalar(@{$files->{conllu}});
             if($n==0)
             {
                 push(@empty_folders, $folder);
@@ -204,7 +198,9 @@ foreach my $folder (@folders)
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
-            # If we are here, we know that this folder is going to be released.
+            #------------------------------------------------------------------
+            # End of skipping. If we are here, we have a versioned UD folder
+            # with valid data. We know that the folder is going to be released.
             # Count it and check it for possible problems.
             $n_folders_with_data++;
             push(@released_folders, $folder);
@@ -217,10 +213,9 @@ foreach my $folder (@folders)
                 $family =~ s/,.*//;
                 $families_with_data{$family}++;
             }
-            my $is_in_shared_task = 0;
-            unless($nist{$folder})
+            if(scalar(@{$files->{extra}})>0)
             {
-                $is_in_shared_task = 1;
+                print("$folder extra files: ", join(', ', sort(@{$files->{extra}})), "\n");
             }
             if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
             {
@@ -255,14 +250,6 @@ foreach my $folder (@folders)
                 print("$folder: Missing contact e-mail: '$metadata->{Contact}'\n");
                 $n_errors++;
             }
-            ###!!! Since UD 2.1 we allow that a treebank has only the test file.
-            ###!!! But maybe we should require that there is training, dev and test if the total size is 30,000 words or more.
-            #my $expected_n = ($language eq 'Czech' && $treebank eq '') ? 6 : 3;
-            #unless($n==$expected_n)
-            #{
-            #    print("$folder: expected $expected_n CoNLL-U files, found $n\n");
-            #    $n_errors++;
-            #}
             if(!-f 'LICENSE.txt')
             {
                 print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
@@ -337,6 +324,10 @@ foreach my $folder (@folders)
                     $n_errors++;
                 }
             }
+            # Remember the numbers of words. We will need them for some tests
+            # that can only be done when all folders have been scanned.
+            my $nwall = $nwtrain+$nwdev+$nwtest;
+            $nw{$folder} = { 'train' => $nwtrain, 'dev' => $nwdev, 'test' => $nwtest, 'all' => $nwall };
             # For small and growing treebanks, we expect the files to appear roughly in the following order:
             # 1. test (>=10K tokens if possible); 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample); 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
             if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
@@ -346,7 +337,6 @@ foreach my $folder (@folders)
             }
             # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
             # Exception: ParTUT can have very small dev data. There are other limitations (sync across languages and with UD_Italian)
-            my $nwall = $nwtrain+$nwdev+$nwtest;
             if($nwall>10000 && $nwtest<10000)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
@@ -362,54 +352,7 @@ foreach my $folder (@folders)
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
             }
-            # Classify shared task treebanks by their size.
-            if($is_in_shared_task)
-            {
-                $n_folders_conll++;
-                $languages_conll{$language}++;
-                # Large: it has train, dev and test, train is larger than each of the other two, dev is at least 5K words, test is at least 10K words.
-                # Small: it does not have dev, train is at least 5K words, test is at least 10K words.
-                # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
-                # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
-                # Other: are there treebanks that do not fit in any of the above categories?
-                if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
-                {
-                    push(@shared_task_large_folders, $folder);
-                }
-                elsif($nwtrain>=5000 && $nwdev==0 && $nwtest>=10000)
-                {
-                    push(@shared_task_small_folders, $folder);
-                }
-                else # We do not expect any treebanks that fall here.
-                {
-                    push(@shared_task_other_folders, $folder);
-                }
-            }
             $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
-            # Look for additional files. (Do we want to include them in the release package?)
-            my @extrafiles = map
-            {
-                $_ .= '/' if(-d $_);
-                $_
-            }
-            grep
-            {
-                !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
-            }
-            (@files);
-            # Some treebanks have exceptional extra files that have been approved and released previously.
-            @extrafiles = grep
-            {!(
-                $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
-                $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
-                $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
-                $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
-            )}
-            (@extrafiles);
-            if(scalar(@extrafiles)>0)
-            {
-                print("$folder extra files: ", join(', ', sort(@extrafiles)), "\n");
-            }
             # Summarize metadata.
             if($metadata->{'License'} ne '')
             {
@@ -459,7 +402,6 @@ foreach my $folder (@folders)
                 system('git push');
                 system('git push --tags');
             }
-            closedir(DIR);
             chdir('..') or die("Cannot return to the upper folder");
         }
         else
@@ -472,6 +414,68 @@ foreach my $folder (@folders)
     {
         print("Cannot parse folder name $folder.\n");
         push(@unknown_folders, $folder);
+    }
+}
+# Classify shared task treebanks by their size. We cannot do this before we
+# have scanned all treebanks because one category depends on whether there are
+# larger treebanks of the same language.
+my $n_folders_conll = 0;
+my %languages_conll;
+my %languages_conll_large;
+my @shared_task_large_folders; # train, dev and test exist, train is larger than either of the other two, test is at least 10K words, dev is at least 5K words
+my @shared_task_small_folders; # no dev, train may be smaller than test, test at least 10K words
+my @shared_task_extra_folders; # no train, no dev, test at least 10K words, the language has another large treebank
+my @shared_task_lorsc_folders; # small or no train, no dev, test at least 10K words, no other large treebank of the language
+my @shared_task_other_folders; # outliers if any
+foreach my $folder (sort(keys(%nw)))
+{
+    my ($language, $treebank) = udlib::decompose_repo_name($folder);
+    my ($nwtrain, $nwdev, $nwtest, $nwall) = ($nw{$folder}{train}, $nw{$folder}{dev}, $nw{$folder}{test}, $nw{$folder}{all});
+    # Only count treebanks that are in the shared task.
+    unless($nist{$folder})
+    {
+        $n_folders_conll++;
+        $languages_conll{$language}++;
+        # Remember languages that have at least one large treebank. It will
+        # influence classification of test-only treebanks of the same language.
+        if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
+        {
+            $languages_conll_large{$language}++;
+        }
+    }
+}
+foreach my $folder (sort(keys(%nw)))
+{
+    my ($language, $treebank) = udlib::decompose_repo_name($folder);
+    my ($nwtrain, $nwdev, $nwtest, $nwall) = ($nw{$folder}{train}, $nw{$folder}{dev}, $nw{$folder}{test}, $nw{$folder}{all});
+    # Only count treebanks that are in the shared task.
+    unless($nist{$folder})
+    {
+        # Large: it has train, dev and test, train is larger than each of the other two, dev is at least 5K words, test is at least 10K words.
+        # Small: it does not have dev, train is at least 5K words, test is at least 10K words.
+        # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
+        # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
+        # Other: are there treebanks that do not fit in any of the above categories?
+        if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
+        {
+            push(@shared_task_large_folders, $folder);
+        }
+        elsif($nwtrain>=5000 && $nwdev==0 && $nwtest>=10000)
+        {
+            push(@shared_task_small_folders, $folder);
+        }
+        elsif($nwtrain==0 && $nwdev==0 && $nwtest>=10000 && $languages_conll_large{$language})
+        {
+            push(@shared_task_extra_folders, $folder);
+        }
+        elsif($nwtrain<5000 && $nwdev=0 && $nwtest>=10000 && !$languages_conll_large{$language})
+        {
+            push(@shared_task_lorsc_folders, $folder);
+        }
+        else # We do not expect any treebanks that fall here.
+        {
+            push(@shared_task_other_folders, $folder);
+        }
     }
 }
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
@@ -502,9 +506,13 @@ print("$n_folders_with_data folders are git repositories and contain valid data:
 print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
 my $n_shared_task_large = scalar(@shared_task_large_folders);
 my $n_shared_task_small = scalar(@shared_task_small_folders);
+my $n_shared_task_extra = scalar(@shared_task_extra_folders);
+my $n_shared_task_lorsc = scalar(@shared_task_lorsc_folders);
 my $n_shared_task_other = scalar(@shared_task_other_folders);
 print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
 print("$n_shared_task_small of them are considered small; they have training data but not development data:\n\n", join(' ', @shared_task_small_folders), "\n\n");
+print("$n_shared_task_extra of them are extra test sets in languages where another large treebank exists:\n\n", join(' ', @shared_task_extra_folders), "\n\n");
+print("$n_shared_task_lorsc of them are low-resource languages; they have no training data or just a tiny sample:\n\n", join(' ', @shared_task_lorsc_folders), "\n\n");
 print("$n_shared_task_other of them do not meet conditions of either large or small shared task treebanks:\n\n", join(' ', @shared_task_other_folders), "\n\n");
 my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
@@ -579,6 +587,49 @@ my $announcement = get_announcement
     \@languages_conll
 );
 print($announcement);
+
+
+
+#------------------------------------------------------------------------------
+# Gets the list of files in a UD folder. Returns the list of CoNLL-U files, and
+# the list of unexpected extra files.
+#------------------------------------------------------------------------------
+my get_files
+{
+    my $folder = shift; # name of the UD repository
+    my $path = shift; # path to the repository (default: '.')
+    $path = '.' if(!defined($path));
+    opendir(DIR, $path) or die("Cannot read the contents of the folder $folder");
+    my @files = readdir(DIR);
+    closedir(DIR);
+    my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
+    # Look for additional files. (Do we want to include them in the release package?)
+    my @extrafiles = map
+    {
+        $_ .= '/' if(-d $_);
+        $_
+    }
+    grep
+    {
+        !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
+    }
+    (@files);
+    # Some treebanks have exceptional extra files that have been approved and released previously.
+    @extrafiles = grep
+    {!(
+        $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
+        $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
+        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
+        $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
+    )}
+    (@extrafiles);
+    my %files =
+    (
+        'conllu' => \@conllufiles,
+        'extra'  => \@extrafiles
+    );
+    return \%files;
+}
 
 
 
