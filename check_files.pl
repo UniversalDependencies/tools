@@ -594,7 +594,7 @@ print($announcement);
 # Gets the list of files in a UD folder. Returns the list of CoNLL-U files, and
 # the list of unexpected extra files.
 #------------------------------------------------------------------------------
-my get_files
+sub get_files
 {
     my $folder = shift; # name of the UD repository
     my $path = shift; # path to the repository (default: '.')
