@@ -130,8 +130,9 @@ my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
-my @shared_task_large_folders; # larger training data than development data
-my @shared_task_small_folders; # less training data; we will merge train+dev and call it train for the shared task
+my @shared_task_large_folders; # train, dev and test exist, each at least 10K words, train is larger than either of the other two
+my @shared_task_small_folders; # no dev, train may be smaller than test, test at least 10K words
+my @shared_task_other_folders; # outliers if any
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -361,26 +362,28 @@ foreach my $folder (@folders)
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
             }
-            # If the treebank has less than 10000 test words, it cannot participate in the shared task.
-            if($nwtest<10000)
-            {
-                $is_in_shared_task = 0;
-            }
-            # Treebanks that are in the shared task must not release their test sets but must have sent the test by e-mail.
+            # Classify shared task treebanks by their size.
             if($is_in_shared_task)
             {
                 $n_folders_conll++;
                 $languages_conll{$language}++;
-                if($nwtrain<$nwdev || $nwtrain+$nwdev<$nwtest)
-                {
-                    push(@shared_task_small_folders, $folder);
-                }
-                else
+                # Large: it has train, dev and test, each at least 10K words, train is larger than each of the other two.
+                # Small: it does not have dev, train is at least 5K words, test is at least 10K words.
+                # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
+                # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
+                # Other: are there treebanks that do not fit in any of the above categories?
+                if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=10000 && $nwtest>=10000)
                 {
                     push(@shared_task_large_folders, $folder);
                 }
-                ###!!! UD 2.1: Unlike in 2.0, the test sets are not hidden, so the following test is commented out.
-                ###!!! $n_errors += check_hidden_test_set($folder, $prefix);
+                elsif($nwtrain>=5000 && $nwdev==0 && $nwtest>=10000)
+                {
+                    push(@shared_task_small_folders, $folder);
+                }
+                else # We do not expect any treebanks that fall here.
+                {
+                    push(@shared_task_other_folders, $folder);
+                }
             }
             $stats{$key} = collect_statistics_about_ud_treebank('.', $key);
             # Look for additional files. (Do we want to include them in the release package?)
@@ -499,8 +502,10 @@ print("$n_folders_with_data folders are git repositories and contain valid data:
 print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
 my $n_shared_task_large = scalar(@shared_task_large_folders);
 my $n_shared_task_small = scalar(@shared_task_small_folders);
+my $n_shared_task_other = scalar(@shared_task_other_folders);
 print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
 print("$n_shared_task_small of them are considered small and their dev+train data (if any) will be merged and called training in the shared task:\n\n", join(' ', @shared_task_small_folders), "\n\n");
+print("$n_shared_task_other of them do not meet conditions of either large or small shared task treebanks:\n\n", join(' ', @shared_task_other_folders), "\n\n");
 my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
@@ -801,36 +806,6 @@ Daniel Zeman. 2008. Reusable Tagset Conversion Using Tagset Drivers. In Proceedi
 EOF
     ;
     return $text;
-}
-
-
-
-#------------------------------------------------------------------------------
-# For the sake of the shared task, check that the test set exists in a special
-# folder and that it is large enough.
-#------------------------------------------------------------------------------
-sub check_hidden_test_set
-{
-    my $folder = shift;
-    my $prefix = shift;
-    my $n_errors = 0;
-    ###!!! Even if the test set exists, we must check that it is valid and contains at least 10000 nodes!
-    ###!!! See the script testsets/validate.sh.
-    if(!-f "../testsets/$prefix-test.conllu")
-    {
-        print("$folder: missing testsets/$prefix-test.conllu\n");
-        $n_errors++;
-    }
-    else
-    {
-        my $stats = collect_statistics_about_ud_file("../testsets/$prefix-test.conllu");
-        if($stats->{nword} < 10000)
-        {
-            print("$folder: testsets/$prefix-test.conllu contains only $stats->{nword} words\n");
-            $n_errors++;
-        }
-    }
-    return $n_errors;
 }
 
 
