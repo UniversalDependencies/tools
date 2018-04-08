@@ -140,6 +140,9 @@ foreach my $folder (@folders)
         if(exists($languages_from_yaml->{$language}))
         {
             $langcode = $languages_from_yaml->{$language}{lcode};
+            my $key = $langcode;
+            $key .= '_'.lc($treebank) if($treebank ne '');
+            my $prefix = $key.'-ud';
             chdir($folder) or die("Cannot enter folder $folder");
             # Skip folders that are not Git repositories even if they otherwise look OK.
             if(!-d '.git')
@@ -157,7 +160,7 @@ foreach my $folder (@folders)
                 print(`git status`);
             }
             # Skip folders that do not contain any data, i.e. CoNLL-U files.
-            my $files = get_files($folder, '.');
+            my $files = get_files($folder, $prefix, '.');
             my $n = scalar(@{$files->{conllu}});
             if($n==0)
             {
@@ -257,9 +260,6 @@ foreach my $folder (@folders)
                 $n_errors++;
             }
             # Check the names and sizes of the data files.
-            my $key = $langcode;
-            $key .= '_'.lc($treebank) if($treebank ne '');
-            my $prefix = $key.'-ud';
             my $nwtrain = 0;
             my $nwdev = 0;
             my $nwtest = 0;
@@ -597,6 +597,7 @@ print($announcement);
 sub get_files
 {
     my $folder = shift; # name of the UD repository
+    my $prefix = shift; # prefix of data files, i.e., language code _ treebank code
     my $path = shift; # path to the repository (default: '.')
     $path = '.' if(!defined($path));
     opendir(DIR, $path) or die("Cannot read the contents of the folder $folder");
