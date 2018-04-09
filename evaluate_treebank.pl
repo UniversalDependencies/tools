@@ -292,102 +292,22 @@ if($verbose)
 }
 #------------------------------------------------------------------------------
 # Evaluate validity. Formally invalid data should get a score close to zero.
-# Temporary measure: When launching treebank evaluation, the most recent UD
-# release is 2.1 (November 2017). We want to know whether the treebank was valid
-# at release time, judged by the version of validator that existed at that
-# moment. Instead of re-running the old validator, we simply use the list of
-# treebanks that were in release 2.1.
-###!!! We assume that $folder is just a repository name, not a longer path!
-###!!! If it contains slashes, it will not be recognized (see the warning above).
-my $r21 = 'UD_Afrikaans UD_Ancient_Greek UD_Ancient_Greek-PROIEL UD_Arabic UD_Arabic-NYUAD UD_Arabic-PUD UD_Basque UD_Belarusian UD_Bulgarian UD_Buryat UD_Cantonese UD_Catalan UD_Chinese UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD UD_Coptic UD_Croatian UD_Czech UD_Czech-CAC UD_Czech-CLTT UD_Czech-FicTree UD_Czech-PUD UD_Danish UD_Dutch UD_Dutch-LassySmall UD_English UD_English-LinES UD_English-PUD UD_English-ParTUT UD_Estonian UD_Finnish UD_Finnish-FTB UD_Finnish-PUD UD_French UD_French-FTB UD_French-PUD UD_French-ParTUT UD_French-Sequoia UD_Galician UD_Galician-TreeGal UD_German UD_German-PUD UD_Gothic UD_Greek UD_Hebrew UD_Hindi UD_Hindi-PUD UD_Hungarian UD_Indonesian UD_Irish UD_Italian UD_Italian-PUD UD_Italian-ParTUT UD_Italian-PoSTWITA UD_Japanese UD_Japanese-PUD UD_Kazakh UD_Korean UD_Kurmanji UD_Latin UD_Latin-ITTB UD_Latin-PROIEL UD_Latvian UD_Lithuanian UD_Marathi UD_North_Sami UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA UD_Old_Church_Slavonic UD_Persian UD_Polish UD_Portuguese UD_Portuguese-BR UD_Portuguese-PUD UD_Romanian UD_Romanian-Nonstandard UD_Russian UD_Russian-PUD UD_Russian-SynTagRus UD_Sanskrit UD_Serbian UD_Slovak UD_Slovenian UD_Slovenian-SST UD_Spanish UD_Spanish-AnCora UD_Spanish-PUD UD_Swedish UD_Swedish-LinES UD_Swedish-PUD UD_Swedish_Sign_Language UD_Tamil UD_Telugu UD_Turkish UD_Turkish-PUD UD_Ukrainian UD_Upper_Sorbian UD_Urdu UD_Uyghur UD_Vietnamese';
-my %r21;
-foreach my $treebank (split(/\s+/, $r21))
+my $folder_success = 1;
+foreach my $file (@{$record->{files}})
 {
-    $r21{$treebank}++;
+    ###!!! If evaluate_treebank.pl is invoked from a CGI script, we must call
+    ###!!! the envelope ./validate.sh in docs-automation. However, if evaluate_
+    ###!!! treebank is run from the command line, validate.sh may not be visible
+    ###!!! and running directly validate.py (which may be in the PATH) is
+    ###!!! preferable.
+    my $command = "validate.py --lang $record->{lcode} --max-err=10 $folder/$file";
+    system("echo $command");
+    my $result = saferun("$command 2>&1");
+    $folder_success = $folder_success && $result;
 }
-# Some treebanks were renamed but we want to count them as valid and released.
-my %oldname =
-(
-    'UD_Afrikaans-AfriBooms'        => 'UD_Afrikaans',
-    'UD_Amharic-ATT'                => 'UD_Amharic',
-    'UD_Ancient_Greek-Perseus'      => 'UD_Ancient_Greek',
-    'UD_Arabic-PADT'                => 'UD_Arabic',
-    'UD_Armenian-ArmTDP'            => 'UD_Armenian',
-    'UD_Bambara-CRB'                => 'UD_Bambara',
-    'UD_Basque-BDT'                 => 'UD_Basque',
-    'UD_Belarusian-HSE'             => 'UD_Belarusian',
-    'UD_Breton-KEB'                 => 'UD_Breton',
-    'UD_Bulgarian-BTB'              => 'UD_Bulgarian',
-    'UD_Buryat-BDT'                 => 'UD_Buryat',
-    'UD_Cantonese-HK'               => 'UD_Cantonese',
-    'UD_Catalan-AnCora'             => 'UD_Catalan',
-    'UD_Chinese-GSD'                => 'UD_Chinese',
-    'UD_Coptic-Scriptorium'         => 'UD_Coptic',
-    'UD_Croatian-SET'               => 'UD_Croatian',
-    'UD_Czech-PDT'                  => 'UD_Czech',
-    'UD_Danish-DDT'                 => 'UD_Danish',
-    'UD_Dutch-Alpino'               => 'UD_Dutch',
-    'UD_English-EWT'                => 'UD_English',
-    'UD_Estonian-EDT'               => 'UD_Estonian',
-    'UD_Faroese-OFT'                => 'UD_Faroese',
-    'UD_Finnish-TDT'                => 'UD_Finnish',
-    'UD_French-GSD'                 => 'UD_French',
-    'UD_Galician-CTG'               => 'UD_Galician',
-    'UD_German-GSD'                 => 'UD_German',
-    'UD_Gothic-PROIEL'              => 'UD_Gothic',
-    'UD_Greek-GDT'                  => 'UD_Greek',
-    'UD_Hebrew-HTB'                 => 'UD_Hebrew',
-    'UD_Hindi-HDTB'                 => 'UD_Hindi',
-    'UD_Hungarian-Szeged'           => 'UD_Hungarian',
-    'UD_Indonesian-GSD'             => 'UD_Indonesian',
-    'UD_Irish-IDT'                  => 'UD_Irish',
-    'UD_Italian-ISDT'               => 'UD_Italian',
-    'UD_Japanese-GSD'               => 'UD_Japanese',
-    'UD_Kazakh-KTB'                 => 'UD_Kazakh',
-    'UD_Korean-GSD'                 => 'UD_Korean',
-    'UD_Kurmanji-MG'                => 'UD_Kurmanji',
-    'UD_Latin-Perseus'              => 'UD_Latin',
-    'UD_Latvian-LVTB'               => 'UD_Latvian',
-    'UD_Lithuanian-HSE'             => 'UD_Lithuanian',
-    'UD_Maltese-MUDT'               => 'UD_Maltese',
-    'UD_Marathi-UFAL'               => 'UD_Marathi',
-    'UD_Naija-NSC'                  => 'UD_Naija',
-    'UD_North_Sami-Giella'          => 'UD_North_Sami',
-    'UD_Old_Church_Slavonic-PROIEL' => 'UD_Old_Church_Slavonic',
-    'UD_Old_French-SRCMF'           => 'UD_Old_French',
-    'UD_Persian-Seraji'             => 'UD_Persian',
-    'UD_Polish-SZ'                  => 'UD_Polish',
-    'UD_Portuguese-Bosque'          => 'UD_Portuguese',
-    'UD_Portuguese-GSD'             => 'UD_Portuguese-BR',
-    'UD_Romanian-RRT'               => 'UD_Romanian',
-    'UD_Russian-GSD'                => 'UD_Russian',
-    'UD_Sanskrit-UFAL'              => 'UD_Sanskrit',
-    'UD_Serbian-SET'                => 'UD_Serbian',
-    'UD_Slovak-SNK'                 => 'UD_Slovak',
-    'UD_Slovenian-SSJ'              => 'UD_Slovenian',
-    'UD_Spanish-GSD'                => 'UD_Spanish',
-    'UD_Swedish-Talbanken'          => 'UD_Swedish',
-    'UD_Swedish_Sign_Language-SSLC' => 'UD_Swedish_Sign_Language',
-    'UD_Tagalog-TRG'                => 'UD_Tagalog',
-    'UD_Tamil-TTB'                  => 'UD_Tamil',
-    'UD_Telugu-MTG'                 => 'UD_Telugu',
-    'UD_Turkish-IMST'               => 'UD_Turkish',
-    'UD_Ukrainian-IU'               => 'UD_Ukrainian',
-    'UD_Upper_Sorbian-UFAL'         => 'UD_Upper_Sorbian',
-    'UD_Urdu-UDTB'                  => 'UD_Urdu',
-    'UD_Uyghur-UDT'                 => 'UD_Uyghur',
-    'UD_Vietnamese-VTB'             => 'UD_Vietnamese'
-);
-my $validity = 0.01;
-if(exists($r21{$folder}) || exists($oldname{$folder}) && exists($r21{$oldname{$folder}}))
-{
-    $validity = 1;
-}
+my $validity = $folder_success ? 1 : 0.01;
 if($verbose)
 {
-    print STDERR ("WARNING: At present, the 'validity' score does not reflect the output of the current validator on the current data.\n");
-    print STDERR ("         Instead, the presence of the treebank in the UD release 2.1 is checked (meaning that it was valid at release time).\n");
-    print STDERR ("         This is a temporary measure until UD release 2.2.\n");
     print STDERR ("Validity: $validity\n");
 }
 #------------------------------------------------------------------------------
