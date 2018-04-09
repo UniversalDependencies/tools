@@ -368,3 +368,54 @@ if($forcemaster)
     ###!!! will be wrong!
     system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
 }
+
+
+
+#------------------------------------------------------------------------------
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# This function comes from Dan's library dzsys. I do not want to depend on that
+# library here, so I am copying the function. I have also modified it so that
+# it does not throw exceptions.
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# Calls an external program. Uses system(). In addition, echoes the command
+# line to the standard error output, and returns true/false according to
+# whether the call was successful and the external program returned 0 (success)
+# or non-zero (error).
+#
+# Typically called as follows:
+#     saferun($command) or die;
+#------------------------------------------------------------------------------
+sub saferun
+{
+    my $command = join(' ', @_);
+    #my $ted = cas::ted()->{datumcas};
+    #print STDERR ("[$ted] Executing: $command\n");
+    system($command);
+    # The external program does not exist, is not executable or the execution failed for other reasons.
+    if($?==-1)
+    {
+        print STDERR ("ERROR: Failed to execute: $command\n  $!\n");
+        return;
+    }
+    # We were able to start the external program but its execution failed.
+    elsif($? & 127)
+    {
+        printf STDERR ("ERROR: Execution of: $command\n  died with signal %d, %s coredump\n",
+            ($? & 127), ($? & 128) ? 'with' : 'without');
+        return;
+    }
+    # The external program ended "successfully" (this still does not guarantee
+    # that the external program returned zero!)
+    else
+    {
+        my $exitcode = $? >> 8;
+        print STDERR ("Exit code: $exitcode\n") if($exitcode);
+        # Return false if the program returned a non-zero value.
+        # It is up to the caller how they will handle the return value.
+        # (The easiest is to always write:
+        # saferun($command) or die;
+        # )
+        return ! $exitcode;
+    }
+}
