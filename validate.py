@@ -78,7 +78,14 @@ def trees(inp,tag_sets,args):
     for line_counter, line in enumerate(inp):
         curr_line=line_counter+1
         line=line.rstrip(u"\n")
-        if not line: #empty line
+        if is_whitespace(line):
+            warn(u"Spurious line that appears empty but is not; there are whitespace characters.",u"Format")
+            # We will pretend that the line terminates a sentence in order to avoid subsequent misleading error messages.
+            if lines:
+                yield comments, lines
+                comments=[]
+                lines=[]
+        elif not line: #empty line
             if lines: #Sentence done
                 yield comments, lines
                 comments=[]
@@ -106,6 +113,9 @@ def trees(inp,tag_sets,args):
             yield comments, lines
 
 ###### Support functions
+
+def is_whitespace(line):
+    return re.match(r"^\s+$", line)
 
 def is_word(cols):
     return re.match(r"^[1-9][0-9]*$", cols[ID])
