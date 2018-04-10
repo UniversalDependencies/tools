@@ -38,7 +38,7 @@ UD_Faroese-OFT UD_Finnish-FTB UD_Finnish-PUD UD_Finnish-TDT
 UD_French-GSD UD_French-Sequoia UD_French-Spoken UD_Galician-CTG UD_Galician-TreeGal
 UD_German-GSD UD_Gothic-PROIEL UD_Greek-GDT UD_Hebrew-HTB UD_Hindi-HDTB
 UD_Hungarian-Szeged UD_Indonesian-GSD UD_Irish-IDT UD_Italian-ISDT UD_Italian-PoSTWITA
-UD_Japanese-GSD UD_Japanese-Modern UD_Kazakh-KTB UD_Korean-GSD
+UD_Japanese-GSD UD_Japanese-Modern UD_Kazakh-KTB UD_Korean-GSD UD_Korean-Kaist
 UD_Kurmanji-MG UD_Latin-ITTB UD_Latin-PROIEL UD_Latin-Perseus UD_Latvian-LVTB
 UD_Naija-NSC UD_North_Sami-Giella
 UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA
