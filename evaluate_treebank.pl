@@ -14,7 +14,7 @@ use File::Which; # find executable files in $PATH
 use udlib;
 
 my $verbose = 0;
-my $forcemaster = 1;
+my $forcemaster = 0;
 GetOptions
 (
     'verbose'      => \$verbose,
