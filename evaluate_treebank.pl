@@ -219,7 +219,7 @@ if($n > 0)
 {
     $score{udapi} = 1;
     my $command = get_udapi_command($folder);
-    if($command)
+    if(defined($command))
     {
         my $output = `(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL`;
         my $nbugs = 0;
@@ -297,15 +297,18 @@ if($verbose)
 my $folder_success = 1;
 foreach my $file (@{$record->{files}})
 {
-    ###!!! If evaluate_treebank.pl is invoked from a CGI script, we must call
-    ###!!! the envelope ./validate.sh in docs-automation. However, if evaluate_
-    ###!!! treebank is run from the command line, validate.sh may not be visible
-    ###!!! and running directly validate.py (which may be in the PATH) is
-    ###!!! preferable.
-    my $command = "validate.py --lang $record->{lcode} --max-err=10 $folder/$file";
-    system("echo $command");
-    my $result = saferun("$command 2>&1");
-    $folder_success = $folder_success && $result;
+    my $command = get_validator_command($folder, $file, $record->{lcode});
+    if(defined($command))
+    {
+        system("echo $command");
+        my $result = saferun("$command 2>&1");
+        $folder_success = $folder_success && $result;
+    }
+    elsif($verbose)
+    {
+        print STDERR ("WARNING: Validator not found. We will assume that all files are valid.\n");
+        last;
+    }
 }
 my $validity = $folder_success ? 1 : 0.01;
 if($verbose)
@@ -369,6 +372,29 @@ if($forcemaster)
     ###!!! fiddle with the repository at the same time! When that happens, the output
     ###!!! will be wrong!
     system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Figures out whether the UD validator is available and how to invoke it.
+#------------------------------------------------------------------------------
+sub get_validator_command
+{
+    my $folder = shift;
+    my $file = shift;
+    my $lcode = shift;
+    my $command;
+    # If evaluation runs under a CGI script on quest, validation must be called through an envelope script.
+    if(-x './validate.sh')
+    {
+        $command = "./validate.sh --lang $lcode --max-err=10 $folder/$file";
+    }
+    elsif(which('validate.py'))
+    {
+        $command = "validate.py --lang $lcode --max-err=10 $folder/$file";
+    }
+    return $command;
 }
 
 
