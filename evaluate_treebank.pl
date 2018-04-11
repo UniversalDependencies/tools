@@ -221,7 +221,7 @@ if($n > 0)
     my $command = get_udapi_command($folder);
     if(defined($command))
     {
-        my $output = `(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL`;
+        my $output = `$command`;
         my $nbugs = 0;
         my $maxwordsperbug = 10; # if there are more bugs than every n-th word, we will count maximum error rate
         if($output =~ m/(\d+)/)
