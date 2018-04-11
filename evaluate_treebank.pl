@@ -10,6 +10,7 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
+use File::Which; # find executable files in $PATH
 use udlib;
 
 my $verbose = 0;
@@ -217,7 +218,8 @@ if($verbose)
 if($n > 0)
 {
     $score{udapi} = 1;
-    if(-x './udapi-markbugs.sh')
+    my $command = get_udapi_command($folder);
+    if($command)
     {
         my $output = `(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL`;
         my $nbugs = 0;
@@ -367,6 +369,27 @@ if($forcemaster)
     ###!!! fiddle with the repository at the same time! When that happens, the output
     ###!!! will be wrong!
     system("cd $folder ; (git checkout dev 1>&2) ; cd ..");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Figures out whether Udapi is available and how to invoke it.
+#------------------------------------------------------------------------------
+sub get_udapi_command
+{
+    my $folder = shift;
+    my $command;
+    # If evaluation runs under a CGI script on quest, Udapi must be called through an envelope script.
+    if(-x './udapi-markbugs.sh')
+    {
+        $command = "(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL";
+    }
+    elsif(which('udapy'))
+    {
+        $command = "(cat $folder/*.conllu | udapy ud.MarkBugs 2>&1) | grep TOTAL";
+    }
+    return $command;
 }
 
 
