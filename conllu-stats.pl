@@ -406,6 +406,8 @@ sub process_treebank
     {
         # Skip comment lines (new in CoNLL-U).
         next if(m/^\#/);
+        # Skip lines with empty nodes of enhanced graphs. We are collecting statistics about basic dependencies.
+        next if(m/^\d+\./);
         # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
         if(m/^\s*$/)
         {
