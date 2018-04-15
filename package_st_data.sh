@@ -29,8 +29,9 @@ DST=$UDPATH/$DSTFOLDER
 # - conll17-ud-development-2017-03-19 (in training-datasets ==? training-datasets-truth)
 # - conll17-ud-test-2017-05-09 (in test-datasets and test-datasets-truth)
 # So we should now create for 2018:
-# - conll18-ud-trial-2018-03-06 (in training-datasets)
-# - later also conll18-ud-development and conll18-ud-test
+# - conll18-ud-trial-2018-04-15 (in training-datasets)
+# - conll18-ud-development-2018-04-15
+# - conll18-ud-test-2018-04-15 (in test-datasets and test-datasets-truth)
 # /media/training-datasets: Only this folder can be accessed by the participants.
 #     It contains the training data (just in case they want to train something
 #     here?), the development data (participants can access the development data
@@ -51,7 +52,7 @@ DST=$UDPATH/$DSTFOLDER
 # /media/test-datasets-truth: Gold standard test data used by the evaluation
 #     script.
 TASK="universal-dependency-learning/conll18-ud"
-DATE="2018-03-06"
+DATE="2018-04-15"
 DSTTRAINI="$DST/training-datasets/$TASK-training-$DATE"
 DSTTRAING="$DST/training-datasets-truth/$TASK-training-$DATE"
 DSTDEVI="$DST/training-datasets/$TASK-development-$DATE"
@@ -119,15 +120,20 @@ echo '[' > $DSTDEVI/metadata.json
 echo '[' > $DSTTRIALI/metadata.json
 echo '[' > $DSTTESTI/metadata.json
 for i in UD_* ; do
-  ltcode=$(ls $i | grep train.conllu | perl -pe 's/-ud-train\.conllu$//')
+  # All treebanks should have test data even if they do not have training or
+  # development data.
+  ltcode=$(ls $i | grep test.conllu | perl -pe 's/-ud-test\.conllu$//')
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
   echo $ltcode
-  chmod 644 $i/$ltcode-ud-train.conllu
-  cp $i/$ltcode-ud-train.conllu         $DSTTRAING/$ltcode.conllu
-  cp $i/$ltcode-ud-train.conllu         $DSTTRAINI/$ltcode.conllu
-  cp $SRCMOR/$i/$ltcode-ud-train.conllu $DSTTRAINI/$ltcode-pmor.conllu
-  cp $i/$ltcode-ud-train.txt            $DSTTRAINI/$ltcode.txt
+  # Some small treebanks do not have any training set.
+  if [ -f $i/$ltcode-ud-train.conllu ] ; then
+    chmod 644 $i/$ltcode-ud-train.conllu
+    cp $i/$ltcode-ud-train.conllu         $DSTTRAING/$ltcode.conllu
+    cp $i/$ltcode-ud-train.conllu         $DSTTRAINI/$ltcode.conllu
+    cp $SRCMOR/$i/$ltcode-ud-train.conllu $DSTTRAINI/$ltcode-pmor.conllu
+    cp $i/$ltcode-ud-train.txt            $DSTTRAINI/$ltcode.txt
+  fi
   # Some small treebanks do not have any dev set.
   if [ -f $i/$ltcode-ud-dev.conllu ] ; then
     if [ -z "$firstdev" ] ; then
@@ -159,10 +165,6 @@ for i in UD_* ; do
   fi
   # Copy the test data. All treebanks should have test data even if they do not
   # have training or development data.
-  ltcode=$(ls $i | grep test.conllu | perl -pe 's/-ud-test\.conllu$//')
-  lcode=$(echo $ltcode | perl -pe 's/_.*//')
-  tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
-  echo $ltcode
   if [ -z "$firsttest" ] ; then
     firsttest="nolonger"
   else
@@ -190,7 +192,9 @@ cp $DSTTESTI/metadata.json $DSTTESTG/metadata.json
 
 
 
-###!!! NO DEV TRAIN THIS TIME!
+###!!! For later updates we may want to generate only selected data sets.
+###!!! The easiest approach is probably to generate everything and then remove
+###!!! the superfluous data sets here.
 #rm -rf $DSTTRAINI
 #rm -rf $DSTTRAING
 #rm -rf $DSTDEVI
