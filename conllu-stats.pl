@@ -1379,6 +1379,10 @@ sub get_detailed_statistics_feature
             unless($result)
             {
                 $result = $lemmatag{$b}{$tag} <=> $lemmatag{$a}{$tag};
+                unless($result)
+                {
+                    $result = $a cmp $b;
+                }
             }
             $result
         }
@@ -1532,7 +1536,16 @@ sub get_paradigm_table
                 $page .= "<td>";
                 my $vforms = $paradigm->{$v}{$of};
                 prune_examples($vforms);
-                my @vforms = sort {my $r = $vforms->{$b} <=> $vforms->{$a}; unless($r) {$r = $vforms->{$a} cmp $vforms->{$b}} $r} (keys(%{$vforms}));
+                my @vforms = sort
+                {
+                    my $result = $vforms->{$b} <=> $vforms->{$a};
+                    unless($result)
+                    {
+                        $result = $a cmp $b;
+                    }
+                    $result
+                }
+                (keys(%{$vforms}));
                 if(scalar(@vforms) > 0)
                 {
                     $page .= fex(join(', ', @vforms));
