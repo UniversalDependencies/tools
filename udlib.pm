@@ -300,6 +300,10 @@ sub read_readme
     # be terminated properly and we have to save it now.
     if($current_section_heading ne '' && $current_section_text ne '')
     {
+        # Metadata may be enclosed in <pre>...</pre> in order to improve the rendering on Github.
+        # However, that could mean that <pre> is now the last line of the last section.
+        # If we keep it there and copy it to a web page, it will ruin all subsequent formatting.
+        $current_section_text =~ s/\s*<pre>\s*$/\n/is;
         $metadata{sections}{$current_section_heading} = $current_section_text;
     }
     close(README);
