@@ -123,13 +123,12 @@ echo '[' > $DSTDEVI/metadata.json
 echo '[' > $DSTTRIALI/metadata.json
 echo '[' > $DSTTESTI/metadata.json
 for i in UD_* ; do
-  echo `pwd`/$i
   # All treebanks should have test data even if they do not have training or
   # development data.
   ltcode=$(ls $i | grep test.conllu | perl -pe 's/-ud-test\.conllu$//')
   lcode=$(echo $ltcode | perl -pe 's/_.*//')
   tcode=$(echo $ltcode | perl -pe 'if(m/_(.+)/) {$_=$1} else {$_=0}')
-  echo $ltcode
+  echo `pwd`/$i '-->' $ltcode
   # Some small treebanks do not have any training set.
   if [ -f $i/$ltcode-ud-train.conllu ] ; then
     chmod 644 $i/$ltcode-ud-train.conllu
