@@ -1,7 +1,7 @@
 #!/bin/bash
 # Scans the contents of the release folder and copies the shared task files into folders that should appear in TIRA.
 UDPATH=/net/work/people/zeman/unidep
-SRCREL=$UDPATH/release-2.2/ud-treebanks-conll2018
+SRCREL=$UDPATH/release-2.2/ud-treebanks-v2.2
 # SRCMOR: UDPipe morphology, gold segmentation and syntax. This has been released in Lindat.
 # SRCPSM: UDPipe segmentation and morphology, no syntax. Preprocessing for participants who do not want to do this on their own.
 # This folder contains a pipeline that Milan created for this. The script process-tira-devel-trial.sh runs it on devel and trial.
