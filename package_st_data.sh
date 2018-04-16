@@ -181,7 +181,7 @@ for i in UD_* ; do
     echo , >> $DSTTESTI/metadata.json
   fi
   echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu"}' >> $DSTTESTI/metadata.json
-  chmod 644 $ltcode-ud-test.conllu
+  chmod 644 $i/$ltcode-ud-test.conllu
   cp $i/$ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   cp $i/$ltcode-ud-test.txt    $DSTTESTI/$ltcode.txt
   if [ -z "$SKIPUDPIPE" ] ; then
