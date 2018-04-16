@@ -12,6 +12,9 @@ SRCREL=$UDPATH/release-2.2/ud-treebanks-conll2018
 #SRCMOR=/home/straka/troja/conll2017-models-final/ud-2.0-conll17-crossfold-morphology
 SRCMOR=/net/work/people/zeman/unidep/ud-2.0-conll17-crossfold-morphology
 SRCPSM=/home/straka/troja/conll2017-tira/udpipe-preprocess
+###!!! Skip files preprocessed by UDPipe until Milan prepares the files from UD 2.2.
+###!!! Setting the variable SKIPUDPIPE to any non-empty value will do it.
+SKIPUDPIPE=yes
 DSTFOLDER=data-for-tira
 DST=$UDPATH/$DSTFOLDER
 # Expected folder structure at TIRA: Datasets are mounted under /media/*.
@@ -131,7 +134,9 @@ for i in UD_* ; do
     chmod 644 $i/$ltcode-ud-train.conllu
     cp $i/$ltcode-ud-train.conllu         $DSTTRAING/$ltcode.conllu
     cp $i/$ltcode-ud-train.conllu         $DSTTRAINI/$ltcode.conllu
-    cp $SRCMOR/$i/$ltcode-ud-train.conllu $DSTTRAINI/$ltcode-pmor.conllu
+    if [ -z "$SKIPUDPIPE" ] ; then
+      cp $SRCMOR/$i/$ltcode-ud-train.conllu $DSTTRAINI/$ltcode-pmor.conllu
+    fi
     cp $i/$ltcode-ud-train.txt            $DSTTRAINI/$ltcode.txt
   fi
   # Some small treebanks do not have any dev set.
@@ -145,8 +150,10 @@ for i in UD_* ; do
     chmod 644 $i/$ltcode-ud-dev.conllu
     cp $i/$ltcode-ud-dev.conllu                  $DSTDEVG/$ltcode.conllu
     cp $i/$ltcode-ud-dev.conllu                  $DSTDEVI/$ltcode.conllu
-    cp $SRCMOR/$i/$ltcode-ud-dev.conllu          $DSTDEVI/$ltcode-pmor.conllu
-    cp $SRCPSM/development/$ltcode-udpipe.conllu $DSTDEVI/$ltcode-udpipe.conllu
+    if [ -z "$SKIPUDPIPE" ] ; then
+      cp $SRCMOR/$i/$ltcode-ud-dev.conllu          $DSTDEVI/$ltcode-pmor.conllu
+      cp $SRCPSM/development/$ltcode-udpipe.conllu $DSTDEVI/$ltcode-udpipe.conllu
+    fi
     cp $i/$ltcode-ud-dev.txt                     $DSTDEVI/$ltcode.txt
   fi
   # Create a trial dataset for debugging purposes.
@@ -161,7 +168,9 @@ for i in UD_* ; do
     echo -n '  {"lcode":"'$lcode'", "tcode":"'$tcode'", "rawfile":"'$ltcode'.txt", "psegmorfile":"'$ltcode'-udpipe.conllu", "outfile":"'$ltcode'.conllu", "goldfile":"'$ltcode'.conllu"}' >> $DSTTRIALI/metadata.json
     split_conll.pl -head 50 < $i/$ltcode-ud-dev.conllu $DSTTRIALG/$ltcode.conllu /dev/null
     ../../tools/conllu_to_text.pl --lang $lcode < $DSTTRIALG/$ltcode.conllu > $DSTTRIALI/$ltcode.txt
-    cp $SRCPSM/trial/$ltcode-udpipe.conllu $DSTTRIALI/$ltcode-udpipe.conllu
+    if [ -z "$SKIPUDPIPE" ] ; then
+      cp $SRCPSM/trial/$ltcode-udpipe.conllu $DSTTRIALI/$ltcode-udpipe.conllu
+    fi
   fi
   # Copy the test data. All treebanks should have test data even if they do not
   # have training or development data.
@@ -174,11 +183,13 @@ for i in UD_* ; do
   chmod 644 $ltcode-ud-test.conllu
   cp $i/$ltcode-ud-test.conllu $DSTTESTG/$ltcode.conllu
   cp $i/$ltcode-ud-test.txt    $DSTTESTI/$ltcode.txt
-  # Erase newdoc with nonsense id, add newdoc without id.
-  # newdoc id = /net/work/people/zeman/unidep/data-for-tira/test-datasets/universal-dependency-learning/conll17-ud-test-2017-05-07/it.txt
-  # WARNING! This command assumes that the first line is always a newdoc! At present this holds even for the surprise languages, although
-  # their newdoc looks different.
-  cat $ltcode-udpipe.conllu | tail -n +2 | (echo "# newdoc"; cat) > $DSTTESTI/$ltcode-udpipe.conllu
+  if [ -z "$SKIPUDPIPE" ] ; then
+    # Erase newdoc with nonsense id, add newdoc without id.
+    # newdoc id = /net/work/people/zeman/unidep/data-for-tira/test-datasets/universal-dependency-learning/conll17-ud-test-2017-05-07/it.txt
+    # WARNING! This command assumes that the first line is always a newdoc! At present this holds even for the surprise languages, although
+    # their newdoc looks different.
+    cat $ltcode-udpipe.conllu | tail -n +2 | (echo "# newdoc"; cat) > $DSTTESTI/$ltcode-udpipe.conllu
+  fi
 done
 echo >> $DSTDEVI/metadata.json
 echo >> $DSTTRIALI/metadata.json
