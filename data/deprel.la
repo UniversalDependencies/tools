@@ -6,3 +6,10 @@ nsubj:pass
 obl:agent
 flat:name
 flat:foreign
+acl:relcl
+obl:arg
+advmod:cc
+acl:appos
+nmod:appos
+advcl:appos
+advmod:appos
