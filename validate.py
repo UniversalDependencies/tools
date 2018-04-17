@@ -724,8 +724,8 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                         continue
                 if validate_langspec or validate_enhanced:
                     try:
-                        ud_v,l_v=v.split(u":")
-                        if ud_v not in res:
+                        parts=v.split(u":")
+                        if parts[0] not in res:
                             warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
                             continue
                     except:
