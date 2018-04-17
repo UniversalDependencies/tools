@@ -227,8 +227,8 @@ if($n > 0)
         if($output =~ m/(\d+)/)
         {
             $nbugs = $1;
-            # Evaluate the proportion of bugs to the size of the treebank.
-            # If half of the tokens (or more) have bugs, it is terrible enough; let's set the ceiling at 50%.
+            # Evaluate the proportion of bugs to the size of the treebank
+            # (with a ceiling defined by $maxwordsperbug; anything above is considered "absolutely bad").
             my $nbugs1 = $nbugs>$n/$maxwordsperbug ? $n/$maxwordsperbug : $nbugs;
             $score{udapi} = 1-$nbugs1/($n/$maxwordsperbug);
             $score{udapi} = 0.01 if($score{udapi}<0.01);
