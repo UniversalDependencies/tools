@@ -7,6 +7,7 @@ advcl:nekā
 nmod:acc
 nmod:aiz
 nmod:ap
+nmod:apakšā
 nmod:apkārt
 nmod:ar
 nmod:bez
@@ -17,8 +18,10 @@ nmod:gar
 nmod:gen
 nmod:iepretim
 nmod:lejpus
+nmod:kā
 nmod:loc
 nmod:līdz
+nmod:nekā
 nmod:no
 nmod:nom
 nmod:otrpus
@@ -35,6 +38,7 @@ nmod:uz
 nmod:virs
 nmod:viņpus
 nmod:zem
+nmod:ārpus
 obl:acc
 obl:aiz
 obl:ap
@@ -53,12 +57,14 @@ obl:garām
 obl:gen
 obl:klāt
 obl:kopš
+obl:kā
 obl:labad
 obl:loc
 obl:līdz
 obl:līdzi
 obl:līdztekus
 obl:līdzās
+obl:nekā
 obl:no
 obl:nom
 obl:pa
