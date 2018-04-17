@@ -7,6 +7,7 @@ advcl:nekā
 nmod:acc
 nmod:aiz
 nmod:ap
+nmod:apakšā
 nmod:apkārt
 nmod:ar
 nmod:bez
@@ -37,6 +38,7 @@ nmod:uz
 nmod:virs
 nmod:viņpus
 nmod:zem
+nmod:ārpus
 obl:acc
 obl:aiz
 obl:ap
