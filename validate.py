@@ -369,9 +369,9 @@ def validate_deprels(cols,tag_sets):
             except ValueError:
                 warn(u"Malformed head:deprel pair '%s'"%head_deprel,u"Syntax")
                 continue
-            if lspec2ud(deprel) not in tag_sets[DEPS]:
-                warn_on_missing_files.add("deprel")
-                warn(u"Unknown dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
+            if deprel not in tag_sets[DEPS]:
+                warn_on_missing_files.add("edeprel")
+                warn(u"Unknown enhanced dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
 
 # Ll ... lowercase Unicode letters
 # Lm ... modifier Unicode letters (e.g., superscript h)
@@ -814,6 +814,4 @@ if __name__=="__main__":
             filepath = os.path.join(THISDIR,"data",f_name+"."+args.lang)
             if not os.path.exists(filepath):
                 print >> sys.stderr, "The language-specific file %s does not exist."%filepath
-                if f_name=="feat_val":
-                    print >> sys.stderr, "python conllu-stats.py --catvals=langspec yourdata/*.conllu > " + filepath
         sys.exit(1)
