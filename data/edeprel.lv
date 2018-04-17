@@ -17,6 +17,7 @@ nmod:gar
 nmod:gen
 nmod:iepretim
 nmod:lejpus
+nmod:kā
 nmod:loc
 nmod:līdz
 nmod:no
@@ -53,12 +54,14 @@ obl:garām
 obl:gen
 obl:klāt
 obl:kopš
+obl:kā
 obl:labad
 obl:loc
 obl:līdz
 obl:līdzi
 obl:līdztekus
 obl:līdzās
+obl:nekā
 obl:no
 obl:nom
 obl:pa
