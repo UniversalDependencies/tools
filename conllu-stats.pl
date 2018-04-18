@@ -2433,9 +2433,9 @@ sub summarize_feature_for_hub
             $markdown .= "    </ul>\n";
             $markdown .= "  </li>\n";
             $markdown .= "</ul>\n";
+            add_cell($table, $markdown, $feature);
+            $markdown = '';
         }
-        add_cell($table, $markdown, $feature);
-        $markdown = '';
     }
     return $markdown;
 }
