@@ -2376,14 +2376,23 @@ sub summarize_feature_for_hub
     my $markdown = '';
     my @values = sort(map {my $x = $_; $x =~ s/^\Q$feature=//; $x} (grep {m/^\Q$feature=/} (keys(%{$stats{fvpairs}}))));
     my $n_values = scalar(@values);
-    if($n_values > 0)
-    {
-        $markdown .= "<li><a>$feature</a>\n";
-    }
     if($save_cells > 1)
     {
+        if($n_values > 0)
+        {
+            $markdown .= "<ul>\n";
+            $markdown .= "  <li><a>$feature</a></li>\n";
+            $markdown .= "</ul>\n";
+        }
         add_cell($table, $markdown);
         $markdown = '';
+    }
+    else # $save_cells <= 1
+    {
+        if($n_values > 0)
+        {
+            $markdown .= "<li><a>$feature</a>\n";
+        }
     }
     if($n_values > 0)
     {
