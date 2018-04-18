@@ -2200,8 +2200,7 @@ sub hub_statistics
     foreach my $feature (@otherfeatures)
     {
         # This function saves its own cells in the table.
-        $cell = summarize_feature_for_hub($feature, $table, 0);
-        add_cell($table, $cell, $feature); #-------------------------------------------------
+        $cell = summarize_feature_for_hub($feature, $table, 1);
     }
     # Syntax.
     $cell = '';
