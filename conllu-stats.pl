@@ -265,14 +265,14 @@ EOF
     print("<table>\n");
     foreach my $row (@{$table})
     {
-        print("<tr>\n");
+        print("  <tr>\n");
         foreach my $cell (@{$row})
         {
-            print("  <td width=\"$width_percent\%\" valign=\"top\">\n");
-            print("$cell\n");
-            print("  </td>\n");
+            print("    <td width=\"$width_percent\%\" valign=\"top\">\n");
+            print(indent("$cell\n", 6));
+            print("    </td>\n");
         }
-        print("</tr>\n");
+        print("  </tr>\n");
     }
     print("</table>\n");
 }
@@ -288,6 +288,31 @@ else
         print STDERR ("[conllu-stats] No command-line arguments found. Standard input will be processed.\n");
     }
     process_treebank();
+}
+
+
+
+#------------------------------------------------------------------------------
+# Indents lines in a given text by a given number of spaces.
+#------------------------------------------------------------------------------
+sub indent
+{
+    my $text = shift;
+    my $nspaces = shift;
+    my $space = $nspaces x ' ';
+    my $eol = 0;
+    if($text =~ s/\r?\n$//s)
+    {
+        $eol = 1;
+    }
+    my @lines = split(/\r?\n/, $text);
+    @lines = map {$space.$_} (@lines);
+    $text = join("\n", @lines);
+    if($eol)
+    {
+        $text .= "\n";
+    }
+    return $text;
 }
 
 
