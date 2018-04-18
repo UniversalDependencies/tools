@@ -269,7 +269,7 @@ EOF
         foreach my $cell (@{$row})
         {
             print("    <td width=\"$width_percent\%\" valign=\"top\">\n");
-            print(indent("$cell\n", 6));
+            print(indent($cell, 6), "\n");
             print("    </td>\n");
         }
         print("  </tr>\n");
@@ -299,7 +299,7 @@ sub indent
 {
     my $text = shift;
     my $nspaces = shift;
-    my $space = $nspaces x ' ';
+    my $space = ' ' x $nspaces;
     my $eol = 0;
     if($text =~ s/\r?\n$//s)
     {
