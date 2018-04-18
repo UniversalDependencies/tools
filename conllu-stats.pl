@@ -2376,6 +2376,7 @@ sub summarize_feature_for_hub
     my $markdown = '';
     my @values = sort(map {my $x = $_; $x =~ s/^\Q$feature=//; $x} (grep {m/^\Q$feature=/} (keys(%{$stats{fvpairs}}))));
     my $n_values = scalar(@values);
+    # Each value has its cell <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     if($save_cells > 1)
     {
         if($n_values > 0)
@@ -2386,44 +2387,55 @@ sub summarize_feature_for_hub
         }
         add_cell($table, $markdown);
         $markdown = '';
-    }
-    else # $save_cells <= 1
-    {
-        if($n_values > 0)
-        {
-            $markdown .= "<li><a>$feature</a>\n";
-        }
-    }
-    if($n_values > 0)
-    {
-        $markdown .= "  <ul>\n";
         foreach my $value (@values)
         {
             my $fvpair = "$feature=$value";
             my @upostags = sort(keys(%{$stats{fvtverbform}{$fvpair}}));
-            $markdown .= "    <li>$value\n";
-            $markdown .= "      <ul>\n";
+            $markdown .= "<ul>\n";
+            $markdown .= "  <li>$value\n";
+            $markdown .= "    <ul>\n";
             foreach my $upos (@upostags)
             {
                 my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
                 my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
-                $markdown .= "        <li>$upos: ".join(', ', @examples)."</li>\n";
+                $markdown .= "      <li>$upos: ".join(', ', @examples)."</li>\n";
             }
-            $markdown .= "      </ul>\n";
-            $markdown .= "    </li>\n";
-            if($save_cells > 1)
-            {
-                $markdown .= "  </ul>\n";
-                add_cell($table, $markdown, $value);
-                $markdown = "  <ul>\n";
-            }
+            $markdown .= "    </ul>\n";
+            $markdown .= "  </li>\n";
+            $markdown .= "</ul>\n";
+            add_cell($table, $markdown, $value);
+            $markdown = '';
         }
-        $markdown .= "  </ul>\n";
-        $markdown .= "</li>\n";
     }
-    if($save_cells > 0)
+    # Feature with all values has a cell <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    else # $save_cells <= 1
     {
+        if($n_values > 0)
+        {
+            $markdown .= "<ul>\n";
+            $markdown .= "  <li><a>$feature</a>\n";
+            $markdown .= "    <ul>\n";
+            foreach my $value (@values)
+            {
+                my $fvpair = "$feature=$value";
+                my @upostags = sort(keys(%{$stats{fvtverbform}{$fvpair}}));
+                $markdown .= "      <li>$value\n";
+                $markdown .= "        <ul>\n";
+                foreach my $upos (@upostags)
+                {
+                    my @keys = keys(%{$stats{examples}{"$upos\t$fvpair"}});
+                    my @examples = sort_and_truncate_examples($stats{examples}{"$upos\t$fvpair"}, \@keys, 10);
+                    $markdown .= "          <li>$upos: ".join(', ', @examples)."</li>\n";
+                }
+                $markdown .= "        </ul>\n";
+                $markdown .= "      </li>\n";
+            }
+            $markdown .= "    </ul>\n";
+            $markdown .= "  </li>\n";
+            $markdown .= "</ul>\n";
+        }
         add_cell($table, $markdown);
+        $markdown = '';
     }
     return $markdown;
 }
