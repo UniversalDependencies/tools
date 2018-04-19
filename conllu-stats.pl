@@ -269,7 +269,7 @@ EOF
         foreach my $cell (@{$row})
         {
             print("    <td width=\"$width_percent\%\" valign=\"top\">\n");
-            print(indent($cell, 6), "\n");
+            print(indent($cell, 6));
             print("    </td>\n");
         }
         print("  </tr>\n");
@@ -293,25 +293,19 @@ else
 
 
 #------------------------------------------------------------------------------
-# Indents lines in a given text by a given number of spaces.
+# Indents lines in a given text by a given number of spaces. Makes sure that
+# the last non-empty line is terminated by a LF character regardless of whether
+# it was terminated in the input. Any subsequent empty lines will be removed.
 #------------------------------------------------------------------------------
 sub indent
 {
     my $text = shift;
     my $nspaces = shift;
+    $text =~ s/\s+$//s;
     my $space = ' ' x $nspaces;
-    my $eol = 0;
-    if($text =~ s/\r?\n$//s)
-    {
-        $eol = 1;
-    }
     my @lines = split(/\r?\n/, $text);
     @lines = map {$space.$_} (@lines);
-    $text = join("\n", @lines);
-    if($eol)
-    {
-        $text .= "\n";
-    }
+    $text = join("\n", @lines)."\n";
     return $text;
 }
 
