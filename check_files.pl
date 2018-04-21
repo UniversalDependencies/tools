@@ -907,10 +907,28 @@ sub check_metadata
         $$n_errors++;
     }
     # Check other sections of the README file.
+    if(length($metadata->{sections}{summary})<40)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Section Summary is too short.\n");
+        $$n_errors++;
+    }
+    elsif(length($metadata->{sections}{summary})>500)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Section Summary is too long.\n");
+        $$n_errors++;
+    }
+    elsif($metadata->{sections}{summary} =~ m/see \[release checklist\]/)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
+        $$n_errors++;
+    }
     if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
     {
         $ok = 0;
-        push(@{$errors}, "$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
+        push(@{$errors}, "$folder README: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
         $$n_errors++;
     }
     # Add a link to the guidelines for README files. Add it to the last error message.
