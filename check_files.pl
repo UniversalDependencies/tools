@@ -16,46 +16,6 @@ use csort;
 use lib 'tools';
 use udlib;
 
-# Preliminary UD 2.2 release: only the training data of the shared task treebanks
-# (but their test data will be frozen as well, they just won't be released yet).
-# After we used this script to select the shared task treebanks automatically,
-# we are now freezing the list, and we may even do manual adjustments, such as
-# removing treebanks with unreliable lemmatization. From now on, the script will
-# work only with treebanks that have been approved for the shared task.
-###!!! Manually removed:
-# UD_Russian-GSD
-# UD_Spanish-GSD
-# UD_Turkish-PUD
-# Note: After some discussion with Giuseppe, UD_Latin-Perseus will be fixed but not removed.
-# So we have 81 shared task treebanks: 63 large and 18 small.
-my @stpresel = qw(UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
-UD_Arabic-PADT UD_Armenian-ArmTDP UD_Basque-BDT UD_Breton-KEB UD_Bulgarian-BTB
-UD_Buryat-BDT UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
-UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Czech-PUD UD_Danish-DDT
-UD_Dutch-Alpino UD_Dutch-LassySmall
-UD_English-EWT UD_English-GUM UD_English-LinES UD_English-PUD UD_Estonian-EDT
-UD_Faroese-OFT UD_Finnish-FTB UD_Finnish-PUD UD_Finnish-TDT
-UD_French-GSD UD_French-Sequoia UD_French-Spoken UD_Galician-CTG UD_Galician-TreeGal
-UD_German-GSD UD_Gothic-PROIEL UD_Greek-GDT UD_Hebrew-HTB UD_Hindi-HDTB
-UD_Hungarian-Szeged UD_Indonesian-GSD UD_Irish-IDT UD_Italian-ISDT UD_Italian-PoSTWITA
-UD_Japanese-GSD UD_Japanese-Modern UD_Kazakh-KTB UD_Korean-GSD UD_Korean-Kaist
-UD_Kurmanji-MG UD_Latin-ITTB UD_Latin-PROIEL UD_Latin-Perseus UD_Latvian-LVTB
-UD_Naija-NSC UD_North_Sami-Giella
-UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA
-UD_Old_Church_Slavonic-PROIEL UD_Old_French-SRCMF UD_Persian-Seraji
-UD_Polish-LFG UD_Polish-SZ UD_Portuguese-Bosque UD_Romanian-RRT
-UD_Russian-SynTagRus UD_Russian-Taiga UD_Serbian-SET UD_Slovak-SNK
-UD_Slovenian-SSJ UD_Slovenian-SST UD_Spanish-AnCora
-UD_Swedish-LinES UD_Swedish-PUD UD_Swedish-Talbanken UD_Thai-PUD UD_Turkish-IMST
-UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
-print('Pre-selected ', scalar(@stpresel), " treebanks for the shared task.\n");
-my %sthash;
-foreach my $treebank (@stpresel)
-{
-    $sthash{$treebank}++;
-}
-print("WARNING: As a temporary measure, treebanks that do not take part in the shared task will be treated as INVALID.\n");
-
 # Include reports on future repositories (not scheduled for the upcoming release)?
 # (If there is no README file, we will include the repository in the report and complain about the missing README.)
 my $include_future = 0;
@@ -89,31 +49,9 @@ my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
 my $languages_from_yaml = udlib::get_language_hash();
-# Download the current validation report. (We could run the validator ourselves
-# but it would take a lot of time.)
-my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
-if(scalar(@validation_report)==0)
-{
-    print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
-}
-my %valid;
-foreach my $line (@validation_report)
-{
-    if($line =~ m/^(UD_.+?):\s*VALID/)
-    {
-        ###!!! Temporary measure: treebank is not valid if it is not in the shared task.
-        if(exists($sthash{$1}))
-        {
-            $valid{$1} = 1;
-        }
-    }
-    # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
-    # The validation report also tells us which valid treebanks will not take part in the task.
-    if($line =~ m/^(UD_.+?):.*not in shared task/)
-    {
-        $nist{$1} = 1;
-    }
-}
+my ($validhash, $nisthash) = get_validation_results();
+my %valid = %{$validhash};
+my %nist = %{$nisthash};
 my $n_folders_with_data = 0;
 my $n_errors = 0;
 my %languages_with_data;
@@ -175,17 +113,13 @@ foreach my $folder (@folders)
                 chdir('..') or die("Cannot return to the upper folder");
                 next;
             }
+            # Check that the expected files are present and that there are no extra files.
+            my @errors;
+            if(!contains_expected_files($folder, $prefix, $files, \@errors, \$n_errors))
+            {
+                print(join('', @errors));
+            }
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
-            if(!-f 'README.txt' && !-f 'README.md')
-            {
-                print("$folder: missing README.txt|md\n");
-                $n_errors++;
-            }
-            if(-f 'README.txt' && -f 'README.md')
-            {
-                print("$folder: both README.txt and README.md are present\n");
-                $n_errors++;
-            }
             my $metadata = udlib::read_readme('.');
             if(!defined($metadata))
             {
@@ -216,10 +150,6 @@ foreach my $folder (@folders)
                 # Keep only the family, discard the genus if present.
                 $family =~ s/,.*//;
                 $families_with_data{$family}++;
-            }
-            if(scalar(@{$files->{extra}})>0)
-            {
-                print("$folder extra files: ", join(', ', sort(@{$files->{extra}})), "\n");
             }
             if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
             {
@@ -254,7 +184,7 @@ foreach my $folder (@folders)
                 print("$folder: Missing contact e-mail: '$metadata->{Contact}'\n");
                 $n_errors++;
             }
-            if(!-f 'LICENSE.txt')
+            if(!-f 'LICENSE.txt') ###!!! We have already reported that the file does not exist but that was a function where README contents is not known and no generating attempt was made.
             {
                 print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
                 generate_license($metadata->{License});
@@ -273,11 +203,6 @@ foreach my $folder (@folders)
             if($folder eq 'UD_Czech-PDT')
             {
                 # The data is split into four files because of the size limits.
-                if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
-                {
-                        print("$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
-                        $n_errors++;
-                }
                 my $stats = collect_statistics_about_ud_file("$prefix-train-c.conllu");
                 $nwtrain = $stats->{nword};
                 $stats = collect_statistics_about_ud_file("$prefix-train-l.conllu");
@@ -588,6 +513,180 @@ my $announcement = get_announcement
     \@languages_conll
 );
 print($announcement);
+
+
+
+#------------------------------------------------------------------------------
+# Downloads the current validation report from the validation server. Returns
+# two hash references: to the hash of valid treebanks, and to the hash of
+# treebanks that are not in the shared task despite being valid.
+#------------------------------------------------------------------------------
+sub get_validation_results
+{
+    # Preliminary UD 2.2 release: only the training data of the shared task treebanks
+    # (but their test data will be frozen as well, they just won't be released yet).
+    # After we used this script to select the shared task treebanks automatically,
+    # we are now freezing the list, and we may even do manual adjustments, such as
+    # removing treebanks with unreliable lemmatization. From now on, the script will
+    # work only with treebanks that have been approved for the shared task.
+    ###!!! Manually removed:
+    # UD_Russian-GSD
+    # UD_Spanish-GSD
+    # UD_Turkish-PUD
+    # Note: After some discussion with Giuseppe, UD_Latin-Perseus will be fixed but not removed.
+    # So we have 81 shared task treebanks: 63 large and 18 small.
+    my @stpresel = qw(
+    UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
+    UD_Arabic-PADT UD_Armenian-ArmTDP
+    UD_Basque-BDT UD_Breton-KEB UD_Bulgarian-BTB UD_Buryat-BDT
+    UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
+    UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Czech-PUD
+    UD_Danish-DDT UD_Dutch-Alpino UD_Dutch-LassySmall
+    UD_English-EWT UD_English-GUM UD_English-LinES UD_English-PUD
+    UD_Estonian-EDT
+    UD_Faroese-OFT UD_Finnish-FTB UD_Finnish-PUD UD_Finnish-TDT
+    UD_French-GSD UD_French-Sequoia UD_French-Spoken
+    UD_Galician-CTG UD_Galician-TreeGal
+    UD_German-GSD UD_Gothic-PROIEL UD_Greek-GDT
+    UD_Hebrew-HTB UD_Hindi-HDTB UD_Hungarian-Szeged
+    UD_Indonesian-GSD UD_Irish-IDT UD_Italian-ISDT UD_Italian-PoSTWITA
+    UD_Japanese-GSD UD_Japanese-Modern
+    UD_Kazakh-KTB UD_Korean-GSD UD_Korean-Kaist UD_Kurmanji-MG
+    UD_Latin-ITTB UD_Latin-PROIEL UD_Latin-Perseus UD_Latvian-LVTB
+    UD_Naija-NSC UD_North_Sami-Giella
+    UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA
+    UD_Old_Church_Slavonic-PROIEL UD_Old_French-SRCMF UD_Persian-Seraji
+    UD_Polish-LFG UD_Polish-SZ UD_Portuguese-Bosque UD_Romanian-RRT
+    UD_Russian-SynTagRus UD_Russian-Taiga UD_Serbian-SET UD_Slovak-SNK
+    UD_Slovenian-SSJ UD_Slovenian-SST UD_Spanish-AnCora
+    UD_Swedish-LinES UD_Swedish-PUD UD_Swedish-Talbanken
+    UD_Thai-PUD UD_Turkish-IMST
+    UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
+    print('Pre-selected ', scalar(@stpresel), " treebanks for the shared task.\n");
+    my %sthash;
+    foreach my $treebank (@stpresel)
+    {
+        $sthash{$treebank}++;
+    }
+    print("WARNING: As a temporary measure, treebanks that do not take part in the shared task will be treated as INVALID.\n");
+    # Download the current validation report. (We could run the validator ourselves
+    # but it would take a lot of time.)
+    my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+    if(scalar(@validation_report)==0)
+    {
+        print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
+    }
+    my %valid;
+    my %nist;
+    foreach my $line (@validation_report)
+    {
+        if($line =~ m/^(UD_.+?):\s*VALID/)
+        {
+            ###!!! Temporary measure: treebank is not valid if it is not in the shared task.
+            if(exists($sthash{$1}))
+            {
+                $valid{$1} = 1;
+            }
+        }
+        # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
+        # The validation report also tells us which valid treebanks will not take part in the task.
+        if($line =~ m/^(UD_.+?):.*not in shared task/)
+        {
+            $nist{$1} = 1;
+        }
+    }
+    return (\%valid, \%nist);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether a UD repository contains the expected files. Expects that the
+# repository is our current folder.
+#------------------------------------------------------------------------------
+sub contains_expected_files
+{
+    my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
+    my $prefix = shift; # prefix of names of data files, e.g. 'cs_pdt-ud'
+    my $files = shift; # hash of files in the folder as collected by get_files()
+    my $errors = shift; # reference to array of error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
+    if(!-f 'README.txt' && !-f 'README.md')
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: missing README.txt|md\n");
+        $$n_errors++;
+    }
+    if(-f 'README.txt' && -f 'README.md')
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: both README.txt and README.md are present\n");
+        $$n_errors++;
+    }
+    if(!-f 'LICENSE.txt')
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: missing LICENSE.txt\n");
+        $$n_errors++;
+    }
+    # Check the data files.
+    my $train_found = 0;
+    # In general, every treebank should have at least the test data.
+    # If there are more data files, zero or one of each of the following is expected: train, dev.
+    # Exception: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+    # No other CoNLL-U files are expected.
+    # It is also expected that if there is dev, there is also train.
+    if($folder eq 'UD_Czech-PDT')
+    {
+        # The data is split into four files because of the size limits.
+        if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+            $$n_errors++;
+        }
+        elsif(-f "$prefix-train.conllu")
+        {
+            # Not finding train is not automatically an error. The treebank can be test-only.
+            $train_found = 1;
+        }
+    }
+    else # all other treebanks
+    {
+        if(-f "$prefix-train.conllu")
+        {
+            # Not finding train is not automatically an error. The treebank can be test-only.
+            $train_found = 1;
+        }
+    }
+    # Look for development data. They are optional and not finding them is not an error.
+    if(-f "$prefix-dev.conllu")
+    {
+        # However, if there is dev data, there should also be training data!
+        if(!$train_found)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder: missing training data although there is dev data\n");
+            $$n_errors++;
+        }
+    }
+    # Look for test data. Unlike train and dev, test data is mandatory!
+    if(!-f "$prefix-test.conllu")
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: missing test data file $prefix-test.conllu\n");
+        $$n_errors++;
+    }
+    # Extra files have already been identified but not registered as an error.
+    if(scalar(@{$files->{extra}})>0)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
+        $$n_errors += scalar(@{$files->{extra}});
+    }
+    return $ok;
+}
 
 
 
