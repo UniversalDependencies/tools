@@ -115,9 +115,10 @@ foreach my $folder (@folders)
             }
             # Check that the expected files are present and that there are no extra files.
             my @errors;
-            if(!contains_expected_files($folder, $prefix, $files, \@errors, \$n_errors))
+            if(!check_files($folder, $prefix, $files, \@errors, \$n_errors))
             {
                 print(join('', @errors));
+                splice(@errors);
             }
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             my $metadata = udlib::read_readme('.');
@@ -151,38 +152,11 @@ foreach my $folder (@folders)
                 $family =~ s/,.*//;
                 $families_with_data{$family}++;
             }
-            if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
-            {
-                print("$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
-                $n_errors++;
-            }
             # Check that all required metadata items are present in the README file.
-            # New contributors sometimes forget to add it. Old contributors sometimes modify it for no good reason ('Data available since' should never change!)
-            # And occasionally people delete the metadata section completely, despite being told not to do so (Hebrew team in the last minute of UD 2.0!)
-            if($metadata->{'Data available since'} !~ m/UD\s*v([0-9]+\.[0-9]+)/)
+            if(!check_metadata($folder, $metadata, $current_release, \@errors, \$n_errors))
             {
-                print("$folder: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
-                $n_errors++;
-            }
-            if($metadata->{Genre} !~ m/\w/)
-            {
-                print("$folder: Missing list of genres: '$metadata->{Genre}'\n");
-                $n_errors++;
-            }
-            if($metadata->{License} !~ m/\w/)
-            {
-                print("$folder: Missing identification of license in README: '$metadata->{License}'\n");
-                $n_errors++;
-            }
-            if($metadata->{Contributors} !~ m/\w/)
-            {
-                print("$folder: Missing list of contributors: '$metadata->{Contributors}'\n");
-                $n_errors++;
-            }
-            if($metadata->{Contact} !~ m/\@/)
-            {
-                print("$folder: Missing contact e-mail: '$metadata->{Contact}'\n");
-                $n_errors++;
+                print(join('', @errors));
+                splice(@errors);
             }
             if(!-f 'LICENSE.txt') ###!!! We have already reported that the file does not exist but that was a function where README contents is not known and no generating attempt was made.
             {
@@ -601,10 +575,54 @@ sub get_validation_results
 
 
 #------------------------------------------------------------------------------
+# Gets the list of files in a UD folder. Returns the list of CoNLL-U files, and
+# the list of unexpected extra files.
+#------------------------------------------------------------------------------
+sub get_files
+{
+    my $folder = shift; # name of the UD repository
+    my $prefix = shift; # prefix of data files, i.e., language code _ treebank code
+    my $path = shift; # path to the repository (default: '.')
+    $path = '.' if(!defined($path));
+    opendir(DIR, $path) or die("Cannot read the contents of the folder $folder");
+    my @files = readdir(DIR);
+    closedir(DIR);
+    my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
+    # Look for additional files. (Do we want to include them in the release package?)
+    my @extrafiles = map
+    {
+        $_ .= '/' if(-d $_);
+        $_
+    }
+    grep
+    {
+        !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
+    }
+    (@files);
+    # Some treebanks have exceptional extra files that have been approved and released previously.
+    @extrafiles = grep
+    {!(
+        $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
+        $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
+        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
+        $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
+    )}
+    (@extrafiles);
+    my %files =
+    (
+        'conllu' => \@conllufiles,
+        'extra'  => \@extrafiles
+    );
+    return \%files;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Checks whether a UD repository contains the expected files. Expects that the
 # repository is our current folder.
 #------------------------------------------------------------------------------
-sub contains_expected_files
+sub check_files
 {
     my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
     my $prefix = shift; # prefix of names of data files, e.g. 'cs_pdt-ud'
@@ -691,45 +709,56 @@ sub contains_expected_files
 
 
 #------------------------------------------------------------------------------
-# Gets the list of files in a UD folder. Returns the list of CoNLL-U files, and
-# the list of unexpected extra files.
+# Checks whether metadata in the README file provides required information.
 #------------------------------------------------------------------------------
-sub get_files
+sub check_metadata
 {
-    my $folder = shift; # name of the UD repository
-    my $prefix = shift; # prefix of data files, i.e., language code _ treebank code
-    my $path = shift; # path to the repository (default: '.')
-    $path = '.' if(!defined($path));
-    opendir(DIR, $path) or die("Cannot read the contents of the folder $folder");
-    my @files = readdir(DIR);
-    closedir(DIR);
-    my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-    # Look for additional files. (Do we want to include them in the release package?)
-    my @extrafiles = map
+    my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
+    my $metadata = shift; # reference to hash returned by udlib::read_readme()
+    my $current_release = shift; # needed to know whether changelog is required
+    my $errors = shift; # reference to array of error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
+    # New contributors sometimes forget to add it. Old contributors sometimes modify it for no good reason ('Data available since' should never change!)
+    # And occasionally people delete the metadata section completely, despite being told not to do so (Hebrew team in the last minute of UD 2.0!)
+    if($metadata->{'Data available since'} !~ m/UD\s*v([0-9]+\.[0-9]+)/)
     {
-        $_ .= '/' if(-d $_);
-        $_
+        $ok = 0;
+        push(@{$errors}, "$folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
+        $$n_errors++;
     }
-    grep
+    if($metadata->{Genre} !~ m/\w/)
     {
-        !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
+        $ok = 0;
+        push(@{$errors}, "$folder README: Missing list of genres: '$metadata->{Genre}'\n");
+        $$n_errors++;
     }
-    (@files);
-    # Some treebanks have exceptional extra files that have been approved and released previously.
-    @extrafiles = grep
-    {!(
-        $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
-        $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
-        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
-        $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
-    )}
-    (@extrafiles);
-    my %files =
-    (
-        'conllu' => \@conllufiles,
-        'extra'  => \@extrafiles
-    );
-    return \%files;
+    if($metadata->{License} !~ m/\w/)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Missing identification of license in README: '$metadata->{License}'\n");
+        $$n_errors++;
+    }
+    if($metadata->{Contributors} !~ m/\w/)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
+        $$n_errors++;
+    }
+    if($metadata->{Contact} !~ m/\@/)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
+        $$n_errors++;
+    }
+    # Check other sections of the README file.
+    if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
+        $$n_errors++;
+    }
+    return $ok;
 }
 
 
