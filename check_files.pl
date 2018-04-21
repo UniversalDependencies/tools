@@ -919,7 +919,13 @@ sub check_metadata
         $$n_errors++;
     }
     # Check other sections of the README file.
-    if(length($metadata->{sections}{summary})<40)
+    if(!defined($metadata->{sections}{summary}))
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Section Summary not found.\n");
+        $$n_errors++;
+    }
+    elsif(length($metadata->{sections}{summary})<40)
     {
         $ok = 0;
         push(@{$errors}, "$folder README: Section Summary is too short.\n");
