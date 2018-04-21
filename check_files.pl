@@ -814,6 +814,12 @@ sub check_metadata
         push(@{$errors}, "$folder README: Missing identification of license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
+    if($metadata->{'Includes text'} !~ m/^(yes|no)$/i)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
+        $$n_errors++;
+    }
     if($metadata->{Contributors} !~ m/\w/)
     {
         $ok = 0;
