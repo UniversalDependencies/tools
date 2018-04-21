@@ -106,14 +106,7 @@ if(scalar(@ARGV)==1)
     if($n_errors>0)
     {
         print(join('', @errors));
-        if($n_errors = 1)
-        {
-            print("*** 1 ERROR ***\n");
-        }
-        else
-        {
-            print("*** $n_errors ERRORS ***\n");
-        }
+        print("*** ERROR ***\n");
     }
     else
     {
