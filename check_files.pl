@@ -600,12 +600,15 @@ sub get_files
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
+    # The treebanks without underlying text need a program that merges the CoNLL-U files with the separately distributed text.
+    # Learner corpora need extra columns to annotate "distributional tag", "distributional head", "distributional relation" and "alignment".
+    ###!!! But we now have guidelines for extra columns from the PARSEME project, so there will be a CoNLL-U-Plus format, .conllup.
     @extrafiles = grep
     {!(
         $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
-        $folder eq 'UD_Bulgarian' && $_ eq 'BTB-biblio.bib' ||
-        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
-        $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
+#        $folder eq 'UD_Bulgarian-BTB' && $_ eq 'BTB-biblio.bib' ||
+        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' #||
+#        $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
     )}
     (@extrafiles);
     my %files =
@@ -664,9 +667,8 @@ sub check_files
             push(@{$errors}, "$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
             $$n_errors++;
         }
-        elsif(-f "$prefix-train.conllu")
+        else
         {
-            # Not finding train is not automatically an error. The treebank can be test-only.
             $train_found = 1;
         }
     }
