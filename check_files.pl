@@ -106,6 +106,19 @@ if(scalar(@ARGV)==1)
     if($n_errors>0)
     {
         print(join('', @errors));
+        if($n_errors = 1)
+        {
+            print("*** 1 ERROR ***\n");
+        }
+        else
+        {
+            print("*** $n_errors ERRORS ***\n");
+        }
+    }
+    else
+    {
+        # Output similar to the validator.
+        print("*** PASSED ***\n");
     }
     # Exit 0 is considered success by the operating system.
     exit($n_errors);
