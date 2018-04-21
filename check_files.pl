@@ -106,7 +106,7 @@ if(scalar(@ARGV)==1)
     if($n_errors>0)
     {
         print(join('', @errors));
-        print("*** ERROR ***\n");
+        print("*** FAILED ***\n");
     }
     else
     {
@@ -796,7 +796,48 @@ sub check_metadata
     my $ok = 1;
     # New contributors sometimes forget to add it. Old contributors sometimes modify it for no good reason ('Data available since' should never change!)
     # And occasionally people delete the metadata section completely, despite being told not to do so (Hebrew team in the last minute of UD 2.0!)
-    if($metadata->{'Data available since'} !~ m/UD\s*v([0-9]+\.[0-9]+)/)
+    if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/)
+    {
+        my $claimed = $1;
+        # The value 'Data available since' must not change from release to release.
+        # It must forever refer to the first release of the treebank in UD.
+        # Therefore, this script will remember the correct value, too, and shout if it changes in the README.
+        my %new_treebanks_by_release =
+        (
+            '1.0' => ['Czech-PDT', 'English-EWT', 'Finnish-TDT', 'French-GSD', 'German-GSD', 'Hungarian-Szeged', 'Irish-IDT', 'Italian-ISDT', 'Spanish-GSD', 'Swedish-Talbanken'],
+            '1.1' => ['Basque-BDT', 'Bulgarian-BTB', 'Croatian-SET', 'Danish-DDT', 'Finnish-FTB', 'Greek-GDT', 'Hebrew-HTB', 'Indonesian-GSD', 'Persian-Seraji'],
+            '1.2' => ['Ancient_Greek-Perseus', 'Ancient_Greek-PROIEL', 'Arabic-PADT', 'Dutch-Alpino', 'Estonian-EDT', 'Gothic-PROIEL', 'Hindi-HDTB', 'Japanese-KTC', 'Latin-ITTB', 'Latin-Perseus', 'Latin-PROIEL', 'Norwegian-Bokmaal', 'Old_Church_Slavonic-PROIEL', 'Polish-SZ', 'Portuguese-Bosque', 'Romanian-RRT', 'Slovenian-SSJ', 'Tamil-TTB'],
+            '1.3' => ['Catalan-AnCora', 'Czech-CAC', 'Czech-CLTT', 'Dutch-LassySmall', 'English-ESL', 'English-LinES', 'Galician-CTG', 'Chinese-GSD', 'Kazakh-KTB', 'Latvian-LVTB', 'Portuguese-GSD', 'Russian-GSD', 'Russian-SynTagRus', 'Slovenian-SST', 'Spanish-AnCora', 'Swedish-LinES', 'Turkish-IMST'],
+            '1.4' => ['Coptic-Scriptorium', 'Galician-TreeGal', 'Japanese-GSD', 'Sanskrit-UFAL', 'Slovak-SNK', 'Swedish_Sign_Language-SSLC', 'Ukrainian-IU', 'Uyghur-UDT', 'Vietnamese-VTB'],
+            '2.0' => ['Arabic-NYUAD', 'Belarusian-HSE', 'English-ParTUT', 'French-FTB', 'French-ParTUT', 'French-Sequoia', 'Italian-ParTUT', 'Korean-GSD', 'Lithuanian-HSE', 'Norwegian-Nynorsk', 'Urdu-UDTB'],
+            '2.1' => ['Afrikaans-Afribooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL']
+        );
+        my $correct;
+        foreach my $release (keys(%new_treebanks_by_release))
+        {
+            foreach my $treebank (@{$new_treebanks_by_release{$release}})
+            {
+                if("UD_$treebank" eq $folder)
+                {
+                    $correct = $release;
+                    last;
+                }
+            }
+        }
+        if(defined($correct) && $claimed ne $correct)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
+            $$n_errors++;
+        }
+        elsif(!defined($correct) && $claimed < $current_release)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
+            $$n_errors++;
+        }
+    }
+    else
     {
         $ok = 0;
         push(@{$errors}, "$folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
@@ -807,6 +848,23 @@ sub check_metadata
         $ok = 0;
         push(@{$errors}, "$folder README: Missing list of genres: '$metadata->{Genre}'\n");
         $$n_errors++;
+    }
+    else
+    {
+        # Originally (until UD 2.2) it was not an error if people invented their genres in addition to the predefined ones.
+        # However, some treebanks do not follow prescribed syntax (e.g. place commas between genres) or just have typos here
+        # (e.g. besides "news" there is also "new" or "newswire"), so we better ban unregistered genres and check it automatically.
+        # Note that a copy of the list of known genres is also in evaluate_treebank.pl.
+        my @official_genres = ('academic', 'bible', 'blog', 'fiction', 'grammar-examples', 'legal', 'medical', 'news', 'nonfiction', 'reviews', 'social', 'spoken', 'web', 'wiki');
+        my @genres = split(/\s+/, $metadata->{Genre});
+        my @unknown_genres = grep {my $g = $_; my @found = grep {$_ eq $g} (@official_genres); scalar(@found)==0} (@genres);
+        if(scalar(@unknown_genres)>0)
+        {
+            $ok = 0;
+            my $ug = join(' ', sort(@unknown_genres));
+            push(@{$errors}, "$folder README: Unknown genre '$ug'\n");
+            $$n_errors++;
+        }
     }
     if($metadata->{License} !~ m/\w/)
     {
@@ -819,6 +877,21 @@ sub check_metadata
         $ok = 0;
         push(@{$errors}, "$folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
         $$n_errors++;
+    }
+    foreach my $annotation (qw(Lemmas UPOS XPOS Features Relations))
+    {
+        if($metadata->{$annotation} !~ m/\w/)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder README: Missing information on availability and source of $annotation\n");
+            $$n_errors++;
+        }
+        elsif($metadata->{$annotation} !~ m/^(manual native|converted from manual|converted with corrections|automatic|automatic with corrections|not available)$/)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
+            $$n_errors++;
+        }
     }
     if($metadata->{Contributors} !~ m/\w/)
     {
@@ -838,6 +911,13 @@ sub check_metadata
         $ok = 0;
         push(@{$errors}, "$folder: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
         $$n_errors++;
+    }
+    # Add a link to the guidelines for README files. Add it to the last error message.
+    # Do not make it a separate error message (just in case we get rid of $n_errors and use scalar(@errors) in the future).
+    unless($ok)
+    {
+        $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#treebank-metadata for guidelines on machine-readable metadata.\n";
+        $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#the-readme-file for general guidelines on README files.\n";
     }
     return $ok;
 }
