@@ -1,5 +1,8 @@
 ([+-]\s*)?\d+(\s+\d+)*
-u. t. jpr.
-u. c.
-u. tml.
-v. tml.
+u\. t\. jpr\.
+u\. c\.
+u\. tml\.
+v\. tml\.
+u\.\s*t\.\s*t\.
+N. B.
+(P\.\s*)+S\.
