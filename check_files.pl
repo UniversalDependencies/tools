@@ -53,6 +53,9 @@ GetOptions
     'tag=s'    => \$tag
 );
 
+# We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
+my $languages_from_yaml = udlib::get_language_hash();
+
 # If there is one argument, we interpret it as a treebank name, check the files
 # and metadata of that treebank, and exit. We should check the arguments after
 # options were read, although we do not expect options if the script is called
@@ -113,8 +116,6 @@ if(scalar(@ARGV)==1)
 opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
-# We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
-my $languages_from_yaml = udlib::get_language_hash();
 my ($validhash, $nisthash) = get_validation_results();
 my %valid = %{$validhash};
 my %nist = %{$nisthash};
