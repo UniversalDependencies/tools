@@ -894,6 +894,18 @@ sub check_metadata
             $$n_errors++;
         }
     }
+    if($metadata->{Contributing} !~ m/\w/)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Missing metadata Contributing (where and how to contribute)\n");
+        $$n_errors++;
+    }
+    elsif($metadata->{Contributing} !~ m/^(here|here source|elsewhere|to be adopted)$/)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
+        $$n_errors++;
+    }
     if($metadata->{Contributors} !~ m/\w/)
     {
         $ok = 0;
