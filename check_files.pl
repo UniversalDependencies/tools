@@ -8,6 +8,17 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+
+sub usage
+{
+    print STDERR ("Usage: tools/check_files.pl\n");
+    print STDERR ("       Must be called from the folder where all UD repositories are cloned as subfolders.\n");
+    print STDERR ("       Will produce a complete report for the next UD release.\n");
+    print STDERR ("\n");
+    print STDERR ("   or: tools/check_files.pl UD_Ancient_Greek-PROIEL\n");
+    print STDERR ("       Will just check files and metadata of one treebank, report errors and exit.\n");
+}
+
 use Getopt::Long;
 use LWP::Simple;
 # Dan's sorting library
@@ -41,6 +52,61 @@ GetOptions
     'stats'    => \$recompute_stats,
     'tag=s'    => \$tag
 );
+
+# If there is one argument, we interpret it as a treebank name, check the files
+# and metadata of that treebank, and exit. We should check the arguments after
+# options were read, although we do not expect options if the script is called
+# on one treebank.
+if(scalar(@ARGV)==1)
+{
+    my $folder = $ARGV[0];
+    $folder =~ s:/$::;
+    my $n_errors = 0;
+    my @errors;
+    # The name of the folder: 'UD_' + language name + optional treebank identifier.
+    # Example: UD_Ancient_Greek-PROIEL
+    my ($language, $treebank) = udlib::decompose_repo_name($folder);
+    if(defined($language))
+    {
+        if(exists($languages_from_yaml->{$language}))
+        {
+            $langcode = $languages_from_yaml->{$language}{lcode};
+            my $key = $langcode;
+            $key .= '_'.lc($treebank) if($treebank ne '');
+            my $prefix = $key.'-ud';
+            chdir($folder) or die("Cannot enter folder $folder");
+            my $files = get_files($folder, $prefix, '.');
+            # Check that the expected files are present and that there are no extra files.
+            check_files($folder, $prefix, $files, \@errors, \$n_errors);
+            # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
+            my $metadata = udlib::read_readme('.');
+            if(!defined($metadata))
+            {
+                push(@errors, "$folder: cannot read the README file: $!\n");
+                $n_errors++;
+            }
+            # Check that all required metadata items are present in the README file.
+            check_metadata($folder, $metadata, $current_release, \@errors, \$n_errors);
+            chdir('..') or die("Cannot return to the upper folder");
+        }
+        else
+        {
+            push(@errors, "Unknown language $language.\n");
+            $n_errors++;
+        }
+    }
+    else
+    {
+        push(@errors, "Cannot parse folder name $folder.\n");
+        $n_errors++;
+    }
+    if($n_errors>0)
+    {
+        print(join('', @errors));
+    }
+    # Exit 0 is considered success by the operating system.
+    exit($n_errors);
+}
 
 # This script expects to be invoked in the folder in which all the UD_folders
 # are placed.
