@@ -679,9 +679,9 @@ sub get_files
     @extrafiles = grep
     {!(
         $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
-#        $folder eq 'UD_Bulgarian-BTB' && $_ eq 'BTB-biblio.bib' ||
-        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' #||
-#        $folder eq 'UD_Finnish-FTB' && $_ =~ m/^COPYING(\.LESSER)?$/
+        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
+        $folder eq 'UD_English-ESL' && $_ eq 'merge.py' ||
+        $folder eq 'UD_Japanese-KTC' && $_ =~ m/^merge/
     )}
     (@extrafiles);
     my %files =
