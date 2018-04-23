@@ -2,5 +2,7 @@ advmod:emph
 aux:pass
 csubj:pass
 flat:foreign
+flat:name
+nmod:poss
 nsubj:pass
 obl:arg
