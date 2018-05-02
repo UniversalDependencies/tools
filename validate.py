@@ -23,8 +23,8 @@ THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this scr
 
 #Constants for the column indices
 COLCOUNT=10
-ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
-COLNAMES=u"ID,FORM,LEMMA,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
+ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
+COLNAMES=u"ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
 TOKENSWSPACE=MISC+1 #one extra constant
 
 error_counter={} #key: error type value: error count
@@ -257,7 +257,7 @@ def validate_whitespace(cols,tag_sets):
             if cols[col_idx][-1].isspace():
                 warn(u"Trailing whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
     ## These columns must not have whitespace
-    for col_idx in (ID,UPOSTAG,XPOSTAG,FEATS,HEAD,DEPREL,DEPS):
+    for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
 
@@ -335,22 +335,22 @@ def validate_features(cols,tag_sets):
         warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
 
 def validate_upos(cols,tag_sets):
-    if UPOSTAG >= len(cols):
+    if UPOS >= len(cols):
         return # this has been already reported in trees()
-    if tag_sets[UPOSTAG] is not None and cols[UPOSTAG] not in tag_sets[UPOSTAG]:
-        warn(u"Unknown UPOS tag: %s"%cols[UPOSTAG],u"Morpho")
+    if tag_sets[UPOS] is not None and cols[UPOS] not in tag_sets[UPOS]:
+        warn(u"Unknown UPOS tag: %s"%cols[UPOS],u"Morpho")
 
 def validate_xpos(cols,tag_sets):
-    if XPOSTAG >= len(cols):
+    if XPOS >= len(cols):
         return # this has been already reported in trees()
-    # XPOSTAG is always None -> not checked atm
-    if tag_sets[XPOSTAG] is not None and cols[XPOSTAG] not in tag_sets[XPOSTAG]:
-        warn(u"Unknown XPOS tag: %s"%cols[XPOSTAG],u"Morpho")
+    # XPOS is always None -> not checked atm
+    if tag_sets[XPOS] is not None and cols[XPOS] not in tag_sets[XPOS]:
+        warn(u"Unknown XPOS tag: %s"%cols[XPOS],u"Morpho")
 
 def validate_pos(cols,tag_sets):
-    if not (is_empty_node(cols) and cols[UPOSTAG] == '_'):
+    if not (is_empty_node(cols) and cols[UPOS] == '_'):
         validate_upos(cols, tag_sets)
-    if not (is_empty_node(cols) and cols[XPOSTAG] == '_'):
+    if not (is_empty_node(cols) and cols[XPOS] == '_'):
         validate_xpos(cols, tag_sets)
 
 def lspec2ud(deprel):
@@ -393,12 +393,12 @@ def validate_character_constraints(cols):
     """
     if is_multiword_token(cols):
         return
-    if UPOSTAG >= len(cols):
+    if UPOS >= len(cols):
         return # this has been already reported in trees()
 
-    if not (re.match(r"^[A-Z]+$", cols[UPOSTAG]) or
-            (is_empty_node(cols) and cols[UPOSTAG] == u"_")):
-        warn("Invalid UPOSTAG value %s" % cols[UPOSTAG],u"Morpho")
+    if not (re.match(r"^[A-Z]+$", cols[UPOS]) or
+            (is_empty_node(cols) and cols[UPOS] == u"_")):
+        warn("Invalid UPOS value %s" % cols[UPOS],u"Morpho")
     if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or
             (is_empty_node(cols) and cols[DEPREL] == u"_")):
         warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
@@ -768,7 +768,7 @@ if __name__=="__main__":
     if args.quiet:
         args.echo_input=False
 
-    tagsets={XPOSTAG:None,UPOSTAG:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
+    tagsets={XPOS:None,UPOS:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
 
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
@@ -777,7 +777,7 @@ if __name__=="__main__":
         # One of them, "ref", is universal and we currently list it directly in the code here, instead of creating a file "edeprel.ud".
         tagsets[DEPS]=tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
-        tagsets[UPOSTAG]=load_set("cpos.ud",None)
+        tagsets[UPOS]=load_set("cpos.ud",None)
         tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
         tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
 
