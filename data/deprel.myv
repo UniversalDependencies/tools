@@ -1,3 +1,9 @@
-nsubj:cop
-aux:neg
 acl:relcl
+advmod:tmod
+aux:neg
+compound:redup
+compound:svc
+nsubj:cop
+obl:agent
+obl:tmod
+xcomp:ds
