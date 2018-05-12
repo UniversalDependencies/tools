@@ -14,6 +14,7 @@ mark:relcl
 nmod:poss
 nsubj:cop
 nsubj:pass
+obj:agent
 obl:agent
 obl:arg
 obl:patient
