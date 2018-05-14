@@ -1,1 +1,7 @@
 acl:relcl
+aux:pass
+compound:prt
+compound:v
+flat:name
+nsubj:pass
+obl:tmod
