@@ -1,8 +1,11 @@
 acl:relcl
 advmod:tmod
 aux:neg
+cc:preconj
 compound:redup
 compound:svc
+flat:name
+nmod:gsubj
 nsubj:cop
 obl:agent
 obl:tmod
