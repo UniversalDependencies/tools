@@ -1,7 +1,11 @@
 acl:relcl
+compound:a
+compound:n
 compound:plur
 csubj:pass
 dep:prt
 flat:name
 nmod:poss
 nsubj:pass
+obl:poss
+obl:tmod
