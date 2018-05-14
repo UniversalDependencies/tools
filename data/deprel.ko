@@ -1,3 +1,7 @@
 acl:relcl
+dep:prt
 det:poss
+flat:name
+nmod:poss
 nsubj:pass
+obl:tmod
