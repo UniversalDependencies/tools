@@ -1,6 +1,12 @@
 acl:relcl
 aux:pass
+cc:preconj
+compound:prt
 csubj:pass
+det:predet
 expl:pass
+flat:name
 nmod:poss
+nmod:tmod
 nsubj:pass
+obl:tmod
