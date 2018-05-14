@@ -1,7 +1,9 @@
 acl:relcl
+cc:preconj
 compound:a
 compound:n
 compound:plur
+compound:v
 csubj:pass
 dep:prt
 flat:name
