@@ -1,9 +1,13 @@
+acl:inf
+acl:part
 acl:relcl
 aux:pass
 cc:preconj
 compound:prt
 csubj:pass
+det:poss
 det:predet
+expl:pv
 flat:foreign
 flat:name
 nmod:npmod
@@ -11,3 +15,4 @@ nmod:tmod
 nsubj:pass
 obl:agent
 obl:tmod
+xcomp:adj
