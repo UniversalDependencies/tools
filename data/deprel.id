@@ -1,3 +1,13 @@
+acl:relcl
+cc:preconj
+compound:a
+compound:n
 compound:plur
+compound:v
 csubj:pass
+dep:prt
+flat:name
+nmod:poss
 nsubj:pass
+obl:poss
+obl:tmod

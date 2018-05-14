@@ -12,8 +12,12 @@ compound:svc
 det:poss
 mark:relcl
 nmod:poss
+nsubj:ben
 nsubj:cop
+nsubj:loc
 nsubj:pass
+obj:agent
+obj:patient
 obl:agent
 obl:arg
 obl:patient
