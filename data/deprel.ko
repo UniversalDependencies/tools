@@ -1,4 +1,6 @@
 acl:relcl
+compound:lvc
+csubj:pass
 dep:prt
 det:poss
 flat:name
