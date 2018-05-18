@@ -13,6 +13,7 @@ det:poss
 mark:relcl
 nmod:poss
 nsubj:ben
+nsubj:caus
 nsubj:cop
 nsubj:loc
 nsubj:pass
