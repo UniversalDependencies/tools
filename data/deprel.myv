@@ -5,6 +5,7 @@ cc:preconj
 compound:coll
 compound:redup
 compound:svc
+csubj:cop
 flat:name
 nmod:comp
 nmod:gobj
