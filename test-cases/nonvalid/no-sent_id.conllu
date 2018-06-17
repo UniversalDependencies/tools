@@ -1,0 +1,22 @@
+# sent_id = tanl1
+# text = LONDRA .
+1	LONDRA	Londra	NOUN	SP	_	0	root	_	_
+2	.	.	PUNCT	FS	_	1	case	_	_
+
+# text = Gas dalla statua .
+# this is sentence does not have a sent_id field
+1	Gas	gas	NOUN	S	Gender=Masc|Number=Sing	0	root	_	_
+2-3	dalla	_	_	_	_	_	_	_	_
+2	da	da	ADP	EA	_	1	nmod	_	_
+3	la	la	DET	RD	Gender=Fem|Number=Sing	4	det	_	_
+4	statua	statua	NOUN	S	Gender=Fem|Number=Sing	2	nmod	_	_
+5	.	.	PUNCT	FS	_	1	punct	_	_
+
+# sent_id = tanl3
+# text = Evacuata la Tate Gallery .
+1	Evacuata	evacuare	VERB	V	Gender=Fem|Number=Sing	3	nmod	_	_
+2	la	il	DET	RD	Gender=Fem|Number=Sing	3	det	_	_
+3	Tate	Tate	NOUN	SP	_	0	root	_	_
+4	Gallery	Gallery	NOUN	SP	_	3	fixed	_	_
+5	.	.	PUNCT	FS	_	3	punct	_	_
+
