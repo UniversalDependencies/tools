@@ -609,13 +609,25 @@ sub get_validation_results
     UD_Swedish-LinES UD_Swedish-PUD UD_Swedish-Talbanken
     UD_Thai-PUD UD_Turkish-IMST
     UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
-    print('Pre-selected ', scalar(@stpresel), " treebanks for the shared task.\n");
-    my %sthash;
-    foreach my $treebank (@stpresel)
+    my @nstpresel = qw(
+    UD_Arabic-NYUAD UD_Arabic-PUD UD_Belarusian-HSE UD_Cantonese-HK
+    UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD UD_Coptic-Scriptorium
+    UD_Czech-CLTT UD_English-ParTUT UD_French-PUD UD_French-ParTUT
+    UD_German-PUD UD_Hindi-PUD UD_Indonesian-PUD UD_Italian-PUD
+    UD_Italian-ParTUT UD_Japanese-BCCWJ UD_Japanese-PUD UD_Komi_Zyrian-IKDP
+    UD_Komi_Zyrian-Lattice UD_Korean-PUD UD_Lithuanian-HSE UD_Marathi-UFAL
+    UD_Portuguese-GSD UD_Portuguese-PUD UD_Romanian-Nonstandard UD_Russian-GSD
+    UD_Russian-PUD UD_Sanskrit-UFAL UD_Spanish-GSD UD_Spanish-PUD
+    UD_Swedish_Sign_Language-SSLC UD_Tagalog-TRG UD_Tamil-TTB UD_Telugu-MTG
+    UD_Turkish-PUD UD_Warlpiri-UFAL
+    );
+    print('Pre-selected ', scalar(@nstpresel), " treebanks for the shared task.\n");
+    my %nsthash;
+    foreach my $treebank (@nstpresel)
     {
-        $sthash{$treebank}++;
+        $nsthash{$treebank}++;
     }
-    print("WARNING: As a temporary measure, treebanks that do not take part in the shared task will be treated as INVALID.\n");
+    print("WARNING: As a temporary measure, treebanks that took part in the shared task will be treated as INVALID.\n");
     # Download the current validation report. (We could run the validator ourselves
     # but it would take a lot of time.)
     my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
@@ -630,7 +642,7 @@ sub get_validation_results
         if($line =~ m/^(UD_.+?):\s*VALID/)
         {
             ###!!! Temporary measure: treebank is not valid if it is not in the shared task.
-            if(exists($sthash{$1}))
+            if(exists($nsthash{$1}))
             {
                 $valid{$1} = 1;
             }
