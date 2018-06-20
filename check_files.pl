@@ -621,7 +621,7 @@ sub get_validation_results
     UD_Swedish_Sign_Language-SSLC UD_Tagalog-TRG UD_Tamil-TTB UD_Telugu-MTG
     UD_Turkish-PUD UD_Warlpiri-UFAL
     );
-    print('Pre-selected ', scalar(@nstpresel), " treebanks for the shared task.\n");
+    print('Pre-selected ', scalar(@nstpresel), " treebanks that did not take part in the shared task.\n");
     my %nsthash;
     foreach my $treebank (@nstpresel)
     {
