@@ -646,13 +646,13 @@ sub get_validation_results
     {
         ###!!! Temporary measure: treebank that is in the shared task must be valid.
         my $corename = '';
-        if($line =~ m/^(UD_.+?):)
+        if($line =~ m/^(UD_.+?):/)
         {
             $corename = $1;
         }
         if($line =~ m/^(UD_.+?):\s*VALID/ || exists($sthash{$corename}))
         {
-            $valid{$1} = 1;
+            $valid{$corename} = 1;
         }
         # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
         # The validation report also tells us which valid treebanks will not take part in the task.
