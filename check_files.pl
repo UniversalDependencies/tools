@@ -621,13 +621,18 @@ sub get_validation_results
     UD_Swedish_Sign_Language-SSLC UD_Tagalog-TRG UD_Tamil-TTB UD_Telugu-MTG
     UD_Turkish-PUD UD_Warlpiri-UFAL
     );
-    print('Pre-selected ', scalar(@nstpresel), " treebanks that did not take part in the shared task.\n");
+    print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
+    print("WARNING: As a temporary measure, treebanks that took part in the shared task are considered VALID even if their current development version is invalid.\n");
+    my %sthash;
+    foreach my $treebank (@stpresel)
+    {
+        $sthash{$treebank}++;
+    }
     my %nsthash;
     foreach my $treebank (@nstpresel)
     {
         $nsthash{$treebank}++;
     }
-    print("WARNING: As a temporary measure, treebanks that took part in the shared task will be treated as INVALID.\n");
     # Download the current validation report. (We could run the validator ourselves
     # but it would take a lot of time.)
     my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
@@ -639,13 +644,10 @@ sub get_validation_results
     my %nist;
     foreach my $line (@validation_report)
     {
-        if($line =~ m/^(UD_.+?):\s*VALID/)
+        ###!!! Temporary measure: treebank that is in the shared task must be valid.
+        if($line =~ m/^(UD_.+?):\s*VALID/ || exists($sthash{$1}))
         {
-            ###!!! Temporary measure: treebank is not valid if it is not in the shared task.
-            if(exists($nsthash{$1}))
-            {
-                $valid{$1} = 1;
-            }
+            $valid{$1} = 1;
         }
         # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
         # The validation report also tells us which valid treebanks will not take part in the task.
