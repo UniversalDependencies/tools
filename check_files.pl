@@ -645,7 +645,12 @@ sub get_validation_results
     foreach my $line (@validation_report)
     {
         ###!!! Temporary measure: treebank that is in the shared task must be valid.
-        if($line =~ m/^(UD_.+?):\s*VALID/ || exists($sthash{$1}))
+        my $corename = '';
+        if($line =~ m/^(UD_.+?):)
+        {
+            $corename = $1;
+        }
+        if($line =~ m/^(UD_.+?):\s*VALID/ || exists($sthash{$corename}))
         {
             $valid{$1} = 1;
         }
