@@ -31,7 +31,7 @@ function copy_data_repo
     rm -rf $dstdir/$1
     cp -r $1 $dstdir
     # Erase files that should not be released (.gitignore, .git, not-to-release).
-    rm -rf $dstdir/$1/.git* $dstdir/$1/not-to-release
+    rm -rf $dstdir/$1/CONTRIBUTING.md $dstdir/$1/.git* $dstdir/$1/not-to-release
     # The training data in UD_Czech-PDT is split to four files because it is too large for Github.
     # However, it can be one file in our release, so join the files again in the release copy.
     if [ "$1" = "UD_Czech-PDT" ]; then
