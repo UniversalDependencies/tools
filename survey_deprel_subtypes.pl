@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Scans all UD treebanks for language-specific subtypes of dependency relations.
-# Copyright © 2016-2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016-2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -8,9 +8,32 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Getopt::Long;
 # If this script is called from the parent folder, how can it find the UD library?
 use lib 'tools';
 use udlib;
+my $tbklist;
+GetOptions
+(
+    'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
+);
+my %treebanks;
+if(defined($tbklist))
+{
+    open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
+    while(<TBKLIST>)
+    {
+        s/^\s+//;
+        s/\s+$//;
+        my @treebanks = split(/\s+/, $_);
+        foreach my $t (@treebanks)
+        {
+            $t =~ s:/$::;
+            $treebanks{$t}++;
+        }
+    }
+    close(TBKLIST);
+}
 # In debugging mode, only the first three treebanks will be scanned.
 my $debug = 0;
 if(scalar(@ARGV)>=1 && $ARGV[0] eq 'debug')
@@ -42,6 +65,11 @@ my %hash;
 my $n_treebanks = 0;
 foreach my $folder (@folders)
 {
+    # If we received the list of treebanks to be released, skip all other treebanks.
+    if(defined($tbklist) && !exists($treebanks{$folder}))
+    {
+        next;
+    }
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
     # Example: UD_Ancient_Greek-PROIEL
     my $language = '';
