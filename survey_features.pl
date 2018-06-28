@@ -10,10 +10,29 @@ binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
 my $datapath = '.';
+my $tbklist;
 GetOptions
 (
-    'datapath=s' => \$datapath # UD_* folders will be sought in this folder
+    'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
+    'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
 );
+my %treebanks;
+if(defined($tbklist))
+{
+    open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
+    while(<TBKLIST>)
+    {
+        s/^\s+//;
+        s/\s+$//;
+        my @treebanks = split(/\s+/, $_);
+        foreach my $t (@treebanks)
+        {
+            $t =~ s:/$::;
+            $treebanks{$t}++;
+        }
+    }
+    close(TBKLIST);
+}
 # If this script is called from the parent folder, how can it find the UD library?
 use lib 'tools';
 use udlib;
@@ -57,6 +76,11 @@ my %hittreebanks;
 my $n_treebanks = 0;
 foreach my $folder (@folders)
 {
+    # If we received the list of treebanks to be released, skip all other treebanks.
+    if(defined($tbklist) && !exists($treebanks{$folder}))
+    {
+        next;
+    }
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
     # Example: UD_Ancient_Greek-PROIEL
     my $language = '';
