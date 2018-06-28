@@ -50,7 +50,15 @@ my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 my $n = scalar(@folders);
 print STDERR ("Found $n UD folders in '$datapath'.\n");
-print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
+if(defined($tbklist))
+{
+    my $n = scalar(keys(%treebanks));
+    print STDERR ("We will only scan those listed in $tbklist (the list contains $n treebanks but we have not checked yet which of them exist in the folder).\n");
+}
+else
+{
+    print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
+}
 if($datapath eq '.')
 {
     print STDERR ("Use the --datapath option to scan a different folder with UD treebanks.\n");
