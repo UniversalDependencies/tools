@@ -610,16 +610,16 @@ sub get_validation_results
     UD_Thai-PUD UD_Turkish-IMST
     UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
     my @nstpresel = qw(
-    UD_Arabic-NYUAD UD_Arabic-PUD UD_Belarusian-HSE UD_Cantonese-HK
-    UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD UD_Coptic-Scriptorium
-    UD_Czech-CLTT UD_English-ParTUT UD_French-PUD UD_French-ParTUT
-    UD_German-PUD UD_Hindi-PUD UD_Indonesian-PUD UD_Italian-PUD
+    UD_Amharic-ATT UD_Arabic-NYUAD UD_Arabic-PUD UD_Belarusian-HSE
+    UD_Cantonese-HK UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD
+    UD_Coptic-Scriptorium UD_Czech-CLTT UD_English-ParTUT UD_French-PUD
+    UD_French-ParTUT UD_German-PUD UD_Hindi-PUD UD_Indonesian-PUD UD_Italian-PUD
     UD_Italian-ParTUT UD_Japanese-BCCWJ UD_Japanese-PUD UD_Komi_Zyrian-IKDP
     UD_Komi_Zyrian-Lattice UD_Korean-PUD UD_Lithuanian-HSE UD_Marathi-UFAL
     UD_Portuguese-GSD UD_Portuguese-PUD UD_Romanian-Nonstandard UD_Russian-GSD
     UD_Russian-PUD UD_Sanskrit-UFAL UD_Spanish-GSD UD_Spanish-PUD
     UD_Swedish_Sign_Language-SSLC UD_Tagalog-TRG UD_Tamil-TTB UD_Telugu-MTG
-    UD_Turkish-PUD UD_Warlpiri-UFAL
+    UD_Turkish-PUD UD_Warlpiri-UFAL UD_Yoruba-YTB
     );
     print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
     print("WARNING: As a temporary measure, treebanks that took part in the shared task are considered VALID even if their current development version is invalid.\n");
@@ -831,7 +831,7 @@ sub check_metadata
             '1.4' => ['Coptic-Scriptorium', 'Galician-TreeGal', 'Japanese-GSD', 'Sanskrit-UFAL', 'Slovak-SNK', 'Swedish_Sign_Language-SSLC', 'Ukrainian-IU', 'Uyghur-UDT', 'Vietnamese-VTB'],
             '2.0' => ['Arabic-NYUAD', 'Belarusian-HSE', 'English-ParTUT', 'French-FTB', 'French-ParTUT', 'French-Sequoia', 'Italian-ParTUT', 'Korean-GSD', 'Lithuanian-HSE', 'Norwegian-Nynorsk', 'Urdu-UDTB'],
             '2.1' => ['Afrikaans-AfriBooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL'],
-            '2.2' => ['Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Japanese-Modern', 'Korean-Kaist', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Thai-PUD']
+            '2.2' => ['Amhraic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
