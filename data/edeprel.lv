@@ -17,8 +17,10 @@ nmod:dat
 nmod:gar
 nmod:gen
 nmod:iepretim
-nmod:lejpus
+nmod:kopš
 nmod:kā
+nmod:lejpus
+nmod:labā
 nmod:loc
 nmod:līdz
 nmod:nekā
@@ -44,7 +46,6 @@ obl:aiz
 obl:ap
 obl:apkārt
 obl:ar
-obl:atbilstoši
 obl:augšpus
 obl:bez
 obl:blakus
@@ -74,7 +75,6 @@ obl:pirms
 obl:pret
 obl:pretim
 obl:pretī
-obl:priekša
 obl:priekšā
 obl:pār
 obl:pāri
