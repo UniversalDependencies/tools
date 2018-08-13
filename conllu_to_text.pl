@@ -18,7 +18,6 @@ GetOptions
 );
 my $chinese = $language =~ m/^(zh|ja)(_|$)/;
 
-my @sentence = ();
 my $text = ''; # from the text attribute of the sentence
 my $ftext = ''; # from the word forms of the tokens
 my $newpar = 0;
@@ -28,7 +27,6 @@ my $start = 1;
 my $mwtlast;
 while(<>)
 {
-    push(@sentence, $_);
     if(m/^\#\s*text\s*=\s*(.+)/)
     {
         $text = $1;
