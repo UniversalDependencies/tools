@@ -326,7 +326,8 @@ sub generate_markdown_treebank_overview
         $md .= "<b>ERROR:</b> Cannot read the README file: $!";
         return $md;
     }
-    $md .= "Language: [$language_name](../$filescan->{lcode}/overview/$filescan->{lcode}-hub.html) (code: `$filescan->{lcode}`)";
+    # Language-specific documentation, e.g. for Polish: http://universaldependencies.org/pl/index.html
+    $md .= "Language: [$language_name](/$filescan->{lcode}/index.html) (code: `$filescan->{lcode}`)";
     my $language_data = get_language_hash(); # we could supply path to the yaml file; but let the function try the default path now
     if(defined($language_data) && exists($language_data->{$language_name}{family}))
     {
@@ -340,7 +341,9 @@ sub generate_markdown_treebank_overview
     $md .= join(', ', map {my $x = $_; if($x =~ m/^(.+),\s*(.+)$/) {$x = "$2 $1"} $x} (split(/\s*;\s*/, $metadata->{Contributors})));
     $md .= ".\n\n";
     $md .= "Repository: [$folder](https://github.com/UniversalDependencies/$folder)<br />\n";
-    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code})\n\n";
+    ###!!! Since UD 2.2, the PML-TQ treebank id contains the release number ("22") but this library does not know the number of the latest release.
+    ###!!! For the moment we hardcode "22" here so that at least we get a link that is now working.
+    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code}22)\n\n";
     $md .= "License: $metadata->{License}";
     $md .= ". The underlying text is not included; the user must obtain it separately and then merge with the UD annotation using a script distributed with UD" if($metadata->{'Includes text'} eq 'no');
     $md .= "\n\n";
