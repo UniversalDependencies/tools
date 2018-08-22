@@ -1292,10 +1292,10 @@ sub get_detailed_statistics_feature
     my $n = $stats{features}{$feature};
     my $p = percent($n, $stats{nword});
     $page .= "$n tokens ($p) have a non-empty value of `$feature`.\n";
-    $n = scalar(keys($stats{fw}{$feature}));
+    $n = scalar(keys(%{$stats{fw}{$feature}}));
     $p = percent($n, scalar(@words));
     $page .= "$n types ($p) occur at least once with a non-empty value of `$feature`.\n";
-    $n = scalar(keys($stats{fl}{$feature}));
+    $n = scalar(keys(%{$stats{fl}{$feature}}));
     $p = percent($n, scalar(@lemmas));
     $page .= "$n lemmas ($p) occur at least once with a non-empty value of `$feature`.\n";
     # List part-of-speech tags with which this feature occurs.
