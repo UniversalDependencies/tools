@@ -312,6 +312,11 @@ sub read_readme
 sub generate_markdown_treebank_overview
 {
     my $folder = shift;
+    # We need to know the number of the latest release in order to generate the links to search engines.
+    my $release = shift;
+    $release = '2.2' if(!defined($release)); ###!!!
+    my $crelease = $release;
+    $crelease =~ s/\.//;
     my $treebank_name = $folder;
     $treebank_name =~ s/[-_]/ /g;
     my $language_name = $folder;
@@ -341,9 +346,7 @@ sub generate_markdown_treebank_overview
     $md .= join(', ', map {my $x = $_; if($x =~ m/^(.+),\s*(.+)$/) {$x = "$2 $1"} $x} (split(/\s*;\s*/, $metadata->{Contributors})));
     $md .= ".\n\n";
     $md .= "Repository: [$folder](https://github.com/UniversalDependencies/$folder)<br />\n";
-    ###!!! Since UD 2.2, the PML-TQ treebank id contains the release number ("22") but this library does not know the number of the latest release.
-    ###!!! For the moment we hardcode "22" here so that at least we get a link that is now working.
-    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code}22)\n\n";
+    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code}$crelease)\n\n";
     $md .= "License: $metadata->{License}";
     $md .= ". The underlying text is not included; the user must obtain it separately and then merge with the UD annotation using a script distributed with UD" if($metadata->{'Includes text'} eq 'no');
     $md .= "\n\n";
