@@ -346,7 +346,8 @@ sub generate_markdown_treebank_overview
     $md .= join(', ', map {my $x = $_; if($x =~ m/^(.+),\s*(.+)$/) {$x = "$2 $1"} $x} (split(/\s*;\s*/, $metadata->{Contributors})));
     $md .= ".\n\n";
     $md .= "Repository: [$folder](https://github.com/UniversalDependencies/$folder)<br />\n";
-    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code}$crelease)\n\n";
+    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code}$crelease)<br />\n";
+    $md .= "Download all treebanks: [UD $release](/#download)\n\n";
     $md .= "License: $metadata->{License}";
     $md .= ". The underlying text is not included; the user must obtain it separately and then merge with the UD annotation using a script distributed with UD" if($metadata->{'Includes text'} eq 'no');
     $md .= "\n\n";
