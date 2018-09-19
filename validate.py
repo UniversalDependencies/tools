@@ -13,6 +13,8 @@ import file_util
 import traceback
 
 # This is (still!) a Python 2 program.
+###!!! Unfortunately, Python 3 will complain about syntax errors in regular expressions
+###!!! before it arrives here. So we are not going to see this error message.
 if sys.version_info[0] >= 3:
     raise Exception("This is a Python 2 program. It will not run under Python 3+.")
 
