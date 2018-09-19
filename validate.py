@@ -12,6 +12,10 @@ import regex as re
 import file_util
 import traceback
 
+# This is (still!) a Python 2 program.
+if sys.version_info[0] >= 3:
+    raise Exception("This is a Python 2 program. It will not run under Python 3+.")
+
 try:
     import argparse
 except:
