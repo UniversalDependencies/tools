@@ -1,4 +1,4 @@
-AdvType=Degree
+AdvType=Deg
 AdvType=Loc
 AdvType=Man
 AdpType=Post
@@ -74,3 +74,5 @@ VerbForm=Inf
 VerbForm=Part
 VerbForm=Vnoun
 VerbType=Aux
+Derivation=GenAttr
+Clitic=Ka
