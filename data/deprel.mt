@@ -7,3 +7,4 @@ nmod:poss
 nsubj:pass
 obl:arg
 case:det
+obl:agent
