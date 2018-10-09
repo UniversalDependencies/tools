@@ -1,6 +1,8 @@
 acl:relcl
+aux:neg
+aux:part
 aux:pass
-nmod:poss
 flat:name
+nmod:poss
 nsubj:pass
 obl:arg
