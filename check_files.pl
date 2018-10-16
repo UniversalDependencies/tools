@@ -700,6 +700,7 @@ sub get_files
         $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
         $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
         $folder eq 'UD_English-ESL' && $_ eq 'merge.py' ||
+        $folder eq 'UD_Hindi_English-HIENCS' && $_ =~ m/^(merge|crawl_tweets\.py)$/ ||
         $folder eq 'UD_Japanese-KTC' && $_ =~ m/^merge/ ||
         $folder eq 'UD_Japanese-BCCWJ' && $_ =~ m/^merge/
     )}
