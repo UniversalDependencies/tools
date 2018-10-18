@@ -13,3 +13,6 @@ acl:appos
 nmod:appos
 advcl:appos
 advmod:appos
+nmod:advmod
+amod:advmod
+advcl:arg
