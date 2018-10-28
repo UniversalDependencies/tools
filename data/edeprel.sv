@@ -48,6 +48,7 @@ advcl:förrän
 advcl:förutsatt_att
 advcl:hos
 advcl:i
+advcl:if
 advcl:i_de_fall
 advcl:i_samband_med
 advcl:i_stället_för
@@ -87,6 +88,7 @@ advcl:även_om
 advcl:över
 aux:pass
 compound:prt
+conj:and
 conj:el
 conj:eller
 conj:fast
@@ -99,6 +101,7 @@ conj:respektive
 conj:samt
 conj:som
 conj:sym
+conj:så
 conj:såväl_som
 conj:ty
 conj:utan
@@ -149,6 +152,7 @@ nmod:med_hänsyn_till
 nmod:med_sikte_på
 nmod:mellan
 nmod:mot
+nmod:nära
 nmod:när_det_gällde
 nmod:när_det_gäller
 nmod:oavsett
@@ -277,6 +281,7 @@ obl:på_grund_av
 obl:på_grundval_av
 obl:på_tal_om
 obl:på_tredje
+obl:runt
 obl:runtomkring
 obl:sedan
 obl:senast
