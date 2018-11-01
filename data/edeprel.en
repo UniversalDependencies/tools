@@ -32,11 +32,13 @@ acl:whether
 acl:with
 advcl:about
 advcl:after
+advcl:against
 advcl:although
 advcl:altough
 advcl:as
-advcl:as_in
 advcl:ask
+advcl:as_in
+advcl:as_opposed_to
 advcl:as_to
 advcl:at
 advcl:bc
@@ -53,6 +55,7 @@ advcl:cause
 advcl:coz
 advcl:despite
 advcl:due_to
+advcl:during
 advcl:except
 advcl:for
 advcl:from
@@ -60,12 +63,13 @@ advcl:give
 advcl:if
 advcl:ig
 advcl:in
-advcl:in_case
-advcl:in_order
 advcl:inside
 advcl:instead_of
-advcl:in_that
 advcl:into
+advcl:in_case
+advcl:in_order
+advcl:in_order_to
+advcl:in_that
 advcl:it
 advcl:lest
 advcl:like
@@ -162,12 +166,12 @@ nmod:among
 nmod:amongst
 nmod:around
 nmod:as
+nmod:astride
 nmod:as_for
 nmod:as_in
 nmod:as_opposed_to
 nmod:as_oppose_to
 nmod:as_to
-nmod:astride
 nmod:at
 nmod:because_of
 nmod:before
@@ -202,6 +206,7 @@ nmod:including
 nmod:inside
 nmod:instead_of
 nmod:into
+nmod:is
 nmod:like
 nmod:near
 nmod:npmod
@@ -240,6 +245,7 @@ nmod:under
 nmod:until
 nmod:up
 nmod:upon
+nmod:up_to
 nmod:versus
 nmod:via
 nmod:vs
@@ -261,6 +267,7 @@ obl:after
 obl:against
 obl:aground
 obl:along
+obl:alongside
 obl:amid
 obl:amidst
 obl:among
@@ -268,8 +275,9 @@ obl:amongst
 obl:and
 obl:around
 obl:as
-obl:as_for
 obl:aside
+obl:as_far_as
+obl:as_for
 obl:as_of
 obl:as_opposed_to
 obl:as_to
@@ -288,8 +296,8 @@ obl:by
 obl:circa
 obl:concerning
 obl:despite
-obl:do_to
 obl:down
+obl:do_to
 obl:due
 obl:due_to
 obl:during
@@ -303,13 +311,14 @@ obl:given
 obl:hours
 obl:hundreds
 obl:in
-obl:in_between
-obl:in_case_of
 obl:include
 obl:including
 obl:inside
 obl:instead_of
 obl:into
+obl:in_between
+obl:in_case_of
+obl:is
 obl:less
 obl:lik
 obl:like
@@ -320,6 +329,7 @@ obl:of
 obl:off
 obl:on
 obl:onto
+obl:opposite
 obl:out
 obl:outside
 obl:over
@@ -332,6 +342,7 @@ obl:rather_than
 obl:re
 obl:regard
 obl:regarding
+obl:regardless
 obl:round
 obl:s
 obl:side
@@ -351,6 +362,7 @@ obl:to
 obl:toward
 obl:towards
 obl:under
+obl:underneath
 obl:unlike
 obl:until
 obl:unto
@@ -359,6 +371,7 @@ obl:upon
 obl:up_to
 obl:via
 obl:w
+obl:whilst
 obl:with
 obl:within
 obl:without
