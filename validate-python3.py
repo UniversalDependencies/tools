@@ -790,18 +790,18 @@ if __name__=="__main__":
         known_sent_ids=set()
         open_files=[]
         if args.input==[]:
-            args.input.append("-")
+            args.input.append('-')
         for fname in args.input:
-            if fname=="-":
+            if fname=='-':
                 # Set PYTHONIOENCODING=utf-8 before starting Python. See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
                 # Otherwise ANSI will be read in Windows and locale-dependent encoding will be used elsewhere.
                 open_files.append(sys.stdin)
             else:
-                open_files.append(io.open(fname, 'r', encoding="utf-8"))
+                open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for curr_fname,inp in zip(args.input,open_files):
             validate(inp,out,args,tagsets,known_sent_ids)
     except:
-        warn(u"Exception caught!",u"Format")
+        warn('Exception caught!', 'Format')
         #traceback.print_exc() #traceback can contain e.g. "<module>" which breaks validation.html
         print(escape(traceback.format_exc()))
 
@@ -811,11 +811,11 @@ if __name__=="__main__":
         sys.exit(0)
     else:
         if not args.quiet:
-            print("*** FAILED *** with %d errors"%sum(v for k,v in error_counter.iteritems()), file=sys.stderr)
+            print('*** FAILED *** with %d errors'%sum(v for k,v in error_counter.iteritems()), file=sys.stderr)
             for k,v in sorted(error_counter.items()):
-                print(k+ "errors:"+ v, file=sys.stderr)
+                print(k+'errors:'+v, file=sys.stderr)
         for f_name in sorted(warn_on_missing_files):
-            filepath = os.path.join(THISDIR,"data",f_name+"."+args.lang)
+            filepath = os.path.join(THISDIR, 'data', f_name+'.'+args.lang)
             if not os.path.exists(filepath):
-                print("The language-specific file %s does not exist."%filepath, file=sys.stderr)
+                print('The language-specific file %s does not exist.'%filepath, file=sys.stderr)
         sys.exit(1)
