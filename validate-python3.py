@@ -23,6 +23,10 @@ ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 TOKENSWSPACE=MISC+1 #one extra constant
 
+# Two global variables:
+curr_line=0 # Current line in the input file
+sentence_line=0 # The line in the input file on which the current sentence starts
+
 error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 def warn(msg,error_type,lineno=True):
@@ -50,11 +54,32 @@ def warn(msg,error_type,lineno=True):
             else:
                 print(("[%sTree number %d on line %d]: %s"%(fn,tree_counter,sentence_line,msg)).encode(args.err_enc), file=sys.stderr)
 
+###### Support functions
 
-#Two global variables:
-curr_line=0 # Current line in the input file
-sentence_line=0 # The line in the input file on which the current sentence starts
-def trees(inp,tag_sets,args):
+def is_whitespace(line):
+    return re.match(r"^\s+$", line)
+
+def is_word(cols):
+    return re.match(r"^[1-9][0-9]*$", cols[ID])
+
+def is_multiword_token(cols):
+    return re.match(r"^[0-9]+-[0-9]+$", cols[ID])
+
+def is_empty_node(cols):
+    return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
+
+def parse_empty_node_id(cols):
+    m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
+    assert m, 'parse_empty_node_id with non-empty node'
+    return m.groups()
+
+
+
+#==============================================================================
+# Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
+#==============================================================================
+
+def trees(inp, tag_sets, args):
     """
     `inp` a file-like object yielding lines as unicode
     `tag_sets` and `args` are needed for choosing the tests
@@ -94,32 +119,69 @@ def trees(inp,tag_sets,args):
             if len(cols)!=COLCOUNT:
                 warn('The line has %d columns but %d are expected.'%(len(cols), COLCOUNT), 'Format')
             lines.append(cols)
-            validate_cols(cols,tag_sets,args)
+            validate_cols_level1(cols)
+            validate_cols(cols,tag_sets,args) ###!!! This should be done only if higher levels are selected!
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             warn("Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line), 'Format')
     else: # end of file
         if comments or lines: # These should have been yielded on an empty line!
             warn('Missing empty line after the last tree.', 'Format')
             yield comments, lines
+##### Tests applicable to the whole tree
 
-###### Support functions
+interval_re=re.compile('^([0-9]+)-([0-9]+)$',re.U)
+def validate_ID_sequence(tree):
+    """
+    Validates that the ID sequence is correctly formed.
+    """
+    words=[]
+    tokens=[]
+    current_word_id, next_empty_id = 0, 1
+    for cols in tree:
+        if not is_empty_node(cols):
+            next_empty_id = 1    # reset sequence
+        if is_word(cols):
+            t_id=int(cols[ID])
+            current_word_id = t_id
+            words.append(t_id)
+            # Not covered by the previous interval?
+            if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
+                tokens.append((t_id,t_id)) # nope - let's make a default interval for it
+        elif is_multiword_token(cols):
+            match=interval_re.match(cols[ID]) # Check the interval against the regex
+            if not match:
+                warn("Spurious token interval definition: '%s'."%cols[ID], 'Format', lineno=False)
+                continue
+            beg,end=int(match.group(1)),int(match.group(2))
+            if not ((not words and beg == 1) or (words and beg == words[-1]+1)):
+                warn('Multiword range not before its first word', 'Format')
+                continue
+            tokens.append((beg,end))
+        elif is_empty_node(cols):
+            word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
+            if word_id != current_word_id or empty_id != next_empty_id:
+                warn('Empty node id %s, expected %d.%d' %
+                     (cols[ID], current_word_id, next_empty_id), 'Format')
+            next_empty_id += 1
+    # Now let's do some basic sanity checks on the sequences
+    wrdstrseq = ','.join(str(x) for x in words)
+    expstrseq = ','.join(str(x) for x in range(1, len(words)+1)) # Words should form a sequence 1,2,...
+    if wrdstrseq != expstrseq:
+        warn("Words do not form a sequence. Got '%s'. Expected '%s'."%(wrdstrseq, expstrseq), 'Format', lineno=False)
+    # Check elementary sanity of word intervals
+    for (b,e) in tokens:
+        if e<b: # end before beginning
+            warn('Spurious token interval %d-%d'%(b,e), 'Format')
+            continue
+        if b<1 or e>len(words): # out of range
+            warn('Spurious token interval %d-%d (out of range)'%(b,e), 'Format')
+            continue
 
-def is_whitespace(line):
-    return re.match(r"^\s+$", line)
 
-def is_word(cols):
-    return re.match(r"^[1-9][0-9]*$", cols[ID])
 
-def is_multiword_token(cols):
-    return re.match(r"^[0-9]+-[0-9]+$", cols[ID])
-
-def is_empty_node(cols):
-    return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
-
-def parse_empty_node_id(cols):
-    m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
-    assert m, 'parse_empty_node_id with non-empty node'
-    return m.groups()
+#==============================================================================
+# Level 2 tests.
+#==============================================================================
 
 ###### Metadata tests #########
 
@@ -202,6 +264,40 @@ def validate_text_meta(comments,tree):
 
 ###### Tests applicable to a single row indpendently of the others
 
+whitespace_re=re.compile('.*\s',re.U)
+whitespace2_re=re.compile('.*\s\s', re.U)
+def validate_cols_level1(cols):
+    """
+    Tests that can run on a single line and pertain only to the CoNLL-U file
+    format, not to predefined sets of UD tags.
+    """
+    # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
+    for col_idx in range(MISC+1):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+        # Must never be empty
+        if not cols[col_idx]:
+            warn('Empty value in column %s'%(COLNAMES[col_idx]), 'Format')
+        else:
+            # Must never have leading/trailing whitespace
+            if cols[col_idx][0].isspace():
+                warn('Initial whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+            if cols[col_idx][-1].isspace():
+                warn('Trailing whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+            # Must never contain two consecutive whitespace characters
+            if whitespace2_re.match(cols[col_idx]):
+                warn('Two or more consecutive whitespace characters not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+    # These columns must not have whitespace
+    for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+        if whitespace_re.match(cols[col_idx]):
+            warn("White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx], cols[col_idx]), 'Format')
+    # Check for the format of the ID value. (ID must not be empty.)
+    if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
+        warn("Unexpected ID format '%s'" % cols[ID], 'Format')
+    ### tree-level: ID sequence
+
 def validate_cols(cols,tag_sets,args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
@@ -216,8 +312,7 @@ def validate_cols(cols,tag_sets,args):
         validate_left_to_right_relations(cols)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
-    else:
-        warn(u"Unexpected ID format %s" % cols[ID], u"Format")
+    # else do nothing; we have already reported wrong ID format at level 1
 
     if is_word(cols):
         validate_deprels(cols,tag_sets)
@@ -228,47 +323,25 @@ def validate_cols(cols,tag_sets,args):
         # - DEPS are connected and non-acyclic
         # (more, what?)
 
-whitespace_re=re.compile('.*\s',re.U)
 def validate_whitespace(cols,tag_sets):
     """
     Checks a single line for disallowed whitespace.
+    Here we assume that all language-independent whitespace-related tests have
+    already been done in validate_cols_level1(), so we only check for words
+    with spaces that are explicitly allowed in a given language.
     """
-    for col_idx in range(MISC+1):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-
-        #Must never be empty
-        if not cols[col_idx]:
-            warn(u"Empty value in column %s"%(COLNAMES[col_idx]),u"Format")
-        else:
-            #Must never have initial/trailing whitespace
-            if cols[col_idx][0].isspace():
-                warn(u"Initial whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
-            if cols[col_idx][-1].isspace():
-                warn(u"Trailing whitespace not allowed in column %s"%(COLNAMES[col_idx]),u"Format")
-    ## These columns must not have whitespace
-    for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-
-        if whitespace_re.match(cols[col_idx]):
-            warn(u"White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx],cols[col_idx]),u"Format")
-
-    ## Now yet check word and lemma against the lists
     for col_idx in (FORM,LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
-
         if whitespace_re.match(cols[col_idx]) is not None:
-            #Whitespace found - does it pass?
+            # Whitespace found - does it pass?
             for regex in tag_sets[TOKENSWSPACE]:
                 match=regex.match(cols[col_idx])
                 if match and match.group(0)==cols[col_idx]:
-                    break #We have a full match from beginning to end
+                    break # We have a full match from beginning to end
             else:
-                warn_on_missing_files.add("tokens_w_space")
-                warn(u"'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.ud and data/tokens_w_space.LANG files)."%(cols[col_idx],COLNAMES[col_idx]),u"Format")
-
+                warn_on_missing_files.add('tokens_w_space')
+                warn("'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."%(cols[col_idx], COLNAMES[col_idx]), 'Format')
 
 def validate_token_empty_vals(cols):
     """
@@ -423,54 +496,6 @@ def validate_left_to_right_relations(cols):
 
 
 ##### Tests applicable to the whole tree
-
-interval_re=re.compile('^([0-9]+)-([0-9]+)$',re.U)
-def validate_ID_sequence(tree):
-    """
-    Validates that the ID sequence is correctly formed. Assumes word indexing.
-    """
-    words=[]
-    tokens=[]
-    current_word_id, next_empty_id = 0, 1
-    for cols in tree:
-        if not is_empty_node(cols):
-            next_empty_id = 1    # reset sequence
-        if is_word(cols):
-            t_id=int(cols[ID])
-            current_word_id = t_id
-            words.append(t_id)
-            #Not covered by the previous interval?
-            if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
-                tokens.append((t_id,t_id)) #nope - let's make a default interval for it
-        elif is_multiword_token(cols):
-            match=interval_re.match(cols[ID]) #Check the interval against the regex
-            if not match:
-                warn(u"Spurious token interval definition: '%s'."%cols[ID],u"Format",lineno=False)
-                continue
-            beg,end=int(match.group(1)),int(match.group(2))
-            if not ((not words and beg == 1) or (words and beg == words[-1]+1)):
-                warn(u"Multiword range not before its first word",u"Format")
-                continue
-            tokens.append((beg,end))
-        elif is_empty_node(cols):
-            word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
-            if word_id != current_word_id or empty_id != next_empty_id:
-                warn(u"Empty node id %s, expected %d.%d" %
-                     (cols[ID], current_word_id, next_empty_id), u"Format")
-            next_empty_id += 1
-    # Now let's do some basic sanity checks on the sequences
-    wrdstrseq = ','.join(str(x) for x in words)
-    expstrseq = ','.join(str(x) for x in range(1, len(words)+1)) # Words should form a sequence 1,2,...
-    if wrdstrseq != expstrseq:
-        warn("Words do not form a sequence. Got '%s'. Expected '%s'."%(wrdstrseq, expstrseq), 'Format', lineno=False)
-    #Check elementary sanity of word intervals
-    for (b,e) in tokens:
-        if e<b: #end before beginning
-            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
-            continue
-        if b<1 or e>len(words): #out of range
-            warn(u"Spurious token interval %d-%d"%(b,e),u"Format")
-            continue
 
 def subset_to_words(tree):
     """
