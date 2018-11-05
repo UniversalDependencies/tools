@@ -536,7 +536,6 @@ def validate_left_to_right_relations(cols):
         if ichild < iparent:
             warn(u"Violation of guidelines: relation %s must go left-to-right" % cols[DEPREL], u"Syntax")
 
-
 ##### Tests applicable to the whole tree
 
 def subset_to_words(tree):
@@ -566,29 +565,25 @@ def validate_ID_references(tree):
     """
     Validates that HEAD and DEPRELS reference existing IDs.
     """
-
     word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
-
     def valid_id(i):
         return i in ids or i == u'0'
-
     def valid_empty_head(cols):
         return cols[HEAD] == '_' and is_empty_node(cols)
-
     for cols in word_tree:
         if HEAD >= len(cols):
             return # this has been already reported in trees()
         if not (valid_id(cols[HEAD]) or valid_empty_head(cols)):
-            warn(u"Undefined ID in HEAD: %s" % cols[HEAD],u"Format")
+            warn('Undefined ID in HEAD: %s' % cols[HEAD], 'Format')
         try:
             deps = deps_list(cols)
         except ValueError:
-            warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Format")
+            warn("Failed to parse DEPS: '%s'" % cols[DEPS], 'Format')
             continue
         for head, deprel in deps:
             if not valid_id(head):
-                warn(u"Undefined ID in DEPS: %s" % head,u"Format")
+                warn("Undefined ID in DEPS: '%s'" % head, 'Format')
 
 def proj(node,s,deps,depth,max_depth):
     """
@@ -600,7 +595,7 @@ def proj(node,s,deps,depth,max_depth):
         return
     for dependent in deps.get(node,[]):
         if dependent in s:
-            warn(u"Loop from %s" % dependent,u"Syntax")
+            warn('Loop from %s' % dependent, 'Syntax')
             continue
         s.add(dependent)
         proj(dependent,s,deps,depth+1,max_depth)
@@ -612,12 +607,12 @@ def validate_root(tree):
     for cols in subset_to_words_and_empty_nodes(tree):
         if HEAD >= len(cols):
             continue # this has been already reported in trees()
-        if cols[HEAD] == u'0':
-            if cols[DEPREL] != u'root':
-                warn(u'DEPREL must be "root" if HEAD is 0',u"Syntax")
+        if cols[HEAD] == '0':
+            if cols[DEPREL] != 'root':
+                warn("DEPREL must be 'root' if HEAD is 0", 'Syntax')
         else:
-            if cols[DEPREL] == u'root':
-                warn(u'DEPREL can only be "root" if HEAD is 0',u"Syntax")
+            if cols[DEPREL] == 'root':
+                warn("DEPREL cannot be 'root' if HEAD is not 0", 'Syntax')
 
 def validate_deps(tree):
     """
@@ -631,18 +626,17 @@ def validate_deps(tree):
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
         except ValueError:
-            warn(u"Failed to parse DEPS: %s" % cols[DEPS],u"Format")
+            warn("Failed to parse DEPS: '%s'" % cols[DEPS], 'Format')
             return
         if heads != sorted(heads):
-            warn(u"DEPS not sorted by head index: %s" % cols[DEPS],u"Format")
-
+            warn("DEPS not sorted by head index: '%s'" % cols[DEPS], 'Format')
         try:
             id_ = float(cols[ID])
         except ValueError:
-            warn(u"Non-numeric ID: %s" % cols[ID],u"Format")
+            warn("Non-numeric ID: '%s'" % cols[ID], 'Format')
             return
         if id_ in heads:
-            warn(u"ID in DEPS for %s" % cols[ID],u"Format")
+            warn("Self-loop in DEPS for '%s'" % cols[ID], 'Format')
 
 def validate_tree(tree):
     """
@@ -655,31 +649,31 @@ def validate_tree(tree):
         if HEAD >= len(cols):
             continue # this has been already reported in trees()
         if cols[HEAD]==u"_":
-            warn(u"Empty head for word ID %s" % cols[ID], u"Format", lineno=False)
+            warn('Empty head for word ID %s' % cols[ID], 'Format', lineno=False)
             continue
         try:
             id_ = int(cols[ID])
         except ValueError:
-            warn(u"Non-integer ID: %s" % cols[ID], u"Format", lineno=False)
+            warn('Non-integer ID: %s' % cols[ID], 'Format', lineno=False)
             continue
         try:
             head = int(cols[HEAD])
         except ValueError:
-            warn(u"Non-integer head for word ID %s" % cols[ID], u"Format", lineno=False)
+            warn('Non-integer head for word ID %s' % cols[ID], 'Format', lineno=False)
             continue
         if head == id_:
-            warn(u"HEAD == ID for %s" % cols[ID], u"Format", lineno=False)
+            warn('HEAD == ID for %s' % cols[ID], 'Format', lineno=False)
             continue
         deps.setdefault(head, set()).add(id_)
     root_deps=set()
     proj(0,root_deps,deps,0,1)
     if len(root_deps)>1 and args.single_root:
-        warn(u"Multiple root words: %s"%list(root_deps), u"Syntax", lineno=False)
+        warn('Multiple root words: %s'%list(root_deps), 'Syntax', lineno=False)
     root_proj=set()
     proj(0,root_proj,deps,0,None)
-    unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
+    unreachable=set(range(1,len(word_tree)+1))-root_proj # all words minus those reachable from root
     if unreachable:
-        warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),u"Syntax",lineno=False)
+        warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
 
 def validate(inp,out,args,tag_sets,known_sent_ids):
     global tree_counter
@@ -687,19 +681,19 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
         tree_counter+=1
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
-        validate_ID_sequence(tree)
-        validate_token_ranges(tree)
+        validate_ID_sequence(tree) # level 1
+        validate_token_ranges(tree) # level 1
         if args.level > 1:
-            validate_ID_references(tree)
-            validate_root(tree)
-            validate_deps(tree)
-            validate_tree(tree)
-            validate_sent_id(comments,known_sent_ids,args.lang)
+            validate_ID_references(tree) # level 2
+            validate_root(tree) # level 2
+            validate_deps(tree) # level 2 and up
+            validate_tree(tree) # level 2
+            validate_sent_id(comments, known_sent_ids, args.lang) # level 2
             if args.check_tree_text:
-                validate_text_meta(comments,tree)
+                validate_text_meta(comments,tree) # level 2
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
-    validate_newlines(inp)
+    validate_newlines(inp) # level 1
 
 def load_file(f_name):
     res=set()
@@ -796,6 +790,9 @@ if __name__=="__main__":
     if args.level < 1:
         print('Option --level must not be less than 1; changing from %d to 1' % args.level, file=sys.stderr)
         args.level = 1
+    # No language-specific tests for levels 1-3
+    if args.level < 4:
+        args.lang = 'ud'
 
     if args.quiet:
         args.echo_input=False
