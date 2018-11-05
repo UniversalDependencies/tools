@@ -12,23 +12,18 @@ import logging
 import regex as re
 import file_util
 import traceback
-
-try:
-    import argparse
-except:
-    #we are on Python 2.6 or older
-    from compat import argparse
+import argparse
 
 
-THISDIR=os.path.dirname(os.path.abspath(__file__)) #The directory where this script resides
+THISDIR=os.path.dirname(os.path.abspath(__file__)) # The folder where this script resides.
 
-#Constants for the column indices
+# Constants for the column indices
 COLCOUNT=10
 ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
-COLNAMES=u"ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC".split(u",")
+COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 TOKENSWSPACE=MISC+1 #one extra constant
 
-error_counter={} #key: error type value: error count
+error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 def warn(msg,error_type,lineno=True):
     """
@@ -55,16 +50,10 @@ def warn(msg,error_type,lineno=True):
             else:
                 print(("[%sTree number %d on line %d]: %s"%(fn,tree_counter,sentence_line,msg)).encode(args.err_enc), file=sys.stderr)
 
-    ## I think this is no longer needed here
-    # if args.max_err>0:
-    #     for err_type in and error_counter[error_type]>=args.max_err:
-    #     print >> sys.stderr, (u"...aborting due to too many errors. You can use --max-err to adjust the threshold").encode(args.err_enc)
-    #     sys.exit(1)
-
 
 #Two global variables:
-curr_line=0 #Current line in the input file
-sentence_line=0 #The line in the input file on which the current sentence starts
+curr_line=0 # Current line in the input file
+sentence_line=0 # The line in the input file on which the current sentence starts
 def trees(inp,tag_sets,args):
     """
     `inp` a file-like object yielding lines as unicode
@@ -74,43 +63,43 @@ def trees(inp,tag_sets,args):
     sentence at a time from the input stream.
     """
     global curr_line, sentence_line
-    comments=[] #List of comment lines to go with the current sentence
-    lines=[] #List of token/word lines of the current sentence
+    comments=[] # List of comment lines to go with the current sentence
+    lines=[] # List of token/word lines of the current sentence
     for line_counter, line in enumerate(inp):
         curr_line=line_counter+1
         line=line.rstrip(u"\n")
         if is_whitespace(line):
-            warn(u"Spurious line that appears empty but is not; there are whitespace characters.",u"Format")
+            warn('Spurious line that appears empty but is not; there are whitespace characters.', 'Format')
             # We will pretend that the line terminates a sentence in order to avoid subsequent misleading error messages.
             if lines:
                 yield comments, lines
                 comments=[]
                 lines=[]
-        elif not line: #empty line
-            if lines: #Sentence done
+        elif not line: # empty line
+            if lines: # sentence done
                 yield comments, lines
                 comments=[]
                 lines=[]
             else:
-                warn(u"Spurious empty line.",u"Format")
-        elif line[0]==u"#":
+                warn('Spurious empty line. Only one empty line is expected after every sentence.', 'Format')
+        elif line[0]=='#':
             if not lines: # before sentence
                 comments.append(line)
             else:
-                warn(u"Spurious comment line.",u"Format")
+                warn('Spurious comment line. Comments are only allowed before a sentence.', 'Format')
         elif line[0].isdigit():
-            if not lines: #new sentence
+            if not lines: # new sentence
                 sentence_line=curr_line
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
-                warn(u"The line has %d columns, but %d are expected."%(len(cols),COLCOUNT),u"Format")
+                warn('The line has %d columns but %d are expected.'%(len(cols), COLCOUNT), 'Format')
             lines.append(cols)
             validate_cols(cols,tag_sets,args)
-        else: #A line which is not a comment, nor a token/word, nor empty. That's bad!
-            warn(u"Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line),u"Format")
-    else: #end of file
-        if comments or lines: #These should have been yielded on an empty line!
-            warn(u"Missing empty line after the last tree.",u"Format")
+        else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
+            warn("Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line), 'Format')
+    else: # end of file
+        if comments or lines: # These should have been yielded on an empty line!
+            warn('Missing empty line after the last tree.', 'Format')
             yield comments, lines
 
 ###### Support functions
