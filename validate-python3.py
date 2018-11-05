@@ -400,6 +400,43 @@ def validate_empty_node_empty_vals(cols):
         if cols[col_idx]!=u"_":
             warn("An empty node must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx], cols[col_idx]), 'Format')
 
+# Ll ... lowercase Unicode letters
+# Lm ... modifier Unicode letters (e.g., superscript h)
+# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+# M .... combining diacritical marks
+# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+edeprelpart_resrc = '[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*';
+# There must be always the universal part, consisting only of ASCII letters.
+# There can be up to three additional, colon-separated parts: subtype, preposition and case.
+# One of them, the preposition, may contain Unicode letters. We do not know which one it is
+# (only if there are all four parts, we know it is the third one).
+# ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
+edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
+edeprel_re = re.compile(edeprel_resrc, re.U)
+def validate_character_constraints(cols):
+    """
+    Checks general constraints on valid characters, e.g. that UPOS
+    only contains [A-Z].
+    """
+    if is_multiword_token(cols):
+        return
+    if UPOS >= len(cols):
+        return # this has been already reported in trees()
+    if not (re.match(r"^[A-Z]+$", cols[UPOS]) or
+            (is_empty_node(cols) and cols[UPOS] == u"_")):
+        warn('Invalid UPOS value %s' % cols[UPOS], 'Morpho')
+    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or
+            (is_empty_node(cols) and cols[DEPREL] == u"_")):
+        warn('Invalid DEPREL value %s' % cols[DEPREL], 'Syntax')
+    try:
+        deps = deps_list(cols)
+    except ValueError:
+        warn('Failed for parse DEPS: %s' % cols[DEPS], 'Syntax')
+        return
+    if any(deprel for head, deprel in deps_list(cols)
+           if not edeprel_re.match(deprel)):
+        warn('Invalid value in DEPS: %s' % cols[DEPS], 'Syntax')
+
 attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
 val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
 def validate_features(cols,tag_sets):
@@ -440,14 +477,14 @@ def validate_upos(cols,tag_sets):
     if UPOS >= len(cols):
         return # this has been already reported in trees()
     if tag_sets[UPOS] is not None and cols[UPOS] not in tag_sets[UPOS]:
-        warn(u"Unknown UPOS tag: %s"%cols[UPOS],u"Morpho")
+        warn('Unknown UPOS tag: %s'%cols[UPOS], 'Morpho')
 
 def validate_xpos(cols,tag_sets):
     if XPOS >= len(cols):
         return # this has been already reported in trees()
-    # XPOS is always None -> not checked atm
+    # We currently do not have any list of known XPOS tags, hence tag_sets[XPOS] is None.
     if tag_sets[XPOS] is not None and cols[XPOS] not in tag_sets[XPOS]:
-        warn(u"Unknown XPOS tag: %s"%cols[XPOS],u"Morpho")
+        warn('Unknown XPOS tag: %s'%cols[XPOS], 'Morpho')
 
 def validate_pos(cols,tag_sets):
     if not (is_empty_node(cols) and cols[UPOS] == '_'):
@@ -463,55 +500,17 @@ def validate_deprels(cols,tag_sets):
         return # this has been already reported in trees()
     if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
         warn_on_missing_files.add("deprel")
-        warn(u"Unknown UD DEPREL: %s"%cols[DEPREL],u"Syntax")
+        warn('Unknown UD DEPREL: %s'%cols[DEPREL], 'Syntax')
     if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
         for head_deprel in cols[DEPS].split(u"|"):
             try:
                 head,deprel=head_deprel.split(u":",1)
             except ValueError:
-                warn(u"Malformed head:deprel pair '%s'"%head_deprel,u"Syntax")
+                warn("Malformed head:deprel pair '%s'"%head_deprel, 'Syntax')
                 continue
             if deprel not in tag_sets[DEPS]:
                 warn_on_missing_files.add("edeprel")
-                warn(u"Unknown enhanced dependency relation '%s' in '%s'"%(deprel,head_deprel),u"Syntax")
-
-# Ll ... lowercase Unicode letters
-# Lm ... modifier Unicode letters (e.g., superscript h)
-# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
-# M .... combining diacritical marks
-# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
-edeprelpart_resrc = '[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*';
-# There must be always the universal part, consisting only of ASCII letters.
-# There can be up to three additional, colon-separated parts: subtype, preposition and case.
-# One of them, the preposition, may contain Unicode letters. We do not know which one it is
-# (only if there are all four parts, we know it is the third one).
-# ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
-edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
-edeprel_re = re.compile(edeprel_resrc, re.U)
-def validate_character_constraints(cols):
-    """
-    Checks general constraints on valid characters, e.g. that UPOS
-    only contains [A-Z].
-    """
-    if is_multiword_token(cols):
-        return
-    if UPOS >= len(cols):
-        return # this has been already reported in trees()
-
-    if not (re.match(r"^[A-Z]+$", cols[UPOS]) or
-            (is_empty_node(cols) and cols[UPOS] == u"_")):
-        warn("Invalid UPOS value %s" % cols[UPOS],u"Morpho")
-    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or
-            (is_empty_node(cols) and cols[DEPREL] == u"_")):
-        warn("Invalid DEPREL value %s" % cols[DEPREL],u"Syntax")
-    try:
-        deps = deps_list(cols)
-    except ValueError:
-        warn(u"Failed for parse DEPS: %s" % cols[DEPS],u"Syntax")
-        return
-    if any(deprel for head, deprel in deps_list(cols)
-           if not edeprel_re.match(deprel)):
-        warn("Invalid value in DEPS: %s" % cols[DEPS],u"Syntax")
+                warn("Unknown enhanced dependency relation '%s' in '%s'"%(deprel,head_deprel), 'Syntax')
 
 
 ##### Content-based tests (annotation guidelines)
