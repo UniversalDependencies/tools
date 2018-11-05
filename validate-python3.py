@@ -340,21 +340,20 @@ def validate_cols(cols,tag_sets,args):
     All tests that can run on a single line. Done as soon as the line is read,
     called from trees() if level>1.
     """
-    validate_whitespace(cols,tag_sets)
+    validate_whitespace(cols,tag_sets) # level 2
     if is_word(cols) or is_empty_node(cols):
-        validate_features(cols,tag_sets)
-        validate_pos(cols,tag_sets)
-        validate_character_constraints(cols)
-        validate_left_to_right_relations(cols)
+        validate_character_constraints(cols) # level 2
+        validate_features(cols,tag_sets) # level 2 and up (relevant code checks whether higher level is required)
+        validate_pos(cols,tag_sets) # level 2
+        validate_left_to_right_relations(cols) # level 3 (or 4?)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
     if is_word(cols):
-        validate_deprels(cols,tag_sets)
+        validate_deprels(cols, tag_sets) # level 2 and up
     elif is_empty_node(cols):
-        validate_empty_node_empty_vals(cols)
+        validate_empty_node_empty_vals(cols) # level 2
         # TODO check also the following:
-        # - ID references are sane and ID sequences valid
         # - DEPS are connected and non-acyclic
         # (more, what?)
 
@@ -440,13 +439,16 @@ def validate_character_constraints(cols):
 attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
 val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
 def validate_features(cols,tag_sets):
+    """
+    Checks general constraints on feature-value format. On level 3 and higher,
+    also checks that a feature-value pair is listed as approved.
+    """
     if FEATS >= len(cols):
         return # this has been already reported in trees()
     feats=cols[FEATS]
     if feats==u"_":
         return True
     feat_list=feats.split(u"|")
-    #the lower() thing is to be on the safe side, since all features must start with [A-Z0-9] anyway
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
         warn("Morphological features must be sorted: '%s'"%feats, 'Morpho')
     attr_set=set() # I'll gather the set of attributes here to check later than none is repeated
@@ -467,7 +469,9 @@ def validate_features(cols,tag_sets):
             for v in values:
                 if not val_re.match(v):
                     warn("Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f), 'Morpho')
-                if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
+                # Level 2 tests character properties and canonical order but not that the f-v pair is known.
+                # Level 3 also checks whether the feature value is on the list.
+                if args.level > 2 and tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
                     warn_on_missing_files.add("feat_val")
                     warn('Unknown attribute-value pair %s=%s'%(attr,v), 'Morpho')
     if len(attr_set)!=len(feat_list):
