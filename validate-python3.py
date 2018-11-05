@@ -177,6 +177,34 @@ def validate_ID_sequence(tree):
             warn('Spurious token interval %d-%d (out of range)'%(b,e), 'Format')
             continue
 
+def validate_token_ranges(tree):
+    """
+    Checks that the word ranges for multiword tokens are valid.
+    """
+    covered = set()
+    for cols in tree:
+        if not is_multiword_token(cols):
+            continue
+        m = interval_re.match(cols[ID])
+        if not m:
+            warn('Failed to parse ID %s' % cols[ID], 'Format')
+            continue
+        start, end = m.groups()
+        try:
+            start, end = int(start), int(end)
+        except ValueError:
+            assert False, 'internal error' # RE should assure that this works
+        if not start < end:
+            warn('Invalid range: %s' % cols[ID], 'Format')
+            continue
+        if covered & set(range(start, end+1)):
+            warn('Range overlaps with others: %s' % cols[ID], 'Format')
+        covered |= set(range(start, end+1))
+
+def validate_newlines(inp):
+    if inp.newlines and inp.newlines!='\n':
+        warn('Only the unix-style LF line terminator is allowed', 'Format')
+
 
 
 #==============================================================================
@@ -563,36 +591,6 @@ def proj(node,s,deps,depth,max_depth):
         s.add(dependent)
         proj(dependent,s,deps,depth+1,max_depth)
 
-def validate_token_ranges(tree):
-    """
-    Checks that the word ranges for multiword tokens are valid.
-    """
-
-    covered = set()
-
-    for cols in tree:
-        if not is_multiword_token(cols):
-            continue
-
-        m = interval_re.match(cols[ID])
-        if not m:
-            warn(u"Failed to parse ID %s" % cols[ID],u"Format")
-            continue
-
-        start, end = m.groups()
-        try:
-            start, end = int(start), int(end)
-        except ValueError:
-            assert False, 'internal error' # RE should assure that this works
-
-        if not start < end:
-            warn(u"Invalid range: %s" % cols[ID],u"Format")
-            continue
-
-        if covered & set(range(start, end+1)):
-            warn(u"Range overlaps with others: %s" % cols[ID],u"Format")
-        covered |= set(range(start, end+1))
-
 def validate_root(tree):
     """
     Validates that DEPREL is "root" iff HEAD is 0.
@@ -668,10 +666,6 @@ def validate_tree(tree):
     unreachable=set(range(1,len(word_tree)+1))-root_proj #all words minus those reachable from root
     if unreachable:
         warn(u"Non-tree structure. Words %s are not reachable from the root 0."%(u",".join(unicode(w) for w in sorted(unreachable))),u"Syntax",lineno=False)
-
-def validate_newlines(inp):
-    if inp.newlines and inp.newlines!='\n':
-        warn('Only the unix-style LF line terminator is allowed', 'Format')
 
 def validate(inp,out,args,tag_sets,known_sent_ids):
     global tree_counter
