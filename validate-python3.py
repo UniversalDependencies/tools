@@ -380,21 +380,25 @@ def validate_whitespace(cols,tag_sets):
 
 def validate_token_empty_vals(cols):
     """
-    Checks that a token only has _ empty values in all fields except MISC.
+    Checks that a multi-word token has _ empty values in all fields except MISC.
+    This is required by UD guidelines although it is not a problem in general,
+    therefore a level 2 test.
     """
     assert is_multiword_token(cols), 'internal error'
     for col_idx in range(LEMMA,MISC): #all columns in the LEMMA-DEPS range
         if cols[col_idx]!=u"_":
-            warn(u"A token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
+            warn("A multi-word token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx], cols[col_idx]), 'Format')
 
 def validate_empty_node_empty_vals(cols):
     """
-    Checks that an empty node only has _ empty values in HEAD and DEPREL.
+    Checks that an empty node has _ empty values in HEAD and DEPREL. This is
+    required by UD guidelines but not necessarily by CoNLL-U, therefore
+    a level 2 test.
     """
     assert is_empty_node(cols), 'internal error'
     for col_idx in (HEAD, DEPREL):
         if cols[col_idx]!=u"_":
-            warn(u"An empty node must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx],cols[col_idx]),u"Format")
+            warn("An empty node must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx], cols[col_idx]), 'Format')
 
 attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
 val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
@@ -407,30 +411,30 @@ def validate_features(cols,tag_sets):
     feat_list=feats.split(u"|")
     #the lower() thing is to be on the safe side, since all features must start with [A-Z0-9] anyway
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
-        warn(u"Morphological features must be sorted: '%s'"%feats,u"Morpho")
-    attr_set=set() #I'll gather the set of attributes here to check later than none is repeated
+        warn("Morphological features must be sorted: '%s'"%feats, 'Morpho')
+    attr_set=set() # I'll gather the set of attributes here to check later than none is repeated
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
-            warn(u"Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f,u"Morpho")
+            warn("Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f, 'Morpho')
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
-            #Check that the values are sorted as well
+            # Check that the values are sorted as well
             attr=match.group(1)
             attr_set.add(attr)
             values=match.group(2).split(u",")
             if len(values)!=len(set(values)):
-                warn(u"Repeated feature values are disallowed: %s"%feats,u"Morpho")
+                warn("Repeated feature values are disallowed: %s"%feats, 'Morpho')
             if [v.lower() for v in values]!=sorted(v.lower() for v in values):
-                warn(u"If an attribute has multiple values, these must be sorted as well: '%s'"%f,u"Morpho")
+                warn("If an attribute has multiple values, these must be sorted as well: '%s'"%f, 'Morpho')
             for v in values:
                 if not val_re.match(v):
-                    warn(u"Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f),u"Morpho")
+                    warn("Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f), 'Morpho')
                 if tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
                     warn_on_missing_files.add("feat_val")
-                    warn(u"Unknown attribute-value pair %s=%s"%(attr,v),u"Morpho")
+                    warn('Unknown attribute-value pair %s=%s'%(attr,v), 'Morpho')
     if len(attr_set)!=len(feat_list):
-        warn(u"Repeated features are disallowed: %s"%feats, u"Morpho")
+        warn('Repeated features are disallowed: %s'%feats, 'Morpho')
 
 def validate_upos(cols,tag_sets):
     if UPOS >= len(cols):
