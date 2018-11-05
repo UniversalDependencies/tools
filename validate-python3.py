@@ -120,13 +120,50 @@ def trees(inp, tag_sets, args):
                 warn('The line has %d columns but %d are expected.'%(len(cols), COLCOUNT), 'Format')
             lines.append(cols)
             validate_cols_level1(cols)
-            validate_cols(cols,tag_sets,args) ###!!! This should be done only if higher levels are selected!
+            if args.level > 1:
+                validate_cols(cols,tag_sets,args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             warn("Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line), 'Format')
     else: # end of file
         if comments or lines: # These should have been yielded on an empty line!
             warn('Missing empty line after the last tree.', 'Format')
             yield comments, lines
+
+###### Tests applicable to a single row indpendently of the others
+
+whitespace_re=re.compile('.*\s',re.U)
+whitespace2_re=re.compile('.*\s\s', re.U)
+def validate_cols_level1(cols):
+    """
+    Tests that can run on a single line and pertain only to the CoNLL-U file
+    format, not to predefined sets of UD tags.
+    """
+    # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
+    for col_idx in range(MISC+1):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+        # Must never be empty
+        if not cols[col_idx]:
+            warn('Empty value in column %s'%(COLNAMES[col_idx]), 'Format')
+        else:
+            # Must never have leading/trailing whitespace
+            if cols[col_idx][0].isspace():
+                warn('Initial whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+            if cols[col_idx][-1].isspace():
+                warn('Trailing whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+            # Must never contain two consecutive whitespace characters
+            if whitespace2_re.match(cols[col_idx]):
+                warn('Two or more consecutive whitespace characters not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+    # These columns must not have whitespace
+    for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+        if whitespace_re.match(cols[col_idx]):
+            warn("White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx], cols[col_idx]), 'Format')
+    # Check for the format of the ID value. (ID must not be empty.)
+    if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
+        warn("Unexpected ID format '%s'" % cols[ID], 'Format')
+
 ##### Tests applicable to the whole tree
 
 interval_re=re.compile('^([0-9]+)-([0-9]+)$',re.U)
@@ -221,18 +258,20 @@ def validate_sent_id(comments,known_ids,lcode):
         if match:
             matched.append(match)
         else:
-            if c.startswith(u"# sent_id") or c.startswith(u"#sent_id"):
-                warn(u"Spurious sent_id line: '%s' Should look like '# sent_id = xxxxxx' where xxxx is not whitespace. Forward slash reserved for special purposes." %c,u"Metadata")
+            if c.startswith('# sent_id') or c.startswith('#sent_id'):
+                warn("Spurious sent_id line: '%s' Should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes." %c, 'Metadata')
     if not matched:
-        warn(u"Missing the sent_id attribute.",u"Metadata")
+        warn('Missing the sent_id attribute.', 'Metadata')
     elif len(matched)>1:
-        warn(u"Multiple sent_id attribute.",u"Metadata")
+        warn('Multiple sent_id attributes.', 'Metadata')
     else:
+        # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
+        # For that to happen, all three files should be tested at once.
         sid=matched[0].group(1)
         if sid in known_ids:
-            warn(u"Non-unique sent_id the sent_id attribute: "+sid,u"Metadata")
+            warn('Non-unique sent_id the sent_id attribute: '+sid, 'Metadata')
         if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud" and lcode!=u"shopen"):
-            warn(u"The forward slash is reserved for special use in parallel treebanks: "+sid,u"Metadata")
+            warn('The forward slash is reserved for special use in parallel treebanks: '+sid, 'Metadata')
         known_ids.add(sid)
 
 def shorten(string):
@@ -246,93 +285,62 @@ def validate_text_meta(comments,tree):
         if match:
             matched.append(match)
     if not matched:
-        warn(u"Missing the text attribute.",u"Metadata")
+        warn('Missing the text attribute.', 'Metadata')
     elif len(matched)>1:
-        warn(u"Multiple text attributes.",u"Metadata")
+        warn('Multiple text attributes.', 'Metadata')
     else:
         stext=matched[0].group(1)
         if stext[-1].isspace():
-            warn(u"The text attribute must not end with a whitespace",u"Metadata")
-        #let's try to validate the text then... :)
+            warn('The text attribute must not end with whitespace', 'Metadata')
+        # Validate the text against the SpaceAfter attribute in MISC.
         skip_words=set()
+        mismatch_reported=0 # do not report multiple mismatches in the same sentence; they usually have the same cause
         for cols in tree:
-            if u"NoSpaceAfter=Yes" in cols[MISC]: #I leave this without the split("|") to catch all
-                warn(u"NoSpaceAfter=Yes should be replaced with SpaceAfter=No",u"Metadata")
-            if u"." in cols[ID]: #empty word
-                if u"SpaceAfter=No" in cols[MISC]: #I leave this without the spliit("|") to catch all
-                    warn(u"There should not be a SpaceAfter=No entry for empty words",u"Metadata")
+            if u"NoSpaceAfter=Yes" in cols[MISC]: # I leave this without the split("|") to catch all
+                warn('NoSpaceAfter=Yes should be replaced with SpaceAfter=No', 'Metadata')
+            if '.' in cols[ID]: # empty word
+                if u"SpaceAfter=No" in cols[MISC]: # I leave this without the split("|") to catch all
+                    warn('There should not be a SpaceAfter=No entry for empty words', 'Metadata')
                 continue
-            elif u"-" in cols[ID]: #we have a token
-                beg,end=cols[ID].split(u"-")
+            elif '-' in cols[ID]: # multi-word token
+                beg,end=cols[ID].split('-')
                 try:
                     begi,endi = int(beg),int(end)
                 except ValueError as e:
-                    warn(u"Non-integer range %s-%s (%s)"%(beg,end,e),u"Format")
+                    warn('Non-integer range %s-%s (%s)'%(beg,end,e), 'Format')
                     begi,endi=1,0
-                for i in range(begi,endi+1): #if we see a token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
-                    skip_words.add(unicode(i))
+                # If we see a MWtoken, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
+                for i in range(begi, endi+1):
+                    skip_words.add(str(i))
             elif cols[ID] in skip_words:
                 if u"SpaceAfter=No" in cols[MISC]:
-                    warn(u"There should not be a SpaceAfter=No entry for words which are a part of a token",u"Metadata")
+                    warn('There should not be a SpaceAfter=No entry for words which are a part of a token', 'Metadata')
                 continue
             else:
-                #err, I guess we have nothing to do here. :)
+                # Err, I guess we have nothing to do here. :)
                 pass
-            #So now we have either a token or a word which is also a token in its entirety
+            # So now we have either a MWtoken or a word which is also a token in its entirety
             if not stext.startswith(cols[FORM]):
-                warn(u"Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'"%(cols[ID],cols[FORM],stext[:len(cols[FORM])+20]),u"Metadata",False)
+                if not mismatch_reported:
+                    warn("Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" %(cols[ID], cols[FORM], stext[:len(cols[FORM])+20]), 'Metadata', False)
+                    mismatch_reported=1
             else:
-                stext=stext[len(cols[FORM]):] #eat the form
+                stext=stext[len(cols[FORM]):] # eat the form
                 if u"SpaceAfter=No" not in cols[MISC].split("|"):
                     if args.check_space_after and (stext) and not stext[0].isspace():
-                        warn(u"SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'"%(cols[ID],shorten(cols[FORM]+stext)),u"Metadata")
+                        warn("SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'" %(cols[ID], shorten(cols[FORM]+stext)), 'Metadata')
                     stext=stext.lstrip()
         if stext:
-            warn(u"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext,u"Metadata")
+            warn("Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext, 'Metadata')
 
 ###### Tests applicable to a single row indpendently of the others
-
-whitespace_re=re.compile('.*\s',re.U)
-whitespace2_re=re.compile('.*\s\s', re.U)
-def validate_cols_level1(cols):
-    """
-    Tests that can run on a single line and pertain only to the CoNLL-U file
-    format, not to predefined sets of UD tags.
-    """
-    # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
-    for col_idx in range(MISC+1):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        # Must never be empty
-        if not cols[col_idx]:
-            warn('Empty value in column %s'%(COLNAMES[col_idx]), 'Format')
-        else:
-            # Must never have leading/trailing whitespace
-            if cols[col_idx][0].isspace():
-                warn('Initial whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
-            if cols[col_idx][-1].isspace():
-                warn('Trailing whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
-            # Must never contain two consecutive whitespace characters
-            if whitespace2_re.match(cols[col_idx]):
-                warn('Two or more consecutive whitespace characters not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
-    # These columns must not have whitespace
-    for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]):
-            warn("White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx], cols[col_idx]), 'Format')
-    # Check for the format of the ID value. (ID must not be empty.)
-    if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
-        warn("Unexpected ID format '%s'" % cols[ID], 'Format')
-    ### tree-level: ID sequence
 
 def validate_cols(cols,tag_sets,args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
-    called from trees()
+    called from trees() if level>1.
     """
     validate_whitespace(cols,tag_sets)
-
     if is_word(cols) or is_empty_node(cols):
         validate_features(cols,tag_sets)
         validate_pos(cols,tag_sets)
@@ -341,7 +349,6 @@ def validate_cols(cols,tag_sets,args):
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
-
     if is_word(cols):
         validate_deprels(cols,tag_sets)
     elif is_empty_node(cols):
@@ -674,14 +681,15 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
         validate_ID_sequence(tree)
-        validate_ID_references(tree)
         validate_token_ranges(tree)
-        validate_root(tree)
-        validate_deps(tree)
-        validate_tree(tree)
-        validate_sent_id(comments,known_sent_ids,args.lang)
-        if args.check_tree_text:
-            validate_text_meta(comments,tree)
+        if args.level > 1:
+            validate_ID_references(tree)
+            validate_root(tree)
+            validate_deps(tree)
+            validate_tree(tree)
+            validate_sent_id(comments,known_sent_ids,args.lang)
+            if args.check_tree_text:
+                validate_text_meta(comments,tree)
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
     validate_newlines(inp)
@@ -766,6 +774,7 @@ if __name__=="__main__":
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
+    tree_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: CoNLL-U backbone. Level 2: UD format. Level 3: UD contents.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
@@ -775,6 +784,11 @@ if __name__=="__main__":
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} #Incremented by warn()  {key: error type value: its count}
     tree_counter=0
+
+    # Level of validation
+    if args.level < 1:
+        print('Option --level must not be less than 1; changing from %d to 1' % args.level, file=sys.stderr)
+        args.level = 1
 
     if args.quiet:
         args.echo_input=False
