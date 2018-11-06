@@ -741,7 +741,7 @@ def load_file(f_name):
     with io.open(f_name, 'r', encoding='utf-8') as f:
         for line in f:
             line=line.strip()
-            if not line or line.startswith(u"#"):
+            if not line or line.startswith('#'):
                 continue
             res.add(line)
     return res
@@ -773,7 +773,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
                     # restricts enhanced dependencies.
                     if not edeprel_re.match(v):
-                        warn(u"Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations."%v,u"Syntax",lineno=False)
+                        warn("Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations."%v, 'Syntax', lineno=False)
                         continue
                 elif validate_langspec:
                     # We are reading the list of language-specific dependency relations in the basic representation
@@ -781,23 +781,19 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
                     # enhanced dependencies, which should be listed in a separate file.)
                     if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
-                        warn(u"Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."%v,u"Syntax",lineno=False)
+                        warn("Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."%v, 'Syntax', lineno=False)
                         continue
                 if validate_langspec or validate_enhanced:
                     try:
-                        parts=v.split(u":")
+                        parts=v.split(':')
                         if parts[0] not in res:
-                            warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
+                            warn("Spurious language-specific relation '%s' - not an extension of any UD relation."%v, 'Syntax', lineno=False)
                             continue
                     except:
-                        warn(u"Spurious language-specific relation '%s' - not an extension of any UD relation."%v,u"Syntax",lineno=False)
+                        warn("Spurious language-specific relation '%s' - not an extension of any UD relation."%v, 'Syntax', lineno=False)
                         continue
                 res.add(v)
     return res
-
-# TODO switch to Python 3 and use html.escape instead
-def escape(string):
-    return string.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
@@ -869,8 +865,10 @@ if __name__=="__main__":
             validate(inp,out,args,tagsets,known_sent_ids)
     except:
         warn('Exception caught!', 'Format')
-        #traceback.print_exc() #traceback can contain e.g. "<module>" which breaks validation.html
-        print(escape(traceback.format_exc()))
+        # If the output is used in an HTML page, it must be properly escaped
+        # because the traceback can contain e.g. "<module>". However, escaping
+        # is beyond the goal of validation, which can be also run in a console.
+        traceback.print_exc()
 
     if not error_counter:
         if not args.quiet:
