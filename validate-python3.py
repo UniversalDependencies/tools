@@ -676,7 +676,6 @@ def validate_left_to_right_relations(cols):
         return
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
-    #if cols[DEPREL] == u"conj":
     if re.match(r"^(conj|fixed|flat)", cols[DEPREL]):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
