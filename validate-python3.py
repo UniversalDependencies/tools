@@ -810,7 +810,7 @@ if __name__=="__main__":
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
-    tree_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: CoNLL-U backbone. Level 2: UD format. Level 3: UD contents.")
+    tree_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
