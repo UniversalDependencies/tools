@@ -245,7 +245,7 @@ def validate_newlines(inp):
 
 
 #==============================================================================
-# Level 2 tests.
+# Level 2 tests. Tree structure, universal tags, features and deprels.
 #==============================================================================
 
 ###### Metadata tests #########
@@ -335,7 +335,7 @@ def validate_text_meta(comments,tree):
 
 ###### Tests applicable to a single row indpendently of the others
 
-def validate_cols(cols,tag_sets,args):
+def validate_cols(cols, tag_sets, args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
     called from trees() if level>1.
@@ -343,14 +343,13 @@ def validate_cols(cols,tag_sets,args):
     validate_whitespace(cols,tag_sets) # level 2
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
-        validate_features(cols,tag_sets) # level 2 and up (relevant code checks whether higher level is required)
+        validate_features(cols, tag_sets, args) # level 2 and up (relevant code checks whether higher level is required)
         validate_pos(cols,tag_sets) # level 2
-        validate_left_to_right_relations(cols) # level 3 (or 4?)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
     if is_word(cols):
-        validate_deprels(cols, tag_sets) # level 2 and up
+        validate_deprels(cols, tag_sets, args) # level 2 and up
     elif is_empty_node(cols):
         validate_empty_node_empty_vals(cols) # level 2
         # TODO check also the following:
@@ -438,7 +437,7 @@ def validate_character_constraints(cols):
 
 attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
 val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
-def validate_features(cols,tag_sets):
+def validate_features(cols, tag_sets, args):
     """
     Checks general constraints on feature-value format. On level 3 and higher,
     also checks that a feature-value pair is listed as approved.
@@ -497,44 +496,30 @@ def validate_pos(cols,tag_sets):
         validate_xpos(cols, tag_sets)
 
 def lspec2ud(deprel):
-    return deprel.split(u":",1)[0]
+    return deprel.split(':', 1)[0]
 
-def validate_deprels(cols,tag_sets):
+def validate_deprels(cols, tag_sets, args):
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
-    if tag_sets[DEPREL] is not None and cols[DEPREL] not in tag_sets[DEPREL]:
+    # Test only the universal part if testing at universal level.
+    deprel = cols[DEPREL]
+    if args.level < 4:
+        deprel = lspec2ud(deprel)
+    if tag_sets[DEPREL] is not None and deprel not in tag_sets[DEPREL]:
         warn_on_missing_files.add("deprel")
         warn('Unknown UD DEPREL: %s'%cols[DEPREL], 'Syntax')
-    if tag_sets[DEPS] is not None and cols[DEPS]!=u"_":
+    if tag_sets[DEPS] is not None and cols[DEPS]!='_':
         for head_deprel in cols[DEPS].split(u"|"):
             try:
                 head,deprel=head_deprel.split(u":",1)
             except ValueError:
                 warn("Malformed head:deprel pair '%s'"%head_deprel, 'Syntax')
                 continue
+            if args.level < 4:
+                deprel = lspec2ud(deprel)
             if deprel not in tag_sets[DEPS]:
                 warn_on_missing_files.add("edeprel")
                 warn("Unknown enhanced dependency relation '%s' in '%s'"%(deprel,head_deprel), 'Syntax')
-
-
-##### Content-based tests (annotation guidelines)
-
-def validate_left_to_right_relations(cols):
-    """
-    Certain UD relations must always go left-to-right.
-    Here we currently check the rule for the basic dependencies.
-    The same should also be tested for the enhanced dependencies!
-    """
-    if is_multiword_token(cols):
-        return
-    if DEPREL >= len(cols):
-        return # this has been already reported in trees()
-    #if cols[DEPREL] == u"conj":
-    if re.match(r"^(conj|fixed|flat)", cols[DEPREL]):
-        ichild = int(cols[ID])
-        iparent = int(cols[HEAD])
-        if ichild < iparent:
-            warn(u"Violation of guidelines: relation %s must go left-to-right" % cols[DEPREL], u"Syntax")
 
 ##### Tests applicable to the whole tree
 
@@ -648,7 +633,7 @@ def validate_tree(tree):
     for cols in word_tree:
         if HEAD >= len(cols):
             continue # this has been already reported in trees()
-        if cols[HEAD]==u"_":
+        if cols[HEAD]=='_':
             warn('Empty head for word ID %s' % cols[ID], 'Format', lineno=False)
             continue
         try:
@@ -675,6 +660,60 @@ def validate_tree(tree):
     if unreachable:
         warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
 
+
+
+#==============================================================================
+# Level 3 tests. Annotation content vs. the guidelines (only universal tests).
+#==============================================================================
+
+def validate_left_to_right_relations(cols):
+    """
+    Certain UD relations must always go left-to-right.
+    Here we currently check the rule for the basic dependencies.
+    The same should also be tested for the enhanced dependencies!
+    """
+    if is_multiword_token(cols):
+        return
+    if DEPREL >= len(cols):
+        return # this has been already reported in trees()
+    #if cols[DEPREL] == u"conj":
+    if re.match(r"^(conj|fixed|flat)", cols[DEPREL]):
+        ichild = int(cols[ID])
+        iparent = int(cols[HEAD])
+        if ichild < iparent:
+            warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax')
+
+def validate_annotation(tree):
+    """
+    Checks universally valid consequences of the annotation guidelines.
+    """
+    deps={} # node -> set of children
+    word_tree=subset_to_words(tree)
+    for cols in word_tree:
+        if HEAD >= len(cols):
+            continue # this has been already reported in trees()
+        if cols[HEAD]=='_':
+            continue # this has been already reported in validate_tree()
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            continue # this has been already reported in validate_tree()
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            continue # this has been already reported in validate_tree()
+        # Incrementally build the set of children of every node.
+        deps.setdefault(head, set()).add(id_)
+        # Content tests that only need to see one word.
+        if is_word(cols) or is_empty_node(cols):
+            validate_left_to_right_relations(cols)
+
+
+
+#==============================================================================
+# Main part.
+#==============================================================================
+
 def validate(inp,out,args,tag_sets,known_sent_ids):
     global tree_counter
     for comments,tree in trees(inp,tag_sets,args):
@@ -691,6 +730,8 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
             if args.check_tree_text:
                 validate_text_meta(comments,tree) # level 2
+            if args.level > 2:
+                validate_annotation(tree) # level 3
         if args.echo_input:
             file_util.print_tree(comments,tree,out)
     validate_newlines(inp) # level 1
