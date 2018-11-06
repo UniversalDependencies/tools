@@ -29,16 +29,16 @@ sentence_line=0 # The line in the input file on which the current sentence start
 
 error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
-def warn(msg,error_type,lineno=True):
+def warn(msg, error_type, lineno=True):
     """
     Print the warning. If lineno is True, print the exact line, otherwise
     print the line on which the current tree starts.
     """
     global curr_fname, curr_line, sentence_line, error_counter, tree_counter, args
-    error_counter[error_type]=error_counter.get(error_type,0)+1
+    error_counter[error_type] = error_counter.get(error_type, 0)+1
     if not args.quiet:
         if args.max_err>0 and error_counter[error_type]==args.max_err:
-            print((u"...suppressing further errors regarding "+error_type).encode(args.err_enc), sys.stderr)
+            print(('...suppressing further errors regarding ' + error_type), file=sys.stderr)
         elif args.max_err>0 and error_counter[error_type]>args.max_err:
             pass #suppressed
         else:
@@ -50,9 +50,9 @@ def warn(msg,error_type,lineno=True):
             else:
                 fn=""
             if lineno:
-                print(("[%sLine                   %d]: %s"%(fn,curr_line,msg)).encode(args.err_enc), file=sys.stderr)
+                print(("[%sLine                   %d]: %s"%(fn,curr_line,msg)), file=sys.stderr)
             else:
-                print(("[%sTree number %d on line %d]: %s"%(fn,tree_counter,sentence_line,msg)).encode(args.err_enc), file=sys.stderr)
+                print(("[%sTree number %d on line %d]: %s"%(fn,tree_counter,sentence_line,msg)), file=sys.stderr)
 
 ###### Support functions
 
@@ -803,7 +803,6 @@ if __name__=="__main__":
     io_group.add_argument('--echo', dest="echo_input", action="store_true", default=False, help='Echo the input CoNLL-U data onto output. (for backward compatibility)')
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail. Implies --noecho.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
-    io_group.add_argument('--err-enc', action="store", default="utf-8", help='Encoding of the error message output. Default: %(default)s. Note that the CoNLL-U output is by definition always utf-8.')
     io_group.add_argument('input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
     #I don't think output makes much sense now that we allow multiple inputs, so it will default to /dev/stdout
     #io_group.add_argument('output', nargs='', help='Output file name, or "-" or nothing for standard output.')
@@ -869,16 +868,15 @@ if __name__=="__main__":
         # because the traceback can contain e.g. "<module>". However, escaping
         # is beyond the goal of validation, which can be also run in a console.
         traceback.print_exc()
-
     if not error_counter:
         if not args.quiet:
             print('*** PASSED ***', file=sys.stderr)
         sys.exit(0)
     else:
         if not args.quiet:
-            print('*** FAILED *** with %d errors'%sum(v for k,v in error_counter.iteritems()), file=sys.stderr)
+            print('*** FAILED *** with %d errors'%sum(v for k,v in iter(error_counter.items())), file=sys.stderr)
             for k,v in sorted(error_counter.items()):
-                print(k+'errors:'+v, file=sys.stderr)
+                print('%s errors: %d' %(k, v), file=sys.stderr)
         for f_name in sorted(warn_on_missing_files):
             filepath = os.path.join(THISDIR, 'data', f_name+'.'+args.lang)
             if not os.path.exists(filepath):
