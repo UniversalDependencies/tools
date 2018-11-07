@@ -477,7 +477,7 @@ my $announcement = get_announcement
     \@families,
     'less than 1,000 tokens',
     'well over 1.5 million tokens',
-    'November 2018', # expected next release
+    'May 2019', # expected next release
     \@contributors_firstlast,
 );
 print($announcement);

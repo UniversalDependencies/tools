@@ -676,6 +676,40 @@ def validate_punctuation(cols):
     if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
         warn("Node %s: DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
 
+def validate_upos_vs_deprel(cols):
+    if is_multiword_token(cols):
+        return
+    # This is a level 3 test, we will check only the universal part of the relation.
+    deprel = lspec2ud(cols[DEPREL])
+    # Certain relations are reserved for nominals and cannot be used for verbs.
+    # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
+    if re.match(r"^(nsubj|obj|iobj|obl|vocative|expl|dislocated|nmod|appos)", deprel) and re.match(r"^(VERB|AUX|ADV|SCONJ|CCONJ)", cols[UPOS]):
+        warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
+    # Determiner can alternate with a pronoun.
+    if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]):
+        warn("Node %s: 'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Nummod is for numerals only.
+    if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
+        warn("Node %s: 'nummod' should be 'NUM' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
+    if deprel == 'advmod' and not re.match(r"^(ADV|PART)", cols[UPOS]):
+        warn("Node %s: 'advmod' should be 'ADV' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Auxiliary verb/particle must be AUX.
+    if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
+        warn("Node %s: 'aux' should be 'AUX' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
+    if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
+        warn("Node %s: copula should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Case is normally an adposition, maybe particle.
+    if deprel == 'case' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
+        warn("Node %s: 'case' should not be '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
+    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
+        warn("Node %s: 'mark' should not be '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    # Cc is a conjunction, possibly an adverb or particle.
+    if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
+        warn("Node %s: 'cc' should not be '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+
 def validate_left_to_right_relations(cols):
     """
     Certain UD relations must always go left-to-right.
@@ -686,7 +720,7 @@ def validate_left_to_right_relations(cols):
         return
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
-    if re.match(r"^(conj|fixed|flat)", cols[DEPREL]):
+    if re.match(r"^(conj|fixed|flat|goeswith)", cols[DEPREL]):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
         if ichild < iparent:
@@ -715,6 +749,7 @@ def validate_annotation(tree):
         deps.setdefault(head, set()).add(id_)
         # Content tests that only need to see one word.
         if is_word(cols) or is_empty_node(cols):
+            validate_upos_vs_deprel(cols)
             validate_punctuation(cols)
             validate_left_to_right_relations(cols)
 
