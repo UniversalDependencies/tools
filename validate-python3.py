@@ -50,7 +50,7 @@ def warn(msg, error_type, lineno=True):
             else:
                 fn=""
             if lineno:
-                print(("[%sLine                   %d]: %s"%(fn,curr_line,msg)), file=sys.stderr)
+                print(("[%sLine %d]: %s"%(fn,curr_line,msg)), file=sys.stderr)
             else:
                 print(("[%sTree number %d on line %d]: %s"%(fn,tree_counter,sentence_line,msg)), file=sys.stderr)
 
@@ -666,6 +666,16 @@ def validate_tree(tree):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
+def validate_punctuation(cols):
+    if is_multiword_token(cols):
+        return
+    if DEPREL >= len(cols):
+        return # this has been already reported in trees()
+    if cols[UPOS] == 'PUNCT' and cols[DEPREL] != 'punct':
+        warn("Node %s: if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[ID], cols[DEPREL]), 'Syntax', lineno=False)
+    if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
+        warn("Node %s: DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+
 def validate_left_to_right_relations(cols):
     """
     Certain UD relations must always go left-to-right.
@@ -705,6 +715,7 @@ def validate_annotation(tree):
         deps.setdefault(head, set()).add(id_)
         # Content tests that only need to see one word.
         if is_word(cols) or is_empty_node(cols):
+            validate_punctuation(cols)
             validate_left_to_right_relations(cols)
 
 
