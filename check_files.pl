@@ -122,9 +122,8 @@ if(scalar(@ARGV)==1)
 opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
-my ($validhash, $nisthash) = get_validation_results();
+my $validhash = get_validation_results();
 my %valid = %{$validhash};
-my %nist = %{$nisthash};
 my $n_folders_with_data = 0;
 my $n_errors = 0;
 my %languages_with_data;
@@ -389,68 +388,6 @@ foreach my $folder (@folders)
         push(@unknown_folders, $folder);
     }
 }
-# Classify shared task treebanks by their size. We cannot do this before we
-# have scanned all treebanks because one category depends on whether there are
-# larger treebanks of the same language.
-my $n_folders_conll = 0;
-my %languages_conll;
-my %languages_conll_large;
-my @shared_task_large_folders; # train, dev and test exist, train is larger than either of the other two, test is at least 10K words, dev is at least 5K words
-my @shared_task_small_folders; # no dev, train may be smaller than test, test at least 10K words
-my @shared_task_extra_folders; # no train, no dev, test at least 10K words, the language has another large treebank
-my @shared_task_lorsc_folders; # small or no train, no dev, test at least 10K words, no other large treebank of the language
-my @shared_task_other_folders; # outliers if any
-foreach my $folder (sort(keys(%nw)))
-{
-    my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    my ($nwtrain, $nwdev, $nwtest, $nwall) = ($nw{$folder}{train}, $nw{$folder}{dev}, $nw{$folder}{test}, $nw{$folder}{all});
-    # Only count treebanks that are in the shared task.
-    unless($nist{$folder})
-    {
-        $n_folders_conll++;
-        $languages_conll{$language}++;
-        # Remember languages that have at least one large treebank. It will
-        # influence classification of test-only treebanks of the same language.
-        if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
-        {
-            $languages_conll_large{$language}++;
-        }
-    }
-}
-foreach my $folder (sort(keys(%nw)))
-{
-    my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    my ($nwtrain, $nwdev, $nwtest, $nwall) = ($nw{$folder}{train}, $nw{$folder}{dev}, $nw{$folder}{test}, $nw{$folder}{all});
-    # Only count treebanks that are in the shared task.
-    unless($nist{$folder})
-    {
-        # Large: it has train, dev and test, train is larger than each of the other two, dev is at least 5K words, test is at least 10K words.
-        # Small: it does not have dev, train is at least 3K words, test is at least 10K words.
-        # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
-        # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
-        # Other: are there treebanks that do not fit in any of the above categories?
-        if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
-        {
-            push(@shared_task_large_folders, $folder);
-        }
-        elsif($nwtrain>=3000 && $nwdev==0 && $nwtest>=10000)
-        {
-            push(@shared_task_small_folders, $folder);
-        }
-        elsif($nwtrain==0 && $nwdev==0 && $nwtest>=10000 && $languages_conll_large{$language})
-        {
-            push(@shared_task_extra_folders, $folder);
-        }
-        elsif($nwtrain<5000 && $nwdev==0 && $nwtest>=10000 && !exists($languages_conll_large{$language}))
-        {
-            push(@shared_task_lorsc_folders, $folder);
-        }
-        else # We do not expect any treebanks that fall here.
-        {
-            push(@shared_task_other_folders, $folder);
-        }
-    }
-}
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
 print("\n");
 print("Found ", scalar(@folders), " folders.\n");
@@ -476,23 +413,10 @@ if(scalar(@invalid_folders) > 0)
 }
 # Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
 print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");
-print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
-my $n_shared_task_large = scalar(@shared_task_large_folders);
-my $n_shared_task_small = scalar(@shared_task_small_folders);
-my $n_shared_task_extra = scalar(@shared_task_extra_folders);
-my $n_shared_task_lorsc = scalar(@shared_task_lorsc_folders);
-my $n_shared_task_other = scalar(@shared_task_other_folders);
-print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
-print("$n_shared_task_small of them are considered small; they have training data but not development data:\n\n", join(' ', @shared_task_small_folders), "\n\n");
-print("$n_shared_task_extra of them are extra test sets in languages where another large treebank exists:\n\n", join(' ', @shared_task_extra_folders), "\n\n");
-print("$n_shared_task_lorsc of them are low-resource languages; they have no training data or just a tiny sample:\n\n", join(' ', @shared_task_lorsc_folders), "\n\n");
-print("$n_shared_task_other of them do not meet conditions of either large or small shared task treebanks:\n\n", join(' ', @shared_task_other_folders), "\n\n");
 my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
-my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
-print(scalar(@languages_conll), " languages in the shared task: ", join(', ', @languages_conll), "\n\n");
 my @langcodes = sort(keys(%stats));
 print("Treebank codes: ", join(' ', @langcodes), "\n\n");
 my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@langcodes);
@@ -555,9 +479,6 @@ my $announcement = get_announcement
     'well over 1.5 million tokens',
     'November 2018', # expected next release
     \@contributors_firstlast,
-    # Temporary for UD 2.0: shared task information
-    $n_folders_conll,
-    \@languages_conll
 );
 print($announcement);
 
@@ -576,12 +497,6 @@ sub get_validation_results
     # we are now freezing the list, and we may even do manual adjustments, such as
     # removing treebanks with unreliable lemmatization. From now on, the script will
     # work only with treebanks that have been approved for the shared task.
-    ###!!! Manually removed:
-    # UD_Russian-GSD
-    # UD_Spanish-GSD
-    # UD_Turkish-PUD
-    # Note: After some discussion with Giuseppe, UD_Latin-Perseus will be fixed but not removed.
-    # So we have 81 shared task treebanks: 63 large and 18 small.
     my @stpresel = qw(
     UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
     UD_Arabic-PADT UD_Armenian-ArmTDP
@@ -640,28 +555,8 @@ sub get_validation_results
     {
         print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
     }
-    my %valid;
-    my %nist;
-    foreach my $line (@validation_report)
-    {
-        ###!!! Temporary measure: treebank that is in the shared task must be valid.
-        my $corename = '';
-        if($line =~ m/^(UD_.+?):/)
-        {
-            $corename = $1;
-        }
-        if($line =~ m/^(UD_.+?):\s*VALID/ || exists($sthash{$corename}))
-        {
-            $valid{$corename} = 1;
-        }
-        # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
-        # The validation report also tells us which valid treebanks will not take part in the task.
-        if($line =~ m/^(UD_.+?):.*not in shared task/)
-        {
-            $nist{$1} = 1;
-        }
-    }
-    return (\%valid, \%nist);
+    my %valid; ###!!!
+    return \%valid;
 }
 
 
@@ -1146,8 +1041,6 @@ sub get_announcement
     my $max_size = shift; # 'well over 1.5 million tokens'
     my $next_release_available_in = shift; # 'March 2017'
     my $contlistref = shift;
-    my $n_conll = shift;
-    my $langlistconllref = shift;
     my @release_list   =   (1.0,  1.1,   1.2,  1.3,   1.4,  2.0,  2.1,    2.2,   2.3,  2.4,  2.5,     2.6,    2.7,       2.8,       2.9,      2.10,     2.11,       2.12,      2.13,      2.14);
     my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
     my $nth;
@@ -1169,17 +1062,8 @@ sub get_announcement
     my $n_families = scalar(@families);
     my $families = join(', ', @families);
     $families =~ s/, ([^,]+)$/ and $1/;
-    my @languages_conll = @{$langlistconllref};
-    my $n_languages_conll = scalar(@languages_conll);
-    my $languages_conll = join(', ', @languages_conll);
-    $languages_conll =~ s/, ([^,]+)$/ and $1/;
     my @contributors = @{$contlistref};
     my $contributors = join(', ', @contributors);
-    # Extra text in 2.0 announcement, removed for 2.1 but kept commented for 2.2
-    #This release is special in that the treebanks will be used as training/development data in the CoNLL 2017 shared task (http://universaldependencies.org/conll17/). Test data are not released, except for the few treebanks that do not take part in the shared task. $n_conll treebanks will be in the shared task, and they correspond to the following $n_languages_conll languages: $languages_conll. Registration of shared task participants is still open!
-    #
-    #REMINDER: ADD ANNOUNCEMENT ABOUT THE RAW DATA, AND ABOUT THE BASELINE MODELS (UDPIPE + SYNTAXNET) WE WANT TO PUBLISH AROUND MID MARCH.
-    #BESIDES THE USUAL MAILING LISTS, SEND THIS ANNOUNCEMENT ALSO DIRECTLY TO ALL THE REGISTERED PARTICIPANTS.
     my $text = <<EOF
 We are very happy to announce the $nth release of annotated treebanks in Universal Dependencies, v$release, available at http://universaldependencies.org/.
 
