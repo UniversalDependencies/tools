@@ -486,76 +486,67 @@ print($announcement);
 
 #------------------------------------------------------------------------------
 # Downloads the current validation report from the validation server. Returns
-# two hash references: to the hash of valid treebanks, and to the hash of
-# treebanks that are not in the shared task despite being valid.
+# a reference to the hash of valid treebanks.
 #------------------------------------------------------------------------------
 sub get_validation_results
 {
-    # Preliminary UD 2.2 release: only the training data of the shared task treebanks
-    # (but their test data will be frozen as well, they just won't be released yet).
-    # After we used this script to select the shared task treebanks automatically,
-    # we are now freezing the list, and we may even do manual adjustments, such as
-    # removing treebanks with unreliable lemmatization. From now on, the script will
-    # work only with treebanks that have been approved for the shared task.
-    my @stpresel = qw(
-    UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
-    UD_Arabic-PADT UD_Armenian-ArmTDP
-    UD_Basque-BDT UD_Breton-KEB UD_Bulgarian-BTB UD_Buryat-BDT
-    UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
-    UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Czech-PUD
-    UD_Danish-DDT UD_Dutch-Alpino UD_Dutch-LassySmall
-    UD_English-EWT UD_English-GUM UD_English-LinES UD_English-PUD
-    UD_Estonian-EDT
-    UD_Faroese-OFT UD_Finnish-FTB UD_Finnish-PUD UD_Finnish-TDT
-    UD_French-GSD UD_French-Sequoia UD_French-Spoken
-    UD_Galician-CTG UD_Galician-TreeGal
-    UD_German-GSD UD_Gothic-PROIEL UD_Greek-GDT
-    UD_Hebrew-HTB UD_Hindi-HDTB UD_Hungarian-Szeged
-    UD_Indonesian-GSD UD_Irish-IDT UD_Italian-ISDT UD_Italian-PoSTWITA
-    UD_Japanese-GSD UD_Japanese-Modern
-    UD_Kazakh-KTB UD_Korean-GSD UD_Korean-Kaist UD_Kurmanji-MG
-    UD_Latin-ITTB UD_Latin-PROIEL UD_Latin-Perseus UD_Latvian-LVTB
-    UD_Naija-NSC UD_North_Sami-Giella
-    UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA
-    UD_Old_Church_Slavonic-PROIEL UD_Old_French-SRCMF UD_Persian-Seraji
-    UD_Polish-LFG UD_Polish-SZ UD_Portuguese-Bosque UD_Romanian-RRT
-    UD_Russian-SynTagRus UD_Russian-Taiga UD_Serbian-SET UD_Slovak-SNK
-    UD_Slovenian-SSJ UD_Slovenian-SST UD_Spanish-AnCora
-    UD_Swedish-LinES UD_Swedish-PUD UD_Swedish-Talbanken
-    UD_Thai-PUD UD_Turkish-IMST
-    UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
-    my @nstpresel = qw(
-    UD_Amharic-ATT UD_Arabic-NYUAD UD_Arabic-PUD UD_Belarusian-HSE
-    UD_Cantonese-HK UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD
-    UD_Coptic-Scriptorium UD_Czech-CLTT UD_English-ParTUT UD_French-PUD
-    UD_French-ParTUT UD_German-PUD UD_Hindi-PUD UD_Indonesian-PUD UD_Italian-PUD
-    UD_Italian-ParTUT UD_Japanese-BCCWJ UD_Japanese-PUD UD_Komi_Zyrian-IKDP
-    UD_Komi_Zyrian-Lattice UD_Korean-PUD UD_Lithuanian-HSE UD_Marathi-UFAL
-    UD_Portuguese-GSD UD_Portuguese-PUD UD_Romanian-Nonstandard UD_Russian-GSD
-    UD_Russian-PUD UD_Sanskrit-UFAL UD_Spanish-GSD UD_Spanish-PUD
-    UD_Swedish_Sign_Language-SSLC UD_Tagalog-TRG UD_Tamil-TTB UD_Telugu-MTG
-    UD_Turkish-PUD UD_Warlpiri-UFAL UD_Yoruba-YTB
-    );
-    print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
-    print("WARNING: As a temporary measure, treebanks that took part in the shared task are considered VALID even if their current development version is invalid.\n");
-    my %sthash;
-    foreach my $treebank (@stpresel)
+    my %valid;
+    my $frozen = 0;
+    if($frozen)
     {
-        $sthash{$treebank}++;
+        # After we used this script to select the treebanks automatically,
+        # we are now freezing the list. From now on, the script will
+        # work only with treebanks that have been approved.
+        my @presel = qw(
+        UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
+        UD_Arabic-PADT UD_Armenian-ArmTDP
+        UD_Basque-BDT UD_Breton-KEB UD_Bulgarian-BTB UD_Buryat-BDT
+        UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
+        UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Czech-PUD
+        UD_Danish-DDT UD_Dutch-Alpino UD_Dutch-LassySmall
+        UD_English-EWT UD_English-GUM UD_English-LinES UD_English-PUD
+        UD_Estonian-EDT
+        UD_Faroese-OFT UD_Finnish-FTB UD_Finnish-PUD UD_Finnish-TDT
+        UD_French-GSD UD_French-Sequoia UD_French-Spoken
+        UD_Galician-CTG UD_Galician-TreeGal
+        UD_German-GSD UD_Gothic-PROIEL UD_Greek-GDT
+        UD_Hebrew-HTB UD_Hindi-HDTB UD_Hungarian-Szeged
+        UD_Indonesian-GSD UD_Irish-IDT UD_Italian-ISDT UD_Italian-PoSTWITA
+        UD_Japanese-GSD UD_Japanese-Modern
+        UD_Kazakh-KTB UD_Korean-GSD UD_Korean-Kaist UD_Kurmanji-MG
+        UD_Latin-ITTB UD_Latin-PROIEL UD_Latin-Perseus UD_Latvian-LVTB
+        UD_Naija-NSC UD_North_Sami-Giella
+        UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA
+        UD_Old_Church_Slavonic-PROIEL UD_Old_French-SRCMF UD_Persian-Seraji
+        UD_Polish-LFG UD_Polish-SZ UD_Portuguese-Bosque UD_Romanian-RRT
+        UD_Russian-SynTagRus UD_Russian-Taiga UD_Serbian-SET UD_Slovak-SNK
+        UD_Slovenian-SSJ UD_Slovenian-SST UD_Spanish-AnCora
+        UD_Swedish-LinES UD_Swedish-PUD UD_Swedish-Talbanken
+        UD_Thai-PUD UD_Turkish-IMST
+        UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
+        print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
+        foreach my $treebank (@presel)
+        {
+            $valid{$treebank}++;
+        }
     }
-    my %nsthash;
-    foreach my $treebank (@nstpresel)
+    else
     {
-        $nsthash{$treebank}++;
+        # Download the current validation report. (We could run the validator ourselves
+        # but it would take a lot of time.)
+        my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+        if(scalar(@validation_report)==0)
+        {
+            print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
+        }
+        foreach my $line (@validation_report)
+        {
+            if($line =~ m/^(UD_.+): VALID$/)
+            {
+                $valid{$1}++;
+            }
+        }
     }
-    # Download the current validation report. (We could run the validator ourselves
-    # but it would take a lot of time.)
-    my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
-    if(scalar(@validation_report)==0)
-    {
-        print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
-    }
-    my %valid; ###!!!
     return \%valid;
 }
 
