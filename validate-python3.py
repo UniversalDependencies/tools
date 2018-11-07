@@ -73,6 +73,12 @@ def parse_empty_node_id(cols):
     assert m, 'parse_empty_node_id with non-empty node'
     return m.groups()
 
+def shorten(string):
+    return string if len(string) < 25 else string[:20]+'[...]'
+
+def lspec2ud(deprel):
+    return deprel.split(':', 1)[0]
+
 
 
 #==============================================================================
@@ -273,9 +279,6 @@ def validate_sent_id(comments,known_ids,lcode):
         if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud" and lcode!=u"shopen"):
             warn('The forward slash is reserved for special use in parallel treebanks: '+sid, 'Metadata')
         known_ids.add(sid)
-
-def shorten(string):
-    return string if len(string) < 25 else string[:20]+'[...]'
 
 text_re=re.compile('^# text\s*=\s*(.+)$')
 def validate_text_meta(comments,tree):
@@ -495,9 +498,6 @@ def validate_pos(cols,tag_sets):
     if not (is_empty_node(cols) and cols[XPOS] == '_'):
         validate_xpos(cols, tag_sets)
 
-def lspec2ud(deprel):
-    return deprel.split(':', 1)[0]
-
 def validate_deprels(cols, tag_sets, args):
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
@@ -538,12 +538,12 @@ def subset_to_words_and_empty_nodes(tree):
 def deps_list(cols):
     if DEPS >= len(cols):
         return # this has been already reported in trees()
-    if cols[DEPS] == u'_':
+    if cols[DEPS] == '_':
         deps = []
     else:
-        deps = [hd.split(u':',1) for hd in cols[DEPS].split(u'|')]
+        deps = [hd.split(':',1) for hd in cols[DEPS].split('|')]
     if any(hd for hd in deps if len(hd) != 2):
-        raise ValueError(u'malformed DEPS: %s' % cols[DEPS])
+        raise ValueError('malformed DEPS: %s' % cols[DEPS])
     return deps
 
 def validate_ID_references(tree):
@@ -570,11 +570,18 @@ def validate_ID_references(tree):
             if not valid_id(head):
                 warn("Undefined ID in DEPS: '%s'" % head, 'Format')
 
-def proj(node,s,deps,depth,max_depth):
+def proj(node, s, deps, depth, max_depth):
     """
     Recursive calculation of the projection of a node `node` (1-based
     integer). The nodes, as they get discovered` are added to the set
     `s`. Deps is a dictionary node -> set of children.
+    To obtain children of all nodes, call
+        deps = {} # node -> set of children
+        word_tree = subset_to_words(tree)
+        for cols in word_tree:
+            deps.setdefault(head, set()).add(id_)
+        root_proj = set()
+        proj(0, root_proj, deps, 0, None)
     """
     if max_depth is not None and depth==max_depth:
         return
@@ -583,7 +590,7 @@ def proj(node,s,deps,depth,max_depth):
             warn('Loop from %s' % dependent, 'Syntax')
             continue
         s.add(dependent)
-        proj(dependent,s,deps,depth+1,max_depth)
+        proj(dependent, s, deps, depth+1, max_depth)
 
 def validate_root(tree):
     """
@@ -628,7 +635,7 @@ def validate_tree(tree):
     Validates that all words can be reached from the root and that
     there are no self-loops in HEAD.
     """
-    deps={} #node -> set of children
+    deps={} # node -> set of children
     word_tree=subset_to_words(tree)
     for cols in word_tree:
         if HEAD >= len(cols):
@@ -677,14 +684,23 @@ def validate_punctuation(cols):
         warn("Node %s: DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
 
 def validate_upos_vs_deprel(cols):
+    """
+    For certain relations checks that the dependent word belongs to an expected
+    part-of-speech category.
+    ###!!! WE ALSO NEED TO SEE THE TREE AND SKIP NODES THAT HAVE fixed CHILDREN!
+    """
     if is_multiword_token(cols):
         return
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
-    if re.match(r"^(nsubj|obj|iobj|obl|vocative|expl|dislocated|nmod|appos)", deprel) and re.match(r"^(VERB|AUX|ADV|SCONJ|CCONJ)", cols[UPOS]):
-        warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
+    # Unfortunately, we cannot enforce this test because a word can be cited
+    # rather than used, and then it can take a nominal function even if it is
+    # a verb, as in this Upper Sorbian sentence where infinitives are appositions:
+    # [hsb] Z werba danci "rejować" móže substantiw nastać danco "reja", adjektiw danca "rejowanski" a adwerb dance "rejowansce", ale tež z substantiwa martelo "hamor" móže nastać werb marteli "klepać z hamorom", adjektiw martela "hamorowy" a adwerb martele "z hamorom".
+    #if re.match(r"^(nsubj|obj|iobj|obl|vocative|expl|dislocated|nmod|appos)", deprel) and re.match(r"^(VERB|AUX|ADV|SCONJ|CCONJ)", cols[UPOS]):
+    #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]):
         warn("Node %s: 'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
