@@ -673,26 +673,18 @@ def validate_tree(tree):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
-def validate_punctuation(cols):
-    if is_multiword_token(cols):
-        return
-    if DEPREL >= len(cols):
-        return # this has been already reported in trees()
-    if cols[UPOS] == 'PUNCT' and cols[DEPREL] != 'punct':
-        warn("Node %s: if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[ID], cols[DEPREL]), 'Syntax', lineno=False)
-    if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
-        warn("Node %s: DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
-
-def validate_upos_vs_deprel(cols):
+def validate_upos_vs_deprel(cols, children, nodes):
     """
     For certain relations checks that the dependent word belongs to an expected
-    part-of-speech category.
-    ###!!! WE ALSO NEED TO SEE THE TREE AND SKIP NODES THAT HAVE fixed CHILDREN!
+    part-of-speech category. Occasionally we may have to check the children of
+    the node, too. Therefore we need 'children' (list of ids) and 'nodes'
+    (dictionary where we can translate the node id into its CoNLL-U columns).
     """
     if is_multiword_token(cols):
         return
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
+    childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -708,7 +700,7 @@ def validate_upos_vs_deprel(cols):
     if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
         warn("Node %s: 'nummod' should be 'NUM' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
-    if deprel == 'advmod' and not re.match(r"^(ADV|PART)", cols[UPOS]):
+    if deprel == 'advmod' and not re.match(r"^(ADV|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
         warn("Node %s: 'advmod' should be 'ADV' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
@@ -723,8 +715,12 @@ def validate_upos_vs_deprel(cols):
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
         warn("Node %s: 'mark' should not be '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
     # Cc is a conjunction, possibly an adverb or particle.
-    if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
+    if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
         warn("Node %s: 'cc' should not be '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
+        warn("Node %s: DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[ID], cols[UPOS]), 'Syntax', lineno=False)
+    if cols[UPOS] == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
+        warn("Node %s: if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[ID], cols[DEPREL]), 'Syntax', lineno=False)
 
 def validate_left_to_right_relations(cols):
     """
@@ -746,28 +742,38 @@ def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
-    deps={} # node -> set of children
-    word_tree=subset_to_words(tree)
+    nodes = {} # node id -> columns of that node
+    children = {} # node -> set of children
+    # Get array of lines that describe syntactic words (node 1 will be at position 0).
+    word_tree = subset_to_words(tree)
     for cols in word_tree:
         if HEAD >= len(cols):
-            continue # this has been already reported in trees()
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
         if cols[HEAD]=='_':
-            continue # this has been already reported in validate_tree()
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
         try:
             id_ = int(cols[ID])
         except ValueError:
-            continue # this has been already reported in validate_tree()
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
         try:
             head = int(cols[HEAD])
         except ValueError:
-            continue # this has been already reported in validate_tree()
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
         # Incrementally build the set of children of every node.
-        deps.setdefault(head, set()).add(id_)
+        nodes.setdefault(cols[ID], cols)
+        children.setdefault(cols[HEAD], set()).add(cols[ID])
+    for cols in word_tree:
         # Content tests that only need to see one word.
-        if is_word(cols) or is_empty_node(cols):
-            validate_upos_vs_deprel(cols)
-            validate_punctuation(cols)
-            validate_left_to_right_relations(cols)
+        validate_upos_vs_deprel(cols, children.get(cols[ID], []), nodes)
+        validate_left_to_right_relations(cols)
 
 
 
