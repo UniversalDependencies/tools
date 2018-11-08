@@ -709,8 +709,10 @@ def validate_upos_vs_deprel(cols, children, nodes, line):
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
         warn("Line %d: copula should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (line, cols[UPOS]), 'Syntax', lineno=False)
-    # Case is normally an adposition, maybe particle.
-    if deprel == 'case' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
+    # Case is normally an adposition, maybe particle. However, there are also secondary adpositions and they may have the original POS tag:
+    # NOUN: [cs] pomocí, prostřednictvím
+    # VERB: [en] including
+    if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
         warn("Line %d: 'case' should not be '%s'" % (line, cols[UPOS]), 'Syntax', lineno=False)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
