@@ -744,7 +744,8 @@ def validate_left_to_right_relations(cols):
         return
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
-    if re.match(r"^(conj|fixed|flat|goeswith)", cols[DEPREL]):
+    # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
+    if re.match(r"^(conj|fixed|flat|goeswith|appos)", cols[DEPREL]):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
         if ichild < iparent:
@@ -790,6 +791,11 @@ def validate_functional_leaves(cols, children, nodes, line):
     deprel = lspec2ud(cols[DEPREL])
     childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
     if re.match(r"^(case|mark|cc|aux|cop|goeswith)$", deprel) and childrels - set(['fixed', 'conj']):
+        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
+    # Fixed expressions should not be nested, i.e., no chains of fixed relations.
+    # As they are supposed to represent functional elements, they should not have
+    # other dependents either, with the possible exception of conj.
+    if deprel == 'fixed' and childrels - set(['conj']):
         warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
     # Punctuation can exceptionally have other punct children if an exclamation
     # mark is in brackets or quotes. It cannot have other children.
