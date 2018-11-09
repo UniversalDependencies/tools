@@ -716,6 +716,9 @@ def validate_upos_vs_deprel(cols, children, nodes, line, sid):
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     if deprel == 'advmod' and not re.match(r"^(ADV|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
         warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+    # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
+    if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
+        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
         warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
