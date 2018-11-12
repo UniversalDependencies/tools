@@ -868,6 +868,103 @@ def validate_annotation(tree):
 
 
 #==============================================================================
+# Level 5 tests. Annotation content vs. the guidelines, language-specific.
+#==============================================================================
+
+def validate_auxiliary_verbs(cols, children, nodes, line, lang):
+    """
+    Verifies that the UPOS tag AUX is used only with lemmas that are known to
+    act as auxiliary verbs or particles in the given language.
+    Parameters:
+      'cols' ....... columns of the head node
+      'children' ... list of ids
+      'nodes' ...... dictionary where we can translate the node id into its
+                     CoNLL-U columns
+      'line' ....... line number of the node within the file
+    """
+    if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
+        ###!!! In the future, lists like this one will be read from a file.
+        auxdict = {
+            'en':  ['be', 'have', 'do', 'will', 'would', 'can', 'shall', 'should', 'must'],
+            'nl':  ['zijn', 'hebben', 'worden', 'kunnen', 'mogen', 'zullen', 'moeten'],
+            'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
+            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste'],
+            'no':  ['være', 'vere', 'ha', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
+            'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
+            'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
+            'pt':  ['ser', 'estar', 'haver', 'ter', 'andar', 'ir', 'poder', 'dever'],
+            'gl':  ['ser', 'estar', 'haber', 'ter', 'ir', 'poder', 'querer', 'deber'],
+            'es':  ['ser', 'estar', 'haber', 'tener', 'ir', 'poder', 'saber', 'querer', 'deber'],
+            'ca':  ['ser', 'estar', 'haver', 'anar', 'poder', 'saber'],
+            'fr':  ['être', 'avoir', 'faire', 'aller', 'pouvoir', 'savoir', 'vouloir', 'devoir'],
+            'it':  ['essere', 'stare', 'avere', 'fare', 'andare', 'venire', 'potere', 'sapere', 'volere', 'dovere'],
+            'ro':  ['fi', 'avea', 'putea', 'ști', 'vrea', 'trebui'],
+            'cs':  ['být', 'bývat', 'bývávat'],
+            'sk':  ['byť', 'bývať', 'by'],
+            'hsb': ['być'],
+            'pl':  ['być', 'bywać', 'by'],
+            'uk':  ['бути', 'бувати', 'би', 'б'],
+            'be':  ['быць'],
+            'ru':  ['быть'],
+            'sl':  ['biti'],
+            'hr':  ['biti'],
+            'sr':  ['biti'],
+            'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
+            'cu':  ['бꙑти']
+        }
+        lspecauxs = auxdict.get(lang, None)
+        if lspecauxs and not cols[LEMMA] in lspecauxs:
+            warn("'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang), 'Morpho', nodelineno=line)
+
+def validate_lspec_annotation(tree, lang):
+    """
+    Checks language-specific consequences of the annotation guidelines.
+    """
+    ###!!! Building the information about the tree is repeated and has been done in the other functions before.
+    ###!!! We should remember the information and not build it several times!
+    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
+    node_line = sentence_line - 1
+    lines = {} # node id -> line number of that node (for error messages)
+    nodes = {} # node id -> columns of that node
+    children = {} # node -> set of children
+    for cols in tree:
+        node_line += 1
+        if not is_word(cols):
+            continue
+        if HEAD >= len(cols):
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
+        if cols[HEAD]=='_':
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return
+        # Incrementally build the set of children of every node.
+        lines.setdefault(cols[ID], node_line)
+        nodes.setdefault(cols[ID], cols)
+        children.setdefault(cols[HEAD], set()).add(cols[ID])
+    for cols in tree:
+        if not is_word(cols):
+            continue
+        myline = lines.get(cols[ID], sentence_line)
+        mychildren = children.get(cols[ID], [])
+        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
+
+
+
+#==============================================================================
 # Main part.
 #==============================================================================
 
@@ -889,6 +986,8 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
                 validate_text_meta(comments, tree) # level 2
             if args.level > 2:
                 validate_annotation(tree) # level 3
+                if args.level > 4:
+                    validate_lspec_annotation(tree, args.lang) # level 5
         if args.echo_input:
             file_util.print_tree(comments, tree, out)
     validate_newlines(inp) # level 1
