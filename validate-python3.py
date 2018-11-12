@@ -27,10 +27,11 @@ TOKENSWSPACE=MISC+1 #one extra constant
 # Two global variables:
 curr_line=0 # Current line in the input file
 sentence_line=0 # The line in the input file on which the current sentence starts
+sentence_id=None # The most recently read sentence id
 
 error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
-def warn(msg, error_type, lineno=True, nodelineno=0, sid=None):
+def warn(msg, error_type, lineno=True, nodelineno=0):
     """
     Print the warning.
     If lineno is True, print the number of the line last read from input. Note
@@ -41,7 +42,7 @@ def warn(msg, error_type, lineno=True, nodelineno=0, sid=None):
     nodelineno. Nonzero nodelineno means that lineno value is ignored.
     If lineno is False, print the number and starting line of the current tree.
     """
-    global curr_fname, curr_line, sentence_line, error_counter, tree_counter, args
+    global curr_fname, curr_line, sentence_line, sentence_id, error_counter, tree_counter, args
     error_counter[error_type] = error_counter.get(error_type, 0)+1
     if not args.quiet:
         if args.max_err>0 and error_counter[error_type]==args.max_err:
@@ -57,8 +58,10 @@ def warn(msg, error_type, lineno=True, nodelineno=0, sid=None):
             else:
                 fn=""
             sent = ''
-            if sid:
-                sent = ' Sent ' + sid
+            # Global variable (last read sentence id): sentence_id
+            # Originally we used a parameter sid but we probably do not need to override the global value.
+            if sentence_id:
+                sent = ' Sent ' + sentence_id
             if nodelineno:
                 print("[%sLine %d%s]: %s" % (fn, nodelineno, sent, msg), file=sys.stderr)
             elif lineno:
@@ -97,6 +100,7 @@ def lspec2ud(deprel):
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
 
+sentid_re=re.compile('^# sent_id\s*=\s*(\S+)$')
 def trees(inp, tag_sets, args):
     """
     `inp` a file-like object yielding lines as unicode
@@ -105,7 +109,7 @@ def trees(inp, tag_sets, args):
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
     """
-    global curr_line, sentence_line
+    global curr_line, sentence_line, sentence_id
     comments=[] # List of comment lines to go with the current sentence
     lines=[] # List of token/word lines of the current sentence
     for line_counter, line in enumerate(inp):
@@ -126,6 +130,13 @@ def trees(inp, tag_sets, args):
             else:
                 warn('Spurious empty line. Only one empty line is expected after every sentence.', 'Format')
         elif line[0]=='#':
+            # We will really validate sentence ids later. But now we want to remember
+            # everything that looks like a sentence id and use it in the error messages.
+            # Line numbers themselves may not be sufficient if we are reading multiple
+            # files from a pipe.
+            match = sentid_re.match(line)
+            if match:
+                sentence_id = match.group(1)
             if not lines: # before sentence
                 comments.append(line)
             else:
@@ -268,7 +279,6 @@ def validate_newlines(inp):
 
 ###### Metadata tests #########
 
-sentid_re=re.compile('^# sent_id\s*=\s*(\S+)$')
 def validate_sent_id(comments,known_ids,lcode):
     matched=[]
     for c in comments:
@@ -685,14 +695,13 @@ def validate_tree(tree):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
-def validate_upos_vs_deprel(cols, children, nodes, line, sid):
+def validate_upos_vs_deprel(cols, children, nodes, line):
     """
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
     the node, too. Therefore we need 'children' (list of ids) and 'nodes'
     (dictionary where we can translate the node id into its CoNLL-U columns).
       'line' ....... line number of the node within the file
-      'sid' ........ current sentence id
     """
     if is_multiword_token(cols):
         return
@@ -709,39 +718,39 @@ def validate_upos_vs_deprel(cols, children, nodes, line, sid):
     #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]):
-        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Nummod is for numerals only.
     if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
-        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     if deprel == 'advmod' and not re.match(r"^(ADV|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
-        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
-        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
-        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Case is normally an adposition, maybe particle. However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
-        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
-        warn("DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line, sid=sid)
+        warn("DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     if cols[UPOS] == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
-        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodelineno=line, sid=sid)
+        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodelineno=line)
 
-def validate_left_to_right_relations(cols, line, sid):
+def validate_left_to_right_relations(cols, line):
     """
     Certain UD relations must always go left-to-right.
     Here we currently check the rule for the basic dependencies.
@@ -756,9 +765,9 @@ def validate_left_to_right_relations(cols, line, sid):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
         if ichild < iparent:
-            warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax', nodelineno=line, sid=sid)
+            warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax', nodelineno=line)
 
-def validate_goeswith_span(cols, children, nodes, line, sid):
+def validate_goeswith_span(cols, children, nodes, line):
     """
     The relation 'goeswith' is used to connect word parts that are separated
     by whitespace and should be one word instead. We assume that the relation
@@ -772,19 +781,18 @@ def validate_goeswith_span(cols, children, nodes, line, sid):
       'nodes' ...... dictionary where we can translate the node id into its
                      CoNLL-U columns
       'line' ....... line number of the node within the file
-      'sid' ........ current sentence id
     """
     gwchildren = [x for x in children if lspec2ud(nodes.get(x, [])[DEPREL]) == 'goeswith'].sort()
     if gwchildren:
         gwrange = [cols[ID], gwchildren]
         # All nodes between me and my last goeswith child should be goeswith too.
         if str(gwchildren) != str(range(int(cols[ID]), int(nodes.get(gwchildren[-1], [])))):
-            warn("Violation of guidelines: gaps in goeswith range '%s'" % str(gwrange), 'Syntax', lineno=False, sid=sid)
+            warn("Violation of guidelines: gaps in goeswith range '%s'" % str(gwrange), 'Syntax', lineno=False)
         # Non-last node in a goeswith range must have a space after itself.
         if 'SpaceAfter=No' in cols[MISC].split('|'):
-            warn("'goeswith' cannot connect nodes that are not separated by whitespace" % cols[ID], 'Syntax', nodelineno=line, sid=sid)
+            warn("'goeswith' cannot connect nodes that are not separated by whitespace" % cols[ID], 'Syntax', nodelineno=line)
 
-def validate_functional_leaves(cols, children, nodes, line, sid):
+def validate_functional_leaves(cols, children, nodes, line):
     """
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
@@ -794,33 +802,26 @@ def validate_functional_leaves(cols, children, nodes, line, sid):
       'nodes' ...... dictionary where we can translate the node id into its
                      CoNLL-U columns
       'line' ....... line number of the node within the file
-      'sid' ........ current sentence id
     """
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
     childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
     if re.match(r"^(case|mark|cc|aux|cop|goeswith)$", deprel) and childrels - set(['fixed', 'conj']):
-        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line, sid=sid)
+        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
     # other dependents either, with the possible exception of conj.
     if deprel == 'fixed' and childrels - set(['conj']):
-        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line, sid=sid)
+        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
     # Punctuation can exceptionally have other punct children if an exclamation
     # mark is in brackets or quotes. It cannot have other children.
     if deprel == 'punct' and childrels - set(['punct']):
-        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line, sid=sid)
+        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
 
-def validate_annotation(comments, tree):
+def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
-    sid = None
-    for c in comments:
-        match = sentid_re.match(c)
-        if match:
-            sid = match.group(1)
-            break
     global sentence_line # the line of the first token/word of the current tree (skipping comments!)
     node_line = sentence_line - 1
     lines = {} # node id -> line number of that node (for error messages)
@@ -859,10 +860,10 @@ def validate_annotation(comments, tree):
             continue
         myline = lines.get(cols[ID], sentence_line)
         mychildren = children.get(cols[ID], [])
-        validate_upos_vs_deprel(cols, mychildren, nodes, myline, sid)
-        validate_left_to_right_relations(cols, myline, sid)
-        validate_goeswith_span(cols, mychildren, nodes, myline, sid)
-        validate_functional_leaves(cols, mychildren, nodes, myline, sid)
+        validate_upos_vs_deprel(cols, mychildren, nodes, myline)
+        validate_left_to_right_relations(cols, myline)
+        validate_goeswith_span(cols, mychildren, nodes, myline)
+        validate_functional_leaves(cols, mychildren, nodes, myline)
 
 
 
@@ -887,7 +888,7 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
             if args.check_tree_text:
                 validate_text_meta(comments, tree) # level 2
             if args.level > 2:
-                validate_annotation(comments, tree) # level 3
+                validate_annotation(tree) # level 3
         if args.echo_input:
             file_util.print_tree(comments, tree, out)
     validate_newlines(inp) # level 1
