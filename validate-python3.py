@@ -78,10 +78,10 @@ def is_word(cols):
     return re.match(r"^[1-9][0-9]*$", cols[ID])
 
 def is_multiword_token(cols):
-    return re.match(r"^[0-9]+-[0-9]+$", cols[ID])
+    return re.match(r"^[1-9][0-9]*-[1-9][0-9]*$", cols[ID])
 
 def is_empty_node(cols):
-    return re.match(r"^[0-9]+\.[0-9]+$", cols[ID])
+    return re.match(r"^[0-9]+\.[1-9][0-9]*$", cols[ID])
 
 def parse_empty_node_id(cols):
     m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
@@ -545,12 +545,6 @@ def validate_deprels(cols, tag_sets, args):
 
 ##### Tests applicable to the whole tree
 
-def subset_to_words(tree):
-    """
-    Only picks the word lines, skips multiword token and empty node lines.
-    """
-    return [cols for cols in tree if is_word(cols)]
-
 def subset_to_words_and_empty_nodes(tree):
     """
     Only picks word and empty node lines, skips multiword token lines.
@@ -599,8 +593,9 @@ def proj(node, s, deps, depth, max_depth):
     `s`. Deps is a dictionary node -> set of children.
     To obtain children of all nodes, call
         deps = {} # node -> set of children
-        word_tree = subset_to_words(tree)
-        for cols in word_tree:
+        for cols in tree:
+            if not is_word(cols):
+                continue
             deps.setdefault(head, set()).add(id_)
         root_proj = set()
         proj(0, root_proj, deps, 0, None)
@@ -618,7 +613,9 @@ def validate_root(tree):
     """
     Validates that DEPREL is "root" iff HEAD is 0.
     """
-    for cols in subset_to_words_and_empty_nodes(tree):
+    for cols in tree:
+        if not (is_word(cols) or is_empty_node(cols)):
+            continue
         if HEAD >= len(cols):
             continue # this has been already reported in trees()
         if cols[HEAD] == '0':
@@ -633,59 +630,77 @@ def validate_deps(tree):
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS.
     """
-    for cols in subset_to_words_and_empty_nodes(tree):
+    node_line = sentence_line - 1
+    for cols in tree:
+        node_line += 1
+        if not (is_word(cols) or is_empty_node(cols)):
+            continue
         if DEPS >= len(cols):
             continue # this has been already reported in trees()
         try:
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
         except ValueError:
-            warn("Failed to parse DEPS: '%s'" % cols[DEPS], 'Format')
+            warn("Failed to parse DEPS: '%s'" % cols[DEPS], 'Format', nodelineno=node_line)
             return
         if heads != sorted(heads):
-            warn("DEPS not sorted by head index: '%s'" % cols[DEPS], 'Format')
+            warn("DEPS not sorted by head index: '%s'" % cols[DEPS], 'Format', nodelineno=node_line)
+        else:
+            lasth = None
+            lastd = None
+            for h, d in deps:
+                if h == lasth:
+                    if d < lastd:
+                        warn("DEPS pointing to head '%s' not sorted by relation type: '%s'" % (h, cols[DEPS]), 'Format', nodelineno=node_line)
+                    elif d == lastd:
+                        warn("DEPS contain multiple instances of the same relation '%s:%s'" % (h, d), 'Format', nodelineno=node_line)
+                lasth = h
+                lastd = d
         try:
             id_ = float(cols[ID])
         except ValueError:
-            warn("Non-numeric ID: '%s'" % cols[ID], 'Format')
+            warn("Non-numeric ID: '%s'" % cols[ID], 'Format', nodelineno=node_line)
             return
         if id_ in heads:
-            warn("Self-loop in DEPS for '%s'" % cols[ID], 'Format')
+            warn("Self-loop in DEPS for '%s'" % cols[ID], 'Format', nodelineno=node_line)
 
 def validate_tree(tree):
     """
     Validates that all words can be reached from the root and that
     there are no self-loops in HEAD.
     """
-    deps={} # node -> set of children
-    word_tree=subset_to_words(tree)
-    for cols in word_tree:
+    node_line = sentence_line - 1
+    deps = {} # node -> set of children
+    for cols in tree:
+        node_line += 1
+        if not is_word(cols):
+            continue
         if HEAD >= len(cols):
             continue # this has been already reported in trees()
-        if cols[HEAD]=='_':
-            warn('Empty head for word ID %s' % cols[ID], 'Format', lineno=False)
-            continue
         try:
             id_ = int(cols[ID])
         except ValueError:
-            warn('Non-integer ID: %s' % cols[ID], 'Format', lineno=False)
+            continue # this has been already reported in validate_cols_level1()
+        if cols[HEAD]=='_':
+            warn('Empty HEAD reference', 'Format', nodelineno=node_line)
             continue
         try:
             head = int(cols[HEAD])
         except ValueError:
-            warn('Non-integer head for word ID %s' % cols[ID], 'Format', lineno=False)
+            warn('Non-integer HEAD reference', 'Format', nodelineno=node_line)
             continue
         if head == id_:
-            warn('HEAD == ID for %s' % cols[ID], 'Format', lineno=False)
+            warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
             continue
         deps.setdefault(head, set()).add(id_)
     root_deps=set()
-    proj(0,root_deps,deps,0,1)
+    proj(0, root_deps, deps, 0, 1)
     if len(root_deps)>1 and args.single_root:
         warn('Multiple root words: %s'%list(root_deps), 'Syntax', lineno=False)
-    root_proj=set()
-    proj(0,root_proj,deps,0,None)
-    unreachable=set(range(1,len(word_tree)+1))-root_proj # all words minus those reachable from root
+    root_proj = set()
+    proj(0, root_proj, deps, 0, None)
+    word_tree = [cols for cols in tree if is_word(cols)]
+    unreachable = set(range(1, len(word_tree) + 1)) - root_proj # all words minus those reachable from root
     if unreachable:
         warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
 
