@@ -489,13 +489,12 @@ foreach my $t (sort(keys(%lastcurrtreebanks)))
     }
 }
 my $nchangedsize = scalar(@changedsize);
-print("The size of the following $nchangedsize treebanks changed significantly since the last release:\n");
+my $changelog = "The size of the following $nchangedsize treebanks changed significantly since the last release:\n";
 foreach my $r (sort {$a->{name} cmp $b->{name}} (@changedsize))
 {
     my $padding = ' ' x ($namemaxl - length($r->{name}));
-    printf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
+    $changelog .= sprintf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
 }
-print("\n");
 # Collect statistics of the current treebanks. Especially the total number of
 # sentences, tokens and words is needed for the metadata in Lindat.
 my $ntok = 0;
@@ -522,6 +521,7 @@ my $announcement = get_announcement
     'well over 1.5 million tokens',
     'May 2019', # expected next release
     \@contributors_firstlast,
+    $changelog
 );
 print($announcement);
 
@@ -1056,6 +1056,7 @@ sub get_announcement
     my $max_size = shift; # 'well over 1.5 million tokens'
     my $next_release_available_in = shift; # 'March 2017'
     my $contlistref = shift;
+    my $changelog = shift;
     my @release_list   =   (1.0,  1.1,   1.2,  1.3,   1.4,  2.0,  2.1,    2.2,   2.3,  2.4,  2.5,     2.6,    2.7,       2.8,       2.9,      2.10,     2.11,       2.12,      2.13,      2.14);
     my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
     my $nth;
@@ -1085,6 +1086,8 @@ We are very happy to announce the $nth release of annotated treebanks in Univers
 Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective (Nivre et al., 2016). The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
 
 The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. The $n_languages languages belong to $n_families families: $families. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
+
+$changelog
 
 $contributors
 
