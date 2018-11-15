@@ -140,6 +140,7 @@ my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
+my %tcode_to_treebank_name;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -153,6 +154,7 @@ foreach my $folder (@folders)
             $langcode = $languages_from_yaml->{$language}{lcode};
             my $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
+            $tcode_to_treebank_name{$key} = join(' ', ($language, $treebank));
             my $prefix = $key.'-ud';
             chdir($folder) or die("Cannot enter folder $folder");
             # Skip folders that are not Git repositories even if they otherwise look OK.
@@ -463,6 +465,7 @@ foreach my $t (@langcodes, @languages11)
 # Find treebanks whose size has changed by more than 10%.
 my @changedsize;
 my $codemaxl = 0;
+my $namemaxl = 0;
 my $oldmaxl = 0;
 my $newmaxl = 0;
 foreach my $t (sort(keys(%lastcurrtreebanks)))
@@ -474,21 +477,23 @@ foreach my $t (sort(keys(%lastcurrtreebanks)))
         my %record =
         (
             'code' => $t,
+            'name' => $tcode_to_treebank_name{$t},
             'old'  => $oldsize,
             'new'  => $newsize
         );
         push(@changedsize, \%record);
         $codemaxl = length($t) if(length($t) > $codemaxl);
+        $namemaxl = length($record{name}) if(length($record{name}) > $namemaxl);
         $oldmaxl = length($oldsize) if(length($oldsize) > $oldmaxl);
         $newmaxl = length($newsize) if(length($newsize) > $newmaxl);
     }
 }
 my $nchangedsize = scalar(@changedsize);
 print("The size of the following $nchangedsize treebanks changed significantly since the last release:\n");
-foreach my $r (@changedsize)
+foreach my $r (sort {$a->{name} cmp $b->{name}} (@changedsize))
 {
-    my $padding = ' ' x ($codemaxl - length($r->{code}));
-    printf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{code}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
+    my $padding = ' ' x ($namemaxl - length($r->{name}));
+    printf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
 }
 print("\n");
 # Collect statistics of the current treebanks. Especially the total number of
