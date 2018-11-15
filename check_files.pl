@@ -483,11 +483,12 @@ foreach my $t (sort(keys(%lastcurrtreebanks)))
         $newmaxl = length($newsize) if(length($newsize) > $newmaxl);
     }
 }
-print("The size of the following treebanks significantly changed since the last release:\n");
+my $nchangedsize = scalar(@changedsize);
+print("The size of the following $nchangedsize treebanks changed significantly since the last release:\n");
 foreach my $r (@changedsize)
 {
     my $padding = ' ' x ($codemaxl - length($r->{code}));
-    printf("    %s: %${oldmaxl}d --> %${newmaxl}d\n", $r->{code}.$padding, $r->{old}, $r->{new});
+    printf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{code}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
 }
 print("\n");
 # Collect statistics of the current treebanks. Especially the total number of
