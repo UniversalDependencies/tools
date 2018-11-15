@@ -437,6 +437,7 @@ my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x =
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 my @contacts = sort(keys(%contacts));
 print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
+# Find treebanks whose data size has changed.
 print("Collecting statistics of $oldpath...\n");
 my $stats11 = collect_statistics_about_ud_release($oldpath);
 my @languages11 = sort(keys(%{$stats11}));
@@ -452,9 +453,38 @@ foreach my $l (@languages11)
     }
 }
 print("\n");
-# Then we may want to do this for treebanks whose size has not changed:
-# zeman@zen:/ha/home/zeman/network/unidep$ for i in UD_* ; do echo $i ; cd $i ; git pull ; cd .. ; done
-# zeman@zen:/net/data/universal-dependencies-1.1$ for i in German Greek English Finnish Finnish-FTB Irish Hebrew Croatian Hungarian Indonesian Swedish ; do for j in UD_$i/*.conllu ; do echo diff $j /net/work/people/zeman/unidep/$j ; ( diff $j /net/work/people/zeman/unidep/$j | head -2 ) ; done ; done
+# Treebanks can appear, disappear and reappear. Get the list of all treebanks
+# that are part either of this or of the previous release.
+my %lastcurrtreebanks;
+foreach my $t (@langcodes, @languages11)
+{
+    $lastcurrtreebanks{$t}++;
+}
+# Find treebanks whose size has changed by more than 10%.
+my @changedsize;
+foreach my $t (sort(keys(%lastcurrtreebanks)))
+{
+    my $oldsize = exists($stats11->{$t}) ? $stats11->{$t}{nword} : 0;
+    my $newsize = exists($stats{$t}) ? $stats{$t}{nword} : 0;
+    if($newsize > $oldsize * 1.1 || $newsize < $oldsize * 0.9)
+    {
+        my %record =
+        (
+            'code' => $t,
+            'old'  => $oldsize,
+            'new'  => $newsize
+        );
+        push(@changedsize, \%record);
+    }
+}
+print("The size of the following treebanks significantly changed since the last release:\n");
+foreach my $r (@changedsize)
+{
+    print("    $r->{code}: $r->{old} --> $r->{new}\n");
+}
+print("\n");
+# Collect statistics of the current treebanks. Especially the total number of
+# sentences, tokens and words is needed for the metadata in Lindat.
 my $ntok = 0;
 my $nword = 0;
 my $nfus = 0;
