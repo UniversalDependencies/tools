@@ -1088,7 +1088,6 @@ Universal Dependencies is a project that seeks to develop cross-linguistically c
 The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. The $n_languages languages belong to $n_families families: $families. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
 
 $changelog
-
 $contributors
 
 
