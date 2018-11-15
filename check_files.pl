@@ -462,6 +462,9 @@ foreach my $t (@langcodes, @languages11)
 }
 # Find treebanks whose size has changed by more than 10%.
 my @changedsize;
+my $codemaxl = 0;
+my $oldmaxl = 0;
+my $newmaxl = 0;
 foreach my $t (sort(keys(%lastcurrtreebanks)))
 {
     my $oldsize = exists($stats11->{$t}) ? $stats11->{$t}{nword} : 0;
@@ -475,12 +478,16 @@ foreach my $t (sort(keys(%lastcurrtreebanks)))
             'new'  => $newsize
         );
         push(@changedsize, \%record);
+        $codemaxl = length($t) if(length($t) > $codemaxl);
+        $oldmaxl = length($oldsize) if(length($oldsize) > $oldmaxl);
+        $newmaxl = length($newsize) if(length($newsize) > $newmaxl);
     }
 }
 print("The size of the following treebanks significantly changed since the last release:\n");
 foreach my $r (@changedsize)
 {
-    print("    $r->{code}: $r->{old} --> $r->{new}\n");
+    my $padding = ' ' x ($codemaxl - length($r->{code}));
+    printf("    %s: %${oldmaxl}d --> %${newmaxl}d\n", $r->{code}.$padding, $r->{old}, $r->{new});
 }
 print("\n");
 # Collect statistics of the current treebanks. Especially the total number of
