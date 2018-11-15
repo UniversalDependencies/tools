@@ -4,18 +4,14 @@ This repository contains various scripts in Perl and Python that can be used as 
 
 ==============================
 validate.py
-validate-python3.py
 ==============================
 
 Reads a CoNLL-U file and verifies that it complies with the UD specification. It must be run with the language
 code and there must exist corresponding lists of treebank-specific features and dependency relations in order
 to check that they are valid, too.
 
-The script runs under Python 2.7 and needs both the third-party module "regex" and the "file_util" module found
+The script runs under Python 3 and needs both the third-party module "regex" and the "file_util" module found
 in this repository. If you do not have the "regex" module, install it using "pip install --user regex".
-NOTE: Since November 2018, there is an experimental port of the validator to Python 3. In the near future, it
-will be renamed to validate.py and become the only supported method of validation. The old Python 2 script will
-become obsolete (it will be probably kept available for a while).
 
   cat la_proiel-ud-train.conllu | python validate.py --lang la
 
