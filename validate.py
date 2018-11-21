@@ -920,7 +920,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'pl':  ['być', 'bywać', 'by'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць'],
-            'ru':  ['быть'],
+            'ru':  ['быть', 'бы'],
             'sl':  ['biti'],
             'hr':  ['biti'],
             'sr':  ['biti'],
