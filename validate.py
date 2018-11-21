@@ -821,17 +821,25 @@ def validate_functional_leaves(cols, children, nodes, line):
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
     childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
-    if re.match(r"^(case|mark|cc|aux|cop|goeswith)$", deprel) and childrels - set(['fixed', 'conj']):
-        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
+    disallowed_childrels = childrels - set(['fixed', 'conj'])
+    if re.match(r"^(case|mark|cc|aux|cop|goeswith)$", deprel) and disallowed_childrels:
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
     # other dependents either, with the possible exception of conj.
-    if deprel == 'fixed' and childrels - set(['conj']):
-        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
+    ###!!! We also allow a punct child, at least temporarily, because of fixed
+    ###!!! expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
+    ###!!! It would be better to keep these expressions as one token. But sometimes
+    ###!!! the tokenizer is out of control of the UD data providers and it is not
+    ###!!! practical to retokenize.
+    disallowed_childrels = childrels - set(['conj', 'punct'])
+    if deprel == 'fixed' and disallowed_childrels:
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
     # Punctuation can exceptionally have other punct children if an exclamation
     # mark is in brackets or quotes. It cannot have other children.
-    if deprel == 'punct' and childrels - set(['punct']):
-        warn("'%s' not expected to have children (%s)" % (deprel, childrels), 'Syntax', nodelineno=line)
+    disallowed_childrels = childrels - set(['punct'])
+    if deprel == 'punct' and disallowed_childrels:
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
 
 def validate_annotation(tree):
     """
