@@ -755,7 +755,7 @@ def validate_upos_vs_deprel(cols, children, nodes, line):
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
         warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
-    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]):
+    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
         warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
