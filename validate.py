@@ -710,6 +710,9 @@ def validate_tree(tree):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
+def get_udeprel(id, nodes):
+    return lspec2ud(nodes.get(id, [])[DEPREL])
+
 def validate_upos_vs_deprel(cols, children, nodes, line):
     """
     For certain relations checks that the dependent word belongs to an expected
@@ -722,7 +725,7 @@ def validate_upos_vs_deprel(cols, children, nodes, line):
         return
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
-    childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
+    childrels = set([get_udeprel(x, nodes) for x in children])
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -784,6 +787,25 @@ def validate_left_to_right_relations(cols, line):
         if ichild < iparent:
             warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax', nodelineno=line)
 
+def validate_single_subject(cols, children, nodes, line):
+    """
+    No predicate should have more than one subject.
+    An xcomp dependent normally has no subject, but in some languages the
+    requirement may be weaker: it could have an overt subject if it is
+    correferential with a particular argument of the matrix verb. Hence we do
+    not check zero subjects of xcomp dependents at present.
+
+    Parameters:
+      'cols' ....... columns of the head node
+      'children' ... list of ids
+      'nodes' ...... dictionary where we can translate the node id into its
+                     CoNLL-U columns
+      'line' ....... line number of the node within the file
+    """
+    subjects = sorted([x for x in children if re.search(r"subj", get_udeprel(x, nodes))])
+    if subjects and len(subjects) > 1:
+        warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=line)
+
 def validate_goeswith_span(cols, children, nodes, line):
     """
     The relation 'goeswith' is used to connect word parts that are separated
@@ -799,7 +821,7 @@ def validate_goeswith_span(cols, children, nodes, line):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
-    gwchildren = [x for x in children if lspec2ud(nodes.get(x, [])[DEPREL]) == 'goeswith'].sort()
+    gwchildren = sorted([x for x in children if lspec2ud(nodes.get(x, [])[DEPREL]) == 'goeswith'])
     if gwchildren:
         gwrange = [cols[ID], gwchildren]
         # All nodes between me and my last goeswith child should be goeswith too.
@@ -887,6 +909,7 @@ def validate_annotation(tree):
         mychildren = children.get(cols[ID], [])
         validate_upos_vs_deprel(cols, mychildren, nodes, myline)
         validate_left_to_right_relations(cols, myline)
+        validate_single_subject(cols, mychildren, nodes, myline)
         validate_goeswith_span(cols, mychildren, nodes, myline)
         validate_functional_leaves(cols, mychildren, nodes, myline)
 
