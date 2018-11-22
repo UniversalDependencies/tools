@@ -91,6 +91,8 @@ if(scalar(@ARGV)==1)
             # Check that all required metadata items are present in the README file.
             check_metadata($folder, $metadata, $current_release, \@errors, \$n_errors);
             chdir('..') or die("Cannot return to the upper folder");
+            # Check that the language-specific documentation has at least the index (summary) page.
+            check_documentation($folder, $langcode, \@errors, \$n_errors);
         }
         else
         {
@@ -886,6 +888,29 @@ sub check_metadata
     {
         $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#treebank-metadata for guidelines on machine-readable metadata.\n";
         $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#the-readme-file for general guidelines on README files.\n";
+    }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether documentation contains a summary page about a language.
+#------------------------------------------------------------------------------
+sub check_documentation
+{
+    my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
+    my $lcode = shift;
+    my $errors = shift; # reference to array of error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
+    ###!!! For now assume that a clone of the docs repository is accessible as
+    ###!!! the docs subfolder of the current folder.
+    if(! -f "docs/_$lcode/index.md")
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.");
+        $$n_errors++;
     }
     return $ok;
 }
