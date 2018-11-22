@@ -749,10 +749,12 @@ def validate_upos_vs_deprel(cols, children, nodes, line):
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
         warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
-    # Case is normally an adposition, maybe particle. However, there are also secondary adpositions and they may have the original POS tag:
+    # Case is normally an adposition, maybe particle.
+    # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
-    if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
+    # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
+    if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", cols[UPOS]) and not 'fixed' in childrels:
         warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
