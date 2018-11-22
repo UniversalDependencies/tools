@@ -927,11 +927,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hsb': ['być'],
             'pl':  ['być', 'bywać', 'by'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
-            'be':  ['быць'],
+            'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы'],
             'sl':  ['biti'],
-            'hr':  ['biti'],
-            'sr':  ['biti'],
+            'hr':  ['biti', 'htjeti'],
+            'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
             'cu':  ['бꙑти']
         }
