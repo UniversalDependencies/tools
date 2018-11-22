@@ -909,7 +909,7 @@ sub check_documentation
     if(! -f "docs/_$lcode/index.md")
     {
         $ok = 0;
-        push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.");
+        push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
         $$n_errors++;
     }
     return $ok;
