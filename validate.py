@@ -825,7 +825,7 @@ def validate_goeswith_span(cols, children, nodes, line):
     if gwchildren:
         gwrange = [cols[ID], gwchildren]
         # All nodes between me and my last goeswith child should be goeswith too.
-        if str(gwchildren) != str(range(int(cols[ID]), int(nodes.get(gwchildren[-1], [])))):
+        if str(gwchildren) != str(range(int(cols[ID]), int(nodes.get(gwchildren[-1], [])[ID]))):
             warn("Violation of guidelines: gaps in goeswith range '%s'" % str(gwrange), 'Syntax', lineno=False)
         # Non-last node in a goeswith range must have a space after itself.
         if 'SpaceAfter=No' in cols[MISC].split('|'):
