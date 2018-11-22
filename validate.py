@@ -803,7 +803,7 @@ def validate_single_subject(cols, children, nodes, line):
       'line' ....... line number of the node within the file
     """
     subjects = sorted([x for x in children if re.search(r"subj", get_udeprel(x, nodes))])
-    if subjects and len(subjects) > 1:
+    if len(subjects) > 1:
         warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=line)
 
 def validate_goeswith_span(cols, children, nodes, line):
