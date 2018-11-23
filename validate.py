@@ -721,9 +721,9 @@ def build_tree(sentence):
         node_line += 1
         if not is_word(cols):
             continue
-        # We do not necessarily need DEPS and MISC for the tree to work.
-        # But we want to be sure that DEPREL exists.
-        if DEPREL >= len(cols):
+        # Even MISC may be needed when checking the annotation guidelines
+        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
+        if MISC >= len(cols):
             # This error has been reported on lower levels, do not report it here.
             # Do not continue to check annotation if there are elementary flaws.
             return None
@@ -862,31 +862,6 @@ def validate_single_subject(cols, children, nodes, line):
     if len(subjects) > 1:
         warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=line)
 
-def validate_goeswith_span(cols, children, nodes, line):
-    """
-    The relation 'goeswith' is used to connect word parts that are separated
-    by whitespace and should be one word instead. We assume that the relation
-    goes left-to-right, which is checked elsewhere. Here we check that the
-    nodes really were separated by whitespace. If there is another node in the
-    middle, it must be also attached via 'goeswith'.
-
-    Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
-      'line' ....... line number of the node within the file
-    """
-    gwchildren = sorted([x for x in children if lspec2ud(nodes.get(x, [])[DEPREL]) == 'goeswith'])
-    if gwchildren:
-        gwrange = [cols[ID], gwchildren]
-        # All nodes between me and my last goeswith child should be goeswith too.
-        if str(gwchildren) != str(range(int(cols[ID]), int(nodes.get(gwchildren[-1], [])[ID]))):
-            warn("Violation of guidelines: gaps in goeswith range '%s'" % str(gwrange), 'Syntax', lineno=False)
-        # Non-last node in a goeswith range must have a space after itself.
-        if 'SpaceAfter=No' in cols[MISC].split('|'):
-            warn("'goeswith' cannot connect nodes that are not separated by whitespace", 'Syntax', nodelineno=line)
-
 def validate_functional_leaves(cols, children, nodes, line):
     """
     Most of the time, function-word nodes should be leaves. This function
@@ -989,6 +964,27 @@ def get_gap(id, tree):
         gap = set(rangebetween) - projection
     return gap
 
+def validate_goeswith_span(id, tree):
+    """
+    The relation 'goeswith' is used to connect word parts that are separated
+    by whitespace and should be one word instead. We assume that the relation
+    goes left-to-right, which is checked elsewhere. Here we check that the
+    nodes really were separated by whitespace. If there is another node in the
+    middle, it must be also attached via 'goeswith'. The parameter id refers to
+    the node whose goeswith children we test.
+    """
+    gwchildren = sorted([x for x in tree['children'][id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'goeswith'])
+    if gwchildren:
+        gwlist = sorted([id] + gwchildren)
+        gwrange = list(range(id, int(tree['nodes'][gwchildren[-1]][ID]) + 1))
+        # All nodes between me and my last goeswith child should be goeswith too.
+        if gwlist != gwrange:
+            warn("Violation of guidelines: gaps in goeswith group %s != %s" % (str(gwlist), str(gwrange)), 'Syntax', nodelineno=tree['linenos'][id])
+        # Non-last node in a goeswith range must have a space after itself.
+        nospaceafter = [x for x in gwlist[:-1] if 'SpaceAfter=No' in tree['nodes'][x][MISC].split('|')]
+        if nospaceafter:
+            warn("'goeswith' cannot connect nodes that are not separated by whitespace", 'Syntax', nodelineno=tree['linenos'][id])
+
 def validate_projective_punctuation(id, tree):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
@@ -1049,13 +1045,13 @@ def validate_annotation(tree):
         validate_upos_vs_deprel(cols, mychildren, nodes, myline)
         validate_left_to_right_relations(cols, myline)
         validate_single_subject(cols, mychildren, nodes, myline)
-        validate_goeswith_span(cols, mychildren, nodes, myline)
         validate_functional_leaves(cols, mychildren, nodes, myline)
     ###!!! New approach. We will gradually rewrite the above tests to use this approach too.
     treee = build_tree(tree) ###!!! the input tree should be called sentence
     if treee:
         for node in treee['nodes']:
             id = int(node[ID])
+            validate_goeswith_span(id, treee)
             validate_projective_punctuation(id, treee)
     else:
         warn("Skipping annotation tests because of corrupted tree structure", 'Format', lineno=False)
