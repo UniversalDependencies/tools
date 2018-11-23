@@ -710,6 +710,75 @@ def validate_tree(tree):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
+def build_tree(sentence):
+    """
+    Takes the list of non-comment lines (line = list of columns) describing
+    a sentence. Returns a dictionary with items providing easier access to the
+    tree structure. In case of fatal problems (missing HEAD etc.) returns None
+    but does not report the error (presumably it has already been reported).
+
+    tree ... dictionary:
+      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
+    """
+    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
+    node_line = sentence_line - 1
+    children = {} # node -> set of children
+    tree = {
+        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
+        'children': [],
+        'linenos':  [sentence_line] # for node 0
+    }
+    for cols in sentence:
+        node_line += 1
+        if not is_word(cols):
+            continue
+        # We do not necessarily need DEPS and MISC for the tree to work.
+        # But we want to be sure that DEPREL exists.
+        if DEPREL >= len(cols):
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        tree['nodes'].append(cols)
+        tree['linenos'].append(node_line)
+        # Incrementally build the set of children of every node.
+        children.setdefault(cols[HEAD], set()).add(id_)
+    for cols in tree['nodes']:
+        tree['children'].append(sorted(children.get(cols[ID], [])))
+    # Return None if there are any cycles. Avoid surprises when working with the graph.
+    # Presence of cycles is equivalent to presence of unreachable nodes.
+    projection = set()
+    get_projection(0, tree, projection)
+    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
+    if unreachable:
+        return None
+    return tree
+
+def get_projection(id, tree, projection):
+    """
+    Like proj() above, but works with the tree data structure. Collects node ids
+    in the set called projection.
+    """
+    for child in tree['children'][id]:
+        if child in projection:
+            continue # cycle is or will be reported elsewhere
+        projection.add(child)
+        get_projection(child, tree, projection)
+    return projection
+
 def get_udeprel(id, nodes):
     return lspec2ud(nodes.get(id, [])[DEPREL])
 
@@ -865,6 +934,89 @@ def validate_functional_leaves(cols, children, nodes, line):
     if deprel == 'punct' and disallowed_childrels:
         warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
 
+def collect_ancestors(id, tree, ancestors):
+    """
+    Usage: ancestors = collect_ancestors(nodeid, nodes, [])
+    """
+    pid = int(tree['nodes'][int(id)][HEAD])
+    if pid == 0:
+        return ancestors
+    if pid in ancestors:
+        # Cycle has been reported on level 2. But we must jump out of it now.
+        return ancestors
+    ancestors.append(pid)
+    return collect_ancestors(pid, tree, ancestors)
+
+def get_caused_nonprojectivities(id, tree):
+    """
+    Checks whether a node is in a gap of a nonprojective edge. Report true only
+    if the node's parent is not in the same gap. (We use this function to check
+    that a punctuation node does not cause nonprojectivity. But if it has been
+    dragged to the gap with a larger subtree, then we do not blame it.)
+
+    tree ... dictionary:
+      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
+    """
+    iid = int(id) # just to be sure
+    # We need to find all nodes that are not ancestors of this node and lie
+    # on other side of this node than their parent. First get the set of
+    # ancestors.
+    ancestors = collect_ancestors(iid, tree, [])
+    maxid = len(tree['nodes']) - 1
+    # Get the lists of nodes to either side of id.
+    # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
+    pid = int(tree['nodes'][iid][HEAD])
+    if pid < iid:
+        left = range(pid, iid - 1)
+        right = range(iid + 1, maxid)
+    else:
+        left = range(1, iid - 1)
+        right = range(iid + 1, pid)
+    # Exclude ancestors of id from the ranges.
+    sancestors = set(ancestors)
+    leftna = set(left) - sancestors
+    rightna = set(right) - sancestors
+    leftcross = [x for x in leftna if int(tree['nodes'][x][HEAD]) > iid]
+    rightcross = [x for x in rightna if int(tree['nodes'][x][HEAD]) < iid]
+    # Once again, exclude nonprojectivities that are caused by ancestors of id.
+    if pid < iid:
+        rightcross = [x for x in rightcross if int(tree['nodes'][x][HEAD]) > pid]
+    else:
+        leftcross = [x for x in leftcross if int(tree['nodes'][x][HEAD]) < pid]
+    # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
+    return sorted(leftcross + rightcross)
+
+def get_gap(id, tree):
+    iid = int(id) # just to be sure
+    pid = int(tree['nodes'][iid][HEAD])
+    if iid < pid:
+        rangebetween = range(iid + 1, pid - 1)
+    else:
+        rangebetween = range(pid + 1, iid - 1)
+    gap = set()
+    if rangebetween:
+        projection = set()
+        get_projection(pid, tree, projection)
+        gap = set(rangebetween) - projection
+    return gap
+
+def validate_projective_punctuation(id, tree):
+    """
+    Punctuation is not supposed to cause nonprojectivity or to be attached
+    nonprojectively.
+    """
+    # This is a level 3 test, we will check only the universal part of the relation.
+    deprel = lspec2ud(tree['nodes'][id][DEPREL])
+    if deprel == 'punct':
+        nonprojnodes = get_caused_nonprojectivities(id, tree)
+        if nonprojnodes:
+            warn("Punctuation must not cause non-projectivity of nodes %s" % nonprojnodes, 'Syntax', nodelineno=tree['linenos'][id])
+        gap = get_gap(id, tree)
+        if gap:
+            warn("Punctuation must not be attached non-projectively over nodes %s" % sorted(gap), 'Syntax', nodelineno=tree['linenos'][id])
+
 def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
@@ -912,6 +1064,14 @@ def validate_annotation(tree):
         validate_single_subject(cols, mychildren, nodes, myline)
         validate_goeswith_span(cols, mychildren, nodes, myline)
         validate_functional_leaves(cols, mychildren, nodes, myline)
+    ###!!! New approach. We will gradually rewrite the above tests to use this approach too.
+    treee = build_tree(tree) ###!!! the input tree should be called sentence
+    if treee:
+        for node in treee['nodes']:
+            id = int(node[ID])
+            validate_projective_punctuation(id, treee)
+    else:
+        warn("Skipping annotation tests because of corrupted tree structure", 'Format', lineno=False)
 
 
 
