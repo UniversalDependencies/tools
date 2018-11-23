@@ -898,7 +898,7 @@ def validate_goeswith_span(cols, children, nodes, line):
             warn("Violation of guidelines: gaps in goeswith range '%s'" % str(gwrange), 'Syntax', lineno=False)
         # Non-last node in a goeswith range must have a space after itself.
         if 'SpaceAfter=No' in cols[MISC].split('|'):
-            warn("'goeswith' cannot connect nodes that are not separated by whitespace" % cols[ID], 'Syntax', nodelineno=line)
+            warn("'goeswith' cannot connect nodes that are not separated by whitespace", 'Syntax', nodelineno=line)
 
 def validate_functional_leaves(cols, children, nodes, line):
     """
