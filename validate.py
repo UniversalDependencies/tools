@@ -274,7 +274,10 @@ def validate_newlines(inp):
 
 
 #==============================================================================
-# Level 2 tests. Tree structure, universal tags, features and deprels.
+# Level 2 tests. Tree structure, universal tags and deprels. Note that any
+# well-formed Feature=Valid pair is allowed (because it could be language-
+# specific) and any word form or lemma can contain spaces (because language-
+# specific guidelines may permit it).
 #==============================================================================
 
 ###### Metadata tests #########
@@ -365,7 +368,6 @@ def validate_cols(cols, tag_sets, args):
     All tests that can run on a single line. Done as soon as the line is read,
     called from trees() if level>1.
     """
-    validate_whitespace(cols,tag_sets) # level 2
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
         validate_features(cols, tag_sets, args) # level 2 and up (relevant code checks whether higher level is required)
@@ -380,26 +382,8 @@ def validate_cols(cols, tag_sets, args):
         # TODO check also the following:
         # - DEPS are connected and non-acyclic
         # (more, what?)
-
-def validate_whitespace(cols,tag_sets):
-    """
-    Checks a single line for disallowed whitespace.
-    Here we assume that all language-independent whitespace-related tests have
-    already been done in validate_cols_level1(), so we only check for words
-    with spaces that are explicitly allowed in a given language.
-    """
-    for col_idx in (FORM,LEMMA):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]) is not None:
-            # Whitespace found - does it pass?
-            for regex in tag_sets[TOKENSWSPACE]:
-                match=regex.match(cols[col_idx])
-                if match and match.group(0)==cols[col_idx]:
-                    break # We have a full match from beginning to end
-            else:
-                warn_on_missing_files.add('tokens_w_space')
-                warn("'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."%(cols[col_idx], COLNAMES[col_idx]), 'Format')
+    if args.level > 3:
+        validate_whitespace(cols, tag_sets) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
 def validate_token_empty_vals(cols):
     """
@@ -464,8 +448,10 @@ attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z
 val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
 def validate_features(cols, tag_sets, args):
     """
-    Checks general constraints on feature-value format. On level 3 and higher,
-    also checks that a feature-value pair is listed as approved.
+    Checks general constraints on feature-value format. On level 4 and higher,
+    also checks that a feature-value pair is listed as approved. (Every pair
+    must be allowed on level 2 because it could be defined as language-specific.
+    To disallow non-universal features, test on level 4 with language 'ud'.)
     """
     if FEATS >= len(cols):
         return # this has been already reported in trees()
@@ -494,8 +480,9 @@ def validate_features(cols, tag_sets, args):
                 if not val_re.match(v):
                     warn("Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f), 'Morpho')
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
-                # Level 3 also checks whether the feature value is on the list.
-                if args.level > 2 and tag_sets[FEATS] is not None and attr+u"="+v not in tag_sets[FEATS]:
+                # Level 4 also checks whether the feature value is on the list.
+                # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
+                if args.level > 3 and tag_sets[FEATS] is not None and attr+'='+v not in tag_sets[FEATS]:
                     warn_on_missing_files.add("feat_val")
                     warn('Unknown attribute-value pair %s=%s'%(attr,v), 'Morpho')
     if len(attr_set)!=len(feat_list):
@@ -1076,6 +1063,33 @@ def validate_annotation(tree):
 
 
 #==============================================================================
+# Level 4 tests. Language-specific formal tests. Now we can check in which
+# words spaces are permitted, and which Feature=Value pairs are defined.
+#==============================================================================
+
+def validate_whitespace(cols, tag_sets):
+    """
+    Checks a single line for disallowed whitespace.
+    Here we assume that all language-independent whitespace-related tests have
+    already been done in validate_cols_level1(), so we only check for words
+    with spaces that are explicitly allowed in a given language.
+    """
+    for col_idx in (FORM,LEMMA):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+        if whitespace_re.match(cols[col_idx]) is not None:
+            # Whitespace found - does it pass?
+            for regex in tag_sets[TOKENSWSPACE]:
+                match=regex.match(cols[col_idx])
+                if match and match.group(0)==cols[col_idx]:
+                    break # We have a full match from beginning to end
+            else:
+                warn_on_missing_files.add('tokens_w_space')
+                warn("'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."%(cols[col_idx], COLNAMES[col_idx]), 'Format')
+
+
+
+#==============================================================================
 # Level 5 tests. Annotation content vs. the guidelines, language-specific.
 #==============================================================================
 
@@ -1291,6 +1305,9 @@ if __name__=="__main__":
         print('Option --level must not be less than 1; changing from %d to 1' % args.level, file=sys.stderr)
         args.level = 1
     # No language-specific tests for levels 1-3
+    # Anyways, any Feature=Value pair should be allowed at level 3 (because it may be language-specific),
+    # and any word form or lemma can contain spaces (because language-specific guidelines may allow it).
+    # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
     if args.level < 4:
         args.lang = 'ud'
 
