@@ -876,8 +876,8 @@ def validate_functional_leaves(cols, children, nodes, line):
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
     childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
-    disallowed_childrels = childrels - set(['fixed', 'conj'])
-    if re.match(r"^(case|mark|cc|aux|cop|goeswith)$", deprel) and disallowed_childrels:
+    disallowed_childrels = childrels - set(['goeswith', 'fixed', 'conj'])
+    if re.match(r"^(case|mark|cc|aux|cop)$", deprel) and disallowed_childrels:
         warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
@@ -887,8 +887,12 @@ def validate_functional_leaves(cols, children, nodes, line):
     ###!!! It would be better to keep these expressions as one token. But sometimes
     ###!!! the tokenizer is out of control of the UD data providers and it is not
     ###!!! practical to retokenize.
-    disallowed_childrels = childrels - set(['conj', 'punct'])
+    disallowed_childrels = childrels - set(['goeswith', 'conj', 'punct'])
     if deprel == 'fixed' and disallowed_childrels:
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
+    # Goeswith cannot have any children, not even another goeswith.
+    disallowed_childrels = childrels
+    if re.match(r"^(goeswith)$", deprel) and disallowed_childrels:
         warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
     # Punctuation can exceptionally have other punct children if an exclamation
     # mark is in brackets or quotes. It cannot have other children.
