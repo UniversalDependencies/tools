@@ -324,10 +324,13 @@ def validate_text_meta(comments,tree):
         skip_words=set()
         mismatch_reported=0 # do not report multiple mismatches in the same sentence; they usually have the same cause
         for cols in tree:
-            if u"NoSpaceAfter=Yes" in cols[MISC]: # I leave this without the split("|") to catch all
+            if MISC >= len(cols):
+                # This error has been reported elsewhere but we cannot check MISC now.
+                continue
+            if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
                 warn('NoSpaceAfter=Yes should be replaced with SpaceAfter=No', 'Metadata')
             if '.' in cols[ID]: # empty word
-                if u"SpaceAfter=No" in cols[MISC]: # I leave this without the split("|") to catch all
+                if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                     warn('There should not be a SpaceAfter=No entry for empty words', 'Metadata')
                 continue
             elif '-' in cols[ID]: # multi-word token
@@ -341,8 +344,8 @@ def validate_text_meta(comments,tree):
                 for i in range(begi, endi+1):
                     skip_words.add(str(i))
             elif cols[ID] in skip_words:
-                if u"SpaceAfter=No" in cols[MISC]:
-                    warn('There should not be a SpaceAfter=No entry for words which are a part of a token', 'Metadata')
+                if 'SpaceAfter=No' in cols[MISC]:
+                    warn('There should not be a SpaceAfter=No entry for words which are a part of a multi-word token', 'Metadata')
                 continue
             else:
                 # Err, I guess we have nothing to do here. :)
@@ -354,7 +357,7 @@ def validate_text_meta(comments,tree):
                     mismatch_reported=1
             else:
                 stext=stext[len(cols[FORM]):] # eat the form
-                if u"SpaceAfter=No" not in cols[MISC].split("|"):
+                if 'SpaceAfter=No' not in cols[MISC].split("|"):
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         warn("SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'" %(cols[ID], shorten(cols[FORM]+stext)), 'Metadata')
                     stext=stext.lstrip()
