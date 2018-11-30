@@ -10,8 +10,8 @@ Reads a CoNLL-U file and verifies that it complies with the UD specification. It
 code and there must exist corresponding lists of treebank-specific features and dependency relations in order
 to check that they are valid, too.
 
-The script runs under Python 3 and needs both the third-party module "regex" and the "file_util" module found
-in this repository. If you do not have the "regex" module, install it using "pip install --user regex".
+The script runs under Python 3 and needs the third-party module "regex". If you do not have the "regex" module,
+install it using "pip install --user regex".
 
   cat la_proiel-ud-train.conllu | python validate.py --lang la
 

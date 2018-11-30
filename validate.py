@@ -11,7 +11,6 @@ import logging
 # as in Perl.
 #import re
 import regex as re
-import file_util
 import traceback
 import argparse
 
@@ -1213,8 +1212,6 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
                 validate_annotation(tree) # level 3
                 if args.level > 4:
                     validate_lspec_annotation(tree, args.lang) # level 5
-        if args.echo_input:
-            file_util.print_tree(comments, tree, out)
     validate_newlines(inp) # level 1
 
 def load_file(f_name):
@@ -1280,9 +1277,7 @@ if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
 
     io_group=opt_parser.add_argument_group("Input / output options")
-    io_group.add_argument('--noecho', dest="echo_input", action="store_false", default=False, help='Do not echo the input CoNLL-U data onto output. (for backward compatibility)')
-    io_group.add_argument('--echo', dest="echo_input", action="store_true", default=False, help='Echo the input CoNLL-U data onto output. (for backward compatibility)')
-    io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail. Implies --noecho.')
+    io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
     io_group.add_argument('input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
     #I don't think output makes much sense now that we allow multiple inputs, so it will default to /dev/stdout
@@ -1313,9 +1308,6 @@ if __name__=="__main__":
     # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
     if args.level < 4:
         args.lang = 'ud'
-
-    if args.quiet:
-        args.echo_input=False
 
     tagsets={XPOS:None,UPOS:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
 
