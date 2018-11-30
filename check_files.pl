@@ -906,11 +906,34 @@ sub check_documentation
     my $ok = 1;
     ###!!! For now assume that a clone of the docs repository is accessible as
     ###!!! the docs subfolder of the current folder.
-    if(! -f "docs/_$lcode/index.md")
+    my $indexpath = "docs/_$lcode/index.md";
+    if(! -f $indexpath)
     {
         $ok = 0;
         push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
         $$n_errors++;
+    }
+    else
+    {
+        # So the file exists but does it really contain anything useful?
+        # Some people just create an almost empty file without bothering to put the contents there (e.g., Sebastian for English).
+        my $doc;
+        open(IDX, $indexpath);
+        while(<IDX>)
+        {
+            $doc .= $_;
+        }
+        close(IDX);
+        # Czech documentation has over 16000 B.
+        # Swedish documentation has over 4500 B.
+        # Yoruba is probably incomplete but it still has over 3500 B.
+        # Let's require 2500 B as a minimum and hope that people don't just put a sequence of whitespace characters there.
+        if(length($doc) < 2500)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+            $$n_errors++;
+        }
     }
     return $ok;
 }
