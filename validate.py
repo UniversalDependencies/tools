@@ -991,6 +991,22 @@ def validate_goeswith_span(id, tree):
         if nospaceafter:
             warn("'goeswith' cannot connect nodes that are not separated by whitespace", 'Syntax', nodelineno=tree['linenos'][id])
 
+def validate_fixed_span(id, tree):
+    """
+    Like with goeswith, the fixed relation should not in general skip words that
+    are not part of the fixed expression. Unlike goeswith however, there can be
+    an intervening punctuation symbol.
+    """
+    fxchildren = sorted([i for i in tree['children'][id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
+    if fxchildren:
+        fxlist = sorted([id] + fxchildren)
+        fxrange = list(range(id, int(tree['nodes'][fxchildren[-1]][ID]) + 1))
+        # All nodes between me and my last fixed child should be either fixed or punct.
+        fxdiff = set(fxrange) - set(fxlist)
+        fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
+        if fxgap:
+            warn("Gaps in fixed expression %s" % str(fxlist), 'Syntax', nodelineno=tree['linenos'][id])
+
 def validate_projective_punctuation(id, tree):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
@@ -1057,6 +1073,7 @@ def validate_annotation(tree):
     if treee:
         for node in treee['nodes']:
             id = int(node[ID])
+            validate_fixed_span(id, treee)
             validate_goeswith_span(id, treee)
             validate_projective_punctuation(id, treee)
     else:
