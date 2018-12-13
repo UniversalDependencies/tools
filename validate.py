@@ -645,6 +645,13 @@ def validate_deps(tree):
                         warn("DEPS contain multiple instances of the same relation '%s:%s'" % (h, d), 'Format', nodelineno=node_line)
                 lasth = h
                 lastd = d
+                # Like in the basic representation, head 0 implies relation root and vice versa.
+                # Note that the enhanced graph may have multiple roots (coordination of predicates).
+                ud = lspec2ud(d)
+                if h == 0 and ud != 'root':
+                    warn("Illegal relation '%s:%s' in DEPS: must be 'root' if head is 0" % (h, d), 'Format', nodelineno=node_line)
+                if ud == 'root' and h != 0:
+                    warn("Illegal relation '%s:%s' in DEPS: cannot be 'root' if head is not 0" % (h, d), 'Format', nodelineno=node_line)
         try:
             id_ = float(cols[ID])
         except ValueError:
