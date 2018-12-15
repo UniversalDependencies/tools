@@ -648,9 +648,9 @@ def validate_deps(tree):
                 # Like in the basic representation, head 0 implies relation root and vice versa.
                 # Note that the enhanced graph may have multiple roots (coordination of predicates).
                 ud = lspec2ud(d)
-                if h == 0 and ud != 'root':
+                if h == '0' and ud != 'root':
                     warn("Illegal relation '%s:%s' in DEPS: must be 'root' if head is 0" % (h, d), 'Format', nodelineno=node_line)
-                if ud == 'root' and h != 0:
+                if ud == 'root' and h != '0':
                     warn("Illegal relation '%s:%s' in DEPS: cannot be 'root' if head is not 0" % (h, d), 'Format', nodelineno=node_line)
         try:
             id_ = float(cols[ID])
@@ -699,6 +699,85 @@ def validate_tree(tree):
     unreachable = set(range(1, len(word_tree) + 1)) - root_proj # all words minus those reachable from root
     if unreachable:
         warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
+
+def build_egraph(sentence):
+    """
+    Takes the list of non-comment lines (line = list of columns) describing
+    a sentence. Returns a dictionary with items providing easier access to the
+    enhanced graph structure. In case of fatal problems returns None
+    but does not report the error (presumably it has already been reported).
+
+    egraph ... dictionary:
+      nodes ... dictionary of dictionaries, each corresponding to a word or an empty node; mwt lines are skipped
+          keys equal to node ids (i.e. strings that look like integers or decimal numbers; key 0 is the artificial root node)
+          value is a dictionary-record:
+              cols ... array of column values from the input line corresponding to the node
+              children ... set of children ids (strings)
+              lineno ... line number in the file (needed in error messages)
+    """
+    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
+    node_line = sentence_line - 1
+    egraph_exists = False # enhanced deps are optional
+    rootnode = {
+        'cols': ['0', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
+        'children': set(),
+        'lineno': sentence_line
+    }
+    egraph = {
+        '0': rootnode
+    } # structure described above
+    nodeids = set()
+    for cols in sentence:
+        node_line += 1
+        if is_multiword_token(cols):
+            continue
+        if MISC >= len(cols):
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            deps = deps_list(cols)
+            heads = [h for h, d in deps]
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        if is_empty_node(cols):
+            egraph_exists = True
+        nodeids.add(cols[ID])
+        # The graph may already contain a record for the current node if one of
+        # the previous nodes is its child. If it doesn't, we will create it now.
+        egraph.setdefault(cols[ID], {})
+        egraph[cols[ID]]['cols'] = cols
+        egraph[cols[ID]].setdefault('children', set())
+        egraph[cols[ID]]['lineno'] = node_line
+        # Incrementally build the set of children of every node.
+        for h in heads:
+            egraph_exists = True
+            egraph.setdefault(h, {})
+            egraph[h].setdefault('children', set()).add(cols[ID])
+    # We are currently testing the existence of enhanced graphs separately for each sentence.
+    # It is thus possible to have one sentence with connected egraph and another without enhanced dependencies.
+    if not egraph_exists:
+        return None
+    # Check that the graph is connected. The UD v2 guidelines do not license unconnected graphs.
+    # Compute projection of every node. Beware of cycles.
+    projection = set()
+    get_graph_projection('0', egraph, projection)
+    unreachable = nodeids - projection
+    if unreachable:
+        sur = sorted(unreachable)
+        warn("Enhanced graph is not connected. Nodes %s are not reachable from any root" % sur, 'Syntax', lineno=False)
+        return None
+    return egraph
+
+def get_graph_projection(id, graph, projection):
+    for child in graph[id]['children']:
+        if child in projection:
+            continue; # skip cycles
+        projection.add(child)
+        get_graph_projection(child, graph, projection)
+    return projection
 
 
 
@@ -1230,6 +1309,7 @@ def validate(inp,out,args,tag_sets,known_sent_ids):
             validate_deps(tree) # level 2 and up
             validate_tree(tree) # level 2
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
+            build_egraph(tree) # level 2
             if args.check_tree_text:
                 validate_text_meta(comments, tree) # level 2
             if args.level > 2:
