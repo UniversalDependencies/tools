@@ -363,7 +363,7 @@ def validate_text_meta(comments,tree):
         if stext:
             warn("Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext, 'Metadata')
 
-###### Tests applicable to a single row indpendently of the others
+##### Tests applicable to a single row indpendently of the others
 
 def validate_cols(cols, tag_sets, args):
     """
@@ -532,7 +532,7 @@ def validate_deprels(cols, tag_sets, args):
                 warn_on_missing_files.add("edeprel")
                 warn("Unknown enhanced dependency relation '%s' in '%s'"%(deprel,head_deprel), 'Syntax')
 
-##### Tests applicable to the whole tree
+##### Tests applicable to the whole sentence
 
 def subset_to_words_and_empty_nodes(tree):
     """
@@ -553,12 +553,12 @@ def deps_list(cols):
 
 def validate_ID_references(tree):
     """
-    Validates that HEAD and DEPRELS reference existing IDs.
+    Validates that HEAD and DEPS reference existing IDs.
     """
     word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
     def valid_id(i):
-        return i in ids or i == u'0'
+        return i in ids or i == '0'
     def valid_empty_head(cols):
         return cols[HEAD] == '_' and is_empty_node(cols)
     for cols in word_tree:
@@ -677,14 +677,10 @@ def validate_tree(tree):
             id_ = int(cols[ID])
         except ValueError:
             continue # this has been already reported in validate_cols_level1()
-        if cols[HEAD]=='_':
-            warn('Empty HEAD reference', 'Format', nodelineno=node_line)
-            continue
         try:
             head = int(cols[HEAD])
         except ValueError:
-            warn('Non-integer HEAD reference', 'Format', nodelineno=node_line)
-            continue
+            continue # this has been already reported in validate_ID_references()
         if head == id_:
             warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
             continue
@@ -700,12 +696,83 @@ def validate_tree(tree):
     if unreachable:
         warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
 
+def build_tree(sentence):
+    """
+    Takes the list of non-comment lines (line = list of columns) describing
+    a sentence. Returns a dictionary with items providing easier access to the
+    tree structure. In case of fatal problems (missing HEAD etc.) returns None
+    but does not report the error (presumably it has already been reported).
+
+    tree ... dictionary:
+      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
+    """
+    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
+    node_line = sentence_line - 1
+    children = {} # node -> set of children
+    tree = {
+        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
+        'children': [],
+        'linenos':  [sentence_line] # for node 0
+    }
+    for cols in sentence:
+        node_line += 1
+        if not is_word(cols):
+            continue
+        # Even MISC may be needed when checking the annotation guidelines
+        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
+        if MISC >= len(cols):
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        tree['nodes'].append(cols)
+        tree['linenos'].append(node_line)
+        # Incrementally build the set of children of every node.
+        children.setdefault(cols[HEAD], set()).add(id_)
+    for cols in tree['nodes']:
+        tree['children'].append(sorted(children.get(cols[ID], [])))
+    # Return None if there are any cycles. Avoid surprises when working with the graph.
+    # Presence of cycles is equivalent to presence of unreachable nodes.
+    projection = set()
+    get_projection(0, tree, projection)
+    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
+    if unreachable:
+        return None
+    return tree
+
+def get_projection(id, tree, projection):
+    """
+    Like proj() above, but works with the tree data structure. Collects node ids
+    in the set called projection.
+    """
+    for child in tree['children'][id]:
+        if child in projection:
+            continue # cycle is or will be reported elsewhere
+        projection.add(child)
+        get_projection(child, tree, projection)
+    return projection
+
 def build_egraph(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
     a sentence. Returns a dictionary with items providing easier access to the
     enhanced graph structure. In case of fatal problems returns None
     but does not report the error (presumably it has already been reported).
+    However, once the graph has been found and built, this function verifies
+    that the graph is connected and generates an error if it is not.
 
     egraph ... dictionary:
       nodes ... dictionary of dictionaries, each corresponding to a word or an empty node; mwt lines are skipped
@@ -784,75 +851,6 @@ def get_graph_projection(id, graph, projection):
 #==============================================================================
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
-
-def build_tree(sentence):
-    """
-    Takes the list of non-comment lines (line = list of columns) describing
-    a sentence. Returns a dictionary with items providing easier access to the
-    tree structure. In case of fatal problems (missing HEAD etc.) returns None
-    but does not report the error (presumably it has already been reported).
-
-    tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
-    """
-    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
-    node_line = sentence_line - 1
-    children = {} # node -> set of children
-    tree = {
-        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
-        'children': [],
-        'linenos':  [sentence_line] # for node 0
-    }
-    for cols in sentence:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        # Even MISC may be needed when checking the annotation guidelines
-        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
-        if MISC >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            id_ = int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            head = int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        tree['nodes'].append(cols)
-        tree['linenos'].append(node_line)
-        # Incrementally build the set of children of every node.
-        children.setdefault(cols[HEAD], set()).add(id_)
-    for cols in tree['nodes']:
-        tree['children'].append(sorted(children.get(cols[ID], [])))
-    # Return None if there are any cycles. Avoid surprises when working with the graph.
-    # Presence of cycles is equivalent to presence of unreachable nodes.
-    projection = set()
-    get_projection(0, tree, projection)
-    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
-    if unreachable:
-        return None
-    return tree
-
-def get_projection(id, tree, projection):
-    """
-    Like proj() above, but works with the tree data structure. Collects node ids
-    in the set called projection.
-    """
-    for child in tree['children'][id]:
-        if child in projection:
-            continue # cycle is or will be reported elsewhere
-        projection.add(child)
-        get_projection(child, tree, projection)
-    return projection
 
 def get_udeprel(id, nodes):
     return lspec2ud(nodes.get(id, [])[DEPREL])
@@ -1108,7 +1106,7 @@ def validate_projective_punctuation(id, tree):
         if gap:
             warn("Punctuation must not be attached non-projectively over nodes %s" % sorted(gap), 'Syntax', nodelineno=tree['linenos'][id])
 
-def validate_annotation(tree):
+def validate_annotation(sentence):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
@@ -1117,7 +1115,7 @@ def validate_annotation(tree):
     lines = {} # node id -> line number of that node (for error messages)
     nodes = {} # node id -> columns of that node
     children = {} # node -> set of children
-    for cols in tree:
+    for cols in sentence:
         node_line += 1
         if not is_word(cols):
             continue
@@ -1145,7 +1143,7 @@ def validate_annotation(tree):
         lines.setdefault(cols[ID], node_line)
         nodes.setdefault(cols[ID], cols)
         children.setdefault(cols[HEAD], set()).add(cols[ID])
-    for cols in tree:
+    for cols in sentence:
         if not is_word(cols):
             continue
         myline = lines.get(cols[ID], sentence_line)
@@ -1155,13 +1153,13 @@ def validate_annotation(tree):
         validate_single_subject(cols, mychildren, nodes, myline)
         validate_functional_leaves(cols, mychildren, nodes, myline)
     ###!!! New approach. We will gradually rewrite the above tests to use this approach too.
-    treee = build_tree(tree) ###!!! the input tree should be called sentence
-    if treee:
-        for node in treee['nodes']:
+    tree = build_tree(sentence)
+    if tree:
+        for node in tree['nodes']:
             id = int(node[ID])
-            validate_fixed_span(id, treee)
-            validate_goeswith_span(id, treee)
-            validate_projective_punctuation(id, treee)
+            validate_fixed_span(id, tree)
+            validate_goeswith_span(id, tree)
+            validate_projective_punctuation(id, tree)
     else:
         warn("Skipping annotation tests because of corrupted tree structure", 'Format', lineno=False)
 
@@ -1295,27 +1293,27 @@ def validate_lspec_annotation(tree, lang):
 # Main part.
 #==============================================================================
 
-def validate(inp,out,args,tag_sets,known_sent_ids):
+def validate(inp, out, args, tag_sets, known_sent_ids):
     global tree_counter
-    for comments,tree in trees(inp,tag_sets,args):
-        tree_counter+=1
+    for comments, sentence in trees(inp, tag_sets, args):
+        tree_counter += 1
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
-        validate_ID_sequence(tree) # level 1
-        validate_token_ranges(tree) # level 1
+        validate_ID_sequence(sentence) # level 1
+        validate_token_ranges(sentence) # level 1
         if args.level > 1:
-            validate_ID_references(tree) # level 2
-            validate_root(tree) # level 2
-            validate_deps(tree) # level 2 and up
-            validate_tree(tree) # level 2
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
-            build_egraph(tree) # level 2
             if args.check_tree_text:
-                validate_text_meta(comments, tree) # level 2
+                validate_text_meta(comments, sentence) # level 2
+            validate_root(sentence) # level 2
+            validate_ID_references(sentence) # level 2
+            validate_deps(sentence) # level 2 and up
+            validate_tree(sentence) # level 2
+            egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if args.level > 2:
-                validate_annotation(tree) # level 3
+                validate_annotation(sentence) # level 3
                 if args.level > 4:
-                    validate_lspec_annotation(tree, args.lang) # level 5
+                    validate_lspec_annotation(sentence, args.lang) # level 5
     validate_newlines(inp) # level 1
 
 def load_file(f_name):
