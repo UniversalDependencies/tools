@@ -23,10 +23,12 @@ ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 TOKENSWSPACE=MISC+1 #one extra constant
 
-# Two global variables:
+# Global variables:
 curr_line=0 # Current line in the input file
 sentence_line=0 # The line in the input file on which the current sentence starts
 sentence_id=None # The most recently read sentence id
+line_of_first_empty_node=None
+line_of_first_enhanced_orphan=None
 
 error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
@@ -735,6 +737,8 @@ def build_egraph(sentence):
     egraph_exists = False # enhanced deps are optional
     rootnode = {
         'cols': ['0', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
+        'deps': [],
+        'parents': set(),
         'children': set(),
         'lineno': sentence_line
     }
@@ -764,6 +768,8 @@ def build_egraph(sentence):
         # the previous nodes is its child. If it doesn't, we will create it now.
         egraph.setdefault(cols[ID], {})
         egraph[cols[ID]]['cols'] = cols
+        egraph[cols[ID]]['deps'] = deps_list(cols)
+        egraph[cols[ID]]['parents'] = set([h for h, d in deps])
         egraph[cols[ID]].setdefault('children', set())
         egraph[cols[ID]]['lineno'] = node_line
         # Incrementally build the set of children of every node.
@@ -1050,6 +1056,38 @@ def validate_annotation(tree):
         validate_goeswith_span(id, tree)
         validate_projective_punctuation(id, tree)
 
+def validate_enhanced_annotation(graph):
+    """
+    Checks universally valid consequences of the annotation guidelines in the
+    enhanced representation. Currently tests only phenomena specific to the
+    enhanced dependencies; however, it we should also test things that are
+    required in the basic dependencies (such as left-to-right coordination),
+    unless it is obvious that in enhanced dependencies such things are legal.
+    """
+    # Enhanced dependencies should not contain the orphan relation.
+    # However, all types of enhancements are optional and orphans are excluded
+    # only if this treebank addresses gapping. We do not know it until we see
+    # the first empty node.
+    global line_of_first_empty_node
+    global line_of_first_enhanced_orphan
+    for id in graph.keys():
+        if is_empty_node(graph[id]['cols']):
+            if not line_of_first_empty_node:
+                ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
+                line_of_first_empty_node = graph[id]['lineno']
+                # Empty node itself is not an error. Report it only for the first time
+                # and only if an orphan occurred before it.
+                if line_of_first_enhanced_orphan:
+                    warn("Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line %s" % line_of_first_enhanced_orphan, 'Enhanced', nodelineno=graph[id]['lineno'])
+        udeprels = set([lspec2ud(d) for h, d in graph[id]['deps']])
+        if 'orphan' in udeprels:
+            if not line_of_first_enhanced_orphan:
+                ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
+                line_of_first_enhanced_orphan = graph[id]['lineno']
+            # If we have seen an empty node, then the orphan is an error.
+            if  line_of_first_empty_node:
+                warn("'orphan' not allowed in enhanced graph because we saw an empty node on line %s" % line_of_first_empty_node, 'Enhanced', nodelineno=graph[id]['lineno'])
+
 
 
 #==============================================================================
@@ -1203,7 +1241,10 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                     if args.level > 4:
                         validate_lspec_annotation(sentence, args.lang) # level 5
             else:
-                warn("Skipping annotation tests because of corrupted tree structure", 'Format', lineno=False)
+                warn("Skipping annotation tests because of corrupt tree structure", 'Format', lineno=False)
+            if egraph:
+                if args.level > 2:
+                    validate_enhanced_annotation(egraph) # level 3
     validate_newlines(inp) # level 1
 
 def load_file(f_name):
