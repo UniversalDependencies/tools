@@ -1088,23 +1088,19 @@ def validate_projective_punctuation(id, tree):
         if gap:
             warn("Punctuation must not be attached non-projectively over nodes %s" % sorted(gap), 'Syntax', nodelineno=tree['linenos'][id])
 
-def validate_annotation(sentence):
+def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
-    tree = build_tree(sentence)
-    if tree:
-        for node in tree['nodes']:
-            id = int(node[ID])
-            validate_upos_vs_deprel(id, tree)
-            validate_left_to_right_relations(id, tree)
-            validate_single_subject(id, tree)
-            validate_functional_leaves(id, tree)
-            validate_fixed_span(id, tree)
-            validate_goeswith_span(id, tree)
-            validate_projective_punctuation(id, tree)
-    else:
-        warn("Skipping annotation tests because of corrupted tree structure", 'Format', lineno=False)
+    for node in tree['nodes']:
+        id = int(node[ID])
+        validate_upos_vs_deprel(id, tree)
+        validate_left_to_right_relations(id, tree)
+        validate_single_subject(id, tree)
+        validate_functional_leaves(id, tree)
+        validate_fixed_span(id, tree)
+        validate_goeswith_span(id, tree)
+        validate_projective_punctuation(id, tree)
 
 
 
@@ -1252,11 +1248,15 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_tree(sentence) # level 2
+            tree = build_tree(sentence)
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
-            if args.level > 2:
-                validate_annotation(sentence) # level 3
-                if args.level > 4:
-                    validate_lspec_annotation(sentence, args.lang) # level 5
+            if tree:
+                if args.level > 2:
+                    validate_annotation(tree) # level 3
+                    if args.level > 4:
+                        validate_lspec_annotation(sentence, args.lang) # level 5
+            else:
+                warn("Skipping annotation tests because of corrupted tree structure", 'Format', lineno=False)
     validate_newlines(inp) # level 1
 
 def load_file(f_name):
