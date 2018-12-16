@@ -575,29 +575,6 @@ def validate_ID_references(tree):
             if not valid_id(head):
                 warn("Undefined ID in DEPS: '%s'" % head, 'Format')
 
-def proj(node, s, deps, depth, max_depth):
-    """
-    Recursive calculation of the projection of a node `node` (1-based
-    integer). The nodes, as they get discovered` are added to the set
-    `s`. Deps is a dictionary node -> set of children.
-    To obtain children of all nodes, call
-        deps = {} # node -> set of children
-        for cols in tree:
-            if not is_word(cols):
-                continue
-            deps.setdefault(head, set()).add(id_)
-        root_proj = set()
-        proj(0, root_proj, deps, 0, None)
-    """
-    if max_depth is not None and depth==max_depth:
-        return
-    for dependent in deps.get(node,[]):
-        if dependent in s:
-            warn('Loop from %s' % dependent, 'Syntax')
-            continue
-        s.add(dependent)
-        proj(dependent, s, deps, depth+1, max_depth)
-
 def validate_root(tree):
     """
     Validates that DEPREL is "root" iff HEAD is 0.
@@ -660,42 +637,6 @@ def validate_deps(tree):
         if id_ in heads:
             warn("Self-loop in DEPS for '%s'" % cols[ID], 'Format', nodelineno=node_line)
 
-def validate_tree(tree):
-    """
-    Validates that all words can be reached from the root and that
-    there are no self-loops in HEAD.
-    """
-    node_line = sentence_line - 1
-    deps = {} # node -> set of children
-    for cols in tree:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        if HEAD >= len(cols):
-            continue # this has been already reported in trees()
-        try:
-            id_ = int(cols[ID])
-        except ValueError:
-            continue # this has been already reported in validate_cols_level1()
-        try:
-            head = int(cols[HEAD])
-        except ValueError:
-            continue # this has been already reported in validate_ID_references()
-        if head == id_:
-            warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
-            continue
-        deps.setdefault(head, set()).add(id_)
-    root_deps=set()
-    proj(0, root_deps, deps, 0, 1)
-    if len(root_deps)>1 and args.single_root:
-        warn('Multiple root words: %s'%list(root_deps), 'Syntax', lineno=False)
-    root_proj = set()
-    proj(0, root_proj, deps, 0, None)
-    word_tree = [cols for cols in tree if is_word(cols)]
-    unreachable = set(range(1, len(word_tree) + 1)) - root_proj # all words minus those reachable from root
-    if unreachable:
-        warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
-
 def build_tree(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
@@ -738,18 +679,25 @@ def build_tree(sentence):
             # This error has been reported on lower levels, do not report it here.
             # Do not continue to check annotation if there are elementary flaws.
             return None
+        if head == id_:
+            warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
+            continue
         tree['nodes'].append(cols)
         tree['linenos'].append(node_line)
         # Incrementally build the set of children of every node.
         children.setdefault(cols[HEAD], set()).add(id_)
     for cols in tree['nodes']:
         tree['children'].append(sorted(children.get(cols[ID], [])))
+    # Check that there is just one node with the root relation.
+    if len(tree['children'][0]) > 1 and args.single_root:
+        warn('Multiple root words: %s' % tree['children'][0], 'Syntax', lineno=False)
     # Return None if there are any cycles. Avoid surprises when working with the graph.
     # Presence of cycles is equivalent to presence of unreachable nodes.
     projection = set()
     get_projection(0, tree, projection)
     unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
     if unreachable:
+        warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
         return None
     return tree
 
@@ -1247,8 +1195,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             validate_root(sentence) # level 2
             validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
-            validate_tree(sentence) # level 2
-            tree = build_tree(sentence)
+            tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if tree:
                 if args.level > 2:
