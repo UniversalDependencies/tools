@@ -852,22 +852,16 @@ def get_graph_projection(id, graph, projection):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
-def get_udeprel(id, nodes):
-    return lspec2ud(nodes.get(id, [])[DEPREL])
-
-def validate_upos_vs_deprel(cols, children, nodes, line):
+def validate_upos_vs_deprel(id, tree):
     """
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
-    the node, too. Therefore we need 'children' (list of ids) and 'nodes'
-    (dictionary where we can translate the node id into its CoNLL-U columns).
-      'line' ....... line number of the node within the file
+    the node, too.
     """
-    if is_multiword_token(cols):
-        return
+    cols = tree['nodes'][id]
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
-    childrels = set([get_udeprel(x, nodes) for x in children])
+    childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][id]])
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -878,46 +872,47 @@ def validate_upos_vs_deprel(cols, children, nodes, line):
     #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]):
-        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Nummod is for numerals only.
     if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
-        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     if deprel == 'advmod' and not re.match(r"^(ADV|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
-        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
-        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
-        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
-        warn("DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=line)
+        warn("DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     if cols[UPOS] == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
-        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodelineno=line)
+        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodelineno=tree['linenos'][id])
 
-def validate_left_to_right_relations(cols, line):
+def validate_left_to_right_relations(id, tree):
     """
     Certain UD relations must always go left-to-right.
     Here we currently check the rule for the basic dependencies.
     The same should also be tested for the enhanced dependencies!
     """
+    cols = tree['nodes'][id]
     if is_multiword_token(cols):
         return
     if DEPREL >= len(cols):
@@ -927,44 +922,31 @@ def validate_left_to_right_relations(cols, line):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
         if ichild < iparent:
-            warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax', nodelineno=line)
+            warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax', nodelineno=tree['linenos'][id])
 
-def validate_single_subject(cols, children, nodes, line):
+def validate_single_subject(id, tree):
     """
     No predicate should have more than one subject.
     An xcomp dependent normally has no subject, but in some languages the
     requirement may be weaker: it could have an overt subject if it is
     correferential with a particular argument of the matrix verb. Hence we do
     not check zero subjects of xcomp dependents at present.
-
-    Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
-      'line' ....... line number of the node within the file
     """
-    subjects = sorted([x for x in children if re.search(r"subj", get_udeprel(x, nodes))])
+    subjects = sorted([x for x in tree['children'][id] if re.search(r"subj", lspec2ud(tree['nodes'][x][DEPREL]))])
     if len(subjects) > 1:
-        warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=line)
+        warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=tree['linenos'][id])
 
-def validate_functional_leaves(cols, children, nodes, line):
+def validate_functional_leaves(id, tree):
     """
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
-    Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
-      'line' ....... line number of the node within the file
     """
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(cols[DEPREL])
-    childrels = set([lspec2ud(nodes.get(x, [])[DEPREL]) for x in children])
+    deprel = lspec2ud(tree['nodes'][id][DEPREL])
+    childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][id]])
     disallowed_childrels = childrels - set(['goeswith', 'fixed', 'conj'])
     if re.match(r"^(case|mark|cc|aux|cop)$", deprel) and disallowed_childrels:
-        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
     # other dependents either, with the possible exception of conj.
@@ -975,16 +957,16 @@ def validate_functional_leaves(cols, children, nodes, line):
     ###!!! practical to retokenize.
     disallowed_childrels = childrels - set(['goeswith', 'conj', 'punct'])
     if deprel == 'fixed' and disallowed_childrels:
-        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
     # Goeswith cannot have any children, not even another goeswith.
     disallowed_childrels = childrels
-    if re.match(r"^(goeswith)$", deprel) and disallowed_childrels:
-        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
+    if deprel == 'goeswith' and disallowed_childrels:
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
     # Punctuation can exceptionally have other punct children if an exclamation
     # mark is in brackets or quotes. It cannot have other children.
     disallowed_childrels = childrels - set(['punct'])
     if deprel == 'punct' and disallowed_childrels:
-        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=line)
+        warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
 
 def collect_ancestors(id, tree, ancestors):
     """
@@ -1110,53 +1092,14 @@ def validate_annotation(sentence):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
-    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
-    node_line = sentence_line - 1
-    lines = {} # node id -> line number of that node (for error messages)
-    nodes = {} # node id -> columns of that node
-    children = {} # node -> set of children
-    for cols in sentence:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        if HEAD >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        if cols[HEAD]=='_':
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        try:
-            id_ = int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        try:
-            head = int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        # Incrementally build the set of children of every node.
-        lines.setdefault(cols[ID], node_line)
-        nodes.setdefault(cols[ID], cols)
-        children.setdefault(cols[HEAD], set()).add(cols[ID])
-    for cols in sentence:
-        if not is_word(cols):
-            continue
-        myline = lines.get(cols[ID], sentence_line)
-        mychildren = children.get(cols[ID], [])
-        validate_upos_vs_deprel(cols, mychildren, nodes, myline)
-        validate_left_to_right_relations(cols, myline)
-        validate_single_subject(cols, mychildren, nodes, myline)
-        validate_functional_leaves(cols, mychildren, nodes, myline)
-    ###!!! New approach. We will gradually rewrite the above tests to use this approach too.
     tree = build_tree(sentence)
     if tree:
         for node in tree['nodes']:
             id = int(node[ID])
+            validate_upos_vs_deprel(id, tree)
+            validate_left_to_right_relations(id, tree)
+            validate_single_subject(id, tree)
+            validate_functional_leaves(id, tree)
             validate_fixed_span(id, tree)
             validate_goeswith_span(id, tree)
             validate_projective_punctuation(id, tree)
