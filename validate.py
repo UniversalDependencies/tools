@@ -1160,7 +1160,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
-            'cu':  ['бꙑти']
+            'cu':  ['бꙑти'],
+            'yo':  ['jẹ́', 'kìí', 'ń', 'ti', 'yóò', 'máa', 'ìbá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
