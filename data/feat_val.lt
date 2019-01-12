@@ -1,5 +1,6 @@
 AdpType=Prep
 NumForm=Digit
+NumForm=Roman
 NumForm=Word
 Reflex=Yes
 Reflex=No
