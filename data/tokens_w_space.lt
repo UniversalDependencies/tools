@@ -6,7 +6,7 @@ bet (kada|kas|kokio|kuri|kurios|kurią|kuris|ką)
 čia pat
 [Dd]aug (kas|kuo|kur)
 [Dd]ėl (ko|to)
-iki (pat|šiol)
+[Ii]ki (pat|šiol)
 in corpore
 [Ii]š (anksto|eilės|esmės|karto|naujo|paskos|pradžių|principo|tiesų|tikrųjų|tolo|viso)
 kada nors
@@ -15,8 +15,8 @@ kaip (nors|tik)
 kas (kita|nors)
 kiek nors
 [Kk]ita vertus
-ko (gero|nors)
-(kokia|kokiame|kokios|kokiu|koks|kokį|kuo|kurio|kurioj|ką) nors
+[Kk]o (gero|nors)
+(kokia|kokiame|kokios|kokiu|koks|kokį|kuo|kurio|kurioj|kuris|ką) nors
 ką tik
 ([Kk]ol|kur) kas
 laba diena
@@ -25,7 +25,7 @@ nedaug kas
 nežinia ką
 nieko prieš
 norom nenorom
-nė (kiek|vienas|vieno|vienoje)
+[Nn]ė (kiek|vienas|vieno|vienoje)
 po (to|velnių)
 prieš (pat|tai)
 šiek tiek
@@ -37,7 +37,7 @@ tai (ką|yra)
 tam (tikra|tikrais|tikras|tikri|tikro|tikroje|tikros|tikru|tikrus|tikrą|tikrų)
 [Tt]as pats?
 tie patys
-tiek (pat|to)
+[Tt]iek (pat|to)
 tiems patiems
 tiesą sakant
 to paties
@@ -52,10 +52,10 @@ tuo (pačiu|tarpu)
 tuoj pat
 tuojau pat
 tuos pačius
-turint omeny
+(turėti|turint) omeny
 tą pačią
 vargais negalais
-vargu ar
+[Vv]argu ar
 [Vv]iena vertus
 vis (dar|dėlto|tiek)
 [Vv]isa tai
