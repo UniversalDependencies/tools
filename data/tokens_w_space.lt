@@ -1,8 +1,8 @@
 \d+( \d+)+(,\d+)?
-a bao a ku
+A Bao A Ku
 be kita ko
 [Bb]e to
-bet (kada|kas|kokio|kuri|kurios|kurią|ką)
+bet (kada|kas|kokio|kuri|kurios|kurią|kuris|ką)
 čia pat
 [Dd]aug (kas|kuo|kur)
 [Dd]ėl (ko|to)
@@ -30,12 +30,12 @@ po (to|velnių)
 prieš (pat|tai)
 šiek tiek
 šį tą
-t\. (t|y|y\.)
+t\. (t|y)\.?
 ta (pati|pačia)
 tai (ką|yra)
 [Tt]aip pat
 tam (tikra|tikrais|tikras|tikri|tikro|tikroje|tikros|tikru|tikrus|tikrą|tikrų)
-tas pats?
+[Tt]as pats?
 tie patys
 tiek (pat|to)
 tiems patiems
@@ -58,6 +58,6 @@ vargais negalais
 vargu ar
 [Vv]iena vertus
 vis (dar|dėlto|tiek)
-visa tai
-visų pirma
+[Vv]isa tai
+[Vv]isų pirma
 vos tik
