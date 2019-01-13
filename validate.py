@@ -1108,9 +1108,8 @@ def validate_whitespace(cols, tag_sets):
         if whitespace_re.match(cols[col_idx]) is not None:
             # Whitespace found - does it pass?
             for regex in tag_sets[TOKENSWSPACE]:
-                match=regex.match(cols[col_idx])
-                if match and match.group(0)==cols[col_idx]:
-                    break # We have a full match from beginning to end
+                if regex.fullmatch(cols[col_idx]):
+                    break
             else:
                 warn_on_missing_files.add('tokens_w_space')
                 warn("'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."%(cols[col_idx], COLNAMES[col_idx]), 'Format')
