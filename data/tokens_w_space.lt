@@ -1,20 +1,20 @@
 \d+( \d+)+(,\d+)?
 a bao a ku
 be kita ko
-be to
-bet (kada|kokio|kuri|kurios|kurią|ką)
+[Bb]e to
+bet (kada|kas|kokio|kuri|kurios|kurią|ką)
 čia pat
 daug (kas|kuo|kur)
-dėl (ko|to)
+[Dd]ėl (ko|to)
 iki (pat|šiol)
 in corpore
-iš (anksto|eilės|esmės|karto|naujo|paskos|pradžių|principo|tiesų|tikrųjų|tolo|viso)
+[Ii]š (anksto|eilės|esmės|karto|naujo|paskos|pradžių|principo|tiesų|tikrųjų|tolo|viso)
 kada nors
-kai (kas|kurie|kurios|kuriose|kuriuos|kuriuose|kurių)
+kai (kas|kurie|kurios|kuriose|kuris|kuriuos|kuriuose|kurių)
 kaip (nors|tik)
 kas (kita|nors)
 kiek nors
-kita vertus
+[Kk]ita vertus
 ko (gero|nors)
 (kokia|kokiame|kokios|kokiu|koks|kokį|kuo|kurio|kurioj|ką) nors
 ką tik
@@ -33,7 +33,7 @@ prieš (pat|tai)
 t\. (t|y|y\.)
 ta (pati|pačia)
 tai (ką|yra)
-taip pat
+[Tt]aip pat
 tam (tikra|tikrais|tikras|tikri|tikro|tikroje|tikros|tikru|tikrus|tikrą|tikrų)
 tas pats?
 tie patys
@@ -56,7 +56,7 @@ turint omeny
 tą pačią
 vargais negalais
 vargu ar
-viena vertus
+[Vv]iena vertus
 vis (dar|dėlto|tiek)
 visa tai
 visų pirma
