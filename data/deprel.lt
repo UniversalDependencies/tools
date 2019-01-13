@@ -1,5 +1,9 @@
 acl:relcl
+advmod:emph
+aux:pass
+csubj:pass
+det:numgov
+nsubj:pass
 nummod:gov
 obl:agent
-aux:pass
-advmod:emph
+obl:arg
