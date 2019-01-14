@@ -1,4 +1,8 @@
 AdpType=Prep
+NameType=Geo
+NameType=Giv
+NameType=Sur
+NumForm=Combi
 NumForm=Digit
 NumForm=Roman
 NumForm=Word
@@ -11,4 +15,5 @@ Tense=PastIter
 Tense=PresHab
 Variant=Short
 Variant=Full
+Variant=Long
 Voice=Necess
