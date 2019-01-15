@@ -2,16 +2,16 @@
 A Bao A Ku
 be kita ko
 [Bb]e to
-bet (kada|kas|kokio|kuri|kurios|kurią|kuris|ką)
+bet (kada|kas|kokio|koks|kuri|kurios|kurią|kuris|ką)
 čia pat
 [Dd]aug (kas|kuo|kur)
 [Dd]ėl (ko|to)
 [Ii]ki (pat|šiol)
 in corpore
 [Ii]š (anksto|eilės|esmės|karto|naujo|paskos|pradžių|principo|tiesų|tikrųjų|tolo|viso)
-[Kk](ada|aip|iek|okia|okiame|okios|okiu|oks|okį|uo|urio|urioj|uris|ą) (nors|tik)
+[Kk](ada|aip|as|iek|okia|okiame|okios|okiu|oks|okį|uo|urio|urioj|uris|ą) (nors|tik)
 [Kk]ai (kas|kurie|kurios|kuriose|kuris|kuriuos|kuriuose|kurių)
-kas (kita|nors)
+[Kk]as kita
 [Kk]ita vertus
 [Kk]o (gero|nors)
 ([Kk]ol|kur) kas
@@ -24,7 +24,7 @@ norom nenorom
 [Nn]ė (kiek|vienas|vieno|vienoje)
 [Pp]o (to|velnių)
 prieš (pat|tai)
-šiek tiek
+[Šš]iek tiek
 šis tas
 šį tą
 [Tt]\. (t|y)\.?
@@ -39,9 +39,8 @@ tiems patiems
 tiesą sakant
 to paties
 toje pačioje
-tokie pat
-tokiu būdu
-tokių pat
+[Tt]oki[eų] pat
+[Tt]okiu būdu
 [Tt]oks pat
 tomis pačiomis
 tos pačios
