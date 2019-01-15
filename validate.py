@@ -1154,7 +1154,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'pl':  ['być', 'bywać', 'by', 'zostać'], # zostać is for passive-action, być for passive-state
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
-            'ru':  ['быть', 'бы'],
+            'ru':  ['быть', 'бы', 'б'],
             'sl':  ['biti'],
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
