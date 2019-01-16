@@ -3,6 +3,7 @@ advmod:emph
 aux:pass
 csubj:pass
 det:numgov
+flat:foreign
 nsubj:pass
 nummod:gov
 obl:agent
