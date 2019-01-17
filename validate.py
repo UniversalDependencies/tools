@@ -885,9 +885,16 @@ def validate_single_subject(id, tree):
     requirement may be weaker: it could have an overt subject if it is
     correferential with a particular argument of the matrix verb. Hence we do
     not check zero subjects of xcomp dependents at present.
+    Furthermore, in some situations we must allow two subjects (but not three or more).
+    If a clause acts as a nonverbal predicate of another clause, and if there is
+    no copula, then we must attach two subjects to the predicate of the inner
+    clause: one is the predicate of the inner clause, the other is the predicate
+    of the outer clause. This could in theory be recursive but in practice it isn't.
+    See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
     """
     subjects = sorted([x for x in tree['children'][id] if re.search(r"subj", lspec2ud(tree['nodes'][x][DEPREL]))])
-    if len(subjects) > 1:
+    if len(subjects) > 2:
+        # We test for more than 2, but in the error message we still say more than 1, so that we do not have to explain the exceptions.
         warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=tree['linenos'][id])
 
 def validate_functional_leaves(id, tree):
