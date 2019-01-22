@@ -831,7 +831,8 @@ def validate_upos_vs_deprel(id, tree):
     if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
         warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
-    if deprel == 'advmod' and not re.match(r"^(ADV|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
+    # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
+    if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
         warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
@@ -905,7 +906,12 @@ def validate_functional_leaves(id, tree):
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(tree['nodes'][id][DEPREL])
     childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][id]])
-    disallowed_childrels = childrels - set(['goeswith', 'fixed', 'conj'])
+    # Punctuation should normally not depend on a functional node. However,
+    # it is possible that a functional node such as auxiliary verb is in
+    # quotation marks or brackets ("must") and then these symbols should depend
+    # on the functional node. We temporarily allow punctuation here, until we
+    # can detect precisely the bracket situation and disallow the rest.
+    disallowed_childrels = childrels - set(['goeswith', 'fixed', 'conj', 'punct'])
     if re.match(r"^(case|mark|cc|aux|cop)$", deprel) and disallowed_childrels:
         warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
