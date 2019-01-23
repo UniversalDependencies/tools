@@ -10,4 +10,5 @@ flat:name
 nmod:gmod
 nmod:poss
 nsubj:pass
+obl:arg
 obl:tmod
