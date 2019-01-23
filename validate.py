@@ -1396,9 +1396,9 @@ if __name__=="__main__":
         sys.exit(0)
     else:
         if not args.quiet:
-            print('*** FAILED *** with %d errors'%sum(v for k,v in iter(error_counter.items())), file=sys.stderr)
             for k,v in sorted(error_counter.items()):
                 print('%s errors: %d' %(k, v), file=sys.stderr)
+            print('*** FAILED *** with %d errors'%sum(v for k,v in iter(error_counter.items())), file=sys.stderr)
         for f_name in sorted(warn_on_missing_files):
             filepath = os.path.join(THISDIR, 'data', f_name+'.'+args.lang)
             if not os.path.exists(filepath):
