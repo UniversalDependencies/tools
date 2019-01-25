@@ -911,7 +911,7 @@ def validate_functional_leaves(id, tree):
     # quotation marks or brackets ("must") and then these symbols should depend
     # on the functional node. We temporarily allow punctuation here, until we
     # can detect precisely the bracket situation and disallow the rest.
-    disallowed_childrels = childrels - set(['goeswith', 'fixed', 'conj', 'punct'])
+    disallowed_childrels = childrels - set(['goeswith', 'fixed', 'reparandum', 'conj', 'punct'])
     if re.match(r"^(case|mark|cc|aux|cop)$", deprel) and disallowed_childrels:
         warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
@@ -922,7 +922,7 @@ def validate_functional_leaves(id, tree):
     ###!!! It would be better to keep these expressions as one token. But sometimes
     ###!!! the tokenizer is out of control of the UD data providers and it is not
     ###!!! practical to retokenize.
-    disallowed_childrels = childrels - set(['goeswith', 'conj', 'punct'])
+    disallowed_childrels = childrels - set(['goeswith', 'reparandum', 'conj', 'punct'])
     if deprel == 'fixed' and disallowed_childrels:
         warn("'%s' not expected to have children (%s)" % (deprel, disallowed_childrels), 'Syntax', nodelineno=tree['linenos'][id])
     # Goeswith cannot have any children, not even another goeswith.
