@@ -460,9 +460,9 @@ def validate_features(cols, tag_sets, args):
     if FEATS >= len(cols):
         return # this has been already reported in trees()
     feats=cols[FEATS]
-    if feats==u"_":
+    if feats == '_':
         return True
-    feat_list=feats.split(u"|")
+    feat_list=feats.split('|')
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
         warn("Morphological features must be sorted: '%s'"%feats, 'Morpho')
     attr_set=set() # I'll gather the set of attributes here to check later than none is repeated
@@ -914,6 +914,14 @@ def validate_deprel_pair(idparent, idchild, tree):
     if not re.match(r"^(case|mark|cc|aux|cop|fixed|goeswith|punct)$", pdeprel):
         return
     cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
+    # The guidelines explicitly say that negation can modify any function word
+    # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
+    # We cannot recognize negation simply by deprel; we have to look at the
+    # part-of-speech tag and the Polarity feature as well.
+    cupos = tree['nodes'][idchild][UPOS]
+    cfeats = tree['nodes'][idchild][FEATS].split('|')
+    if pdeprel != 'punct' and cdeprel == 'advmod' and cupos == 'PART' and 'Polarity=Neg' in cfeats:
+        return
     # Auxiliaries, conjunctions and case markers will tollerate a few special
     # types of modifiers.
     # Punctuation should normally not depend on a functional node. However,
@@ -921,10 +929,6 @@ def validate_deprel_pair(idparent, idchild, tree):
     # quotation marks or brackets ("must") and then these symbols should depend
     # on the functional node. We temporarily allow punctuation here, until we
     # can detect precisely the bracket situation and disallow the rest.
-    ###!!! The guidelines explicitly say that negation can modify any function
-    ###!!! word (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
-    ###!!! We cannot recognize negation simply by deprel; we have to look at
-    ###!!! the part-of-speech tag and the Polarity feature as well.
     if re.match(r"^(case|mark|cc|aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
         warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
