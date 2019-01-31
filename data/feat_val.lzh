@@ -3,4 +3,5 @@ NameType=Giv
 NameType=Nat
 NameType=Prs
 NameType=Sur
+NounType=Class
 VerbType=Cop
