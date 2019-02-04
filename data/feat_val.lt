@@ -7,6 +7,7 @@ NumForm=Combi
 NumForm=Digit
 NumForm=Roman
 NumForm=Word
+PunctType=Peri
 Reflex=Yes
 Reflex=No
 VerbForm=PartPad
