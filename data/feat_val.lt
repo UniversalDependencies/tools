@@ -1,4 +1,5 @@
 AdpType=Prep
+Hyph=Yes
 NameType=Geo
 NameType=Giv
 NameType=Sur
@@ -6,6 +7,7 @@ NumForm=Combi
 NumForm=Digit
 NumForm=Roman
 NumForm=Word
+PunctType=Peri
 Reflex=Yes
 Reflex=No
 VerbForm=PartPad

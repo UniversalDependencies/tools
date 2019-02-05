@@ -15,7 +15,7 @@ import traceback
 import argparse
 
 
-THISDIR=os.path.dirname(os.path.abspath(__file__)) # The folder where this script resides.
+THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__))) # The folder where this script resides.
 
 # Constants for the column indices
 COLCOUNT=10
