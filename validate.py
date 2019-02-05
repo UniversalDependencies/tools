@@ -843,6 +843,11 @@ def validate_upos_vs_deprel(id, tree):
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
         warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+    # AUX is normally aux or cop. It can appear in many other relations if it is promoted due to ellipsis.
+    # However, I believe that it should not appear in compound. From the other side, compound can consist
+    # of many different part-of-speech categories but I don't think it can contain AUX.
+    if deprel == 'compound' and re.match(r"^(AUX)", cols[UPOS]):
+        warn("'compound' should not be 'AUX'", 'Syntax', nodelineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
@@ -1198,7 +1203,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
             'cu':  ['бꙑти'],
-            'yo':  ['jẹ́', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'lè', 'má', 'máà']
+            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
