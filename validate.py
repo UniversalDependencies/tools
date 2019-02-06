@@ -971,6 +971,7 @@ def collect_ancestors(id, tree, ancestors):
     """
     pid = int(tree['nodes'][int(id)][HEAD])
     if pid == 0:
+        ancestors.append(0)
         return ancestors
     if pid in ancestors:
         # Cycle has been reported on level 2. But we must jump out of it now.
