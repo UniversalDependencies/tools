@@ -43,13 +43,11 @@ def warn(msg, error_type, lineno=True, nodelineno=0):
     nodelineno. Nonzero nodelineno means that lineno value is ignored.
     If lineno is False, print the number and starting line of the current tree.
     """
-    if not hasattr(warn, 'out'):
-        warn.out = sys.stderr
     global curr_fname, curr_line, sentence_line, sentence_id, error_counter, tree_counter, args
     error_counter[error_type] = error_counter.get(error_type, 0)+1
     if not args.quiet:
         if args.max_err>0 and error_counter[error_type]==args.max_err:
-            print(('...suppressing further errors regarding ' + error_type), file=warn.out)
+            print(('...suppressing further errors regarding ' + error_type), file=sys.stderr)
         elif args.max_err>0 and error_counter[error_type]>args.max_err:
             pass #suppressed
         else:
@@ -66,11 +64,11 @@ def warn(msg, error_type, lineno=True, nodelineno=0):
             if sentence_id:
                 sent = ' Sent ' + sentence_id
             if nodelineno:
-                print("[%sLine %d%s]: %s" % (fn, nodelineno, sent, msg), file=warn.out)
+                print("[%sLine %d%s]: %s" % (fn, nodelineno, sent, msg), file=sys.stderr)
             elif lineno:
-                print("[%sLine %d%s]: %s" % (fn, curr_line, sent, msg), file=warn.out)
+                print("[%sLine %d%s]: %s" % (fn, curr_line, sent, msg), file=sys.stderr)
             else:
-                print("[%sTree number %d on line %d%s]: %s" % (fn, tree_counter, sentence_line, sent, msg), file=warn.out)
+                print("[%sTree number %d on line %d%s]: %s" % (fn, tree_counter, sentence_line, sent, msg), file=sys.stderr)
 
 ###### Support functions
 
@@ -108,7 +106,6 @@ def trees(inp, tag_sets, args):
     """
     `inp` a file-like object yielding lines as unicode
     `tag_sets` and `args` are needed for choosing the tests
-
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
     """
@@ -647,7 +644,6 @@ def build_tree(sentence):
     a sentence. Returns a dictionary with items providing easier access to the
     tree structure. In case of fatal problems (missing HEAD etc.) returns None
     but does not report the error (presumably it has already been reported).
-
     tree ... dictionary:
       nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
       children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
@@ -725,7 +721,6 @@ def build_egraph(sentence):
     but does not report the error (presumably it has already been reported).
     However, once the graph has been found and built, this function verifies
     that the graph is connected and generates an error if it is not.
-
     egraph ... dictionary:
       nodes ... dictionary of dictionaries, each corresponding to a word or an empty node; mwt lines are skipped
           keys equal to node ids (i.e. strings that look like integers or decimal numbers; key 0 is the artificial root node)
@@ -845,11 +840,6 @@ def validate_upos_vs_deprel(id, tree):
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
         warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
-    # AUX is normally aux or cop. It can appear in many other relations if it is promoted due to ellipsis.
-    # However, I believe that it should not appear in compound. From the other side, compound can consist
-    # of many different part-of-speech categories but I don't think it can contain AUX.
-    if deprel == 'compound' and re.match(r"^(AUX)", cols[UPOS]):
-        warn("'compound' should not be 'AUX'", 'Syntax', nodelineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
@@ -973,7 +963,6 @@ def collect_ancestors(id, tree, ancestors):
     """
     pid = int(tree['nodes'][int(id)][HEAD])
     if pid == 0:
-        ancestors.append(0)
         return ancestors
     if pid in ancestors:
         # Cycle has been reported on level 2. But we must jump out of it now.
@@ -987,7 +976,6 @@ def get_caused_nonprojectivities(id, tree):
     if the node's parent is not in the same gap. (We use this function to check
     that a punctuation node does not cause nonprojectivity. But if it has been
     dragged to the gap with a larger subtree, then we do not blame it.)
-
     tree ... dictionary:
       nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
       children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
@@ -1206,7 +1194,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
             'cu':  ['бꙑти'],
-            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'lè', 'má', 'máà']
+            'yo':  ['jẹ́', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
@@ -1358,9 +1346,9 @@ if __name__=="__main__":
     io_group=opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
-    io_group.add_argument('-i', '--input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
+    io_group.add_argument('input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
     #I don't think output makes much sense now that we allow multiple inputs, so it will default to /dev/stdout
-    io_group.add_argument('-o','--output', help='Output file name, or "-" or nothing for standard output.')
+    #io_group.add_argument('output', nargs='', help='Output file name, or "-" or nothing for standard output.')
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
@@ -1402,10 +1390,6 @@ if __name__=="__main__":
         tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
-    # it needs, highly unconvenient to always look in the command line while editing a treebank @nicklogin
-    if args.output:
-        out = open(args.output, 'w', encoding='utf-8')
-        warn.out = out
 
     try:
         known_sent_ids=set()
@@ -1421,8 +1405,6 @@ if __name__=="__main__":
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for curr_fname,inp in zip(args.input,open_files):
             validate(inp,out,args,tagsets,known_sent_ids)
-            if 'output' in args:
-                out.close()
     except:
         warn('Exception caught!', 'Format')
         # If the output is used in an HTML page, it must be properly escaped

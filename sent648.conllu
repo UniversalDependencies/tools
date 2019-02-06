@@ -1,0 +1,26 @@
+# newpar id=648
+# sent_id=0
+1	Tai	tas	PRON	_	Definite=Ind|Gender=Neut	2	nsubj	_	_
+2	slapta	slapta	NOUN	_	Case=Nom|Gender=Fem|Number=Sing	0	root	_	_
+3	,	,	PUNCT	_	_	5	punct	_	_
+4	kurią	kuris	PRON	_	Case=Acc|Gender=Fem|Number=Sing	5	obj	_	_
+5	tegali	tegalėti	VERB	_	Mood=Ind|Number=Sing|Person=2|Reflex=No|Tense=Pres	2	conj	_	_
+6	patirti	patirti	VERB	_	Reflex=No|VerbForm=Inf	5	conj	_	_
+7	tenai	tenai	ADV	_	Degree=Pos	6	advmod	_	_
+8	,	,	PUNCT	_	_	2	punct	_	_
+9	pabaigė	pabaigti	VERB	_	Mood=Ind|Number=Sing|Person=3|Reflex=No|Tense=Past	2	parataxis	_	_
+10	Daisia	daisia	PART	_	_	9	nsubj	_	_
+11	ir	ir	CCONJ	_	_	12	cc	_	_
+12	atsistojo	atsistoti	VERB	_	Mood=Ind|Number=Sing|Person=3|Reflex=Yes|Tense=Past	9	conj	_	_
+13	,	,	PUNCT	_	_	9	punct	_	_
+14	nes	nes	SCONJ	_	_	16	cc	_	_
+15	jau	jau	ADV	_	Degree=Pos	16	advmod	_	_
+16	artinos	arti	VERB	_	Case=Nom|Definite=Ind|Gender=Fem|Number=Plur|Reflex=No|VerbForm=Part|Voice=Necess	9	conj	_	_
+17	į	į	ADP	_	_	18	case	_	_
+18	juos	jis	PRON	_	Case=Acc|Definite=Ind|Gender=Masc|Number=Plur	16	iobj	_	_
+19	bent	bent	ADV	_	Degree=Pos	20	advmod	_	_
+20	dvi	du	NUM	card	Case=Nom|Gender=Fem	21	nummod	_	_
+21	voros	vora	NOUN	_	Case=Nom|Gender=Fem|Number=Plur	16	nsubj	_	_
+22	žmonių	žmogus	NOUN	_	Case=Gen|Gender=Masc|Number=Plur	21	nmod	_	_
+23	.	.	PUNCT	_	_	9	punct	_	_
+
