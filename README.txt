@@ -29,13 +29,15 @@ one treebank (repository) must be supplied at once in order to test treebank-wid
 
 
 ==============================
-conllu-stats.py
 conllu-stats.pl
 ==============================
 
-Reads a CoNLL-U file, collects various statistics and prints them. These two scripts, one in Python and the other in
-Perl, are independent of each other. The statistics they collect overlap but are not the same. The Perl script
-(conllu-stats.pl) was used to generate the stats.xml files in each data repository.
+Reads a CoNLL-U file, collects various statistics and prints them. This Perl script
+should not be confused with conll-stats.py, an old Python 2 program that collects
+just a few very basic statistics. The Perl script (conllu-stats.pl) is used to
+generate the stats.xml files in each data repository.
+
+  perl conllu-stats.pl *.conllu > stats.xml
 
 
 

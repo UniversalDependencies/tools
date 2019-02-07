@@ -7,8 +7,11 @@ use utf8;
 
 sub usage
 {
-    print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
+    print STDERR ("perl conllu-stats.pl *.conllu > stats.xml\n");
     print STDERR ("... generates the basic statistics that accompany each treebank.\n");
+    print STDERR ("... sizes of train, dev, and test data are based on file names.\n");
+    print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
+    print STDERR ("... if no files are given, standard input will be read but train/dev/test won't be distinguished.\n");
     print STDERR ("perl conllu-stats.pl --oformat detailed --data .. --docs ../docs --lang pt\n");
     print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
     print STDERR ("    data = parent folder of the data repositories, e.g. of UD_English\n");
