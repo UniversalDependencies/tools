@@ -632,8 +632,36 @@ EOF
 # Reads one or more CoNLL-U files and collects statistics about them. The list
 # of files is controlled by the global variable @ARGV. If it is empty, the
 # standard input is read. The statistic counters are local in the Perl sense.
+# Unlike the function process_input() below, here we still know what file we
+# are reading and we can tell the nested functions to collect partial
+# statistics about that file.
 #------------------------------------------------------------------------------
 sub process_files
+{
+    # If we have a list of input files, process them one-by-one so that we can
+    # also collect partial statistics about different portions of the data.
+    if(scalar(@ARGV) > 0)
+    {
+        my @files = @ARGV;
+        foreach my $file (@files)
+        {
+            @ARGV = ($file);
+            process_input();
+        }
+    }
+    else # process STDIN
+    {
+        process_input();
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Reads the files listed in @ARGV, or STDIN, if @ARGV is empty. The statistic
+# counters are local in the Perl sense.
+#------------------------------------------------------------------------------
+sub process_input
 {
     my @sentence;
     while(<>)
