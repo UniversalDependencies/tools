@@ -398,7 +398,6 @@ sub process_treebank
 {
     local %stats;
     reset_counters(\%stats);
-    local @sentence;
     # Counters visible to the summarizing functions.
     local %wordtag;
     local %lemmatag;
@@ -421,58 +420,10 @@ sub process_treebank
     local %childtagdeprel;
     local %agreement;
     local %disagreement;
-    while(<>)
-    {
-        # Skip comment lines (new in CoNLL-U).
-        next if(m/^\#/);
-        # Skip lines with empty nodes of enhanced graphs. We are collecting statistics about basic dependencies.
-        next if(m/^\d+\./);
-        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
-        if(m/^\s*$/)
-        {
-            if(@sentence)
-            {
-                process_sentence(@sentence);
-            }
-            $stats{nsent}++;
-            splice(@sentence);
-        }
-        # Lines with fused tokens do not contain features but we want to count the fusions.
-        elsif(m/^(\d+)-(\d+)\t(\S+)/)
-        {
-            my $i0 = $1;
-            my $i1 = $2;
-            my $fusion = $3;
-            my $size = $i1-$i0+1;
-            $stats{ntok} -= $size-1;
-            $stats{ntoksano}++ if(m/SpaceAfter=No/);
-            $stats{nfus}++;
-            # Remember the occurrence of the fusion.
-            $stats{fusions}{$fusion}++ unless($fusion eq '_');
-        }
-        else
-        {
-            $stats{ntok}++;
-            $stats{nword}++;
-            # Get rid of the line break.
-            s/\r?\n$//;
-            # Split line into columns.
-            # Since UD 2.0 the FORM and LEMMA may contain the space character,
-            # hence we cannot split on /\s+/ but we must use /\t/ only!
-            my @columns = split(/\t/, $_);
-            push(@sentence, \@columns);
-        }
-    }
-    # Process the last sentence even if it is not correctly terminated.
-    if(@sentence)
-    {
-        print STDERR ("WARNING! The last sentence is not properly terminated by an empty line.\n");
-        print STDERR ("         (An empty line means two consecutive LF characters, not just one!)\n");
-        print STDERR ("         Counting the words from the bad sentence anyway.\n");
-        process_sentence(@sentence);
-        $stats{nsent}++;
-        splice(@sentence);
-    }
+    # Read the input and collect statistics about it. Either take the files
+    # listed in the global array @ARGV, or, if @ARGV is empty, read STDIN.
+    process_files();
+    # Now prepare the output.
     prune_examples($stats{fusions});
     local @fusions = sort {my $r = $stats{fusions}{$b} <=> $stats{fusions}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{fusions}}));
     prune_examples($stats{words});
@@ -672,6 +623,70 @@ EOF
     else # stats.xml
     {
         simple_xml_statistics();
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Reads one or more CoNLL-U files and collects statistics about them. The list
+# of files is controlled by the global variable @ARGV. If it is empty, the
+# standard input is read. The statistic counters are local in the Perl sense.
+#------------------------------------------------------------------------------
+sub process_files
+{
+    my @sentence;
+    while(<>)
+    {
+        # Skip comment lines (new in CoNLL-U).
+        next if(m/^\#/);
+        # Skip lines with empty nodes of enhanced graphs. We are collecting statistics about basic dependencies.
+        next if(m/^\d+\./);
+        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
+        if(m/^\s*$/)
+        {
+            if(@sentence)
+            {
+                process_sentence(@sentence);
+            }
+            $stats{nsent}++;
+            splice(@sentence);
+        }
+        # Lines with fused tokens do not contain features but we want to count the fusions.
+        elsif(m/^(\d+)-(\d+)\t(\S+)/)
+        {
+            my $i0 = $1;
+            my $i1 = $2;
+            my $fusion = $3;
+            my $size = $i1-$i0+1;
+            $stats{ntok} -= $size-1;
+            $stats{ntoksano}++ if(m/SpaceAfter=No/);
+            $stats{nfus}++;
+            # Remember the occurrence of the fusion.
+            $stats{fusions}{$fusion}++ unless($fusion eq '_');
+        }
+        else
+        {
+            $stats{ntok}++;
+            $stats{nword}++;
+            # Get rid of the line break.
+            s/\r?\n$//;
+            # Split line into columns.
+            # Since UD 2.0 the FORM and LEMMA may contain the space character,
+            # hence we cannot split on /\s+/ but we must use /\t/ only!
+            my @columns = split(/\t/, $_);
+            push(@sentence, \@columns);
+        }
+    }
+    # Process the last sentence even if it is not correctly terminated.
+    if(@sentence)
+    {
+        print STDERR ("WARNING! The last sentence is not properly terminated by an empty line.\n");
+        print STDERR ("         (An empty line means two consecutive LF characters, not just one!)\n");
+        print STDERR ("         Counting the words from the bad sentence anyway.\n");
+        process_sentence(@sentence);
+        $stats{nsent}++;
+        splice(@sentence);
     }
 }
 
