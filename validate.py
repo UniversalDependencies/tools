@@ -832,7 +832,7 @@ def validate_upos_vs_deprel(id, tree):
         warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
-    if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels:
+    if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels and not 'goeswith' in childrels:
         warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
