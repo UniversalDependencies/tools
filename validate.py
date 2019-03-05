@@ -1001,10 +1001,10 @@ def get_caused_nonprojectivities(id, tree):
     # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
     pid = int(tree['nodes'][iid][HEAD])
     if pid < iid:
-        left = range(pid, iid - 1)
-        right = range(iid + 1, maxid)
+        left = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
+        right = range(iid + 1, maxid + 1)
     else:
-        left = range(1, iid - 1)
+        left = range(1, iid)
         right = range(iid + 1, pid)
     # Exclude ancestors of id from the ranges.
     sancestors = set(ancestors)
