@@ -5,14 +5,15 @@ import fileinput
 import sys
 import io
 import os.path
+import argparse
 import logging
+import traceback
 # According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
 # the regex module has the same API as re but it can check Unicode character properties using \p{}
 # as in Perl.
 #import re
 import regex as re
-import traceback
-import argparse
+import unicodedata
 
 
 THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__))) # The folder where this script resides.
@@ -143,6 +144,7 @@ def trees(inp, tag_sets, args):
             else:
                 warn('Spurious comment line. Comments are only allowed before a sentence.', 'Format')
         elif line[0].isdigit():
+            validate_unicode_normalization(line)
             if not lines: # new sentence
                 sentence_line=curr_line
             cols=line.split(u"\t")
@@ -160,6 +162,33 @@ def trees(inp, tag_sets, args):
             yield comments, lines
 
 ###### Tests applicable to a single row indpendently of the others
+
+def validate_unicode_normalization(text):
+    """
+    Tests that letters composed of multiple Unicode characters (such as a base
+    letter plus combining diacritics) conform to NFC normalization (canonical
+    decomposition followed by canonical composition).
+    """
+    normalized_text = unicodedata.normalize('NFC', text)
+    if text != normalized_text:
+        # Find the first unmatched character and include it in the report.
+        firsti = -1
+        firstj = -1
+        inpfirst = ''
+        nfcfirst = ''
+        tcols = text.split("\t")
+        ncols = normalized_text.split("\t")
+        for i in range(len(tcols)):
+            for j in range(len(tcols[i])):
+                if tcols[i][j] != ncols[i][j]:
+                    firsti = i
+                    firstj = j
+                    inpfirst = unicodedata.name(tcols[i][j])
+                    nfcfirst = unicodedata.name(ncols[i][j])
+                    break
+            if firsti >= 0:
+                break
+        warn("Unicode not normalized: %s.character[%d] is %s, should be %s" % (COLNAMES[firsti], firstj, inpfirst, nfcfirst), 'Unicode')
 
 whitespace_re=re.compile('.*\s',re.U)
 whitespace2_re=re.compile('.*\s\s', re.U)
