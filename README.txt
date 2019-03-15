@@ -17,6 +17,8 @@ install it using "pip install --user regex".
 
 You can run "python validate.py --help" for a list of available options.
 
+
+
 ==============================
 check_sentence_ids.pl
 ==============================
@@ -25,6 +27,25 @@ Reads CoNLL-U files from STDIN and verifies that every sentence has a unique id 
 one treebank (repository) must be supplied at once in order to test treebank-wide id uniqueness.
 
   cat *.conllu | perl check_sentence_ids.pl
+
+
+
+==============================
+normalize_unicode.pl
+==============================
+
+Converts Unicode to the NFC normalized form. Can be applied to any
+UTF-8-encoded text file, including CoNLL-U. As a result, if there
+are character combinations that by definition must look the same,
+the same sequence of bytes will be used to represent the glyph,
+thus improving accuracy of models (as long as they are applied to
+normalized data too).
+
+Beware: The output may slightly differ depending on your version of
+Perl because the Unicode standard evolves and newer Perl versions
+incorporate newer versions of Unicode data.
+
+  perl normalize_unicode.pl < input.conllu > normalized_output.conllu
 
 
 
