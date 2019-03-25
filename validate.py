@@ -1239,6 +1239,108 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         if lspecauxs and not cols[LEMMA] in lspecauxs:
             warn("'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang), 'Morpho', nodelineno=line)
 
+def validate_copula_lemmas(cols, children, nodes, line, lang):
+    """
+    Verifies that the relation cop is used only with lemmas that are known to
+    act as copulas in the given language.
+    Parameters:
+      'cols' ....... columns of the head node
+      'children' ... list of ids
+      'nodes' ...... dictionary where we can translate the node id into its
+                     CoNLL-U columns
+      'line' ....... line number of the node within the file
+    """
+    if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
+        ###!!! In the future, lists like this one will be read from a file.
+        # The UD guidelines narrow down the class of copulas to just the equivalent of "to be" (equivalence).
+        # Other verbs that may be considered copulas by the traditional grammar (such as the equivalents of
+        # "to become" or "to seem") are not copulas in UD; they head the nominal predicate, which is their xcomp.
+        # Existential "to be" can be copula only if it is the same verb as in equivalence ("John is a teacher").
+        # If the language uses two different verbs, then the existential one is not a copula.
+        # Besides AUX, the copula can also be a pronoun in some languages.
+        copdict = {
+            'en':  ['be'],
+            'af':  ['is', 'wees'],
+            'nl':  ['zijn'],
+            'de':  ['sein'],
+            'sv':  ['vara'],
+            'no':  ['være'],
+            'da':  ['være'],
+            'fo':  ['vera'],
+            'pcm': ['na', 'be'],
+            # In Romance languages, both "ser" and "estar" qualify as copulas.
+            'pt':  ['ser', 'estar'],
+            'gl':  ['ser', 'estar'],
+            'es':  ['ser', 'estar'],
+            'ca':  ['ser', 'estar'],
+            'fr':  ['être'],
+            'it':  ['essere'],
+            'ro':  ['fi'],
+            'la':  ['sum'],
+            # In Slavic languages, the iteratives are still variants of "to be", although they have a different lemma (derived from the main one).
+            # In addition, Polish and Russian also have pronominal copulas ("to" = "this/that").
+            'cs':  ['být', 'bývat', 'bývávat'],
+            'sk':  ['byť', 'bývať'],
+            'hsb': ['być'],
+            'pl':  ['być', 'bywać', 'to'],
+            'uk':  ['бути', 'бувати'],
+            'be':  ['быць', 'гэта'],
+            'ru':  ['быть', 'это'],
+            'sl':  ['biti'],
+            'hr':  ['biti'],
+            'sr':  ['biti'],
+            'bg':  ['съм', 'бъда'],
+            'cu':  ['бꙑти'],
+            'lt':  ['būti'],
+            'lv':  ['būt'],
+            'ga':  ['is'],
+            'br':  ['bezañ'],
+            'grc': ['εἰμί'],
+            'el':  ['είμαι'],
+            'hy':  ['եմ'],
+            'kmr': ['bûn'],
+            'fa':  ['است'],
+            'sa':  ['अस्'],
+            'hi':  ['है', 'था'],
+            'ur':  ['ہے', 'تھا'],
+            'mr':  ['असणे'],
+            'eu':  ['izan', 'egon', 'ukan'],
+            # Uralic languages.
+            'fi':  ['olla'],
+            'et':  ['olema'],
+            'sme': ['leat'],
+            'myv': ['оль'],
+            'kpv': ['вӧвны'],
+            'hu':  ['van'],
+            # Altaic languages.
+            'tr':  ['i'],
+            'kk':  ['бол', 'е'],
+            'ug':  ['بول', 'ئى'],
+            'bxr': ['бай', 'боло'],
+            'ko':  ['이+라는'],
+            'ja':  ['だ'],
+            # Dravidian languages.
+            'ta':  ['முயல்'],
+            # Sino-Tibetan languages.
+            'zh':  ['是'],
+            'yue': ['係'],
+            # Austro-Asiatic languages.
+            'vi':  ['là'],
+            # Austronesian languages.
+            'id':  ['adalah'],
+            'tl':  ['may'],
+            # Afro-Asiatic languages.
+            'ar':  ['كَان', 'لَيس'],
+            'he':  ['היה', 'הוא', 'זה'],
+            'am':  ['ን'],
+            'cop': ['ⲡⲉ'],
+            # Niger-Congo languages.
+            'yo':  ['jẹ́', 'ní']
+        }
+        lspeccops = copdict.get(lang, None)
+        if lspeccops and not cols[LEMMA] in lspeccops:
+            warn("'%s' is not a copula in language [%s]" % (cols[LEMMA], lang), 'Syntax', nodelineno=line)
+
 def validate_lspec_annotation(tree, lang):
     """
     Checks language-specific consequences of the annotation guidelines.
@@ -1284,6 +1386,7 @@ def validate_lspec_annotation(tree, lang):
         myline = lines.get(cols[ID], sentence_line)
         mychildren = children.get(cols[ID], [])
         validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
+        validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
 
 
 
