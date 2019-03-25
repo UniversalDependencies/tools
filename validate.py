@@ -1214,8 +1214,16 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'no':  ['være', 'vere', 'ha', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
+            # The addition of the following to Portuguese was requested by Alexandre Rademaker:
+            # 'continuar', 'passar', 'ficar', 'começar', 'voltar', 'parecer', 'acabar', 'deixar', 'vir'
             'pt':  ['ser', 'estar', 'haver', 'ter', 'andar', 'ir', 'poder', 'dever'],
-            'gl':  ['ser', 'estar', 'haber', 'ter', 'ir', 'poder', 'querer', 'deber'],
+            # The addition of the following to Galician was requested by Marcos Garcia:
+            # 'vir', 'parecer', 'semellar', 'seguir', 'resultar', 'deixar', 'quedar', 'levar', 'acabar', 'eis'
+            # DZ: Doubts about 'eis'. Marcos: "which is a sort of an ancient adverb which means "there is",
+            # so it works exactly as a copula (+locative adverb)."
+            # DZ: But if a language uses other verb in existential sentences than in equational sentences,
+            # the former is not treated as a copula.
+            'gl':  ['ser', 'estar', 'haber', 'ter', 'ir', 'poder', 'querer', 'deber', 'vir', 'parecer', 'semellar', 'seguir', 'resultar', 'deixar', 'quedar', 'levar', 'acabar', 'eis'],
             'es':  ['ser', 'estar', 'haber', 'tener', 'ir', 'poder', 'saber', 'querer', 'deber'],
             'ca':  ['ser', 'estar', 'haver', 'anar', 'poder', 'saber'],
             'fr':  ['être', 'avoir', 'faire', 'aller', 'pouvoir', 'savoir', 'vouloir', 'devoir'],
