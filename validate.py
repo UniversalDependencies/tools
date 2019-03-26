@@ -1268,7 +1268,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'nl':  ['zijn'],
             'de':  ['sein'],
             'sv':  ['vara'],
-            'no':  ['være'],
+            'no':  ['være', 'vere'], # 'vere' is the Nynorsk variant
             'da':  ['være'],
             'fo':  ['vera'],
             'pcm': ['na', 'be'],
