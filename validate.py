@@ -33,7 +33,7 @@ line_of_first_enhanced_orphan=None
 
 error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
-def warn(msg, error_type, lineno=True, nodelineno=0):
+def warn(msg, error_type, lineno=True, nodelineno=0, nodeid=0):
     """
     Print the warning.
     If lineno is True, print the number of the line last read from input. Note
@@ -60,16 +60,19 @@ def warn(msg, error_type, lineno=True, nodelineno=0):
             else:
                 fn=""
             sent = ''
+            node = ''
             # Global variable (last read sentence id): sentence_id
             # Originally we used a parameter sid but we probably do not need to override the global value.
             if sentence_id:
                 sent = ' Sent ' + sentence_id
+            if nodeid:
+                node = ' Node ' + str(nodeid)
             if nodelineno:
-                print("[%sLine %d%s]: %s" % (fn, nodelineno, sent, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: %s" % (fn, nodelineno, sent, node, msg), file=sys.stderr)
             elif lineno:
-                print("[%sLine %d%s]: %s" % (fn, curr_line, sent, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: %s" % (fn, curr_line, sent, node, msg), file=sys.stderr)
             else:
-                print("[%sTree number %d on line %d%s]: %s" % (fn, tree_counter, sentence_line, sent, msg), file=sys.stderr)
+                print("[%sTree number %d on line %d%s%s]: %s" % (fn, tree_counter, sentence_line, sent, node, msg), file=sys.stderr)
 
 ###### Support functions
 
@@ -855,45 +858,45 @@ def validate_upos_vs_deprel(id, tree):
     #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Nummod is for numerals only.
     if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
-        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels and not 'goeswith' in childrels:
-        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
-        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
-        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
-        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # AUX is normally aux or cop. It can appear in many other relations if it is promoted due to ellipsis.
     # However, I believe that it should not appear in compound. From the other side, compound can consist
     # of many different part-of-speech categories but I don't think it can contain AUX.
     if deprel == 'compound' and re.match(r"^(AUX)", cols[UPOS]):
-        warn("'compound' should not be 'AUX'", 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'compound' should not be 'AUX'", 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
-        warn("DEPREL can be 'punct' only if UPOS is 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("'punct' must be 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
     if cols[UPOS] == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
-        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodelineno=tree['linenos'][id])
+        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_left_to_right_relations(id, tree):
     """
@@ -1110,10 +1113,10 @@ def validate_projective_punctuation(id, tree):
     if deprel == 'punct':
         nonprojnodes = get_caused_nonprojectivities(id, tree)
         if nonprojnodes:
-            warn("Punctuation must not cause non-projectivity of nodes %s" % nonprojnodes, 'Syntax', nodelineno=tree['linenos'][id])
+            warn("Punctuation must not cause non-projectivity of nodes %s" % nonprojnodes, 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
         gap = get_gap(id, tree)
         if gap:
-            warn("Punctuation must not be attached non-projectively over nodes %s" % sorted(gap), 'Syntax', nodelineno=tree['linenos'][id])
+            warn("Punctuation must not be attached non-projectively over nodes %s" % sorted(gap), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_annotation(tree):
     """
@@ -1241,7 +1244,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
-            warn("'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang), 'Morpho', nodelineno=line)
+            warn("'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang), 'Morpho', nodeid=cols[ID], nodelineno=line)
 
 def validate_copula_lemmas(cols, children, nodes, line, lang):
     """
@@ -1343,7 +1346,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
         }
         lspeccops = copdict.get(lang, None)
         if lspeccops and not cols[LEMMA] in lspeccops:
-            warn("'%s' is not a copula in language [%s]" % (cols[LEMMA], lang), 'Syntax', nodelineno=line)
+            warn("'%s' is not a copula in language [%s]" % (cols[LEMMA], lang), 'Syntax', nodeid=cols[ID], nodelineno=line)
 
 def validate_lspec_annotation(tree, lang):
     """
