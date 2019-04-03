@@ -959,6 +959,18 @@ def validate_deprel_pair(idparent, idchild, tree):
     cfeats = tree['nodes'][idchild][FEATS].split('|')
     if pdeprel != 'punct' and cdeprel == 'advmod' and cupos == 'PART' and 'Polarity=Neg' in cfeats:
         return
+    # Punctuation should not depend on function words if it can be projectively
+    # attached to a content word. But sometimes it cannot. Czech example:
+    # "Budou - li však zbývat , ukončíme" (lit. "will - if however remain , we-stop")
+    # "však" depends on "ukončíme" while "budou" and "li" depend nonprojectively
+    # on "zbývat" (which depends on "ukončíme"). "Budou" is aux and "li" is mark.
+    # Yet the hyphen must depend on one of them because any other attachment would
+    # be non-projective. Here we assume that if the parent of a punctuation node
+    # is attached nonprojectively, punctuation can be attached to it to avoid its
+    # own nonprojectivity.
+    gap = get_gap(idparent, tree)
+    if gap and cdeprel == 'punct':
+        return
     # Auxiliaries, conjunctions and case markers will tollerate a few special
     # types of modifiers.
     # Punctuation should normally not depend on a functional node. However,
