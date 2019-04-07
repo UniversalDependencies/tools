@@ -1222,7 +1222,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
     if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
         ###!!! In the future, lists like this one will be read from a file.
         auxdict = {
-            'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must'],
+            # ChrisManning 2019/04: Allow 'get' as aux for get passive construction
+            'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get'],
             'nl':  ['zijn', 'hebben', 'worden', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
             'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste'],
