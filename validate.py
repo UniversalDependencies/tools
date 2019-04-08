@@ -1226,7 +1226,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get'],
             'nl':  ['zijn', 'hebben', 'worden', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
-            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste'],
+            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär'],
             'no':  ['være', 'vere', 'ha', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
