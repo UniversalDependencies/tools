@@ -1320,6 +1320,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'lt':  ['būti'],
             'lv':  ['būt'],
             'ga':  ['is'],
+            'cy':  ['bod'],
             'br':  ['bezañ'],
             'grc': ['εἰμί'],
             'el':  ['είμαι'],
