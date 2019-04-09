@@ -978,7 +978,13 @@ def validate_deprel_pair(idparent, idchild, tree):
     # quotation marks or brackets ("must") and then these symbols should depend
     # on the functional node. We temporarily allow punctuation here, until we
     # can detect precisely the bracket situation and disallow the rest.
-    if re.match(r"^(case|mark|cc|aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
+    # According to the guidelines
+    # (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers),
+    # mark can have a limited set of adverbial/oblique dependents, while the same
+    # is not allowed for nodes attached as case.
+    if re.match(r"^(mark)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|punct)$", cdeprel):
+        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+    if re.match(r"^(case|cc|aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
         warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
@@ -1226,7 +1232,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get'],
             'nl':  ['zijn', 'hebben', 'worden', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
-            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär'],
+            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
             'no':  ['være', 'vere', 'ha', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
