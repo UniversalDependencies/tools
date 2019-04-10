@@ -1259,6 +1259,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
             'cu':  ['бꙑти'],
+            'lt':  ['būti'],
+            'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
@@ -1318,7 +1320,11 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'bg':  ['съм', 'бъда'],
             'cu':  ['бꙑти'],
             'lt':  ['būti'],
-            'lv':  ['būt'],
+            # Lauma says that all four should be copulas despite the fact that
+            # kļūt and tapt correspond to English "to become", which is not
+            # copula in UD. See also the discussion in
+            # https://github.com/UniversalDependencies/docs/issues/622
+            'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
             'ga':  ['is'],
             'cy':  ['bod'],
             'br':  ['bezañ'],
