@@ -679,9 +679,12 @@ def build_tree(sentence):
     but does not report the error (presumably it has already been reported).
 
     tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
+      nodes ... array of word lines, i.e., lists of columns;
+          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings);
+          indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes
+          (needed in error messages)
     """
     global sentence_line # the line of the first token/word of the current tree (skipping comments!)
     node_line = sentence_line - 1
@@ -715,7 +718,7 @@ def build_tree(sentence):
             return None
         if head == id_:
             warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
-            continue
+            return None
         tree['nodes'].append(cols)
         tree['linenos'].append(node_line)
         # Incrementally build the set of children of every node.
