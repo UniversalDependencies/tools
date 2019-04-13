@@ -1122,7 +1122,15 @@ def validate_fixed_span(id, tree):
     Like with goeswith, the fixed relation should not in general skip words that
     are not part of the fixed expression. Unlike goeswith however, there can be
     an intervening punctuation symbol.
+
+    Update 2019-04-13: The rule that fixed expressions cannot be discontiguous
+    has been challenged with examples from Swedish and Coptic, see
+    https://github.com/UniversalDependencies/docs/issues/623
+    For the moment, I am turning this test off. In the future, we should
+    distinguish fatal errors from warnings and then this test will perhaps be
+    just a warning.
     """
+    return ###!!! temporarily turned off
     fxchildren = sorted([i for i in tree['children'][id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
     if fxchildren:
         fxlist = sorted([id] + fxchildren)
