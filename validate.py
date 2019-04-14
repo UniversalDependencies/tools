@@ -995,7 +995,8 @@ def validate_deprel_pair(idparent, idchild, tree):
     # such as "both-and", "either-or". Here the first part is attached to the
     # first conjunct. Since some function nodes (mark, case, aux, cop) can be
     # coordinated, we must allow 'cc' children under these nodes, too. However,
-    # we do not want to allow 'cc' under another 'cc'.
+    # we do not want to allow 'cc' under another 'cc'. (Still, 'cc' can have
+    # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
     if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
         warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
     ###!!! The pdeprel regex in the following test should probably include "det".
@@ -1004,7 +1005,7 @@ def validate_deprel_pair(idparent, idchild, tree):
     ###!!! of errors.
     if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
         warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-    if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|punct)$", cdeprel):
+    if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
         warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
