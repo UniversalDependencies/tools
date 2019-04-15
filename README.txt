@@ -11,9 +11,11 @@ code and there must exist corresponding lists of treebank-specific features and 
 to check that they are valid, too.
 
 The script runs under Python 3 and needs the third-party module "regex". If you do not have the "regex" module,
-install it using "pip install --user regex".
+install it using "pip install --user regex". NOTE: Depending on the configuration of your system, it is possible
+that both Python 2 and 3 are installed; then you may have to run "python3" instead of "python", and "pip3"
+instead of "pip".
 
-  cat la_proiel-ud-train.conllu | python validate.py --lang la
+  cat la_proiel-ud-train.conllu | python validate.py --lang la --max-err=0
 
 You can run "python validate.py --help" for a list of available options.
 
