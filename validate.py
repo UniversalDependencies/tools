@@ -1392,7 +1392,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'id':  ['adalah'],
             'tl':  ['may'],
             # Afro-Asiatic languages.
-            'ar':  ['كَان', 'لَيس', 'لسنا'],
+            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'am':  ['ን'],
             'cop': ['ⲡⲉ'],
