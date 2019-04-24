@@ -1372,7 +1372,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'et':  ['olema'],
             'sme': ['leat'],
             'myv': ['оль'],
-            'kpv': ['вӧвны'],
+            # Niko says about Komi:
+            # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
+            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
             'hu':  ['van'],
             # Altaic languages.
             'tr':  ['i'],
