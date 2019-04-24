@@ -1,15 +1,10 @@
-acl:inf
 acl:relcl
-advmod:inf
-advmod:phrase
-aux:q
 case:acc
 case:gen
+compound:affix
 compound:smixut
-conj:discourse
 det:def
-det:quant
 flat:name
+mark:q
 nmod:poss
 nsubj:cop
-obl:tmod

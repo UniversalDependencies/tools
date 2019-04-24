@@ -4,6 +4,7 @@ Clitic=Yes
 Clusivity=Ex
 Clusivity=In
 Contrast=Yes
+Copula=Yes
 Definite[obj]=Def
 Distance=Prox
 Distance=Med

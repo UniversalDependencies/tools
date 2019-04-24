@@ -5,7 +5,9 @@ acl:efter
 acl:från
 acl:för
 acl:hos
+acl:huruvida
 acl:i
+acl:innan
 acl:liksom
 acl:med
 acl:mot
@@ -29,10 +31,12 @@ advcl:att
 advcl:av
 advcl:beroende_på
 advcl:bortsett_från
+advcl:dess
 advcl:därför_att
 advcl:då
 advcl:då_och_då
 advcl:efter
+advcl:efter_att
 advcl:efter_det_att
 advcl:efter_hand_som
 advcl:eftersom
@@ -46,11 +50,13 @@ advcl:för
 advcl:för_att
 advcl:förrän
 advcl:förutsatt_att
+advcl:genom
 advcl:hos
 advcl:i
 advcl:i_de_fall
 advcl:i_samband_med
 advcl:i_stället_för
+advcl:if
 advcl:ifråga_om
 advcl:innan
 advcl:liksom
@@ -68,6 +74,7 @@ advcl:samtidigt_med_att
 advcl:samtidigt_som
 advcl:sedan
 advcl:som
+advcl:så
 advcl:så_att
 advcl:så_fort
 advcl:så_länge
@@ -81,12 +88,14 @@ advcl:trots_att
 advcl:under_det_att
 advcl:under_förutsättning_att
 advcl:utan
+advcl:utöver
 advcl:vare_sig
 advcl:än
 advcl:även_om
 advcl:över
 aux:pass
 compound:prt
+conj:and
 conj:el
 conj:eller
 conj:fast
@@ -99,6 +108,7 @@ conj:respektive
 conj:samt
 conj:som
 conj:sym
+conj:så
 conj:såväl_som
 conj:ty
 conj:utan
@@ -112,14 +122,17 @@ nmod:bakom
 nmod:beträffande
 nmod:bland
 nmod:bredvid
+nmod:de
 nmod:efter
 nmod:emellan
 nmod:enligt
 nmod:f
 nmod:for
 nmod:fr_o_m
+nmod:framför
 nmod:från
 nmod:för
+nmod:för_sedan
 nmod:före
 nmod:genom
 nmod:gentemot
@@ -129,6 +142,7 @@ nmod:i_form_av
 nmod:i_fråga_om
 nmod:i_förening_med
 nmod:i_förhållande_till
+nmod:i_linje_med
 nmod:i_proportion_till
 nmod:i_samarbete_med
 nmod:i_samband_med
@@ -151,6 +165,7 @@ nmod:mellan
 nmod:mot
 nmod:när_det_gällde
 nmod:när_det_gäller
+nmod:nära
 nmod:oavsett
 nmod:of
 nmod:om
@@ -176,6 +191,7 @@ nmod:utan
 nmod:utanför
 nmod:utom
 nmod:utöver
+nmod:vad_gäller
 nmod:via
 nmod:vid
 nmod:vid_sidan_om
@@ -194,6 +210,7 @@ obl:bland
 obl:bortsett_från
 obl:efter
 obl:emellan
+obl:emot
 obl:enl
 obl:enligt
 obl:exkl
@@ -208,7 +225,9 @@ obl:för
 obl:för_sedan
 obl:för_sen
 obl:för_skull
+obl:förbi
 obl:före
+obl:förrän
 obl:förutan
 obl:förutom
 obl:genom
@@ -244,6 +263,7 @@ obl:intill
 obl:istället_för
 obl:jämfört_med
 obl:kring
+obl:liksom
 obl:längs
 obl:lågstadiet
 obl:med
@@ -270,6 +290,7 @@ obl:om
 obl:omkring
 obl:ovanför
 obl:ovanpå
+obl:over
 obl:per
 obl:på
 obl:på_basis_av
@@ -277,6 +298,7 @@ obl:på_grund_av
 obl:på_grundval_av
 obl:på_tal_om
 obl:på_tredje
+obl:runt
 obl:runtomkring
 obl:sedan
 obl:senast
@@ -288,6 +310,7 @@ obl:tidigast
 obl:till
 obl:till_följd_av
 obl:till_höger_om
+obl:till_skillnad_från
 obl:till_skillnad_mot
 obl:till_vänster_om
 obl:tom
@@ -315,5 +338,6 @@ obl:vid_sidan_av
 obl:vid_sidan_om
 obl:värld
 obl:än
+obl:å
 obl:åt
 obl:över

@@ -7,8 +7,11 @@ use utf8;
 
 sub usage
 {
-    print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
+    print STDERR ("perl conllu-stats.pl *.conllu > stats.xml\n");
     print STDERR ("... generates the basic statistics that accompany each treebank.\n");
+    print STDERR ("... sizes of train, dev, and test data are based on file names.\n");
+    print STDERR ("cat *.conllu | perl conllu-stats.pl > stats.xml\n");
+    print STDERR ("... if no files are given, standard input will be read but train/dev/test won't be distinguished.\n");
     print STDERR ("perl conllu-stats.pl --oformat detailed --data .. --docs ../docs --lang pt\n");
     print STDERR ("... adds detailed statistics of each tag, feature and relation to the documentation source pages.\n");
     print STDERR ("    data = parent folder of the data repositories, e.g. of UD_English\n");
@@ -361,6 +364,18 @@ sub reset_counters
     $stats->{ntoksano} = 0;
     $stats->{nfus} = 0;
     $stats->{nword} = 0;
+    $stats->{train}{nsent} = 0;
+    $stats->{train}{ntok} = 0;
+    $stats->{train}{nfus} = 0;
+    $stats->{train}{nword} = 0;
+    $stats->{dev}{nsent} = 0;
+    $stats->{dev}{ntok} = 0;
+    $stats->{dev}{nfus} = 0;
+    $stats->{dev}{nword} = 0;
+    $stats->{test}{nsent} = 0;
+    $stats->{test}{ntok} = 0;
+    $stats->{test}{nfus} = 0;
+    $stats->{test}{nword} = 0;
     $stats->{words} = {};
     $stats->{fusions} = {};
     $stats->{lemmas} = {};
@@ -398,7 +413,6 @@ sub process_treebank
 {
     local %stats;
     reset_counters(\%stats);
-    local @sentence;
     # Counters visible to the summarizing functions.
     local %wordtag;
     local %lemmatag;
@@ -421,58 +435,10 @@ sub process_treebank
     local %childtagdeprel;
     local %agreement;
     local %disagreement;
-    while(<>)
-    {
-        # Skip comment lines (new in CoNLL-U).
-        next if(m/^\#/);
-        # Skip lines with empty nodes of enhanced graphs. We are collecting statistics about basic dependencies.
-        next if(m/^\d+\./);
-        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
-        if(m/^\s*$/)
-        {
-            if(@sentence)
-            {
-                process_sentence(@sentence);
-            }
-            $stats{nsent}++;
-            splice(@sentence);
-        }
-        # Lines with fused tokens do not contain features but we want to count the fusions.
-        elsif(m/^(\d+)-(\d+)\t(\S+)/)
-        {
-            my $i0 = $1;
-            my $i1 = $2;
-            my $fusion = $3;
-            my $size = $i1-$i0+1;
-            $stats{ntok} -= $size-1;
-            $stats{ntoksano}++ if(m/SpaceAfter=No/);
-            $stats{nfus}++;
-            # Remember the occurrence of the fusion.
-            $stats{fusions}{$fusion}++ unless($fusion eq '_');
-        }
-        else
-        {
-            $stats{ntok}++;
-            $stats{nword}++;
-            # Get rid of the line break.
-            s/\r?\n$//;
-            # Split line into columns.
-            # Since UD 2.0 the FORM and LEMMA may contain the space character,
-            # hence we cannot split on /\s+/ but we must use /\t/ only!
-            my @columns = split(/\t/, $_);
-            push(@sentence, \@columns);
-        }
-    }
-    # Process the last sentence even if it is not correctly terminated.
-    if(@sentence)
-    {
-        print STDERR ("WARNING! The last sentence is not properly terminated by an empty line.\n");
-        print STDERR ("         (An empty line means two consecutive LF characters, not just one!)\n");
-        print STDERR ("         Counting the words from the bad sentence anyway.\n");
-        process_sentence(@sentence);
-        $stats{nsent}++;
-        splice(@sentence);
-    }
+    # Read the input and collect statistics about it. Either take the files
+    # listed in the global array @ARGV, or, if @ARGV is empty, read STDIN.
+    process_files();
+    # Now prepare the output.
     prune_examples($stats{fusions});
     local @fusions = sort {my $r = $stats{fusions}{$b} <=> $stats{fusions}{$a}; unless($r) {$r = $a cmp $b}; $r} (keys(%{$stats{fusions}}));
     prune_examples($stats{words});
@@ -672,6 +638,121 @@ EOF
     else # stats.xml
     {
         simple_xml_statistics();
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Reads one or more CoNLL-U files and collects statistics about them. The list
+# of files is controlled by the global variable @ARGV. If it is empty, the
+# standard input is read. The statistic counters are local in the Perl sense.
+# Unlike the function process_input() below, here we still know what file we
+# are reading and we can tell the nested functions to collect partial
+# statistics about that file.
+#------------------------------------------------------------------------------
+sub process_files
+{
+    local $current_portion = 'other';
+    # If we have a list of input files, process them one-by-one so that we can
+    # also collect partial statistics about different portions of the data.
+    if(scalar(@ARGV) > 0)
+    {
+        my @files = @ARGV;
+        foreach my $file (@files)
+        {
+            @ARGV = ($file);
+            if($file =~ m/ud-train/)
+            {
+                $current_portion = 'train';
+            }
+            elsif($file =~ m/ud-dev/)
+            {
+                $current_portion = 'dev';
+            }
+            elsif($file =~ m/ud-test/)
+            {
+                $current_portion = 'test';
+            }
+            else
+            {
+                $current_portion = 'other';
+            }
+            process_input();
+        }
+    }
+    else # process STDIN
+    {
+        process_input();
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Reads the files listed in @ARGV, or STDIN, if @ARGV is empty. The statistic
+# counters are local in the Perl sense.
+#------------------------------------------------------------------------------
+sub process_input
+{
+    my @sentence;
+    while(<>)
+    {
+        # Skip comment lines (new in CoNLL-U).
+        next if(m/^\#/);
+        # Skip lines with empty nodes of enhanced graphs. We are collecting statistics about basic dependencies.
+        next if(m/^\d+\./);
+        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
+        if(m/^\s*$/)
+        {
+            if(@sentence)
+            {
+                process_sentence(@sentence);
+            }
+            $stats{nsent}++;
+            $stats{$current_portion}{nsent}++;
+            splice(@sentence);
+        }
+        # Lines with fused tokens do not contain features but we want to count the fusions.
+        elsif(m/^(\d+)-(\d+)\t(\S+)/)
+        {
+            my $i0 = $1;
+            my $i1 = $2;
+            my $fusion = $3;
+            my $size = $i1-$i0+1;
+            $stats{ntok} -= $size-1;
+            $stats{$current_portion}{ntok} -= $size-1;
+            $stats{ntoksano}++ if(m/SpaceAfter=No/);
+            $stats{nfus}++;
+            $stats{$current_portion}{nfus}++;
+            # Remember the occurrence of the fusion.
+            $stats{fusions}{$fusion}++ unless($fusion eq '_');
+        }
+        else
+        {
+            $stats{ntok}++;
+            $stats{$current_portion}{ntok}++;
+            $stats{nword}++;
+            $stats{$current_portion}{nword}++;
+            # Get rid of the line break.
+            s/\r?\n$//;
+            # Split line into columns.
+            # Since UD 2.0 the FORM and LEMMA may contain the space character,
+            # hence we cannot split on /\s+/ but we must use /\t/ only!
+            my @columns = split(/\t/, $_);
+            push(@sentence, \@columns);
+        }
+    }
+    # Process the last sentence even if it is not correctly terminated.
+    if(@sentence)
+    {
+        print STDERR ("WARNING! The last sentence is not properly terminated by an empty line.\n");
+        print STDERR ("         (An empty line means two consecutive LF characters, not just one!)\n");
+        print STDERR ("         Counting the words from the bad sentence anyway.\n");
+        process_sentence(@sentence);
+        $stats{nsent}++;
+        $stats{$current_portion}{nsent}++;
+        splice(@sentence);
     }
 }
 
@@ -902,6 +983,98 @@ sub process_sentence
             }
         }
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints fundamental statistics about words, lemmas, part-of-speech tags,
+# features and dependency relations to the standard output. The output of this
+# function is included with each treebank in the stats.xml file.
+#------------------------------------------------------------------------------
+sub simple_xml_statistics
+{
+    # Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
+    print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    print("<treebank>\n");
+    print <<EOF
+  <!-- tokens means "surface tokens", e.g. Spanish "vámonos" counts as one token
+       words means "syntactic words", e.g. Spanish "vámonos" is split to two words, "vamos" and "nos"
+       fused is the number of tokens that are split to two or more syntactic words
+       The words and fused elements can be omitted if no token is split to smaller syntactic words. -->
+EOF
+    ;
+    print("  <size>\n");
+    print("    <total><sentences>$stats{nsent}</sentences><tokens>$stats{ntok}</tokens><words>$stats{nword}</words><fused>$stats{nfus}</fused></total>\n");
+    if($stats{train}{nsent}>0 || $stats{dev}{nsent}>0 || $stats{test}{nsent}>0)
+    {
+        print("    <train><sentences>$stats{train}{nsent}</sentences><tokens>$stats{train}{ntok}</tokens><words>$stats{train}{nword}</words><fused>$stats{train}{nfus}</fused></train>\n");
+        print("    <dev><sentences>$stats{dev}{nsent}</sentences><tokens>$stats{dev}{ntok}</tokens><words>$stats{dev}{nword}</words><fused>$stats{dev}{nfus}</fused></dev>\n");
+        print("    <test><sentences>$stats{test}{nsent}</sentences><tokens>$stats{test}{ntok}</tokens><words>$stats{test}{nword}</words><fused>$stats{test}{nfus}</fused></test>\n");
+    }
+    print("  </size>\n");
+    print('  <lemmas unique="', scalar(@lemmas), '" />');
+    splice(@lemmas, 15);
+    # XML comment must not contain '--' but some treebanks do. Replace it by ndash.
+    my $ex = join(', ', @lemmas);
+    $ex =~ s/--/\x{2013}/g;
+    print("<!-- $ex -->\n");
+    print('  <forms unique="', scalar(@words), '" />');
+    splice(@words, 15);
+    $ex = join(', ', @words);
+    $ex =~ s/--/\x{2013}/g;
+    print("<!-- $ex -->\n");
+    print('  <fusions unique="', scalar(@fusions), '" />');
+    splice(@fusions, 15);
+    $ex = join(', ', @fusions);
+    $ex =~ s/--/\x{2013}/g;
+    print("<!-- $ex -->\n");
+    # CoNLL 2017 shared task, surprise languages: I want to make some statistics public together with the language names
+    # but I do not want to reveal the number of tokens in the test set (the participants have to do the tokenization themselves).
+    # Therefore the POS tag statistics should not give absolute counts (number of tokens is a simple sum of the counts).
+    print("  <!-- Statistics of universal POS tags. The comments show the most frequent lemmas. -->\n");
+    print("  <tags unique=\"".scalar(@tagset)."\">\n");
+    foreach my $tag (@tagset)
+    {
+        my @keys = keys(%{$stats{examples}{$tag.'-lemma'}});
+        my @examples = sort_and_truncate_examples($stats{examples}{$tag.'-lemma'}, \@keys, 10);
+        $ex = join(', ', @examples);
+        $ex =~ s/--/\x{2013}/g;
+        # Absolute or relative count?
+        my $c = $stats{tags}{$tag};
+        $c /= $stats{ntok} if($konfig{relative});
+        print('    <tag name="'.$tag.'">'.$c."</tag><!-- $ex -->\n");
+    }
+    print("  </tags>\n");
+    # Print the list of features as an XML structure that can be used in the treebank description XML file.
+    print("  <!-- Statistics of features and values. The comments show the most frequent word forms. -->\n");
+    print("  <feats unique=\"".scalar(@fvset)."\">\n");
+    foreach my $feature (@fvset)
+    {
+        my @keys = keys(%{$stats{examples}{$feature}});
+        my @examples = sort_and_truncate_examples($stats{examples}{$feature}, \@keys, 10);
+        my $upostags = join(',', sort(keys(%{$stats{fvt}{$feature}})));
+        my ($name, $value) = split(/=/, $feature);
+        $ex = join(', ', @examples);
+        $ex =~ s/--/\x{2013}/g;
+        # Absolute or relative count?
+        my $c = $stats{fvpairs}{$feature};
+        $c /= $stats{ntok} if($konfig{relative});
+        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$c."</feat><!-- $ex -->\n");
+    }
+    print("  </feats>\n");
+    # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
+    print("  <!-- Statistics of universal dependency relations. -->\n");
+    print("  <deps unique=\"".scalar(@deprelset)."\">\n");
+    foreach my $deprel (@deprelset)
+    {
+        # Absolute or relative count?
+        my $c = $stats{deprels}{$deprel};
+        $c /= $stats{ntok} if($konfig{relative});
+        print('    <dep name="'.$deprel.'">'.$c."</dep>\n");
+    }
+    print("  </deps>\n");
+    print("</treebank>\n");
 }
 
 
@@ -1879,96 +2052,6 @@ sub percent
     my $whole = shift;
     return 0 if($whole == 0);
     return sprintf("%d%%", ($part/$whole)*100+0.5);
-}
-
-
-
-#------------------------------------------------------------------------------
-# Prints fundamental statistics about words, lemmas, part-of-speech tags,
-# features and dependency relations to the standard output. The output of this
-# function is included with each treebank in the stats.xml file.
-#------------------------------------------------------------------------------
-sub simple_xml_statistics
-{
-    # Print the list of universal tags as an XML structure that can be used in the treebank description XML file.
-    print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    print("<treebank>\n");
-    print <<EOF
-  <!-- tokens means "surface tokens", e.g. Spanish "vámonos" counts as one token
-       words means "syntactic words", e.g. Spanish "vámonos" is split to two words, "vamos" and "nos"
-       fused is the number of tokens that are split to two or more syntactic words
-       The words and fused elements can be omitted if no token is split to smaller syntactic words. -->
-EOF
-    ;
-    print("  <size>\n");
-    print("    <total><sentences>$stats{nsent}</sentences><tokens>$stats{ntok}</tokens><words>$stats{nword}</words><fused>$stats{nfus}</fused></total>\n");
-    ###!!! We do not know what part of the data is for training, development or testing. We would have to change the calling syntax.
-    #print("    <train></train>\n");
-    #print("    <dev></dev>\n");
-    #print("    <test></test>\n");
-    print("  </size>\n");
-    print('  <lemmas unique="', scalar(@lemmas), '" />');
-    splice(@lemmas, 15);
-    # XML comment must not contain '--' but some treebanks do. Replace it by ndash.
-    my $ex = join(', ', @lemmas);
-    $ex =~ s/--/\x{2013}/g;
-    print("<!-- $ex -->\n");
-    print('  <forms unique="', scalar(@words), '" />');
-    splice(@words, 15);
-    $ex = join(', ', @words);
-    $ex =~ s/--/\x{2013}/g;
-    print("<!-- $ex -->\n");
-    print('  <fusions unique="', scalar(@fusions), '" />');
-    splice(@fusions, 15);
-    $ex = join(', ', @fusions);
-    $ex =~ s/--/\x{2013}/g;
-    print("<!-- $ex -->\n");
-    # CoNLL 2017 shared task, surprise languages: I want to make some statistics public together with the language names
-    # but I do not want to reveal the number of tokens in the test set (the participants have to do the tokenization themselves).
-    # Therefore the POS tag statistics should not give absolute counts (number of tokens is a simple sum of the counts).
-    print("  <!-- Statistics of universal POS tags. The comments show the most frequent lemmas. -->\n");
-    print("  <tags unique=\"".scalar(@tagset)."\">\n");
-    foreach my $tag (@tagset)
-    {
-        my @keys = keys(%{$stats{examples}{$tag.'-lemma'}});
-        my @examples = sort_and_truncate_examples($stats{examples}{$tag.'-lemma'}, \@keys, 10);
-        $ex = join(', ', @examples);
-        $ex =~ s/--/\x{2013}/g;
-        # Absolute or relative count?
-        my $c = $stats{tags}{$tag};
-        $c /= $stats{ntok} if($konfig{relative});
-        print('    <tag name="'.$tag.'">'.$c."</tag><!-- $ex -->\n");
-    }
-    print("  </tags>\n");
-    # Print the list of features as an XML structure that can be used in the treebank description XML file.
-    print("  <!-- Statistics of features and values. The comments show the most frequent word forms. -->\n");
-    print("  <feats unique=\"".scalar(@fvset)."\">\n");
-    foreach my $feature (@fvset)
-    {
-        my @keys = keys(%{$stats{examples}{$feature}});
-        my @examples = sort_and_truncate_examples($stats{examples}{$feature}, \@keys, 10);
-        my $upostags = join(',', sort(keys(%{$stats{fvt}{$feature}})));
-        my ($name, $value) = split(/=/, $feature);
-        $ex = join(', ', @examples);
-        $ex =~ s/--/\x{2013}/g;
-        # Absolute or relative count?
-        my $c = $stats{fvpairs}{$feature};
-        $c /= $stats{ntok} if($konfig{relative});
-        print('    <feat name="'.$name.'" value="'.$value.'" upos="'.$upostags.'">'.$c."</feat><!-- $ex -->\n");
-    }
-    print("  </feats>\n");
-    # Print the list of dependency relations as an XML structure that can be used in the treebank description XML file.
-    print("  <!-- Statistics of universal dependency relations. -->\n");
-    print("  <deps unique=\"".scalar(@deprelset)."\">\n");
-    foreach my $deprel (@deprelset)
-    {
-        # Absolute or relative count?
-        my $c = $stats{deprels}{$deprel};
-        $c /= $stats{ntok} if($konfig{relative});
-        print('    <dep name="'.$deprel.'">'.$c."</dep>\n");
-    }
-    print("  </deps>\n");
-    print("</treebank>\n");
 }
 
 
