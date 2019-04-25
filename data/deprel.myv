@@ -1,11 +1,13 @@
 acl:relcl
 advmod:tmod
 aux:neg
+aux:q
 cc:preconj
 compound:coll
 compound:redup
 compound:svc
 csubj:cop
+flat:ellipsis
 flat:name
 nmod:comp
 nmod:gobj
