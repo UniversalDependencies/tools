@@ -1,5 +1,10 @@
 acl:relcl
+aux:neg
+aux:part
 aux:pass
-det:poss
 flat:name
+nmod:poss
 nsubj:pass
+obl:arg
+case:det
+obl:agent

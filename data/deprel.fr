@@ -24,6 +24,7 @@ nsubj:caus
 nsubj:expl
 nsubj:pass
 obj:agent
+obj:lvc
 obl:agent
 obl:arg
 obl:comp

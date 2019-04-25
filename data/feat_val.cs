@@ -30,4 +30,5 @@ Style=Rare
 Style=Slng
 Style=Vrnc
 Style=Vulg
+Typo=Yes
 Variant=Short

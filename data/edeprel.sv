@@ -18,7 +18,6 @@ acl:relcl
 acl:som
 acl:såsom
 acl:till
-acl:under
 acl:utan
 acl:vid
 acl:än
@@ -86,7 +85,6 @@ advcl:såvida
 advcl:till
 advcl:tills
 advcl:trots_att
-advcl:under
 advcl:under_det_att
 advcl:under_förutsättning_att
 advcl:utan
@@ -98,7 +96,6 @@ advcl:över
 aux:pass
 compound:prt
 conj:and
-conj:dvs
 conj:el
 conj:eller
 conj:fast
@@ -185,7 +182,6 @@ nmod:runt
 nmod:rörande
 nmod:sedan
 nmod:sym
-nmod:sym:sym
 nmod:t_o_m
 nmod:till
 nmod:till_förmån_för
@@ -212,7 +208,6 @@ obl:beroende_på
 obl:beträffande
 obl:bland
 obl:bortsett_från
-obl:den
 obl:efter
 obl:emellan
 obl:emot
@@ -232,7 +227,6 @@ obl:för_sen
 obl:för_skull
 obl:förbi
 obl:före
-obl:förra
 obl:förrän
 obl:förutan
 obl:förutom
@@ -267,7 +261,6 @@ obl:inom_ramen_för
 obl:inpå
 obl:intill
 obl:istället_för
-obl:j
 obl:jämfört_med
 obl:kring
 obl:liksom

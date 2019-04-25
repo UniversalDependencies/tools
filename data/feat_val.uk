@@ -6,6 +6,7 @@ NameType=Pat
 NameType=Sur
 Orth=Alt
 PartType=Conseq
+PunctType=Bull
 PunctType=Dash
 PunctType=Hyph
 PunctType=Ndash

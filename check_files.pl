@@ -39,11 +39,11 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.2;
+my $current_release = 2.3;
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.1';
+my $oldpath = '/net/data/universal-dependencies-2.2';
 GetOptions
 (
     'future'   => \$include_future,
@@ -91,6 +91,8 @@ if(scalar(@ARGV)==1)
             # Check that all required metadata items are present in the README file.
             check_metadata($folder, $metadata, $current_release, \@errors, \$n_errors);
             chdir('..') or die("Cannot return to the upper folder");
+            # Check that the language-specific documentation has at least the index (summary) page.
+            check_documentation($folder, $langcode, \@errors, \$n_errors);
         }
         else
         {
@@ -122,9 +124,8 @@ if(scalar(@ARGV)==1)
 opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
-my ($validhash, $nisthash) = get_validation_results();
+my $validhash = get_validation_results();
 my %valid = %{$validhash};
-my %nist = %{$nisthash};
 my $n_folders_with_data = 0;
 my $n_errors = 0;
 my %languages_with_data;
@@ -141,6 +142,7 @@ my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
+my %tcode_to_treebank_name;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
@@ -154,6 +156,7 @@ foreach my $folder (@folders)
             $langcode = $languages_from_yaml->{$language}{lcode};
             my $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
+            $tcode_to_treebank_name{$key} = join(' ', ($language, $treebank));
             my $prefix = $key.'-ud';
             chdir($folder) or die("Cannot enter folder $folder");
             # Skip folders that are not Git repositories even if they otherwise look OK.
@@ -243,7 +246,8 @@ foreach my $folder (@folders)
             my $nwtest = 0;
             # In general, every treebank should have at least the test data.
             # If there are more data files, zero or one of each of the following is expected: train, dev.
-            # Exception: Czech has four train files: train-c, train-l, train-m, train-v.
+            # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+            # Exception 2: German HDT has two train files: train-a, train-b.
             # No other CoNLL-U files are expected.
             # It is also expected that if there is dev, there is also train.
             # And if there is train, it should be same size or larger (in words) than both dev and test.
@@ -257,6 +261,14 @@ foreach my $folder (@folders)
                 $stats = collect_statistics_about_ud_file("$prefix-train-m.conllu");
                 $nwtrain += $stats->{nword};
                 $stats = collect_statistics_about_ud_file("$prefix-train-v.conllu");
+                $nwtrain += $stats->{nword};
+            }
+            elsif($folder eq 'UD_German-HDT')
+            {
+                # The data is split into two files because of the size limits.
+                my $stats = collect_statistics_about_ud_file("$prefix-train-a.conllu");
+                $nwtrain = $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b.conllu");
                 $nwtrain += $stats->{nword};
             }
             else # all other treebanks
@@ -389,68 +401,6 @@ foreach my $folder (@folders)
         push(@unknown_folders, $folder);
     }
 }
-# Classify shared task treebanks by their size. We cannot do this before we
-# have scanned all treebanks because one category depends on whether there are
-# larger treebanks of the same language.
-my $n_folders_conll = 0;
-my %languages_conll;
-my %languages_conll_large;
-my @shared_task_large_folders; # train, dev and test exist, train is larger than either of the other two, test is at least 10K words, dev is at least 5K words
-my @shared_task_small_folders; # no dev, train may be smaller than test, test at least 10K words
-my @shared_task_extra_folders; # no train, no dev, test at least 10K words, the language has another large treebank
-my @shared_task_lorsc_folders; # small or no train, no dev, test at least 10K words, no other large treebank of the language
-my @shared_task_other_folders; # outliers if any
-foreach my $folder (sort(keys(%nw)))
-{
-    my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    my ($nwtrain, $nwdev, $nwtest, $nwall) = ($nw{$folder}{train}, $nw{$folder}{dev}, $nw{$folder}{test}, $nw{$folder}{all});
-    # Only count treebanks that are in the shared task.
-    unless($nist{$folder})
-    {
-        $n_folders_conll++;
-        $languages_conll{$language}++;
-        # Remember languages that have at least one large treebank. It will
-        # influence classification of test-only treebanks of the same language.
-        if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
-        {
-            $languages_conll_large{$language}++;
-        }
-    }
-}
-foreach my $folder (sort(keys(%nw)))
-{
-    my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    my ($nwtrain, $nwdev, $nwtest, $nwall) = ($nw{$folder}{train}, $nw{$folder}{dev}, $nw{$folder}{test}, $nw{$folder}{all});
-    # Only count treebanks that are in the shared task.
-    unless($nist{$folder})
-    {
-        # Large: it has train, dev and test, train is larger than each of the other two, dev is at least 5K words, test is at least 10K words.
-        # Small: it does not have dev, train is at least 3K words, test is at least 10K words.
-        # Extra test: it has only test, at least 10K words. There is another treebank of the same language, and the other treebank is large.
-        # Low resource: no dev, train zero or a tiny sample, test at least 10K words, and this is the only treebank of the language.
-        # Other: are there treebanks that do not fit in any of the above categories?
-        if($nwtrain>$nwdev && $nwtrain>$nwtest && $nwdev>=5000 && $nwtest>=10000)
-        {
-            push(@shared_task_large_folders, $folder);
-        }
-        elsif($nwtrain>=3000 && $nwdev==0 && $nwtest>=10000)
-        {
-            push(@shared_task_small_folders, $folder);
-        }
-        elsif($nwtrain==0 && $nwdev==0 && $nwtest>=10000 && $languages_conll_large{$language})
-        {
-            push(@shared_task_extra_folders, $folder);
-        }
-        elsif($nwtrain<5000 && $nwdev==0 && $nwtest>=10000 && !exists($languages_conll_large{$language}))
-        {
-            push(@shared_task_lorsc_folders, $folder);
-        }
-        else # We do not expect any treebanks that fall here.
-        {
-            push(@shared_task_other_folders, $folder);
-        }
-    }
-}
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
 print("\n");
 print("Found ", scalar(@folders), " folders.\n");
@@ -476,23 +426,10 @@ if(scalar(@invalid_folders) > 0)
 }
 # Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
 print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");
-print("$n_folders_conll of those will take part in the CoNLL shared task.\n");
-my $n_shared_task_large = scalar(@shared_task_large_folders);
-my $n_shared_task_small = scalar(@shared_task_small_folders);
-my $n_shared_task_extra = scalar(@shared_task_extra_folders);
-my $n_shared_task_lorsc = scalar(@shared_task_lorsc_folders);
-my $n_shared_task_other = scalar(@shared_task_other_folders);
-print("$n_shared_task_large of them are considered large and will have separate training and development data in the shared task:\n\n", join(' ', @shared_task_large_folders), "\n\n");
-print("$n_shared_task_small of them are considered small; they have training data but not development data:\n\n", join(' ', @shared_task_small_folders), "\n\n");
-print("$n_shared_task_extra of them are extra test sets in languages where another large treebank exists:\n\n", join(' ', @shared_task_extra_folders), "\n\n");
-print("$n_shared_task_lorsc of them are low-resource languages; they have no training data or just a tiny sample:\n\n", join(' ', @shared_task_lorsc_folders), "\n\n");
-print("$n_shared_task_other of them do not meet conditions of either large or small shared task treebanks:\n\n", join(' ', @shared_task_other_folders), "\n\n");
 my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
-my @languages_conll = map {s/_/ /g; $_} (sort(keys(%languages_conll)));
-print(scalar(@languages_conll), " languages in the shared task: ", join(', ', @languages_conll), "\n\n");
 my @langcodes = sort(keys(%stats));
 print("Treebank codes: ", join(' ', @langcodes), "\n\n");
 my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@langcodes);
@@ -513,6 +450,7 @@ my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x =
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 my @contacts = sort(keys(%contacts));
 print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
+# Find treebanks whose data size has changed.
 print("Collecting statistics of $oldpath...\n");
 my $stats11 = collect_statistics_about_ud_release($oldpath);
 my @languages11 = sort(keys(%{$stats11}));
@@ -528,9 +466,48 @@ foreach my $l (@languages11)
     }
 }
 print("\n");
-# Then we may want to do this for treebanks whose size has not changed:
-# zeman@zen:/ha/home/zeman/network/unidep$ for i in UD_* ; do echo $i ; cd $i ; git pull ; cd .. ; done
-# zeman@zen:/net/data/universal-dependencies-1.1$ for i in German Greek English Finnish Finnish-FTB Irish Hebrew Croatian Hungarian Indonesian Swedish ; do for j in UD_$i/*.conllu ; do echo diff $j /net/work/people/zeman/unidep/$j ; ( diff $j /net/work/people/zeman/unidep/$j | head -2 ) ; done ; done
+# Treebanks can appear, disappear and reappear. Get the list of all treebanks
+# that are part either of this or of the previous release.
+my %lastcurrtreebanks;
+foreach my $t (@langcodes, @languages11)
+{
+    $lastcurrtreebanks{$t}++;
+}
+# Find treebanks whose size has changed by more than 10%.
+my @changedsize;
+my $codemaxl = 0;
+my $namemaxl = 0;
+my $oldmaxl = 0;
+my $newmaxl = 0;
+foreach my $t (sort(keys(%lastcurrtreebanks)))
+{
+    my $oldsize = exists($stats11->{$t}) ? $stats11->{$t}{nword} : 0;
+    my $newsize = exists($stats{$t}) ? $stats{$t}{nword} : 0;
+    if($newsize > $oldsize * 1.1 || $newsize < $oldsize * 0.9)
+    {
+        my %record =
+        (
+            'code' => $t,
+            'name' => $tcode_to_treebank_name{$t},
+            'old'  => $oldsize,
+            'new'  => $newsize
+        );
+        push(@changedsize, \%record);
+        $codemaxl = length($t) if(length($t) > $codemaxl);
+        $namemaxl = length($record{name}) if(length($record{name}) > $namemaxl);
+        $oldmaxl = length($oldsize) if(length($oldsize) > $oldmaxl);
+        $newmaxl = length($newsize) if(length($newsize) > $newmaxl);
+    }
+}
+my $nchangedsize = scalar(@changedsize);
+my $changelog = "The size of the following $nchangedsize treebanks changed significantly since the last release:\n";
+foreach my $r (sort {$a->{name} cmp $b->{name}} (@changedsize))
+{
+    my $padding = ' ' x ($namemaxl - length($r->{name}));
+    $changelog .= sprintf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
+}
+# Collect statistics of the current treebanks. Especially the total number of
+# sentences, tokens and words is needed for the metadata in Lindat.
 my $ntok = 0;
 my $nword = 0;
 my $nfus = 0;
@@ -553,11 +530,9 @@ my $announcement = get_announcement
     \@families,
     'less than 1,000 tokens',
     'well over 1.5 million tokens',
-    'November 2018', # expected next release
+    'May 2019', # expected next release
     \@contributors_firstlast,
-    # Temporary for UD 2.0: shared task information
-    $n_folders_conll,
-    \@languages_conll
+    $changelog
 );
 print($announcement);
 
@@ -565,103 +540,48 @@ print($announcement);
 
 #------------------------------------------------------------------------------
 # Downloads the current validation report from the validation server. Returns
-# two hash references: to the hash of valid treebanks, and to the hash of
-# treebanks that are not in the shared task despite being valid.
+# a reference to the hash of valid treebanks.
 #------------------------------------------------------------------------------
 sub get_validation_results
 {
-    # Preliminary UD 2.2 release: only the training data of the shared task treebanks
-    # (but their test data will be frozen as well, they just won't be released yet).
-    # After we used this script to select the shared task treebanks automatically,
-    # we are now freezing the list, and we may even do manual adjustments, such as
-    # removing treebanks with unreliable lemmatization. From now on, the script will
-    # work only with treebanks that have been approved for the shared task.
-    ###!!! Manually removed:
-    # UD_Russian-GSD
-    # UD_Spanish-GSD
-    # UD_Turkish-PUD
-    # Note: After some discussion with Giuseppe, UD_Latin-Perseus will be fixed but not removed.
-    # So we have 81 shared task treebanks: 63 large and 18 small.
-    my @stpresel = qw(
-    UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
-    UD_Arabic-PADT UD_Armenian-ArmTDP
-    UD_Basque-BDT UD_Breton-KEB UD_Bulgarian-BTB UD_Buryat-BDT
-    UD_Catalan-AnCora UD_Chinese-GSD UD_Croatian-SET
-    UD_Czech-CAC UD_Czech-FicTree UD_Czech-PDT UD_Czech-PUD
-    UD_Danish-DDT UD_Dutch-Alpino UD_Dutch-LassySmall
-    UD_English-EWT UD_English-GUM UD_English-LinES UD_English-PUD
-    UD_Estonian-EDT
-    UD_Faroese-OFT UD_Finnish-FTB UD_Finnish-PUD UD_Finnish-TDT
-    UD_French-GSD UD_French-Sequoia UD_French-Spoken
-    UD_Galician-CTG UD_Galician-TreeGal
-    UD_German-GSD UD_Gothic-PROIEL UD_Greek-GDT
-    UD_Hebrew-HTB UD_Hindi-HDTB UD_Hungarian-Szeged
-    UD_Indonesian-GSD UD_Irish-IDT UD_Italian-ISDT UD_Italian-PoSTWITA
-    UD_Japanese-GSD UD_Japanese-Modern
-    UD_Kazakh-KTB UD_Korean-GSD UD_Korean-Kaist UD_Kurmanji-MG
-    UD_Latin-ITTB UD_Latin-PROIEL UD_Latin-Perseus UD_Latvian-LVTB
-    UD_Naija-NSC UD_North_Sami-Giella
-    UD_Norwegian-Bokmaal UD_Norwegian-Nynorsk UD_Norwegian-NynorskLIA
-    UD_Old_Church_Slavonic-PROIEL UD_Old_French-SRCMF UD_Persian-Seraji
-    UD_Polish-LFG UD_Polish-SZ UD_Portuguese-Bosque UD_Romanian-RRT
-    UD_Russian-SynTagRus UD_Russian-Taiga UD_Serbian-SET UD_Slovak-SNK
-    UD_Slovenian-SSJ UD_Slovenian-SST UD_Spanish-AnCora
-    UD_Swedish-LinES UD_Swedish-PUD UD_Swedish-Talbanken
-    UD_Thai-PUD UD_Turkish-IMST
-    UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB);
-    my @nstpresel = qw(
-    UD_Amharic-ATT UD_Arabic-NYUAD UD_Arabic-PUD UD_Belarusian-HSE
-    UD_Cantonese-HK UD_Chinese-CFL UD_Chinese-HK UD_Chinese-PUD
-    UD_Coptic-Scriptorium UD_Czech-CLTT UD_English-ParTUT UD_French-PUD
-    UD_French-ParTUT UD_German-PUD UD_Hindi-PUD UD_Indonesian-PUD UD_Italian-PUD
-    UD_Italian-ParTUT UD_Japanese-BCCWJ UD_Japanese-PUD UD_Komi_Zyrian-IKDP
-    UD_Komi_Zyrian-Lattice UD_Korean-PUD UD_Lithuanian-HSE UD_Marathi-UFAL
-    UD_Portuguese-GSD UD_Portuguese-PUD UD_Romanian-Nonstandard UD_Russian-GSD
-    UD_Russian-PUD UD_Sanskrit-UFAL UD_Spanish-GSD UD_Spanish-PUD
-    UD_Swedish_Sign_Language-SSLC UD_Tagalog-TRG UD_Tamil-TTB UD_Telugu-MTG
-    UD_Turkish-PUD UD_Warlpiri-UFAL UD_Yoruba-YTB
-    );
-    print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
-    print("WARNING: As a temporary measure, treebanks that took part in the shared task are considered VALID even if their current development version is invalid.\n");
-    my %sthash;
-    foreach my $treebank (@stpresel)
-    {
-        $sthash{$treebank}++;
-    }
-    my %nsthash;
-    foreach my $treebank (@nstpresel)
-    {
-        $nsthash{$treebank}++;
-    }
-    # Download the current validation report. (We could run the validator ourselves
-    # but it would take a lot of time.)
-    my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
-    if(scalar(@validation_report)==0)
-    {
-        print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
-    }
     my %valid;
-    my %nist;
-    foreach my $line (@validation_report)
+    my $frozen = 0;
+    if($frozen)
     {
-        ###!!! Temporary measure: treebank that is in the shared task must be valid.
-        my $corename = '';
-        if($line =~ m/^(UD_.+?):/)
+        # After we used this script to select the treebanks automatically,
+        # we typically freeze the list in an external file called
+        # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
+        # Previously (for the CoNLL 2017 and 2018 shared tasks) we had a
+        # hard-coded frozen list directly here. This method will probably not
+        # be needed again, and this block of code will be removed.
+        my @presel = qw(
+        UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
+        UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB
+        );
+        print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
+        foreach my $treebank (@presel)
         {
-            $corename = $1;
-        }
-        if($line =~ m/^(UD_.+?):\s*VALID/ || exists($sthash{$corename}))
-        {
-            $valid{$corename} = 1;
-        }
-        # There are different requirements for treebanks that are released but are not in the CoNLL 2018 shared task.
-        # The validation report also tells us which valid treebanks will not take part in the task.
-        if($line =~ m/^(UD_.+?):.*not in shared task/)
-        {
-            $nist{$1} = 1;
+            $valid{$treebank}++;
         }
     }
-    return (\%valid, \%nist);
+    else
+    {
+        # Download the current validation report. (We could run the validator ourselves
+        # but it would take a lot of time.)
+        my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+        if(scalar(@validation_report)==0)
+        {
+            print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
+        }
+        foreach my $line (@validation_report)
+        {
+            if($line =~ m/^(UD_.+): VALID$/)
+            {
+                $valid{$1}++;
+            }
+        }
+    }
+    return \%valid;
 }
 
 
@@ -688,7 +608,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore)?|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
+        !m/^(\.\.?|\.git(ignore|attributes)?|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
@@ -700,6 +620,7 @@ sub get_files
         $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
         $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
         $folder eq 'UD_English-ESL' && $_ eq 'merge.py' ||
+        $folder eq 'UD_Hindi_English-HIENCS' && $_ =~ m/^(merge\/?|crawl_tweets\.py)$/ ||
         $folder eq 'UD_Japanese-KTC' && $_ =~ m/^merge/ ||
         $folder eq 'UD_Japanese-BCCWJ' && $_ =~ m/^merge/
     )}
@@ -748,7 +669,8 @@ sub check_files
     my $train_found = 0;
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
-    # Exception: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+    # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+    # Exception 2: German HDT has two train files: train-a, train-b.
     # No other CoNLL-U files are expected.
     # It is also expected that if there is dev, there is also train.
     if($folder eq 'UD_Czech-PDT')
@@ -758,6 +680,20 @@ sub check_files
         {
             $ok = 0;
             push(@{$errors}, "$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+            $$n_errors++;
+        }
+        else
+        {
+            $train_found = 1;
+        }
+    }
+    elsif($folder eq 'UD_German-HDT')
+    {
+        # The data is split into two files because of the size limits.
+        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu")
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[ab].conllu\n");
             $$n_errors++;
         }
         else
@@ -831,7 +767,8 @@ sub check_metadata
             '1.4' => ['Coptic-Scriptorium', 'Galician-TreeGal', 'Japanese-GSD', 'Sanskrit-UFAL', 'Slovak-SNK', 'Swedish_Sign_Language-SSLC', 'Ukrainian-IU', 'Uyghur-UDT', 'Vietnamese-VTB'],
             '2.0' => ['Arabic-NYUAD', 'Belarusian-HSE', 'English-ParTUT', 'French-FTB', 'French-ParTUT', 'French-Sequoia', 'Italian-ParTUT', 'Korean-GSD', 'Lithuanian-HSE', 'Norwegian-Nynorsk', 'Urdu-UDTB'],
             '2.1' => ['Afrikaans-AfriBooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL'],
-            '2.2' => ['Amhraic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB']
+            '2.2' => ['Amharic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB'],
+            '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
@@ -975,6 +912,52 @@ sub check_metadata
     {
         $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#treebank-metadata for guidelines on machine-readable metadata.\n";
         $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#the-readme-file for general guidelines on README files.\n";
+    }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether documentation contains a summary page about a language.
+#------------------------------------------------------------------------------
+sub check_documentation
+{
+    my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
+    my $lcode = shift;
+    my $errors = shift; # reference to array of error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
+    ###!!! For now assume that a clone of the docs repository is accessible as
+    ###!!! the docs subfolder of the current folder.
+    my $indexpath = "docs/_$lcode/index.md";
+    if(! -f $indexpath)
+    {
+        $ok = 0;
+        push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+        $$n_errors++;
+    }
+    else
+    {
+        # So the file exists but does it really contain anything useful?
+        # Some people just create an almost empty file without bothering to put the contents there (e.g., Sebastian for English).
+        my $doc;
+        open(IDX, $indexpath);
+        while(<IDX>)
+        {
+            $doc .= $_;
+        }
+        close(IDX);
+        # Czech documentation has over 16000 B.
+        # Swedish documentation has over 4500 B.
+        # Yoruba is probably incomplete but it still has over 3500 B.
+        # Let's require 2500 B as a minimum and hope that people don't just put a sequence of whitespace characters there.
+        if(length($doc) < 2500)
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+            $$n_errors++;
+        }
     }
     return $ok;
 }
@@ -1145,8 +1128,7 @@ sub get_announcement
     my $max_size = shift; # 'well over 1.5 million tokens'
     my $next_release_available_in = shift; # 'March 2017'
     my $contlistref = shift;
-    my $n_conll = shift;
-    my $langlistconllref = shift;
+    my $changelog = shift;
     my @release_list   =   (1.0,  1.1,   1.2,  1.3,   1.4,  2.0,  2.1,    2.2,   2.3,  2.4,  2.5,     2.6,    2.7,       2.8,       2.9,      2.10,     2.11,       2.12,      2.13,      2.14);
     my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
     my $nth;
@@ -1168,17 +1150,8 @@ sub get_announcement
     my $n_families = scalar(@families);
     my $families = join(', ', @families);
     $families =~ s/, ([^,]+)$/ and $1/;
-    my @languages_conll = @{$langlistconllref};
-    my $n_languages_conll = scalar(@languages_conll);
-    my $languages_conll = join(', ', @languages_conll);
-    $languages_conll =~ s/, ([^,]+)$/ and $1/;
     my @contributors = @{$contlistref};
     my $contributors = join(', ', @contributors);
-    # Extra text in 2.0 announcement, removed for 2.1 but kept commented for 2.2
-    #This release is special in that the treebanks will be used as training/development data in the CoNLL 2017 shared task (http://universaldependencies.org/conll17/). Test data are not released, except for the few treebanks that do not take part in the shared task. $n_conll treebanks will be in the shared task, and they correspond to the following $n_languages_conll languages: $languages_conll. Registration of shared task participants is still open!
-    #
-    #REMINDER: ADD ANNOUNCEMENT ABOUT THE RAW DATA, AND ABOUT THE BASELINE MODELS (UDPIPE + SYNTAXNET) WE WANT TO PUBLISH AROUND MID MARCH.
-    #BESIDES THE USUAL MAILING LISTS, SEND THIS ANNOUNCEMENT ALSO DIRECTLY TO ALL THE REGISTERED PARTICIPANTS.
     my $text = <<EOF
 We are very happy to announce the $nth release of annotated treebanks in Universal Dependencies, v$release, available at http://universaldependencies.org/.
 
@@ -1186,6 +1159,7 @@ Universal Dependencies is a project that seeks to develop cross-linguistically c
 
 The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. The $n_languages languages belong to $n_families families: $families. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
 
+$changelog
 $contributors
 
 

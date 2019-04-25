@@ -10,10 +10,14 @@ Reads a CoNLL-U file and verifies that it complies with the UD specification. It
 code and there must exist corresponding lists of treebank-specific features and dependency relations in order
 to check that they are valid, too.
 
-The script runs under Python 2.7 and needs the third-party module "regex". If you do not have the module,
-install it using "pip install regex".
+The script runs under Python 3 and needs the third-party module "regex". If you do not have the "regex" module,
+install it using "pip install --user regex". NOTE: Depending on the configuration of your system, it is possible
+that both Python 2 and 3 are installed; then you may have to run "python3" instead of "python", and "pip3"
+instead of "pip".
 
-  cat la_proiel-ud-train.conllu | python validate.py --lang la
+  cat la_proiel-ud-train.conllu | python validate.py --lang la --max-err=0
+
+You can run "python validate.py --help" for a list of available options.
 
 
 
@@ -29,13 +33,34 @@ one treebank (repository) must be supplied at once in order to test treebank-wid
 
 
 ==============================
-conllu-stats.py
+normalize_unicode.pl
+==============================
+
+Converts Unicode to the NFC normalized form. Can be applied to any
+UTF-8-encoded text file, including CoNLL-U. As a result, if there
+are character combinations that by definition must look the same,
+the same sequence of bytes will be used to represent the glyph,
+thus improving accuracy of models (as long as they are applied to
+normalized data too).
+
+Beware: The output may slightly differ depending on your version of
+Perl because the Unicode standard evolves and newer Perl versions
+incorporate newer versions of Unicode data.
+
+  perl normalize_unicode.pl < input.conllu > normalized_output.conllu
+
+
+
+==============================
 conllu-stats.pl
 ==============================
 
-Reads a CoNLL-U file, collects various statistics and prints them. These two scripts, one in Python and the other in
-Perl, are independent of each other. The statistics they collect overlap but are not the same. The Perl script
-(conllu-stats.pl) was used to generate the stats.xml files in each data repository.
+Reads a CoNLL-U file, collects various statistics and prints them. This Perl script
+should not be confused with conll-stats.py, an old Python 2 program that collects
+just a few very basic statistics. The Perl script (conllu-stats.pl) is used to
+generate the stats.xml files in each data repository.
+
+  perl conllu-stats.pl *.conllu > stats.xml
 
 
 

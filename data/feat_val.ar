@@ -1,4 +1,5 @@
 AdpType=Prep
+ConjType=Oper
 NumForm=Digit
 NumForm=Word
 NumValue=1

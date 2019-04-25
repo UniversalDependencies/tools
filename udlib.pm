@@ -167,18 +167,7 @@ sub get_ud_files_and_codes
     my $code;
     my $lcode;
     my $tcode;
-    if($n==0)
-    {
-        if($section eq 'any')
-        {
-            print STDERR ("WARNING: No data found in '$path/$udfolder'\n");
-        }
-        else
-        {
-            print STDERR ("WARNING: No $section data found in '$path/$udfolder'\n");
-        }
-    }
-    else
+    if($n>0)
     {
         if($n>1 && $section ne 'any')
         {
@@ -323,6 +312,11 @@ sub read_readme
 sub generate_markdown_treebank_overview
 {
     my $folder = shift;
+    # We need to know the number of the latest release in order to generate the links to search engines.
+    my $release = shift;
+    $release = '2.2' if(!defined($release)); ###!!!
+    my $crelease = $release;
+    $crelease =~ s/\.//;
     my $treebank_name = $folder;
     $treebank_name =~ s/[-_]/ /g;
     my $language_name = $folder;
@@ -337,7 +331,8 @@ sub generate_markdown_treebank_overview
         $md .= "<b>ERROR:</b> Cannot read the README file: $!";
         return $md;
     }
-    $md .= "Language: [$language_name](../$filescan->{lcode}/overview/$filescan->{lcode}-hub.html) (code: `$filescan->{lcode}`)";
+    # Language-specific documentation, e.g. for Polish: http://universaldependencies.org/pl/index.html
+    $md .= "Language: [$language_name](/$filescan->{lcode}/index.html) (code: `$filescan->{lcode}`)";
     my $language_data = get_language_hash(); # we could supply path to the yaml file; but let the function try the default path now
     if(defined($language_data) && exists($language_data->{$language_name}{family}))
     {
@@ -351,7 +346,8 @@ sub generate_markdown_treebank_overview
     $md .= join(', ', map {my $x = $_; if($x =~ m/^(.+),\s*(.+)$/) {$x = "$2 $1"} $x} (split(/\s*;\s*/, $metadata->{Contributors})));
     $md .= ".\n\n";
     $md .= "Repository: [$folder](https://github.com/UniversalDependencies/$folder)<br />\n";
-    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code})\n\n";
+    $md .= "Search this treebank on-line: [PML-TQ](https://lindat.mff.cuni.cz/services/pmltq/\#!/treebank/ud$filescan->{code}$crelease)<br />\n";
+    $md .= "Download all treebanks: [UD $release](/#download)\n\n";
     $md .= "License: $metadata->{License}";
     $md .= ". The underlying text is not included; the user must obtain it separately and then merge with the UD annotation using a script distributed with UD" if($metadata->{'Includes text'} eq 'no');
     $md .= "\n\n";
