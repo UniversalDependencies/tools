@@ -1279,7 +1279,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'cs':  ['být', 'bývat', 'bývávat'],
             'sk':  ['byť', 'bývať', 'by'],
             'hsb': ['być'],
-            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać'], # zostać is for passive-action, być for passive-state
+            # zostać is for passive-action, być for passive-state
+            # niech* are (3rd person?) imperative markers
+            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы', 'б'],
