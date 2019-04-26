@@ -1380,7 +1380,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
             'hu':  ['van'],
             # Altaic languages.
-            'tr':  ['i'],
+            'tr':  ['i', 'ol'],
             'kk':  ['бол', 'е'],
             'ug':  ['بول', 'ئى'],
             'bxr': ['бай', 'боло'],
