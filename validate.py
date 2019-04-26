@@ -1281,7 +1281,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hsb': ['być'],
             # zostać is for passive-action, być for passive-state
             # niech* are (3rd person?) imperative markers
-            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże'],
+            # "to" is a copula and Agnieszka insists that, "according to current analyses of Polish", it is a verb in the present tense
+            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы', 'б'],
