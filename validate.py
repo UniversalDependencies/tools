@@ -1265,6 +1265,12 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
+            # DZ: The Portuguese list is much longer than for the other Romance languages
+            # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
+            # i.e. they neither construct a periphrastic tense, nor modality etc.
+            # This should be discussed further and perhaps shortened (and in any
+            # case, verbs that stay on the list must be explained in the Portuguese
+            # documentation!)
             'pt':  ['ser', 'estar', 'haver', 'ter', 'andar', 'ir', 'poder', 'dever', 'continuar', 'passar', 'ameaçar',
                     'recomeçar', 'ficar', 'começar', 'voltar', 'parecer', 'acabar', 'deixar', 'vir','chegar', 'costumar', 'quer',
                     'querer','parar','procurar','interpretar','tender', 'viver','permitir','agredir','tornar', 'interpelar'],
@@ -1291,7 +1297,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'cu':  ['бꙑти'],
             'lt':  ['būti'],
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
-            'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama'],
+            'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
+            'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
