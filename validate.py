@@ -1265,11 +1265,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
-            # The addition of the following to Portuguese was requested by Alexandre Rademaker:
-            # 'continuar', 'passar', 'ficar', 'começar', 'voltar', 'parecer', 'acabar', 'deixar', 'vir'
-            'pt':  ['ser', 'estar', 'haver', 'ter', 'andar', 'ir', 'poder', 'dever'],
-            # The addition of the following to Galician was requested by Marcos Garcia:
-            # 'vir', semellar', 'seguir', 'deixar', 'quedar', 'levar', 'acabar'
+            'pt':  ['ser', 'estar', 'haver', 'ter', 'andar', 'ir', 'poder', 'dever', 'continuar', 'passar', 'ameaçar',
+                    'recomeçar', 'ficar', 'começar', 'voltar', 'parecer', 'acabar', 'deixar', 'vir','chegar', 'costumar', 'quer',
+                    'querer','parar','procurar','interpretar','tender', 'viver','permitir','agredir','tornar', 'interpelar'],
             'gl':  ['ser', 'estar', 'haber', 'ter', 'ir', 'poder', 'querer', 'deber', 'vir', 'semellar', 'seguir', 'deixar', 'quedar', 'levar', 'acabar'],
             'es':  ['ser', 'estar', 'haber', 'tener', 'ir', 'poder', 'saber', 'querer', 'deber'],
             'ca':  ['ser', 'estar', 'haver', 'anar', 'poder', 'saber'],
