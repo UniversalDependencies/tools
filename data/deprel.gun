@@ -1,4 +1,6 @@
-discourse:q
+advmod:sentcon
 compound:svc
-cc:sent
+discourse:q
 dislocated:cleft
+obl:sentcon
+parataxis:rep
