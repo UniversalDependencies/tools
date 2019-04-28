@@ -3,6 +3,7 @@ aux:neg
 aux:part
 aux:pass
 case:det
+cop:expl
 flat:name
 nmod:poss
 nsubj:pass
