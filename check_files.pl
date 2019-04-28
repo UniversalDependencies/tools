@@ -246,7 +246,8 @@ foreach my $folder (@folders)
             my $nwtest = 0;
             # In general, every treebank should have at least the test data.
             # If there are more data files, zero or one of each of the following is expected: train, dev.
-            # Exception: Czech has four train files: train-c, train-l, train-m, train-v.
+            # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+            # Exception 2: German HDT has two train files: train-a, train-b.
             # No other CoNLL-U files are expected.
             # It is also expected that if there is dev, there is also train.
             # And if there is train, it should be same size or larger (in words) than both dev and test.
@@ -260,6 +261,14 @@ foreach my $folder (@folders)
                 $stats = collect_statistics_about_ud_file("$prefix-train-m.conllu");
                 $nwtrain += $stats->{nword};
                 $stats = collect_statistics_about_ud_file("$prefix-train-v.conllu");
+                $nwtrain += $stats->{nword};
+            }
+            elsif($folder eq 'UD_German-HDT')
+            {
+                # The data is split into two files because of the size limits.
+                my $stats = collect_statistics_about_ud_file("$prefix-train-a.conllu");
+                $nwtrain = $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b.conllu");
                 $nwtrain += $stats->{nword};
             }
             else # all other treebanks
@@ -599,7 +608,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore|attributes)?|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|stats\.xml)$/
+        !m/^(\.\.?|\.git(ignore|attributes)?|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
@@ -660,7 +669,8 @@ sub check_files
     my $train_found = 0;
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
-    # Exception: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+    # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+    # Exception 2: German HDT has two train files: train-a, train-b.
     # No other CoNLL-U files are expected.
     # It is also expected that if there is dev, there is also train.
     if($folder eq 'UD_Czech-PDT')
@@ -670,6 +680,20 @@ sub check_files
         {
             $ok = 0;
             push(@{$errors}, "$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+            $$n_errors++;
+        }
+        else
+        {
+            $train_found = 1;
+        }
+    }
+    elsif($folder eq 'UD_German-HDT')
+    {
+        # The data is split into two files because of the size limits.
+        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu")
+        {
+            $ok = 0;
+            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[ab].conllu\n");
             $$n_errors++;
         }
         else

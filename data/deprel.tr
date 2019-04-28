@@ -11,3 +11,8 @@ nmod:arg
 nmod:poss
 nmod:tmod
 obl:tmod
+nsubj:cop
+csubj:cop
+nmod:part
+nmod:comp
+obl:agent

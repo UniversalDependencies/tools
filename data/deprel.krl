@@ -1,6 +1,5 @@
-advmod:emph
 aux:pass
 csubj:pass
-expl:pass
+flat:name
+nmod:poss
 nsubj:pass
-obl:arg

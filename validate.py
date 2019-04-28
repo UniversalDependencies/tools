@@ -679,9 +679,12 @@ def build_tree(sentence):
     but does not report the error (presumably it has already been reported).
 
     tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
+      nodes ... array of word lines, i.e., lists of columns;
+          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings);
+          indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes
+          (needed in error messages)
     """
     global sentence_line # the line of the first token/word of the current tree (skipping comments!)
     node_line = sentence_line - 1
@@ -715,7 +718,7 @@ def build_tree(sentence):
             return None
         if head == id_:
             warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
-            continue
+            return None
         tree['nodes'].append(cols)
         tree['linenos'].append(node_line)
         # Incrementally build the set of children of every node.
@@ -948,7 +951,7 @@ def validate_deprel_pair(idparent, idchild, tree):
     # nodes, which we recognize by the parent's deprel.
     ###!!! We should also check that 'det' does not have children except for a limited set of exceptions!
     ###!!! (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
-    if not re.match(r"^(case|mark|cc|aux|cop|fixed|goeswith|punct)$", pdeprel):
+    if not re.match(r"^(case|mark|cc|aux|cop|det|fixed|goeswith|punct)$", pdeprel):
         return
     cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
     # The guidelines explicitly say that negation can modify any function word
@@ -978,7 +981,31 @@ def validate_deprel_pair(idparent, idchild, tree):
     # quotation marks or brackets ("must") and then these symbols should depend
     # on the functional node. We temporarily allow punctuation here, until we
     # can detect precisely the bracket situation and disallow the rest.
-    if re.match(r"^(case|mark|cc|aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
+    # According to the guidelines
+    # (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers),
+    # mark can have a limited set of adverbial/oblique dependents, while the same
+    # is not allowed for nodes attached as case. Nevertheless, there are valid
+    # objections against this (see https://github.com/UniversalDependencies/docs/issues/618)
+    # and we may want to revisit the guideline in UD v3. For the time being,
+    # we make the validator more benevolent to 'case' too. (If we now force people
+    # to attach adverbials higher, information will be lost and later reversal
+    # of the step will not be possible.)
+    # Coordinating conjunctions usually depend on a non-first conjunct, i.e.,
+    # on a node whose deprel is 'conj'. However, there are paired conjunctions
+    # such as "both-and", "either-or". Here the first part is attached to the
+    # first conjunct. Since some function nodes (mark, case, aux, cop) can be
+    # coordinated, we must allow 'cc' children under these nodes, too. However,
+    # we do not want to allow 'cc' under another 'cc'. (Still, 'cc' can have
+    # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
+    if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
+        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+    ###!!! The pdeprel regex in the following test should probably include "det".
+    ###!!! I forgot to add it well in advance of release 2.4, so I am leaving it
+    ###!!! out for now, so that people don't have to deal with additional load
+    ###!!! of errors.
+    if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
+        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+    if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
         warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
     # Fixed expressions should not be nested, i.e., no chains of fixed relations.
     # As they are supposed to represent functional elements, they should not have
@@ -1005,7 +1032,7 @@ def validate_functional_leaves(id, tree):
     """
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(tree['nodes'][id][DEPREL])
-    if re.match(r"^(case|mark|cc|aux|cop|fixed|goeswith|punct)$", deprel):
+    if re.match(r"^(case|mark|cc|aux|cop|det|fixed|goeswith|punct)$", deprel):
         for idchild in tree['children'][id]:
             validate_deprel_pair(id, idchild, tree)
 
@@ -1104,7 +1131,15 @@ def validate_fixed_span(id, tree):
     Like with goeswith, the fixed relation should not in general skip words that
     are not part of the fixed expression. Unlike goeswith however, there can be
     an intervening punctuation symbol.
+
+    Update 2019-04-13: The rule that fixed expressions cannot be discontiguous
+    has been challenged with examples from Swedish and Coptic, see
+    https://github.com/UniversalDependencies/docs/issues/623
+    For the moment, I am turning this test off. In the future, we should
+    distinguish fatal errors from warnings and then this test will perhaps be
+    just a warning.
     """
+    return ###!!! temporarily turned off
     fxchildren = sorted([i for i in tree['children'][id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
     if fxchildren:
         fxlist = sorted([id] + fxchildren)
@@ -1226,8 +1261,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get', 'ought'],
             'nl':  ['zijn', 'hebben', 'worden', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
-            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste'],
-            'no':  ['være', 'vere', 'ha', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
+            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
+            'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
             # The addition of the following to Portuguese was requested by Alexandre Rademaker:
@@ -1244,7 +1279,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'cs':  ['být', 'bývat', 'bývávat'],
             'sk':  ['byť', 'bývať', 'by'],
             'hsb': ['być'],
-            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać'], # zostać is for passive-action, być for passive-state
+            # zostać is for passive-action, być for passive-state
+            # niech* are imperative markers (the only means in 3rd person; alternating with morphological imperative in 2nd person)
+            # "to" is a copula and Agnieszka insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
+            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы', 'б'],
@@ -1253,6 +1291,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
             'cu':  ['бꙑти'],
+            'lt':  ['būti'],
+            'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
+            'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama'],
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
@@ -1312,8 +1353,13 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'bg':  ['съм', 'бъда'],
             'cu':  ['бꙑти'],
             'lt':  ['būti'],
-            'lv':  ['būt'],
+            # Lauma says that all four should be copulas despite the fact that
+            # kļūt and tapt correspond to English "to become", which is not
+            # copula in UD. See also the discussion in
+            # https://github.com/UniversalDependencies/docs/issues/622
+            'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
             'ga':  ['is'],
+            'cy':  ['bod'],
             'br':  ['bezañ'],
             'grc': ['εἰμί'],
             'el':  ['είμαι'],
@@ -1330,10 +1376,12 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'et':  ['olema'],
             'sme': ['leat'],
             'myv': ['оль'],
-            'kpv': ['вӧвны'],
+            # Niko says about Komi:
+            # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
+            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
             'hu':  ['van'],
             # Altaic languages.
-            'tr':  ['i'],
+            'tr':  ['i', 'ol'],
             'kk':  ['бол', 'е'],
             'ug':  ['بول', 'ئى'],
             'bxr': ['бай', 'боло'],
@@ -1350,7 +1398,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'id':  ['adalah'],
             'tl':  ['may'],
             # Afro-Asiatic languages.
-            'ar':  ['كَان', 'لَيس'],
+            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'am':  ['ን'],
             'cop': ['ⲡⲉ'],
