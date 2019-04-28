@@ -1290,6 +1290,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы', 'б'],
+            # Hanne says that negation is fused with the verb in the present tense and
+            # then the negative lemma is used. DZ: I believe that in the future
+            # the negative forms should get the affirmative lemma + the feature Polarity=Neg,
+            # as it is assumed in the guidelines and done in other languages.
+            'orv': ['быти', 'не быти'],
             'sl':  ['biti'],
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
