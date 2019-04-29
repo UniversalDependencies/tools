@@ -1285,7 +1285,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hsb': ['być'],
             # zostać is for passive-action, być for passive-state
             # niech* are imperative markers (the only means in 3rd person; alternating with morphological imperative in 2nd person)
-            # "to" is a copula and Agnieszka insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
+            # "to" is a copula and the Polish team insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
             'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
@@ -1383,15 +1383,21 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'eu':  ['izan', 'egon', 'ukan'],
             # Uralic languages.
             'fi':  ['olla'],
+            'krl': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
-            'myv': ['оль'],
+            # Jack says about Erzya:
+            # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
+            # and the dependent morphology -оль (both preterit and non-past).
+            # The neg арась occurs in locative/existential negation, and its
+            # positive counterpart is realized in the three copulas above.
+            'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
             'hu':  ['van'],
             # Altaic languages.
-            'tr':  ['i', 'ol'],
+            'tr':  ['ol', 'i'],
             'kk':  ['бол', 'е'],
             'ug':  ['بول', 'ئى'],
             'bxr': ['бай', 'боло'],
