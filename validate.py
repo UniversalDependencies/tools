@@ -1304,6 +1304,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
+            # DZ: Wolof auxiliaries taken from the documentation. There seem to be others, yet undocumented.
+            'wo':  ['di', 'a', 'da', 'la', 'na'],
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
