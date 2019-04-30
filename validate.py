@@ -1306,7 +1306,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'doon', 'nekk', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
-            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà']
+            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà'],
+            'gun': ['iko', "nda'ei", 'ĩ']
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
@@ -1425,7 +1426,10 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'cop': ['ⲡⲉ'],
             # Niger-Congo languages.
             'wo':  ['doon', 'nekk', 'être'], # 'être' is French and is needed because of code switching.
-            'yo':  ['jẹ́', 'ní']
+            'yo':  ['jẹ́', 'ní'],
+            # Tupian languages.
+            # 'iko' is the normal copula, 'nda'ei' is negative copula and 'ĩ' is locative copula.
+            'gun': ['iko', "nda'ei", 'ĩ']
         }
         lspeccops = copdict.get(lang, None)
         if lspeccops and not cols[LEMMA] in lspeccops:
