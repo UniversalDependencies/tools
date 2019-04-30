@@ -1304,8 +1304,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
-            # DZ: Wolof auxiliaries taken from the documentation. There seem to be others, yet undocumented.
-            'wo':  ['di', 'a', 'da', 'la', 'na'],
+            # DZ: Wolof auxiliaries taken from the documentation.
+            'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'doon', 'nekk', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà']
         }
         lspecauxs = auxdict.get(lang, None)
@@ -1424,6 +1424,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'am':  ['ን'],
             'cop': ['ⲡⲉ'],
             # Niger-Congo languages.
+            'wo':  ['doon', 'nekk', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní']
         }
         lspeccops = copdict.get(lang, None)
