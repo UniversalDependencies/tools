@@ -1342,7 +1342,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'fo':  ['vera'],
             'pcm': ['na', 'be'],
             # In Romance languages, both "ser" and "estar" qualify as copulas.
-            'pt':  ['ser', 'estar'],
+            'pt':  ['ser', 'estar','ficar','viver'],
             'gl':  ['ser', 'estar'],
             'es':  ['ser', 'estar'],
             'ca':  ['ser', 'estar'],
