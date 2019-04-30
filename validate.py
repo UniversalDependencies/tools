@@ -1299,7 +1299,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
             'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
-            'cu':  ['бꙑти'],
+            'cu':  ['бꙑти', 'не.бꙑти'],
             'lt':  ['būti'],
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
@@ -1359,11 +1359,14 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'uk':  ['бути', 'бувати'],
             'be':  ['быць', 'гэта'],
             'ru':  ['быть', 'это'],
+            # See above (AUX verbs) for the comment on affirmative vs. negative lemma.
+            'orv': ['быти', 'не быти'],
             'sl':  ['biti'],
             'hr':  ['biti'],
             'sr':  ['biti'],
             'bg':  ['съм', 'бъда'],
-            'cu':  ['бꙑти'],
+            # See above (AUX verbs) for the comment on affirmative vs. negative lemma.
+            'cu':  ['бꙑти', 'не.бꙑти'],
             'lt':  ['būti'],
             # Lauma says that all four should be copulas despite the fact that
             # kļūt and tapt correspond to English "to become", which is not
