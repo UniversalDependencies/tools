@@ -928,6 +928,8 @@ sub check_documentation
     my $errors = shift; # reference to array of error messages
     my $n_errors = shift; # reference to error counter
     my $ok = 1;
+    ###!!! DZ: 2019-05-01: Temporarily not requiring the documentation, for release 2.4 only!
+    return $ok; ###!!!
     ###!!! For now assume that a clone of the docs repository is accessible as
     ###!!! the docs subfolder of the current folder.
     my $indexpath = "docs/_$lcode/index.md";
