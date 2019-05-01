@@ -1302,11 +1302,28 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'cu':  ['бꙑти', 'не.бꙑти'],
             'lt':  ['būti'],
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
+            'ga':  ['is'],
+            'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe'],
+            'br':  ['bezañ'],
+            'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
+            'hy':  ['եմ', 'լինել', 'տալ'],
+            'kmr': ['bûn'],
+            'fa':  ['است'],
+            'sa':  ['अस्'],
+            'hi':  ['है', 'था'],
+            'ur':  ['ہے', 'تھا'],
+            'mr':  ['असणे'],
+            # Uralic languages.
+            'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
+            # Afro-Asiatic languages.
+            'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
+            # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà'],
+            # Tupian languages.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
         lspecauxs = auxdict.get(lang, None)
@@ -1420,6 +1437,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'id':  ['adalah'],
             'tl':  ['may'],
             # Afro-Asiatic languages.
+            'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'am':  ['ን'],
