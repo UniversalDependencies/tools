@@ -9,7 +9,6 @@ Number=Plur
 Number[psor]=Sing
 Number[psor]=Plur
 Person=1
-Person=12
 Person=2
 Person=3
 Person[subj]=1
