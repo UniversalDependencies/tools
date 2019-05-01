@@ -1316,7 +1316,12 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'mr':  ['असणे'],
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
-            'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
+            'krl': ['olla', 'ei', 'voija', 'piteä'],
+            'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
+            'sme': ['leat'],
+            'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
+            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
+            'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             # Niger-Congo languages.
