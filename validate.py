@@ -1307,7 +1307,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe'],
             'br':  ['bezañ'],
             'grc': ['εἰμί'],
-            'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
+            'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
             'hy':  ['եմ', 'լինել', 'տալ'],
             'kmr': ['bûn'],
             'fa':  ['است'],
