@@ -1183,7 +1183,7 @@ def validate_enhanced_annotation(graph):
     """
     Checks universally valid consequences of the annotation guidelines in the
     enhanced representation. Currently tests only phenomena specific to the
-    enhanced dependencies; however, it we should also test things that are
+    enhanced dependencies; however, we should also test things that are
     required in the basic dependencies (such as left-to-right coordination),
     unless it is obvious that in enhanced dependencies such things are legal.
     """
@@ -1305,9 +1305,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'saama', 'pidama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             # DZ: Wolof auxiliaries taken from the documentation.
-            'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'doon', 'nekk', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
+            'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà'],
-            'gun': ['iko', "nda'ei", 'ĩ']
+            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
@@ -1425,11 +1425,11 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'am':  ['ን'],
             'cop': ['ⲡⲉ'],
             # Niger-Congo languages.
-            'wo':  ['doon', 'nekk', 'être'], # 'être' is French and is needed because of code switching.
+            'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní'],
             # Tupian languages.
-            # 'iko' is the normal copula, 'nda'ei' is negative copula and 'ĩ' is locative copula.
-            'gun': ['iko', "nda'ei", 'ĩ']
+            # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
+            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
         lspeccops = copdict.get(lang, None)
         if lspeccops and not cols[LEMMA] in lspeccops:
