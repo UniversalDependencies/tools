@@ -1320,7 +1320,12 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'krl': ['olla', 'ei', 'voija', 'piteä'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
-            'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
+            # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
+            # "have to, need to, must": савомс савкшномс эрявомс
+            # "future; begin, start": кармамс
+            # "question particles": ли штоли
+            # mood: давайте давай бу кадык
+            'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
