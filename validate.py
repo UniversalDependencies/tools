@@ -1313,7 +1313,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'fa':  ['است'],
             'sa':  ['अस्'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
-            'ur':  ['ہے', 'تھا'],
+            'ur':  ['ہے', 'تھا', 'رہ', 'کر', 'جا', 'سک', 'چاہیئے', 'ہو', 'پڑ', 'لگ', 'چک', 'لے', 'دے', 'آ'],
             'mr':  ['असणे'],
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
