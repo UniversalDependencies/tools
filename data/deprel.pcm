@@ -5,7 +5,7 @@ advmod:emph
 aux:pass
 ccomp:cleft
 compound:prt
-compound:redup
+conj:redup
 compound:svc
 conj:appos
 conj:coord
