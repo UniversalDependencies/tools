@@ -1312,7 +1312,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'kmr': ['bûn'],
             'fa':  ['است'],
             'sa':  ['अस्'],
-            'hi':  ['है', 'था'],
+            'hi':  ['है', 'था', 'रह', 'जा', 'ले', 'दे'],
             'ur':  ['ہے', 'تھا'],
             'mr':  ['असणे'],
             # Uralic languages.
