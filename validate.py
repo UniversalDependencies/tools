@@ -1304,7 +1304,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lt':  ['būti'],
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'ga':  ['is'],
-            'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe'],
+            'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe', 'am'],
             'br':  ['bezañ'],
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
@@ -1326,7 +1326,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # "question particles": ли штоли
             # mood: давайте давай бу кадык
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
-            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
+            # 'оз' is the negation verb analogous to Finnish 'ei'.
+            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
