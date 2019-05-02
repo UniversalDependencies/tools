@@ -813,7 +813,7 @@ sub check_metadata
         # However, some treebanks do not follow prescribed syntax (e.g. place commas between genres) or just have typos here
         # (e.g. besides "news" there is also "new" or "newswire"), so we better ban unregistered genres and check it automatically.
         # Note that a copy of the list of known genres is also in evaluate_treebank.pl and in docs-automation/genre_symbols.json.
-        my @official_genres = ('academic', 'bible', 'blog', 'email', 'fiction', 'grammar-examples', 'learner-essays', 'legal', 'medical', 'news', 'nonfiction', 'poetry', 'reviews', 'social', 'spoken', 'web', 'wiki');
+        my @official_genres = ('academic', 'bible', 'blog', 'email', 'fiction', 'government', 'grammar-examples', 'learner-essays', 'legal', 'medical', 'news', 'nonfiction', 'poetry', 'reviews', 'social', 'spoken', 'web', 'wiki');
         my @genres = split(/\s+/, $metadata->{Genre});
         my @unknown_genres = grep {my $g = $_; my @found = grep {$_ eq $g} (@official_genres); scalar(@found)==0} (@genres);
         if(scalar(@unknown_genres)>0)
