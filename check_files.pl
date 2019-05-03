@@ -44,6 +44,7 @@ my $current_release = 2.4;
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
 my $oldpath = '/net/data/universal-dependencies-2.3';
+###!!! Also find the currently hard-coded parameters of the call to get_announcement()! (Next release date.)
 GetOptions
 (
     'release'  => \$current_release,
@@ -532,7 +533,7 @@ my $announcement = get_announcement
     \@families,
     'less than 1,000 tokens',
     'well over 1.5 million tokens',
-    'May 2019', # expected next release
+    'November 2019', # expected next release
     \@contributors_firstlast,
     $changelog
 );
