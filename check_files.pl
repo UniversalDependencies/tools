@@ -45,6 +45,7 @@ my $current_release = 2.4;
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
 my $oldpath = '/net/data/universal-dependencies-2.3';
 ###!!! Also find the currently hard-coded parameters of the call to get_announcement()! (Next release date.)
+###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
 (
     'release'  => \$current_release,
@@ -771,7 +772,8 @@ sub check_metadata
             '2.0' => ['Arabic-NYUAD', 'Belarusian-HSE', 'English-ParTUT', 'French-FTB', 'French-ParTUT', 'French-Sequoia', 'Italian-ParTUT', 'Korean-GSD', 'Lithuanian-HSE', 'Norwegian-Nynorsk', 'Urdu-UDTB'],
             '2.1' => ['Afrikaans-AfriBooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL'],
             '2.2' => ['Amharic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB'],
-            '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT']
+            '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT'],
+            '2.4' => ['Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_Russian-RNC', 'Old_Russian-TOROT', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
