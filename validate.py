@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python3
 # Original code (2015) by Filip Ginter and Sampo Pyysalo.
 # DZ 2018-11-04: Porting the validator to Python 3.
 import fileinput
