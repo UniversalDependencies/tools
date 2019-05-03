@@ -39,13 +39,15 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.3;
+my $current_release = 2.4;
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.2';
+my $oldpath = '/net/data/universal-dependencies-2.3';
 GetOptions
 (
+    'release'  => \$current_release,
+    'oldpath'  => \$oldpath,
     'future'   => \$include_future,
     'pull'     => \$pull,
     'validate' => \$validate,
