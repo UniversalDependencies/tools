@@ -532,7 +532,7 @@ my $announcement = get_announcement
     \@languages,
     \@families,
     'less than 1,000 tokens',
-    'well over 1.5 million tokens',
+    'almost 3 million tokens',
     'November 2019', # expected next release
     \@contributors_firstlast,
     $changelog
