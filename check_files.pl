@@ -318,25 +318,29 @@ foreach my $folder (@folders)
             my $nwall = $nwtrain+$nwdev+$nwtest;
             $nw{$folder} = { 'train' => $nwtrain, 'dev' => $nwdev, 'test' => $nwtest, 'all' => $nwall };
             # For small and growing treebanks, we expect the files to appear roughly in the following order:
-            # 1. test (>=10K tokens if possible); 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample); 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
+            # 1. test (>=10K tokens if possible);
+            # 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample);
+            # 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
             if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
             {
                 print("$folder: train or dev exists but there is no test\n");
                 $n_errors++;
             }
             # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
-            # Exception: ParTUT can have very small dev data. There are other limitations (sync across languages and with UD_Italian)
-            if($nwall>10000 && $nwtest<10000)
+            # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
+            # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
+            # Exception: ParTUT has some portions smaller because of other limitations (sync across languages and with UD_Italian).
+            if($nwall>10000 && $nwtest<10000 && $folder !~ m/-ParTUT$/)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
             }
-            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/-(PUD|ParTUT)$/)
+            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/^UD_(French-FQB|German-LIT|.+-PUD|.+-ParTUT)$/)
             {
                 print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
                 $n_errors++;
             }
-            if($nwall>30000 && $nwdev<5000 && $folder !~ m/-(PUD|ParTUT)$/)
+            if($nwall>30000 && $nwdev<5000 && $folder !~ m/^UD_(German-LIT|.+-PUD|.+-ParTUT)$/)
             {
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
