@@ -1598,7 +1598,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                 if validate_langspec or validate_enhanced:
                     try:
                         parts=v.split(':')
-                        if parts[0] not in res:
+                        if parts[0] not in res and parts[0] != 'ref':
                             warn("Spurious language-specific relation '%s' - not an extension of any UD relation."%v, 'Syntax', lineno=False)
                             continue
                     except:
@@ -1650,7 +1650,8 @@ if __name__=="__main__":
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
-        # One of them, "ref", is universal and we currently list it directly in the code here, instead of creating a file "edeprel.ud".
+        # One of them, "ref", is universal and we currently mention it directly
+        # in the code, although there is also a file "edeprel.ud".
         tagsets[DEPS]=tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
         tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
         tagsets[UPOS]=load_set("cpos.ud",None)
