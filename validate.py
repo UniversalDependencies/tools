@@ -1651,7 +1651,7 @@ if __name__=="__main__":
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
     ###!!! DZ: 2019-05-01: Temporarily lowering the default validation level from 5 to 2, for UD release 2.4 only.
-    tree_group.add_argument("--level", action="store", type=int, default=2, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
+    tree_group.add_argument("--level", action="store", type=int, default=3, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
