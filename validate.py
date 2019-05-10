@@ -671,6 +671,34 @@ def validate_deps(tree):
         if id_ in heads:
             warn("Self-loop in DEPS for '%s'" % cols[ID], 'Format', nodelineno=node_line)
 
+def validate_misc(tree):
+    """
+    In general, the MISC column can contain almost anything. However, if there
+    is a vertical bar character, it is interpreted as the separator of two
+    MISC attributes, which may or may not have the form of attribute=value pair.
+    In general it is not forbidden that the same attribute appears several times
+    with different values, but this should not happen for selected attributes
+    that are described in the UD documentation.
+    """
+    node_line = sentence_line - 1
+    for cols in tree:
+        node_line += 1
+        if not (is_word(cols) or is_empty_node(cols)):
+            continue
+        if MISC >= len(cols):
+            continue # this has been already reported in trees()
+        if cols[MISC] == '_':
+            continue
+        misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
+        mamap = {}
+        for ma in misc:
+            if re.match(r"^(SpaceAfter|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
+                mamap.setdefault(ma[0], 0)
+                mamap[ma[0]] = mamap[ma[0]] + 1
+        for a in list(mamap):
+            if mamap[a] > 1:
+                warn("MISC attribute '%s' not supposed to occur twice" % a, 'Format', nodelineno=node_line)
+
 def build_tree(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
@@ -1534,6 +1562,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             validate_root(sentence) # level 2
             validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
+            validate_misc(sentence) # level 2 and up
             tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if tree:
