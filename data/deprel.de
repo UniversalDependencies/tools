@@ -6,6 +6,7 @@ csubj:pass
 det:poss
 det:predet
 expl:pv
+flat:foreign
 flat:name
 nmod:gmod
 nmod:poss
