@@ -39,11 +39,11 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.4;
+my $current_release = 2.5;
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.3';
+my $oldpath = '/net/data/universal-dependencies-2.4';
 ###!!! Also find the currently hard-coded parameters of the call to get_announcement()! (Next release date.)
 ###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
