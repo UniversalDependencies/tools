@@ -966,93 +966,6 @@ def validate_single_subject(id, tree):
         # We test for more than 2, but in the error message we still say more than 1, so that we do not have to explain the exceptions.
         warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=tree['linenos'][id])
 
-def validate_deprel_pair(idparent, idchild, tree):
-    """
-    Certain types of dependents cannot have dependents of their own, or they
-    can have only a very limited set of dependents. This test is based mostly
-    on deprels but sometimes it is necessary to look at the UPOS tags and
-    features as well.
-    """
-    # This is a level 3 test, we will check only the universal part of the relation.
-    pdeprel = lspec2ud(tree['nodes'][idparent][DEPREL])
-    # At present we only check children of function words and certain technical
-    # nodes, which we recognize by the parent's deprel.
-    ###!!! We should also check that 'det' does not have children except for a limited set of exceptions!
-    ###!!! (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
-    if not re.match(r"^(case|mark|cc|aux|cop|det|fixed|goeswith|punct)$", pdeprel):
-        return
-    cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
-    # The guidelines explicitly say that negation can modify any function word
-    # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
-    # We cannot recognize negation simply by deprel; we have to look at the
-    # part-of-speech tag and the Polarity feature as well.
-    cupos = tree['nodes'][idchild][UPOS]
-    cfeats = tree['nodes'][idchild][FEATS].split('|')
-    if pdeprel != 'punct' and cdeprel == 'advmod' and cupos == 'PART' and 'Polarity=Neg' in cfeats:
-        return
-    # Punctuation should not depend on function words if it can be projectively
-    # attached to a content word. But sometimes it cannot. Czech example:
-    # "Budou - li však zbývat , ukončíme" (lit. "will - if however remain , we-stop")
-    # "však" depends on "ukončíme" while "budou" and "li" depend nonprojectively
-    # on "zbývat" (which depends on "ukončíme"). "Budou" is aux and "li" is mark.
-    # Yet the hyphen must depend on one of them because any other attachment would
-    # be non-projective. Here we assume that if the parent of a punctuation node
-    # is attached nonprojectively, punctuation can be attached to it to avoid its
-    # own nonprojectivity.
-    gap = get_gap(idparent, tree)
-    if gap and cdeprel == 'punct':
-        return
-    # Auxiliaries, conjunctions and case markers will tollerate a few special
-    # types of modifiers.
-    # Punctuation should normally not depend on a functional node. However,
-    # it is possible that a functional node such as auxiliary verb is in
-    # quotation marks or brackets ("must") and then these symbols should depend
-    # on the functional node. We temporarily allow punctuation here, until we
-    # can detect precisely the bracket situation and disallow the rest.
-    # According to the guidelines
-    # (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers),
-    # mark can have a limited set of adverbial/oblique dependents, while the same
-    # is not allowed for nodes attached as case. Nevertheless, there are valid
-    # objections against this (see https://github.com/UniversalDependencies/docs/issues/618)
-    # and we may want to revisit the guideline in UD v3. For the time being,
-    # we make the validator more benevolent to 'case' too. (If we now force people
-    # to attach adverbials higher, information will be lost and later reversal
-    # of the step will not be possible.)
-    # Coordinating conjunctions usually depend on a non-first conjunct, i.e.,
-    # on a node whose deprel is 'conj'. However, there are paired conjunctions
-    # such as "both-and", "either-or". Here the first part is attached to the
-    # first conjunct. Since some function nodes (mark, case, aux, cop) can be
-    # coordinated, we must allow 'cc' children under these nodes, too. However,
-    # we do not want to allow 'cc' under another 'cc'. (Still, 'cc' can have
-    # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
-    if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-    ###!!! The pdeprel regex in the following test should probably include "det".
-    ###!!! I forgot to add it well in advance of release 2.4, so I am leaving it
-    ###!!! out for now, so that people don't have to deal with additional load
-    ###!!! of errors.
-    if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-    if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
-        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-    # Fixed expressions should not be nested, i.e., no chains of fixed relations.
-    # As they are supposed to represent functional elements, they should not have
-    # other dependents either, with the possible exception of conj.
-    ###!!! We also allow a punct child, at least temporarily, because of fixed
-    ###!!! expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
-    ###!!! It would be better to keep these expressions as one token. But sometimes
-    ###!!! the tokenizer is out of control of the UD data providers and it is not
-    ###!!! practical to retokenize.
-    elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
-        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-    # Goeswith cannot have any children, not even another goeswith.
-    elif pdeprel == 'goeswith':
-        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-    # Punctuation can exceptionally have other punct children if an exclamation
-    # mark is in brackets or quotes. It cannot have other children.
-    elif pdeprel == 'punct' and cdeprel != 'punct':
-        warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
-
 def validate_functional_leaves(id, tree):
     """
     Most of the time, function-word nodes should be leaves. This function
@@ -1061,8 +974,83 @@ def validate_functional_leaves(id, tree):
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(tree['nodes'][id][DEPREL])
     if re.match(r"^(case|mark|cc|aux|cop|det|fixed|goeswith|punct)$", deprel):
+        idparent = id
         for idchild in tree['children'][id]:
-            validate_deprel_pair(id, idchild, tree)
+            # This is a level 3 test, we will check only the universal part of the relation.
+            pdeprel = lspec2ud(tree['nodes'][idparent][DEPREL])
+            ###!!! We should also check that 'det' does not have children except for a limited set of exceptions!
+            ###!!! (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
+            cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
+            # The guidelines explicitly say that negation can modify any function word
+            # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
+            # We cannot recognize negation simply by deprel; we have to look at the
+            # part-of-speech tag and the Polarity feature as well.
+            cupos = tree['nodes'][idchild][UPOS]
+            cfeats = tree['nodes'][idchild][FEATS].split('|')
+            if pdeprel != 'punct' and cdeprel == 'advmod' and cupos == 'PART' and 'Polarity=Neg' in cfeats:
+                continue
+            # Punctuation should not depend on function words if it can be projectively
+            # attached to a content word. But sometimes it cannot. Czech example:
+            # "Budou - li však zbývat , ukončíme" (lit. "will - if however remain , we-stop")
+            # "však" depends on "ukončíme" while "budou" and "li" depend nonprojectively
+            # on "zbývat" (which depends on "ukončíme"). "Budou" is aux and "li" is mark.
+            # Yet the hyphen must depend on one of them because any other attachment would
+            # be non-projective. Here we assume that if the parent of a punctuation node
+            # is attached nonprojectively, punctuation can be attached to it to avoid its
+            # own nonprojectivity.
+            gap = get_gap(idparent, tree)
+            if gap and cdeprel == 'punct':
+                continue
+            # Auxiliaries, conjunctions and case markers will tollerate a few special
+            # types of modifiers.
+            # Punctuation should normally not depend on a functional node. However,
+            # it is possible that a functional node such as auxiliary verb is in
+            # quotation marks or brackets ("must") and then these symbols should depend
+            # on the functional node. We temporarily allow punctuation here, until we
+            # can detect precisely the bracket situation and disallow the rest.
+            # According to the guidelines
+            # (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers),
+            # mark can have a limited set of adverbial/oblique dependents, while the same
+            # is not allowed for nodes attached as case. Nevertheless, there are valid
+            # objections against this (see https://github.com/UniversalDependencies/docs/issues/618)
+            # and we may want to revisit the guideline in UD v3. For the time being,
+            # we make the validator more benevolent to 'case' too. (If we now force people
+            # to attach adverbials higher, information will be lost and later reversal
+            # of the step will not be possible.)
+            # Coordinating conjunctions usually depend on a non-first conjunct, i.e.,
+            # on a node whose deprel is 'conj'. However, there are paired conjunctions
+            # such as "both-and", "either-or". Here the first part is attached to the
+            # first conjunct. Since some function nodes (mark, case, aux, cop) can be
+            # coordinated, we must allow 'cc' children under these nodes, too. However,
+            # we do not want to allow 'cc' under another 'cc'. (Still, 'cc' can have
+            # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
+            if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
+                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+            ###!!! The pdeprel regex in the following test should probably include "det".
+            ###!!! I forgot to add it well in advance of release 2.4, so I am leaving it
+            ###!!! out for now, so that people don't have to deal with additional load
+            ###!!! of errors.
+            if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
+                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+            if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
+                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+            # Fixed expressions should not be nested, i.e., no chains of fixed relations.
+            # As they are supposed to represent functional elements, they should not have
+            # other dependents either, with the possible exception of conj.
+            ###!!! We also allow a punct child, at least temporarily, because of fixed
+            ###!!! expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
+            ###!!! It would be better to keep these expressions as one token. But sometimes
+            ###!!! the tokenizer is out of control of the UD data providers and it is not
+            ###!!! practical to retokenize.
+            elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
+                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+            # Goeswith cannot have any children, not even another goeswith.
+            elif pdeprel == 'goeswith':
+                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+            # Punctuation can exceptionally have other punct children if an exclamation
+            # mark is in brackets or quotes. It cannot have other children.
+            elif pdeprel == 'punct' and cdeprel != 'punct':
+                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
 
 def collect_ancestors(id, tree, ancestors):
     """
