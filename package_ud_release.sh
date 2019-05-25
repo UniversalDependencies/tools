@@ -32,11 +32,15 @@ function copy_data_repo
     cp -r $1 $dstdir
     # Erase files that should not be released (.gitignore, .gitattributes, .git, not-to-release).
     rm -rf $dstdir/$1/CONTRIBUTING.md $dstdir/$1/.git* $dstdir/$1/not-to-release
-    # The training data in UD_Czech-PDT is split to four files because it is too large for Github.
+    # The training data in UD_Czech-PDT and in UD_German-HDT is split to
+    # multiple files because it is too large for Github.
     # However, it can be one file in our release, so join the files again in the release copy.
-    if [ "$1" = "UD_Czech-PDT" ]; then
+    if [ "$1" == "UD_Czech-PDT" ] ; then
         cat $dstdir/$1/cs_pdt-ud-train-*.conllu > $dstdir/$1/cs_pdt-ud-train.conllu
         rm $dstdir/$1/cs_pdt-ud-train-*.conllu
+    elif [ "$1" == "UD_German-HDT" ] ; then
+        cat $dstdir/$1/de_hdt-ud-train-*.conllu > $dstdir/$1/de_hdt-ud-train.conllu
+        rm $dstdir/$1/de_hdt-ud-train-*.conllu
     fi
     # If we are creating the special package for the CoNLL 2018 shared task,
     # and if this treebank is considered small, merge its training and development data.
