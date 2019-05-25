@@ -966,6 +966,21 @@ def validate_single_subject(id, tree):
         # We test for more than 2, but in the error message we still say more than 1, so that we do not have to explain the exceptions.
         warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=tree['linenos'][id])
 
+def validate_orphan(id, tree):
+    """
+    The orphan relation is used to attach an unpromoted orphan to the promoted
+    orphan in gapping constructions. A common error is that the promoted orphan
+    gets the orphan relation too. The parent of orphan is typically attached
+    via a conj relation.
+    """
+    # This is a level 3 test, we will check only the universal part of the relation.
+    deprel = lspec2ud(tree['nodes'][id][DEPREL])
+    if deprel == 'orphan':
+        pid = int(tree['nodes'][id][HEAD])
+        pdeprel = lspec2ud(tree['nodes'][pid][DEPREL])
+        if not re.match(r"^(conj|parataxis|root)$", pdeprel):
+            warn("The parent of 'orphan' should normally be 'conj' but it is '%s'" % (pdeprel), 'Syntax', nodelineno=tree['linenos'][pid])
+
 def validate_functional_leaves(id, tree):
     """
     Most of the time, function-word nodes should be leaves. This function
@@ -1190,6 +1205,7 @@ def validate_annotation(tree):
         validate_upos_vs_deprel(id, tree)
         validate_left_to_right_relations(id, tree)
         validate_single_subject(id, tree)
+        validate_orphan(id, tree)
         validate_functional_leaves(id, tree)
         validate_fixed_span(id, tree)
         validate_goeswith_span(id, tree)
