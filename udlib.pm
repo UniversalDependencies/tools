@@ -4,6 +4,7 @@
 
 package udlib;
 
+use Carp;
 use JSON::Parse 'json_file_to_perl';
 use YAML qw(LoadFile);
 use utf8;
@@ -314,7 +315,12 @@ sub generate_markdown_treebank_overview
     my $folder = shift;
     # We need to know the number of the latest release in order to generate the links to search engines.
     my $release = shift;
-    $release = '2.2' if(!defined($release)); ###!!!
+    if($release !~ m/^\d+\.\d+$/)
+    {
+        # Let's be mean and throw an exception. We do not want to generate docs
+        # pages with wrong or empty release numbers in links.
+        confess("Unrecognized UD release number '$release'.");
+    }
     my $crelease = $release;
     $crelease =~ s/\.//;
     my $treebank_name = $folder;
