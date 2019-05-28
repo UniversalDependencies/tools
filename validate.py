@@ -978,7 +978,9 @@ def validate_orphan(id, tree):
     if deprel == 'orphan':
         pid = int(tree['nodes'][id][HEAD])
         pdeprel = lspec2ud(tree['nodes'][pid][DEPREL])
-        if not re.match(r"^(conj|parataxis|root)$", pdeprel):
+        # We include advcl because gapping (or something very similar) can also
+        # occur in subordinate clauses: "He buys companies like my mother [does] vegetables."
+        if not re.match(r"^(conj|parataxis|root|advcl)$", pdeprel):
             warn("The parent of 'orphan' should normally be 'conj' but it is '%s'" % (pdeprel), 'Syntax', nodelineno=tree['linenos'][pid])
 
 def validate_functional_leaves(id, tree):
