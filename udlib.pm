@@ -397,7 +397,9 @@ sub generate_markdown_treebank_overview
         if($metadata->{$annotation} eq 'manual native')
         {
             $md .= "annotated manually";
-            unless($annotation eq 'XPOS')
+            # It probably does not make sense to speak about "UD style" lemmatization.
+            # And it would be definitely wrong with XPOS.
+            unless($annotation =~ m/^(Lemmas|XPOS)$/)
             {
                 $md .= ", natively in UD style";
             }
