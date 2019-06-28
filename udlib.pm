@@ -155,11 +155,11 @@ sub get_ud_files_and_codes
     my $section = 'any'; # training|development|test|any
     my %section_re =
     (
-        # Training data in UD_Czech are split to four files.
-        'training'    => 'train(-[clmv])?',
+        # Training data in big treebanks is split into multiple files.
+        'training'    => 'train(-[a-z])?(-[0-9])?',
         'development' => 'dev',
         'test'        => 'test',
-        'any'         => '(train(-[clmv])?|dev|test)'
+        'any'         => '(train(-[a-z])?(-[0-9])?|dev|test)'
     );
     opendir(DIR, "$path/$udfolder") or die("Cannot read the contents of '$path/$udfolder': $!");
     my @files = sort(grep {-f "$path/$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));
