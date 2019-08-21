@@ -981,7 +981,9 @@ def validate_orphan(id, tree):
         # We include advcl because gapping (or something very similar) can also
         # occur in subordinate clauses: "He buys companies like my mother [does] vegetables."
         # In theory, a similar pattern could also occur with reparandum.
-        if not re.match(r"^(conj|parataxis|root|advcl|reparandum)$", pdeprel):
+        # A similar pattern also occurs with acl, e.g. in Latvian:
+        # viņš ēd tos ābolus, ko pirms tam [ēda] tārpi ('he eats the same apples, which where [eaten] by worms before that')
+        if not re.match(r"^(conj|parataxis|root|advcl|acl|reparandum)$", pdeprel):
             warn("The parent of 'orphan' should normally be 'conj' but it is '%s'" % (pdeprel), 'Syntax', nodelineno=tree['linenos'][pid])
 
 def validate_functional_leaves(id, tree):
