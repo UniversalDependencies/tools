@@ -983,7 +983,10 @@ def validate_orphan(id, tree):
         # In theory, a similar pattern could also occur with reparandum.
         # A similar pattern also occurs with acl, e.g. in Latvian:
         # viņš ēd tos ābolus, ko pirms tam [ēda] tārpi ('he eats the same apples, which where [eaten] by worms before that')
-        if not re.match(r"^(conj|parataxis|root|advcl|acl|reparandum)$", pdeprel):
+        # Other clausal heads (ccomp, csubj) may be eligible as well, e.g. in Latvian
+        # (see also issue 635 19.9.2019):
+        # atjēdzos, ka bez angļu valodas nekur [netikšu] '[I] realised, that [I will get] nowhere without English'
+        if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", pdeprel):
             warn("The parent of 'orphan' should normally be 'conj' but it is '%s'" % (pdeprel), 'Syntax', nodelineno=tree['linenos'][pid])
 
 def validate_functional_leaves(id, tree):
