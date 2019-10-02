@@ -33,7 +33,7 @@ line_of_first_enhanced_orphan=None
 
 error_counter={} # key: error type value: error count
 warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
-def warn(msg, error_type, lineno=True, nodelineno=0, nodeid=0):
+def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
     Print the warning.
     If lineno is True, print the number of the line last read from input. Note
@@ -68,11 +68,11 @@ def warn(msg, error_type, lineno=True, nodelineno=0, nodeid=0):
             if nodeid:
                 node = ' Node ' + str(nodeid)
             if nodelineno:
-                print("[%sLine %d%s%s]: %s" % (fn, nodelineno, sent, node, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: [L%d%s %s] %s" % (fn, nodelineno, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
             elif lineno:
-                print("[%sLine %d%s%s]: %s" % (fn, curr_line, sent, node, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: [L%d%s %s] %s" % (fn, curr_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
             else:
-                print("[%sTree number %d on line %d%s%s]: %s" % (fn, tree_counter, sentence_line, sent, node, msg), file=sys.stderr)
+                print("[%sTree number %d on line %d%s%s]: [L%d%s %s] %s" % (fn, tree_counter, sentence_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
 
 ###### Support functions
 
@@ -117,11 +117,15 @@ def trees(inp, tag_sets, args):
     global curr_line, sentence_line, sentence_id
     comments=[] # List of comment lines to go with the current sentence
     lines=[] # List of token/word lines of the current sentence
+    testlevel = 1
+    testclass = 'Format'
     for line_counter, line in enumerate(inp):
         curr_line=line_counter+1
         line=line.rstrip(u"\n")
         if is_whitespace(line):
-            warn('Spurious line that appears empty but is not; there are whitespace characters.', 'Format')
+            testid = 'pseudo-empty-line'
+            testmessage = 'Spurious line that appears empty but is not; there are whitespace characters.'
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             # We will pretend that the line terminates a sentence in order to avoid subsequent misleading error messages.
             if lines:
                 yield comments, lines
@@ -133,7 +137,9 @@ def trees(inp, tag_sets, args):
                 comments=[]
                 lines=[]
             else:
-                warn('Spurious empty line. Only one empty line is expected after every sentence.', 'Format')
+                testid = 'extra-empty-line'
+                testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         elif line[0]=='#':
             # We will really validate sentence ids later. But now we want to remember
             # everything that looks like a sentence id and use it in the error messages.
@@ -145,23 +151,31 @@ def trees(inp, tag_sets, args):
             if not lines: # before sentence
                 comments.append(line)
             else:
-                warn('Spurious comment line. Comments are only allowed before a sentence.', 'Format')
+                testid = 'misplaced-comment'
+                testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         elif line[0].isdigit():
             validate_unicode_normalization(line)
             if not lines: # new sentence
                 sentence_line=curr_line
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
-                warn('The line has %d columns but %d are expected.'%(len(cols), COLCOUNT), 'Format')
+                testid = 'number-of-columns'
+                testmessage = 'The line has %d columns but %d are expected.' % (len(cols), COLCOUNT)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             lines.append(cols)
             validate_cols_level1(cols)
             if args.level > 1:
                 validate_cols(cols,tag_sets,args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
-            warn("Spurious line: '%s'. All non-empty lines should start with a digit or the # character."%(line), 'Format')
+            testid = 'invalid-line'
+            testmessage = "Spurious line: '%s'. All non-empty lines should start with a digit or the # character." % (line)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     else: # end of file
         if comments or lines: # These should have been yielded on an empty line!
-            warn('Missing empty line after the last tree.', 'Format')
+            testid = 'missing-empty-line'
+            testmessage = 'Missing empty line after the last sentence.'
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             yield comments, lines
 
 ###### Tests applicable to a single row indpendently of the others
@@ -191,7 +205,11 @@ def validate_unicode_normalization(text):
                     break
             if firsti >= 0:
                 break
-        warn("Unicode not normalized: %s.character[%d] is %s, should be %s" % (COLNAMES[firsti], firstj, inpfirst, nfcfirst), 'Unicode')
+        testlevel = 1
+        testclass = 'Unicode'
+        testid = 'missing-empty-line'
+        testmessage = "Unicode not normalized: %s.character[%d] is %s, should be %s." % (COLNAMES[firsti], firstj, inpfirst, nfcfirst)
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 whitespace_re=re.compile('.*\s',re.U)
 whitespace2_re=re.compile('.*\s\s', re.U)
@@ -200,31 +218,45 @@ def validate_cols_level1(cols):
     Tests that can run on a single line and pertain only to the CoNLL-U file
     format, not to predefined sets of UD tags.
     """
+    testlevel = 1
+    testclass = 'Format'
     # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
     for col_idx in range(MISC+1):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         # Must never be empty
         if not cols[col_idx]:
-            warn('Empty value in column %s'%(COLNAMES[col_idx]), 'Format')
+            testid = 'empty-column'
+            testmessage = 'Empty value in column %s.' % (COLNAMES[col_idx])
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         else:
             # Must never have leading/trailing whitespace
             if cols[col_idx][0].isspace():
-                warn('Initial whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+                testid = 'leading-whitespace'
+                testmessage = 'Leading whitespace not allowed in column %s.' % (COLNAMES[col_idx])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             if cols[col_idx][-1].isspace():
-                warn('Trailing whitespace not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+                testid = 'trailing-whitespace'
+                testmessage = 'Trailing whitespace not allowed in column %s.' % (COLNAMES[col_idx])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             # Must never contain two consecutive whitespace characters
             if whitespace2_re.match(cols[col_idx]):
-                warn('Two or more consecutive whitespace characters not allowed in column %s'%(COLNAMES[col_idx]), 'Format')
+                testid = 'repeated-whitespace'
+                testmessage = 'Two or more consecutive whitespace characters not allowed in column %s.' % (COLNAMES[col_idx])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     # These columns must not have whitespace
     for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         if whitespace_re.match(cols[col_idx]):
-            warn("White space not allowed in the %s column: '%s'"%(COLNAMES[col_idx], cols[col_idx]), 'Format')
+            testid = 'invalid-whitespace'
+            testmessage = "White space not allowed in column %s: '%s'." % (COLNAMES[col_idx], cols[col_idx])
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     # Check for the format of the ID value. (ID must not be empty.)
     if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
-        warn("Unexpected ID format '%s'" % cols[ID], 'Format')
+        testid = 'invalid-word-id'
+        testmessage = "Unexpected ID format '%s'." % cols[ID]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 ##### Tests applicable to the whole tree
 
@@ -233,6 +265,8 @@ def validate_ID_sequence(tree):
     """
     Validates that the ID sequence is correctly formed.
     """
+    testlevel = 1
+    testclass = 'Format'
     words=[]
     tokens=[]
     current_word_id, next_empty_id = 0, 1
@@ -248,61 +282,85 @@ def validate_ID_sequence(tree):
                 tokens.append((t_id,t_id)) # nope - let's make a default interval for it
         elif is_multiword_token(cols):
             match=interval_re.match(cols[ID]) # Check the interval against the regex
-            if not match:
-                warn("Spurious token interval definition: '%s'."%cols[ID], 'Format', lineno=False)
+            if not match: # This should not happen. The function is_multiword_token() would then not return True.
+                testid = 'invalid-word-interval'
+                testmessage = "Spurious word interval definition: '%s'." % cols[ID]
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 continue
             beg,end=int(match.group(1)),int(match.group(2))
-            if not ((not words and beg == 1) or (words and beg == words[-1]+1)):
-                warn('Multiword range not before its first word', 'Format')
+            if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
+                testid = 'misplaced-word-interval'
+                testmessage = 'Multiword range not before its first word.'
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 continue
             tokens.append((beg,end))
         elif is_empty_node(cols):
             word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
             if word_id != current_word_id or empty_id != next_empty_id:
-                warn('Empty node id %s, expected %d.%d' %
-                     (cols[ID], current_word_id, next_empty_id), 'Format')
+                testid = 'misplaced-empty-node'
+                testmessage = 'Empty node id %s, expected %d.%d' % (cols[ID], current_word_id, next_empty_id)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             next_empty_id += 1
     # Now let's do some basic sanity checks on the sequences
     wrdstrseq = ','.join(str(x) for x in words)
     expstrseq = ','.join(str(x) for x in range(1, len(words)+1)) # Words should form a sequence 1,2,...
     if wrdstrseq != expstrseq:
-        warn("Words do not form a sequence. Got '%s'. Expected '%s'."%(wrdstrseq, expstrseq), 'Format', lineno=False)
-    # Check elementary sanity of word intervals
-    for (b,e) in tokens:
+        testid = 'word-id-sequence'
+        testmessage = "Words do not form a sequence. Got '%s'. Expected '%s'." % (wrdstrseq, expstrseq)
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
+    # Check elementary sanity of word intervals.
+    # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
+    for (b, e) in tokens:
         if e<b: # end before beginning
-            warn('Spurious token interval %d-%d'%(b,e), 'Format')
+            testid = 'reversed-word-interval'
+            testmessage = 'Spurious token interval %d-%d' % (b,e)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             continue
         if b<1 or e>len(words): # out of range
-            warn('Spurious token interval %d-%d (out of range)'%(b,e), 'Format')
+            testid = 'word-interval-out'
+            testmessage = 'Spurious token interval %d-%d (out of range)' % (b,e)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             continue
 
 def validate_token_ranges(tree):
     """
     Checks that the word ranges for multiword tokens are valid.
     """
+    testlevel = 1
+    testclass = 'Format'
     covered = set()
     for cols in tree:
         if not is_multiword_token(cols):
             continue
         m = interval_re.match(cols[ID])
-        if not m:
-            warn('Failed to parse ID %s' % cols[ID], 'Format')
+        if not m: # This should not happen. The function is_multiword_token() would then not return True.
+            testid = 'invalid-word-interval'
+            testmessage = "Spurious word interval definition: '%s'." % cols[ID]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             continue
         start, end = m.groups()
         try:
             start, end = int(start), int(end)
         except ValueError:
             assert False, 'internal error' # RE should assure that this works
-        if not start < end:
-            warn('Invalid range: %s' % cols[ID], 'Format')
+        if not start < end: ###!!! This was already tested above in validate_ID_sequence()! Should we remove it from there?
+            testid = 'reversed-word-interval'
+            testmessage = 'Spurious token interval %d-%d' % (start, end)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             continue
         if covered & set(range(start, end+1)):
-            warn('Range overlaps with others: %s' % cols[ID], 'Format')
+            testid = 'overlapping-word-intervals'
+            testmessage = 'Range overlaps with others: %s' % cols[ID]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         covered |= set(range(start, end+1))
 
 def validate_newlines(inp):
     if inp.newlines and inp.newlines!='\n':
-        warn('Only the unix-style LF line terminator is allowed', 'Format')
+        testlevel = 1
+        testclass = 'Format'
+        testid = 'non-unix-newline'
+        testmessage = 'Only the unix-style LF line terminator is allowed.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 
 
@@ -316,6 +374,8 @@ def validate_newlines(inp):
 ###### Metadata tests #########
 
 def validate_sent_id(comments,known_ids,lcode):
+    testlevel = 2
+    testclass = 'Metadata'
     matched=[]
     for c in comments:
         match=sentid_re.match(c)
@@ -323,36 +383,54 @@ def validate_sent_id(comments,known_ids,lcode):
             matched.append(match)
         else:
             if c.startswith('# sent_id') or c.startswith('#sent_id'):
-                warn("Spurious sent_id line: '%s' Should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes." %c, 'Metadata')
+                testid = 'invalid-sent-id'
+                testmessage = "Spurious sent_id line: '%s' Should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes." % c
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if not matched:
-        warn('Missing the sent_id attribute.', 'Metadata')
+        testid = 'missing-sent-id'
+        testmessage = 'Missing the sent_id attribute.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     elif len(matched)>1:
-        warn('Multiple sent_id attributes.', 'Metadata')
+        testid = 'multiple-sent-id'
+        testmessage = 'Multiple sent_id attributes.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     else:
         # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
         # For that to happen, all three files should be tested at once.
         sid=matched[0].group(1)
         if sid in known_ids:
-            warn('Non-unique sent_id the sent_id attribute: '+sid, 'Metadata')
+            testid = 'non-unique-sent-id'
+            testmessage = "Non-unique sent_id attribute '%s'." % sid
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud" and lcode!=u"shopen"):
-            warn('The forward slash is reserved for special use in parallel treebanks: '+sid, 'Metadata')
+            testid = 'slash-in-sent-id'
+            testmessage = "The forward slash is reserved for special use in parallel treebanks: '%s'" % sid
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         known_ids.add(sid)
 
 text_re=re.compile('^# text\s*=\s*(.+)$')
 def validate_text_meta(comments,tree):
+    testlevel = 2
+    testclass = 'Metadata'
     matched=[]
     for c in comments:
         match=text_re.match(c)
         if match:
             matched.append(match)
     if not matched:
-        warn('Missing the text attribute.', 'Metadata')
+        testid = 'missing-text'
+        testmessage = 'Missing the text attribute.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     elif len(matched)>1:
-        warn('Multiple text attributes.', 'Metadata')
+        testid = 'multiple-text'
+        testmessage = 'Multiple text attributes.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     else:
         stext=matched[0].group(1)
         if stext[-1].isspace():
-            warn('The text attribute must not end with whitespace', 'Metadata')
+            testid = 'text-trailing-whitespace'
+            testmessage = 'The text attribute must not end with whitespace.'
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         # Validate the text against the SpaceAfter attribute in MISC.
         skip_words=set()
         mismatch_reported=0 # do not report multiple mismatches in the same sentence; they usually have the same cause
@@ -361,41 +439,53 @@ def validate_text_meta(comments,tree):
                 # This error has been reported elsewhere but we cannot check MISC now.
                 continue
             if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
-                warn('NoSpaceAfter=Yes should be replaced with SpaceAfter=No', 'Metadata')
-            if '.' in cols[ID]: # empty word
+                testid = 'nospaceafter-yes'
+                testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            if '.' in cols[ID]: # empty node
                 if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
-                    warn('There should not be a SpaceAfter=No entry for empty words', 'Metadata')
+                    testid = 'spaceafter-empty-node'
+                    testmessage = "'SpaceAfter=No' cannot occur with empty nodes."
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 continue
             elif '-' in cols[ID]: # multi-word token
                 beg,end=cols[ID].split('-')
                 try:
                     begi,endi = int(beg),int(end)
                 except ValueError as e:
-                    warn('Non-integer range %s-%s (%s)'%(beg,end,e), 'Format')
+                    # This error has been reported elsewhere.
                     begi,endi=1,0
-                # If we see a MWtoken, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
+                # If we see a multi-word token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
                 for i in range(begi, endi+1):
                     skip_words.add(str(i))
             elif cols[ID] in skip_words:
                 if 'SpaceAfter=No' in cols[MISC]:
-                    warn('There should not be a SpaceAfter=No entry for words which are a part of a multi-word token', 'Metadata')
+                    testid = 'spaceafter-mwt-node'
+                    testmessage = "'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 continue
             else:
                 # Err, I guess we have nothing to do here. :)
                 pass
-            # So now we have either a MWtoken or a word which is also a token in its entirety
+            # So now we have either a multi-word token or a word which is also a token in its entirety.
             if not stext.startswith(cols[FORM]):
                 if not mismatch_reported:
-                    warn("Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" %(cols[ID], cols[FORM], stext[:len(cols[FORM])+20]), 'Metadata', False)
+                    testid = 'text-form-mismatch'
+                    testmessage = "Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" % (cols[ID], cols[FORM], stext[:len(cols[FORM])+20])
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                     mismatch_reported=1
             else:
                 stext=stext[len(cols[FORM]):] # eat the form
                 if 'SpaceAfter=No' not in cols[MISC].split("|"):
                     if args.check_space_after and (stext) and not stext[0].isspace():
-                        warn("SpaceAfter=No is missing in the MISC field of node #%s because the text is '%s'" %(cols[ID], shorten(cols[FORM]+stext)), 'Metadata')
+                        testid = 'missing-spaceafter'
+                        testmessage = "'SpaceAfter=No' is missing in the MISC field of node #%s because the text is '%s'." % (cols[ID], shorten(cols[FORM]+stext))
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                     stext=stext.lstrip()
         if stext:
-            warn("Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'"%stext, 'Metadata')
+            testid = 'text-extra-chars'
+            testmessage = "Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'" % stext
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 ##### Tests applicable to a single row indpendently of the others
 
@@ -407,7 +497,7 @@ def validate_cols(cols, tag_sets, args):
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
         validate_features(cols, tag_sets, args) # level 2 and up (relevant code checks whether higher level is required)
-        validate_pos(cols,tag_sets) # level 2
+        validate_upos(cols,tag_sets) # level 2
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
@@ -428,9 +518,13 @@ def validate_token_empty_vals(cols):
     therefore a level 2 test.
     """
     assert is_multiword_token(cols), 'internal error'
-    for col_idx in range(LEMMA,MISC): #all columns in the LEMMA-DEPS range
-        if cols[col_idx]!=u"_":
-            warn("A multi-word token line must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx], cols[col_idx]), 'Format')
+    for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
+        if cols[col_idx] != '_':
+            testlevel = 2
+            testclass = 'Format'
+            testid = 'mwt-nonempty-field'
+            testmessage = "A multi-word token line must have '_' in the column %s. Now: '%s'." % (COLNAMES[col_idx], cols[col_idx])
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 def validate_empty_node_empty_vals(cols):
     """
@@ -440,8 +534,12 @@ def validate_empty_node_empty_vals(cols):
     """
     assert is_empty_node(cols), 'internal error'
     for col_idx in (HEAD, DEPREL):
-        if cols[col_idx]!=u"_":
-            warn("An empty node must have '_' in the column %s. Now: '%s'."%(COLNAMES[col_idx], cols[col_idx]), 'Format')
+        if cols[col_idx]!= '_':
+            testlevel = 2
+            testclass = 'Format'
+            testid = 'mwt-nonempty-field'
+            testmessage = "An empty node must have '_' in the column %s. Now: '%s'." % (COLNAMES[col_idx], cols[col_idx])
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 # Ll ... lowercase Unicode letters
 # Lm ... modifier Unicode letters (e.g., superscript h)
@@ -461,24 +559,35 @@ def validate_character_constraints(cols):
     Checks general constraints on valid characters, e.g. that UPOS
     only contains [A-Z].
     """
+    testlevel = 2
     if is_multiword_token(cols):
         return
     if UPOS >= len(cols):
         return # this has been already reported in trees()
-    if not (re.match(r"^[A-Z]+$", cols[UPOS]) or
-            (is_empty_node(cols) and cols[UPOS] == u"_")):
-        warn('Invalid UPOS value %s' % cols[UPOS], 'Morpho')
-    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or
-            (is_empty_node(cols) and cols[DEPREL] == u"_")):
-        warn('Invalid DEPREL value %s' % cols[DEPREL], 'Syntax')
+    if not (re.match(r"^[A-Z]+$", cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
+        testclass = 'Morpho'
+        testid = 'invalid-upos'
+        testmessage = "Invalid UPOS value '%s'." % cols[UPOS]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
+        testclass = 'Syntax'
+        testid = 'invalid-deprel'
+        testmessage = "Invalid DEPREL value '%s'." % cols[DEPREL]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     try:
         deps = deps_list(cols)
     except ValueError:
-        warn('Failed for parse DEPS: %s' % cols[DEPS], 'Syntax')
+        testclass = 'Enhanced'
+        testid = 'invalid-deps'
+        testmessage = "Failed to parse DEPS: '%s'." % cols[DEPS]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         return
     if any(deprel for head, deprel in deps_list(cols)
-           if not edeprel_re.match(deprel)):
-        warn('Invalid value in DEPS: %s' % cols[DEPS], 'Syntax')
+        if not edeprel_re.match(deprel)):
+            testclass = 'Enhanced'
+            testid = 'invalid-edeprel'
+            testmessage = "Invalid enhanced relation type: '%s'." % cols[DEPS]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
 val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
@@ -489,6 +598,7 @@ def validate_features(cols, tag_sets, args):
     must be allowed on level 2 because it could be defined as language-specific.
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
+    testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
     feats=cols[FEATS]
@@ -496,75 +606,102 @@ def validate_features(cols, tag_sets, args):
         return True
     feat_list=feats.split('|')
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
-        warn("Morphological features must be sorted: '%s'"%feats, 'Morpho')
-    attr_set=set() # I'll gather the set of attributes here to check later than none is repeated
+        testlevel = 2
+        testid = 'unsorted-features'
+        testmessage = "Morphological features must be sorted: '%s'." % feats
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    attr_set=set() # I'll gather the set of features here to check later that none is repeated.
     for f in feat_list:
         match=attr_val_re.match(f)
         if match is None:
-            warn("Spurious morphological feature: '%s'. Should be of the form attribute=value and must start with [A-Z0-9] and only contain [A-Za-z0-9]."%f, 'Morpho')
+            testlevel = 2
+            testid = 'invalid-feature'
+            testmessage = "Spurious morphological feature: '%s'. Should be of the form Feature=Value and must start with [A-Z0-9] and only contain [A-Za-z0-9]." % f
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             # Check that the values are sorted as well
             attr=match.group(1)
             attr_set.add(attr)
-            values=match.group(2).split(u",")
-            if len(values)!=len(set(values)):
-                warn("Repeated feature values are disallowed: %s"%feats, 'Morpho')
-            if [v.lower() for v in values]!=sorted(v.lower() for v in values):
-                warn("If an attribute has multiple values, these must be sorted as well: '%s'"%f, 'Morpho')
+            values=match.group(2).split(',')
+            if len(values) != len(set(values)):
+                testlevel = 2
+                testid = 'repeated-feature-value'
+                testmessage = "Repeated feature values are disallowed: '%s'" % feats
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            if [v.lower() for v in values] != sorted(v.lower() for v in values):
+                testlevel = 2
+                testid = 'unsorted-feature-values'
+                testmessage = "If a feature has multiple values, these must be sorted: '%s'" % f
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             for v in values:
                 if not val_re.match(v):
-                    warn("Incorrect value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."%(v,f), 'Morpho')
+                    testlevel = 2
+                    testid = 'invalid-feature-value'
+                    testmessage = "Spurious value '%s' in '%s'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]." % (v, f)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
                 # Level 4 also checks whether the feature value is on the list.
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
                 if args.level > 3 and tag_sets[FEATS] is not None and attr+'='+v not in tag_sets[FEATS]:
                     warn_on_missing_files.add("feat_val")
-                    warn('Unknown attribute-value pair %s=%s'%(attr,v), 'Morpho')
-    if len(attr_set)!=len(feat_list):
-        warn('Repeated features are disallowed: %s'%feats, 'Morpho')
+                    testlevel = 4
+                    testid = 'unknown-feature-value'
+                    testmessage = "Unknown feature-value pair '%s=%s'." % (attr, v)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if len(attr_set) != len(feat_list):
+        testlevel = 2
+        testid = 'repeated-feature'
+        testmessage = "Repeated features are disallowed: '%s'." % feats
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
-def validate_upos(cols,tag_sets):
+def validate_upos(cols, tag_sets):
     if UPOS >= len(cols):
         return # this has been already reported in trees()
+    if is_empty_node(cols) and cols[UPOS] == '_':
+        return
     if tag_sets[UPOS] is not None and cols[UPOS] not in tag_sets[UPOS]:
-        warn('Unknown UPOS tag: %s'%cols[UPOS], 'Morpho')
-
-def validate_xpos(cols,tag_sets):
-    if XPOS >= len(cols):
-        return # this has been already reported in trees()
-    # We currently do not have any list of known XPOS tags, hence tag_sets[XPOS] is None.
-    if tag_sets[XPOS] is not None and cols[XPOS] not in tag_sets[XPOS]:
-        warn('Unknown XPOS tag: %s'%cols[XPOS], 'Morpho')
-
-def validate_pos(cols,tag_sets):
-    if not (is_empty_node(cols) and cols[UPOS] == '_'):
-        validate_upos(cols, tag_sets)
-    if not (is_empty_node(cols) and cols[XPOS] == '_'):
-        validate_xpos(cols, tag_sets)
+        testlevel = 2
+        testclass = 'Morpho'
+        testid = 'unknown-upos'
+        testmessage = "Unknown UPOS tag: '%s'." % cols[UPOS]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 def validate_deprels(cols, tag_sets, args):
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
     # Test only the universal part if testing at universal level.
     deprel = cols[DEPREL]
+    testlevel = 4
     if args.level < 4:
         deprel = lspec2ud(deprel)
+        testlevel = 2
     if tag_sets[DEPREL] is not None and deprel not in tag_sets[DEPREL]:
         warn_on_missing_files.add("deprel")
-        warn('Unknown UD DEPREL: %s'%cols[DEPREL], 'Syntax')
-    if tag_sets[DEPS] is not None and cols[DEPS]!='_':
-        for head_deprel in cols[DEPS].split(u"|"):
+        testclass = 'Syntax'
+        testid = 'unknown-deprel'
+        testmessage = "Unknown DEPREL label: '%s'" % cols[DEPREL]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if DEPS >= len(cols):
+        return # this has been already reported in trees()
+    if tag_sets[DEPS] is not None and cols[DEPS] != '_':
+        for head_deprel in cols[DEPS].split('|'):
             try:
-                head,deprel=head_deprel.split(u":",1)
+                head,deprel=head_deprel.split(':', 1)
             except ValueError:
-                warn("Malformed head:deprel pair '%s'"%head_deprel, 'Syntax')
+                testclass = 'Enhanced'
+                testid = 'invalid-head-deprel' # but it would have probably triggered another error above
+                testmessage = "Malformed head:deprel pair '%s'." % head_deprel
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 continue
             if args.level < 4:
                 deprel = lspec2ud(deprel)
             if deprel not in tag_sets[DEPS]:
                 warn_on_missing_files.add("edeprel")
-                warn("Unknown enhanced dependency relation '%s' in '%s'"%(deprel,head_deprel), 'Syntax')
+                testclass = 'Enhanced'
+                testid = 'unknown-edeprel'
+                testmessage = "Unknown enhanced relation type '%s' in '%s'" % (deprel, head_deprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 ##### Tests applicable to the whole sentence
 
@@ -585,51 +722,105 @@ def deps_list(cols):
         raise ValueError('malformed DEPS: %s' % cols[DEPS])
     return deps
 
+basic_head_re = re.compile('^(0|[1-9][0-9]*)$', re.U)
+enhanced_head_re = re.compile('^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$', re.U)
 def validate_ID_references(tree):
     """
     Validates that HEAD and DEPS reference existing IDs.
     """
+    testlevel = 2
     word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
-    def valid_id(i):
-        return i in ids or i == '0'
-    def valid_empty_head(cols):
-        return cols[HEAD] == '_' and is_empty_node(cols)
     for cols in word_tree:
         if HEAD >= len(cols):
             return # this has been already reported in trees()
-        if not (valid_id(cols[HEAD]) or valid_empty_head(cols)):
-            warn('Undefined ID in HEAD: %s' % cols[HEAD], 'Format')
+        # Test the basic HEAD only for non-empty nodes.
+        # We have checked elsewhere that it is empty for empty nodes.
+        if not is_empty_node(cols):
+            match = basic_head_re.match(cols[HEAD])
+            if match is None:
+                testclass = 'Format'
+                testid = 'invalid-head'
+                testmessage = "Invalid HEAD: '%s'." % cols[HEAD]
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            if not (cols[HEAD] in ids or cols[HEAD] == '0'):
+                testclass = 'Syntax'
+                testid = 'unknown-head'
+                testmessage = "Undefined HEAD (no such ID): '%s'." % cols[HEAD]
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+        if DEPS >= len(cols):
+            return # this has been already reported in trees()
         try:
             deps = deps_list(cols)
         except ValueError:
-            warn("Failed to parse DEPS: '%s'" % cols[DEPS], 'Format')
+            # Similar errors have probably been reported earlier.
+            testclass = 'Format'
+            testid = 'invalid-deps'
+            testmessage = "Failed to parse DEPS: '%s'." % cols[DEPS]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             continue
         for head, deprel in deps:
-            if not valid_id(head):
-                warn("Undefined ID in DEPS: '%s'" % head, 'Format')
+            match = enhanced_head_re.match(head)
+            if match is None:
+                testclass = 'Format'
+                testid = 'invalid-ehead'
+                testmessage = "Invalid enhanced head reference: '%s'." % head
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            if not (head in ids or head == '0'):
+                testclass = 'Enhanced'
+                testid = 'unknown-ehead'
+                testmessage = "Undefined enhanced head reference (no such ID): '%s'." % head
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 def validate_root(tree):
     """
-    Validates that DEPREL is "root" iff HEAD is 0.
+    Checks that DEPREL is "root" iff HEAD is 0.
     """
+    testlevel = 2
     for cols in tree:
-        if not (is_word(cols) or is_empty_node(cols)):
-            continue
-        if HEAD >= len(cols):
-            continue # this has been already reported in trees()
-        if cols[HEAD] == '0':
-            if cols[DEPREL] != 'root':
-                warn("DEPREL must be 'root' if HEAD is 0", 'Syntax')
-        else:
-            if cols[DEPREL] == 'root':
-                warn("DEPREL cannot be 'root' if HEAD is not 0", 'Syntax')
+        if is_word(cols):
+            if HEAD >= len(cols):
+                continue # this has been already reported in trees()
+            if cols[HEAD] == '0' and cols[DEPREL] != 'root':
+                testclass = 'Syntax'
+                testid = '0-is-not-root'
+                testmessage = "DEPREL must be 'root' if HEAD is 0."
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            if cols[HEAD] != '0' and cols[DEPREL] == 'root':
+                testclass = 'Syntax'
+                testid = 'root-is-not-0'
+                testmessage = "DEPREL cannot be 'root' if HEAD is not 0."
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+        if is_word(cols) or is_empty_node(cols):
+            if DEPS >= len(cols):
+                continue # this has been already reported in trees()
+            try:
+                deps = deps_list(cols)
+            except ValueError:
+                # Similar errors have probably been reported earlier.
+                testclass = 'Format'
+                testid = 'invalid-deps'
+                testmessage = "Failed to parse DEPS: '%s'." % cols[DEPS]
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                continue
+            for head, deprel in deps:
+                if head == '0' and deprel != 'root':
+                    testclass = 'Enhanced'
+                    testid = 'enhanced-0-is-not-root'
+                    testmessage = "Enhanced relation type must be 'root' if head is 0."
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                if head != '0' and deprel == 'root':
+                    testclass = 'Enhanced'
+                    testid = 'enhanced-root-is-not-0'
+                    testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 def validate_deps(tree):
     """
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS.
     """
+    testlevel = 2
     node_line = sentence_line - 1
     for cols in tree:
         node_line += 1
@@ -641,35 +832,52 @@ def validate_deps(tree):
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
         except ValueError:
-            warn("Failed to parse DEPS: '%s'" % cols[DEPS], 'Format', nodelineno=node_line)
+            # Similar errors have probably been reported earlier.
+            testclass = 'Format'
+            testid = 'invalid-deps'
+            testmessage = "Failed to parse DEPS: '%s'." % cols[DEPS]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
             return
         if heads != sorted(heads):
-            warn("DEPS not sorted by head index: '%s'" % cols[DEPS], 'Format', nodelineno=node_line)
+            testclass = 'Format'
+            testid = 'unsorted-deps'
+            testmessage = "DEPS not sorted by head index: '%s'" % cols[DEPS]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
         else:
             lasth = None
             lastd = None
             for h, d in deps:
                 if h == lasth:
                     if d < lastd:
-                        warn("DEPS pointing to head '%s' not sorted by relation type: '%s'" % (h, cols[DEPS]), 'Format', nodelineno=node_line)
+                        testclass = 'Format'
+                        testid = 'unsorted-deps-2'
+                        testmessage = "DEPS pointing to head '%s' not sorted by relation type: '%s'" % (h, cols[DEPS])
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
                     elif d == lastd:
-                        warn("DEPS contain multiple instances of the same relation '%s:%s'" % (h, d), 'Format', nodelineno=node_line)
+                        testclass = 'Format'
+                        testid = 'repeated-deps'
+                        testmessage = "DEPS contain multiple instances of the same relation '%s:%s'" % (h, d)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
                 lasth = h
                 lastd = d
+                ###!!! This is now also tested above in validate_root(). We must reorganize testing of the enhanced structure so that the same thing is not tested multiple times.
                 # Like in the basic representation, head 0 implies relation root and vice versa.
                 # Note that the enhanced graph may have multiple roots (coordination of predicates).
-                ud = lspec2ud(d)
-                if h == '0' and ud != 'root':
-                    warn("Illegal relation '%s:%s' in DEPS: must be 'root' if head is 0" % (h, d), 'Format', nodelineno=node_line)
-                if ud == 'root' and h != '0':
-                    warn("Illegal relation '%s:%s' in DEPS: cannot be 'root' if head is not 0" % (h, d), 'Format', nodelineno=node_line)
+                #ud = lspec2ud(d)
+                #if h == '0' and ud != 'root':
+                #    warn("Illegal relation '%s:%s' in DEPS: must be 'root' if head is 0" % (h, d), 'Format', nodelineno=node_line)
+                #if ud == 'root' and h != '0':
+                #    warn("Illegal relation '%s:%s' in DEPS: cannot be 'root' if head is not 0" % (h, d), 'Format', nodelineno=node_line)
         try:
             id_ = float(cols[ID])
         except ValueError:
-            warn("Non-numeric ID: '%s'" % cols[ID], 'Format', nodelineno=node_line)
+            # This error has been reported previously.
             return
         if id_ in heads:
-            warn("Self-loop in DEPS for '%s'" % cols[ID], 'Format', nodelineno=node_line)
+            testclass = 'Enhanced'
+            testid = 'deps-self-loop'
+            testmessage = "Self-loop in DEPS for '%s'" % cols[ID]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
 
 def validate_misc(tree):
     """
@@ -680,6 +888,8 @@ def validate_misc(tree):
     with different values, but this should not happen for selected attributes
     that are described in the UD documentation.
     """
+    testlevel = 2
+    testclass = 'Format'
     node_line = sentence_line - 1
     for cols in tree:
         node_line += 1
@@ -697,7 +907,9 @@ def validate_misc(tree):
                 mamap[ma[0]] = mamap[ma[0]] + 1
         for a in list(mamap):
             if mamap[a] > 1:
-                warn("MISC attribute '%s' not supposed to occur twice" % a, 'Format', nodelineno=node_line)
+                testid = 'repeated-misc'
+                testmessage = "MISC attribute '%s' not supposed to occur twice" % a
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
 
 def build_tree(sentence):
     """
@@ -714,6 +926,8 @@ def build_tree(sentence):
       linenos ... array of line numbers in the file, corresponding to nodes
           (needed in error messages)
     """
+    testlevel = 2
+    testclass = 'Syntax'
     global sentence_line # the line of the first token/word of the current tree (skipping comments!)
     node_line = sentence_line - 1
     children = {} # node -> set of children
@@ -745,7 +959,9 @@ def build_tree(sentence):
             # Do not continue to check annotation if there are elementary flaws.
             return None
         if head == id_:
-            warn('HEAD == ID for %s' % cols[ID], 'Syntax', nodelineno=node_line)
+            testid = 'head-self-loop'
+            testmessage = 'HEAD == ID for %s' % cols[ID]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
             return None
         tree['nodes'].append(cols)
         tree['linenos'].append(node_line)
@@ -755,14 +971,19 @@ def build_tree(sentence):
         tree['children'].append(sorted(children.get(cols[ID], [])))
     # Check that there is just one node with the root relation.
     if len(tree['children'][0]) > 1 and args.single_root:
-        warn('Multiple root words: %s' % tree['children'][0], 'Syntax', lineno=False)
+        testid = 'multiple-roots'
+        testmessage = "Multiple root words: %s" % tree['children'][0]
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
+        return None
     # Return None if there are any cycles. Avoid surprises when working with the graph.
     # Presence of cycles is equivalent to presence of unreachable nodes.
     projection = set()
     get_projection(0, tree, projection)
     unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
     if unreachable:
-        warn('Non-tree structure. Words %s are not reachable from the root 0.'%(','.join(str(w) for w in sorted(unreachable))), 'Syntax', lineno=False)
+        testid = 'non-tree'
+        testmessage = 'Non-tree structure. Words %s are not reachable from the root 0.' % (','.join(str(w) for w in sorted(unreachable)))
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
         return None
     return tree
 
@@ -851,7 +1072,11 @@ def build_egraph(sentence):
     unreachable = nodeids - projection
     if unreachable:
         sur = sorted(unreachable)
-        warn("Enhanced graph is not connected. Nodes %s are not reachable from any root" % sur, 'Syntax', lineno=False)
+        testlevel = 2
+        testclass = 'Enhanced'
+        testid = 'unconnected-egraph'
+        testmessage = "Enhanced graph is not connected. Nodes %s are not reachable from any root" % sur
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
         return None
     return egraph
 
@@ -875,6 +1100,8 @@ def validate_upos_vs_deprel(id, tree):
     part-of-speech category. Occasionally we may have to check the children of
     the node, too.
     """
+    testlevel = 3
+    testclass = 'Syntax'
     cols = tree['nodes'][id]
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
@@ -889,45 +1116,69 @@ def validate_upos_vs_deprel(id, tree):
     #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-det'
+        testmessage = "'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Nummod is for numerals only.
     if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
-        warn("'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-nummod'
+        testmessage = "'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels and not 'goeswith' in childrels:
-        warn("'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-advmod'
+        testmessage = "'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", cols[UPOS]):
-        warn("'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-expl'
+        testmessage = "'expl' should normally be 'PRON' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", cols[UPOS]):
-        warn("'aux' should be 'AUX' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-aux'
+        testmessage = "'aux' should be 'AUX' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", cols[UPOS]):
-        warn("'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-cop'
+        testmessage = "'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # AUX is normally aux or cop. It can appear in many other relations if it is promoted due to ellipsis.
     # However, I believe that it should not appear in compound. From the other side, compound can consist
     # of many different part-of-speech categories but I don't think it can contain AUX.
     if deprel == 'compound' and re.match(r"^(AUX)", cols[UPOS]):
-        warn("'compound' should not be 'AUX'", 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-compound'
+        testmessage = "'compound' should not be 'AUX'"
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'case' should not be '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-case'
+        testmessage = "'case' should not be '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'mark' should not be '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-mark'
+        testmessage = "'mark' should not be '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
-        warn("'cc' should not be '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-cc'
+        testmessage = "'cc' should not be '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
-        warn("'punct' must be 'PUNCT' but it is '%s'" % (cols[UPOS]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'rel-upos-punct'
+        testmessage = "'punct' must be 'PUNCT' but it is '%s'" % (cols[UPOS])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     if cols[UPOS] == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
-        warn("if UPOS is 'PUNCT', DEPREL must be 'punct' but is '%s'" % (cols[DEPREL]), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+        testid = 'upos-rel-punct'
+        testmessage = "'PUNCT' must be 'punct' but it is '%s'" % (cols[DEPREL])
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_left_to_right_relations(id, tree):
     """
@@ -935,6 +1186,8 @@ def validate_left_to_right_relations(id, tree):
     Here we currently check the rule for the basic dependencies.
     The same should also be tested for the enhanced dependencies!
     """
+    testlevel = 3
+    testclass = 'Syntax'
     cols = tree['nodes'][id]
     if is_multiword_token(cols):
         return
@@ -945,7 +1198,9 @@ def validate_left_to_right_relations(id, tree):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
         if ichild < iparent:
-            warn("Violation of guidelines: relation '%s' must go left-to-right" % cols[DEPREL], 'Syntax', nodelineno=tree['linenos'][id])
+            testid = 'left-to-right-rel'
+            testmessage = "Relation '%s' must go left-to-right." % cols[DEPREL]
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_single_subject(id, tree):
     """
@@ -964,14 +1219,18 @@ def validate_single_subject(id, tree):
     subjects = sorted([x for x in tree['children'][id] if re.search(r"subj", lspec2ud(tree['nodes'][x][DEPREL]))])
     if len(subjects) > 2:
         # We test for more than 2, but in the error message we still say more than 1, so that we do not have to explain the exceptions.
-        warn("Violation of guidelines: node has more than one subject: %s" % str(subjects), 'Syntax', nodelineno=tree['linenos'][id])
+        testlevel = 3
+        testclass = 'Syntax'
+        testid = 'too-many-subjects'
+        testmessage = "Node has more than one subject: %s" % str(subjects)
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_orphan(id, tree):
     """
     The orphan relation is used to attach an unpromoted orphan to the promoted
     orphan in gapping constructions. A common error is that the promoted orphan
     gets the orphan relation too. The parent of orphan is typically attached
-    via a conj relation.
+    via a conj relation, although some other relations are plausible too.
     """
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(tree['nodes'][id][DEPREL])
@@ -987,13 +1246,19 @@ def validate_orphan(id, tree):
         # (see also issue 635 19.9.2019):
         # atjēdzos, ka bez angļu valodas nekur [netikšu] '[I] realised, that [I will get] nowhere without English'
         if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", pdeprel):
-            warn("The parent of 'orphan' should normally be 'conj' but it is '%s'" % (pdeprel), 'Syntax', nodelineno=tree['linenos'][pid])
+            testlevel = 3
+            testclass = 'Syntax'
+            testid = 'orphan-parent'
+            testmessage = "The parent of 'orphan' should normally be 'conj' but it is '%s'." % (pdeprel)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_functional_leaves(id, tree):
     """
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
     """
+    testlevel = 3
+    testclass = 'Syntax'
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(tree['nodes'][id][DEPREL])
     if re.match(r"^(case|mark|cc|aux|cop|det|fixed|goeswith|punct)$", deprel):
@@ -1048,15 +1313,21 @@ def validate_functional_leaves(id, tree):
             # we do not want to allow 'cc' under another 'cc'. (Still, 'cc' can have
             # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
             if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+                testid = 'leaf-mark-case'
+                testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][idchild])
             ###!!! The pdeprel regex in the following test should probably include "det".
             ###!!! I forgot to add it well in advance of release 2.4, so I am leaving it
             ###!!! out for now, so that people don't have to deal with additional load
             ###!!! of errors.
             if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+                testid = 'leaf-aux-cop'
+                testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][idchild])
             if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
-                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+                testid = 'leaf-cc'
+                testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][idchild])
             # Fixed expressions should not be nested, i.e., no chains of fixed relations.
             # As they are supposed to represent functional elements, they should not have
             # other dependents either, with the possible exception of conj.
@@ -1066,14 +1337,20 @@ def validate_functional_leaves(id, tree):
             ###!!! the tokenizer is out of control of the UD data providers and it is not
             ###!!! practical to retokenize.
             elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
-                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+                testid = 'leaf-fixed'
+                testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][idchild])
             # Goeswith cannot have any children, not even another goeswith.
             elif pdeprel == 'goeswith':
-                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+                testid = 'leaf-goeswith'
+                testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][idchild])
             # Punctuation can exceptionally have other punct children if an exclamation
             # mark is in brackets or quotes. It cannot have other children.
             elif pdeprel == 'punct' and cdeprel != 'punct':
-                warn("'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel), 'Syntax', nodelineno=tree['linenos'][idchild])
+                testid = 'leaf-punct'
+                testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][idchild])
 
 def collect_ancestors(id, tree, ancestors):
     """
@@ -1153,17 +1430,23 @@ def validate_goeswith_span(id, tree):
     middle, it must be also attached via 'goeswith'. The parameter id refers to
     the node whose goeswith children we test.
     """
+    testlevel = 3
+    testclass = 'Syntax'
     gwchildren = sorted([x for x in tree['children'][id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'goeswith'])
     if gwchildren:
         gwlist = sorted([id] + gwchildren)
         gwrange = list(range(id, int(tree['nodes'][gwchildren[-1]][ID]) + 1))
         # All nodes between me and my last goeswith child should be goeswith too.
         if gwlist != gwrange:
-            warn("Violation of guidelines: gaps in goeswith group %s != %s" % (str(gwlist), str(gwrange)), 'Syntax', nodelineno=tree['linenos'][id])
+            testid = 'goeswith-gap'
+            testmessage = "Violation of guidelines: gaps in goeswith group %s != %s." % (str(gwlist), str(gwrange))
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
         # Non-last node in a goeswith range must have a space after itself.
         nospaceafter = [x for x in gwlist[:-1] if 'SpaceAfter=No' in tree['nodes'][x][MISC].split('|')]
         if nospaceafter:
-            warn("'goeswith' cannot connect nodes that are not separated by whitespace", 'Syntax', nodelineno=tree['linenos'][id])
+            testid = 'goeswith-nospace'
+            testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace"
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_fixed_span(id, tree):
     """
@@ -1187,22 +1470,32 @@ def validate_fixed_span(id, tree):
         fxdiff = set(fxrange) - set(fxlist)
         fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
         if fxgap:
-            warn("Gaps in fixed expression %s" % str(fxlist), 'Syntax', nodelineno=tree['linenos'][id])
+            testlevel = 3
+            testclass = 'Syntax'
+            testid = 'fixed-gap'
+            testmessage = "Gaps in fixed expression %s" % str(fxlist)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_projective_punctuation(id, tree):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
     nonprojectively.
     """
+    testlevel = 3
+    testclass = 'Syntax'
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(tree['nodes'][id][DEPREL])
     if deprel == 'punct':
         nonprojnodes = get_caused_nonprojectivities(id, tree)
         if nonprojnodes:
-            warn("Punctuation must not cause non-projectivity of nodes %s" % nonprojnodes, 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+            testid = 'punct-causes-nonproj'
+            testmessage = "Punctuation must not cause non-projectivity of nodes %s" % nonprojnodes
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
         gap = get_gap(id, tree)
         if gap:
-            warn("Punctuation must not be attached non-projectively over nodes %s" % sorted(gap), 'Syntax', nodeid=id, nodelineno=tree['linenos'][id])
+            testid = 'punct-is-nonproj'
+            testmessage = "Punctuation must not be attached non-projectively over nodes %s" % sorted(gap)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_annotation(tree):
     """
@@ -1227,6 +1520,8 @@ def validate_enhanced_annotation(graph):
     required in the basic dependencies (such as left-to-right coordination),
     unless it is obvious that in enhanced dependencies such things are legal.
     """
+    testlevel = 3
+    testclass = 'Enhanced'
     # Enhanced dependencies should not contain the orphan relation.
     # However, all types of enhancements are optional and orphans are excluded
     # only if this treebank addresses gapping. We do not know it until we see
@@ -1241,7 +1536,9 @@ def validate_enhanced_annotation(graph):
                 # Empty node itself is not an error. Report it only for the first time
                 # and only if an orphan occurred before it.
                 if line_of_first_enhanced_orphan:
-                    warn("Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line %s" % line_of_first_enhanced_orphan, 'Enhanced', nodelineno=graph[id]['lineno'])
+                    testid = 'empty-node-after-eorphan'
+                    testmessage = "Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line %s" % line_of_first_enhanced_orphan
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=graph[id]['lineno'])
         udeprels = set([lspec2ud(d) for h, d in graph[id]['deps']])
         if 'orphan' in udeprels:
             if not line_of_first_enhanced_orphan:
@@ -1249,7 +1546,9 @@ def validate_enhanced_annotation(graph):
                 line_of_first_enhanced_orphan = graph[id]['lineno']
             # If we have seen an empty node, then the orphan is an error.
             if  line_of_first_empty_node:
-                warn("'orphan' not allowed in enhanced graph because we saw an empty node on line %s" % line_of_first_empty_node, 'Enhanced', nodelineno=graph[id]['lineno'])
+                testid = 'eorphan-after-empty-node'
+                testmessage = "'orphan' not allowed in enhanced graph because we saw an empty node on line %s" % line_of_first_empty_node
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=graph[id]['lineno'])
 
 
 
@@ -1265,6 +1564,8 @@ def validate_whitespace(cols, tag_sets):
     already been done in validate_cols_level1(), so we only check for words
     with spaces that are explicitly allowed in a given language.
     """
+    testlevel = 4
+    testclass = 'Format'
     for col_idx in (FORM,LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
@@ -1275,7 +1576,9 @@ def validate_whitespace(cols, tag_sets):
                     break
             else:
                 warn_on_missing_files.add('tokens_w_space')
-                warn("'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."%(cols[col_idx], COLNAMES[col_idx]), 'Format')
+                testid = 'invalid-word-with-space'
+                testmessage = "'%s' in column %s is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)." % (cols[col_idx], COLNAMES[col_idx])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 
 
@@ -1380,7 +1683,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         }
         lspecauxs = auxdict.get(lang, None)
         if lspecauxs and not cols[LEMMA] in lspecauxs:
-            warn("'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang), 'Morpho', nodeid=cols[ID], nodelineno=line)
+            testlevel = 5
+            testclass = 'Morpho'
+            testid = 'aux-lemma'
+            testmessage = "'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
 
 def validate_copula_lemmas(cols, children, nodes, line, lang):
     """
@@ -1504,7 +1811,11 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
         }
         lspeccops = copdict.get(lang, None)
         if lspeccops and not cols[LEMMA] in lspeccops:
-            warn("'%s' is not a copula in language [%s]" % (cols[LEMMA], lang), 'Syntax', nodeid=cols[ID], nodelineno=line)
+            testlevel = 5
+            testclass = 'Syntax'
+            testid = 'cop-lemma'
+            testmessage = "'%s' is not a copula in language [%s]" % (cols[LEMMA], lang)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
 
 def validate_lspec_annotation(tree, lang):
     """
@@ -1583,7 +1894,10 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                     if args.level > 4:
                         validate_lspec_annotation(sentence, args.lang) # level 5
             else:
-                warn("Skipping annotation tests because of corrupt tree structure", 'Format', lineno=False)
+                testlevel = 2
+                testclass = 'Format'
+                testmessage = "Skipping annotation tests because of corrupt tree structure."
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
             if egraph:
                 if args.level > 2:
                     validate_enhanced_annotation(egraph) # level 3
@@ -1626,7 +1940,10 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
                     # restricts enhanced dependencies.
                     if not edeprel_re.match(v):
-                        warn("Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations."%v, 'Syntax', lineno=False)
+                        testlevel = 4
+                        testclass = 'Enhanced'
+                        testmessage = "Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations." % v
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
                 elif validate_langspec:
                     # We are reading the list of language-specific dependency relations in the basic representation
@@ -1634,16 +1951,25 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
                     # enhanced dependencies, which should be listed in a separate file.)
                     if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
-                        warn("Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."%v, 'Syntax', lineno=False)
+                        testlevel = 4
+                        testclass = 'Syntax'
+                        testmessage = "Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'." % v
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
                 if validate_langspec or validate_enhanced:
                     try:
                         parts=v.split(':')
                         if parts[0] not in res and parts[0] != 'ref':
-                            warn("Spurious language-specific relation '%s' - not an extension of any UD relation."%v, 'Syntax', lineno=False)
+                            testlevel = 4
+                            testclass = 'Syntax'
+                            testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                             continue
                     except:
-                        warn("Spurious language-specific relation '%s' - not an extension of any UD relation."%v, 'Syntax', lineno=False)
+                        testlevel = 4
+                        testclass = 'Syntax'
+                        testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
                 res.add(v)
     return res
@@ -1671,7 +1997,7 @@ if __name__=="__main__":
     meta_group.add_argument("--no-space-after", action="store_false", default=True, dest="check_space_after", help="Do not test presence of SpaceAfter=No.")
 
     args = opt_parser.parse_args() #Parsed command-line arguments
-    error_counter={} #Incremented by warn()  {key: error type value: its count}
+    error_counter={} # Incremented by warn()  {key: error type value: its count}
     tree_counter=0
 
     # Level of validation
