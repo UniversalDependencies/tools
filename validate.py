@@ -1198,7 +1198,10 @@ def validate_left_to_right_relations(id, tree):
         ichild = int(cols[ID])
         iparent = int(cols[HEAD])
         if ichild < iparent:
-            testid = 'left-to-right-rel'
+            # We must recognize the relation type in the test id so we can manage exceptions for legacy treebanks.
+            # For conj, flat, and fixed the requirement was introduced already before UD 2.2 (I think), and all treebanks in UD 2.3 passed it.
+            # For appos and goeswith the requirement was introduced before UD 2.4 and legacy treebanks are allowed to fail it.
+            testid = "left-to-right-%s" % lspec2ud(cols[DEPREL])
             testmessage = "Relation '%s' must go left-to-right." % cols[DEPREL]
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
