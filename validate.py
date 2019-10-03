@@ -207,7 +207,7 @@ def validate_unicode_normalization(text):
                 break
         testlevel = 1
         testclass = 'Unicode'
-        testid = 'missing-empty-line'
+        testid = 'unicode-normalization'
         testmessage = "Unicode not normalized: %s.character[%d] is %s, should be %s." % (COLNAMES[firsti], firstj, inpfirst, nfcfirst)
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
