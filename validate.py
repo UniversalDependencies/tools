@@ -1126,7 +1126,10 @@ def validate_upos_vs_deprel(id, tree):
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
-    if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels and not 'goeswith' in childrels:
+    # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
+    # Bohdan reports that some DET can modify adjectives in a way similar to ADV.
+    # I am not sure whether advmod is the best relation for them but the alternative det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
+    if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", cols[UPOS]) and not 'fixed' in childrels and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
         testmessage = "'advmod' should be 'ADV' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
