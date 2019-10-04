@@ -68,11 +68,11 @@ def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodeline
             if nodeid:
                 node = ' Node ' + str(nodeid)
             if nodelineno:
-                print("[%sLine %d%s%s]: [L%d%s %s] %s" % (fn, nodelineno, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, nodelineno, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
             elif lineno:
-                print("[%sLine %d%s%s]: [L%d%s %s] %s" % (fn, curr_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, curr_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
             else:
-                print("[%sTree number %d on line %d%s%s]: [L%d%s %s] %s" % (fn, tree_counter, sentence_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
+                print("[%sTree number %d on line %d%s%s]: [L%d %s %s] %s" % (fn, tree_counter, sentence_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
 
 ###### Support functions
 
@@ -1199,9 +1199,9 @@ def validate_left_to_right_relations(id, tree):
         iparent = int(cols[HEAD])
         if ichild < iparent:
             # We must recognize the relation type in the test id so we can manage exceptions for legacy treebanks.
-            # For conj, flat, and fixed the requirement was introduced already before UD 2.2 (I think), and all treebanks in UD 2.3 passed it.
+            # For conj, flat, and fixed the requirement was introduced already before UD 2.2, and all treebanks in UD 2.3 passed it.
             # For appos and goeswith the requirement was introduced before UD 2.4 and legacy treebanks are allowed to fail it.
-            testid = "left-to-right-%s" % lspec2ud(cols[DEPREL])
+            testid = "right-to-left-%s" % lspec2ud(cols[DEPREL])
             testmessage = "Relation '%s' must go left-to-right." % cols[DEPREL]
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
