@@ -1281,7 +1281,7 @@ def validate_functional_leaves(id, tree):
             # part-of-speech tag and the Polarity feature as well.
             cupos = tree['nodes'][idchild][UPOS]
             cfeats = tree['nodes'][idchild][FEATS].split('|')
-            if pdeprel != 'punct' and cdeprel == 'advmod' and cupos == 'PART' and 'Polarity=Neg' in cfeats:
+            if pdeprel != 'punct' and cdeprel == 'advmod' and re.match(r"^(PART|ADV)$", cupos) and 'Polarity=Neg' in cfeats:
                 continue
             # Punctuation should not depend on function words if it can be projectively
             # attached to a content word. But sometimes it cannot. Czech example:
