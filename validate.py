@@ -1119,8 +1119,11 @@ def validate_upos_vs_deprel(id, tree):
         testid = 'rel-upos-det'
         testmessage = "'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
-    # Nummod is for numerals only.
-    if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
+    # Nummod is for "number phrases" only. This could be interpreted as NUM only,
+    # but some languages treat some cardinal numbers as NOUNs, and in
+    # https://github.com/UniversalDependencies/docs/issues/596,
+    # we concluded that the validator will tolerate them.
+    if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", cols[UPOS]):
         testid = 'rel-upos-nummod'
         testmessage = "'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
