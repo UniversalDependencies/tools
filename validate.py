@@ -1680,6 +1680,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз'],
+            'koi': ['овны', 'вӧвны', 'бы', 'ковны', 'позьны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
@@ -1787,6 +1788,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
+            'koi': ['овны', 'вӧвны'],
             'hu':  ['van'],
             # Altaic languages.
             'tr':  ['ol', 'i'],
