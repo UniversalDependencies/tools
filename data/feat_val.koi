@@ -1,5 +1,6 @@
 Case=Apr
 Case=Car
+Case=Comp
 Case=Egr
 Case=Prl
 Case=Tra
@@ -27,3 +28,4 @@ Person[psor]=3
 PronType=Inter
 PronType=Qnt
 Tense=Prt1
+Tense=Prt2
