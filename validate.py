@@ -1812,7 +1812,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'am':  ['ን'],
-            'cop': ['ⲡⲉ'],
+            'cop': ['ⲡⲉ', 'ⲡ'],
             # Niger-Congo languages.
             'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní'],
