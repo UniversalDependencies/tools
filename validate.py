@@ -1680,7 +1680,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз'],
-            'koi': ['овны', 'вӧвны', 'бы', 'ковны', 'позьны', 'оз'],
+            # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
+            'koi': ['овны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
