@@ -1,6 +1,9 @@
 acl:relcl
 advmod:tmod
+aux:cnd
+aux:imp
 aux:neg
+aux:opt
 aux:q
 cc:preconj
 compound:coll
