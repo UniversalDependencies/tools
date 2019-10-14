@@ -1,0 +1,11 @@
+acl:relcl
+aux:pass
+compound:prt
+cop:own
+csubj:pass
+flat:name
+nmod:gsubj
+nmod:poss
+nsubj:cop
+nsubj:pass
+xcomp:ds
