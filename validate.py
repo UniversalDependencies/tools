@@ -1670,6 +1670,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
             'krl': ['olla', 'ei', 'voija', 'piteä'],
+            'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
@@ -1778,6 +1779,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Uralic languages.
             'fi':  ['olla'],
             'krl': ['olla'],
+            'olo': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
             # Jack says about Erzya:
