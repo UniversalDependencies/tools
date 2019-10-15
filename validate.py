@@ -1801,7 +1801,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Dravidian languages.
             'ta':  ['முயல்'],
             # Sino-Tibetan languages.
-            'zh':  ['是'],
+            # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
+            # 是(shi4) and 为/為(wei2) should be interchangeable.
+            'zh':  ['是', '为', '為'],
             'yue': ['係'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
