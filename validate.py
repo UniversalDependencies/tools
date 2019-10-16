@@ -1912,6 +1912,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             else:
                 testlevel = 2
                 testclass = 'Format'
+                testid = 'skipped-corrupt-tree'
                 testmessage = "Skipping annotation tests because of corrupt tree structure."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
             if egraph:
