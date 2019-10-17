@@ -658,19 +658,19 @@ sub check_files
     if(!-f 'README.txt' && !-f 'README.md')
     {
         $ok = 0;
-        push(@{$errors}, "$folder: missing README.txt|md\n");
+        push(@{$errors}, "[L0 Repo files] $folder: missing README.txt|md\n");
         $$n_errors++;
     }
     if(-f 'README.txt' && -f 'README.md')
     {
         $ok = 0;
-        push(@{$errors}, "$folder: both README.txt and README.md are present\n");
+        push(@{$errors}, "[L0 Repo files] $folder: both README.txt and README.md are present\n");
         $$n_errors++;
     }
     if(!-f 'LICENSE.txt')
     {
         $ok = 0;
-        push(@{$errors}, "$folder: missing LICENSE.txt\n");
+        push(@{$errors}, "[L0 Repo files] $folder: missing LICENSE.txt\n");
         $$n_errors++;
     }
     # Check the data files.
@@ -687,7 +687,7 @@ sub check_files
         if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
         {
             $ok = 0;
-            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[clmv].conllu\n");
             $$n_errors++;
         }
         else
@@ -701,7 +701,7 @@ sub check_files
         if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu")
         {
             $ok = 0;
-            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[ab].conllu\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab].conllu\n");
             $$n_errors++;
         }
         else
@@ -724,7 +724,7 @@ sub check_files
         if(!$train_found)
         {
             $ok = 0;
-            push(@{$errors}, "$folder: missing training data although there is dev data\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing training data although there is dev data\n");
             $$n_errors++;
         }
     }
@@ -732,14 +732,14 @@ sub check_files
     if(!-f "$prefix-test.conllu")
     {
         $ok = 0;
-        push(@{$errors}, "$folder: missing test data file $prefix-test.conllu\n");
+        push(@{$errors}, "[L0 Repo files] $folder: missing test data file $prefix-test.conllu\n");
         $$n_errors++;
     }
     # Extra files have already been identified but not registered as an error.
     if(scalar(@{$files->{extra}})>0)
     {
         $ok = 0;
-        push(@{$errors}, "$folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
+        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
         $$n_errors += scalar(@{$files->{extra}});
     }
     return $ok;
@@ -794,26 +794,26 @@ sub check_metadata
         if(defined($correct) && $claimed ne $correct)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
             $$n_errors++;
         }
         elsif(!defined($correct) && $claimed < $current_release)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
             $$n_errors++;
         }
     }
     else
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
         $$n_errors++;
     }
     if($metadata->{Genre} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing list of genres: '$metadata->{Genre}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of genres: '$metadata->{Genre}'\n");
         $$n_errors++;
     }
     else
@@ -829,20 +829,20 @@ sub check_metadata
         {
             $ok = 0;
             my $ug = join(' ', sort(@unknown_genres));
-            push(@{$errors}, "$folder README: Unknown genre '$ug'\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown genre '$ug'\n");
             $$n_errors++;
         }
     }
     if($metadata->{License} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing identification of license in README: '$metadata->{License}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
     if($metadata->{'Includes text'} !~ m/^(yes|no)$/i)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
         $$n_errors++;
     }
     foreach my $annotation (qw(Lemmas UPOS XPOS Features Relations))
@@ -850,69 +850,69 @@ sub check_metadata
         if($metadata->{$annotation} !~ m/\w/)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: Missing information on availability and source of $annotation\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: Missing information on availability and source of $annotation\n");
             $$n_errors++;
         }
         elsif($metadata->{$annotation} !~ m/^(manual native|converted from manual|converted with corrections|automatic|automatic with corrections|not available)$/)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
             $$n_errors++;
         }
     }
     if($metadata->{Contributing} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing metadata Contributing (where and how to contribute)\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing metadata Contributing (where and how to contribute)\n");
         $$n_errors++;
     }
     elsif($metadata->{Contributing} !~ m/^(here|here source|elsewhere|to be adopted)$/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
         $$n_errors++;
     }
     if($metadata->{Contributors} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
         $$n_errors++;
     }
     if($metadata->{Contact} !~ m/\@/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
         $$n_errors++;
     }
     # Check other sections of the README file.
     if(!defined($metadata->{sections}{summary}))
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary not found.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary not found.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})<40)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary is too short.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too short.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})>500)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary is too long.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too long.\n");
         $$n_errors++;
     }
     elsif($metadata->{sections}{summary} =~ m/see \[release checklist\]/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
         $$n_errors++;
     }
     if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
         $$n_errors++;
     }
     # Add a link to the guidelines for README files. Add it to the last error message.
@@ -943,7 +943,7 @@ sub check_documentation
     if(! -f $indexpath)
     {
         $ok = 0;
-        push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+        push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
         $$n_errors++;
     }
     else
@@ -964,7 +964,7 @@ sub check_documentation
         if(length($doc) < 2500)
         {
             $ok = 0;
-            push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+            push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
             $$n_errors++;
         }
     }
