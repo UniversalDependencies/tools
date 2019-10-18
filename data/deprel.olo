@@ -1,8 +1,10 @@
 acl:relcl
 aux:neg
 aux:pass
+compound:nn
 compound:prt
 cop:own
+csubj:cop
 csubj:pass
 flat:name
 nmod:gsubj

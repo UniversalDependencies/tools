@@ -1670,6 +1670,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
             'krl': ['olla', 'ei', 'voija', 'piteä'],
+            'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
@@ -1778,6 +1779,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Uralic languages.
             'fi':  ['olla'],
             'krl': ['olla'],
+            'olo': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
             # Jack says about Erzya:
@@ -1801,7 +1803,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Dravidian languages.
             'ta':  ['முயல்'],
             # Sino-Tibetan languages.
-            'zh':  ['是'],
+            # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
+            # 是(shi4) and 为/為(wei2) should be interchangeable.
+            'zh':  ['是', '为', '為'],
             'yue': ['係'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
@@ -1908,6 +1912,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             else:
                 testlevel = 2
                 testclass = 'Format'
+                testid = 'skipped-corrupt-tree'
                 testmessage = "Skipping annotation tests because of corrupt tree structure."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
             if egraph:
