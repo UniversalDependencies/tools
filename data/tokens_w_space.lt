@@ -2,7 +2,7 @@
 [-A-Za-z0-9 ]+[<=>]+[0-9, ]+
 (\d+\s*)?[-\.]\s*\d+
 1993 / 13 / EEB
-DAg = DA + ∑ kn DPn + ∑ DSn
+DAg = DA \+ ∑ kn DPn \+ ∑ DSn
 A Bao A Ku
 be kita ko
 [Bb]e to
