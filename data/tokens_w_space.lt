@@ -1,4 +1,5 @@
 \d+( \d+)+(,\d+)?
+[A-Za-z0-9 ]+[<=>]+[0-9, ]+
 A Bao A Ku
 be kita ko
 [Bb]e to
