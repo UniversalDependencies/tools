@@ -616,7 +616,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore|attributes)?|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
+        !m/^(\.\.?|\.git(ignore|attributes)?|\.travis\.yml|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
