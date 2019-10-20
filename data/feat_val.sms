@@ -1,6 +1,7 @@
 AdvType=Tim
 Clitic=QstA
 Connegative=Yes
+flat:name
 Number[psor]=Plur
 Number[psor]=Sing
 Number[psor]=Dual
