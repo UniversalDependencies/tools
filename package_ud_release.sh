@@ -30,8 +30,8 @@ function copy_data_repo
     echo Copying $1 to $dstdir
     rm -rf $dstdir/$1
     cp -r $1 $dstdir
-    # Erase files that should not be released (.gitignore, .gitattributes, .git, not-to-release).
-    rm -rf $dstdir/$1/CONTRIBUTING.md $dstdir/$1/.git* $dstdir/$1/not-to-release
+    # Erase files that should not be released (.gitignore, .gitattributes, .git, .travis.yml, not-to-release).
+    rm -rf $dstdir/$1/CONTRIBUTING.md $dstdir/$1/.git* $dstdir/$1/.travis.yml $dstdir/$1/not-to-release
     # The training data in UD_Czech-PDT and in UD_German-HDT is split to
     # multiple files because it is too large for Github.
     # However, it can be one file in our release, so join the files again in the release copy.

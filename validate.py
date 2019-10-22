@@ -1119,8 +1119,11 @@ def validate_upos_vs_deprel(id, tree):
         testid = 'rel-upos-det'
         testmessage = "'det' should be 'DET' or 'PRON' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
-    # Nummod is for numerals only.
-    if deprel == 'nummod' and not re.match(r"^(NUM)", cols[UPOS]):
+    # Nummod is for "number phrases" only. This could be interpreted as NUM only,
+    # but some languages treat some cardinal numbers as NOUNs, and in
+    # https://github.com/UniversalDependencies/docs/issues/596,
+    # we concluded that the validator will tolerate them.
+    if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", cols[UPOS]):
         testid = 'rel-upos-nummod'
         testmessage = "'nummod' should be 'NUM' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
@@ -1667,6 +1670,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
             'krl': ['olla', 'ei', 'voija', 'piteä'],
+            'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
@@ -1676,7 +1680,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # mood: давайте давай бу кадык
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
-            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз'],
+            # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
+            # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
+            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз', 'абу', 'быть'],
+            # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
+            'koi': ['овны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
@@ -1773,6 +1781,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Uralic languages.
             'fi':  ['olla'],
             'krl': ['olla'],
+            'olo': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
             # Jack says about Erzya:
@@ -1783,7 +1792,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
-            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны'],
+            # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
+            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть'],
+            'koi': ['овны', 'вӧвны'],
             'hu':  ['van'],
             # Altaic languages.
             'tr':  ['ol', 'i'],
@@ -1795,7 +1806,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Dravidian languages.
             'ta':  ['முயல்'],
             # Sino-Tibetan languages.
-            'zh':  ['是'],
+            # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
+            # 是(shi4) and 为/為(wei2) should be interchangeable.
+            'zh':  ['是', '为', '為'],
             'yue': ['係'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
@@ -1807,7 +1820,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'am':  ['ን'],
-            'cop': ['ⲡⲉ'],
+            'cop': ['ⲡⲉ', 'ⲡ'],
             # Niger-Congo languages.
             'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní'],
@@ -1902,6 +1915,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             else:
                 testlevel = 2
                 testclass = 'Format'
+                testid = 'skipped-corrupt-tree'
                 testmessage = "Skipping annotation tests because of corrupt tree structure."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
             if egraph:
@@ -1994,8 +2008,7 @@ if __name__=="__main__":
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
-    ###!!! DZ: 2019-05-01: Temporarily lowering the default validation level from 5 to 2, for UD release 2.4 only.
-    tree_group.add_argument("--level", action="store", type=int, default=3, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
+    tree_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
