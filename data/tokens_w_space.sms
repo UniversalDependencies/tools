@@ -1,0 +1,9 @@
+# -:- coding= UTF-8 -:-
+# emoticons written with space
+: \)
+: D
+# inflected numbers
+[0-9 ]+-([a-z]+)?
+# fixed expressions
+čõõđ ääiʹj
+ouddâl ko

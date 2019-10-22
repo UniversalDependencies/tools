@@ -1,0 +1,13 @@
+acl:relcl
+case:voc
+compound:prt
+csubj:cleft
+csubj:cop
+flat:foreign
+flat:name
+mark:prt
+nmod:poss
+obl:prep
+obl:smod
+obl:tmod
+xcomp:pred
