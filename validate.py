@@ -1656,6 +1656,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lt':  ['būti'],
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'ga':  ['is'],
+            'gd':  ['is'],
             'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe', 'am'],
             'br':  ['bezañ'],
             'grc': ['εἰμί'],
@@ -1766,6 +1767,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # https://github.com/UniversalDependencies/docs/issues/622
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
             'ga':  ['is'],
+            'gd':  ['is'],
             'cy':  ['bod'],
             'br':  ['bezañ'],
             'grc': ['εἰμί'],
