@@ -1,5 +1,0 @@
-
-  File "validate.py", line 51
-    print(('...suppressing further errors regarding ' + error_type), file=sys.stderr)
-                                                                         ^
-SyntaxError: invalid syntax
