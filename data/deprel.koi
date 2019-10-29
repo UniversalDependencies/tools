@@ -3,4 +3,7 @@ aux:cnd
 aux:neg
 cc:preconj
 flat:name
+nmod:poss
+nsubj:cop
+obl:agent
 obl:tmod
