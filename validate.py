@@ -1810,8 +1810,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Sino-Tibetan languages.
             # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
             # 是(shi4) and 为/為(wei2) should be interchangeable.
+            # Sam: In Cantonese, 為 is used only in the high-standard variety, not in colloquial speech.
             'zh':  ['是', '为', '為'],
-            'yue': ['係'],
+            'yue': ['係', '為'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
