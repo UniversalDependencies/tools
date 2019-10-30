@@ -5,6 +5,7 @@ csubj:pass
 obl:agent
 advmod:emph
 aux:caus
+aux:ex
 nmod:npmod
 nmod:poss
 acl:relcl
