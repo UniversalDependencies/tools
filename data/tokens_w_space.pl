@@ -14,8 +14,12 @@ pod nazwą
 pod tytułem
 post scriptum
 pod wezwaniem
+przed naszą erą
 spółka akcyjna
+świętej pamięci
 tak zwany
 to jest
 to znaczy
 ubiegły rok
+w sprawie
+wyżej wymieniony
