@@ -1,4 +1,8 @@
 \d+( \d+)+(,\d+)?
+[-A-Za-z0-9 ]+[<=>]+[0-9, ]+
+(\d+\s*)?[-\.]\s*\d+
+1993 / 13 / EEB
+DAg = DA \+ ∑ kn DPn \+ ∑ DSn
 A Bao A Ku
 be kita ko
 [Bb]e to
@@ -22,6 +26,7 @@ nežinia ką
 nieko prieš
 norom nenorom
 [Nn]ė (kiek|vienas|vieno|vienoje)
+odd - ball
 [Pp]o (to|velnių)
 prieš (pat|tai)
 [Šš]iek tiek
@@ -44,7 +49,7 @@ toje pačioje
 [Tt]oks pat
 tomis pačiomis
 tos pačios
-tuo (pačiu|tarpu)
+[Tt]uo (pačiu|tarpu)
 tuoj pat
 tuojau pat
 tuos pačius

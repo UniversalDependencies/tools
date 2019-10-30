@@ -1,8 +1,10 @@
 acl:inf
 acl:part
 acl:relcl
+appos:parataxis
 aux:pass
 cc:preconj
+ccomp:parataxis
 compound:prt
 csubj:pass
 det:poss

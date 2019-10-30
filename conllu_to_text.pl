@@ -16,7 +16,7 @@ GetOptions
 (
     'language=s' => \$language
 );
-my $chinese = $language =~ m/^(zh|ja)(_|$)/;
+my $chinese = $language =~ m/^(zh|ja|lzh|yue)(_|$)/;
 
 my $text = ''; # from the text attribute of the sentence
 my $ftext = ''; # from the word forms of the tokens

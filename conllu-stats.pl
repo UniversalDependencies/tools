@@ -21,7 +21,7 @@ sub usage
     print STDERR ("perl conllu-stats.pl --oformat hubcompare UD_Czech UD_Czech-CAC > docs/treebanks/cs-comparison.md\n");
     print STDERR ("... similar to hub but compares two or more treebanks side-by-side.\n");
     print STDERR ("... each treebank is either one CoNLL-U file, or a folder with CoNLL-U files.\n");
-    print STDERR ("perl conllu-stats.pl --oformat newdetailed --treebank UD_Czech --docs docs\n");
+    print STDERR ("perl conllu-stats.pl --oformat newdetailed --release 2.4 --treebank UD_Czech --docs docs\n");
     print STDERR ("... generates a number of treebank-specific files in docs/treebanks.\n");
 }
 
@@ -51,6 +51,7 @@ $konfig{datapath} = '.'; # if detailed: parent folder of the data repositories (
 $konfig{docspath} = '../docs'; # if detailed: where is the docs repository? We will modify the page sources there.
 $konfig{langcode} = ''; # if detailed; used to identify docs that shall be modified, and also in links inside
 $konfig{permalink} = ''; # permalink property of the generated hub page; only needed if the path to the MarkDown source is different from the path to the HTML page
+$konfig{release} = ''; # e.g. '2.4'; needed in the download link in the generated hub page.
 GetOptions
 (
     'iformat=s'   => \$konfig{iformat},
@@ -61,6 +62,7 @@ GetOptions
     'language=s'  => \$konfig{langcode},
     'treebank=s'  => \$konfig{treebank},
     'permalink=s' => \$konfig{permalink},
+    'release=s'   => \$konfig{release},
     'help'        => \$konfig{help}
 );
 exit(usage()) if($konfig{help});
@@ -621,7 +623,7 @@ udver: '2'
 
 EOF
             ;
-            print PAGE (udlib::generate_markdown_treebank_overview($konfig{treebank}));
+            print PAGE (udlib::generate_markdown_treebank_overview($konfig{treebank}, $konfig{release}));
             print PAGE ("\n");
             print PAGE ("\# Statistics of $treebank_name\n\n");
             print PAGE ("\#\# POS Tags\n\n");

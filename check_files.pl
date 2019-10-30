@@ -39,13 +39,17 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.3;
+my $current_release = 2.5;
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.2';
+my $oldpath = '/net/data/universal-dependencies-2.4';
+###!!! Also find the currently hard-coded parameters of the call to get_announcement()! (Next release date.)
+###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
 (
+    'release'  => \$current_release,
+    'oldpath'  => \$oldpath,
     'future'   => \$include_future,
     'pull'     => \$pull,
     'validate' => \$validate,
@@ -314,25 +318,29 @@ foreach my $folder (@folders)
             my $nwall = $nwtrain+$nwdev+$nwtest;
             $nw{$folder} = { 'train' => $nwtrain, 'dev' => $nwdev, 'test' => $nwtest, 'all' => $nwall };
             # For small and growing treebanks, we expect the files to appear roughly in the following order:
-            # 1. test (>=10K tokens if possible); 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample); 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
+            # 1. test (>=10K tokens if possible);
+            # 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample);
+            # 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
             if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
             {
                 print("$folder: train or dev exists but there is no test\n");
                 $n_errors++;
             }
             # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
-            # Exception: ParTUT can have very small dev data. There are other limitations (sync across languages and with UD_Italian)
-            if($nwall>10000 && $nwtest<10000)
+            # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
+            # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
+            # Exception: ParTUT has some portions smaller because of other limitations (sync across languages and with UD_Italian).
+            if($nwall>10000 && $nwtest<10000 && $folder !~ m/-ParTUT$/)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
             }
-            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/-(PUD|ParTUT)$/)
+            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/^UD_(French-FQB|German-LIT|.+-PUD|.+-ParTUT)$/)
             {
                 print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
                 $n_errors++;
             }
-            if($nwall>30000 && $nwdev<5000 && $folder !~ m/-(PUD|ParTUT)$/)
+            if($nwall>30000 && $nwdev<5000 && $folder !~ m/^UD_(German-LIT|.+-PUD|.+-ParTUT)$/)
             {
                 print("$folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
                 $n_errors++;
@@ -529,8 +537,8 @@ my $announcement = get_announcement
     \@languages,
     \@families,
     'less than 1,000 tokens',
-    'well over 1.5 million tokens',
-    'May 2019', # expected next release
+    'almost 3 million tokens',
+    'November 2019', # expected next release
     \@contributors_firstlast,
     $changelog
 );
@@ -608,7 +616,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore|attributes)?|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
+        !m/^(\.\.?|\.git(ignore|attributes)?|\.travis\.yml|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
@@ -650,19 +658,19 @@ sub check_files
     if(!-f 'README.txt' && !-f 'README.md')
     {
         $ok = 0;
-        push(@{$errors}, "$folder: missing README.txt|md\n");
+        push(@{$errors}, "[L0 Repo files] $folder: missing README.txt|md\n");
         $$n_errors++;
     }
     if(-f 'README.txt' && -f 'README.md')
     {
         $ok = 0;
-        push(@{$errors}, "$folder: both README.txt and README.md are present\n");
+        push(@{$errors}, "[L0 Repo files] $folder: both README.txt and README.md are present\n");
         $$n_errors++;
     }
     if(!-f 'LICENSE.txt')
     {
         $ok = 0;
-        push(@{$errors}, "$folder: missing LICENSE.txt\n");
+        push(@{$errors}, "[L0 Repo files] $folder: missing LICENSE.txt\n");
         $$n_errors++;
     }
     # Check the data files.
@@ -679,7 +687,7 @@ sub check_files
         if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
         {
             $ok = 0;
-            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[clmv].conllu\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[clmv].conllu\n");
             $$n_errors++;
         }
         else
@@ -693,7 +701,7 @@ sub check_files
         if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu")
         {
             $ok = 0;
-            push(@{$errors}, "$folder: missing at least one file of $prefix-train-[ab].conllu\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab].conllu\n");
             $$n_errors++;
         }
         else
@@ -716,7 +724,7 @@ sub check_files
         if(!$train_found)
         {
             $ok = 0;
-            push(@{$errors}, "$folder: missing training data although there is dev data\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing training data although there is dev data\n");
             $$n_errors++;
         }
     }
@@ -724,14 +732,14 @@ sub check_files
     if(!-f "$prefix-test.conllu")
     {
         $ok = 0;
-        push(@{$errors}, "$folder: missing test data file $prefix-test.conllu\n");
+        push(@{$errors}, "[L0 Repo files] $folder: missing test data file $prefix-test.conllu\n");
         $$n_errors++;
     }
     # Extra files have already been identified but not registered as an error.
     if(scalar(@{$files->{extra}})>0)
     {
         $ok = 0;
-        push(@{$errors}, "$folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
+        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
         $$n_errors += scalar(@{$files->{extra}});
     }
     return $ok;
@@ -762,13 +770,14 @@ sub check_metadata
         (
             '1.0' => ['Czech-PDT', 'English-EWT', 'Finnish-TDT', 'French-GSD', 'German-GSD', 'Hungarian-Szeged', 'Irish-IDT', 'Italian-ISDT', 'Spanish-GSD', 'Swedish-Talbanken'],
             '1.1' => ['Basque-BDT', 'Bulgarian-BTB', 'Croatian-SET', 'Danish-DDT', 'Finnish-FTB', 'Greek-GDT', 'Hebrew-HTB', 'Indonesian-GSD', 'Persian-Seraji'],
-            '1.2' => ['Ancient_Greek-Perseus', 'Ancient_Greek-PROIEL', 'Arabic-PADT', 'Dutch-Alpino', 'Estonian-EDT', 'Gothic-PROIEL', 'Hindi-HDTB', 'Japanese-KTC', 'Latin-ITTB', 'Latin-Perseus', 'Latin-PROIEL', 'Norwegian-Bokmaal', 'Old_Church_Slavonic-PROIEL', 'Polish-SZ', 'Portuguese-Bosque', 'Romanian-RRT', 'Slovenian-SSJ', 'Tamil-TTB'],
+            '1.2' => ['Ancient_Greek-Perseus', 'Ancient_Greek-PROIEL', 'Arabic-PADT', 'Dutch-Alpino', 'Estonian-EDT', 'Gothic-PROIEL', 'Hindi-HDTB', 'Japanese-KTC', 'Latin-ITTB', 'Latin-Perseus', 'Latin-PROIEL', 'Norwegian-Bokmaal', 'Old_Church_Slavonic-PROIEL', 'Polish-PDB', 'Portuguese-Bosque', 'Romanian-RRT', 'Slovenian-SSJ', 'Tamil-TTB'],
             '1.3' => ['Catalan-AnCora', 'Czech-CAC', 'Czech-CLTT', 'Dutch-LassySmall', 'English-ESL', 'English-LinES', 'Galician-CTG', 'Chinese-GSD', 'Kazakh-KTB', 'Latvian-LVTB', 'Portuguese-GSD', 'Russian-GSD', 'Russian-SynTagRus', 'Slovenian-SST', 'Spanish-AnCora', 'Swedish-LinES', 'Turkish-IMST'],
             '1.4' => ['Coptic-Scriptorium', 'Galician-TreeGal', 'Japanese-GSD', 'Sanskrit-UFAL', 'Slovak-SNK', 'Swedish_Sign_Language-SSLC', 'Ukrainian-IU', 'Uyghur-UDT', 'Vietnamese-VTB'],
             '2.0' => ['Arabic-NYUAD', 'Belarusian-HSE', 'English-ParTUT', 'French-FTB', 'French-ParTUT', 'French-Sequoia', 'Italian-ParTUT', 'Korean-GSD', 'Lithuanian-HSE', 'Norwegian-Nynorsk', 'Urdu-UDTB'],
             '2.1' => ['Afrikaans-AfriBooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL'],
             '2.2' => ['Amharic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB'],
-            '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT']
+            '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT'],
+            '2.4' => ['Assyrian-AS', 'Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'German-LIT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_Russian-RNC', 'Old_Russian-TOROT', 'Polish-PUD', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
@@ -785,26 +794,26 @@ sub check_metadata
         if(defined($correct) && $claimed ne $correct)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
             $$n_errors++;
         }
         elsif(!defined($correct) && $claimed < $current_release)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
             $$n_errors++;
         }
     }
     else
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
         $$n_errors++;
     }
     if($metadata->{Genre} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing list of genres: '$metadata->{Genre}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of genres: '$metadata->{Genre}'\n");
         $$n_errors++;
     }
     else
@@ -813,27 +822,27 @@ sub check_metadata
         # However, some treebanks do not follow prescribed syntax (e.g. place commas between genres) or just have typos here
         # (e.g. besides "news" there is also "new" or "newswire"), so we better ban unregistered genres and check it automatically.
         # Note that a copy of the list of known genres is also in evaluate_treebank.pl and in docs-automation/genre_symbols.json.
-        my @official_genres = ('academic', 'bible', 'blog', 'email', 'fiction', 'grammar-examples', 'learner-essays', 'legal', 'medical', 'news', 'nonfiction', 'poetry', 'reviews', 'social', 'spoken', 'web', 'wiki');
+        my @official_genres = ('academic', 'bible', 'blog', 'email', 'fiction', 'government', 'grammar-examples', 'learner-essays', 'legal', 'medical', 'news', 'nonfiction', 'poetry', 'reviews', 'social', 'spoken', 'web', 'wiki');
         my @genres = split(/\s+/, $metadata->{Genre});
         my @unknown_genres = grep {my $g = $_; my @found = grep {$_ eq $g} (@official_genres); scalar(@found)==0} (@genres);
         if(scalar(@unknown_genres)>0)
         {
             $ok = 0;
             my $ug = join(' ', sort(@unknown_genres));
-            push(@{$errors}, "$folder README: Unknown genre '$ug'\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown genre '$ug'\n");
             $$n_errors++;
         }
     }
     if($metadata->{License} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing identification of license in README: '$metadata->{License}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
     if($metadata->{'Includes text'} !~ m/^(yes|no)$/i)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
         $$n_errors++;
     }
     foreach my $annotation (qw(Lemmas UPOS XPOS Features Relations))
@@ -841,69 +850,69 @@ sub check_metadata
         if($metadata->{$annotation} !~ m/\w/)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: Missing information on availability and source of $annotation\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: Missing information on availability and source of $annotation\n");
             $$n_errors++;
         }
         elsif($metadata->{$annotation} !~ m/^(manual native|converted from manual|converted with corrections|automatic|automatic with corrections|not available)$/)
         {
             $ok = 0;
-            push(@{$errors}, "$folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
             $$n_errors++;
         }
     }
     if($metadata->{Contributing} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing metadata Contributing (where and how to contribute)\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing metadata Contributing (where and how to contribute)\n");
         $$n_errors++;
     }
     elsif($metadata->{Contributing} !~ m/^(here|here source|elsewhere|to be adopted)$/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
         $$n_errors++;
     }
     if($metadata->{Contributors} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
         $$n_errors++;
     }
     if($metadata->{Contact} !~ m/\@/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
         $$n_errors++;
     }
     # Check other sections of the README file.
     if(!defined($metadata->{sections}{summary}))
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary not found.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary not found.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})<40)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary is too short.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too short.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})>500)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary is too long.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too long.\n");
         $$n_errors++;
     }
     elsif($metadata->{sections}{summary} =~ m/see \[release checklist\]/)
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
         $$n_errors++;
     }
     if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
     {
         $ok = 0;
-        push(@{$errors}, "$folder README: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
         $$n_errors++;
     }
     # Add a link to the guidelines for README files. Add it to the last error message.
@@ -934,7 +943,7 @@ sub check_documentation
     if(! -f $indexpath)
     {
         $ok = 0;
-        push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+        push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: Language '$lcode' does not have the one-page documentation summary in the docs repository.\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
         $$n_errors++;
     }
     else
@@ -955,7 +964,7 @@ sub check_documentation
         if(length($doc) < 2500)
         {
             $ok = 0;
-            push(@{$errors}, "$folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+            push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
             $$n_errors++;
         }
     }

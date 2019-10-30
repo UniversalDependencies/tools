@@ -4,6 +4,7 @@
 
 package udlib;
 
+use Carp;
 use JSON::Parse 'json_file_to_perl';
 use YAML qw(LoadFile);
 use utf8;
@@ -154,11 +155,11 @@ sub get_ud_files_and_codes
     my $section = 'any'; # training|development|test|any
     my %section_re =
     (
-        # Training data in UD_Czech are split to four files.
-        'training'    => 'train(-[clmv])?',
+        # Training data in big treebanks is split into multiple files.
+        'training'    => 'train(-[a-z])?(-[0-9])?',
         'development' => 'dev',
         'test'        => 'test',
-        'any'         => '(train(-[clmv])?|dev|test)'
+        'any'         => '(train(-[a-z])?(-[0-9])?|dev|test)'
     );
     opendir(DIR, "$path/$udfolder") or die("Cannot read the contents of '$path/$udfolder': $!");
     my @files = sort(grep {-f "$path/$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));
@@ -314,7 +315,12 @@ sub generate_markdown_treebank_overview
     my $folder = shift;
     # We need to know the number of the latest release in order to generate the links to search engines.
     my $release = shift;
-    $release = '2.2' if(!defined($release)); ###!!!
+    if($release !~ m/^\d+\.\d+$/)
+    {
+        # Let's be mean and throw an exception. We do not want to generate docs
+        # pages with wrong or empty release numbers in links.
+        confess("Unrecognized UD release number '$release'.");
+    }
     my $crelease = $release;
     $crelease =~ s/\.//;
     my $treebank_name = $folder;
@@ -391,7 +397,9 @@ sub generate_markdown_treebank_overview
         if($metadata->{$annotation} eq 'manual native')
         {
             $md .= "annotated manually";
-            unless($annotation eq 'XPOS')
+            # It probably does not make sense to speak about "UD style" lemmatization.
+            # And it would be definitely wrong with XPOS.
+            unless($annotation =~ m/^(Lemmas|XPOS)$/)
             {
                 $md .= ", natively in UD style";
             }

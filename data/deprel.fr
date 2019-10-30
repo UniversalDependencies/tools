@@ -6,6 +6,7 @@ appos:conj
 appos:nmod
 aux:caus
 aux:pass
+aux:tense
 ccomp:cleft
 conj:coord
 conj:dicto
@@ -14,12 +15,12 @@ dep:iobj
 dep:obj
 det:predet
 expl:pass
+expl:subj
+expl:comp
 flat:foreign
 flat:name
 iobj:agent
 nmod:appos
-nmod:poss
-nmod:range
 nsubj:caus
 nsubj:expl
 nsubj:pass
@@ -30,7 +31,6 @@ obl:arg
 obl:comp
 obl:mod
 obl:periph
-obl:tmod
 parataxis:discourse
 parataxis:insert
 parataxis:obj

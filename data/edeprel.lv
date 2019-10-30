@@ -1,5 +1,6 @@
 acl:acc
 acl:dat
+acl:gen
 acl:loc
 acl:nom
 advcl:kā
@@ -39,6 +40,7 @@ nmod:starp
 nmod:uz
 nmod:virs
 nmod:viņpus
+nmod:voc
 nmod:zem
 nmod:ārpus
 obl:acc
@@ -61,6 +63,7 @@ obl:iepretī
 obl:klāt
 obl:kopš
 obl:kā
+obl:kā_jau
 obl:labad
 obl:loc
 obl:līdz
@@ -86,6 +89,8 @@ obl:pēc
 obl:starp
 obl:tuvu
 obl:tuvāk
+obl:tā_kā
+obl:tāpat_kā
 obl:uz
 obl:virs
 obl:virsū
