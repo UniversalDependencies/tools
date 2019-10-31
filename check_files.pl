@@ -269,10 +269,14 @@ foreach my $folder (@folders)
             }
             elsif($folder eq 'UD_German-HDT')
             {
-                # The data is split into two files because of the size limits.
-                my $stats = collect_statistics_about_ud_file("$prefix-train-a.conllu");
+                # The data is split into four files because of the size limits.
+                my $stats = collect_statistics_about_ud_file("$prefix-train-a-1.conllu");
                 $nwtrain = $stats->{nword};
-                $stats = collect_statistics_about_ud_file("$prefix-train-b.conllu");
+                $stats = collect_statistics_about_ud_file("$prefix-train-a-2.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b-1.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b-2.conllu");
                 $nwtrain += $stats->{nword};
             }
             else # all other treebanks
@@ -616,7 +620,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore|attributes)?|\.travis\.yml|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
+        !m/^(\.\.?|\.git(ignore|attributes)?|\.travis\.yml|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]-[12]\.conllu|stats\.xml)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
@@ -697,11 +701,11 @@ sub check_files
     }
     elsif($folder eq 'UD_German-HDT')
     {
-        # The data is split into two files because of the size limits.
-        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu")
+        # The data is split into four files because of the size limits.
+        if(!-f "$prefix-train-a-1.conllu" || !-f "$prefix-train-a-2.conllu" || !-f "$prefix-train-b-1.conllu" || !-f "$prefix-train-b-2.conllu")
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab].conllu\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab]-[12].conllu\n");
             $$n_errors++;
         }
         else
