@@ -4,6 +4,7 @@ Strength=Weak
 Degree=Cmp2
 Variant=Long
 Variant=Short
+Number=Adnum
 NumForm=Digit
 Tense=Fut1
 VerbForm=PartRes
