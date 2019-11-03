@@ -1647,7 +1647,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # then the negative lemma is used. DZ: I believe that in the future
             # the negative forms should get the affirmative lemma + the feature Polarity=Neg,
             # as it is assumed in the guidelines and done in other languages.
-            'orv': ['быти', 'не быти'],
+            'orv': ['быти', 'не быти', 'бы', 'бъ'],
             'sl':  ['biti'],
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
