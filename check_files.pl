@@ -612,7 +612,26 @@ sub get_files
     my @files = readdir(DIR);
     closedir(DIR);
     my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-    # Look for additional files. (Do we want to include them in the release package?)
+    # Look for additional files so they can be reported.
+    # Some extra files are tolerated in the Github repository although we do not include them in the release package; these are not reported.
+    my @tolerated =
+    (
+        # tolerated but not released
+        '\.\.?',
+        '\.git(ignore|attributes)?',
+        '\.travis\.yml',
+        'not-to-release',
+        # expected and released
+        'README\.(txt|md)',
+        'LICENSE\.txt',
+        'CONTRIBUTING\.md',
+        $prefix.'-(train|dev|test)\.conllu',
+        'stats\.xml',
+        # split data files of large treebanks
+        'cs_pdt-ud-train-[clmv]\.conllu',
+        'de_hdt-ud-train-[ab]-[12]\.conllu'
+    );
+    my $tolerated_re = join('|', @tolerated);
     my @extrafiles = map
     {
         $_ .= '/' if(-d $_);
@@ -620,7 +639,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore|attributes)?|\.travis\.yml|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]-[12]\.conllu|stats\.xml)$/
+        !m/^($tolerated_re)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
