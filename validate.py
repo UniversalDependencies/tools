@@ -1639,7 +1639,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # zostać is for passive-action, być for passive-state
             # niech* are imperative markers (the only means in 3rd person; alternating with morphological imperative in 2nd person)
             # "to" is a copula and the Polish team insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
-            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże', 'to'],
+            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechby', 'niechże', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы', 'б'],
@@ -1647,7 +1647,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # then the negative lemma is used. DZ: I believe that in the future
             # the negative forms should get the affirmative lemma + the feature Polarity=Neg,
             # as it is assumed in the guidelines and done in other languages.
-            'orv': ['быти', 'не быти'],
+            'orv': ['быти', 'не быти', 'бы', 'бъ'],
             'sl':  ['biti'],
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
