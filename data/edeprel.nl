@@ -250,6 +250,7 @@ nmod:per
 nmod:plus
 nmod:poss
 nmod:qua
+nmod:richting
 nmod:rond
 nmod:rondom
 nmod:sinds
@@ -335,6 +336,7 @@ obl:doorheen
 obl:door_middel_van
 obl:gaandeweg
 obl:gedurende
+obl:getuige
 obl:gezien
 obl:halverwege
 obl:heen
