@@ -1245,6 +1245,7 @@ sub get_potentially_misspelled_contributors
     }
     # We must compare every name with every other name (N^2).
     # Hashing will not help us identify suspicious pairs.
+    my $ok = 1;
     for(my $i = 0; $i <= $#contributors; $i++)
     {
         for(my $j = $i+1; $j <= $#contributors; $j++)
@@ -1254,8 +1255,14 @@ sub get_potentially_misspelled_contributors
             if($similarity >= 0.83)
             {
                 print("WARNING: '$contributors[$i]' is similar ($similarity) to '$contributors[$j]'\n");
+                $ok = 0;
             }
         }
+    }
+    # Print an empty line if there were warnings.
+    if(!$ok)
+    {
+        print("\n");
     }
 }
 
