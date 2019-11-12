@@ -1305,7 +1305,7 @@ sub get_character_overlap
     }
     # If 1 character is replaced by 1 character (e.g. "ž" --> "z"), we have 2 diff points but we will count it as 1.
     # Consequently, if a character is inserted on one side (no counterpart on the other side), we count it as 0.5.
-    my $diff /= 2;
+    $diff /= 2;
     my $avglength = (length($name1) + length($name2)) / 2;
     ###!!! DEBUG
     my $nuc = scalar(keys(%chunion));
