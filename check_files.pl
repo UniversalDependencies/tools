@@ -462,7 +462,13 @@ foreach my $contributor (@contributors)
 # Since release 2.5 we go by "Zeman, Nivre, and alphabetically others".
 $trid{'Zeman, Daniel'} = '0001';
 $trid{'Nivre, Joakim'} = '0002';
-my @contributors = sort {$trid{$a} cmp $trid{$b}} (keys(%contributors));
+@contributors = sort {$trid{$a} cmp $trid{$b}} (keys(%contributors));
+###!!! DEBUG
+for(my $i = 0; $i < 10; $i++)
+{
+    print("trid($contributors[$i]) = $trid{$contributors[$i]}\n");
+}
+###!!! END DEBUG
 # Is the same person spelled differently in different treebanks?
 get_potentially_misspelled_contributors(\%contributions, @contributors);
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
