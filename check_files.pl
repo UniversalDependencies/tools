@@ -137,6 +137,7 @@ my %families_with_data;
 my %licenses;
 my %genres;
 my %contributors;
+my %contributions; # for each contributor find treebanks they contributed to
 my %contacts;
 my %stats;
 my %nw; # number of words in train|dev|test|all; indexed by folder name
@@ -371,6 +372,7 @@ foreach my $folder (@folders)
                     $contributor =~ s/^\s+//;
                     $contributor =~ s/\s+$//;
                     $contributors{$contributor}++;
+                    $contributions{$contributor}{$folder}++;
                 }
             }
             if($metadata->{'Contact'} ne '')
@@ -459,7 +461,7 @@ foreach my $contributor (@contributors)
 }
 my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
 # Is the same person spelled differently in different treebanks?
-get_potentially_misspelled_contributors(@contributors);
+get_potentially_misspelled_contributors(\%contributions, @contributors);
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 my @contacts = sort(keys(%contacts));
@@ -1237,6 +1239,16 @@ sub is_valid_conllu
 #------------------------------------------------------------------------------
 sub get_potentially_misspelled_contributors
 {
+    # Other tests we could try:
+    # - Report contributors that have only one name. It is not forbidden but in most cases it is just an error in formatting.
+    # - If people use comma instead of semicolon to separate two contributors,
+    #   we will think it is one person with multiple given names and multiple
+    #   surnames. I do not know how to detect this; Spanish people can have
+    #   two given names and two surnames. But this error has happened already.
+    # - The overlap computed here may not work if an author has a middle name which is sometimes omitted ("Francis (Morton) Tyers").
+    #   Hence try also overlap of characters per word: if there are at least two words with 80%+ character overlap,
+    #   and one or more other words that have no clear counterpart on the other side, report suspicion.
+    my $contributions = shift; # hashref: for each contributor, hash of treebanks they contributed to
     my @contributors = @_;
     my @character_hashes;
     for(my $i = 0; $i <= $#contributors; $i++)
@@ -1246,6 +1258,7 @@ sub get_potentially_misspelled_contributors
     # We must compare every name with every other name (N^2).
     # Hashing will not help us identify suspicious pairs.
     my $ok = 1;
+    my %problematic_names;
     for(my $i = 0; $i <= $#contributors; $i++)
     {
         for(my $j = $i+1; $j <= $#contributors; $j++)
@@ -1256,12 +1269,20 @@ sub get_potentially_misspelled_contributors
             {
                 print("WARNING: '$contributors[$i]' is similar ($similarity) to '$contributors[$j]'\n");
                 $ok = 0;
+                $problematic_names{$contributors[$i]}++;
+                $problematic_names{$contributors[$j]}++;
             }
         }
     }
     # Print an empty line if there were warnings.
+    # Also report the treebanks the problematic contributors contributed to.
     if(!$ok)
     {
+        my @pn = sort(keys(%problematic_names));
+        foreach my $pn (@pn)
+        {
+            print("$pn: ", join(', ', sort(keys(%{$contributions->{$pn}}))), "\n");
+        }
         print("\n");
     }
 }
