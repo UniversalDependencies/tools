@@ -459,7 +459,10 @@ foreach my $contributor (@contributors)
 {
     $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
 }
-my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
+# Since release 2.5 we go by "Zeman, Nivre, and alphabetically others".
+$trid{'Zeman, Daniel'} = '0001';
+$trid{'Nivre, Joakim'} = '0002';
+my @contributors = sort {$trid{$a} cmp $trid{$b}} (keys(%contributors));
 # Is the same person spelled differently in different treebanks?
 get_potentially_misspelled_contributors(\%contributions, @contributors);
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
