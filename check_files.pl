@@ -1267,8 +1267,9 @@ sub get_potentially_misspelled_contributors
 sub get_character_hash
 {
     my $name = shift;
-    # Get list of lowercased characters.
-    my @characters = split(//, lc($name));
+    # Get list of characters. Do not even lowercase them (case change would also
+    # prevent us from merging the names as one person in global metadata).
+    my @characters = split(//, $name);
     my %characters;
     foreach my $c (@characters)
     {
