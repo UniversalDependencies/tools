@@ -1300,8 +1300,8 @@ sub get_character_overlap
     foreach my $c (keys(%chunion))
     {
         $diff += abs($ch1->{$c} - $ch2->{$c});
-        my $ldiff = abs($ch1->{$c} - $ch2->{$c});
-        print("character = '$c'; left = $ch1->{$c}; right = $ch2->{$c}; diff = $ldiff\n");
+        # my $ldiff = abs($ch1->{$c} - $ch2->{$c});
+        # print("character = '$c'; left = $ch1->{$c}; right = $ch2->{$c}; diff = $ldiff\n");
     }
     # If 1 character is replaced by 1 character (e.g. "ž" --> "z"), we have 2 diff points but we will count it as 1.
     # Consequently, if a character is inserted on one side (no counterpart on the other side), we count it as 0.5.
