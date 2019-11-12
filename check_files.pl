@@ -1252,7 +1252,7 @@ sub get_potentially_misspelled_contributors
             my $similarity = get_character_overlap($contributors[$i], $contributors[$j], $character_hashes[$i], $character_hashes[$j]);
             if($similarity >= 0.8)
             {
-                print("WARNING: '$contributors[$i]' is similar to '$contributors[$j]'\n");
+                print("WARNING: '$contributors[$i]' is similar ($similarity) to '$contributors[$j]'\n");
             }
         }
     }
