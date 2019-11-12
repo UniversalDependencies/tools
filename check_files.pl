@@ -458,6 +458,8 @@ foreach my $contributor (@contributors)
     $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
 }
 my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
+# Is the same person spelled differently in different treebanks?
+get_potentially_misspelled_contributors(@contributors);
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 my @contacts = sort(keys(%contacts));
@@ -1224,4 +1226,83 @@ sub is_valid_conllu
         return ! $exitcode;
     }
     # We should never arrive here.
+}
+
+
+
+#------------------------------------------------------------------------------
+# A contributor may be listed at more than one treebank. If their name is not
+# spelled always the same way, they will be listed as multiple people. This
+# function tries to identify such cases and issue warnings.
+#------------------------------------------------------------------------------
+sub get_potentially_misspelled_contributors
+{
+    my @contributors = @_;
+    my @character_hashes;
+    for(my $i = 0; $i <= $#contributors; $i++)
+    {
+        $character_hashes[$i] = get_character_hash($contributors[$i]);
+    }
+    # We must compare every name with every other name (N^2).
+    # Hashing will not help us identify suspicious pairs.
+    for(my $i = 0; $i <= $#contributors; $i++)
+    {
+        for(my $j = $i+1; $j <= $#contributors; $j++)
+        {
+            my $similarity = get_character_overlap($contributors[$i], $contributors[$j], $character_hashes[$i], $character_hashes[$j]);
+            if($similarity >= 0.8)
+            {
+                print("WARNING: '$contributors[$i]' is similar to '$contributors[$j]'\n");
+            }
+        }
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Gets character frequencies from a string so that string similarity can be
+# assessed.
+#------------------------------------------------------------------------------
+sub get_character_hash
+{
+    my $name = shift;
+    # Get list of lowercased characters.
+    my @characters = split(//, lc($name));
+    my %characters;
+    foreach my $c (@characters)
+    {
+        $characters{$c}++;
+    }
+    return \%characters;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Compares character frequencies of two strings relatively to the lengths of
+# the strings and returns a similarity measure (maximum is similarity = 1) for
+# identical strings.
+#------------------------------------------------------------------------------
+sub get_character_overlap
+{
+    my $name1 = shift;
+    my $name2 = shift;
+    my $ch1 = shift;
+    my $ch2 = shift;
+    my %chunion;
+    foreach my $c (keys(%{$ch1}), keys(%{$ch2}))
+    {
+        $chunion{$c}++;
+    }
+    my $diff = 0;
+    foreach my $c (keys(%chunion))
+    {
+        $diff += abs($ch1->{$c} - $ch2->{$c});
+    }
+    # If 1 character is replaced by 1 character (e.g. "ž" --> "z"), we have 2 diff points but we will count it as 1.
+    # Consequently, if a character is inserted on one side (no counterpart on the other side), we count it as 0.5.
+    my $diff /= 2;
+    my $avglength = (length($name1) + length($name2)) / 2;
+    return 1 - ($diff / $avglength);
 }
