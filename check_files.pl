@@ -1307,9 +1307,7 @@ sub get_character_overlap
     # Consequently, if a character is inserted on one side (no counterpart on the other side), we count it as 0.5.
     $diff /= 2;
     my $avglength = (length($name1) + length($name2)) / 2;
-    ###!!! DEBUG
-    my $nuc = scalar(keys(%chunion));
-    print("name1 = '$name1'; name2 = '$name2'; unique chars = $nuc; diff = $diff; avglength = $avglength\n");
-    ###!!! END DEBUG
+    # my $nuc = scalar(keys(%chunion));
+    # print("name1 = '$name1'; name2 = '$name2'; unique chars = $nuc; diff = $diff; avglength = $avglength\n");
     return 1 - ($diff / $avglength);
 }
