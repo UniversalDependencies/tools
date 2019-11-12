@@ -1250,7 +1250,8 @@ sub get_potentially_misspelled_contributors
         for(my $j = $i+1; $j <= $#contributors; $j++)
         {
             my $similarity = get_character_overlap($contributors[$i], $contributors[$j], $character_hashes[$i], $character_hashes[$j]);
-            if($similarity >= 0.8)
+            # Threshold found empirically to minimize false alarms.
+            if($similarity >= 0.83)
             {
                 print("WARNING: '$contributors[$i]' is similar ($similarity) to '$contributors[$j]'\n");
             }
