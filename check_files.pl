@@ -460,8 +460,10 @@ foreach my $contributor (@contributors)
     $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
 }
 # Since release 2.5 we go by "Zeman, Nivre, and alphabetically others".
-$trid{'Zeman, Daniel'} = '0001';
-$trid{'Nivre, Joakim'} = '0002';
+# Normal trid values are numeric strings. Prepend '!' and it will sort before
+# any numeric value.
+$trid{'Zeman, Daniel'} = '!01';
+$trid{'Nivre, Joakim'} = '!02';
 @contributors = sort {$trid{$a} cmp $trid{$b}} (keys(%contributors));
 ###!!! DEBUG
 for(my $i = 0; $i < 10; $i++)
