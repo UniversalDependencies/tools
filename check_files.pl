@@ -557,40 +557,21 @@ print($announcement);
 sub get_validation_results
 {
     my %valid;
-    my $frozen = 0;
-    if($frozen)
+    # After we used this script to select the treebanks automatically,
+    # we typically freeze the list in an external file called
+    # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
+    # Download the current validation report. (We could run the validator ourselves
+    # but it would take a lot of time.)
+    my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+    if(scalar(@validation_report)==0)
     {
-        # After we used this script to select the treebanks automatically,
-        # we typically freeze the list in an external file called
-        # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
-        # Previously (for the CoNLL 2017 and 2018 shared tasks) we had a
-        # hard-coded frozen list directly here. This method will probably not
-        # be needed again, and this block of code will be removed.
-        my @presel = qw(
-        UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
-        UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB
-        );
-        print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
-        foreach my $treebank (@presel)
-        {
-            $valid{$treebank}++;
-        }
+        print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
     }
-    else
+    foreach my $line (@validation_report)
     {
-        # Download the current validation report. (We could run the validator ourselves
-        # but it would take a lot of time.)
-        my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
-        if(scalar(@validation_report)==0)
+        if($line =~ m/^(UD_.+): (VALID|LEGACY)/)
         {
-            print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
-        }
-        foreach my $line (@validation_report)
-        {
-            if($line =~ m/^(UD_.+): VALID$/)
-            {
-                $valid{$1}++;
-            }
+            $valid{$1}++;
         }
     }
     return \%valid;
