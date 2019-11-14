@@ -1248,7 +1248,6 @@ sub is_valid_conllu
 sub get_potentially_misspelled_contributors
 {
     # Other tests we could try:
-    # - Report contributors that have only one name. It is not forbidden but in most cases it is just an error in formatting.
     # - If people use comma instead of semicolon to separate two contributors,
     #   we will think it is one person with multiple given names and multiple
     #   surnames. I do not know how to detect this; Spanish people can have
@@ -1257,15 +1256,31 @@ sub get_potentially_misspelled_contributors
     #   Hence try also overlap of characters per word: if there are at least two words with 80%+ character overlap,
     #   and one or more other words that have no clear counterpart on the other side, report suspicion.
     my $contributions = shift; # hashref: for each contributor, hash of treebanks they contributed to
+    my $ok = 1;
     my @contributors = @_;
     my @character_hashes;
     for(my $i = 0; $i <= $#contributors; $i++)
     {
         $character_hashes[$i] = get_character_hash($contributors[$i]);
+        # If there is no comma in the name, it means the name is not divided to given names and surnames.
+        # This is rarely correct, so we will issue a warning.
+        if(!exists($character_hashes[$i]{','}) || $character_hashes[$i]{','} < 1)
+        {
+            print("WARNING: '$contributors[$i]' is not divided to given names and surnames.\n");
+            $ok = 0;
+            $problematic_names{$contributors[$i]}++;
+        }
+        # If there are two or more commas in the name, it is an error.
+        # Most likely someone used commas instead of semicolons to separate persons.
+        elsif($character_hashes[$i]{','} > 1)
+        {
+            print("WARNING: '$contributors[$i]' contains too many commas. There should be only one, separating surname from given names.\n");
+            $ok = 0;
+            $problematic_names{$contributors[$i]}++;
+        }
     }
     # We must compare every name with every other name (N^2).
     # Hashing will not help us identify suspicious pairs.
-    my $ok = 1;
     my %problematic_names;
     for(my $i = 0; $i <= $#contributors; $i++)
     {
