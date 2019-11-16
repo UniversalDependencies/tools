@@ -39,7 +39,9 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.5;
+my $current_release = 2.6;
+# Month and year when the next release is expected. We use it in the announcement.
+my $next_release_expected = 'November 2020';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
@@ -48,13 +50,14 @@ my $oldpath = '/net/data/universal-dependencies-2.4';
 ###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
 (
-    'release'  => \$current_release,
-    'oldpath'  => \$oldpath,
-    'future'   => \$include_future,
-    'pull'     => \$pull,
-    'validate' => \$validate,
-    'stats'    => \$recompute_stats,
-    'tag=s'    => \$tag
+    'release'       => \$current_release,
+    'next-expected' => \$next_release_expected,
+    'oldpath'       => \$oldpath,
+    'future'        => \$include_future,
+    'pull'          => \$pull,
+    'validate'      => \$validate,
+    'stats'         => \$recompute_stats,
+    'tag=s'         => \$tag
 );
 
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
@@ -553,7 +556,7 @@ my $announcement = get_announcement
     \@families,
     'less than 1,000 tokens',
     'over 3 million tokens',
-    'May 2020', # expected next release
+    $next_release_expected,
     \@contributors_firstlast,
     $changelog
 );
