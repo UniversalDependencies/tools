@@ -1611,6 +1611,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         auxdict = {
             # ChrisManning 2019/04: Allow 'get' as aux for get passive construction. And 'ought'
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get', 'ought'],
+            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet'],
             # Gosse Bouma: 'krijgen' is used as passive auxiliary in cases where an indirect object is promoted to subject (as in German 'kriegen'-passiv).
             'nl':  ['zijn', 'hebben', 'worden', 'krijgen', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
@@ -1669,6 +1670,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'sa':  ['अस्', 'भू'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
             'ur':  ['ہے', 'تھا', 'رہ', 'کر', 'جا', 'سک', 'پا', 'چاہیئے', 'ہو', 'پڑ', 'لگ', 'چک', 'لے', 'دے', 'بیٹھ', 'رکھ', 'آ'],
+            'bho': ['हऽ', 'आ', 'बा', 'रहल', 'बाड', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहि', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख'],
             'mr':  ['असणे', 'नाही', 'नका', 'होणे', 'शकणे', 'लागणे', 'देणे', 'येणे'],
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
@@ -1691,6 +1693,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
+            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
+            'he':  ['היה', 'הוא', 'זה'],
+            'aii': ['ܗܵܘܹܐ'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
@@ -1705,7 +1710,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             testid = 'aux-lemma'
             testmessage = "'%s' is not an auxiliary verb in language [%s] (there are no known approved auxiliaries in this language)" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
-        elif not cols[LEMMA] in lspecauxs:
+        elif cols[LEMMA] != '_' and not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
@@ -1831,6 +1836,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
+            'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],
             'cop': ['ⲡⲉ', 'ⲡ'],
             # Niger-Congo languages.
@@ -1847,7 +1853,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             testid = 'cop-lemma'
             testmessage = "'%s' is not a copula in language [%s] (there are no known approved copulas in this language)" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
-        elif not cols[LEMMA] in lspeccops:
+        elif cols[LEMMA] != '_' and not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
