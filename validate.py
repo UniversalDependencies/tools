@@ -1636,6 +1636,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'fr':  ['être', 'avoir', 'faire', 'aller', 'pouvoir', 'savoir', 'vouloir', 'devoir'],
             'it':  ['essere', 'stare', 'avere', 'fare', 'andare', 'venire', 'potere', 'sapere', 'volere', 'dovere'],
             'ro':  ['fi', 'avea', 'putea', 'ști', 'vrea', 'trebui'],
+            'la':  ['sum'],
             'cs':  ['být', 'bývat', 'bývávat'],
             'sk':  ['byť', 'bývať', 'by'],
             'hsb': ['być'],
@@ -1678,12 +1679,14 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
+            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'feʹrttjed'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
             # "have to, need to, must": савомс савкшномс эрявомс
             # "future; begin, start": кармамс
             # "question particles": ли штоли
             # mood: давайте давай бу кадык
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
+            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афоль', 'апак', 'эрявомс'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
@@ -1691,11 +1694,28 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
             'koi': ['овны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
+            # Altaic languages.
+            'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olduk', 'bulun'],
+            'kk':  ['бол', 'е'],
+            'ug':  ['بول', 'ئى'],
+            'bxr': ['бай', 'боло'],
+            'ko':  ['이+라는'],
+            'ja':  ['だ', 'た', 'いる', 'ない', 'する', 'ある', 'ます', 'れる', 'られる', 'すぎる', 'う'],
+            # Dravidian languages.
+            'ta':  ['முயல்', 'வேண்டு', 'கொள்', 'விடு', 'உள்', 'இல்', 'படு'],
+            # Austro-Asiatic languages.
+            'vi':  ['là'],
+            # Austronesian languages.
+            'id':  ['adalah'],
+            'tl':  ['may'],
+            # Australian languages: Pama-Nyungan.
+            'wbp': ['ka'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ'],
+            'cop': ['ⲁ', 'ⲉⲣϣⲁⲛ', 'ϣⲁⲣⲉ', 'ϣ', 'ⲙⲛ', 'ⲙⲡⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲉⲣⲉ', 'ⲛⲁ', 'ⲛⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲛⲧⲉ', 'ⲛⲧⲉⲣⲉ'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
@@ -1800,12 +1820,14 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'olo': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
+            'sms': ['leeʹd'],
             # Jack says about Erzya:
             # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
             # and the dependent morphology -оль (both preterit and non-past).
             # The neg арась occurs in locative/existential negation, and its
             # positive counterpart is realized in the three copulas above.
             'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
+            'mdf': ['улемс', 'оль'],
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
