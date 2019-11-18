@@ -1618,6 +1618,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
+            'is':  ['vera', 'geta', 'mega', 'munu', 'skulu', 'eiga'],
             'got': ['wisan'],
             # DZ: The Portuguese list is much longer than for the other Romance languages
             # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
@@ -1698,7 +1699,13 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
         lspecauxs = auxdict.get(lang, None)
-        if lspecauxs and not cols[LEMMA] in lspecauxs:
+        if not lspecauxs:
+            testlevel = 5
+            testclass = 'Morpho'
+            testid = 'aux-lemma'
+            testmessage = "'%s' is not an auxiliary verb in language [%s] (there are no known approved auxiliaries in this language)" % (cols[LEMMA], lang)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
+        elif not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
@@ -1733,6 +1740,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'no':  ['være', 'vere'], # 'vere' is the Nynorsk variant
             'da':  ['være'],
             'fo':  ['vera'],
+            'is':  ['vera'],
             'got': ['wisan'],
             'pcm': ['na', 'be'],
             # In Romance languages, both "ser" and "estar" qualify as copulas.
@@ -1833,7 +1841,13 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
         lspeccops = copdict.get(lang, None)
-        if lspeccops and not cols[LEMMA] in lspeccops:
+        if not lspeccops:
+            testlevel = 5
+            testclass = 'Syntax'
+            testid = 'cop-lemma'
+            testmessage = "'%s' is not a copula in language [%s] (there are no known approved copulas in this language)" % (cols[LEMMA], lang)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
+        elif not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
