@@ -1700,11 +1700,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'ug':  ['بول', 'ئى', 'كەت', 'بەر'],
             'bxr': ['бай', 'боло'],
             'ko':  ['이+라는'],
-            'ja':  ['だ', 'た', 'たい', 'いる', 'ない', 'なる', 'する', 'ある', 'おる', 'ます', 'れる', 'られる', 'すぎる', 'める', 'できる', 'う', 'いく', '行く', '来る'],
+            'ja':  ['だ', 'た', 'ようだ', 'たい', 'いる', 'ない', 'なる', 'する', 'ある', 'おる', 'ます', 'れる', 'られる', 'すぎる', 'める', 'できる', 'しまう', 'せる', 'う', 'いく', '行く', '来る'],
             # Dravidian languages.
-            'ta':  ['முயல்', 'வேண்டு', 'கொள்', 'விடு', 'உள்', 'இல்', 'படு'],
+            'ta':  ['முயல்', 'வேண்டு', 'கொள்', 'விடு', 'உள்', 'இல்', 'படு', 'இரு', 'வரு', 'முடி'],
             # Sino-Tibetan languages.
-            'lzh': ['爲', '得', '可', '敢', '欲', '能'],
+            'lzh': ['爲', '足', '得', '可', '敢', '欲', '能', '宜', '見'],
             'zh':  ['是', '为', '為'],
             'yue': ['係', '為'],
             # Austro-Asiatic languages.
@@ -1719,7 +1719,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
-            'cop': ['ⲁ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣⲁⲣⲉ', 'ϣⲁⲛⲧⲉ', 'ϣ', 'ⲙⲁ', 'ⲙⲉ', 'ⲙⲛ', 'ⲙⲡⲁⲧⲉ', 'ⲙⲡⲉ', 'ⲙⲡⲣⲧⲣⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲉⲣⲉ', 'ⲛⲁ', 'ⲛⲉ', 'ⲛⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲛⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲧⲉⲣⲉ', 'ⲟⲩⲛ'],
+            # https://universaldependencies.org/cop/dep/aux_.html
+            # future auxiliary ⲛⲁ
+            # potential verb ϣ ("be able to")
+            # existential elements ⲟⲩⲛ/ⲙⲛ in indefinite durative tenses (but not in pure existential clauses)
+            'cop': ['ⲁ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣⲁⲣⲉ', 'ϣⲁⲛⲧⲉ', 'ϣ', 'ϣⲁ', 'ⲙⲁ', 'ⲙⲉ', 'ⲙⲡ', 'ⲙⲡⲁⲧⲉ', 'ⲙⲡⲉ', 'ⲙⲡⲣⲧⲣⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲉⲣⲉ', 'ⲛⲁ', 'ⲛⲉ', 'ⲛⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲛⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲧⲉⲣⲉ', 'ⲧⲁⲣ', 'ⲧⲁⲣⲉ', 'ⲟⲩⲛ', 'ⲙⲛ'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
@@ -1734,7 +1738,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             testid = 'aux-lemma'
             testmessage = "'%s' is not an auxiliary verb in language [%s] (there are no known approved auxiliaries in this language)" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
-        elif cols[LEMMA] != '_' and not cols[LEMMA] in lspecauxs:
+        elif not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
@@ -1880,7 +1884,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             testid = 'cop-lemma'
             testmessage = "'%s' is not a copula in language [%s] (there are no known approved copulas in this language)" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
-        elif cols[LEMMA] != '_' and not cols[LEMMA] in lspeccops:
+        elif not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
