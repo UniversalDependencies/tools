@@ -1666,7 +1666,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
             'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
-            'kmr': ['bûn'],
+            'kmr': ['bûn', 'hebûn'],
             'fa':  ['است'],
             'sa':  ['अस्', 'भू'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
@@ -1679,14 +1679,14 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
-            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'feʹrttjed'],
+            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'feʹrttjed', 'pâʹstted'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
             # "have to, need to, must": савомс савкшномс эрявомс
             # "future; begin, start": кармамс
             # "question particles": ли штоли
             # mood: давайте давай бу кадык
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
-            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афоль', 'апак', 'эрявомс'],
+            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афи', 'афоль', 'апак', 'аш', 'эрявомс'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
@@ -1695,14 +1695,18 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'koi': ['овны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Altaic languages.
-            'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olduk', 'bulun'],
+            'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun'],
             'kk':  ['бол', 'е'],
-            'ug':  ['بول', 'ئى'],
+            'ug':  ['بول', 'ئى', 'كەت', 'بەر'],
             'bxr': ['бай', 'боло'],
             'ko':  ['이+라는'],
-            'ja':  ['だ', 'た', 'いる', 'ない', 'する', 'ある', 'ます', 'れる', 'られる', 'すぎる', 'う'],
+            'ja':  ['だ', 'た', 'たい', 'いる', 'ない', 'なる', 'する', 'ある', 'おる', 'ます', 'れる', 'られる', 'すぎる', 'める', 'できる', 'う', 'いく', '行く', '来る'],
             # Dravidian languages.
             'ta':  ['முயல்', 'வேண்டு', 'கொள்', 'விடு', 'உள்', 'இல்', 'படு'],
+            # Sino-Tibetan languages.
+            'lzh': ['爲', '得', '可', '敢', '欲', '能'],
+            'zh':  ['是', '为', '為'],
+            'yue': ['係', '為'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
@@ -1714,8 +1718,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
-            'aii': ['ܗܵܘܹܐ'],
-            'cop': ['ⲁ', 'ⲉⲣϣⲁⲛ', 'ϣⲁⲣⲉ', 'ϣ', 'ⲙⲛ', 'ⲙⲡⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲉⲣⲉ', 'ⲛⲁ', 'ⲛⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲛⲧⲉ', 'ⲛⲧⲉⲣⲉ'],
+            'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
+            'cop': ['ⲁ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣⲁⲣⲉ', 'ϣⲁⲛⲧⲉ', 'ϣ', 'ⲙⲁ', 'ⲙⲉ', 'ⲙⲛ', 'ⲙⲡⲁⲧⲉ', 'ⲙⲡⲉ', 'ⲙⲡⲣⲧⲣⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲉⲣⲉ', 'ⲛⲁ', 'ⲛⲉ', 'ⲛⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲛⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲧⲉⲣⲉ', 'ⲟⲩⲛ'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
@@ -1847,6 +1851,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
             # 是(shi4) and 为/為(wei2) should be interchangeable.
             # Sam: In Cantonese, 為 is used only in the high-standard variety, not in colloquial speech.
+            'lzh': ['爲'],
             'zh':  ['是', '为', '為'],
             'yue': ['係', '為'],
             # Austro-Asiatic languages.
