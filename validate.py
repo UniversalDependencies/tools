@@ -1723,11 +1723,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
+            # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
             # https://universaldependencies.org/cop/dep/aux_.html
-            # future auxiliary ⲛⲁ
-            # potential verb ϣ ("be able to")
             # existential elements ⲟⲩⲛ/ⲙⲛ in indefinite durative tenses (but not in pure existential clauses)
-            'cop': ['ⲁ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣⲁⲣⲉ', 'ϣⲁⲛⲧⲉ', 'ϣ', 'ϣⲁ', 'ⲙⲁ', 'ⲙⲉ', 'ⲙⲡ', 'ⲙⲡⲁⲧⲉ', 'ⲙⲡⲉ', 'ⲙⲡⲣⲧⲣⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲉⲣⲉ', 'ⲛⲁ', 'ⲛⲉ', 'ⲛⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲛⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲧⲉⲣⲉ', 'ⲧⲁⲣ', 'ⲧⲁⲣⲉ', 'ⲟⲩⲛ', 'ⲙⲛ'],
+            'cop': ['ⲟⲩⲛ', 'ⲙⲛ', 'ⲙⲛⲧⲉ', 'ϣⲁⲣⲉ', 'ϣⲁ', 'ⲙⲉⲣⲉ', 'ⲙⲉ', 'ⲁ', 'ⲙⲡⲉ', 'ⲙⲡ', 'ⲛⲉⲣⲉ', 'ⲛⲉ', 'ⲛⲁ', 'ⲛⲧⲉ', 'ⲧⲁⲣⲉ', 'ⲧⲁⲣ', 'ϣⲁⲛⲧⲉ', 'ⲙⲡⲁⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣ', 'ⲛⲉϣ', 'ⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲡⲣⲧⲣⲉ'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
