@@ -440,11 +440,9 @@ obl:ač:ins
 obl:ačkoliv
 obl:ad:acc
 obl:ad:nom
-obl:agent
 obl:agent:ins
 obl:a:loc
 obl:aniž
-obl:arg
 obl:arg:až_k:dat
 obl:arg:bez:gen
 obl:arg:blízko:gen
