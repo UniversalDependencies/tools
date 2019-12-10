@@ -1673,7 +1673,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'ur':  ['ہے', 'تھا', 'رہ', 'کر', 'جا', 'سک', 'پا', 'چاہیئے', 'ہو', 'پڑ', 'لگ', 'چک', 'لے', 'دے', 'بیٹھ', 'رکھ', 'آ'],
             # The Bhojpuri list is suspiciously long. Some words may actually be inflected forms of other words.
             # I will wait with approving the following until they are at least documented: 'गइल', 'जाव', 'दीह', 'बाड़ा', 'जात', 'कइला', 'होखा', 'रहेला', 'बानी', 'सके', 'लाँ', 'सकेला', 'दिहलसि', 'जात'
-            'bho': ['हऽ', 'आ', 'बा', 'रहल', 'बाड', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहि', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख'],
+            'bho': ['हऽ', 'आ', 'सन', 'बा', 'भा', 'ना', 'गइल', 'रहल', 'कर', 'जा', 'सक', 'पा', 'चाही', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख'],
             'mr':  ['असणे', 'नाही', 'नका', 'होणे', 'शकणे', 'लागणे', 'देणे', 'येणे'],
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
