@@ -159,6 +159,10 @@ my %languages =
     'ur'  => {'name' => 'Urdu',       'i' => 0, 'c' => '،'},
     'ug'  => {'name' => 'Uyghur',     'i' => 0, 'c' => '،'},
     'vi'  => {'name' => 'Vietnamese', 'i' => 1, 'c' => ','},
+    'wbp' => {'name' => 'Warlpiri',   'i' => 1, 'c' => ','},
+    'cy'  => {'name' => 'Welsh',      'i' => 1, 'c' => ','},
+    'wo'  => {'name' => 'Wolof',      'i' => 1, 'c' => ','},
+    'yo'  => {'name' => 'Yoruba',     'i' => 1, 'c' => ','},
 );
 if($konfig{oformat} eq 'detailed')
 {
