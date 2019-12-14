@@ -1726,7 +1726,18 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
             # مَا mā "not" is negation. Maybe it should be PART/advmod rather than AUX/aux?
             # هَل hal "whether" is a question particle. Maybe it should be PART/advmod rather than AUX/aux?
-            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ', 'سَ', 'قَد', 'مَا', 'هَل', 'رُبَّمَا'],
+            'ar':  [
+                'كَان',
+                'لَيس',
+                'لسنا',
+                'هُوَ',
+                'سَوفَ',
+                'سَ',
+                'قَد',
+                'رُبَّمَا',
+                'مَا',
+                'هَل',
+            ],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
             # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
