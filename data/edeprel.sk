@@ -43,13 +43,6 @@ advcl:zatiaľ_čo
 advcl:či
 advcl:čo
 advcl:že
-advmod:emph
-aux:pass
-csubj:pass
-det:numgov
-expl:pass
-expl:pv
-flat:foreign
 nmod:acc
 nmod:ako:acc
 nmod:bez:gen
@@ -116,7 +109,6 @@ nmod:z:gen
 nmod:za:acc
 nmod:za:gen
 nmod:za:ins
-nsubj:pass
 obl:aby:nom
 obl:acc
 obl:ako
