@@ -1723,7 +1723,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'wbp': ['ka'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
-            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
+            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ', 'سَ', 'قَد'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
             # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
