@@ -1726,6 +1726,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
             # مَا mā "not" is negation. Maybe it should be PART/advmod rather than AUX/aux?
             # هَل hal "whether" is a question particle. Maybe it should be PART/advmod rather than AUX/aux?
+            # أ ʾa "whether, indeed" is a question particle. It occurs together with the negative copula: "أليس" (ʾalays) "isn't it...". Maybe it should be PART/advmod rather than AUX/aux?
             'ar':  [
                 'كَان',
                 'لَيس',
@@ -1737,6 +1738,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 'رُبَّمَا',
                 'مَا',
                 'هَل',
+                'أ'
             ],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
