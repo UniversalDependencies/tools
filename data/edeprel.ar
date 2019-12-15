@@ -1,7 +1,4 @@
-acl:relcl:أَنَّ
-acl:relcl:أَنَّ_فِي
 acl:relcl:إِذ
-acl:relcl:إِنَّ
 acl:أَن
 acl:أَن_بِ
 acl:أَن_دُونَ
@@ -14,6 +11,7 @@ acl:أَنَّ_إِلَى
 acl:أَنَّ_بِ
 acl:أَنَّ_عَلَى
 acl:أَنَّ_عَن
+acl:أَنَّ_فِي
 acl:أَنَّ_هُوَ
 acl:أَنَّ_وَ_كَ
 acl:إِذَا
@@ -87,6 +85,7 @@ advcl:أَنَّ_هُوَ_بِ_رَغم_مِن
 advcl:أَنَّ_هُوَ_سِوَى
 advcl:أَنَّ_هُوَ_عَلَى_رَغم_مِن
 advcl:أَنَّ_هُوَ_فِي_حِينَ
+advcl:أَنَّ_ولو
 advcl:أَنَّ_وَ_طَالَمَا
 advcl:إِذ
 advcl:إِذ_أَنَّ
@@ -94,7 +93,7 @@ advcl:إِذًا
 advcl:إِذَا
 advcl:إِذَا_فَ_مِن
 advcl:إِذَا_مَا
-advcl:إِذَا_مِن
+advcl:إِذَا_مِن_إِنَّ
 advcl:إِلَى_حَيثُ
 advcl:إِلَّا_أَن
 advcl:إِلَّا_أَنَّ
@@ -103,6 +102,9 @@ advcl:إِلَّا_إِذَا
 advcl:إِلَّا_عَلَى
 advcl:إِن
 advcl:إِنَّ
+advcl:إِنَّ_أَنَّ
+advcl:إِنَّ_بِ
+advcl:إِنَّ_بِ_تَالِي
 advcl:إِنَّ_حَتَّى
 advcl:إِنَّ_هُوَ
 advcl:إِنَّمَا
@@ -117,7 +119,6 @@ advcl:بِ
 advcl:بِ_أَن_عَلَى
 advcl:بِ_أَنَّ
 advcl:بِ_اِعتِبَار_أَنَّ
-advcl:بِ_تَالِي
 advcl:بِ_حَتَّى
 advcl:بِ_حَيثُ
 advcl:بِ_رَغم_مِن_أَنَّ
@@ -202,7 +203,6 @@ advcl:مِن_غَير_أَن
 advcl:هذا_بالأضافة
 advcl:وإن
 advcl:وان
-advcl:ولو
 advcl:وَ_أَنَّ
 advcl:وَ_أَنَّ_هُوَ
 advcl:وَ_إِلَّا
@@ -402,7 +402,7 @@ nmod:لَا:acc
 nmod:لَا_أَنَّ_بِ:acc
 nmod:لَدَى
 nmod:لَدَى:gen
-nmod:لَو:acc
+nmod:لَو_أَنَّ:acc
 nmod:لِ
 nmod:لِ:acc
 nmod:لِ:gen
@@ -523,6 +523,7 @@ obl:arg:إِلَى_جَانِب
 obl:arg:إِلَى_جَانِب:gen
 obl:arg:إِلَى_فِي:gen
 obl:arg:إِلَى_لِ:gen
+obl:arg:إِنَّ_بِ:gen
 obl:arg:إِيَّا:gen
 obl:arg:بازاء:gen
 obl:arg:بدون:gen
