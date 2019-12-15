@@ -1724,6 +1724,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
+            # عَلَّ ʿalla "perhaps" is a modal auxiliary
+            # عَاد ʿād “return, no longer do” seems to be an aspectual auxiliary
             # مَا mā "not" is negation. Maybe it should be PART/advmod rather than AUX/aux?
             # هَل hal "whether" is a question particle. Maybe it should be PART/advmod rather than AUX/aux?
             # أ ʾa "whether, indeed" is a question particle. It occurs together with the negative copula: "أليس" (ʾalays) "isn't it...". Maybe it should be PART/advmod rather than AUX/aux?
@@ -1736,6 +1738,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 'سَ',
                 'قَد',
                 'رُبَّمَا',
+                'عَلَّ',
+                'عَاد',
                 'مَا',
                 'هَل',
                 'أَ'
