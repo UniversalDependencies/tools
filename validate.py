@@ -1703,11 +1703,15 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'ko':  ['이+라는'],
             'ja':  ['だ', 'た', 'ようだ', 'たい', 'いる', 'ない', 'なる', 'する', 'ある', 'おる', 'ます', 'れる', 'られる', 'すぎる', 'める', 'できる', 'しまう', 'せる', 'う', 'いく', '行く', '来る'],
             # Dravidian languages.
+            # போ / po “go” for future tense, follows the infinitive of the main verb
+            # மாட்டு / māṭṭu “will not” for negative future tense with human subject
             # படு / paṭu “experience” for the passive voice
+            # வை / vai “put” for the causative voice
             # இரு / iru “be”
             # இல் / il (இல்லை / illai) “not be” for negation
             # வேண்டு / veṇṭu “must”
-            'ta':  ['படு', 'இரு', 'இல்', 'வேண்டு', 'முயல்', 'கொள்', 'விடு', 'உள்', 'வரு', 'முடி', 'மாட்டு', 'வா', 'செய்', 'ஆகு', 'கூடு', 'போ', 'பெறு', 'தகு', 'வரல்', 'பிடு', 'வீடு', 'என்', 'கூறு', 'கூறு', 'கொடு', 'ஆவர்', 'வை', 'விரி', 'கிடை', 'அல்'],
+            # முடி / muṭi “can”
+            'ta':  ['போ', 'மாட்டு', 'படு', 'வை', 'இரு', 'இல்', 'வேண்டு', 'முயல்', 'கொள்', 'விடு', 'உள்', 'வரு', 'முடி', 'வா', 'செய்', 'ஆகு', 'கூடு', 'பெறு', 'தகு', 'வரல்', 'பிடு', 'வீடு', 'என்', 'கூறு', 'கூறு', 'கொடு', 'ஆவர்', 'விரி', 'கிடை', 'அல்'],
             # Sino-Tibetan languages.
             # 爲, cop 儀 Nec 可 Pot 宜 Nec 得 Pot 敢 Des 欲 Des 肯 Des 能 Pot 足 Pot 須 Nec 被 Pass 見 Pass
             'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯'],
