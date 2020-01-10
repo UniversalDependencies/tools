@@ -166,6 +166,7 @@ obl:gen
 obl:ins
 obl:loc
 obl:nom
+obl:rel
 obl:rel:acc
 obl:rel:dat
 obl:rel:gen
