@@ -75,6 +75,24 @@ Reads a CoNLL-U file, collects statistics of multi-word tokens and prints them.
 
 
 ==============================
+enhanced_graph_properties.pl
+==============================
+
+Reads a CoNLL-U file, collects statistics about the enhanced graphs in the DEPS
+column and prints them. This script uses the modules Graph.pm and Node.pm that
+lie in the same folder. On UNIX-like systems it should be able to tell Perl
+where to find the modules even if the script is invoked from a remote folder.
+If that does not work, use "perl -I libfolder script" to invoke it. Also note
+that other third-party modules are needed that are not automatically included
+in the installation of Perl: Moose, MooseX::SemiAffordanceAccessor,
+List::MoreUtils. You may need to install these modules using the "cpan" tool
+(simply go to commandline and type "sudo cpan Moose").
+
+  cat *.conllu | perl enhanced_graph_properties.pl > eud-stats.txt
+
+
+
+==============================
 overlap.py
 ==============================
 
