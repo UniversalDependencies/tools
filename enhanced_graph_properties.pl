@@ -116,24 +116,7 @@ print("* Deprel with case:    $stats{case_deprel}\n");
 sub process_sentence
 {
     my @sentence = @_;
-    my $graph = new Graph;
-    # Get rid of everything except the node lines. But include empty nodes!
-    my @nodelines = grep {m/^\d+(\.\d+)?\t/} (@sentence);
-    foreach my $nodeline (@nodelines)
-    {
-        my @fields = split(/\t/, $nodeline);
-        my $node = new Node('id' => $fields[0], 'form' => $fields[1], 'lemma' => $fields[2], 'upos' => $fields[3], 'xpos' => $fields[4],
-                            '_head' => $fields[6], '_deprel' => $fields[7], '_deps' => $fields[8]);
-        $node->set_feats_from_conllu($fields[5]);
-        $node->set_misc_from_conllu($fields[9]);
-        $graph->add_node($node);
-    }
-    # Once all nodes have been added to the graph, we can draw edges between them.
-    foreach my $node ($graph->get_nodes())
-    {
-        $node->set_basic_dep_from_conllu();
-        $node->set_deps_from_conllu();
-    }
+    my $graph = Graph::from_conllu_lines(@sentence);
     # We now have a complete representation of the graph and can run various
     # functions that will examine it and collect statistics about it.
     find_singletons($graph);

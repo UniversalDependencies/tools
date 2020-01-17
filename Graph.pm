@@ -17,6 +17,57 @@ has 'nodes'    => (is => 'ro', isa => 'HashRef', default => sub {my $self = shif
 
 
 #------------------------------------------------------------------------------
+# Creates a graph from a list of CoNLL-U lines (the list may or may not contain
+# the final empty line, it does not matter). This is a static function, it does
+# not take a reference to a Graph object but it returns one.
+#------------------------------------------------------------------------------
+sub from_conllu_lines
+{
+    my @sentence = @_;
+    my $graph = new Graph;
+    # Get rid of everything except the node lines. But include empty nodes!
+    my @nodelines = grep {m/^\d+(\.\d+)?\t/} (@sentence);
+    foreach my $nodeline (@nodelines)
+    {
+        my @fields = split(/\t/, $nodeline);
+        my $node = new Node('id' => $fields[0], 'form' => $fields[1], 'lemma' => $fields[2], 'upos' => $fields[3], 'xpos' => $fields[4],
+                            '_head' => $fields[6], '_deprel' => $fields[7], '_deps' => $fields[8]);
+        $node->set_feats_from_conllu($fields[5]);
+        $node->set_misc_from_conllu($fields[9]);
+        $graph->add_node($node);
+    }
+    # Once all nodes have been added to the graph, we can draw edges between them.
+    foreach my $node ($graph->get_nodes())
+    {
+        $node->set_basic_dep_from_conllu();
+        $node->set_deps_from_conllu();
+    }
+    return $graph;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Generates a list of CoNLL-U lines from the current graph; the list does not
+# contain the final empty line.
+#------------------------------------------------------------------------------
+sub to_conllu_lines
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    my $self = shift;
+    my @sentence = ();
+    foreach my $node ($self->get_nodes())
+    {
+        my @fields = ($node->id(), $node->form(), $node->lemma(), $node->upos(), $node->xpos(), $node->get_feats_string(),
+                      $node->bparent(), $node->bdeprel(), $node->get_deps_string(), $node->get_misc_string());
+        push(@sentence, join("\t", @fields));
+    }
+    return @sentence;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Checks whether there is a node with the given id.
 #------------------------------------------------------------------------------
 sub has_node
@@ -215,6 +266,17 @@ ids from the first column of the CoNLL-U file.
 =head1 METHODS
 
 =over
+
+=item $graph = Graph::from_conllu_lines (@sentence);
+
+Creates a graph from a list of CoNLL-U lines (the list may or may not contain
+the final empty line, it does not matter). This is a static function, it does
+not take a reference to a Graph object but it returns one.
+
+=item @sentence = $graph->to_conllu_lines ();
+
+Generates a list of CoNLL-U lines from the current graph; the list does not
+contain the final empty line.
 
 =item $graph->has_node ($id);
 
