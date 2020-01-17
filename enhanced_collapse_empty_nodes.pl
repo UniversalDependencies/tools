@@ -23,6 +23,7 @@ BEGIN
 {
     my $path = $0;
     my $currentpath = `pwd`;
+    $currentpath =~ s/\r?\n$//;
     $libpath = $currentpath;
     if($path =~ m:/:)
     {
