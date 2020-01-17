@@ -26,15 +26,21 @@ sub from_conllu_lines
     my @sentence = @_;
     my $graph = new Graph;
     # Get rid of everything except the node lines. But include empty nodes!
-    my @nodelines = grep {m/^\d+(\.\d+)?\t/} (@sentence);
-    foreach my $nodeline (@nodelines)
+    foreach my $line (@sentence)
     {
-        my @fields = split(/\t/, $nodeline);
-        my $node = new Node('id' => $fields[0], 'form' => $fields[1], 'lemma' => $fields[2], 'upos' => $fields[3], 'xpos' => $fields[4],
-                            '_head' => $fields[6], '_deprel' => $fields[7], '_deps' => $fields[8]);
-        $node->set_feats_from_conllu($fields[5]);
-        $node->set_misc_from_conllu($fields[9]);
-        $graph->add_node($node);
+        if($line =~ m/^\#/)
+        {
+            push(@{$graph->comments()}, $line);
+        }
+        elsif($line =~ m/^\d/)
+        {
+            my @fields = split(/\t/, $line);
+            my $node = new Node('id' => $fields[0], 'form' => $fields[1], 'lemma' => $fields[2], 'upos' => $fields[3], 'xpos' => $fields[4],
+                                '_head' => $fields[6], '_deprel' => $fields[7], '_deps' => $fields[8]);
+            $node->set_feats_from_conllu($fields[5]);
+            $node->set_misc_from_conllu($fields[9]);
+            $graph->add_node($node);
+        }
     }
     # Once all nodes have been added to the graph, we can draw edges between them.
     foreach my $node ($graph->get_nodes())
@@ -55,7 +61,7 @@ sub to_conllu_lines
 {
     confess('Incorrect number of arguments') if(scalar(@_) != 1);
     my $self = shift;
-    my @sentence = ();
+    my @sentence = @{$self->comments()};
     foreach my $node ($self->get_nodes())
     {
         my @fields = ($node->id(), $node->form(), $node->lemma(), $node->upos(), $node->xpos(), $node->get_feats_string(),

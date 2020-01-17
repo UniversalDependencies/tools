@@ -12,24 +12,23 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use List::MoreUtils qw(any);
-###!!! We need to tell Perl where to find my graph modules. But we should
-###!!! modify it so that it works on any computer! Right now it depends on
-###!!! the 'pwd' command, which is not available on Windows.
-###!!! If this does not work, you can put the script together with Graph.pm and
-###!!! Node.pm in a folder of you choice, say, /home/joe/scripts, and then
-###!!! invoke Perl explicitly telling it where the modules are:
-###!!! perl -I/home/joe/scripts /home/joe/scripts/enhanced_graph_properties.pl inputfile.conllu
+# We need to tell Perl where to find my graph modules.
+# If this does not work, you can put the script together with Graph.pm and
+# Node.pm in a folder of you choice, say, /home/joe/scripts, and then
+# invoke Perl explicitly telling it where the modules are:
+# perl -I/home/joe/scripts /home/joe/scripts/enhanced_collapse_empty_nodes.pl inputfile.conllu
 BEGIN
 {
+    use Cwd;
     my $path = $0;
-    my $currentpath = `pwd`;
+    my $currentpath = getcwd();
     $currentpath =~ s/\r?\n$//;
     $libpath = $currentpath;
     if($path =~ m:/:)
     {
         $path =~ s:/[^/]*$:/:;
         chdir($path);
-        $libpath = `pwd`;
+        $libpath = getcwd();
         chdir($currentpath);
     }
     $libpath =~ s/\r?\n$//;
