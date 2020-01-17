@@ -21,8 +21,8 @@ has 'misc'    => (is => 'rw', isa => 'ArrayRef', documentation => 'Array holding
 has '_head'   => (is => 'rw', isa => 'Str', documentation => 'Temporary storage for the HEAD column before the graph structure is built.');
 has '_deprel' => (is => 'rw', isa => 'Str', documentation => 'Temporary storage for the DEPREL column before the graph structure is built.');
 has '_deps'   => (is => 'rw', isa => 'Str', documentation => 'Temporary storage for the DEPS column before the graph structure is built.');
-has 'iedges'  => (is => 'rw', isa => 'ArrayRef', default => sub {[]}, documentation => 'Array of records of incoming edges.');
-has 'oedges'  => (is => 'rw', isa => 'ArrayRef', default => sub {[]}, documentation => 'Array of records of outgoing edges.');
+has 'iedges'  => (is => 'rw', isa => 'ArrayRef', default => sub {[]}, documentation => 'Array of records of incoming edges. Each record is a hash ref, keys are id, deprel.');
+has 'oedges'  => (is => 'rw', isa => 'ArrayRef', default => sub {[]}, documentation => 'Array of records of outgoing edges. Each record is a hash ref, keys are id, deprel.');
 has 'bparent' => (is => 'rw', isa => 'Str', documentation => 'Parent node in the basic tree.');
 has 'bdeprel' => (is => 'rw', isa => 'Str', documentation => 'Type of relation between this node and its parent in the basic tree.');
 has 'bchildren' => (is=>'rw', isa => 'ArrayRef', default => sub {[]}, documentation => 'Array of ids of children in the basic tree.');

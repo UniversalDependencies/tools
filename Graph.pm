@@ -100,6 +100,28 @@ sub add_node
 
 
 #------------------------------------------------------------------------------
+# Removes a node from the graph. Does not change the ids of the remaining
+# nodes. Returns the Node object that has been disconnected from the graph.
+# Returns undef if there is no node with the given id.
+#------------------------------------------------------------------------------
+sub remove_node
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 2);
+    my $self = shift;
+    my $id = shift;
+    confess('Undefined id') if(!defined($id));
+    my $node = undef;
+    if($self->has_node($id))
+    {
+        $node = $self->nodes()->{$id};
+        delete($self->nodes()->{$id});
+    }
+    return $node;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Adds an edge between two nodes that are already in the graph.
 #------------------------------------------------------------------------------
 sub add_edge
@@ -128,6 +150,28 @@ sub add_edge
     # Check that the same edge does not exist already.
     push(@{$srcnode->oedges()}, \%oe) unless(any {$_->{id} eq $tgtid && $_->{deprel} eq $deprel} (@{$srcnode->oedges()}));
     push(@{$tgtnode->iedges()}, \%ie) unless(any {$_->{id} eq $srcid && $_->{deprel} eq $deprel} (@{$tgtnode->iedges()}));
+}
+
+
+
+#------------------------------------------------------------------------------
+# Removes an existing edge between two nodes of the graph.
+#------------------------------------------------------------------------------
+sub remove_edge
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 4);
+    my $self = shift;
+    my $srcid = shift;
+    my $tgtid = shift;
+    my $deprel = shift;
+    my $srcnode = $self->get_node($srcid);
+    my $tgtnode = $self->get_node($tgtid);
+    confess("Unknown node '$srcid'") if(!defined($srcnode));
+    confess("Unknown node '$tgtid'") if(!defined($tgtnode));
+    # Outgoing edge from the source (parent).
+    @{$srcnode->oedges()} = grep {!($_->{id} eq $tgtid && $_->{deprel} eq $deprel)} (@{$srcnode->oedges()});
+    # Incoming edge to the target (child).
+    @{$tgtnode->iedges()} = grep {!($_->{id} eq $srcid && $_->{deprel} eq $deprel)} (@{$tgtnode->iedges()});
 }
 
 
@@ -176,6 +220,11 @@ ids from the first column of the CoNLL-U file.
 
 Returns a nonzero value if there is a node with the given id in the graph.
 
+=item $graph->get_node ($id);
+=item $graph->node ($id);
+
+Returns the object with the node with the given id.
+
 =item @nodes = $graph->get_nodes ();
 
 Returns the list of all nodes except the artificial root node with id 0. The
@@ -186,9 +235,19 @@ list is ordered by node ids.
 Adds a node (a L<Node> object) to the graph. The node must have a non-empty id
 that has not been used by any other node previously added to the graph.
 
+=item $graph->remove_node ($id);
+
+Removes a node from the graph. Does not change the ids of the remaining
+nodes. Returns the L<Node> object that has been disconnected from the graph.
+Returns undef if there is no node with the given id.
+
 =item $graph->add_edge ($source_id, $target_id, $relation_label);
 
 Adds an edge between two nodes that are already in the graph.
+
+=item $graph->remove_edge ($source_id, $target_id, $relation_label);
+
+Removes an existing edge between two nodes of the graph.
 
 =back
 
