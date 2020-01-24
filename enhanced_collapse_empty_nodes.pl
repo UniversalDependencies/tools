@@ -185,7 +185,7 @@ sub collapse_empty_nodes
         my $item = $ecedge->[-1];
         if(!exists($oknodes{$item}))
         {
-            print STDERR ('Incoming path to an empty node ignored because the node has no children: '.join('>', @ecedge)."\n");
+            print STDERR ('Incoming path to an empty node ignored because the node has no children: '.join('>', @{$ecedge})."\n");
         }
     }
     # Remove all edges going to or from an empty node, then remove the empty nodes as well.
