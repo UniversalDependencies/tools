@@ -113,6 +113,10 @@ sub collapse_empty_nodes
     {
         my $epedge = shift(@epedges);
         my @myecedges = grep {$_->[-1] eq $epedge->[0]} (@ecedges);
+        if(scalar(@myecedges)==0)
+        {
+            print STDERR ('Ignoring enhanced path because the empty source node does not have any parent: '.join('>', @epedge)."\n");
+        }
         foreach my $ecedge (@myecedges)
         {
             my @newedge = @{$ecedge};
