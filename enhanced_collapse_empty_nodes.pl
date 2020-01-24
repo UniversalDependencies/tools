@@ -118,25 +118,31 @@ sub collapse_empty_nodes
             my @newedge = @{$ecedge};
             pop(@newedge);
             push(@newedge, @{$epedge});
-            # If there are cycles involving the empty nodes, ignore them.
-            my $cycle = 0;
-            my %map;
-            for(my $i = 0; $i <= $#newedge; $i += 2)
+            # Cyclic paths need special treatment. We do not want to fall in an endless loop.
+            # However, if both ends of the path are non-empty nodes (even if it is the same non-empty node),
+            # we can add the edge to @okedges. Note that self-loop edges are normally not allowed in
+            # enhanced graphs; however, in this collapsed form they can still preserve information
+            # that would disappear otherwise.
+            if($newedge[0] =~ m/^\d+$/ && $newedge[-1] =~ m/^\d+$/)
             {
-                if(exists($map{$newedge[$i]}))
-                {
-                    $cycle = 1;
-                    last;
-                }
-                $map{$newedge[$i]}++;
+                push(@okedges, \@newedge);
             }
-            unless($cycle)
+            else
             {
-                if($newedge[0] =~ m/^\d+$/ && $newedge[-1] =~ m/^\d+$/)
+                # This edge is not OK because it still begins or ends in an empty node.
+                # We will use it for creation of longer edges but only if it does not contain a cycle.
+                my $cycle = 0;
+                my %map;
+                for(my $i = 0; $i <= $#newedge; $i += 2)
                 {
-                    push(@okedges, \@newedge);
+                    if(exists($map{$newedge[$i]}))
+                    {
+                        $cycle = 1;
+                        last;
+                    }
+                    $map{$newedge[$i]}++;
                 }
-                else
+                unless($cycle)
                 {
                     if($newedge[0] =~ m/^\d+\.\d+$/)
                     {
@@ -147,10 +153,10 @@ sub collapse_empty_nodes
                         push(@ecedges, \@newedge);
                     }
                 }
-            }
-            else
-            {
-                print STDERR ('Ignoring enhanced path '.join('>', @newedge)."\n");
+                else
+                {
+                    print STDERR ('Cyclic enhanced path will not be used to construct longer paths: '.join('>', @newedge)."\n");
+                }
             }
         }
     }
