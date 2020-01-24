@@ -167,6 +167,27 @@ sub collapse_empty_nodes
     # Now there are no more @epedges (while @ecedges grew over time but we do not care now).
     # All edges in @okedges have non-empty ends.
     @okedges = sort {my $r = $a->[-1] <=> $b->[-1]; unless($r) {$r = $a->[0] <=> $b->[0]} $r} (@okedges);
+    # Empty nodes normally should not be leaves but it is not guaranteed.
+    # Issue a warning if an empty node disappears because it has no children.
+    my %oknodes;
+    foreach my $okedge (@okedges)
+    {
+        foreach my $item (@{$okedge})
+        {
+            if($item =~ m/^\d+\.\d+$/)
+            {
+                $oknodes{$item}++;
+            }
+        }
+    }
+    foreach my $ecedge (@ecedges)
+    {
+        my $item = $ecedge->[-1];
+        if(!exists($oknodes{$item}))
+        {
+            print STDERR ('Incoming path to an empty node ignored because the node has no children: '.join('>', @ecedge)."\n");
+        }
+    }
     # Remove all edges going to or from an empty node, then remove the empty nodes as well.
     foreach my $node (@nodes)
     {
