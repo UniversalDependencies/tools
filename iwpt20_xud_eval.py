@@ -134,8 +134,21 @@ def _decode(text):
 def _encode(text):
     return text if sys.version_info[0] >= 3 or not isinstance(text, unicode) else text.encode("utf-8")
 
+CASE_DEPRELS = {'obl','nmod','conj','advcl'}
+UNIVERSAL_DEPREL_EXTENSIONS = {'pass','relcl','xsubj'}
+
+# modify the set of deps produced by system to be in accordance with gold treebank type
+# return a (filtered) list of (hd,dependency_path) tuples. -- GB 
+def process_enhanced_deps(deps) :
+    edeps = []
+    for edep in deps.split('|') :
+        (hd,path) = edep.split(':',1)
+        steps = path.split('>') # collapsing empty nodes gives rise to paths like this : 3:conj:en>obl:voor
+        edeps.append((hd,steps))   # (3,['conj:en','obj:voor'])
+    return edeps 
+
 # Load given CoNLL-U file into internal representation
-def load_conllu(file):
+def load_conllu(file,treebank_type):
     # Internal representation classes
     class UDRepresentation:
         def __init__(self):
@@ -177,7 +190,7 @@ def load_conllu(file):
             self.is_functional_deprel = self.columns[DEPREL] in FUNCTIONAL_DEPRELS
             # store enhanced deps --GB
             # split string positions and enhanced labels as well?
-            self.columns[DEPS] = columns[DEPS].split('|')
+            self.columns[DEPS] = process_enhanced_deps(columns[DEPS])
 
     ud = UDRepresentation()
 
@@ -213,19 +226,98 @@ def load_conllu(file):
                         word.parent = parent
 
 
+            position = sentence_start # need to incrementally keep track of current position for loop detection in relcl
             for word in ud.words[sentence_start:]:
                 process_word(word)
+                enhanced_deps = word.columns[DEPS]
                 # replace head positions of enhanced dependencies with parent word object -- GB 
-                remapped_deps = []
-                for dep in word.columns[DEPS] :
-                    (head,rel) = dep.split(':',1)
+                processed_deps = []
+                for (head,steps) in word.columns[DEPS] :       # (3,['conj:en','obj:voor'])
                     hd = int(head)
-                    if hd :
-                        parent = ud.words[sentence_start + hd -1]
-                    else :  # just use '0' as parent for cases where hd == 0 -- GB
-                        parent = hd 
-                    remapped_deps.append((parent,rel))
-                word.columns[DEPS] = remapped_deps
+                    parent = ud.words[sentence_start + hd -1] if hd else hd  # just assign '0' to parent for root cases               
+                    processed_deps.append((parent,steps))                    
+                enhanced_deps = processed_deps
+
+                # ignore rel>rel dependencies, and instead append the original hd/rel edge
+                # note that this also ignores other extensions (like adding lemma's)
+                # note that this sometimes introduces duplicates (if orig hd/rel was already included in DEPS)
+                if (treebank_type['no_gapping']) : # enhancement 1
+                    processed_deps = []
+                    for (parent,steps) in enhanced_deps :
+                        if len(steps) > 1 :
+                            processed_deps.append((word.parent,[word.columns[DEPREL]]))
+                        else :
+                            if (parent,steps) in processed_deps :
+                                True
+                            else :
+                                processed_deps.append((parent,steps))
+                    enhanced_deps = processed_deps
+
+                # for a given conj node, any rel other than conj in DEPS can be ignored
+                if treebank_type['no_shared_parents_in_coordination'] :   # enhancement  2
+                    for (hd,steps) in enhanced_deps :
+                        if len(steps) == 1 and steps[0].startswith('conj') :
+                            enhanced_deps = [(hd,steps)]  
+
+                # deprels not matching ud_hd/ud_dep are spurious. 
+                #  czech/pud estonian/ewt syntagrus finnish/pud
+                # TO DO: treebanks that do not mark xcomp and relcl subjects 
+                if treebank_type['no_shared_dependents_in_coordination'] : # enhancement  3
+                    processed_deps = []
+                    for (hd,steps) in enhanced_deps :
+                        duplicate = 0
+                        for (hd2,steps2) in enhanced_deps :
+                            if steps == steps2 and hd2 == word.columns[HEAD]  and hd != hd2  : # checking only for ud_hd here, check for ud_dep as well?
+                                duplicate = 1 
+                        if not(duplicate) :
+                            processed_deps.append((hd,steps))
+                    enhanced_deps = processed_deps
+
+                # if treebank does not have control relations: subjects of xcomp parents in system are to be skipped
+                # note that rel is actually a path sometimes rel1>rel2 in theory rel2 could be subj?
+                # from lassy-small: 7:conj:en>nsubj:pass|7:conj:en>nsubj:xsubj    (7,['conj:en','nsubj:xsubj'])
+                if (treebank_type['no_control']) : # enhancement 4 
+                    processed_deps = []
+                    for (parent,steps) in enhanced_deps : 
+                        include = 1
+                        if ( parent and parent.columns[DEPREL] == 'xcomp') :
+                            for rel in steps: 
+                                if rel.startswith('nsubj') :
+                                    include = 0
+                        if include :
+                            processed_deps.append((parent,steps))
+                    enhanced_deps = processed_deps
+
+                if (treebank_type['no_external_arguments_of_relative_clauses']) : # enhancement 5
+                    processed_deps = []
+                    for (parent,steps) in enhanced_deps :
+                        if (steps[0] == 'ref') :
+                            processed_deps.append((word.parent,[word.columns[DEPREL]]))  # append the original relation
+                        # ignore external argument link 
+                        # external args are deps of an acl:relcl where that acl also is a dependent of external arg (i.e. ext arg introduces a cycle)
+                        elif ( parent and parent.columns[DEPREL].startswith('acl')  and int(parent.columns[HEAD]) == position - sentence_start ) : 
+                            #print('removed external argument')
+                            True
+                        else : 
+                            processed_deps.append((parent,steps))
+                    enhanced_deps = processed_deps
+
+                # treebanks where no lemma info has been added 
+                if treebank_type['no_case_info'] :  # enhancement number 6 
+                    processed_deps = []
+                    for (hd,steps) in enhanced_deps :
+                        processed_steps = []
+                        for dep in steps :   
+                            depparts = dep.split(':')
+                            if depparts[0] in  CASE_DEPRELS :
+                                if (len(depparts) == 2 and not(depparts[1] in UNIVERSAL_DEPREL_EXTENSIONS )) :
+                                    dep = depparts[0]
+                            processed_steps.append(dep)
+                        processed_deps.append((hd,processed_steps))
+                    enhanced_deps = processed_deps
+                
+                position += 1
+                word.columns[DEPS] = enhanced_deps 
 
             # func_children cannot be assigned within process_word
             # because it is called recursively and may result in adding one child twice.
@@ -525,14 +617,23 @@ def evaluate(gold_ud, system_ud):
     }
 
 
-def load_conllu_file(path):
+def load_conllu_file(path,treebank_type):
     _file = open(path, mode="r", **({"encoding": "utf-8"} if sys.version_info >= (3, 0) else {}))
-    return load_conllu(_file)
+    return load_conllu(_file,treebank_type)
 
 def evaluate_wrapper(args):
+    treebank_type = {}
+    enhancements = list(args.enhancements)
+    treebank_type['no_gapping'] = 1 if '1' in enhancements else 0
+    treebank_type['no_shared_parents_in_coordination'] = 1 if '2' in enhancements else 0
+    treebank_type['no_shared_dependents_in_coordination'] = 1 if '3' in enhancements else 0
+    treebank_type['no_control'] = 1 if '4' in enhancements else 0
+    treebank_type['no_external_arguments_of_relative_clauses'] = 1 if '5' in enhancements else 0
+    treebank_type['no_case_info'] = 1 if '6' in enhancements else 0
+
     # Load CoNLL-U files
-    gold_ud = load_conllu_file(args.gold_file)
-    system_ud = load_conllu_file(args.system_file)
+    gold_ud = load_conllu_file(args.gold_file,treebank_type)
+    system_ud = load_conllu_file(args.system_file,treebank_type)
     return evaluate(gold_ud, system_ud)
 
 def main():
@@ -546,6 +647,8 @@ def main():
                         help="Print all metrics.")
     parser.add_argument("--counts", "-c", default=False, action="store_true",
                         help="Print raw counts of correct/gold/system/aligned words instead of prec/rec/F1 for all metrics.")
+    parser.add_argument("--enhancements", type=str, default='0',
+                        help="Level of enhancements in the gold data (see guidelines) 0=all (default), 1=no gapping, 2=no shared parents, 3=no shared dependents 4=no control, 5=no external arguments, 6=no lemma info, combinations: 12=both 1 and 2 apply, etc.")
     args = parser.parse_args()
 
     # Evaluate
