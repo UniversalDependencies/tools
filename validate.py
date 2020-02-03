@@ -2046,6 +2046,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     if not edeprel_re.match(v):
                         testlevel = 4
                         testclass = 'Enhanced'
+                        testid = 'spurious-enhanced-relation'
                         testmessage = "Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
