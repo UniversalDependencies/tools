@@ -2046,7 +2046,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     if not edeprel_re.match(v):
                         testlevel = 4
                         testclass = 'Enhanced'
-                        testid = 'spurious-enhanced-relation'
+                        testid = 'edeprel-def-regex'
                         testmessage = "Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
@@ -2058,6 +2058,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
                         testlevel = 4
                         testclass = 'Syntax'
+                        testid = 'deprel-def-regex'
                         testmessage = "Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
@@ -2067,12 +2068,14 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                         if parts[0] not in res and parts[0] != 'ref':
                             testlevel = 4
                             testclass = 'Syntax'
+                            testid = 'deprel-def-universal-part'
                             testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                             continue
                     except:
                         testlevel = 4
                         testclass = 'Syntax'
+                        testid = 'deprel-def-universal-part'
                         testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
