@@ -92,6 +92,29 @@ List::MoreUtils. You may need to install these modules using the "cpan" tool
 
 
 
+================================
+enhanced_collapse_empty_nodes.pl
+================================
+
+Reads a CoNLL-U file, removes empty nodes and adjusts the enhanced graphs so
+that a path traversing one or more empty nodes is contracted into a single
+edge: if there was a "conj" edge from node 27 to node 33.1, and a "nsubj"
+edge from node 33.1 to node 33, the resulting graph will have an edge from
+27 to 33, labeled "conj>nsubj"
+
+This script uses the modules Graph.pm and Node.pm that lie in the same folder.
+On UNIX-like systems it should be able to tell Perl where to find the modules
+even if the script is invoked from a remote folder. If that does not work, use
+"perl -I libfolder script" to invoke it. Also note that other third-party
+modules are needed that are not automatically included in the installation
+of Perl: Moose, MooseX::SemiAffordanceAccessor, List::MoreUtils.
+You may need to install these modules using the "cpan" tool
+(simply go to commandline and type "sudo cpan Moose").
+
+  perl enhanced_collapse_empty_nodes.pl enhanced.conllu > collapsed.conllu
+
+
+
 ==============================
 overlap.py
 ==============================
