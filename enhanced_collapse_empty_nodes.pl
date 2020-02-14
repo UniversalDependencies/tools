@@ -113,30 +113,40 @@ sub collapse_empty_nodes
     {
         my $epedge = shift(@epedges);
         my @myecedges = grep {$_->[-1] eq $epedge->[0]} (@ecedges);
+        if(scalar(@myecedges)==0)
+        {
+            print STDERR ('Ignoring enhanced path because the empty source node does not have any parent: '.join('>', @epedge)."\n");
+        }
         foreach my $ecedge (@myecedges)
         {
             my @newedge = @{$ecedge};
             pop(@newedge);
             push(@newedge, @{$epedge});
-            # If there are cycles involving the empty nodes, ignore them.
-            my $cycle = 0;
-            my %map;
-            for(my $i = 0; $i <= $#newedge; $i += 2)
+            # Cyclic paths need special treatment. We do not want to fall in an endless loop.
+            # However, if both ends of the path are non-empty nodes (even if it is the same non-empty node),
+            # we can add the edge to @okedges. Note that self-loop edges are normally not allowed in
+            # enhanced graphs; however, in this collapsed form they can still preserve information
+            # that would disappear otherwise.
+            if($newedge[0] =~ m/^\d+$/ && $newedge[-1] =~ m/^\d+$/)
             {
-                if(exists($map{$newedge[$i]}))
-                {
-                    $cycle = 1;
-                    last;
-                }
-                $map{$newedge[$i]}++;
+                push(@okedges, \@newedge);
             }
-            unless($cycle)
+            else
             {
-                if($newedge[0] =~ m/^\d+$/ && $newedge[-1] =~ m/^\d+$/)
+                # This edge is not OK because it still begins or ends in an empty node.
+                # We will use it for creation of longer edges but only if it does not contain a cycle.
+                my $cycle = 0;
+                my %map;
+                for(my $i = 0; $i <= $#newedge; $i += 2)
                 {
-                    push(@okedges, \@newedge);
+                    if(exists($map{$newedge[$i]}))
+                    {
+                        $cycle = 1;
+                        last;
+                    }
+                    $map{$newedge[$i]}++;
                 }
-                else
+                unless($cycle)
                 {
                     if($newedge[0] =~ m/^\d+\.\d+$/)
                     {
@@ -147,16 +157,37 @@ sub collapse_empty_nodes
                         push(@ecedges, \@newedge);
                     }
                 }
-            }
-            else
-            {
-                print STDERR ('Ignoring enhanced path '.join('>', @newedge)."\n");
+                else
+                {
+                    print STDERR ('Cyclic enhanced path will not be used to construct longer paths: '.join('>', @newedge)."\n");
+                }
             }
         }
     }
     # Now there are no more @epedges (while @ecedges grew over time but we do not care now).
     # All edges in @okedges have non-empty ends.
     @okedges = sort {my $r = $a->[-1] <=> $b->[-1]; unless($r) {$r = $a->[0] <=> $b->[0]} $r} (@okedges);
+    # Empty nodes normally should not be leaves but it is not guaranteed.
+    # Issue a warning if an empty node disappears because it has no children.
+    my %oknodes;
+    foreach my $okedge (@okedges)
+    {
+        foreach my $item (@{$okedge})
+        {
+            if($item =~ m/^\d+\.\d+$/)
+            {
+                $oknodes{$item}++;
+            }
+        }
+    }
+    foreach my $ecedge (@ecedges)
+    {
+        my $item = $ecedge->[-1];
+        if(!exists($oknodes{$item}))
+        {
+            print STDERR ('Incoming path to an empty node ignored because the node has no children: '.join('>', @{$ecedge})."\n");
+        }
+    }
     # Remove all edges going to or from an empty node, then remove the empty nodes as well.
     foreach my $node (@nodes)
     {

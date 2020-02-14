@@ -1849,6 +1849,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'sa':  ['अस्'],
             'hi':  ['है', 'था'],
             'ur':  ['ہے', 'تھا'],
+            'bho': ['हऽ', 'बा', 'भा'],
             'mr':  ['असणे'],
             'eu':  ['izan', 'egon', 'ukan'],
             # Uralic languages.
