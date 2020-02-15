@@ -1712,18 +1712,24 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # வேண்டு / veṇṭu “must”
             # முடி / muṭi “can”
             'ta':  ['போ', 'மாட்டு', 'படு', 'வை', 'இரு', 'இல்', 'வேண்டு', 'முயல்', 'கொள்', 'விடு', 'உள்', 'வரு', 'முடி', 'வா', 'செய்', 'ஆகு', 'கூடு', 'பெறு', 'தகு', 'வரல்', 'பிடு', 'வீடு', 'என்', 'கூறு', 'கூறு', 'கொடு', 'ஆவர்', 'விரி', 'கிடை', 'அல்'],
+            # Northeast Caucasian languages.
+            'lez': ['x̂ana', "k'an"],
             # Sino-Tibetan languages.
             # 爲, cop 儀 Nec 可 Pot 宜 Nec 得 Pot 敢 Des 欲 Des 肯 Des 能 Pot 足 Pot 須 Nec 被 Pass 見 Pass
             'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯'],
             'zh':  ['是', '为', '為'],
             'yue': ['係', '為'],
+            'lus': ['nii'],
+            'prx': ['in', 'd̪uk'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
             'id':  ['adalah'],
-            'tl':  ['may'],
+            'tl':  ['may', 'kaya', 'sana', 'huwag'],
+            'ifb': ['agguy', 'adi', 'gun', "'ahi"],
             # Australian languages: Pama-Nyungan.
             'wbp': ['ka'],
+            'zmu': ['yi'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
@@ -1753,14 +1759,29 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # https://universaldependencies.org/cop/dep/aux_.html
             # existential elements ⲟⲩⲛ/ⲙⲛ in indefinite durative tenses (but not in pure existential clauses)
             'cop': ['ⲟⲩⲛ', 'ⲙⲛ', 'ⲙⲛⲧⲉ', 'ϣⲁⲣⲉ', 'ϣⲁ', 'ⲙⲉⲣⲉ', 'ⲙⲉ', 'ⲁ', 'ⲙⲡⲉ', 'ⲙⲡ', 'ⲛⲉⲣⲉ', 'ⲛⲉ', 'ⲛⲁ', 'ⲛⲧⲉ', 'ⲧⲁⲣⲉ', 'ⲧⲁⲣ', 'ϣⲁⲛⲧⲉ', 'ⲙⲡⲁⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣ', 'ⲛⲉϣ', 'ⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲡⲣⲧⲣⲉ'],
+            'gqa': ['ə', 'ni'],
+            'ha':  ['ce', 'ne', 'ta', 'ba'],
+            # Nilo-Saharan languages.
+            'laj': ['bèdò', 'bìnò'],
+            # Mande languages.
+            'mxx': ['à', 'yè'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà'],
+            # Yuman languages.
+            'mov': ['iðu:m'],
             # Tupian languages.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
-        lspecauxs = auxdict.get(lang, None)
+        if lang == 'shopen':
+            # 'desu', 'kudasai', 'yo' and 'sa' are romanized Japanese.
+            lspecauxs = ['desu', 'kudasai', 'yo', 'sa']
+            for ilang in auxdict:
+                ilspecauxs = auxdict[ilang]
+                lspecauxs = lspecauxs + ilspecauxs
+        else:
+            lspecauxs = auxdict.get(lang, None)
         if not lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
@@ -1881,6 +1902,8 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'ja':  ['だ'],
             # Dravidian languages.
             'ta':  ['முயல்'],
+            # Northeast Caucasian languages.
+            'lez': ['x̂ana'],
             # Sino-Tibetan languages.
             # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
             # 是(shi4) and 为/為(wei2) should be interchangeable.
@@ -1888,11 +1911,15 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'lzh': ['爲'],
             'zh':  ['是', '为', '為'],
             'yue': ['係', '為'],
+            'lus': ['nii'],
+            'prx': ['in', 'd̪uk'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
             'id':  ['adalah'],
             'tl':  ['may'],
+            # Australian languages: Pama-Nyungan.
+            'zmu': ['yi'],
             # Afro-Asiatic languages.
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
@@ -1900,6 +1927,11 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],
             'cop': ['ⲡⲉ', 'ⲡ'],
+            'ha':  ['ce', 'ne'],
+            # Nilo-Saharan languages.
+            'laj': ['bèdò'],
+            # Mande languages.
+            'mxx': ['à', 'yè'],
             # Niger-Congo languages.
             'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní'],
@@ -1907,7 +1939,14 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
-        lspeccops = copdict.get(lang, None)
+        if lang == 'shopen':
+            # 'desu' is romanized Japanese.
+            lspeccops = ['desu']
+            for ilang in copdict:
+                ilspeccops = copdict[ilang]
+                lspeccops = lspeccops + ilspeccops
+        else:
+            lspeccops = copdict.get(lang, None)
         if not lspeccops:
             testlevel = 5
             testclass = 'Syntax'
