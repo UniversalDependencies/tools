@@ -1769,6 +1769,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà'],
+            'kfz': ['la'],
             'bav': ['lùu'],
             # Yuman languages.
             'mov': ['iðu:m'],
@@ -1936,6 +1937,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Niger-Congo languages.
             'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní'],
+            'kfz': ['la'],
             'bav': ['lùu'],
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
