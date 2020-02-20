@@ -161,12 +161,16 @@ def trees(inp, tag_sets, args):
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
                 testid = 'number-of-columns'
-                testmessage = 'The line has %d columns but %d are expected.' % (len(cols), COLCOUNT)
+                testmessage = 'The line has %d columns but %d are expected. The contents of the columns will not be checked.' % (len(cols), COLCOUNT)
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-            lines.append(cols)
-            validate_cols_level1(cols)
-            if args.level > 1:
-                validate_cols(cols,tag_sets,args)
+            # If there is an unexpected number of columns, do not test their contents.
+            # Maybe the contents belongs to a different column. And we could see
+            # an exception if a column value is missing.
+            else:
+                lines.append(cols)
+                validate_cols_level1(cols)
+                if args.level > 1:
+                    validate_cols(cols,tag_sets,args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = "Spurious line: '%s'. All non-empty lines should start with a digit or the # character." % (line)
