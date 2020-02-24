@@ -1,4 +1,5 @@
 csubj:pass
 nmod:poss
-nsubj:pass
-obl:agent
+det:adj
+det:pron
+acl:relcl
