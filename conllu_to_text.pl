@@ -27,6 +27,7 @@ my $start = 1;
 my $mwtlast;
 while(<>)
 {
+    s/\r?\n$//;
     if(m/^\#\s*text\s*=\s*(.+)/)
     {
         $text = $1;
@@ -43,10 +44,11 @@ while(<>)
     {
         $mwtlast = $1;
         my @f = split(/\t/, $_);
+        my @misc = split(/\|/, $f[9]);
         # Paragraphs may start in the middle of a sentence (bulleted lists, verse etc.)
         # The first token of the new paragraph has "NewPar=Yes" in the MISC column.
         # Multi-word tokens have this in the token-introducing line.
-        if($f[9] =~ m/NewPar=Yes/i)
+        if(grep {$_ eq 'NewPar=Yes'} (@misc))
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
@@ -64,16 +66,17 @@ while(<>)
             $ftext = '';
         }
         $ftext .= $f[1];
-        $ftext .= ' ' unless($f[9] =~ m/SpaceAfter=No/);
+        $ftext .= ' ' unless(grep {$_ eq 'SpaceAfter=No'} (@misc));
     }
     elsif(m/^(\d+)\t/ && !(defined($mwtlast) && $1<=$mwtlast))
     {
         $mwtlast = undef;
         my @f = split(/\t/, $_);
+        my @misc = split(/\|/, $f[9]);
         # Paragraphs may start in the middle of a sentence (bulleted lists, verse etc.)
         # The first token of the new paragraph has "NewPar=Yes" in the MISC column.
         # Multi-word tokens have this in the token-introducing line.
-        if($f[9] =~ m/NewPar=Yes/i)
+        if(grep {$_ eq 'NewPar=Yes'} (@misc))
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
@@ -91,7 +94,7 @@ while(<>)
             $ftext = '';
         }
         $ftext .= $f[1];
-        $ftext .= ' ' unless($f[9] =~ m/SpaceAfter=No/);
+        $ftext .= ' ' unless(grep {$_ eq 'SpaceAfter=No'} (@misc));
     }
     elsif(m/^\s*$/)
     {
