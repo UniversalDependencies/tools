@@ -339,6 +339,9 @@ def load_conllu(file,treebank_type):
                 if word.parent and word.is_functional_deprel:
                     word.parent.functional_children.append(word)
 
+            if sentence_start == len(ud.words) :
+                raise UDError("There is a sentence with 0 tokens (possibly a double blank line)")
+
             # Check there is a single root node
             if len([word for word in ud.words[sentence_start:] if word.parent is None]) != 1:
                 raise UDError("There are multiple roots in a sentence")
