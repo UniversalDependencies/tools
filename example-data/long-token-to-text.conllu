@@ -1,0 +1,45 @@
+# sent_id = aja_ee200110_3121
+# text = Moodymanni ehk Kenny Dixon Jnr võid näha ja lausa liigutamas aadressil proto.groovetech.com/mk-demf.rxml?file=/demf/mainstage/day2/mainstageday2-kennydixonjr.rm
+1	Moodymanni	Moodymann	PROPN	S	Case=Par|Number=Sing	7	obj	7:obj	_
+2	ehk	ehk	CCONJ	J	_	3	cc	3:cc	_
+3	Kenny	Kenny	PROPN	S	Case=Nom|Number=Sing	1	conj	1:conj	_
+4	Dixon	Dixon	PROPN	S	Case=Nom|Number=Sing	3	flat	3:flat	_
+5	Jnr	Jnr	PROPN	S	Case=Nom|Number=Sing	3	flat	3:flat	_
+6	võid	võima	AUX	V	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin|Voice=Act	7	aux	7:aux	_
+7	näha	nägema	VERB	V	VerbForm=Inf	0	root	0:root	_
+8	ja	ja	CCONJ	J	_	10	cc	10:cc	_
+9	lausa	lausa	ADV	D	_	10	advmod	10:advmod	_
+10	liigutamas	liigutama	VERB	V	Case=Ine|VerbForm=Sup|Voice=Act	7	conj	7:conj	_
+11	aadressil	aadress	NOUN	S	Case=Ade|Number=Sing	7	obl	7:obl:ade	_
+12	proto.groovetech.com/mk-demf.rxml?file=/demf/mainstage/day2/mainstageday2-kennydixonjr.rm	proto.groovetech.com/mk-demf.rxml	SYM	Y	Abbr=Yes	11	appos	11:appos	SpaceAfter=No
+
+# sent_id = aja_ee200110_3122
+# text = (Antes Edition)
+1	(	(	PUNCT	Z	_	2	punct	2:punct	SpaceAfter=No
+2	Antes	Antes	PROPN	S	Case=Nom|Number=Sing	0	root	0:root	_
+3	Edition	Edition	PROPN	S	Case=Nom|Number=Sing	2	flat	2:flat	SpaceAfter=No
+4	)	)	PUNCT	Z	_	2	punct	2:punct	_
+
+# sent_id = aja_ee200110_3123
+# text = Filmimuusika loomine on mitmes mõttes erinev kontserdisaalis ette kantava teose kirjutamisest, sisaldades nii kitsendusi kui ka ahvatlevaid võimalusi.
+1	Filmimuusika	filmi_muusika	NOUN	S	Case=Gen|Number=Sing	2	nmod	2:nmod:gen	_
+2	loomine	loomine	NOUN	S	Case=Nom|Number=Sing	6	nsubj:cop	6:nsubj	_
+3	on	olema	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	6	cop	6:cop	_
+4	mitmes	mitu	DET	P	Case=Ine|Number=Sing|PronType=Ind	5	det	5:det	_
+5	mõttes	mõte	NOUN	S	Case=Ine|Number=Sing	6	obl	6:obl:ine	_
+6	erinev	erinev	ADJ	A	Case=Nom|Degree=Pos|Number=Sing|Tense=Pres|VerbForm=Part|Voice=Act	0	root	0:root	_
+7	kontserdisaalis	kontserdi_saal	NOUN	S	Case=Ine|Number=Sing	9	obl	9:obl:ine	_
+8	ette	ette	ADV	D	_	9	advmod	9:advmod	_
+9	kantava	kantav	ADJ	A	Case=Gen|Degree=Pos|Number=Sing|Tense=Pres|VerbForm=Part|Voice=Act	10	acl	10:acl	_
+10	teose	teos	NOUN	S	Case=Gen|Number=Sing	11	nmod	11:nmod:gen	_
+11	kirjutamisest	kirjutamine	NOUN	S	Case=Ela|Number=Sing	6	obl	6:obl:ela	SpaceAfter=No
+12	,	,	PUNCT	Z	_	13	punct	13:punct	_
+13	sisaldades	sisaldama	VERB	V	VerbForm=Conv	6	advcl	6:advcl	_
+14	nii	nii	ADV	D	_	15	cc:preconj	15:cc	_
+15	kitsendusi	kitsendus	NOUN	S	Case=Par|Number=Plur	13	obj	13:obj	_
+16	kui	kui	CCONJ	J	_	19	cc	19:cc	_
+17	ka	ka	ADV	D	_	19	advmod	19:advmod	_
+18	ahvatlevaid	ahvatlev	ADJ	A	Case=Par|Degree=Pos|Number=Plur|Tense=Pres|VerbForm=Part|Voice=Act	19	acl	19:acl	_
+19	võimalusi	võimalus	NOUN	S	Case=Par|Number=Plur	15	conj	15:conj	SpaceAfter=No
+20	.	.	PUNCT	Z	_	6	punct	6:punct	_
+
