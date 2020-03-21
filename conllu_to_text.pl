@@ -26,8 +26,10 @@ my $buffer = '';
 my $start = 1;
 my $nobreaknow = 0; # last word added to buffer had SpaceAfter=No
 my $mwtlast;
+my $iline = 0; # needed to report position of warnings
 while(<>)
 {
+    $iline++;
     s/\r?\n$//;
     if(m/^\#\s*text\s*=\s*(.+)/)
     {
@@ -53,10 +55,10 @@ while(<>)
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
-            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
+            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow, $iline);
             $buffer .= $ftext;
             # Line breaks at word boundaries after at most 80 characters.
-            $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+            $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
             print("$buffer\n\n");
             $buffer = '';
             # Start is only true until we write the first sentence of the input stream.
@@ -89,10 +91,10 @@ while(<>)
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
-            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
+            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow, $iline);
             $buffer .= $ftext;
             # Line breaks at word boundaries after at most 80 characters.
-            $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+            $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
             print("$buffer\n\n");
             $buffer = '';
             # Start is only true until we write the first sentence of the input stream.
@@ -122,7 +124,7 @@ while(<>)
         # and ignore $text, even though we note it when seeing the text attribute.
         # $text .= ' ' unless($chinese);
         # Empty line between documents and paragraphs.
-        $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow);
+        $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow, $iline);
         $buffer .= $ftext;
         # Line breaks at word boundaries after at most 80 characters.
         $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
@@ -155,6 +157,7 @@ sub print_new_paragraph_if_needed
     my $newpar = shift;
     my $buffer = shift;
     my $nobreaknow = shift;
+    my $iline = shift; # for warning reports
     if(!$start && ($newdoc || $newpar))
     {
         if($buffer ne '')
@@ -164,7 +167,7 @@ sub print_new_paragraph_if_needed
         }
         if($nobreaknow)
         {
-            print STDERR ("WARNING: SpaceAfter=No is in effect when new paragraph is starting.\n");
+            print STDERR ("WARNING: Line $iline: SpaceAfter=No is in effect when new paragraph is starting.\n");
         }
         print("\n");
     }
