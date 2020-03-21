@@ -55,7 +55,7 @@ while(<>)
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
-            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow, $iline);
+            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
             $buffer .= $ftext;
             # Line breaks at word boundaries after at most 80 characters.
             $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
@@ -91,7 +91,7 @@ while(<>)
         {
             # Empty line between documents and paragraphs. (There may have been
             # a paragraph break before the first part of this sentence as well!)
-            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow, $iline);
+            $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
             $buffer .= $ftext;
             # Line breaks at word boundaries after at most 80 characters.
             $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
@@ -124,7 +124,7 @@ while(<>)
         # and ignore $text, even though we note it when seeing the text attribute.
         # $text .= ' ' unless($chinese);
         # Empty line between documents and paragraphs.
-        $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer, $nobreaknow, $iline);
+        $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
         $buffer .= $ftext;
         # Line breaks at word boundaries after at most 80 characters.
         $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
@@ -156,18 +156,12 @@ sub print_new_paragraph_if_needed
     my $newdoc = shift;
     my $newpar = shift;
     my $buffer = shift;
-    my $nobreaknow = shift;
-    my $iline = shift; # for warning reports
     if(!$start && ($newdoc || $newpar))
     {
         if($buffer ne '')
         {
             print("$buffer\n");
             $buffer = '';
-        }
-        if($nobreaknow)
-        {
-            print STDERR ("WARNING: Line $iline: SpaceAfter=No is in effect when new paragraph is starting.\n");
         }
         print("\n");
     }
