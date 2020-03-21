@@ -1,12 +1,15 @@
 acl:relcl
 advmod:tmod
 aux:neg
+aux:opt
 aux:q
 cc:preconj
+cop:own
 csubj:cop
 flat:ellipsis
 flat:name
 nmod:bahuv
+nmod:poss
 nsubj:cop
 obl:agent
 obl:tmod
