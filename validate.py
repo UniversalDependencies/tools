@@ -1686,13 +1686,15 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
             'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'feʹrttjed', 'pâʹstted'],
-            # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
+            # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
             # "have to, need to, must": савомс савкшномс эрявомс
             # "future; begin, start": кармамс
             # "question particles": ли штоли
             # mood: давайте давай бу кадык
+            # сашендовомс = have to
+            # 'аш' = does not exist
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
-            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афи', 'афоль', 'апак', 'аш', 'эрявомс'],
+            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афи', 'афоль', 'апак', 'аш', 'эрявомс', 'савомс', 'сашендовомс', 'катк'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
@@ -1894,7 +1896,8 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # The neg арась occurs in locative/existential negation, and its
             # positive counterpart is realized in the three copulas above.
             'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
-            'mdf': ['улемс', 'оль'],
+            # The neg аш is locative/existential negation.
+            'mdf': ['улемс', 'оль', 'аш'],
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
