@@ -24,9 +24,12 @@ my $newpar = 0;
 my $newdoc = 0;
 my $buffer = '';
 my $start = 1;
+my $nobreaknow = 0; # last word added to buffer had SpaceAfter=No
 my $mwtlast;
+my $iline = 0; # needed to report position of warnings
 while(<>)
 {
+    $iline++;
     s/\r?\n$//;
     if(m/^\#\s*text\s*=\s*(.+)/)
     {
@@ -55,7 +58,7 @@ while(<>)
             $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
             $buffer .= $ftext;
             # Line breaks at word boundaries after at most 80 characters.
-            $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+            $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
             print("$buffer\n\n");
             $buffer = '';
             # Start is only true until we write the first sentence of the input stream.
@@ -66,7 +69,15 @@ while(<>)
             $ftext = '';
         }
         $ftext .= $f[1];
-        $ftext .= ' ' unless(grep {$_ eq 'SpaceAfter=No'} (@misc));
+        if(grep {$_ eq 'SpaceAfter=No'} (@misc))
+        {
+            $nobreaknow = 1;
+        }
+        else
+        {
+            $nobreaknow = 0;
+            $ftext .= ' ';
+        }
     }
     elsif(m/^(\d+)\t/ && !(defined($mwtlast) && $1<=$mwtlast))
     {
@@ -83,7 +94,7 @@ while(<>)
             $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
             $buffer .= $ftext;
             # Line breaks at word boundaries after at most 80 characters.
-            $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+            $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
             print("$buffer\n\n");
             $buffer = '';
             # Start is only true until we write the first sentence of the input stream.
@@ -94,7 +105,15 @@ while(<>)
             $ftext = '';
         }
         $ftext .= $f[1];
-        $ftext .= ' ' unless(grep {$_ eq 'SpaceAfter=No'} (@misc));
+        if(grep {$_ eq 'SpaceAfter=No'} (@misc))
+        {
+            $nobreaknow = 1;
+        }
+        else
+        {
+            $nobreaknow = 0;
+            $ftext .= ' ';
+        }
     }
     elsif(m/^\s*$/)
     {
@@ -108,7 +127,7 @@ while(<>)
         $buffer = print_new_paragraph_if_needed($start, $newdoc, $newpar, $buffer);
         $buffer .= $ftext;
         # Line breaks at word boundaries after at most 80 characters.
-        $buffer = print_lines_from_buffer($buffer, 80, $chinese);
+        $buffer = print_lines_from_buffer($buffer, 80, $chinese, $nobreaknow);
         # Start is only true until we write the first sentence of the input stream.
         $start = 0;
         $newdoc = 0;
@@ -166,6 +185,7 @@ sub print_lines_from_buffer
     my $limit = shift;
     # We need a different algorithm for Chinese and Japanese.
     my $chinese = shift;
+    my $nobreaknow = shift;
     if($chinese)
     {
         return print_chinese_lines_from_buffer($buffer, $limit);
@@ -200,8 +220,18 @@ sub print_lines_from_buffer
             }
             else
             {
-                print(join('', @cbuffer), "\n");
-                splice(@cbuffer);
+                # We did not find a space. There is a long string of non-whitespace
+                # characters that exceeds the line limit. We should print it all unless
+                # it has SpaceAfter=No (then we must wait for the next string).
+                if($nobreaknow)
+                {
+                    last; # get out of the while(@cbuffer >= $limit) loop
+                }
+                else
+                {
+                    print(join('', @cbuffer), "\n");
+                    splice(@cbuffer);
+                }
             }
         }
         $buffer = join('', @cbuffer);
