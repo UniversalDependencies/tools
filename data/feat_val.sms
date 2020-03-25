@@ -1,12 +1,16 @@
 AdvType=Tim
+Clitic=AddI
 Clitic=QstA
 Connegative=Yes
+Derivation=Vnoun
+Mood=Pot
 Number[psor]=Plur
 Number[psor]=Sing
 Number[psor]=Dual
 Person[psor]=1
 Person[psor]=2
 Person[psor]=3
+PronType=Refl
 PronType=Coll
 Tense=Prt
 Valency=1

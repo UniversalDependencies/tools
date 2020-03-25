@@ -1,3 +1,4 @@
+advmod:lmod
 advmod:tmod
 aux:cnd
 aux:neg
@@ -6,4 +7,5 @@ flat:name
 nmod:poss
 nsubj:cop
 obl:agent
+obl:lmod
 obl:tmod

@@ -16,6 +16,7 @@ NumType=Pers
 PartType=Ad
 PartType=Cmpl
 PartType=Comp
+PartType=Sup
 PartType=Cop
 PartType=Deg
 PartType=Inf

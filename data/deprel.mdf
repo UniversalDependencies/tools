@@ -1,4 +1,6 @@
 acl:relcl
+advcl:tmod
+advmod:lmod
 advmod:tmod
 aux:neg
 aux:opt
@@ -9,7 +11,10 @@ csubj:cop
 flat:ellipsis
 flat:name
 nmod:bahuv
+nmod:part
 nmod:poss
 nsubj:cop
+nsubj:pass
 obl:agent
+obl:lmod
 obl:tmod
