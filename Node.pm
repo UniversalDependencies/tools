@@ -201,8 +201,23 @@ sub basic_depends_on
     my $self = shift;
     confess('Node is not member of a graph') if(!defined($self->graph()));
     my $aid = shift; # ancestor id
-    my $pid = $self->bparent();
-    return defined($pid) && ($pid==$aid || $self->graph()->get_node($pid)->basic_depends_on($aid));
+    # Avoid deep recursion in large trees (e.g., the Gothic treebank contains
+    # a sentence of 165 words that form one long apposition chain). Avoid
+    # recursion completely.
+    my $graph = $self->graph();
+    my $id = $self->bparent();
+    while(defined($id))
+    {
+        if($id==$aid)
+        {
+            return 1;
+        }
+        else
+        {
+            $id = $graph->get_node($id)->bparent();
+        }
+    }
+    return 0;
 }
 
 
