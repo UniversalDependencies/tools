@@ -675,7 +675,7 @@ def main():
         else:
             print("Metric     | Precision |    Recall |  F1 Score | AligndAcc")
         print("-----------+-----------+-----------+-----------+-----------")
-        for metric in["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "CLAS", "MLAS", "BLEX"]:
+        for metric in["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "EULAS", "CLAS", "MLAS", "BLEX"]:
             if args.counts:
                 print("{:11}|{:10} |{:10} |{:10} |{:10}".format(
                     metric,
