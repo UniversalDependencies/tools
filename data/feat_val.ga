@@ -12,7 +12,6 @@ NounType=NotSlender
 NounType=Slender
 NounType=Strong
 NounType=Weak
-NumType=Pers
 PartType=Ad
 PartType=Cmpl
 PartType=Comp
