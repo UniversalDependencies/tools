@@ -1623,7 +1623,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
-            'is':  ['vera', 'geta', 'mega', 'munu', 'skulu', 'eiga'],
+            'is':  ['vera', 'hafa', 'verða', 'geta', 'mega', 'munu', 'skulu', 'eiga'],
             'got': ['wisan'],
             # DZ: The Portuguese list is much longer than for the other Romance languages
             # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
