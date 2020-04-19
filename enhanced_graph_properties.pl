@@ -9,6 +9,7 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use List::MoreUtils qw(any);
+use Getopt::Long;
 # We need to tell Perl where to find my graph modules.
 # If this does not work, you can put the script together with Graph.pm and
 # Node.pm in a folder of you choice, say, /home/joe/scripts, and then
@@ -34,6 +35,12 @@ BEGIN
 use lib $libpath;
 use Graph;
 use Node;
+
+my $report_cycles = 0; # report each sentence where a cycle is found?
+GetOptions
+(
+    'report-cycles' => \$report_cycles
+);
 
 my %stats =
 (
@@ -226,6 +233,16 @@ sub find_cycles
                 if(grep {$_==$childid} (@curidpath))
                 {
                     $stats{n_cyclic_graphs}++;
+                    if($report_cycles) # global option
+                    {
+                        print("Found a cycle in this sentence:\n");
+                        my @comments = @{$graph->comments()};
+                        foreach my $comment (@comments)
+                        {
+                            print($comment);
+                        }
+                        print("\n");
+                    }
                     return 1;
                 }
                 my @extpath = @curpath;
