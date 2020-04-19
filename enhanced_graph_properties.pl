@@ -239,7 +239,7 @@ sub find_cycles
                         my @comments = @{$graph->comments()};
                         foreach my $comment (@comments)
                         {
-                            print($comment);
+                            print("$comment\n");
                         }
                         print("\n");
                     }
