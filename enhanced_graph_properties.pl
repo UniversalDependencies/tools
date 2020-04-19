@@ -242,6 +242,8 @@ sub find_cycles
                             print("$comment\n");
                         }
                         my @cycle = map {$_->id().':'.$_->form()} (@curpath, $childnode);
+                        # The current path may start outside the cycle, so remove the irrelevant prefix.
+                        shift(@cycle) while($cycle[0] ne $cycle[-1]);
                         print("The cycle: ".join(' ', @cycle)."\n");
                         print("\n");
                     }
