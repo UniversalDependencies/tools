@@ -242,7 +242,7 @@ sub find_cycles
                             print("$comment\n");
                         }
                         my @cycle = map {$_->id().':'.$_->form()} (@curpath, $childnode);
-                        print("The cycle:".join(' ', @cycle)."\n");
+                        print("The cycle: ".join(' ', @cycle)."\n");
                         print("\n");
                     }
                     return 1;
