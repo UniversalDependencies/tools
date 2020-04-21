@@ -35,3 +35,4 @@ parataxis:discourse
 parataxis:insert
 parataxis:obj
 parataxis:parenth
+xcomp:lvc
