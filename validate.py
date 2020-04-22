@@ -1673,7 +1673,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
             'kmr': ['bûn', 'hebûn'],
             'fa':  ['است'],
-            'sa':  ['अस्', 'भू'],
+            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
+            'sa':  ['अस्', 'as', 'भू', 'bhū', 'इ', 'i', 'कृ', 'kṛ', 'शक्', 'śak'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
             'ur':  ['ہے', 'تھا', 'رہ', 'کر', 'جا', 'سک', 'پا', 'چاہیئے', 'ہو', 'پڑ', 'لگ', 'چک', 'لے', 'دے', 'بیٹھ', 'رکھ', 'آ'],
             # The Bhojpuri list is suspiciously long. Some words may actually be inflected forms of other words.
@@ -1877,7 +1878,8 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'hy':  ['եմ'],
             'kmr': ['bûn'],
             'fa':  ['است'],
-            'sa':  ['अस्'],
+            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
+            'sa':  ['अस्', 'as', 'भू', 'bhū'],
             'hi':  ['है', 'था'],
             'ur':  ['ہے', 'تھا'],
             'bho': ['हऽ', 'बा', 'भा'],
