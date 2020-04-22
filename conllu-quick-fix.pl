@@ -110,4 +110,6 @@ sub process_sentence
     {
         unshift(@sentence, "\# sent_id = $isent\n");
     }
+    # Print the fixed sentence.
+    print(join('', @sentence));
 }
