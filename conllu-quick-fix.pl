@@ -84,11 +84,13 @@ sub process_sentence
             {
                 my @a = split(/:/, $a);
                 my @b = split(/:/, $b);
-                my $r = $a[0] <=> $b[0];
+                my $ah = shift(@a);
+                my $bh = shift(@b);
+                my $r = $ah <=> $bh;
                 unless($r)
                 {
-                    my $ad = join(':', $a[1..$#a]);
-                    my $bd = join(':', $b[1..$#b]);
+                    my $ad = join(':', @a);
+                    my $bd = join(':', @b);
                     $r = $ad cmp $bd;
                 }
                 $r
