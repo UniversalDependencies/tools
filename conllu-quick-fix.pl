@@ -92,6 +92,7 @@ sub process_sentence
                 # Each element must be a name=value pair.
                 # Feature names start with [A-Z] and contain [A-Za-z].
                 # Same for feature values, but [0-9] is also allowed there.
+                # Feature names can additionally contain square brackets with layer ("[psor]").
                 foreach my $fv (@feats)
                 {
                     my ($f, $v);
@@ -105,7 +106,7 @@ sub process_sentence
                         $f = $fv;
                         $v = 'Yes';
                     }
-                    $f =~ s/[^A-Za-z]//g;
+                    $f =~ s/[^A-Za-z\[\]]//g;
                     $f =~ s/^(.)/\u\1/;
                     $f = 'X'.$f if($f !~ m/^[A-Z]/);
                     $v =~ s/[^A-Za-z0-9]//g;
