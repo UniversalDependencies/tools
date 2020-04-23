@@ -56,11 +56,17 @@ sub process_sentence
             $mwtto = $1;
             my @f = split(/\t/, $line);
             $collected_text .= $f[1];
+            # Make sure that LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL and DEPS of a multiword token are empty.
+            for(my $i = 2; $i <= 8; $i++)
+            {
+                $f[$i] = '_';
+            }
             my @misc = split(/\|/, $f[9]);
             unless(grep {m/^SpaceAfter=No$/} (@misc))
             {
                 $collected_text .= ' ';
             }
+            $line = join("\t", @f);
         }
         elsif($line =~ m/^\d+\t/)
         {
@@ -74,12 +80,110 @@ sub process_sentence
                     $collected_text .= ' ';
                 }
             }
+            # Make sure that UPOS is not empty.
+            if($f[3] eq '_' || $f[3] eq '')
+            {
+                $f[3] = 'X';
+            }
+            # Make sure that FEATS is either '_' or it follows the prescribed pattern.
+            if($f[5] ne '_')
+            {
+                my @feats = split(/\|/, $f[5]);
+                # Each element must be a name=value pair.
+                # Feature names start with [A-Z] and contain [A-Za-z].
+                # Same for feature values, but [0-9] is also allowed there.
+                foreach my $fv (@feats)
+                {
+                    my ($f, $v);
+                    if($fv =~ m/^(.+)=(.+)$/)
+                    {
+                        $f = $1;
+                        $v = $2;
+                    }
+                    else
+                    {
+                        $f = $fv;
+                        $v = 'Yes';
+                    }
+                    $f =~ s/[^A-Za-z]//g;
+                    $f =~ s/^(.)/\u\1/;
+                    $f = 'X'.$f if($f !~ m/^[A-Z]/);
+                    $v =~ s/[^A-Za-z0-9]//g;
+                    $v =~ s/^(.)/\u\1/;
+                    $v = 'X'.$v if($v !~ m/^[A-Z0-9]/);
+                    $fv = "$f=$v";
+                }
+                @feats = sort {lc($a) cmp lc($b)} (@feats);
+                $f[5] = join('|', @feats);
+            }
+            # Make sure that HEAD is numeric and DEPREL is not empty.
+            if($f[6] !~ m/^\d+$/)
+            {
+                # We will attach node 1 to node 0, and all other nodes to 1.
+                # This will produce a valid tree if we apply it to all words,
+                # i.e., none of them had a valid parent before. Otherwise, it
+                # may not work as we may be introducing cycles!
+                if($f[0] == 1)
+                {
+                    $f[6] = 0;
+                    $f[7] = 'root';
+                }
+                else
+                {
+                    $f[6] = 1;
+                    if($f[7] eq '_' || $f[7] eq '')
+                    {
+                        $f[7] = 'dep';
+                    }
+                }
+            }
+            $line = join("\t", @f);
+        }
+        elsif($line =~ m/^\d+\.\d+\t/)
+        {
+            # Empty nodes must have empty HEAD and DEPREL.
+            my @f = split(/\t/, $line);
+            $f[6] = '_';
+            $f[7] = '_';
+            $line = join("\t", @f);
         }
         # For both surface nodes and empty nodes, check the order of deps.
         if($line =~ m/^\d+(\.\d+)?\t/)
         {
             my @f = split(/\t/, $line);
             my @deps = split(/\|/, $f[8]);
+            # Make sure that the deps do not contain disallowed characters.
+            foreach my $dep (@deps)
+            {
+                my ($h, $d);
+                if($dep =~ m/^(\d+(?:\.\d+)?):(.+)$/)
+                {
+                    $h = $1;
+                    $d = $2;
+                }
+                else
+                {
+                    $h = 1;
+                    $d = $dep;
+                }
+                if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                {
+                    # First attempt: just lowercase and remove strange characters.
+                    $d = lc($d);
+                    $d =~ s/[^:_a-z\p{Ll}\p{Lm}\p{Lo}\p{M}]//g;
+                }
+                if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                {
+                    # Second attempt: everything after the first colon is simply 'extra'.
+                    $d =~ s/^([^:]*):.*$/$1:extra/;
+                }
+                if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                {
+                    # Last attempt: just 'dep'.
+                    $d = 'dep';
+                }
+                $dep = "$h:$d";
+            }
             @deps = sort
             {
                 my @a = split(/:/, $a);
