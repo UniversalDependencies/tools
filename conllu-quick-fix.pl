@@ -72,27 +72,29 @@ sub process_sentence
                 if($f[1] eq substr($resttext, 0, $l))
                 {
                     $resttext = substr($resttext, $l);
-                    if($resttext =~ s/^\s+//)
+                    # Now check SpaceAfter=No against the resttext. Exception: end of sentence cannot be verified.
+                    unless($resttext eq '')
                     {
-                        # No spaces follow the form in $resttext. There must not be SpaceAfter=No unless this is the last token of the sentence.
-                        unless($resttext eq '')
+                        if($resttext =~ s/^\s+//)
                         {
+                            # We just removed leading space(s) from $resttext. There must not be SpaceAfter=No in MISC.
                             @misc = grep {!m/^SpaceAfter=No$/} (@misc);
                             if(scalar(@misc) == 0)
                             {
                                 push(@misc, '_');
                             }
                         }
-                    }
-                    else
-                    {
-                        if(scalar(@misc) == 1 && $misc[0] eq '_')
+                        else
                         {
-                            $misc[0] = 'SpaceAfter=No';
-                        }
-                        elsif(!grep {m/^SpaceAfter=No$/} (@misc))
-                        {
-                            push(@misc, 'SpaceAfter=No');
+                            # No spaces follow the form in $resttext. There must be SpaceAfter=No in MISC.
+                            if(scalar(@misc) == 1 && $misc[0] eq '_')
+                            {
+                                $misc[0] = 'SpaceAfter=No';
+                            }
+                            elsif(!grep {m/^SpaceAfter=No$/} (@misc))
+                            {
+                                push(@misc, 'SpaceAfter=No');
+                            }
                         }
                     }
                 }
@@ -124,27 +126,29 @@ sub process_sentence
                     if($f[1] eq substr($resttext, 0, $l))
                     {
                         $resttext = substr($resttext, $l);
-                        if($resttext =~ s/^\s+//)
+                        # Now check SpaceAfter=No against the resttext. Exception: end of sentence cannot be verified.
+                        unless($resttext eq '')
                         {
-                            # No spaces follow the form in $resttext. There must not be SpaceAfter=No unless this is the last token of the sentence.
-                            unless($resttext eq '')
+                            if($resttext =~ s/^\s+//)
                             {
+                                # We just removed leading space(s) from $resttext. There must not be SpaceAfter=No in MISC.
                                 @misc = grep {!m/^SpaceAfter=No$/} (@misc);
                                 if(scalar(@misc) == 0)
                                 {
                                     push(@misc, '_');
                                 }
                             }
-                        }
-                        else
-                        {
-                            if(scalar(@misc) == 1 && $misc[0] eq '_')
+                            else
                             {
-                                $misc[0] = 'SpaceAfter=No';
-                            }
-                            elsif(!grep {m/^SpaceAfter=No$/} (@misc))
-                            {
-                                push(@misc, 'SpaceAfter=No');
+                                # No spaces follow the form in $resttext. There must be SpaceAfter=No in MISC.
+                                if(scalar(@misc) == 1 && $misc[0] eq '_')
+                                {
+                                    $misc[0] = 'SpaceAfter=No';
+                                }
+                                elsif(!grep {m/^SpaceAfter=No$/} (@misc))
+                                {
+                                    push(@misc, 'SpaceAfter=No');
+                                }
                             }
                         }
                     }
