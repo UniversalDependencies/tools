@@ -74,6 +74,14 @@ sub process_sentence
                     $resttext = substr($resttext, $l);
                     if($resttext =~ s/^\s+//)
                     {
+                        @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                        if(scalar(@misc) == 0)
+                        {
+                            push(@misc, '_');
+                        }
+                    }
+                    else
+                    {
                         if(scalar(@misc) == 1 && $misc[0] eq '_')
                         {
                             $misc[0] = 'SpaceAfter=No';
@@ -81,14 +89,6 @@ sub process_sentence
                         elsif(!grep {m/^SpaceAfter=No$/} (@misc))
                         {
                             push(@misc, 'SpaceAfter=No');
-                        }
-                    }
-                    else
-                    {
-                        @misc = grep {!m/^SpaceAfter=No$/} (@misc);
-                        if(scalar(@misc) == 0)
-                        {
-                            push(@misc, '_');
                         }
                     }
                 }
@@ -122,6 +122,14 @@ sub process_sentence
                         $resttext = substr($resttext, $l);
                         if($resttext =~ s/^\s+//)
                         {
+                            @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                            if(scalar(@misc) == 0)
+                            {
+                                push(@misc, '_');
+                            }
+                        }
+                        else
+                        {
                             if(scalar(@misc) == 1 && $misc[0] eq '_')
                             {
                                 $misc[0] = 'SpaceAfter=No';
@@ -129,14 +137,6 @@ sub process_sentence
                             elsif(!grep {m/^SpaceAfter=No$/} (@misc))
                             {
                                 push(@misc, 'SpaceAfter=No');
-                            }
-                        }
-                        else
-                        {
-                            @misc = grep {!m/^SpaceAfter=No$/} (@misc);
-                            if(scalar(@misc) == 0)
-                            {
-                                push(@misc, '_');
                             }
                         }
                     }
