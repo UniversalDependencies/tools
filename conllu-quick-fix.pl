@@ -269,56 +269,66 @@ sub process_sentence
         if($line =~ m/^\d+(\.\d+)?\t/)
         {
             my @f = split(/\t/, $line);
-            my @deps = split(/\|/, $f[8]);
-            # Make sure that the deps do not contain disallowed characters.
-            foreach my $dep (@deps)
+            unless($f[8] eq '_')
             {
-                my ($h, $d);
-                if($dep =~ m/^(\d+(?:\.\d+)?):(.+)$/)
+                my @deps = split(/\|/, $f[8]);
+                # Remove self-loops.
+                @deps = grep {my $h; if(m/^(\d+):/) {$h = $1;} defined($h) && $h!=$f[0]} (@deps);
+                if(scalar(@deps)==0)
                 {
-                    $h = $1;
-                    $d = $2;
+                    # DEPS was not empty, so there is an enhanced graph and we should not make DEPS empty now.
+                    push(@deps, '0:root');
                 }
-                else
+                # Make sure that the deps do not contain disallowed characters.
+                foreach my $dep (@deps)
                 {
-                    $h = 1;
-                    $d = $dep;
+                    my ($h, $d);
+                    if($dep =~ m/^(\d+(?:\.\d+)?):(.+)$/)
+                    {
+                        $h = $1;
+                        $d = $2;
+                    }
+                    else
+                    {
+                        $h = 1;
+                        $d = $dep;
+                    }
+                    if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                    {
+                        # First attempt: just lowercase and remove strange characters.
+                        $d = lc($d);
+                        $d =~ s/[^:_a-z\p{Ll}\p{Lm}\p{Lo}\p{M}]//g;
+                    }
+                    if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                    {
+                        # Second attempt: everything after the first colon is simply 'extra'.
+                        $d =~ s/^([^:]*):.*$/$1:extra/;
+                    }
+                    if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                    {
+                        # Last attempt: just 'dep'.
+                        $d = 'dep';
+                    }
+                    $dep = "$h:$d";
                 }
-                if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+                @deps = sort
                 {
-                    # First attempt: just lowercase and remove strange characters.
-                    $d = lc($d);
-                    $d =~ s/[^:_a-z\p{Ll}\p{Lm}\p{Lo}\p{M}]//g;
+                    my @a = split(/:/, $a);
+                    my @b = split(/:/, $b);
+                    my $ah = shift(@a);
+                    my $bh = shift(@b);
+                    my $r = $ah <=> $bh;
+                    unless($r)
+                    {
+                        my $ad = join(':', @a);
+                        my $bd = join(':', @b);
+                        $r = $ad cmp $bd;
+                    }
+                    $r
                 }
-                if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
-                {
-                    # Second attempt: everything after the first colon is simply 'extra'.
-                    $d =~ s/^([^:]*):.*$/$1:extra/;
-                }
-                if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
-                {
-                    # Last attempt: just 'dep'.
-                    $d = 'dep';
-                }
-                $dep = "$h:$d";
+                (@deps);
+                $f[8] = join('|', @deps);
             }
-            @deps = sort
-            {
-                my @a = split(/:/, $a);
-                my @b = split(/:/, $b);
-                my $ah = shift(@a);
-                my $bh = shift(@b);
-                my $r = $ah <=> $bh;
-                unless($r)
-                {
-                    my $ad = join(':', @a);
-                    my $bd = join(':', @b);
-                    $r = $ad cmp $bd;
-                }
-                $r
-            }
-            (@deps);
-            $f[8] = join('|', @deps);
             $line = join("\t", @f);
         }
         $line .= "\n";
