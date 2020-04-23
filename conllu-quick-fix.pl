@@ -91,7 +91,7 @@ sub process_sentence
                 my @feats = split(/\|/, $f[5]);
                 # Each element must be a name=value pair.
                 # Feature names start with [A-Z] and contain [A-Za-z].
-                # Same for feature values, but [0-9] is also allowed there.
+                # Same for feature values, but [0-9] is also allowed there, and comma (',') may separate multi-values.
                 # Feature names can additionally contain square brackets with layer ("[psor]").
                 foreach my $fv (@feats)
                 {
@@ -109,7 +109,7 @@ sub process_sentence
                     $f =~ s/[^A-Za-z\[\]]//g;
                     $f =~ s/^(.)/\u\1/;
                     $f = 'X'.$f if($f !~ m/^[A-Z]/);
-                    $v =~ s/[^A-Za-z0-9]//g;
+                    $v =~ s/[^A-Za-z0-9,]//g;
                     $v =~ s/^(.)/\u\1/;
                     $v = 'X'.$v if($v !~ m/^[A-Z0-9]/);
                     $fv = "$f=$v";
