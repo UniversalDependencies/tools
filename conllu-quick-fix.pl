@@ -38,6 +38,7 @@ sub process_sentence
     my @sentence = @_;
     my $sentid;
     my $text;
+    my $resttext;
     my $collected_text = '';
     my $mwtto;
     foreach my $line (@sentence)
@@ -50,22 +51,58 @@ sub process_sentence
         elsif($line =~ m/^\#\s*text\s*=\s*(.+)$/)
         {
             $text = $1;
+            $resttext = $text;
         }
         elsif($line =~ m/^\d+-(\d+)\t/)
         {
             $mwtto = $1;
             my @f = split(/\t/, $line);
-            $collected_text .= $f[1];
             # Make sure that LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL and DEPS of a multiword token are empty.
             for(my $i = 2; $i <= 8; $i++)
             {
                 $f[$i] = '_';
             }
+            # Collect text from FORM. We will use it if there was no # text attribute.
             my @misc = split(/\|/, $f[9]);
+            $collected_text .= $f[1];
+            # If there was a # text attribute, we will check and fix SpaceAfter=No instead.
+            if(defined($resttext))
+            {
+                my $l = length($f[1]);
+                if($f[1] eq substr($resttext, 0, $l))
+                {
+                    $resttext = substr($resttext, $l);
+                    if($resttext =~ s/^\s+//)
+                    {
+                        if(scalar(@misc) == 1 && $misc[0] eq '_')
+                        {
+                            $misc[0] = 'SpaceAfter=No';
+                        }
+                        elsif(!grep {m/^SpaceAfter=No$/} (@misc))
+                        {
+                            push(@misc, 'SpaceAfter=No');
+                        }
+                    }
+                    else
+                    {
+                        @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                        if(scalar(@misc) == 0)
+                        {
+                            push(@misc, '_');
+                        }
+                    }
+                }
+                else
+                {
+                    print STDERR ("WARNING: sentence text comment exists and the form '$f[1]' does not match the rest of the text '$resttext'; giving up.\n");
+                    $resttext = undef;
+                }
+            }
             unless(grep {m/^SpaceAfter=No$/} (@misc))
             {
                 $collected_text .= ' ';
             }
+            $f[9] = join('|', @misc);
             $line = join("\t", @f);
         }
         elsif($line =~ m/^\d+\t/)
@@ -73,12 +110,57 @@ sub process_sentence
             my @f = split(/\t/, $line);
             unless(defined($mwtto) && $f[0]<=$mwtto)
             {
-                $collected_text .= $f[1];
+                # Collect text from FORM. We will use it if there was no # text attribute.
                 my @misc = split(/\|/, $f[9]);
+                $collected_text .= $f[1];
+                # If there was a # text attribute, we will check and fix SpaceAfter=No instead.
+                if(defined($resttext))
+                {
+                    my $l = length($f[1]);
+                    if($f[1] eq substr($resttext, 0, $l))
+                    {
+                        $resttext = substr($resttext, $l);
+                        if($resttext =~ s/^\s+//)
+                        {
+                            if(scalar(@misc) == 1 && $misc[0] eq '_')
+                            {
+                                $misc[0] = 'SpaceAfter=No';
+                            }
+                            elsif(!grep {m/^SpaceAfter=No$/} (@misc))
+                            {
+                                push(@misc, 'SpaceAfter=No');
+                            }
+                        }
+                        else
+                        {
+                            @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                            if(scalar(@misc) == 0)
+                            {
+                                push(@misc, '_');
+                            }
+                        }
+                    }
+                    else
+                    {
+                        print STDERR ("WARNING: sentence text comment exists and the form '$f[1]' does not match the rest of the text '$resttext'; giving up.\n");
+                        $resttext = undef;
+                    }
+                }
                 unless(grep {m/^SpaceAfter=No$/} (@misc))
                 {
                     $collected_text .= ' ';
                 }
+                $f[9] = join('|', @misc);
+            }
+            else # MISC of words within a multi-word token must not contain SpaceAfter=No
+            {
+                my @misc = split(/\|/, $f[9]);
+                @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                if(scalar(@misc) == 0)
+                {
+                    push(@misc, '_');
+                }
+                $f[9] = join('|', @misc);
             }
             # Make sure that UPOS is not empty.
             if($f[3] eq '_' || $f[3] eq '')
