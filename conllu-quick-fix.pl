@@ -249,7 +249,7 @@ sub process_sentence
                     # First attempt: remove the subtype.
                     $f[7] =~ s/:.*//;
                 }
-                if($f[7] !~ m/^($udeprels)$/)
+                if($f[7] !~ m/^($udeprels)(:[a-z]+)?$/)
                 {
                     # Second attempt: take 'dep'.
                     $f[7] = 'dep';
