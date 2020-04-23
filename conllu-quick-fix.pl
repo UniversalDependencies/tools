@@ -74,10 +74,14 @@ sub process_sentence
                     $resttext = substr($resttext, $l);
                     if($resttext =~ s/^\s+//)
                     {
-                        @misc = grep {!m/^SpaceAfter=No$/} (@misc);
-                        if(scalar(@misc) == 0)
+                        # No spaces follow the form in $resttext. There must not be SpaceAfter=No unless this is the last token of the sentence.
+                        unless($resttext eq '')
                         {
-                            push(@misc, '_');
+                            @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                            if(scalar(@misc) == 0)
+                            {
+                                push(@misc, '_');
+                            }
                         }
                     }
                     else
@@ -122,10 +126,14 @@ sub process_sentence
                         $resttext = substr($resttext, $l);
                         if($resttext =~ s/^\s+//)
                         {
-                            @misc = grep {!m/^SpaceAfter=No$/} (@misc);
-                            if(scalar(@misc) == 0)
+                            # No spaces follow the form in $resttext. There must not be SpaceAfter=No unless this is the last token of the sentence.
+                            unless($resttext eq '')
                             {
-                                push(@misc, '_');
+                                @misc = grep {!m/^SpaceAfter=No$/} (@misc);
+                                if(scalar(@misc) == 0)
+                                {
+                                    push(@misc, '_');
+                                }
                             }
                         }
                         else
