@@ -232,6 +232,29 @@ sub process_sentence
                     }
                 }
             }
+            # Make sure that DEPREL contains only allowed strings (but no language-specific list is checked).
+            else
+            {
+                my $udeprels = 'nsubj|obj|iobj|csubj|ccomp|xcomp|obl|vocative|expl|dislocated|advcl|advmod|discourse|aux|cop|mark|nmod|appos|nummod|acl|amod|det|clf|case|conj|cc|fixed|flat|compound|list|parataxis|orphan|goeswith|reparandum|punct|root|dep';
+                if($f[7] =~ m/^root(:|$)/ && $f[6] != 0)
+                {
+                    $f[7] = 'dep';
+                }
+                if($f[7] !~ m/^root(:|$)/ && $f[6] == 0)
+                {
+                    $f[7] = 'root';
+                }
+                if($f[7] !~ m/^($udeprels)(:[a-z]+)?$/)
+                {
+                    # First attempt: remove the subtype.
+                    $f[7] =~ s/:.*//;
+                }
+                if($f[7] !~ m/^($udeprels)$/)
+                {
+                    # Second attempt: take 'dep'.
+                    $f[7] = 'dep';
+                }
+            }
             $line = join("\t", @f);
         }
         elsif($line =~ m/^\d+\.\d+\t/)
