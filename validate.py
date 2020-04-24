@@ -1640,7 +1640,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'fr':  ['être', 'avoir', 'faire', 'aller', 'pouvoir', 'savoir', 'vouloir', 'devoir'],
             'it':  ['essere', 'stare', 'avere', 'fare', 'andare', 'venire', 'potere', 'sapere', 'volere', 'dovere'],
             'ro':  ['fi', 'avea', 'putea', 'ști', 'vrea', 'trebui'],
-            'la':  ['sum'],
+            #In Late Latin, also habeo appears as an auxiliary (like in the modern Romance languages), whereas it can happen a confusion between some forms of sum and fio (originally "to be made")
+			'la':  ['sum','habeo','fio'],
             'cs':  ['být', 'bývat', 'bývávat'],
             'sk':  ['byť', 'bývať', 'by'],
             'hsb': ['być'],
