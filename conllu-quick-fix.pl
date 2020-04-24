@@ -111,6 +111,7 @@ sub process_sentence
             $f[9] = join('|', @misc);
             $line = join("\t", @f);
         }
+        # Normal nodes (they may or may not be part of a multi-word token).
         elsif($line =~ m/^\d+\t/)
         {
             my @f = split(/\t/, $line);
@@ -174,6 +175,10 @@ sub process_sentence
                 }
                 $f[9] = join('|', @misc);
             }
+            # Make sure that LEMMA does not contain leading or trailing spaces.
+            $f[2] =~ s/^\s+//;
+            $f[2] =~ s/\s+$//;
+            $f[2] = '_' if($f[2] eq '');
             # Make sure that UPOS is not empty.
             if($f[3] eq '_' || $f[3] eq '')
             {
