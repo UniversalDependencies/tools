@@ -1,3 +1,5 @@
 AdpType=Prep
 NumForm=Digit
 VerbType=Mod
+Number[psor]=Sing
+Number[psor]=Plur
