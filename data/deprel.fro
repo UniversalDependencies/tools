@@ -6,9 +6,11 @@ cc:nc
 mark:advmod
 mark:obj
 mark:obl
+nmod:appos
 nsubj:advmod
 nsubj:obj
 obj:advmod
 obj:advneg
 obj:obl
 obl:advmod
+obl:mod
