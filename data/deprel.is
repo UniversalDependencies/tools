@@ -1,8 +1,6 @@
 acl:relcl
-aux:pass
 compound:prt
-csubj:pass
+flat:foreign
 flat:name
 nmod:poss
-nsubj:pass
 obl:arg
