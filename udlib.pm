@@ -221,7 +221,9 @@ sub get_ud_files_and_codes
 sub read_readme
 {
     my $folder = shift;
-    my $filename = (-f "$folder/README.txt") ? "$folder/README.txt" : "$folder/README.md";
+    my $path = shift; # path to the superordinate folder; default: the current folder
+    $path = '.' if(!defined($path));
+    my $filename = (-f "$path/$folder/README.txt") ? "$path/$folder/README.txt" : "$path/$folder/README.md";
     open(README, $filename) or return undef;
     binmode(README, ':utf8');
     my %metadata;

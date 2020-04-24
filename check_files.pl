@@ -39,7 +39,9 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.5;
+my $current_release = 2.6;
+# Month and year when the next release is expected. We use it in the announcement.
+my $next_release_expected = 'November 2020';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
@@ -48,13 +50,14 @@ my $oldpath = '/net/data/universal-dependencies-2.4';
 ###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
 (
-    'release'  => \$current_release,
-    'oldpath'  => \$oldpath,
-    'future'   => \$include_future,
-    'pull'     => \$pull,
-    'validate' => \$validate,
-    'stats'    => \$recompute_stats,
-    'tag=s'    => \$tag
+    'release'       => \$current_release,
+    'next-expected' => \$next_release_expected,
+    'oldpath'       => \$oldpath,
+    'future'        => \$include_future,
+    'pull'          => \$pull,
+    'validate'      => \$validate,
+    'stats'         => \$recompute_stats,
+    'tag=s'         => \$tag
 );
 
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
@@ -137,6 +140,7 @@ my %families_with_data;
 my %licenses;
 my %genres;
 my %contributors;
+my %contributions; # for each contributor find treebanks they contributed to
 my %contacts;
 my %stats;
 my %nw; # number of words in train|dev|test|all; indexed by folder name
@@ -269,10 +273,14 @@ foreach my $folder (@folders)
             }
             elsif($folder eq 'UD_German-HDT')
             {
-                # The data is split into two files because of the size limits.
-                my $stats = collect_statistics_about_ud_file("$prefix-train-a.conllu");
+                # The data is split into four files because of the size limits.
+                my $stats = collect_statistics_about_ud_file("$prefix-train-a-1.conllu");
                 $nwtrain = $stats->{nword};
-                $stats = collect_statistics_about_ud_file("$prefix-train-b.conllu");
+                $stats = collect_statistics_about_ud_file("$prefix-train-a-2.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b-1.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b-2.conllu");
                 $nwtrain += $stats->{nword};
             }
             else # all other treebanks
@@ -330,7 +338,9 @@ foreach my $folder (@folders)
             # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
             # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
             # Exception: ParTUT has some portions smaller because of other limitations (sync across languages and with UD_Italian).
-            if($nwall>10000 && $nwtest<10000 && $folder !~ m/-ParTUT$/)
+            # Exception: TWITTIRO overlaps with POSTWITA and tries to match its data split.
+            # Exception: UD_Scottish_Gaelic-ARCOSG is close to 10K test tokens but they could not get there if they did not want to split documents.
+            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-ParTUT|Italian-TWITTIRO|Scottish_Gaelic-ARCOSG)$/)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
@@ -367,6 +377,7 @@ foreach my $folder (@folders)
                     $contributor =~ s/^\s+//;
                     $contributor =~ s/\s+$//;
                     $contributors{$contributor}++;
+                    $contributions{$contributor}{$folder}++;
                 }
             }
             if($metadata->{'Contact'} ne '')
@@ -453,7 +464,14 @@ foreach my $contributor (@contributors)
 {
     $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
 }
-my @contributors = sort {my $v; $v = -1 if($a eq 'Nivre, Joakim'); $v = 1 if($b eq 'Nivre, Joakim'); unless($v) { $v = $trid{$a} cmp $trid{$b}; } $v} (keys(%contributors));
+# Since release 2.5 we go by "Zeman, Nivre, and alphabetically others".
+# Normal trid values are numeric strings. Prepend '!' and it will sort before
+# any numeric value.
+$trid{'Zeman, Daniel'} = '!01';
+$trid{'Nivre, Joakim'} = '!02';
+@contributors = sort {$trid{$a} cmp $trid{$b}} (keys(%contributors));
+# Is the same person spelled differently in different treebanks?
+get_potentially_misspelled_contributors(\%contributions, @contributors);
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
 print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n");
 my @contacts = sort(keys(%contacts));
@@ -537,8 +555,8 @@ my $announcement = get_announcement
     \@languages,
     \@families,
     'less than 1,000 tokens',
-    'almost 3 million tokens',
-    'November 2019', # expected next release
+    'over 3 million tokens',
+    $next_release_expected,
     \@contributors_firstlast,
     $changelog
 );
@@ -553,40 +571,21 @@ print($announcement);
 sub get_validation_results
 {
     my %valid;
-    my $frozen = 0;
-    if($frozen)
+    # After we used this script to select the treebanks automatically,
+    # we typically freeze the list in an external file called
+    # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
+    # Download the current validation report. (We could run the validator ourselves
+    # but it would take a lot of time.)
+    my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+    if(scalar(@validation_report)==0)
     {
-        # After we used this script to select the treebanks automatically,
-        # we typically freeze the list in an external file called
-        # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
-        # Previously (for the CoNLL 2017 and 2018 shared tasks) we had a
-        # hard-coded frozen list directly here. This method will probably not
-        # be needed again, and this block of code will be removed.
-        my @presel = qw(
-        UD_Afrikaans-AfriBooms UD_Ancient_Greek-PROIEL UD_Ancient_Greek-Perseus
-        UD_Ukrainian-IU UD_Upper_Sorbian-UFAL UD_Urdu-UDTB UD_Uyghur-UDT UD_Vietnamese-VTB
-        );
-        print('The treebanks for the release 2.2 have been pre-selected: ', scalar(@stpresel), ' shared task and ', scalar(@nstpresel), " non-shared task treebanks.\n");
-        foreach my $treebank (@presel)
-        {
-            $valid{$treebank}++;
-        }
+        print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
     }
-    else
+    foreach my $line (@validation_report)
     {
-        # Download the current validation report. (We could run the validator ourselves
-        # but it would take a lot of time.)
-        my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
-        if(scalar(@validation_report)==0)
+        if($line =~ m/^(UD_.+): (VALID|LEGACY)/)
         {
-            print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
-        }
-        foreach my $line (@validation_report)
-        {
-            if($line =~ m/^(UD_.+): VALID$/)
-            {
-                $valid{$1}++;
-            }
+            $valid{$1}++;
         }
     }
     return \%valid;
@@ -608,7 +607,26 @@ sub get_files
     my @files = readdir(DIR);
     closedir(DIR);
     my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-    # Look for additional files. (Do we want to include them in the release package?)
+    # Look for additional files so they can be reported.
+    # Some extra files are tolerated in the Github repository although we do not include them in the release package; these are not reported.
+    my @tolerated =
+    (
+        # tolerated but not released
+        '\.\.?',
+        '\.git(ignore|attributes)?',
+        '\.travis\.yml',
+        'not-to-release',
+        # expected and released
+        'README\.(txt|md)',
+        'LICENSE\.txt',
+        'CONTRIBUTING\.md',
+        $prefix.'-(train|dev|test)\.conllu',
+        'stats\.xml',
+        # split data files of large treebanks
+        'cs_pdt-ud-train-[clmv]\.conllu',
+        'de_hdt-ud-train-[ab]-[12]\.conllu'
+    );
+    my $tolerated_re = join('|', @tolerated);
     my @extrafiles = map
     {
         $_ .= '/' if(-d $_);
@@ -616,7 +634,7 @@ sub get_files
     }
     grep
     {
-        !m/^(\.\.?|\.git(ignore|attributes)?|\.travis\.yml|not-to-release|README\.(txt|md)|LICENSE\.txt|CONTRIBUTING\.md|$prefix-(train|dev|test)\.conllu|cs_pdt-ud-train-[clmv]\.conllu|de_hdt-ud-train-[ab]\.conllu|stats\.xml)$/
+        !m/^($tolerated_re)$/
     }
     (@files);
     # Some treebanks have exceptional extra files that have been approved and released previously.
@@ -697,11 +715,11 @@ sub check_files
     }
     elsif($folder eq 'UD_German-HDT')
     {
-        # The data is split into two files because of the size limits.
-        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu")
+        # The data is split into four files because of the size limits.
+        if(!-f "$prefix-train-a-1.conllu" || !-f "$prefix-train-a-2.conllu" || !-f "$prefix-train-b-1.conllu" || !-f "$prefix-train-b-2.conllu")
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab].conllu\n");
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab]-[12].conllu\n");
             $$n_errors++;
         }
         else
@@ -777,7 +795,8 @@ sub check_metadata
             '2.1' => ['Afrikaans-AfriBooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL'],
             '2.2' => ['Amharic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB'],
             '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT'],
-            '2.4' => ['Assyrian-AS', 'Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'German-LIT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_Russian-RNC', 'Old_Russian-TOROT', 'Polish-PUD', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB']
+            '2.4' => ['Assyrian-AS', 'Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'German-LIT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_Russian-RNC', 'Old_Russian-TOROT', 'Polish-PUD', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB'],
+            '2.5' => ['Bhojpuri-BHTB', 'Chinese-GSDSimp', 'English-Pronouns', 'Italian-TWITTIRO', 'Komi_Permyak-UH', 'Livvi-KKPP', 'Moksha-JR', 'Romanian-SiMoNERo', 'Scottish_Gaelic-ARCOSG', 'Skolt_Sami-Giellagas', 'Swiss_German-UZH']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
@@ -1220,4 +1239,130 @@ sub is_valid_conllu
         return ! $exitcode;
     }
     # We should never arrive here.
+}
+
+
+
+#------------------------------------------------------------------------------
+# A contributor may be listed at more than one treebank. If their name is not
+# spelled always the same way, they will be listed as multiple people. This
+# function tries to identify such cases and issue warnings.
+#------------------------------------------------------------------------------
+sub get_potentially_misspelled_contributors
+{
+    # Other tests we could try:
+    # - If people use comma instead of semicolon to separate two contributors,
+    #   we will think it is one person with multiple given names and multiple
+    #   surnames. I do not know how to detect this; Spanish people can have
+    #   two given names and two surnames. But this error has happened already.
+    # - The overlap computed here may not work if an author has a middle name which is sometimes omitted ("Francis (Morton) Tyers").
+    #   Hence try also overlap of characters per word: if there are at least two words with 80%+ character overlap,
+    #   and one or more other words that have no clear counterpart on the other side, report suspicion.
+    my $contributions = shift; # hashref: for each contributor, hash of treebanks they contributed to
+    my $ok = 1;
+    my @contributors = @_;
+    my @character_hashes;
+    for(my $i = 0; $i <= $#contributors; $i++)
+    {
+        $character_hashes[$i] = get_character_hash($contributors[$i]);
+        # If there is no comma in the name, it means the name is not divided to given names and surnames.
+        # This is rarely correct, so we will issue a warning.
+        if(!exists($character_hashes[$i]{','}) || $character_hashes[$i]{','} < 1)
+        {
+            print("WARNING: '$contributors[$i]' is not divided to given names and surnames.\n");
+            $ok = 0;
+            $problematic_names{$contributors[$i]}++;
+        }
+        # If there are two or more commas in the name, it is an error.
+        # Most likely someone used commas instead of semicolons to separate persons.
+        elsif($character_hashes[$i]{','} > 1)
+        {
+            print("WARNING: '$contributors[$i]' contains too many commas. There should be only one, separating surname from given names.\n");
+            $ok = 0;
+            $problematic_names{$contributors[$i]}++;
+        }
+    }
+    # We must compare every name with every other name (N^2).
+    # Hashing will not help us identify suspicious pairs.
+    my %problematic_names;
+    for(my $i = 0; $i <= $#contributors; $i++)
+    {
+        for(my $j = $i+1; $j <= $#contributors; $j++)
+        {
+            my $similarity = get_character_overlap($contributors[$i], $contributors[$j], $character_hashes[$i], $character_hashes[$j]);
+            # Threshold found empirically to minimize false alarms.
+            if($similarity >= 0.83)
+            {
+                print("WARNING: '$contributors[$i]' is similar ($similarity) to '$contributors[$j]'\n");
+                $ok = 0;
+                $problematic_names{$contributors[$i]}++;
+                $problematic_names{$contributors[$j]}++;
+            }
+        }
+    }
+    # Print an empty line if there were warnings.
+    # Also report the treebanks the problematic contributors contributed to.
+    if(!$ok)
+    {
+        my @pn = sort(keys(%problematic_names));
+        foreach my $pn (@pn)
+        {
+            print("$pn: ", join(', ', sort(keys(%{$contributions->{$pn}}))), "\n");
+        }
+        print("\n");
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Gets character frequencies from a string so that string similarity can be
+# assessed.
+#------------------------------------------------------------------------------
+sub get_character_hash
+{
+    my $name = shift;
+    # Get list of characters. Do not even lowercase them (case change would also
+    # prevent us from merging the names as one person in global metadata).
+    my @characters = split(//, $name);
+    my %characters;
+    foreach my $c (@characters)
+    {
+        $characters{$c}++;
+    }
+    return \%characters;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Compares character frequencies of two strings relatively to the lengths of
+# the strings and returns a similarity measure (maximum is similarity = 1) for
+# identical strings.
+#------------------------------------------------------------------------------
+sub get_character_overlap
+{
+    my $name1 = shift;
+    my $name2 = shift;
+    my $ch1 = shift;
+    my $ch2 = shift;
+    my %chunion;
+    foreach my $c (keys(%{$ch1}), keys(%{$ch2}))
+    {
+        $chunion{$c}++;
+    }
+    my $diff = 0;
+    foreach my $c (keys(%chunion))
+    {
+        $diff += abs($ch1->{$c} - $ch2->{$c});
+        # my $ldiff = abs($ch1->{$c} - $ch2->{$c});
+        # print("character = '$c'; left = $ch1->{$c}; right = $ch2->{$c}; diff = $ldiff\n");
+    }
+    # If 1 character is replaced by 1 character (e.g. "ž" --> "z"), we have 2 diff points but we will count it as 1.
+    # Consequently, if a character is inserted on one side (no counterpart on the other side), we count it as 0.5.
+    $diff /= 2;
+    my $avglength = (length($name1) + length($name2)) / 2;
+    # my $nuc = scalar(keys(%chunion));
+    # print("name1 = '$name1'; name2 = '$name2'; unique chars = $nuc; diff = $diff; avglength = $avglength\n");
+    return 1 - ($diff / $avglength);
 }

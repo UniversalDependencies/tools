@@ -161,12 +161,16 @@ def trees(inp, tag_sets, args):
             cols=line.split(u"\t")
             if len(cols)!=COLCOUNT:
                 testid = 'number-of-columns'
-                testmessage = 'The line has %d columns but %d are expected.' % (len(cols), COLCOUNT)
+                testmessage = 'The line has %d columns but %d are expected. The contents of the columns will not be checked.' % (len(cols), COLCOUNT)
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-            lines.append(cols)
-            validate_cols_level1(cols)
-            if args.level > 1:
-                validate_cols(cols,tag_sets,args)
+            # If there is an unexpected number of columns, do not test their contents.
+            # Maybe the contents belongs to a different column. And we could see
+            # an exception if a column value is missing.
+            else:
+                lines.append(cols)
+                validate_cols_level1(cols)
+                if args.level > 1:
+                    validate_cols(cols,tag_sets,args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = "Spurious line: '%s'. All non-empty lines should start with a digit or the # character." % (line)
@@ -1611,12 +1615,15 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         auxdict = {
             # ChrisManning 2019/04: Allow 'get' as aux for get passive construction. And 'ought'
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get', 'ought'],
-            'nl':  ['zijn', 'hebben', 'worden', 'kunnen', 'mogen', 'zullen', 'moeten'],
+            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet'],
+            # Gosse Bouma: 'krijgen' is used as passive auxiliary in cases where an indirect object is promoted to subject (as in German 'kriegen'-passiv).
+            'nl':  ['zijn', 'hebben', 'worden', 'krijgen', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
             'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
             'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
+            'is':  ['vera', 'hafa', 'verða', 'geta', 'mega', 'munu', 'skulu', 'eiga'],
             'got': ['wisan'],
             # DZ: The Portuguese list is much longer than for the other Romance languages
             # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
@@ -1633,13 +1640,14 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'fr':  ['être', 'avoir', 'faire', 'aller', 'pouvoir', 'savoir', 'vouloir', 'devoir'],
             'it':  ['essere', 'stare', 'avere', 'fare', 'andare', 'venire', 'potere', 'sapere', 'volere', 'dovere'],
             'ro':  ['fi', 'avea', 'putea', 'ști', 'vrea', 'trebui'],
+            'la':  ['sum'],
             'cs':  ['být', 'bývat', 'bývávat'],
             'sk':  ['byť', 'bývať', 'by'],
             'hsb': ['być'],
             # zostać is for passive-action, być for passive-state
             # niech* are imperative markers (the only means in 3rd person; alternating with morphological imperative in 2nd person)
             # "to" is a copula and the Polish team insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
-            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechaj', 'niechajże', 'to'],
+            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechby', 'niechże', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
             'be':  ['быць', 'б'],
             'ru':  ['быть', 'бы', 'б'],
@@ -1647,7 +1655,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # then the negative lemma is used. DZ: I believe that in the future
             # the negative forms should get the affirmative lemma + the feature Polarity=Neg,
             # as it is assumed in the guidelines and done in other languages.
-            'orv': ['быти', 'не быти'],
+            'orv': ['быти', 'не быти', 'бы', 'бъ'],
             'sl':  ['biti'],
             'hr':  ['biti', 'htjeti'],
             'sr':  ['biti', 'hteti'],
@@ -1656,16 +1664,21 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lt':  ['būti'],
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
             'ga':  ['is'],
+            'gd':  ['is'],
             'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe', 'am'],
             'br':  ['bezañ'],
+            'sq':  ['kam', 'jam', 'u'],
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
-            'hy':  ['եմ', 'լինել', 'տալ'],
-            'kmr': ['bûn'],
+            'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
+            'kmr': ['bûn', 'hebûn'],
             'fa':  ['است'],
-            'sa':  ['अस्', 'भू'],
+            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
+            'sa':  ['अस्', 'as', 'भू', 'bhū', 'इ', 'i', 'कृ', 'kṛ', 'शक्', 'śak'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
             'ur':  ['ہے', 'تھا', 'رہ', 'کر', 'جا', 'سک', 'پا', 'چاہیئے', 'ہو', 'پڑ', 'لگ', 'چک', 'لے', 'دے', 'بیٹھ', 'رکھ', 'آ'],
+            # The Bhojpuri list is suspiciously long. Some words may actually be inflected forms of other words.
+            'bho': ['हऽ', 'आ', 'स', 'बा', 'छी', 'भा', 'ना', 'गइल', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाही', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'मार', 'डाल', 'बैठ', 'उठ', 'रख'],
             'mr':  ['असणे', 'नाही', 'नका', 'होणे', 'शकणे', 'लागणे', 'देणे', 'येणे'],
             # Uralic languages.
             'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
@@ -1673,12 +1686,16 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
-            # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь
+            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'feʹrttjed', 'pâʹstted'],
+            # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
             # "have to, need to, must": савомс савкшномс эрявомс
             # "future; begin, start": кармамс
             # "question particles": ли штоли
             # mood: давайте давай бу кадык
+            # сашендовомс = have to
+            # 'аш' = does not exist
             'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
+            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афи', 'афоль', 'апак', 'аш', 'эрявомс', 'савомс', 'сашендовомс', 'катк'],
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
@@ -1686,17 +1703,102 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
             'koi': ['овны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
+            # Altaic languages.
+            'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun'],
+            'kk':  ['бол', 'е'],
+            'ug':  ['بول', 'ئى', 'كەت', 'بەر'],
+            'bxr': ['бай', 'боло'],
+            'ko':  ['이+라는'],
+            'ja':  ['だ', 'た', 'ようだ', 'たい', 'いる', 'ない', 'なる', 'する', 'ある', 'おる', 'ます', 'れる', 'られる', 'すぎる', 'める', 'できる', 'しまう', 'せる', 'う', 'いく', '行く', '来る'],
+            # Dravidian languages.
+            # போ / po “go” for future tense, follows the infinitive of the main verb
+            # மாட்டு / māṭṭu “will not” for negative future tense with human subject
+            # படு / paṭu “experience” for the passive voice
+            # வை / vai “put” for the causative voice
+            # இரு / iru “be”
+            # இல் / il (இல்லை / illai) “not be” for negation
+            # வேண்டு / veṇṭu “must”
+            # முடி / muṭi “can”
+            'ta':  ['போ', 'மாட்டு', 'படு', 'வை', 'இரு', 'இல்', 'வேண்டு', 'முயல்', 'கொள்', 'விடு', 'உள்', 'வரு', 'முடி', 'வா', 'செய்', 'ஆகு', 'கூடு', 'பெறு', 'தகு', 'வரல்', 'பிடு', 'வீடு', 'என்', 'கூறு', 'கூறு', 'கொடு', 'ஆவர்', 'விரி', 'கிடை', 'அல்'],
+            # Northeast Caucasian languages.
+            'lez': ['x̂ana', "k'an"],
+            # Sino-Tibetan languages.
+            # 爲, cop 儀 Nec 可 Pot 宜 Nec 得 Pot 敢 Des 欲 Des 肯 Des 能 Pot 足 Pot 須 Nec 被 Pass 見 Pass
+            'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯'],
+            'zh':  ['是', '为', '為'],
+            'yue': ['係', '為'],
+            'lus': ['nii'],
+            'prx': ['in', 'd̪uk'],
+            # Austro-Asiatic languages.
+            'vi':  ['là'],
+            # Austronesian languages.
+            'id':  ['adalah'],
+            'tl':  ['may', 'kaya', 'sana', 'huwag'],
+            'ifb': ['agguy', 'adi', 'gun', "'ahi"],
+            # Australian languages: Pama-Nyungan.
+            'wbp': ['ka'],
+            'zmu': ['yi'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
+            # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
+            # عَلَّ ʿalla "perhaps" is a modal auxiliary
+            # عَاد ʿād “return, no longer do” seems to be an aspectual auxiliary
+            # مَا mā "not" is negation. Maybe it should be PART/advmod rather than AUX/aux?
+            # هَل hal "whether" is a question particle. Maybe it should be PART/advmod rather than AUX/aux?
+            # أ ʾa "whether, indeed" is a question particle. It occurs together with the negative copula: "أليس" (ʾalays) "isn't it...". Maybe it should be PART/advmod rather than AUX/aux?
+            'ar':  [
+                'كَان',
+                'لَيس',
+                'لسنا',
+                'هُوَ',
+                'سَوفَ',
+                'سَ',
+                'قَد',
+                'رُبَّمَا',
+                'عَلَّ',
+                'عَاد',
+                'مَا',
+                'هَل',
+                'أَ'
+            ],
+            'he':  ['היה', 'הוא', 'זה'],
+            'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
+            # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
+            # https://universaldependencies.org/cop/dep/aux_.html
+            # existential elements ⲟⲩⲛ/ⲙⲛ in indefinite durative tenses (but not in pure existential clauses)
+            'cop': ['ⲟⲩⲛ', 'ⲙⲛ', 'ⲙⲛⲧⲉ', 'ϣⲁⲣⲉ', 'ϣⲁ', 'ⲙⲉⲣⲉ', 'ⲙⲉ', 'ⲁ', 'ⲙⲡⲉ', 'ⲙⲡ', 'ⲛⲉⲣⲉ', 'ⲛⲉ', 'ⲛⲁ', 'ⲛⲧⲉ', 'ⲧⲁⲣⲉ', 'ⲧⲁⲣ', 'ϣⲁⲛⲧⲉ', 'ⲙⲡⲁⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣ', 'ⲛⲉϣ', 'ⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲡⲣⲧⲣⲉ'],
+            'gqa': ['ə', 'ni'],
+            'ha':  ['ce', 'ne', 'ta', 'ba'],
+            # Nilo-Saharan languages.
+            'laj': ['bèdò', 'bìnò'],
+            # Mande languages.
+            'mxx': ['à', 'yè'],
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
             'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'má', 'máà'],
+            'kfz': ['la'],
+            'bav': ['lùu'],
+            # Yuman languages.
+            'mov': ['iðu:m'],
             # Tupian languages.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
-        lspecauxs = auxdict.get(lang, None)
-        if lspecauxs and not cols[LEMMA] in lspecauxs:
+        if lang == 'shopen':
+            # 'desu', 'kudasai', 'yo' and 'sa' are romanized Japanese.
+            lspecauxs = ['desu', 'kudasai', 'yo', 'sa']
+            for ilang in auxdict:
+                ilspecauxs = auxdict[ilang]
+                lspecauxs = lspecauxs + ilspecauxs
+        else:
+            lspecauxs = auxdict.get(lang, None)
+        if not lspecauxs:
+            testlevel = 5
+            testclass = 'Morpho'
+            testid = 'aux-lemma'
+            testmessage = "'%s' is not an auxiliary verb in language [%s] (there are no known approved auxiliaries in this language)" % (cols[LEMMA], lang)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
+        elif not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
@@ -1731,6 +1833,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'no':  ['være', 'vere'], # 'vere' is the Nynorsk variant
             'da':  ['være'],
             'fo':  ['vera'],
+            'is':  ['vera'],
             'got': ['wisan'],
             'pcm': ['na', 'be'],
             # In Romance languages, both "ser" and "estar" qualify as copulas.
@@ -1766,16 +1869,20 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # https://github.com/UniversalDependencies/docs/issues/622
             'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
             'ga':  ['is'],
+            'gd':  ['is'],
             'cy':  ['bod'],
             'br':  ['bezañ'],
+            'sq':  ['jam'],
             'grc': ['εἰμί'],
             'el':  ['είμαι'],
             'hy':  ['եմ'],
             'kmr': ['bûn'],
             'fa':  ['است'],
-            'sa':  ['अस्'],
+            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
+            'sa':  ['अस्', 'as', 'भू', 'bhū'],
             'hi':  ['है', 'था'],
             'ur':  ['ہے', 'تھا'],
+            'bho': ['हऽ', 'बा', 'भा'],
             'mr':  ['असणे'],
             'eu':  ['izan', 'egon', 'ukan'],
             # Uralic languages.
@@ -1784,12 +1891,15 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'olo': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
+            'sms': ['leeʹd'],
             # Jack says about Erzya:
             # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
             # and the dependent morphology -оль (both preterit and non-past).
             # The neg арась occurs in locative/existential negation, and its
             # positive counterpart is realized in the three copulas above.
             'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
+            # The neg аш is locative/existential negation.
+            'mdf': ['улемс', 'оль', 'аш'],
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
@@ -1805,31 +1915,60 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'ja':  ['だ'],
             # Dravidian languages.
             'ta':  ['முயல்'],
+            # Northeast Caucasian languages.
+            'lez': ['x̂ana'],
             # Sino-Tibetan languages.
             # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
             # 是(shi4) and 为/為(wei2) should be interchangeable.
+            # Sam: In Cantonese, 為 is used only in the high-standard variety, not in colloquial speech.
+            'lzh': ['爲'],
             'zh':  ['是', '为', '為'],
-            'yue': ['係'],
+            'yue': ['係', '為'],
+            'lus': ['nii'],
+            'prx': ['in', 'd̪uk'],
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
             'id':  ['adalah'],
             'tl':  ['may'],
+            # Australian languages: Pama-Nyungan.
+            'zmu': ['yi'],
             # Afro-Asiatic languages.
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
             'he':  ['היה', 'הוא', 'זה'],
+            'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],
             'cop': ['ⲡⲉ', 'ⲡ'],
+            'ha':  ['ce', 'ne'],
+            # Nilo-Saharan languages.
+            'laj': ['bèdò'],
+            # Mande languages.
+            'mxx': ['à', 'yè'],
             # Niger-Congo languages.
             'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
             'yo':  ['jẹ́', 'ní'],
+            'kfz': ['la'],
+            'bav': ['lùu'],
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
         }
-        lspeccops = copdict.get(lang, None)
-        if lspeccops and not cols[LEMMA] in lspeccops:
+        if lang == 'shopen':
+            # 'desu' is romanized Japanese.
+            lspeccops = ['desu']
+            for ilang in copdict:
+                ilspeccops = copdict[ilang]
+                lspeccops = lspeccops + ilspeccops
+        else:
+            lspeccops = copdict.get(lang, None)
+        if not lspeccops:
+            testlevel = 5
+            testclass = 'Syntax'
+            testid = 'cop-lemma'
+            testmessage = "'%s' is not a copula in language [%s] (there are no known approved copulas in this language)" % (cols[LEMMA], lang)
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
+        elif not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
@@ -1962,6 +2101,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     if not edeprel_re.match(v):
                         testlevel = 4
                         testclass = 'Enhanced'
+                        testid = 'edeprel-def-regex'
                         testmessage = "Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
@@ -1973,6 +2113,7 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                     if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
                         testlevel = 4
                         testclass = 'Syntax'
+                        testid = 'deprel-def-regex'
                         testmessage = "Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue
@@ -1982,12 +2123,14 @@ def load_set(f_name_ud,f_name_langspec,validate_langspec=False,validate_enhanced
                         if parts[0] not in res and parts[0] != 'ref':
                             testlevel = 4
                             testclass = 'Syntax'
+                            testid = 'deprel-def-universal-part'
                             testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                             continue
                     except:
                         testlevel = 4
                         testclass = 'Syntax'
+                        testid = 'deprel-def-universal-part'
                         testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
                         continue

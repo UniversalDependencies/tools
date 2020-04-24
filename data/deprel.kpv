@@ -1,3 +1,7 @@
 acl:relcl
+advmod:lmod
+advmod:tmod
 aux:neg
 flat:name
+obl:lmod
+obl:tmod

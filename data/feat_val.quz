@@ -1,0 +1,15 @@
+Aspect=Inch
+Deriv=Rptn
+Deriv=Ag
+Evident=DirE
+Evident=Assumptive
+Evident=Fact
+Evident=IndE
+Evident=Sqa
+Mood=Assistive
+Number[psor]=Sing
+Number[psor]=Plur
+Person[psor]=1
+Person[psor]=3
+PronType=Det
+Topic=Yes
