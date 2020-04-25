@@ -339,6 +339,9 @@ sub process_sentence
                     }
                     $dep = "$h:$d";
                 }
+                # Remove duplicates from @deps.
+                my %deps; map {$deps{$_}++} (@deps);
+                @deps = keys(%deps);
                 @deps = sort
                 {
                     my @a = split(/:/, $a);
