@@ -75,14 +75,13 @@ sub process_sentence
             $f[4] = fix_xpos($f[0], $f[4]);
             $f[5] = fix_feats($f[0], $f[5]);
             ($f[6], $f[7]) = fix_head_deprel($f[0], $f[6], $f[7]);
+            $f[8] = fix_deps($f[0], $f[8]);
             $line = join("\t", @f);
         }
         if($line =~ m/^\d+-(\d+)\t/)
         {
             $mwtto = $1;
             my @f = split(/\t/, $line);
-            # Make sure that DEPS of a multiword token are empty.
-            $f[8] = '_';
             # Collect text from FORM. We will use it if there was no # text attribute.
             my @misc = split(/\|/, $f[9]);
             $collected_text .= $f[1];
@@ -195,80 +194,6 @@ sub process_sentence
                     push(@misc, '_');
                 }
                 $f[9] = join('|', @misc);
-            }
-            $line = join("\t", @f);
-        }
-        # For both surface nodes and empty nodes, check the order of deps.
-        if($line =~ m/^\d+(\.\d+)?\t/)
-        {
-            my @f = split(/\t/, $line);
-            unless($f[8] eq '_')
-            {
-                my @deps = split(/\|/, $f[8]);
-                # Remove self-loops.
-                @deps = grep {my $h; if(m/^(\d+(?:\.\d+)?):/) {$h = $1;} defined($h) && $h!=$f[0]} (@deps);
-                if(scalar(@deps)==0)
-                {
-                    # DEPS was not empty, so there is an enhanced graph and we should not make DEPS empty now.
-                    push(@deps, '0:root');
-                }
-                # Make sure that the deps do not contain disallowed characters.
-                foreach my $dep (@deps)
-                {
-                    my ($h, $d);
-                    if($dep =~ m/^(\d+(?:\.\d+)?):(.+)$/)
-                    {
-                        $h = $1;
-                        $d = $2;
-                    }
-                    else
-                    {
-                        $h = 1;
-                        $d = $dep;
-                    }
-                    if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
-                    {
-                        # First attempt: just lowercase and remove strange characters.
-                        $d = lc($d);
-                        $d =~ s/[^:_a-z\p{Ll}\p{Lm}\p{Lo}\p{M}]//g;
-                    }
-                    if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
-                    {
-                        # Second attempt: everything after the first colon is simply 'extra'.
-                        $d =~ s/^([^:]*):.*$/$1:extra/;
-                    }
-                    if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
-                    {
-                        # Last attempt: just 'dep'.
-                        $d = 'dep';
-                    }
-                    # Finally, if $h is 0, then $d must be root.
-                    if($h==0 && $d !~ m/^root(:|$)/)
-                    {
-                        $d = 'root';
-                    }
-                    $dep = "$h:$d";
-                }
-                # Remove duplicates from @deps.
-                my %deps; map {$deps{$_}++} (@deps);
-                @deps = keys(%deps);
-                @deps = sort
-                {
-                    my @a = split(/:/, $a);
-                    my @b = split(/:/, $b);
-                    my $ah = shift(@a);
-                    my $bh = shift(@b);
-                    my $r = $ah <=> $bh;
-                    unless($r)
-                    {
-                        my $ad = join(':', @a);
-                        my $bd = join(':', @b);
-                        $r = $ad cmp $bd;
-                    }
-                    $r
-                }
-                (@deps);
-                $f[8] = join('|', @deps);
             }
             $line = join("\t", @f);
         }
@@ -488,6 +413,96 @@ sub fix_head_deprel
         $deprel = 'dep';
     }
     return ($head, $deprel);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Makes sure that DEPS is valid.
+#------------------------------------------------------------------------------
+sub fix_deps
+{
+    my $id = shift;
+    my $deps = shift;
+    # Multi-word tokens must have DEPS empty.
+    if($id =~ m/^\d+-\d+$/)
+    {
+        return '_';
+    }
+    # Empty DEPS is OK. But if not empty, then certain rules must be followed.
+    unless($deps eq '_')
+    {
+        my @deps = split(/\|/, $deps);
+        # Remove self-loops.
+        @deps = grep {my $h; if(m/^(\d+(?:\.\d+)?):/) {$h = $1;} defined($h) && $h!=$f[0]} (@deps);
+        if(scalar(@deps)==0)
+        {
+            # DEPS was not empty, so there is an enhanced graph and we should not make DEPS empty now.
+            push(@deps, '0:root');
+        }
+        # Make sure that the deps do not contain disallowed characters.
+        foreach my $dep (@deps)
+        {
+            my ($h, $d);
+            if($dep =~ m/^(\d+(?:\.\d+)?):(.+)$/)
+            {
+                $h = $1;
+                $d = $2;
+            }
+            else
+            {
+                $h = 1;
+                $d = $dep;
+            }
+            if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+            {
+                # First attempt: just lowercase and remove strange characters.
+                $d = lc($d);
+                $d =~ s/[^:_a-z\p{Ll}\p{Lm}\p{Lo}\p{M}]//g;
+            }
+            if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+            {
+                # Second attempt: everything after the first colon is simply 'extra'.
+                $d =~ s/^([^:]*):.*$/$1:extra/;
+            }
+            if($d !~ m/^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$/)
+            {
+                # Last attempt: just 'dep'.
+                $d = 'dep';
+            }
+            # Finally, if $h is 0, then $d must be root; and  if $h is not 0, then $d must not be root.
+            if($h==0 && $d !~ m/^root(:|$)/)
+            {
+                $d = 'root';
+            }
+            if($h!=0 && $d =~ m/^root(:|$)/)
+            {
+                $d = 'dep';
+            }
+            $dep = "$h:$d";
+        }
+        # Remove duplicates from @deps.
+        my %deps; map {$deps{$_}++} (@deps);
+        @deps = keys(%deps);
+        @deps = sort
+        {
+            my @a = split(/:/, $a);
+            my @b = split(/:/, $b);
+            my $ah = shift(@a);
+            my $bh = shift(@b);
+            my $r = $ah <=> $bh;
+            unless($r)
+            {
+                my $ad = join(':', @a);
+                my $bd = join(':', @b);
+                $r = $ad cmp $bd;
+            }
+            $r
+        }
+        (@deps);
+        $deps = join('|', @deps);
+    }
+    return $deps;
 }
 
 
