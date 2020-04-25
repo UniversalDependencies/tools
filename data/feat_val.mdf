@@ -83,6 +83,7 @@ PronType=Int
 PronType=Prs
 PronType=Refl
 PronType=Rel
+Style=Ped
 Tense=Prt1
 Tense=Prt2
 Typo=Yes
