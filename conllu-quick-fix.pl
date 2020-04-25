@@ -69,17 +69,20 @@ sub process_sentence
                 push(@f, '_');
             }
             splice(@f, 10);
+            # Now check the contents of the columns.
+            $f[2] = fix_lemma($f[0], $f[2]);
+            $f[3] = fix_upos($f[0], $f[3]);
+            $f[4] = fix_xpos($f[0], $f[4]);
+            $f[5] = fix_feats($f[0], $f[5]);
+            ($f[6], $f[7]) = fix_head_deprel($f[0], $f[6], $f[7]);
             $line = join("\t", @f);
         }
         if($line =~ m/^\d+-(\d+)\t/)
         {
             $mwtto = $1;
             my @f = split(/\t/, $line);
-            # Make sure that LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL and DEPS of a multiword token are empty.
-            for(my $i = 2; $i <= 8; $i++)
-            {
-                $f[$i] = '_';
-            }
+            # Make sure that DEPS of a multiword token are empty.
+            $f[8] = '_';
             # Collect text from FORM. We will use it if there was no # text attribute.
             my @misc = split(/\|/, $f[9]);
             $collected_text .= $f[1];
@@ -193,99 +196,6 @@ sub process_sentence
                 }
                 $f[9] = join('|', @misc);
             }
-            # Make sure that LEMMA does not contain leading or trailing spaces.
-            $f[2] =~ s/^\s+//;
-            $f[2] =~ s/\s+$//;
-            $f[2] = '_' if($f[2] eq '');
-            # Make sure that UPOS is not empty.
-            if($f[3] eq '_' || $f[3] eq '')
-            {
-                $f[3] = 'X';
-            }
-            # Make sure that FEATS is either '_' or it follows the prescribed pattern.
-            if($f[5] ne '_')
-            {
-                my @feats = split(/\|/, $f[5]);
-                # Each element must be a name=value pair.
-                # Feature names start with [A-Z] and contain [A-Za-z].
-                # Same for feature values, but [0-9] is also allowed there, and comma (',') may separate multi-values.
-                # Feature names can additionally contain square brackets with layer ("[psor]").
-                foreach my $fv (@feats)
-                {
-                    my ($f, $v);
-                    if($fv =~ m/^(.+)=(.+)$/)
-                    {
-                        $f = $1;
-                        $v = $2;
-                    }
-                    else
-                    {
-                        $f = $fv;
-                        $v = 'Yes';
-                    }
-                    $f =~ s/[^A-Za-z\[\]]//g;
-                    $f =~ s/^(.)/\u\1/;
-                    $f = 'X'.$f if($f !~ m/^[A-Z]/);
-                    $v =~ s/[^A-Za-z0-9,]//g;
-                    $v =~ s/^(.)/\u\1/;
-                    $v = 'X'.$v if($v !~ m/^[A-Z0-9]/);
-                    $fv = "$f=$v";
-                }
-                @feats = sort {lc($a) cmp lc($b)} (@feats);
-                $f[5] = join('|', @feats);
-            }
-            # Make sure that HEAD is numeric and DEPREL is not empty.
-            if($f[6] !~ m/^\d+$/)
-            {
-                # We will attach node 1 to node 0, and all other nodes to 1.
-                # This will produce a valid tree if we apply it to all words,
-                # i.e., none of them had a valid parent before. Otherwise, it
-                # may not work as we may be introducing cycles!
-                if($f[0] == 1)
-                {
-                    $f[6] = 0;
-                    $f[7] = 'root';
-                }
-                else
-                {
-                    $f[6] = 1;
-                    if($f[7] eq '_' || $f[7] eq '')
-                    {
-                        $f[7] = 'dep';
-                    }
-                }
-            }
-            # Make sure that DEPREL contains only allowed strings (but no language-specific list is checked).
-            else
-            {
-                my $udeprels = 'nsubj|obj|iobj|csubj|ccomp|xcomp|obl|vocative|expl|dislocated|advcl|advmod|discourse|aux|cop|mark|nmod|appos|nummod|acl|amod|det|clf|case|conj|cc|fixed|flat|compound|list|parataxis|orphan|goeswith|reparandum|punct|root|dep';
-                if($f[7] =~ m/^root(:|$)/ && $f[6] != 0)
-                {
-                    $f[7] = 'dep';
-                }
-                if($f[7] !~ m/^root(:|$)/ && $f[6] == 0)
-                {
-                    $f[7] = 'root';
-                }
-                if($f[7] !~ m/^($udeprels)(:[a-z]+)?$/)
-                {
-                    # First attempt: remove the subtype.
-                    $f[7] =~ s/:.*//;
-                }
-                if($f[7] !~ m/^($udeprels)(:[a-z]+)?$/)
-                {
-                    # Second attempt: take 'dep'.
-                    $f[7] = 'dep';
-                }
-            }
-            $line = join("\t", @f);
-        }
-        elsif($line =~ m/^\d+\.\d+\t/)
-        {
-            # Empty nodes must have empty HEAD and DEPREL.
-            my @f = split(/\t/, $line);
-            $f[6] = '_';
-            $f[7] = '_';
             $line = join("\t", @f);
         }
         # For both surface nodes and empty nodes, check the order of deps.
@@ -383,6 +293,201 @@ sub process_sentence
     }
     # Print the fixed sentence.
     print(join('', @sentence));
+}
+
+
+
+#------------------------------------------------------------------------------
+# Makes sure that lemma is valid.
+#------------------------------------------------------------------------------
+sub fix_lemma
+{
+    my $id = shift;
+    my $lemma = shift;
+    # Multi-word token must have the lemma empty.
+    if($id =~ m/^\d+-\d+$/)
+    {
+        return '_';
+    }
+    # Empty node can have the lemma empty but it is not required.
+    if($id =~ m/^\d+\.\d+$/ && $lemma eq '_')
+    {
+        return $lemma;
+    }
+    # Normal nodes and empty nodes with non-empty lemmas.
+    # Make sure that LEMMA does not contain leading or trailing spaces.
+    $lemma =~ s/^\s+//;
+    $lemma =~ s/\s+$//;
+    $lemma = '_' if($lemma eq '');
+    return $lemma;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Makes sure that UPOS is valid.
+#------------------------------------------------------------------------------
+sub fix_upos
+{
+    my $id = shift;
+    my $upos = shift;
+    # Multi-word token must have the UPOS empty.
+    if($id =~ m/^\d+-\d+$/)
+    {
+        return '_';
+    }
+    # Empty node can have the UPOS empty but it is not required.
+    if($id =~ m/^\d+\.\d+$/ && $upos eq '_')
+    {
+        return $upos;
+    }
+    # Make sure that UPOS is from the prescribed inventory.
+    if($upos !~ m/^(NOUN|PROPN|PRON|ADJ|DET|NUM|VERB|AUX|ADV|ADP|SCONJ|CCONJ|PART|INTJ|SYM|PUNCT|X)$/)
+    {
+        $upos = 'X';
+    }
+    return $upos;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Makes sure that XPOS is valid.
+#------------------------------------------------------------------------------
+sub fix_xpos
+{
+    my $id = shift;
+    my $xpos = shift;
+    # Multi-word token must have the XPOS empty.
+    if($id =~ m/^\d+-\d+$/)
+    {
+        return '_';
+    }
+    # Empty node can have the XPOS empty but it is not required.
+    if($id =~ m/^\d+\.\d+$/ && $xpos eq '_')
+    {
+        return $xpos;
+    }
+    # Normal nodes and empty nodes with non-empty XPOS.
+    # Make sure that XPOS does not contain leading or trailing spaces.
+    $xpos =~ s/^\s+//;
+    $xpos =~ s/\s+$//;
+    $xpos = '_' if($xpos eq '');
+    return $xpos;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Makes sure that FEATS is valid.
+#------------------------------------------------------------------------------
+sub fix_feats
+{
+    my $id = shift;
+    my $feats = shift;
+    # Multi-word token must have the FEATS empty.
+    if($id =~ m/^\d+-\d+$/)
+    {
+        return '_';
+    }
+    # Empty node can have the FEATS empty but it is not required.
+    if($id =~ m/^\d+\.\d+$/ && $feats eq '_')
+    {
+        return $feats;
+    }
+    # Normal nodes and empty nodes with non-empty FEATS.
+    # Make sure that FEATS is either '_' or it follows the prescribed pattern.
+    if($feats ne '_')
+    {
+        my @feats = split(/\|/, $feats);
+        # Each element must be a name=value pair.
+        # Feature names start with [A-Z] and contain [A-Za-z].
+        # Same for feature values, but [0-9] is also allowed there, and comma (',') may separate multi-values.
+        # Feature names can additionally contain square brackets with layer ("[psor]").
+        foreach my $fv (@feats)
+        {
+            my ($f, $v);
+            if($fv =~ m/^(.+)=(.+)$/)
+            {
+                $f = $1;
+                $v = $2;
+            }
+            else
+            {
+                $f = $fv;
+                $v = 'Yes';
+            }
+            $f =~ s/[^A-Za-z\[\]]//g;
+            $f =~ s/^(.)/\u\1/;
+            $f = 'X'.$f if($f !~ m/^[A-Z]/);
+            $v =~ s/[^A-Za-z0-9,]//g;
+            $v =~ s/^(.)/\u\1/;
+            $v = 'X'.$v if($v !~ m/^[A-Z0-9]/);
+            $fv = "$f=$v";
+        }
+        @feats = sort {lc($a) cmp lc($b)} (@feats);
+        $feats = join('|', @feats);
+    }
+    return $feats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Makes sure that HEAD and DEPREL are valid.
+#------------------------------------------------------------------------------
+sub fix_head_deprel
+{
+    my $id = shift;
+    my $head = shift;
+    my $deprel = shift;
+    # Multi-word tokens and empty nodes must have HEAD and DEPREL empty.
+    if($id =~ m/^\d+(-|\.)\d+$/)
+    {
+        return ('_', '_');
+    }
+    # Make sure that HEAD is numeric and DEPREL is not empty.
+    if($head !~ m/^\d+$/)
+    {
+        # We will attach node 1 to node 0, and all other nodes to 1.
+        # This will produce a valid tree if we apply it to all words,
+        # i.e., none of them had a valid parent before. Otherwise, it
+        # may not work as we may be introducing cycles!
+        if($id == 1)
+        {
+            $head = 0;
+            $deprel = 'root';
+        }
+        else
+        {
+            $head = 1;
+            if($deprel eq '_' || $deprel eq '')
+            {
+                $deprel = 'dep';
+            }
+        }
+    }
+    # Make sure that DEPREL contains only allowed strings (but no language-specific list is checked).
+    my $udeprels = 'nsubj|obj|iobj|csubj|ccomp|xcomp|obl|vocative|expl|dislocated|advcl|advmod|discourse|aux|cop|mark|nmod|appos|nummod|acl|amod|det|clf|case|conj|cc|fixed|flat|compound|list|parataxis|orphan|goeswith|reparandum|punct|root|dep';
+    if($deprel =~ m/^root(:|$)/ && $head != 0)
+    {
+        $deprel = 'dep';
+    }
+    if($deprel !~ m/^root(:|$)/ && $head == 0)
+    {
+        $deprel = 'root';
+    }
+    if($deprel !~ m/^($udeprels)(:[a-z]+)?$/)
+    {
+        # First attempt: remove the subtype.
+        $deprel =~ s/:.*//;
+    }
+    if($deprel !~ m/^($udeprels)(:[a-z]+)?$/)
+    {
+        # Second attempt: take 'dep'.
+        $deprel = 'dep';
+    }
+    return ($head, $deprel);
 }
 
 
