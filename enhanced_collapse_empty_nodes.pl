@@ -114,6 +114,11 @@ sub collapse_empty_nodes
     {
         $epedges{join(' ', @{$epedge})}++;
     }
+    my %ecedges;
+    foreach my $ecedge (@ecedges)
+    {
+        $ecedges{join(' ', @{$ecedge})}++;
+    }
     while(@epedges)
     {
         my $epedge = shift(@epedges);
@@ -164,7 +169,11 @@ sub collapse_empty_nodes
                     }
                     if($newedge[-1] =~ m/^\d+\.\d+$/)
                     {
-                        push(@ecedges, \@newedge);
+                        my $serialized = join(' ', @newedge);
+                        unless(exists($ecedges{$serialized}))
+                        {
+                            push(@ecedges, \@newedge);
+                        }
                     }
                 }
                 else
