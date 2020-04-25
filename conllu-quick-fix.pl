@@ -332,6 +332,11 @@ sub process_sentence
                         # Last attempt: just 'dep'.
                         $d = 'dep';
                     }
+                    # Finally, if $h is 0, then $d must be root.
+                    if($h==0 && $d !~ m/^root(:|$)/)
+                    {
+                        $d = 'root';
+                    }
                     $dep = "$h:$d";
                 }
                 @deps = sort
