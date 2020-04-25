@@ -1,5 +1,6 @@
 acl:relcl
 advcl:tmod
+advmod:deg
 advmod:tmod
 aux:cnd
 aux:imp
