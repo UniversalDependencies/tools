@@ -1,4 +1,5 @@
 acl:relcl
+advcl:tmod
 advmod:tmod
 aux:cnd
 aux:imp
@@ -15,8 +16,12 @@ flat:name
 nmod:comp
 nmod:gobj
 nmod:gsubj
+nmod:lmod
+nmod:part
+nmod:poss
 nsubj:cop
 obl:agent
+obl:lmod
 obl:tmod
 xcomp:ds
 aux:q
