@@ -785,12 +785,12 @@ def validate_root(tree):
         if is_word(cols):
             if HEAD >= len(cols):
                 continue # this has been already reported in trees()
-            if cols[HEAD] == '0' and cols[DEPREL] != 'root':
+            if cols[HEAD] == '0' and lspec2ud(cols[DEPREL]) != 'root':
                 testclass = 'Syntax'
                 testid = '0-is-not-root'
                 testmessage = "DEPREL must be 'root' if HEAD is 0."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-            if cols[HEAD] != '0' and cols[DEPREL] == 'root':
+            if cols[HEAD] != '0' and lspec2ud(cols[DEPREL]) == 'root':
                 testclass = 'Syntax'
                 testid = 'root-is-not-0'
                 testmessage = "DEPREL cannot be 'root' if HEAD is not 0."
@@ -808,12 +808,12 @@ def validate_root(tree):
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 continue
             for head, deprel in deps:
-                if head == '0' and deprel != 'root':
+                if head == '0' and lspec2ud(deprel) != 'root':
                     testclass = 'Enhanced'
                     testid = 'enhanced-0-is-not-root'
                     testmessage = "Enhanced relation type must be 'root' if head is 0."
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-                if head != '0' and deprel == 'root':
+                if head != '0' and lspec2ud(deprel) == 'root':
                     testclass = 'Enhanced'
                     testid = 'enhanced-root-is-not-0'
                     testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
