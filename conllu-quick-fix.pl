@@ -53,7 +53,18 @@ sub process_sentence
             $text = $1;
             $resttext = $text;
         }
-        elsif($line =~ m/^\d+-(\d+)\t/)
+        # All node/token lines must have exactly ten columns.
+        if($line =~ m/^\d/)
+        {
+            my @f = split(/\t/, $line);
+            while(scalar(@f)<10)
+            {
+                push(@f, '_');
+            }
+            splice(@f, 10);
+            $line = join("\t", @f);
+        }
+        if($line =~ m/^\d+-(\d+)\t/)
         {
             $mwtto = $1;
             my @f = split(/\t/, $line);
