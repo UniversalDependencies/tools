@@ -109,6 +109,11 @@ sub collapse_empty_nodes
     my @okedges = grep {$_->[0] =~ m/^\d+$/ && $_->[-1] =~ m/^\d+$/} (@edges);
     my @epedges = grep {$_->[0] =~ m/^\d+\.\d+$/} (@edges); # including those that have also empty child
     my @ecedges = grep {$_->[-1] =~ m/^\d+\.\d+$/} (@edges); # including those that have also empty parent
+    my %epedges; # hash of serialized edges: make sure not to add an edge that is already there
+    foreach my $epedge (@epedges)
+    {
+        $epedges{join(' ', @{$epedge})}++;
+    }
     while(@epedges)
     {
         my $epedge = shift(@epedges);
@@ -150,7 +155,12 @@ sub collapse_empty_nodes
                 {
                     if($newedge[0] =~ m/^\d+\.\d+$/)
                     {
-                        push(@epedges, \@newedge);
+                        my $serialized = join(' ', @newedge);
+                        unless(exists($epedges{$serialized}))
+                        {
+                            push(@epedges, \@newedge);
+                            $epedges{$serialized}++;
+                        }
                     }
                     if($newedge[-1] =~ m/^\d+\.\d+$/)
                     {

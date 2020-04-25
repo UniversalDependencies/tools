@@ -160,7 +160,7 @@ sub collapse_empty_nodes
 			unless(exists($epedges{$serialized}))
 			{
 			    print STDERR ("  Adding edge $serialized\n");
-                            push(@epedges, \@newedge);
+                push(@epedges, \@newedge);
 			    $epedges{$serialized}++;
 			}
                     }
