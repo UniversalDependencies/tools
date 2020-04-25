@@ -14,6 +14,13 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Unicode::Normalize;
+use Getopt::Long;
+
+my $connect_to_root = 0;
+GetOptions
+(
+    'connect-to-root' => \$connect_to_root
+);
 
 my @sentence = ();
 my $isent = 0;
@@ -360,6 +367,95 @@ sub process_sentence
     {
         unshift(@sentence, "\# sent_id = $isent\n");
     }
+    # Optionally (with the --connect-to-root switch) add 0:root enhanced relations
+    # untill all nodes are reachable from 0.
+    if($connect_to_root)
+    {
+        @sentence = make_all_nodes_reachable(@sentence);
+    }
     # Print the fixed sentence.
     print(join('', @sentence));
+}
+
+
+
+#------------------------------------------------------------------------------
+# For each node of the enhanced graph, finds the set of nodes from which the
+# node is reachable, i.e., the set of its enhanced ancestors. If node 0 (the
+# virtual root) is not among them, adds gradually 0:root relations until all
+# nodes are reachable from the root.
+#------------------------------------------------------------------------------
+sub make_all_nodes_reachable
+{
+    my @sentence = @_;
+    my @nodes = grep {m/^\d+(\.\d+)?\t/} (@sentence);
+    my %unreachable;
+    my %parents;
+    foreach my $node (@nodes)
+    {
+        my @f = split(/\t/, $node);
+        my $id = $f[0];
+        $unreachable{$id}++;
+        my $deps = $f[8];
+        my @nodeparents = map {m/^(.+):/; $1} (split(/\|/, $deps));
+        my %nodeparents; map {$nodeparents{$_}++} (@nodeparents);
+        @nodeparents = keys(%nodeparents);
+        $parents{$id} = \@nodeparents;
+    }
+    # Find nodes that are reachable from 0.
+    my %reachable;
+    $reachable{'0'}++;
+    my %attach_to_root; # nodes that will have to be attached to 0
+    while(1)
+    {
+        my @unreachable = sort(keys(%unreachable));
+        last if(scalar(@unreachable)==0);
+        my $found_new = 0;
+        foreach my $id (@unreachable)
+        {
+            foreach my $parent (@{$parents{$id}})
+            {
+                if($reachable{$parent})
+                {
+                    $found_new++;
+                    $reachable{$id}++;
+                    delete($unreachable{$id});
+                    last;
+                }
+            }
+        }
+        # If we cannot find a new way how to make an unreachable node reachable,
+        # try attaching the first unreachable node directly to the root.
+        # We will first try to attach to root the first node (by id, lexicographically).
+        # There might be better solutions, e.g., if the unreachable nodes form
+        # a component whose root is the last node (with highest id). But we are
+        # not trying to find the optimal solution. We just want to make the file
+        # valid.
+        @unreachable = sort(keys(%unreachable));
+        if(scalar(@unreachable)>0 && !$found_new)
+        {
+            my $node = shift(@unreachable);
+            $attach_to_root{$node}++;
+            $reachable{$node}++;
+            delete($unreachable{$node});
+            $found_new = 1;
+        }
+    }
+    # Now take the nodes that should be attached to the root and attach them there.
+    foreach my $line (@sentence)
+    {
+        if($line =~ m/^\d+(\.\d+)?\t/)
+        {
+            my @f = split(/\t/, $line);
+            if($attach_to_root{$f[0]})
+            {
+                my @deps = split(/\|/, $f[8]);
+                @deps = () if(scalar(@deps)==1 && $deps[0] eq '_');
+                unshift(@deps, '0:root');
+                $f[8] = join('|', @deps);
+            }
+            $line = join("\t", @f);
+        }
+    }
+    return @sentence;
 }
