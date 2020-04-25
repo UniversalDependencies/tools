@@ -434,7 +434,7 @@ sub fix_deps
     {
         my @deps = split(/\|/, $deps);
         # Remove self-loops.
-        @deps = grep {my $h; if(m/^(\d+(?:\.\d+)?):/) {$h = $1;} defined($h) && $h!=$f[0]} (@deps);
+        @deps = grep {my $h; if(m/^(\d+(?:\.\d+)?):/) {$h = $1;} defined($h) && $h!=$id} (@deps);
         if(scalar(@deps)==0)
         {
             # DEPS was not empty, so there is an enhanced graph and we should not make DEPS empty now.
