@@ -1,5 +1,5 @@
-AdpType=Deg
 AdpType=Post
+AdvType=Deg
 AdvType=Loc
 Case=Apr
 Case=Car
@@ -12,6 +12,7 @@ Clitic=So
 Connegative=Yes
 Derivation=A
 Derivation=An
+Derivation=CompMod
 Derivation=Dimin
 Derivation=Zhyk
 Derivation=Ig
