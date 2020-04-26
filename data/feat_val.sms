@@ -13,5 +13,6 @@ Person[psor]=2
 Person[psor]=3
 PronType=Refl
 PronType=Coll
+PronType=Int
 Tense=Prt
 Valency=1
