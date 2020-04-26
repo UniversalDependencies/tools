@@ -1687,7 +1687,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
-            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'feʹrttjed', 'pâʹstted'],
+            # Jack: i-gõl = should not
+            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'i-gõl', 'feʹrttjed', 'pâʹstted'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
             # "have to, need to, must": савомс савкшномс эрявомс
             # "future; begin, start": кармамс
@@ -1892,7 +1893,8 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'olo': ['olla'],
             'et':  ['olema'],
             'sme': ['leat'],
-            'sms': ['leeʹd'],
+            # Jack: iʹlla = to not be
+            'sms': ['leeʹd', 'iʹlla'],
             # Jack says about Erzya:
             # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
             # and the dependent morphology -оль (both preterit and non-past).
