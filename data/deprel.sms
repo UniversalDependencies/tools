@@ -1,5 +1,7 @@
 acl:relcl
 advcl:tmod
+advmod:mmod
+advmod:lmod
 advmod:tmod
 aux:neg
 cc:preconj
