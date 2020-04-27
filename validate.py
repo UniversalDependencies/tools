@@ -1779,7 +1779,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Niger-Congo languages.
             # DZ: Wolof auxiliaries taken from the documentation.
             'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
-            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'gbọdọ̀', 'má', 'máà'],
+            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'a', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'gbọdọ̀', 'má', 'máà'],
             'kfz': ['la'],
             'bav': ['lùu'],
             # Yuman languages.
