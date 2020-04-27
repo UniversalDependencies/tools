@@ -1703,7 +1703,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз', 'абу', 'быть'],
             # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
-            'koi': ['овны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз'],
+            # овлыны 'to be (habitual)'; 'не' negation from Russian
+            'koi': ['овны', 'овлыны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз', 'не'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Altaic languages.
             'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun'],
@@ -1907,7 +1908,8 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
             'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть'],
-            'koi': ['овны', 'вӧвны'],
+            # Komi Permyak: овлыны = to be (habitual) [Jack Rueter]
+            'koi': ['овны', 'овлыны', 'вӧвны'],
             'hu':  ['van'],
             # Altaic languages.
             'tr':  ['ol', 'i'],
