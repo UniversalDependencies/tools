@@ -53,6 +53,7 @@ Mood=Opt
 Mood=Proh
 Mood=Prec
 NameType=Giv
+NameType=Patr
 NameType=Sur
 NegationType=Contrastive
 Number[obj]=Plur
