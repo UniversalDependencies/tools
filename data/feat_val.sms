@@ -8,6 +8,7 @@ Mood=Pot
 NameType=Geo
 NameType=Giv
 NameType=Prs
+NameType=Sur
 Number[psor]=Plur
 Number[psor]=Sing
 Number[psor]=Dual
