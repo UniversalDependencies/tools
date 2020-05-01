@@ -1785,7 +1785,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Yuman languages.
             'mov': ['iðu:m'],
             # Tupian languages.
-            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
+            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
+            # Creole
+            'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would']
+
         }
         if lang == 'shopen':
             # 'desu', 'kudasai', 'yo' and 'sa' are romanized Japanese.
@@ -1838,7 +1841,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'fo':  ['vera'],
             'is':  ['vera'],
             'got': ['wisan'],
-            'pcm': ['na', 'be'],
+            'pcm': ['be', 'bin', 'can', 'con', 'dey', 'do', 'don', 'gats', 'go', 'must', 'na', 'shall', 'should', 'will' ],
             # In Romance languages, both "ser" and "estar" qualify as copulas.
             'pt':  ['ser', 'estar'],
             'gl':  ['ser', 'estar'],

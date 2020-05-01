@@ -2,6 +2,7 @@ acl:relcl
 advcl:tmod
 advmod:deg
 advmod:lmod
+advmod:mmod
 advmod:tmod
 aux:cnd
 aux:imp
