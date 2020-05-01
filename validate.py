@@ -1688,7 +1688,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
             'sme': ['leat'],
             # Jack: i-gõl = should not
-            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'i-gõl', 'feʹrttjed', 'pâʹstted'],
+            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'i-ǥõl', 'feʹrttjed', 'pâʹstted'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
             # "have to, need to, must": савомс савкшномс эрявомс
             # "future; begin, start": кармамс
@@ -1701,10 +1701,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # 'оз' is the negation verb analogous to Finnish 'ei'.
             # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз', 'абу', 'быть'],
+            'kpv': ['лоны', 'лолыны', 'овлывлыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз', 'абу', 'быть', 'эм'],
             # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
             # овлыны 'to be (habitual)'; 'не' negation from Russian
-            'koi': ['овны', 'овлыны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз', 'не'],
+            'koi': ['овны', 'овлыны', 'овлывлыны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз', 'не', 'эм'],
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Altaic languages.
             'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun'],
@@ -1907,9 +1907,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            'kpv': ['лоны', 'лолыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть'],
+            'kpv': ['лоны', 'лолыны', 'овлывлыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть', 'эм'],
             # Komi Permyak: овлыны = to be (habitual) [Jack Rueter]
-            'koi': ['овны', 'овлыны', 'вӧвны'],
+            'koi': ['овны', 'овлыны', 'овлывлыны', 'вӧвны', 'эм'],
             'hu':  ['van'],
             # Altaic languages.
             'tr':  ['ol', 'i'],
