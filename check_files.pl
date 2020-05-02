@@ -45,7 +45,7 @@ my $next_release_expected = 'November 2020';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.4';
+my $oldpath = '/net/data/universal-dependencies-2.5';
 ###!!! Also find the currently hard-coded parameters of the call to get_announcement()! (Next release date.)
 ###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
@@ -646,6 +646,7 @@ sub get_files
         $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
         $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
         $folder eq 'UD_English-ESL' && $_ eq 'merge.py' ||
+        $folder eq 'UD_English-GUMReddit' && $_ eq 'get_text.py' ||
         $folder eq 'UD_Hindi_English-HIENCS' && $_ =~ m/^(merge\/?|crawl_tweets\.py)$/ ||
         $folder eq 'UD_Japanese-KTC' && $_ =~ m/^merge/ ||
         $folder eq 'UD_Japanese-BCCWJ' && $_ =~ m/^merge/
