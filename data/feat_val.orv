@@ -1,3 +1,4 @@
+Analyt=Yes
 Aspect=Res
 Strength=Strong
 Strength=Weak
@@ -6,6 +7,6 @@ Variant=Long
 Variant=Short
 Number=Adnum
 NumForm=Digit
+NumForm=Roman
 Tense=Fut1
 VerbForm=PartRes
-Analyt=Yes
