@@ -6,6 +6,7 @@ Degree=Cmp2
 Variant=Long
 Variant=Short
 Number=Adnum
+NumForm=Cyril
 NumForm=Digit
 NumForm=Roman
 Tense=Fut1
