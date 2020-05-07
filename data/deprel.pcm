@@ -32,6 +32,7 @@ advmod:appos
 advmod:periph
 amod:appos
 amod:emph
+ccomp:agent
 compound:redup
 expl:subj
 flat:foreign
