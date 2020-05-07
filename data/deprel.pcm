@@ -38,7 +38,8 @@ flat:foreign
 nmod:appos
 nmod:emph
 nmod:periph
-nummod:num
+nummod:det
+nummod:mod
 nummod:periph
 obj:agent
 obj:lvc
