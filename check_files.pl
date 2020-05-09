@@ -576,7 +576,7 @@ sub get_validation_results
     # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
     # Download the current validation report. (We could run the validator ourselves
     # but it would take a lot of time.)
-    my @validation_report = split(/\n/, get('http://quest.ms.mff.cuni.cz/cgi-bin/zeman/unidep/validation-report.pl?text_only'));
+    my @validation_report = split(/\n/, get('https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/validation-report.pl?text_only'));
     if(scalar(@validation_report)==0)
     {
         print STDERR ("WARNING: Could not download validation report from quest. All treebanks will be considered invalid.\n");
