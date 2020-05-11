@@ -459,17 +459,29 @@ print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n\n")
 my @genres = sort(keys(%genres));
 print(scalar(@genres), " different genres: ", join(', ', @genres), "\n\n");
 my @contributors = keys(%contributors);
-my %trid;
+my %tridl, %tridf;
 foreach my $contributor (@contributors)
 {
-    $trid{$contributor} = csort::zjistit_tridici_hodnoty($contributor, 'en');
+    # We want to sort by last names first, and only look at first names when the
+    # last names are identical. If we compared the whole names directly, we would
+    # see "Morioka, Tomohiko" between "Mori, Keiko" and "Mori, Shinsuke"; we do
+    # not want this to happen.
+    my $lastname = $contributor;
+    my $firstname = '';
+    if($contributor =~ m/^([^,]+),\s*(.+)$/)
+    {
+        $lastname = $1;
+        $firstname = $2;
+    }
+    $tridl{$contributor} = csort::zjistit_tridici_hodnoty($lastname, 'en');
+    $tridf{$contributor} = csort::zjistit_tridici_hodnoty($firstname, 'en');
 }
 # Since release 2.5 we go by "Zeman, Nivre, and alphabetically others".
 # Normal trid values are numeric strings. Prepend '!' and it will sort before
 # any numeric value.
-$trid{'Zeman, Daniel'} = '!01';
-$trid{'Nivre, Joakim'} = '!02';
-@contributors = sort {$trid{$a} cmp $trid{$b}} (keys(%contributors));
+$tridl{'Zeman, Daniel'} = '!01';
+$tridl{'Nivre, Joakim'} = '!02';
+@contributors = sort {my $r = $tridl{$a} cmp $tridl{$b}; unless($r) {$r = $tridf{$a} cmp $tridf{$b}} $r} (keys(%contributors));
 # Is the same person spelled differently in different treebanks?
 get_potentially_misspelled_contributors(\%contributions, @contributors);
 my @contributors_firstlast = map {my $x = $_; if($x =~ m/^(.+?),\s*(.+)$/) {$x = "$2 $1";} $x} (@contributors);
