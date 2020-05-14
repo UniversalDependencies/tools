@@ -809,7 +809,8 @@ sub check_metadata
             '2.2' => ['Amharic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Spoken', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-SRCMF', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB'],
             '2.3' => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT'],
             '2.4' => ['Assyrian-AS', 'Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'German-LIT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_Russian-RNC', 'Old_Russian-TOROT', 'Polish-PUD', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB'],
-            '2.5' => ['Bhojpuri-BHTB', 'Chinese-GSDSimp', 'English-Pronouns', 'Italian-TWITTIRO', 'Komi_Permyak-UH', 'Livvi-KKPP', 'Moksha-JR', 'Romanian-SiMoNERo', 'Scottish_Gaelic-ARCOSG', 'Skolt_Sami-Giellagas', 'Swiss_German-UZH']
+            '2.5' => ['Bhojpuri-BHTB', 'Chinese-GSDSimp', 'English-Pronouns', 'Italian-TWITTIRO', 'Komi_Permyak-UH', 'Livvi-KKPP', 'Moksha-JR', 'Romanian-SiMoNERo', 'Scottish_Gaelic-ARCOSG', 'Skolt_Sami-Giellagas', 'Swiss_German-UZH'],
+            '2.6' => ['Albanian-TSA', 'English-GUMReddit', 'Icelandic-PUD', 'Latin-LLCT', 'Sanskrit-Vedic', 'Tagalog-Ugnayan']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
