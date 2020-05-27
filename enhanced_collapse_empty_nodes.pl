@@ -38,7 +38,6 @@ use lib $libpath;
 use Graph;
 use Node;
 
-my $i = 1;
 my @sentence;
 while(<>)
 {
@@ -46,13 +45,6 @@ while(<>)
     {
         process_sentence(@sentence);
         @sentence = ();
-        ###!!! DEBUG: I suspect that memory is leaking.
-        ###!!! Caution: as explained in Tim Bunce's presentation, you'll want to track VSIZE instead of RSS.
-        if($i % 100 == 0)
-        {
-            print STDERR ("Sentence no. $i\n", `ps -p $$ -o vsz,rsz,sz,size`);
-        }
-        $i++;
     }
     else
     {

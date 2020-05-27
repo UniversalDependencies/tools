@@ -242,7 +242,7 @@ sub remove_edge
 # cally. As long as the references are there, the graph will not be destroyed
 # and DEMOLISH will not be called.
 #
-# Debug memory usage like this (watch the VSIZE number):
+# Debug memory usage like this (watch the VSZ number):
 # print STDERR ("Sentence no. $i\n", `ps -p $$ -o vsz,rsz,sz,size`);
 #------------------------------------------------------------------------------
 sub remove_all_nodes
@@ -277,6 +277,10 @@ Graph
 A C<Graph> holds a list of nodes and can return the C<Node> based on its
 C<ID> (the first column in a CoNLL-U file, can be integer or a decimal number).
 Edges are stored in nodes.
+
+It is currently necessary to call the method C<remove_all_nodes()> when the
+graph is no longer needed. Otherwise cyclic references will prevent Perl from
+freeing the memory occupied by the graph and its nodes.
 
 =head1 ATTRIBUTES
 
@@ -341,6 +345,11 @@ Adds an edge between two nodes that are already in the graph.
 =item $graph->remove_edge ($source_id, $target_id, $relation_label);
 
 Removes an existing edge between two nodes of the graph.
+
+=item $graph->remove_all_nodes ();
+
+Currently the only way of breaking cyclic references when the graph is no
+longer needed. Make sure to call this method in order to prevent memory leaks!
 
 =back
 
