@@ -245,7 +245,7 @@ sub DEMOLISH
     my @nodes = $self->get_nodes();
     foreach my $node (@nodes)
     {
-        $graph->remove_node($node->id());
+        $self->remove_node($node->id());
         # We don't have to remove edges manually. They contain node ids but not Perl references.
     }
 };
