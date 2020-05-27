@@ -234,6 +234,24 @@ sub remove_edge
 
 
 
+#------------------------------------------------------------------------------
+# Graphs refer to nodes and nodes refer back to graphs. We must break this
+# cycle when the graph is being destroyed, otherwise the Perl garbage collector
+# will keep the graph and the nodes in the memory forever.
+#------------------------------------------------------------------------------
+sub DEMOLISH
+{
+    my $self = shift;
+    my @nodes = $self->get_nodes();
+    foreach my $node (@nodes)
+    {
+        $graph->remove_node($node->id());
+        # We don't have to remove edges manually. They contain node ids but not Perl references.
+    }
+};
+
+
+
 __PACKAGE__->meta->make_immutable();
 
 1;
