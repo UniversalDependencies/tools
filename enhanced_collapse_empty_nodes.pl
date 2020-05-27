@@ -80,7 +80,12 @@ sub process_sentence
     # Now get the list of CoNLL-U lines from the modified graph.
     @sentence = $graph->to_conllu_lines();
     print_sentence(@sentence);
-    delete($graph);
+    ###!!! Does the graph get properly destroyed?
+    my @nodes = $graph->get_nodes();
+    foreach my $node (@nodes)
+    {
+        $graph->remove_node($node->id());
+    }
 }
 
 
