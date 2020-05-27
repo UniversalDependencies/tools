@@ -80,13 +80,8 @@ sub process_sentence
     # Now get the list of CoNLL-U lines from the modified graph.
     @sentence = $graph->to_conllu_lines();
     print_sentence(@sentence);
-    ###!!! Does the graph get properly destroyed?
-    #my @nodes = $graph->get_nodes();
-    #foreach my $node (@nodes)
-    #{
-    #    $graph->remove_node($node->id());
-    #    # We don't have to remove edges manually. They contain node ids but not Perl references.
-    #}
+    # Make sure that the graph gets properly destroyed. Remove cyclic references.
+    $graph->remove_all_nodes();
 }
 
 

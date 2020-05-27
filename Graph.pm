@@ -236,10 +236,16 @@ sub remove_edge
 
 #------------------------------------------------------------------------------
 # Graphs refer to nodes and nodes refer back to graphs. We must break this
-# cycle when the graph is being destroyed, otherwise the Perl garbage collector
-# will keep the graph and the nodes in the memory forever.
+# cycle manually when we are done with the graph, otherwise the Perl garbage
+# collector will keep the graph and the nodes in the memory forever. Note that
+# renaming this method to DEMOLISH will not cause Perl to clean up automati-
+# cally. As long as the references are there, the graph will not be destroyed
+# and DEMOLISH will not be called.
+#
+# Debug memory usage like this (watch the VSIZE number):
+# print STDERR ("Sentence no. $i\n", `ps -p $$ -o vsz,rsz,sz,size`);
 #------------------------------------------------------------------------------
-sub DEMOLISH
+sub remove_all_nodes
 {
     my $self = shift;
     my @nodes = $self->get_nodes();
@@ -248,7 +254,7 @@ sub DEMOLISH
         $self->remove_node($node->id());
         # We don't have to remove edges manually. They contain node ids but not Perl references.
     }
-};
+}
 
 
 
