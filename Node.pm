@@ -10,7 +10,7 @@ use Graph;
 
 
 
-has 'graph'   => (is => 'rw', isa => 'Graph', documentation => 'Refers to the graph (sentence) this node belongs to.');
+has 'graph'   => (is => 'rw', isa => 'Maybe[Graph]', documentation => 'Refers to the graph (sentence) this node belongs to.');
 has 'id'      => (is => 'rw', isa => 'Str', required => 1, documentation => 'The ID column in CoNLL-U file.');
 has 'form'    => (is => 'rw', isa => 'Str', documentation => 'The FORM column in CoNLL-U file.');
 has 'lemma'   => (is => 'rw', isa => 'Str', documentation => 'The LEMMA column in CoNLL-U file.');
