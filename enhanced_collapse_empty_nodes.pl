@@ -85,6 +85,7 @@ sub process_sentence
     foreach my $node (@nodes)
     {
         $graph->remove_node($node->id());
+        # We don't have to remove edges manually. They contain node ids but not Perl references.
     }
 }
 

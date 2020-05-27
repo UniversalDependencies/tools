@@ -172,6 +172,7 @@ sub remove_node
     {
         $node = $self->nodes()->{$id};
         delete($self->nodes()->{$id});
+        $node->set_graph(undef);
     }
     return $node;
 }
