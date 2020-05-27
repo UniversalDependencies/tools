@@ -74,12 +74,13 @@ if(scalar(@sentence) > 0)
 sub process_sentence
 {
     my @sentence = @_;
-    ###!!!my $graph = Graph::from_conllu_lines(@sentence);
+    my $graph = Graph::from_conllu_lines(@sentence);
     # We now have a complete representation of the graph.
     ###!!!collapse_empty_nodes($graph);
     # Now get the list of CoNLL-U lines from the modified graph.
-    ###!!!@sentence = $graph->to_conllu_lines();
+    @sentence = $graph->to_conllu_lines();
     print_sentence(@sentence);
+    delete($graph);
 }
 
 
