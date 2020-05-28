@@ -1424,12 +1424,16 @@ def get_gap(id, tree):
     iid = int(id) # just to be sure
     pid = int(tree['nodes'][iid][HEAD])
     if iid < pid:
-        rangebetween = range(iid + 1, pid - 1)
+        rangebetween = range(iid + 1, pid)
     else:
-        rangebetween = range(pid + 1, iid - 1)
+        rangebetween = range(pid + 1, iid)
     gap = set()
     if rangebetween:
         projection = set()
+        # We simply assume that edge X-Y (X is parent) is projective if all nodes
+        # between X and Y can be reached from X. However, it is possible that
+        # a node Z is reached from X via a node W that lies outside X-Y. We
+        # should count that as non-projectivity too! ###!!!
         get_projection(pid, tree, projection)
         gap = set(rangebetween) - projection
     return gap
