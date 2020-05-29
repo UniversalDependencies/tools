@@ -1406,10 +1406,10 @@ def get_caused_nonprojectivities(id, tree):
     else:
         left = range(1, iid)
         right = range(iid + 1, pid)
-    # Exclude ancestors of id from the ranges.
+    # Exclude nodes whose parents are ancestors of id.
     sancestors = set(ancestors)
-    leftna = set(left) - sancestors
-    rightna = set(right) - sancestors
+    leftna = [x for x in left if int(tree['nodes'][x][HEAD]) not in sancestors]
+    rightna = [x for x in right if int(tree['nodes'][x][HEAD]) not in sancestors]
     leftcross = [x for x in leftna if int(tree['nodes'][x][HEAD]) > iid]
     rightcross = [x for x in rightna if int(tree['nodes'][x][HEAD]) < iid]
     # Once again, exclude nonprojectivities that are caused by ancestors of id.
