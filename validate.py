@@ -1769,7 +1769,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
             # https://universaldependencies.org/cop/dep/aux_.html
             # existential elements ⲟⲩⲛ/ⲙⲛ in indefinite durative tenses (but not in pure existential clauses)
-            'cop': ['ⲟⲩⲛ', 'ⲙⲛ', 'ⲙⲛⲧⲉ', 'ϣⲁⲣⲉ', 'ϣⲁ', 'ⲙⲉⲣⲉ', 'ⲙⲉ', 'ⲁ', 'ⲙⲡⲉ', 'ⲙⲡ', 'ⲛⲉⲣⲉ', 'ⲛⲉ', 'ⲛⲁ', 'ⲛⲧⲉ', 'ⲧⲁⲣⲉ', 'ⲧⲁⲣ', 'ϣⲁⲛⲧⲉ', 'ⲙⲡⲁⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣ', 'ⲛⲉϣ', 'ⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲡⲣⲧⲣⲉ'],
+            # 29.5.2020: added ϫⲡⲓ ‘jpi’: it means and is about as frequent as English ‘ought to’. It has the same syntax as other existing auxiliary verbs, such as ϣ ‘š’, “be able to”.
+            'cop': ['ⲟⲩⲛ', 'ⲙⲛ', 'ⲙⲛⲧⲉ', 'ϣⲁⲣⲉ', 'ϣⲁ', 'ⲙⲉⲣⲉ', 'ⲙⲉ', 'ⲁ', 'ⲙⲡⲉ', 'ⲙⲡ', 'ⲛⲉⲣⲉ', 'ⲛⲉ', 'ⲛⲁ', 'ⲛⲧⲉ', 'ⲧⲁⲣⲉ', 'ⲧⲁⲣ', 'ϣⲁⲛⲧⲉ', 'ⲙⲡⲁⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣ', 'ϫⲡⲓ', 'ⲛⲉϣ', 'ⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲡⲣⲧⲣⲉ'],
             'gqa': ['ə', 'ni'],
             'ha':  ['ce', 'ne', 'ta', 'ba'],
             # Nilo-Saharan languages.
