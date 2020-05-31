@@ -64,7 +64,7 @@ if(defined($tbklist))
 }
 
 opendir(DIR, $datapath) or die("Cannot read the contents of '$datapath': $!");
-my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
+my @folders = sort(grep {-d "$datapath/$_" && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 my $n = scalar(@folders);
 print STDERR ("Found $n UD folders in '$datapath'.\n");
