@@ -460,7 +460,10 @@ sub find_enhancements
             $stats{edge_basic_only}++;
             if($report_basenh)
             {
-                $stats{basenh}{"edge basic only: $biedge->{deprel}"}++;
+                # If we want to find the corpus position and investigate whether the annotation is correct,
+                # we may need to know the concrete constellation including parent ids.
+                my $details = "$biedge->{id} $biedge->{deprel}   ".$curnode->get_deps_string();
+                $stats{basenh}{"edge basic only: $biedge->{deprel} [$details]"}++;
             }
         }
         # The presence of an empty node signals that gapping is resolved.
