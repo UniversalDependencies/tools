@@ -37,9 +37,11 @@ use Graph;
 use Node;
 
 my $report_cycles = 0; # report each sentence where a cycle is found?
+my $report_basenh = 0; # report each type of discrepancy between the basic tree and the enhanced graph?
 GetOptions
 (
-    'report-cycles' => \$report_cycles
+    'report-cycles' => \$report_cycles,
+    'report-basenh' => \$report_basenh
 );
 
 my %stats =
@@ -123,6 +125,15 @@ print("* Coord shared depend:    $stats{conj_shared_dependent}\n");
 print("* Controlled subject:     $stats{xsubj}\n");
 print("* Relative clause:        $stats{relcl}\n");
 print("* Deprel with case:       $stats{case_deprel}\n");
+if($report_basenh)
+{
+    print("\n");
+    my @keys = sort(keys(%{$stats{basenh}}));
+    foreach my $key (@keys)
+    {
+        print("$stats{basenh}{$key}\t$key\n");
+    }
+}
 
 
 
@@ -402,6 +413,10 @@ sub find_enhancements
                 if($biedge->{id} != $iedge->{id})
                 {
                     $stats{edge_enhanced_only}++;
+                    if($report_basenh)
+                    {
+                        $stats{basenh}{"edge enhanced only: $iedge->{deprel}"}++;
+                    }
                 }
                 # The parent is the same node in basic and in enhanced. What about the relation type?
                 elsif($biedge->{deprel} eq $iedge->{deprel})
@@ -425,16 +440,28 @@ sub find_enhancements
                         $stats{edge_basic_parent_incompatible_type}++;
                     }
                     $biedge_found++;
+                    if($report_basenh)
+                    {
+                        $stats{basenh}{"edge enhanced type: $biedge->{deprel} --> $iedge->{deprel}"}++;
+                    }
                 }
             }
             else # no basic incoming edge => all incoming edges are enhanced-only
             {
                 $stats{edge_enhanced_only}++;
+                if($report_basenh)
+                {
+                    $stats{basenh}{"edge enhanced only: $iedge->{deprel}"}++;
+                }
             }
         }
         if(!$biedge_found)
         {
             $stats{edge_basic_only}++;
+            if($report_basenh)
+            {
+                $stats{basenh}{"edge basic only: $biedge->{deprel}"}++;
+            }
         }
         # The presence of an empty node signals that gapping is resolved.
         if($curnode->is_empty())
