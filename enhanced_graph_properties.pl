@@ -468,6 +468,10 @@ sub find_enhancements
                 {
                     $details = "$biedge->{deprel}   ref";
                 }
+                elsif($edeps =~ m/^\d+\.\d+:([a-z:]+)$/)
+                {
+                    $details = "1 $biedge->{deprel}   1.1:$1";
+                }
                 else
                 {
                     $details = "$biedge->{id} $biedge->{deprel}   $edeps";
