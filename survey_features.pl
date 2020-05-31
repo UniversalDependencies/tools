@@ -123,7 +123,7 @@ foreach my $folder (@folders)
             $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $nhits = 0;
-            chdir($folder) or die("Cannot enter folder $folder");
+            chdir("$datapath/$folder") or die("Cannot enter folder '$datapath/$folder': $!");
             # Look for the other files in the repository.
             opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
             my @files = readdir(DIR);
@@ -164,13 +164,12 @@ foreach my $folder (@folders)
             {
                 $hittreebanks{$key}++;
             }
-            chdir('..') or die("Cannot return to the upper folder");
         }
     }
 }
 # Check the permitted feature values in validator data. Are there values that do not occur in the data?
-chdir('tools/data') or die("Cannot enter folder tools/data");
-opendir(DIR, '.') or die("Cannot read the contents of the folder tools/data");
+chdir("$libpath/data") or die("Cannot enter folder '$libpath/data': $!");
+opendir(DIR, '.') or die("Cannot read the contents of the folder '$libpath/data': $!");
 my @files = readdir(DIR);
 closedir(DIR);
 my @featvalfiles = grep {-f $_ && m/^feat_val\..+/} (@files);
@@ -194,7 +193,6 @@ foreach my $file (@featvalfiles)
     }
     close(FILE);
 }
-chdir('../..');
 my @features = sort(keys(%hash));
 print <<EOF
 ---

@@ -123,7 +123,7 @@ foreach my $folder (@folders)
             $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $nhits = 0;
-            chdir($folder) or die("Cannot enter folder $folder");
+            chdir("$datapath/$folder") or die("Cannot enter folder '$datapath/$folder': $!");
             # Collect enhanced graph properties from all CoNLL-U files in the folder using a dedicated script.
             my $command = "cat *.conllu | $libpath/enhanced_graph_properties.pl";
             open(PROPERTIES, "$command |") or die("Cannot run and read output of '$command': $!");
@@ -150,7 +150,6 @@ foreach my $folder (@folders)
                 }
             }
             close(PROPERTIES);
-            chdir('..') or die("Cannot return to the upper folder");
         }
     }
 }
