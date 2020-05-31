@@ -44,18 +44,23 @@ GetOptions
 
 my %stats =
 (
-    'n_graphs' => 0,
-    'n_nodes'  => 0,
+    'n_graphs'  => 0,
+    'n_nodes'   => 0,
     'n_empty_nodes' => 0,
     'n_overt_nodes' => 0,
-    'n_edges'  => 0,
-    'n_single' => 0,
+    'n_edges'   => 0,
+    'n_single'  => 0,
     'n_in2plus' => 0,
-    'n_top1'   => 0,
-    'n_top2'   => 0,
-    'n_indep'  => 0,
-    'n_cyclic_graphs' => 0,
-    'n_unconnected_graphs'  => 0,
+    'n_top1'    => 0,
+    'n_top2'    => 0,
+    'n_indep'   => 0,
+    'n_cyclic_graphs'      => 0,
+    'n_unconnected_graphs' => 0,
+    'edge_basic_only'                     => 0,
+    'edge_both_basic_and_enhanced'        => 0,
+    'edge_basic_parent_enhanced_type'     => 0,
+    'edge_basic_parent_incompatible_type' => 0,
+    'edge_enhanced_only'                  => 0,
     'gapping'               => 0,
     'conj_effective_parent' => 0,
     'conj_shared_dependent' => 0,
@@ -107,12 +112,17 @@ print("$stats{n_indep} independent non-top nodes (zero in, nonzero out)\n");
 print("$stats{n_cyclic_graphs} graphs that contain at least one cycle\n");
 print("$stats{n_unconnected_graphs} graphs with multiple non-singleton components\n");
 print("Enhancements defined in Enhanced Universal Dependencies v2 (number of observed signals that the enhancement is applied):\n");
-print("* Gapping:             $stats{gapping}\n");
-print("* Coord shared parent: $stats{conj_effective_parent}\n");
-print("* Coord shared depend: $stats{conj_shared_dependent}\n");
-print("* Controlled subject:  $stats{xsubj}\n");
-print("* Relative clause:     $stats{relcl}\n");
-print("* Deprel with case:    $stats{case_deprel}\n");
+print("* Edge basic only:        $stats{edge_basic_only}\n");
+print("* Edge basic & enhanced:  $stats{edge_both_basic_and_enhanced}\n");
+print("* Edge enhanced type:     $stats{edge_basic_parent_enhanced_type}\n");
+print("* Edge incompatible type: $stats{edge_basic_parent_incompatible_type}\n");
+print("* Edge enhanced only:     $stats{edge_enhanced_only}\n");
+print("* Gapping:                $stats{gapping}\n");
+print("* Coord shared parent:    $stats{conj_effective_parent}\n");
+print("* Coord shared depend:    $stats{conj_shared_dependent}\n");
+print("* Controlled subject:     $stats{xsubj}\n");
+print("* Relative clause:        $stats{relcl}\n");
+print("* Deprel with case:       $stats{case_deprel}\n");
 
 
 
@@ -377,8 +387,57 @@ sub find_enhancements
     {
         my @iedges = @{$curnode->iedges()};
         my @oedges = @{$curnode->oedges()};
+        # Compare the enhanced incoming edges with the basic incoming edge
+        # (if any; an empty node does not participate in any basic edge).
+        my $biedge;
+        unless($curnode->is_empty())
+        {
+            $biedge = {'id' => $curnode->bparent(), 'deprel' => $curnode->bdeprel()};
+        }
+        my $biedge_found = 0;
+        foreach my $iedge (@iedges)
+        {
+            if($biedge)
+            {
+                if($biedge->{id} != $iedge->{id})
+                {
+                    $stats{edge_enhanced_only}++;
+                }
+                # The parent is the same node in basic and in enhanced. What about the relation type?
+                elsif($biedge->{deprel} eq $iedge->{deprel})
+                {
+                    $stats{edge_both_basic_and_enhanced}++;
+                    $biedge_found++;
+                }
+                else
+                {
+                    # Edge differs from basic edge in subtype but not in main type, e.g., basic='obl', enhanced='obl:in'.
+                    my $budeprel = $biedge->{deprel};
+                    $budeprel =~ s/^([^:]+):.*$/$1/;
+                    my $eudeprel = $iedge->{deprel};
+                    $eudeprel =~ s/^([^:]+):.*$/$1/;
+                    if($budeprel eq $eudeprel)
+                    {
+                        $stats{edge_basic_parent_enhanced_type}++;
+                    }
+                    else
+                    {
+                        $stats{edge_basic_parent_incompatible_type}++;
+                    }
+                    $biedge_found++;
+                }
+            }
+            else # no basic incoming edge => all incoming edges are enhanced-only
+            {
+                $stats{edge_enhanced_only}++;
+            }
+        }
+        if(!$biedge_found)
+        {
+            $stats{edge_basic_only}++;
+        }
         # The presence of an empty node signals that gapping is resolved.
-        if($curnode->id() =~ m/\./)
+        if($curnode->is_empty())
         {
             $stats{gapping}++;
             $n_empty_nodes_in_this_graph++;

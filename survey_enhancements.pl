@@ -174,6 +174,11 @@ foreach my $treebank (@treebanks)
         $n_treebanks_everything++ if($hash{$treebank}{hit}==6);
         my $spaces = ' ' x ($maxlength-length($treebank));
         print("$treebank$spaces\t");
+        print("EB=$hash{$treebank}{'Edge basic only'}\t");
+        print("EBE=$hash{$treebank}{'Edge basic & enhanced'}\t");
+        print("EBe=$hash{$treebank}{'Edge enhanced type'}\t");
+        print("EBi=$hash{$treebank}{'Edge incompatible type'}\t");
+        print("EE=$hash{$treebank}{'Edge enhanced only'}\t");
         print("G=$hash{$treebank}{'Gapping'}\t");
         print("P=$hash{$treebank}{'Coord shared parent'}\t");
         print("S=$hash{$treebank}{'Coord shared depend'}\t");

@@ -398,6 +398,19 @@ sub cmpids
 
 
 #------------------------------------------------------------------------------
+# Checks whether the node is empty, i.e., it does not correspond to an overt
+# surface token and has a decimal id.
+#------------------------------------------------------------------------------
+sub is_empty
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    my $self = shift;
+    return $self->id() =~ m/\./;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Returns the number of incoming edges.
 #------------------------------------------------------------------------------
 sub get_in_degree
@@ -484,6 +497,19 @@ discarded and replaced by the new one.
 =item $feats = $node->get_feats_string ();
 
 Returns features as a string that can be used in a CoNLL-U file.
+
+=item $node->is_empty ();
+
+Checks whether the node is empty, i.e., it does not correspond to an overt
+surface token and has a decimal id.
+
+=item $indeg = $node->get_in_degree ();
+
+Returns the number of incoming edges to the node.
+
+=item $outdeg = $node->get_out_degree ();
+
+Returns the number of outgoing edges from the node.
 
 =back
 
