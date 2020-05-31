@@ -6,7 +6,7 @@
 # License: GNU GPL
 
 # Usage: Merge gold file with lemmas predicted by UDPipe in the shared task:
-# tools/conllu-align-tokens.pl UD_Turkish-PUD/tr_pud-ud-test.conllu media/conll17-ud-test-2017-05-09/UFAL-UDPipe-1-2/2017-05-15-02-00-38/output/tr_pud.conllu
+# tools/conllu_align_tokens.pl UD_Turkish-PUD/tr_pud-ud-test.conllu media/conll17-ud-test-2017-05-09/UFAL-UDPipe-1-2/2017-05-15-02-00-38/output/tr_pud.conllu
 
 use utf8;
 use open ':utf8';
