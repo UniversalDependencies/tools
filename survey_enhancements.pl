@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
-# Scans all UD treebanks for language-specific features and values.
-# Copyright © 2016-2018, 2020 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Scans all UD treebanks for enhancement types in enhanced UD graphs.
+# Copyright © 2020 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -32,7 +32,7 @@ use udlib;
 
 sub usage
 {
-    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt\n");
+    print STDERR ("Usage: perl survey_enhancements.pl --datapath /net/projects/ud --tbklist udsubset.txt\n");
     print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
     print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
@@ -98,7 +98,7 @@ foreach my $language (keys(%{$languages_from_yaml}))
 }
 # Look for features in the data.
 my %hash;
-my %hittreebanks;
+my %hitlanguages;
 foreach my $folder (@folders)
 {
     # If we received the list of treebanks to be released, skip all other treebanks.
@@ -124,102 +124,57 @@ foreach my $folder (@folders)
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $nhits = 0;
             chdir($folder) or die("Cannot enter folder $folder");
-            # Look for the other files in the repository.
-            opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
-            my @files = readdir(DIR);
-            closedir(DIR);
-            my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-            foreach my $file (@conllufiles)
+            # Collect enhanced graph properties from all CoNLL-U files in the folder using a dedicated script.
+            my $command = "cat *.conllu | $libpath/enhanced_graph_properties.pl";
+            open(PROPERTIES, "$command |") or die("Cannot run and read output of '$command': $!");
+            while(<PROPERTIES>)
             {
-                # Read the file and look for language-specific subtypes in the DEPREL column.
-                # We currently do not look for additional types in the DEPS column.
-                open(FILE, $file) or die("Cannot read $file: $!");
-                while(<FILE>)
+                s/\r?\n$//;
+                # We are looking for the following six lines:
+                # * Gapping:             0
+                # * Coord shared parent: 1145
+                # * Coord shared depend: 407
+                # * Controlled subject:  698
+                # * Relative clause:     0
+                # * Deprel with case:    55
+                if(m/^\*\s*(.+):\s*(\d+)$/)
                 {
-                    if(m/^\d+\t/)
+                    my $property = $1;
+                    my $count = $2;
+                    $hash{$folder}{$property} = $count;
+                    if($count>0)
                     {
-                        chomp();
-                        my @fields = split(/\t/, $_);
-                        my $features = $fields[5];
-                        unless($features eq '_')
-                        {
-                            my @features = split(/\|/, $features);
-                            foreach my $feature (@features)
-                            {
-                                my ($f, $vv) = split(/=/, $feature);
-                                # There may be several values delimited by commas.
-                                my @values = split(/,/, $vv);
-                                foreach my $v (@values)
-                                {
-                                    $hash{$f}{$v}{$key}++;
-                                    $nhits++;
-                                }
-                            }
-                        }
+                        $hash{$folder}{hit}++;
+                        $hitlanguages{$langcode}++;
                     }
                 }
             }
-            # Remember treebanks where we found something.
-            if($nhits>0)
-            {
-                $hittreebanks{$key}++;
-            }
+            close(PROPERTIES);
             chdir('..') or die("Cannot return to the upper folder");
         }
     }
 }
-# Check the permitted feature values in validator data. Are there values that do not occur in the data?
-chdir('tools/data') or die("Cannot enter folder tools/data");
-opendir(DIR, '.') or die("Cannot read the contents of the folder tools/data");
-my @files = readdir(DIR);
-closedir(DIR);
-my @featvalfiles = grep {-f $_ && m/^feat_val\..+/} (@files);
-foreach my $file (@featvalfiles)
+my $n_languages_something = scalar(keys(%hitlanguages));
+my $n_treebanks_something = 0;
+my $n_treebanks_everything = 0;
+my @treebanks = sort(keys(%hash));
+foreach my $treebank (@treebanks)
 {
-    $file =~ m/^feat_val\.(.+)$/;
-    my $key = $1;
-    next if($key eq 'ud');
-    # Also skip treebanks where we did not find anything in the data (or did not find the data).
-    next if(!exists($hittreebanks{$key}));
-    open(FILE, $file) or die("Cannot read $file: $!");
-    while(<FILE>)
+    if($hash{$treebank}{hit})
     {
-        s/\r?\n$//;
-        my $feature = $_;
-        my ($f, $v) = split(/=/, $feature);
-        if(!m/^\s*$/ && !exists($hash{$f}{$v}{$key}))
-        {
-            $hash{$f}{$v}{$key} = 'ZERO BUT LISTED AS PERMITTED IN VALIDATOR DATA';
-        }
+        $n_treebanks_something++;
+        $n_treebanks_everything++ if($hash{$treebank}{hit}==6);
+        print("$treebank\t");
+        print("G=$hash{$treebank}{'Gapping'}\t");
+        print("P=$hash{$treebank}{'Coord shared parent'}\t");
+        print("S=$hash{$treebank}{'Coord shared depend'}\t");
+        print("X=$hash{$treebank}{'Controlled subject'}\t");
+        print("R=$hash{$treebank}{'Relative clause'}\t");
+        print("C=$hash{$treebank}{'Deprel with case'}");
+        print("\n");
     }
-    close(FILE);
 }
-chdir('../..');
-my @features = sort(keys(%hash));
-print <<EOF
----
-layout: base
-title:  'Features and Values'
-udver: '2'
----
-
-This is an automatically generated list of features and values (both universal and language-specific) that occur in the UD data.
-EOF
-;
-foreach my $f (@features)
-{
-    my %ffolders;
-    my @values = sort(keys(%{$hash{$f}}));
-    print("\#\# $f\n\n");
-    print("[$f]()\n\n");
-    foreach my $v (@values)
-    {
-        my @folders = sort(keys(%{$hash{$f}{$v}}));
-        foreach my $folder (@folders)
-        {
-            print("* $f=$v\t$folder\t$hash{$f}{$v}{$folder}\n");
-            $ffolders{$folder}++;
-        }
-    }
-    print("\n");
-}
+print("\n");
+print("Total $n_treebanks_everything treebanks have all types of enhancements.\n");
+print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
+print("Total $n_languages_something languages have at least one type of enhancement in at least one treebank.\n");
