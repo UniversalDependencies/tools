@@ -67,7 +67,7 @@ my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 # There is now also the new list of languages in YAML in docs-automation; this one has also language families.
-my $languages_from_yaml = udlib::get_language_hash();
+my $languages_from_yaml = udlib::get_language_hash("$libpath/../docs-automation/codes_and_flags.yaml");
 my %langnames;
 my %langcodes;
 foreach my $language (keys(%{$languages_from_yaml}))
