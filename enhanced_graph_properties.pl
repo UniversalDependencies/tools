@@ -462,7 +462,16 @@ sub find_enhancements
             {
                 # If we want to find the corpus position and investigate whether the annotation is correct,
                 # we may need to know the concrete constellation including parent ids.
-                my $details = "$biedge->{id} $biedge->{deprel}   ".$curnode->get_deps_string();
+                my $edeps = $curnode->get_deps_string();
+                my $details;
+                if($edeps =~ m/^\d+(\.\d+)?:ref$/)
+                {
+                    $details = "$biedge->{deprel}   ref";
+                }
+                else
+                {
+                    $details = "$biedge->{id} $biedge->{deprel}   $edeps";
+                }
                 $stats{basenh}{"edge basic only: $biedge->{deprel} [$details]"}++;
             }
         }
