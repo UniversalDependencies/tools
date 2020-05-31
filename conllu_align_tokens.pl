@@ -87,6 +87,7 @@ while(my $goldline = <GOLD>)
                 {
                     my @gf = split(/\t/, $goldlines[$i]);
                     my @sf = split(/\t/, $syslines[$i]);
+                    # LEMMA is the column [2].
                     if(defined($sf[2]) && $sf[2] ne '')
                     {
                         $gf[2] = $sf[2];
