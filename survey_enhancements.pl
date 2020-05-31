@@ -157,13 +157,23 @@ my $n_languages_something = scalar(keys(%hitlanguages));
 my $n_treebanks_something = 0;
 my $n_treebanks_everything = 0;
 my @treebanks = sort(keys(%hash));
+my $maxlength;
+foreach my $treebank (@treebanks)
+{
+    my $l = length($treebank);
+    if(!defined($maxlength) || $l > $maxlength)
+    {
+        $maxlength = $l;
+    }
+}
 foreach my $treebank (@treebanks)
 {
     if($hash{$treebank}{hit})
     {
         $n_treebanks_something++;
         $n_treebanks_everything++ if($hash{$treebank}{hit}==6);
-        print("$treebank\t");
+        my $spaces = ' ' x ($maxlength-length($treebank));
+        print("$treebank$spaces\t");
         print("G=$hash{$treebank}{'Gapping'}\t");
         print("P=$hash{$treebank}{'Coord shared parent'}\t");
         print("S=$hash{$treebank}{'Coord shared depend'}\t");
