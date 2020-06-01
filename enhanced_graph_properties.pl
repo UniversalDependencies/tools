@@ -455,7 +455,7 @@ sub find_enhancements
                 }
             }
         }
-        if(!$biedge_found)
+        if($biedge && !$biedge_found)
         {
             $stats{edge_basic_only}++;
             if($report_basenh)
