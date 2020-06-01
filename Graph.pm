@@ -32,6 +32,10 @@ sub from_conllu_lines
         {
             push(@{$graph->comments()}, $line);
         }
+        # We need nodes even for the lines that introduce multi-word tokens
+        # because we have to store their attributes so we can later print the
+        # whole sentence again. However, these "nodes" will not be connected
+        # to the rest of the graph neither by basic nor by enhanced edges.
         elsif($line =~ m/^\d/)
         {
             my @fields = split(/\t/, $line);
@@ -62,7 +66,7 @@ sub to_conllu_lines
     confess('Incorrect number of arguments') if(scalar(@_) != 1);
     my $self = shift;
     my @sentence = @{$self->comments()};
-    foreach my $node ($self->get_nodes())
+    foreach my $node ($self->get_nodes(1))
     {
         my @fields = ($node->id(), $node->form(), $node->lemma(), $node->upos(), $node->xpos(), $node->get_feats_string(),
                       $node->bparent(), $node->bdeprel(), $node->get_deps_string(), $node->get_misc_string());
@@ -116,17 +120,19 @@ sub node
 
 #------------------------------------------------------------------------------
 # Returns the list of all nodes except the artificial root node with id 0. The
-# list is ordered by node ids.
+# list is ordered by node ids. The list excludes fake nodes of multi-word
+# tokens by default, but they can be required in the second parameter.
 #------------------------------------------------------------------------------
 sub get_nodes
 {
-    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    confess('Incorrect number of arguments') if(scalar(@_) < 1 || scalar(@_) > 2);
     my $self = shift;
+    my $include_mwts = shift;
     my @list = map {$self->get_node($_)} (sort
     {
         Node::cmpids($a, $b)
     }
-    (grep {$_ ne '0'} (keys(%{$self->nodes()}))));
+    (grep {$_ ne '0' && ($include_mwts || $_ !~ m/-/)} (keys(%{$self->nodes()}))));
     return @list;
 }
 
@@ -248,7 +254,7 @@ sub remove_edge
 sub remove_all_nodes
 {
     my $self = shift;
-    my @nodes = $self->get_nodes();
+    my @nodes = $self->get_nodes(1);
     foreach my $node (@nodes)
     {
         $self->remove_node($node->id());
@@ -325,7 +331,8 @@ Returns the object with the node with the given id.
 =item @nodes = $graph->get_nodes ();
 
 Returns the list of all nodes except the artificial root node with id 0. The
-list is ordered by node ids.
+list is ordered by node ids. The list excludes fake nodes of multi-word tokens
+by default, but they can be required in the second parameter.
 
 =item $graph->add_node ($node);
 

@@ -398,6 +398,19 @@ sub cmpids
 
 
 #------------------------------------------------------------------------------
+# Checks whether the node corresponds to a multi-word token (which means it is
+# not a normal node, just a storage place for the token's attributes).
+#------------------------------------------------------------------------------
+sub is_mwt
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    my $self = shift;
+    return $self->id() =~ m/-/;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Checks whether the node is empty, i.e., it does not correspond to an overt
 # surface token and has a decimal id.
 #------------------------------------------------------------------------------
@@ -497,6 +510,11 @@ discarded and replaced by the new one.
 =item $feats = $node->get_feats_string ();
 
 Returns features as a string that can be used in a CoNLL-U file.
+
+=item $node->is_mwt ();
+
+Checks whether the node corresponds to a multi-word token (which means it is
+not a normal node, just a storage place for the token's attributes).
 
 =item $node->is_empty ();
 
