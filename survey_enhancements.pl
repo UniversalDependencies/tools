@@ -171,19 +171,25 @@ foreach my $treebank (@treebanks)
     if($hash{$treebank}{hit})
     {
         $n_treebanks_something++;
-        $n_treebanks_everything++ if($hash{$treebank}{hit}==6);
+        my $g = $hash{$treebank}{'Gapping'};
+        my $p = $hash{$treebank}{'Coord shared parent'};
+        my $s = $hash{$treebank}{'Coord shared depend'};
+        my $x = $hash{$treebank}{'Controlled subject'};
+        my $r = $hash{$treebank}{'Relative clause'};
+        my $c = $hash{$treebank}{'Deprel with case'};
+        $n_treebanks_everything++ if($g>0 && $p>0 && $s>0 && $x>0 && $r>0 && $c>0);
         print(pad($treebank, $maxlength), "\t");
         print(pad("EB=$hash{$treebank}{'Edge basic only'}", 10), "\t");
         print(pad("EBE=$hash{$treebank}{'Edge basic & enhanced'}", 11), "\t");
         print(pad("EBe=$hash{$treebank}{'Edge enhanced type'}", 11), "\t");
         print(pad("EBi=$hash{$treebank}{'Edge incompatible type'}", 11), "\t");
         print(pad("EE=$hash{$treebank}{'Edge enhanced only'}", 10), "\t");
-        print(pad("G=$hash{$treebank}{'Gapping'}", 7), "\t");
-        print(pad("P=$hash{$treebank}{'Coord shared parent'}", 7), "\t");
-        print(pad("S=$hash{$treebank}{'Coord shared depend'}", 7), "\t");
-        print(pad("X=$hash{$treebank}{'Controlled subject'}", 7), "\t");
-        print(pad("R=$hash{$treebank}{'Relative clause'}", 7), "\t");
-        print("C=$hash{$treebank}{'Deprel with case'}\n");
+        print(pad("G=$g", 7), "\t");
+        print(pad("P=$p", 7), "\t");
+        print(pad("S=$s", 7), "\t");
+        print(pad("X=$x", 7), "\t");
+        print(pad("R=$r", 7), "\t");
+        print("C=$c\n");
     }
 }
 print("\n");
