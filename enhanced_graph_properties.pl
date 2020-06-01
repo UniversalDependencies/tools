@@ -460,6 +460,11 @@ sub find_enhancements
             $stats{edge_basic_only}++;
             if($report_basenh)
             {
+                ###!!! DEBUGGING: Apparently we sometimes consider nodes whose HEAD, DEPREL and DEPS are '_'.
+                if($biedge->{id} eq '_')
+                {
+                    print STDERR ("WARNING: Node ", $curnode->id(), " has HEAD='_'.\n");
+                }
                 # If we want to find the corpus position and investigate whether the annotation is correct,
                 # we may need to know the concrete constellation including parent ids.
                 my $edeps = $curnode->get_deps_string();
