@@ -142,7 +142,7 @@ foreach my $folder (@folders)
                     my $property = $1;
                     my $count = $2;
                     $hash{$folder}{$property} = $count;
-                    if($count>0)
+                    if($property ne 'Edge basic only' && $count>0)
                     {
                         $hash{$folder}{hit}++;
                         $hitlanguages{$langcode}++;
