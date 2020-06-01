@@ -172,23 +172,47 @@ foreach my $treebank (@treebanks)
     {
         $n_treebanks_something++;
         $n_treebanks_everything++ if($hash{$treebank}{hit}==6);
-        my $spaces = ' ' x ($maxlength-length($treebank));
-        print("$treebank$spaces\t");
-        print("EB=$hash{$treebank}{'Edge basic only'}\t");
-        print("EBE=$hash{$treebank}{'Edge basic & enhanced'}\t");
-        print("EBe=$hash{$treebank}{'Edge enhanced type'}\t");
-        print("EBi=$hash{$treebank}{'Edge incompatible type'}\t");
-        print("EE=$hash{$treebank}{'Edge enhanced only'}\t");
-        print("G=$hash{$treebank}{'Gapping'}\t");
-        print("P=$hash{$treebank}{'Coord shared parent'}\t");
-        print("S=$hash{$treebank}{'Coord shared depend'}\t");
-        print("X=$hash{$treebank}{'Controlled subject'}\t");
-        print("R=$hash{$treebank}{'Relative clause'}\t");
-        print("C=$hash{$treebank}{'Deprel with case'}");
-        print("\n");
+        print(pad($treebank, $maxlength), "\t");
+        print(pad("EB=$hash{$treebank}{'Edge basic only'}", 11), "\t");
+        print(pad("EBE=$hash{$treebank}{'Edge basic & enhanced'}", 11), "\t");
+        print(pad("EBe=$hash{$treebank}{'Edge enhanced type'}", 11), "\t");
+        print(pad("EBi=$hash{$treebank}{'Edge incompatible type'}", 11), "\t");
+        print(pad("EE=$hash{$treebank}{'Edge enhanced only'}", 11), "\t");
+        print(pad("G=$hash{$treebank}{'Gapping'}", 11), "\t");
+        print(pad("P=$hash{$treebank}{'Coord shared parent'}", 11), "\t");
+        print(pad("S=$hash{$treebank}{'Coord shared depend'}", 11), "\t");
+        print(pad("X=$hash{$treebank}{'Controlled subject'}", 11), "\t");
+        print(pad("R=$hash{$treebank}{'Relative clause'}", 11), "\t");
+        print("C=$hash{$treebank}{'Deprel with case'}\n");
     }
 }
 print("\n");
 print("Total $n_treebanks_everything treebanks have all types of enhancements.\n");
 print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
 print("Total $n_languages_something languages have at least one type of enhancement in at least one treebank.\n");
+
+
+
+#------------------------------------------------------------------------------
+# Adds spaces before or after a string to achieve a specified length.
+#------------------------------------------------------------------------------
+sub pad
+{
+    my $string = shift;
+    my $target = shift; # target length
+    my $before = shift;
+    my $l = length($string);
+    if($target > $l)
+    {
+        my $spaces = ' ' x ($target-$l);
+        if($before)
+        {
+            $string = $spaces.$string;
+        }
+        else
+        {
+            $string = $string.$spaces;
+        }
+    }
+    return $string;
+}
