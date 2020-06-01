@@ -177,8 +177,13 @@ foreach my $treebank (@treebanks)
         my $x = $hash{$treebank}{'Controlled subject'};
         my $r = $hash{$treebank}{'Relative clause'};
         my $c = $hash{$treebank}{'Deprel with case'};
-        $n_treebanks_everything++ if($g>0 && $p>0 && $s>0 && $x>0 && $r>0 && $c>0);
-        print(pad($treebank, $maxlength), "\t");
+        my $all = '';
+        if($g>0 && $p>0 && $s>0 && $x>0 && $r>0 && $c>0)
+        {
+            $all = '*';
+            $n_treebanks_everything++;
+        }
+        print(pad($treebank.$all, $maxlength+1), "\t");
         print(pad("EB=$hash{$treebank}{'Edge basic only'}", 10), "\t");
         print(pad("EBE=$hash{$treebank}{'Edge basic & enhanced'}", 11), "\t");
         print(pad("EBe=$hash{$treebank}{'Edge enhanced type'}", 11), "\t");
