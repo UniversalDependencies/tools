@@ -29,6 +29,7 @@ acl:pokud
 acl:proti
 acl:proto
 acl:protože
+acl:relcl:jako
 acl:s_zda
 acl:takže
 acl:totiž_že
