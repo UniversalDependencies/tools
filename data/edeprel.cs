@@ -514,6 +514,7 @@ obl:arg:se:ins
 obl:arg:s:gen
 obl:arg:s:ins
 obl:arg:s_zřetel:dat
+obl:arg:s_zřetel_k:dat
 obl:arg:u:gen
 obl:arg:v
 obl:arg:v:acc
