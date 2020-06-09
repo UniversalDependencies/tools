@@ -10,6 +10,7 @@ aux:tense
 ccomp:cleft
 conj:coord
 conj:dicto
+csubj:impers
 csubj:pass
 dep:iobj
 dep:obj
@@ -23,6 +24,7 @@ iobj:agent
 nmod:appos
 nsubj:caus
 nsubj:expl
+nsubj:impers
 nsubj:pass
 obj:agent
 obj:lvc
