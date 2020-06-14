@@ -7,6 +7,7 @@ appos:nmod
 aux:caus
 aux:pass
 aux:tense
+ccomp:agent
 ccomp:cleft
 conj:coord
 conj:dicto
