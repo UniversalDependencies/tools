@@ -72,6 +72,8 @@ sub process_sentence
     # Now get the list of CoNLL-U lines from the modified graph.
     @sentence = $graph->to_conllu_lines();
     print_sentence(@sentence);
+    # Make sure that the graph gets properly destroyed. Remove cyclic references.
+    $graph->remove_all_nodes();
 }
 
 

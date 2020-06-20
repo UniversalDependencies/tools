@@ -226,3 +226,18 @@ check_files.pl
 
 This script must be run in a folder where all the data repositories (UD_*) are stored as subfolders. It checks the
 contents of the data repositories for various issues that we want to solve before a new release of UD is published.
+
+
+
+==============================
+conllu_align_tokens.pl
+==============================
+
+Compares tokenization and word segmentation of two CoNLL-U files. Assumes that no normalization was performed, that
+is, the sequence of non-whitespace characters is identical on both sides. Use case: We want to merge a gold-standard
+file, which has no lemmas, with lemmatization predicted by an external tool. But the tool also performed tokenization
+and we have no guarantee that it matches the gold-standard tokenization. Despite its name, the script now does
+exactly that, i.e., copies the system lemma to the gold-standard annotation if the tokens match, and prints the
+merged file to STDOUT. If something else than lemma shall be copied, the source code must be adjusted.
+
+  perl conllu_align_tokens.pl UD_Turkish-PUD/tr_pud-ud-test.conllu media/conll17-ud-test-2017-05-09/UFAL-UDPipe-1-2/2017-05-15-02-00-38/output/tr_pud.conllu

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Scans all UD treebanks for language-specific subtypes of dependency relations.
-# Copyright © 2016-2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016-2018, 2020 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -9,9 +9,34 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
-# If this script is called from the parent folder, how can it find the UD library?
-use lib 'tools';
+# We need to tell Perl where to find my UD and graph modules.
+BEGIN
+{
+    use Cwd;
+    my $path = $0;
+    my $currentpath = getcwd();
+    $currentpath =~ s/\r?\n$//;
+    $libpath = $currentpath;
+    if($path =~ m:/:)
+    {
+        $path =~ s:/[^/]*$:/:;
+        chdir($path);
+        $libpath = getcwd();
+        chdir($currentpath);
+    }
+    $libpath =~ s/\r?\n$//;
+    #print STDERR ("libpath=$libpath\n");
+}
+use lib $libpath;
 use udlib;
+
+sub usage
+{
+    print STDERR ("Usage: perl survey_deprel_subtypes.pl --tbklist udsubset.txt\n");
+    print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
+    print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
+}
+
 my $tbklist;
 GetOptions
 (
@@ -34,12 +59,6 @@ if(defined($tbklist))
     }
     close(TBKLIST);
 }
-# In debugging mode, only the first three treebanks will be scanned.
-my $debug = 0;
-if(scalar(@ARGV)>=1 && $ARGV[0] eq 'debug')
-{
-    $debug = 1;
-}
 
 # This script expects to be invoked in the folder in which all the UD_folders
 # are placed.
@@ -48,7 +67,7 @@ my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 # There is now also the new list of languages in YAML in docs-automation; this one has also language families.
-my $languages_from_yaml = udlib::get_language_hash();
+my $languages_from_yaml = udlib::get_language_hash("$libpath/../docs-automation/codes_and_flags.yaml");
 my %langnames;
 my %langcodes;
 foreach my $language (keys(%{$languages_from_yaml}))
@@ -62,7 +81,6 @@ foreach my $language (keys(%{$languages_from_yaml}))
 }
 # Look for deprels in the data.
 my %hash;
-my $n_treebanks = 0;
 foreach my $folder (@folders)
 {
     # If we received the list of treebanks to be released, skip all other treebanks.
@@ -78,11 +96,6 @@ foreach my $folder (@folders)
     my $key;
     if($folder =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
     {
-        $n_treebanks++;
-        if($debug && $n_treebanks>3)
-        {
-            next;
-        }
         print STDERR ("$folder\n");
         $language = $1;
         $treebank = $2 if(defined($2));

@@ -5,4 +5,5 @@ Hyph=Yes
 NumForm=Digit
 NumForm=Letter
 NumForm=Roman
-
+Style=Slng
+Typo=Yes

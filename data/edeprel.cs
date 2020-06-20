@@ -29,6 +29,7 @@ acl:pokud
 acl:proti
 acl:proto
 acl:protože
+acl:relcl:jako
 acl:s_zda
 acl:takže
 acl:totiž_že
@@ -514,6 +515,7 @@ obl:arg:se:ins
 obl:arg:s:gen
 obl:arg:s:ins
 obl:arg:s_zřetel:dat
+obl:arg:s_zřetel_k:dat
 obl:arg:u:gen
 obl:arg:v
 obl:arg:v:acc

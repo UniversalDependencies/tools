@@ -32,6 +32,10 @@ sub from_conllu_lines
         {
             push(@{$graph->comments()}, $line);
         }
+        # We need nodes even for the lines that introduce multi-word tokens
+        # because we have to store their attributes so we can later print the
+        # whole sentence again. However, these "nodes" will not be connected
+        # to the rest of the graph neither by basic nor by enhanced edges.
         elsif($line =~ m/^\d/)
         {
             my @fields = split(/\t/, $line);
@@ -62,7 +66,7 @@ sub to_conllu_lines
     confess('Incorrect number of arguments') if(scalar(@_) != 1);
     my $self = shift;
     my @sentence = @{$self->comments()};
-    foreach my $node ($self->get_nodes())
+    foreach my $node ($self->get_nodes(1))
     {
         my @fields = ($node->id(), $node->form(), $node->lemma(), $node->upos(), $node->xpos(), $node->get_feats_string(),
                       $node->bparent(), $node->bdeprel(), $node->get_deps_string(), $node->get_misc_string());
@@ -116,17 +120,19 @@ sub node
 
 #------------------------------------------------------------------------------
 # Returns the list of all nodes except the artificial root node with id 0. The
-# list is ordered by node ids.
+# list is ordered by node ids. The list excludes fake nodes of multi-word
+# tokens by default, but they can be required in the second parameter.
 #------------------------------------------------------------------------------
 sub get_nodes
 {
-    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    confess('Incorrect number of arguments') if(scalar(@_) < 1 || scalar(@_) > 2);
     my $self = shift;
+    my $include_mwts = shift;
     my @list = map {$self->get_node($_)} (sort
     {
         Node::cmpids($a, $b)
     }
-    (grep {$_ ne '0'} (keys(%{$self->nodes()}))));
+    (grep {$_ ne '0' && ($include_mwts || $_ !~ m/-/)} (keys(%{$self->nodes()}))));
     return @list;
 }
 
@@ -172,6 +178,7 @@ sub remove_node
     {
         $node = $self->nodes()->{$id};
         delete($self->nodes()->{$id});
+        $node->set_graph(undef);
     }
     return $node;
 }
@@ -233,6 +240,30 @@ sub remove_edge
 
 
 
+#------------------------------------------------------------------------------
+# Graphs refer to nodes and nodes refer back to graphs. We must break this
+# cycle manually when we are done with the graph, otherwise the Perl garbage
+# collector will keep the graph and the nodes in the memory forever. Note that
+# renaming this method to DEMOLISH will not cause Perl to clean up automati-
+# cally. As long as the references are there, the graph will not be destroyed
+# and DEMOLISH will not be called.
+#
+# Debug memory usage like this (watch the VSZ number):
+# print STDERR ("Sentence no. $i\n", `ps -p $$ -o vsz,rsz,sz,size`);
+#------------------------------------------------------------------------------
+sub remove_all_nodes
+{
+    my $self = shift;
+    my @nodes = $self->get_nodes(1);
+    foreach my $node (@nodes)
+    {
+        $self->remove_node($node->id());
+        # We don't have to remove edges manually. They contain node ids but not Perl references.
+    }
+}
+
+
+
 __PACKAGE__->meta->make_immutable();
 
 1;
@@ -252,6 +283,10 @@ Graph
 A C<Graph> holds a list of nodes and can return the C<Node> based on its
 C<ID> (the first column in a CoNLL-U file, can be integer or a decimal number).
 Edges are stored in nodes.
+
+It is currently necessary to call the method C<remove_all_nodes()> when the
+graph is no longer needed. Otherwise cyclic references will prevent Perl from
+freeing the memory occupied by the graph and its nodes.
 
 =head1 ATTRIBUTES
 
@@ -296,7 +331,8 @@ Returns the object with the node with the given id.
 =item @nodes = $graph->get_nodes ();
 
 Returns the list of all nodes except the artificial root node with id 0. The
-list is ordered by node ids.
+list is ordered by node ids. The list excludes fake nodes of multi-word tokens
+by default, but they can be required in the second parameter.
 
 =item $graph->add_node ($node);
 
@@ -316,6 +352,11 @@ Adds an edge between two nodes that are already in the graph.
 =item $graph->remove_edge ($source_id, $target_id, $relation_label);
 
 Removes an existing edge between two nodes of the graph.
+
+=item $graph->remove_all_nodes ();
+
+Currently the only way of breaking cyclic references when the graph is no
+longer needed. Make sure to call this method in order to prevent memory leaks!
 
 =back
 
