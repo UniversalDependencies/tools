@@ -32,6 +32,7 @@ obj:lvc
 obl:agent
 obl:arg
 obl:comp
+obl:lvc
 obl:mod
 obl:periph
 parataxis:discourse
