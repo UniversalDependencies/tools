@@ -29,6 +29,7 @@ expl:pass
 flat:foreign
 flat:name
 mark:case
+nsubj:cleft
 nsubj:pass
 obl:abs
 obl:agent
