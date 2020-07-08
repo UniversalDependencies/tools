@@ -74,7 +74,7 @@ sub process_sentence
             $f[3] = fix_upos($f[0], $f[3]);
             $f[4] = fix_xpos($f[0], $f[4]);
             $f[5] = fix_feats($f[0], $f[5]);
-            ($f[6], $f[7]) = fix_head_deprel($f[0], $f[6], $f[7]);
+            ($f[6], $f[7]) = fix_head_deprel($f[0], $f[6], $f[7], $f[3]);
             $f[8] = fix_deps($f[0], $f[8]);
             $line = join("\t", @f);
         }
@@ -366,6 +366,7 @@ sub fix_head_deprel
     my $id = shift;
     my $head = shift;
     my $deprel = shift;
+    my $upos = shift; # optional UPOS tag of the dependent; we will check whether it is PUNCT
     # Multi-word tokens and empty nodes must have HEAD and DEPREL empty.
     if($id =~ m/^\d+(-|\.)\d+$/)
     {
@@ -388,7 +389,14 @@ sub fix_head_deprel
             $head = 1;
             if($deprel eq '_' || $deprel eq '')
             {
-                $deprel = 'dep';
+                if(defined($upos) && $upos eq 'PUNCT')
+                {
+                    $deprel = 'punct';
+                }
+                else
+                {
+                    $deprel = 'dep';
+                }
             }
         }
     }
