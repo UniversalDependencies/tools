@@ -348,6 +348,13 @@ sub fix_feats
             $v =~ s/[^A-Za-z0-9,]//g;
             $v =~ s/^(.)/\u\1/;
             $v = 'X'.$v if($v !~ m/^[A-Z0-9]/);
+            # If the value is a disjunction of multiple values, these must be sorted.
+            if($v =~ m/,/)
+            {
+                my @v = split(/,/, $v);
+                @v = sort(@v);
+                $v = join(',', @v);
+            }
             $fv = "$f=$v";
         }
         @feats = sort {lc($a) cmp lc($b)} (@feats);
