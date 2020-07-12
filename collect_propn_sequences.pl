@@ -18,6 +18,9 @@ binmode(STDERR, ':utf8');
 my %ne;
 my $current_ne = '';
 my $mwtto = 0;
+my $mwt_form = '';
+my $mwt_no_space_after = 0;
+my $mwt_is_propn;
 while(<>)
 {
     s/\r?\n$//;
@@ -25,43 +28,64 @@ while(<>)
     {
         $mwtto = $1;
         my @f = split(/\t/, $_);
-        if($f[3] eq 'PROPN')
-        {
-            $current_ne .= $f[1];
-            unless(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
-            {
-                $current_ne .= ' ';
-            }
-        }
-        else
-        {
-            if($current_ne ne '')
-            {
-                $current_ne =~ s/\s+$//;
-                $ne{$current_ne}++;
-            }
-            $current_ne = '';
-        }
+        $mwt_form = $f[1];
+        $mwt_no_space_after = scalar(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])));
+        $mwt_is_propn = 1; # any non-PROPN word within the MWT will clear this flag
     }
-    elsif(m/^(\d+)\t/ && $1 > $mwtto)
+    elsif(m/^(\d+)\t/)
     {
         my @f = split(/\t/, $_);
-        if($f[3] eq 'PROPN')
+        if($mwtto > 0 && $f[0] <= $mwtto)
         {
-            $current_ne .= $f[1];
-            unless(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
+            # We are in a non-final word of a multi-word token and it is not a PROPN.
+            # If the buffer contains a named entity, it will not include any part of
+            # the MWT, even if its initial words were PROPN.
+            if($f[3] ne 'PROPN')
             {
-                $current_ne .= ' ';
+                if($current_ne ne '')
+                {
+                    $current_ne =~ s/\s+$//;
+                    $ne{$current_ne}++;
+                }
+                $current_ne = '';
+                $mwt_is_propn = 0;
+            }
+            if($f[0] == $mwtto)
+            {
+                if($mwt_is_propn)
+                {
+                    $current_ne .= $mwt_form;
+                    unless($mwt_no_space_after)
+                    {
+                        $current_ne .= ' ';
+                    }
+                }
+                $mwtto = 0;
+                $mwt_form = '';
+                $mwt_no_space_after = 0;
+                $mwt_is_propn = undef;
             }
         }
+        # Normal word/token that is not part of a multi-word token.
         else
         {
-            if($current_ne ne '')
+            if($f[3] eq 'PROPN')
             {
-                $current_ne =~ s/\s+$//;
-                $ne{$current_ne}++;
+                $current_ne .= $f[1];
+                unless(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
+                {
+                    $current_ne .= ' ';
+                }
             }
-            $current_ne = '';
+            else
+            {
+                if($current_ne ne '')
+                {
+                    $current_ne =~ s/\s+$//;
+                    $ne{$current_ne}++;
+                }
+                $current_ne = '';
+            }
         }
     }
     elsif(m/^\s*$/)
@@ -73,6 +97,9 @@ while(<>)
         }
         $current_ne = '';
         $mwtto = 0;
+        $mwt_form = '';
+        $mwt_no_space_after = 0;
+        $mwt_is_propn = undef;
     }
 }
 my @ne = sort {my $r = $ne{$b} <=> $ne{$a}; unless($r) {$r = $a cmp $b} $r} (keys(%ne));
