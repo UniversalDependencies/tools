@@ -28,7 +28,7 @@ while(<>)
         if($f[3] eq 'PROPN')
         {
             $current_ne .= $f[1];
-            if(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
+            unless(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
             {
                 $current_ne .= ' ';
             }
@@ -49,7 +49,7 @@ while(<>)
         if($f[3] eq 'PROPN')
         {
             $current_ne .= $f[1];
-            if(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
+            unless(grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
             {
                 $current_ne .= ' ';
             }
