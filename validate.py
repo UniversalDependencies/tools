@@ -1709,7 +1709,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
             # Altaic languages.
             'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun'],
-            'kk':  ['бол', 'е'],
+            'kk':  ['бол', 'е', 'ал', 'отыр', 'өт', 'жат', 'тұр', 'бер', 'түс', 'кел', 'біл', 'көр', 'баста', 'шық', 'қал', 'кет', 'қой', 'жаз', 'жүр', 'жібер', 'таста', 'біт', 'бар'],
             'ug':  ['بول', 'ئى', 'كەت', 'بەر'],
             'bxr': ['бай', 'боло'],
             'ko':  ['이+라는'],
