@@ -5,6 +5,7 @@ advcl:abs
 advcl:agent
 advcl:arg
 advcl:cmpr
+advcl:pred
 advmod:emph
 advmod:neg
 aux:pass
@@ -36,4 +37,5 @@ obl:agent
 obl:arg
 obl:cmpr
 orphan:missing
+xcomp:pred
 
