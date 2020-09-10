@@ -1,4 +1,6 @@
 acl:relcl
+advmod:emph
+case:adv
 cc:preconj
 compound:a
 compound:n
@@ -6,8 +8,14 @@ compound:plur
 compound:v
 csubj:pass
 dep:prt
+flat:foreign
 flat:name
+flat:range
+nmod:npmod
 nmod:poss
+nmod:tmod
 nsubj:pass
+obl:agent
+obl:mod
 obl:poss
 obl:tmod
