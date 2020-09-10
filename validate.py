@@ -1736,7 +1736,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
-            'id':  ['adalah'],
+            'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'harus'],
             'tl':  ['may', 'kaya', 'sana', 'huwag'],
             'ifb': ['agguy', 'adi', 'gun', "'ahi"],
             # Australian languages: Pama-Nyungan.
@@ -1940,7 +1940,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
-            'id':  ['adalah'],
+            'id':  ['adalah', 'ialah'],
             'tl':  ['may'],
             # Australian languages: Pama-Nyungan.
             'zmu': ['yi'],
