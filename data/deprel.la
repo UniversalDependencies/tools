@@ -39,4 +39,10 @@ obl:cmpr
 orphan:missing
 parataxis:rep
 xcomp:pred
+nmod:appos
+nmod:advmod
+amod:advmod
+advmod:cc
+acl:appos
+advcl:appos
 
