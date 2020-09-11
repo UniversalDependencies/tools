@@ -1765,6 +1765,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 'هَل',
                 'أَ'
             ],
+            'ajp': [
+                'كَان',
+            ],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
             # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
@@ -1947,6 +1950,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Afro-Asiatic languages.
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
+            'ajp': ['كَان'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],
