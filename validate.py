@@ -1668,7 +1668,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'gd':  ['is'],
             'gv':  ['she'],
             'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe', 'am'],
-            'br':  ['bezañ'],
+            'br':  ['bezañ', 'ober', 'e', 'a', 'kaout', 'gellout', 'gallout', 'em', 'o', 'en', 'ur', 'dleout', 'rankout', 'na', 'ra'],
             'sq':  ['kam', 'jam', 'u'],
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
