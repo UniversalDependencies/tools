@@ -1622,7 +1622,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
             'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
-            'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna'],
+            'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna', 'skula', 'vara', 'kunnu', 'mega'],
             'is':  ['vera', 'hafa', 'verða', 'geta', 'mega', 'munu', 'skulu', 'eiga'],
             'got': ['wisan'],
             # DZ: The Portuguese list is much longer than for the other Romance languages
@@ -1668,13 +1668,13 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'gd':  ['is'],
             'gv':  ['she'],
             'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe', 'am'],
-            'br':  ['bezañ'],
+            'br':  ['bezañ', 'ober', 'e', 'a', 'kaout', 'gellout', 'gallout', 'em', 'o', 'en', 'ur', 'dleout', 'rankout', 'na', 'ra'],
             'sq':  ['kam', 'jam', 'u'],
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
             'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
             'kmr': ['bûn', 'hebûn'],
-            'fa':  ['است'],
+            'fa':  ['است','#است','کرد#کن','بود#باش','#هست','بایست#باید','خواست#خواه','بر#خواست#خواه','#توان','شد#شد','شد#شو','توانست#توان','فرو#خواست#خواه','در#خواست#خواه','باز#خواست#خواه','شایست#شاید','وا#خواست#خواه','فرا#خواست#خواه','گشت#گرد','داد#ده','ور#خواست#خواه'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
             'sa':  ['अस्', 'as', 'भू', 'bhū', 'इ', 'i', 'कृ', 'kṛ', 'शक्', 'śak'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
@@ -1764,6 +1764,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 'مَا',
                 'هَل',
                 'أَ'
+            ],
+            'ajp': [
+                'كَان',
             ],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
@@ -1886,7 +1889,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'el':  ['είμαι'],
             'hy':  ['եմ'],
             'kmr': ['bûn'],
-            'fa':  ['است'],
+            'fa':  ['است','#است','بود#باش','#هست'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
             'sa':  ['अस्', 'as', 'भू', 'bhū'],
             'hi':  ['है', 'था'],
@@ -1947,6 +1950,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Afro-Asiatic languages.
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
+            'ajp': ['كَان'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],

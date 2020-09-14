@@ -8,6 +8,7 @@ compound:plur
 compound:v
 csubj:pass
 dep:prt
+det:poss
 flat:foreign
 flat:name
 flat:range
