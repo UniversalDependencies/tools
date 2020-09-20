@@ -1650,7 +1650,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # "to" is a copula and the Polish team insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
             'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechby', 'niechże', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
-            'be':  ['быць', 'б'],
+            'be':  ['быць', 'бы', 'б'],
             'ru':  ['быть', 'бы', 'б'],
             # Hanne says that negation is fused with the verb in the present tense and
             # then the negative lemma is used. DZ: I believe that in the future
