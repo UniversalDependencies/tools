@@ -1739,9 +1739,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'harus'],
             'tl':  ['may', 'kaya', 'sana', 'huwag'],
             'ifb': ['agguy', 'adi', 'gun', "'ahi"],
-            # Australian languages: Pama-Nyungan.
+            # Australian languages: Pama-Nyungan and Tangkic.
             'wbp': ['ka'],
             'zmu': ['yi'],
+            'gcd': ['kari', 'ŋka'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
