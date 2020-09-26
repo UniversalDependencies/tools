@@ -115,27 +115,32 @@ def trees(inp, tag_sets, args):
     sentence at a time from the input stream.
     """
     global curr_line, sentence_line, sentence_id
-    comments=[] # List of comment lines to go with the current sentence
-    lines=[] # List of token/word lines of the current sentence
+    comments = [] # List of comment lines to go with the current sentence
+    lines = [] # List of token/word lines of the current sentence
+    corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
     testlevel = 1
     testclass = 'Format'
     for line_counter, line in enumerate(inp):
-        curr_line=line_counter+1
-        line=line.rstrip(u"\n")
+        curr_line = line_counter+1
+        line = line.rstrip(u"\n")
         if is_whitespace(line):
             testid = 'pseudo-empty-line'
             testmessage = 'Spurious line that appears empty but is not; there are whitespace characters.'
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             # We will pretend that the line terminates a sentence in order to avoid subsequent misleading error messages.
             if lines:
-                yield comments, lines
-                comments=[]
-                lines=[]
+                if not corrupted:
+                    yield comments, lines
+                comments = []
+                lines = []
+                corrupted = False
         elif not line: # empty line
             if lines: # sentence done
-                yield comments, lines
+                if not corrupted:
+                    yield comments, lines
                 comments=[]
                 lines=[]
+                corrupted = False
             else:
                 testid = 'extra-empty-line'
                 testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
@@ -163,6 +168,7 @@ def trees(inp, tag_sets, args):
                 testid = 'number-of-columns'
                 testmessage = 'The line has %d columns but %d are expected. The contents of the columns will not be checked.' % (len(cols), COLCOUNT)
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                corrupted = True
             # If there is an unexpected number of columns, do not test their contents.
             # Maybe the contents belongs to a different column. And we could see
             # an exception if a column value is missing.
@@ -180,7 +186,8 @@ def trees(inp, tag_sets, args):
             testid = 'missing-empty-line'
             testmessage = 'Missing empty line after the last sentence.'
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-            yield comments, lines
+            if not corrupted:
+                yield comments, lines
 
 ###### Tests applicable to a single row indpendently of the others
 
@@ -509,9 +516,6 @@ def validate_cols(cols, tag_sets, args):
         validate_deprels(cols, tag_sets, args) # level 2 and up
     elif is_empty_node(cols):
         validate_empty_node_empty_vals(cols) # level 2
-        # TODO check also the following:
-        # - DEPS are connected and non-acyclic
-        # (more, what?)
     if args.level > 3:
         validate_whitespace(cols, tag_sets) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
