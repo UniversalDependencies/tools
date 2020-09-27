@@ -1740,7 +1740,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
-            'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'harus', 'seharusnya', 'sebaiknya'],
+            'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'wajib', 'harus', 'seharusnya', 'sebaiknya'],
             'tl':  ['may', 'kaya', 'sana', 'huwag'],
             'ifb': ['agguy', 'adi', 'gun', "'ahi"],
             # Australian languages: Pama-Nyungan and Tangkic.
