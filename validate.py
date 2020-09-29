@@ -1677,6 +1677,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
             'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
+            'hit': ['ēš-', 'NU.GÁL'],
             'kmr': ['bûn', 'hebûn'],
             'fa':  ['است','#است','شد#شو','بود#باش','#هست','بایست#باید','خواست#خواه','بر#خواست#خواه','#توان','شد#شد','توانست#توان','داشت#دار','فرو#خواست#خواه','در#خواست#خواه','باز#خواست#خواه','کرد#کن','شایست#شاید','وا#خواست#خواه','فرا#خواست#خواه','گشت#گرد','داد#ده','ور#خواست#خواه'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
@@ -1893,6 +1894,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'grc': ['εἰμί'],
             'el':  ['είμαι'],
             'hy':  ['եմ'],
+            'hit': ['ēš-', 'NU.GÁL'],
             'kmr': ['bûn'],
             'fa':  ['است','#است','بود#باش','#هست'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
