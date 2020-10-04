@@ -106,6 +106,7 @@ Number[psor]=Plur
 Number[subj]=Sing
 Number[subj]=Dual
 Number[subj]=Plur
+PartType=Des
 PartType=Dir
 PartType=Emph
 PartType=Inf
