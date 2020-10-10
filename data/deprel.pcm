@@ -1,4 +1,3 @@
-acl:cleft
 acl:relcl
 advcl:periph
 advmod:emph
@@ -7,16 +6,12 @@ ccomp:cleft
 compound:prt
 conj:redup
 compound:svc
-conj:appos
 conj:coord
 conj:dicto
-csubj:quasi
-det:predet
 nmod:npmod
 nmod:poss
 nsubj:expl
 nsubj:pass
-nsubj:quasi
 obl:arg
 obl:mod
 obl:periph
@@ -28,9 +23,7 @@ parataxis:parenth
 acl:periph
 advcl:cleft
 advcl:emph
-advmod:appos
 advmod:periph
-amod:appos
 amod:emph
 ccomp:agent
 compound:redup
@@ -48,3 +41,10 @@ obl:agent
 obl:lvc
 parataxis:comp
 parataxis:insert
+ccomp:obj
+ccomp:obl
+ccomp:pred
+xcomp:obj
+xcomp:obl
+xcomp:pred
+dep:comp
