@@ -1772,7 +1772,13 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 'أَ'
             ],
             'ajp': [
-                'كَان',
+                'كَان', # copula
+                'عم', # copula
+                'راح', # will
+                'قِدِر', # can
+                'حَب', # would (like to)
+                'ممكن', # could
+                'لَازِم' # must
             ],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
@@ -1957,7 +1963,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Afro-Asiatic languages.
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
-            'ajp': ['كَان'],
+            'ajp': ['كَان', 'عم'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],
