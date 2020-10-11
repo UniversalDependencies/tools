@@ -1773,11 +1773,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             ],
             'ajp': [
                 'كَان', # copula
-                'عم', # copula
+                'عَم', # copula
                 'راح', # will
                 'قِدِر', # can
                 'حَب', # would (like to)
-                'ممكن', # could
+                'مُمكِن', # could
                 'لَازِم' # must
             ],
             'he':  ['היה', 'הוא', 'זה'],
