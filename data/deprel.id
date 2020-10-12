@@ -12,6 +12,7 @@ det:poss
 flat:foreign
 flat:name
 flat:range
+nmod:lmod
 nmod:npmod
 nmod:poss
 nmod:tmod

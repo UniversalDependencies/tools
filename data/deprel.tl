@@ -1,2 +1,9 @@
 compound:redup
+csubj:bfoc
+csubj:lfoc
+csubj:pass
 nmod:poss
+nsubj:bfoc
+nsubj:lfoc
+nsubj:pass
+obj:agent

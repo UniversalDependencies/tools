@@ -1,8 +1,4 @@
 Case=NomAcc
-Dialect=Connaught
-Dialect=Munster
-Dialect=Ulster
-Form=Ecl
 Form=Emp
 Form=HPref
 Form=Len
@@ -23,6 +19,7 @@ PartType=Num
 PartType=Pat
 PartType=Vb
 PartType=Voc
+Polarity=Aff
 PrepForm=Cmpd
 VerbForm=Cop
 Voice=Auto

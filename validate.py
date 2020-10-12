@@ -115,27 +115,32 @@ def trees(inp, tag_sets, args):
     sentence at a time from the input stream.
     """
     global curr_line, sentence_line, sentence_id
-    comments=[] # List of comment lines to go with the current sentence
-    lines=[] # List of token/word lines of the current sentence
+    comments = [] # List of comment lines to go with the current sentence
+    lines = [] # List of token/word lines of the current sentence
+    corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
     testlevel = 1
     testclass = 'Format'
     for line_counter, line in enumerate(inp):
-        curr_line=line_counter+1
-        line=line.rstrip(u"\n")
+        curr_line = line_counter+1
+        line = line.rstrip(u"\n")
         if is_whitespace(line):
             testid = 'pseudo-empty-line'
             testmessage = 'Spurious line that appears empty but is not; there are whitespace characters.'
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             # We will pretend that the line terminates a sentence in order to avoid subsequent misleading error messages.
             if lines:
-                yield comments, lines
-                comments=[]
-                lines=[]
+                if not corrupted:
+                    yield comments, lines
+                comments = []
+                lines = []
+                corrupted = False
         elif not line: # empty line
             if lines: # sentence done
-                yield comments, lines
+                if not corrupted:
+                    yield comments, lines
                 comments=[]
                 lines=[]
+                corrupted = False
             else:
                 testid = 'extra-empty-line'
                 testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
@@ -163,6 +168,7 @@ def trees(inp, tag_sets, args):
                 testid = 'number-of-columns'
                 testmessage = 'The line has %d columns but %d are expected. The contents of the columns will not be checked.' % (len(cols), COLCOUNT)
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                corrupted = True
             # If there is an unexpected number of columns, do not test their contents.
             # Maybe the contents belongs to a different column. And we could see
             # an exception if a column value is missing.
@@ -180,7 +186,8 @@ def trees(inp, tag_sets, args):
             testid = 'missing-empty-line'
             testmessage = 'Missing empty line after the last sentence.'
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-            yield comments, lines
+            if not corrupted:
+                yield comments, lines
 
 ###### Tests applicable to a single row indpendently of the others
 
@@ -509,9 +516,6 @@ def validate_cols(cols, tag_sets, args):
         validate_deprels(cols, tag_sets, args) # level 2 and up
     elif is_empty_node(cols):
         validate_empty_node_empty_vals(cols) # level 2
-        # TODO check also the following:
-        # - DEPS are connected and non-acyclic
-        # (more, what?)
     if args.level > 3:
         validate_whitespace(cols, tag_sets) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
@@ -1641,7 +1645,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'it':  ['essere', 'stare', 'avere', 'fare', 'andare', 'venire', 'potere', 'sapere', 'volere', 'dovere'],
             'ro':  ['fi', 'avea', 'putea', 'ști', 'vrea', 'trebui'],
             #In Late Latin, also habeo appears as an auxiliary (like in the modern Romance languages), whereas it can happen a confusion between some forms of sum and fio (originally "to be made")
-			'la':  ['sum','habeo','fio'],
+			'la':  ['sum', 'habeo', 'fio'],
             'cs':  ['být', 'bývat', 'bývávat'],
             'sk':  ['byť', 'bývať', 'by'],
             'hsb': ['być'],
@@ -1650,7 +1654,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # "to" is a copula and the Polish team insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
             'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechby', 'niechże', 'niechaj', 'niechajże', 'to'],
             'uk':  ['бути', 'бувати', 'би', 'б'],
-            'be':  ['быць', 'б'],
+            'be':  ['быць', 'бы', 'б'],
             'ru':  ['быть', 'бы', 'б'],
             # Hanne says that negation is fused with the verb in the present tense and
             # then the negative lemma is used. DZ: I believe that in the future
@@ -1673,8 +1677,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'grc': ['εἰμί'],
             'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
             'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
+            'hit': ['ēš-', 'NU.GÁL'],
             'kmr': ['bûn', 'hebûn'],
-            'fa':  ['است','#است','کرد#کن','بود#باش','#هست','بایست#باید','خواست#خواه','بر#خواست#خواه','#توان','شد#شد','شد#شو','توانست#توان','فرو#خواست#خواه','در#خواست#خواه','باز#خواست#خواه','شایست#شاید','وا#خواست#خواه','فرا#خواست#خواه','گشت#گرد','داد#ده','ور#خواست#خواه'],
+            'fa':  ['است','#است','شد#شو','بود#باش','#هست','بایست#باید','خواست#خواه','بر#خواست#خواه','#توان','شد#شد','توانست#توان','داشت#دار','فرو#خواست#خواه','در#خواست#خواه','باز#خواست#خواه','کرد#کن','شایست#شاید','وا#خواست#خواه','فرا#خواست#خواه','گشت#گرد','داد#ده','ور#خواست#خواه'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
             'sa':  ['अस्', 'as', 'भू', 'bhū', 'इ', 'i', 'कृ', 'kṛ', 'शक्', 'śak'],
             'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
@@ -1736,12 +1741,13 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
-            'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'harus'],
+            'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'wajib', 'harus', 'seharusnya', 'sebaiknya'],
             'tl':  ['may', 'kaya', 'sana', 'huwag'],
             'ifb': ['agguy', 'adi', 'gun', "'ahi"],
-            # Australian languages: Pama-Nyungan.
+            # Australian languages: Pama-Nyungan and Tangkic.
             'wbp': ['ka'],
             'zmu': ['yi'],
+            'gcd': ['kari', 'ŋka'],
             # Afro-Asiatic languages.
             'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
             # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
@@ -1766,7 +1772,13 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 'أَ'
             ],
             'ajp': [
-                'كَان',
+                'كَان', # copula
+                'عَم', # copula
+                'راح', # will
+                'قِدِر', # can
+                'حَب', # would (like to)
+                'مُمكِن', # could
+                'لَازِم' # must
             ],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
@@ -1888,6 +1900,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'grc': ['εἰμί'],
             'el':  ['είμαι'],
             'hy':  ['եմ'],
+            'hit': ['ēš-', 'NU.GÁL'],
             'kmr': ['bûn'],
             'fa':  ['است','#است','بود#باش','#هست'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
@@ -1950,7 +1963,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Afro-Asiatic languages.
             'mt':  ['kien'],
             'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
-            'ajp': ['كَان'],
+            'ajp': ['كَان', 'عم'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ'],
             'am':  ['ን'],
