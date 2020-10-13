@@ -10,6 +10,7 @@ compound:prt
 compound:redup
 compound:svc
 det:poss
+flat:name
 mark:relcl
 nmod:poss
 nsubj:ben
