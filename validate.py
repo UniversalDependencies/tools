@@ -1803,6 +1803,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'bav': ['lùu'],
             # Yuman languages.
             'mov': ['iðu:m'],
+            # Arawakan languages.
+            # Jack Rueter: 'kuna' is a negation marker. DZ: maybe it should then be PART rather than AUX?
+            'apu': ['awa', 'txa', 'kuna'],
             # Tupian languages.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
             # Creole
