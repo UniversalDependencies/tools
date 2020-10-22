@@ -48,3 +48,4 @@ xcomp:obj
 xcomp:obl
 xcomp:pred
 dep:comp
+dep:fixed
