@@ -1756,13 +1756,15 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # مَا mā "not" is negation. Maybe it should be PART/advmod rather than AUX/aux?
             # هَل hal "whether" is a question particle. Maybe it should be PART/advmod rather than AUX/aux?
             # أ ʾa "whether, indeed" is a question particle. It occurs together with the negative copula: "أليس" (ʾalays) "isn't it...". Maybe it should be PART/advmod rather than AUX/aux?
+            # The NYUAD treebank contains only some lemmas but they are romanized and unvocalized.
+            # We have to list them separately here.
             'ar':  [
                 'كَان',
                 'لَيس',
                 'لسنا',
                 'هُوَ',
                 'سَوفَ',
-                'سَ',
+                'سَ', 's',
                 'قَد',
                 'رُبَّمَا',
                 'عَلَّ',
