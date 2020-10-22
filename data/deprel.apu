@@ -1,0 +1,10 @@
+acl:relcl
+advcl:tmod
+advmod:lmod
+advmod:tmod
+aux:neg
+nmod:poss
+nsubj:cop
+obj:agent
+obl:lmod
+obl:tmod

@@ -10,7 +10,7 @@ case:pred
 aux:pass
 obl:agent
 nsubj:pass
-
+compound:redup
 
 
 
