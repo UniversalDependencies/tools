@@ -1,0 +1,17 @@
+AdpType=Prep
+PartType=Aug
+PartType=Dct
+Prefix=Yes
+PronClass=A
+PronClass=B
+PronClass=C
+PronGend=Fem
+PronGend=Masc
+PronGend=Neut
+PronNum=1
+PronNum=2
+PronNum=3
+PronPers=Plur
+PronPers=Sing
+PronType=Ana
+VerbType=Cop
