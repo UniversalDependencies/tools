@@ -5,3 +5,7 @@ nmod:poss
 aux:pass
 acl:cleft
 acl:relcl
+compound:prt
+flat:foreign
+flat:name
+obl:arg

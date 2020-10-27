@@ -1733,7 +1733,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lez': ['x̂ana', "k'an"],
             # Sino-Tibetan languages.
             # 爲, cop 儀 Nec 可 Pot 宜 Nec 得 Pot 敢 Des 欲 Des 肯 Des 能 Pot 足 Pot 須 Nec 被 Pass 見 Pass
-            'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯'],
+            'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯', '應' ],
             'zh':  ['是', '为', '為'],
             'yue': ['係', '為'],
             'lus': ['nii'],
@@ -1809,7 +1809,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Tupian languages.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
             # Creole
-            'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would']
+            'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would'],
+            # Multilingual/code-switching
+            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
 
         }
         if lang == 'shopen':
@@ -1985,7 +1987,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'bav': ['lùu'],
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
-            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
+            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
+            # Multilingual/code-switching
+            'qtd': ['ol', 'i', 'sein'],
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
