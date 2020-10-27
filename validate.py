@@ -1733,7 +1733,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'lez': ['x̂ana', "k'an"],
             # Sino-Tibetan languages.
             # 爲, cop 儀 Nec 可 Pot 宜 Nec 得 Pot 敢 Des 欲 Des 肯 Des 能 Pot 足 Pot 須 Nec 被 Pass 見 Pass
-            'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯'],
+            'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯', '應' ],
             'zh':  ['是', '为', '為'],
             'yue': ['係', '為'],
             'lus': ['nii'],
