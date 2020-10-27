@@ -1809,7 +1809,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Tupian languages.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
             # Creole
-            'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would']
+            'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would'],
+            # Multilingual/code-switching
+            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
 
         }
         if lang == 'shopen':
@@ -1985,7 +1987,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'bav': ['lùu'],
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
-            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ']
+            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
+            # Multilingual/code-switching
+            'qtd': ['ol', 'i', 'sein'],
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
