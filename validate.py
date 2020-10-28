@@ -1692,7 +1692,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'krl': ['olla', 'ei', 'voija', 'piteä'],
             'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
-            'sme': ['leat'],
+            'sme': ['leat', 'ii', 'sáhttit', 'galgat', 'fertet', 'áigut',
+                    'máhttit', 'dáidit', 'šaddat', 'lávet', 'bállet', 'orrut',
+                    'háliidit', 'sihtat', 'gártat', 'álgit', 'soaitit',
+                    'gillet', 'nagodit', 'berret', 'beassat', 'boahtit',
+                    'viggat', 'veadjit'],
             # Jack: i-gõl = should not
             'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'i-ǥõl', 'feʹrttjed', 'pâʹstted'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
