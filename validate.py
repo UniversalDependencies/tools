@@ -1990,6 +1990,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
             # Multilingual/code-switching
             'qtd': ['ol', 'i', 'sein'],
+            'akk': ['anāku']
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
