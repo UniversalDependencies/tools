@@ -1619,7 +1619,8 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         auxdict = {
             # ChrisManning 2019/04: Allow 'get' as aux for get passive construction. And 'ought'
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get', 'ought'],
-            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet'],
+            # Peter Dirix 2020/10: 'is' is inflected form of 'wees', added 'moenie', 'behoort' and 'hoef'
+            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet', 'moenie', 'behoort', 'hoef'],
             # Gosse Bouma: 'krijgen' is used as passive auxiliary in cases where an indirect object is promoted to subject (as in German 'kriegen'-passiv).
             'nl':  ['zijn', 'hebben', 'worden', 'krijgen', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
@@ -1856,7 +1857,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
         # Besides AUX, the copula can also be a pronoun in some languages.
         copdict = {
             'en':  ['be'],
-            'af':  ['is', 'wees'],
+            'af':  ['wees'],
             'nl':  ['zijn'],
             'de':  ['sein'],
             'sv':  ['vara'],
