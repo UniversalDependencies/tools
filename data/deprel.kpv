@@ -1,9 +1,14 @@
 acl:relcl
+advcl:tmod
 advmod:deg
 advmod:lmod
 advmod:mmod
+advmod:neg
 advmod:tmod
 aux:neg
 flat:name
+nmod:comp
+nmod:poss
+nsubj:cop
 obl:lmod
 obl:tmod
