@@ -1,6 +1,7 @@
 AdpType=Prep
 PartType=Aug
 PartType=Dct
+PartType=Vb
 Prefix=Yes
 PronClass=A
 PronClass=B
