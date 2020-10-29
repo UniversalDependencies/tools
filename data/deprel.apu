@@ -1,6 +1,7 @@
 acl:relcl
 advcl:tmod
 advmod:lmod
+advmod:neg
 advmod:tmod
 aux:neg
 nmod:poss
