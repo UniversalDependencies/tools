@@ -1625,10 +1625,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'nl':  ['zijn', 'hebben', 'worden', 'krijgen', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
             'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
-            'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
+            'no':  ['være', 'vere', 'ha', 'bli', 'verte', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna', 'skula', 'vara', 'kunnu', 'mega'],
-            'is':  ['vera', 'hafa', 'verða', 'geta', 'fá', 'mega', 'vilja', 'munu', 'skulu', 'eiga'],
+            'is':  ['vera', 'hafa', 'blífa', 'verða', 'geta', 'fá', 'kunna', 'mega', 'vilja', 'munu', 'skulu', 'eiga'],
             'got': ['wisan'],
             # DZ: The Portuguese list is much longer than for the other Romance languages
             # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
@@ -1816,7 +1816,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Creole
             'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would'],
             # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
+            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen', 'be', 'tun'],
 
         }
         if lang == 'shopen':
@@ -1994,7 +1994,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
             # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'sein'],
+            'qtd': ['ol', 'i', 'sein', 'be'],
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
