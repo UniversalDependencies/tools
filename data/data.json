@@ -864,6 +864,7 @@
 {"lcode": "ur", "lemma": "ہو", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ur", "lemma": "ہے", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "vi", "lemma": "là", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "wbp", "lemma": "ka", "function": "Periphrastic tense: present", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Kurdungku [ka] maliki witangku wajilipinyi.", "exampleen": "The small child is chasing the dog.", "comment": "", "status": "documented", "lastchanged": "2020-11-01-18-18-53", "lastchanger": "dan-zeman"},
 {"lcode": "wo", "lemma": "a", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "wo", "lemma": "avoir", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "wo", "lemma": "bu", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
