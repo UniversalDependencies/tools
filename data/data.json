@@ -135,7 +135,7 @@
 {"lcode": "cop", "lemma": "ⲟⲩⲛ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cop", "lemma": "ⲧⲁⲣ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cop", "lemma": "ⲧⲁⲣⲉ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "cs", "lemma": "být", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "cs", "lemma": "být", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "basic non-iterative paradigm", "example": "moje žena [je] učitelka", "exampleen": "my wife is a teacher", "comment": "", "status": "documented", "lastchanged": "2020-11-01-17-32-55", "lastchanger": "dan-zeman"},
 {"lcode": "cs", "lemma": "bývat", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cs", "lemma": "bývávat", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cu", "lemma": "бꙑти", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
