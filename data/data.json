@@ -180,7 +180,7 @@
 {"lcode": "en", "lemma": "could", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "en", "lemma": "do", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "en", "lemma": "get", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "en", "lemma": "have", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "en", "lemma": "have", "function": "Periphrastic aspect: perfect", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "he [has] done it", "exampleen": "", "comment": "", "status": "documented", "lastchanged": "2020-11-01-16-18-19", "lastchanger": "dan-zeman"},
 {"lcode": "en", "lemma": "may", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "en", "lemma": "might", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "en", "lemma": "must", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
