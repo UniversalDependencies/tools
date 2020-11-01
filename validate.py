@@ -1993,8 +1993,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
+            'akk': ['anāku'],
             # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'sein', 'be'],
+            'qtd': ['ol', 'i', 'sein', 'be']
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
