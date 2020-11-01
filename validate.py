@@ -1619,15 +1619,16 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         auxdict = {
             # ChrisManning 2019/04: Allow 'get' as aux for get passive construction. And 'ought'
             'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get', 'ought'],
-            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet'],
+            # Peter Dirix 2020/10: 'is' is inflected form of 'wees', added 'moenie', 'behoort' and 'hoef'
+            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet', 'moenie', 'behoort', 'hoef'],
             # Gosse Bouma: 'krijgen' is used as passive auxiliary in cases where an indirect object is promoted to subject (as in German 'kriegen'-passiv).
             'nl':  ['zijn', 'hebben', 'worden', 'krijgen', 'kunnen', 'mogen', 'zullen', 'moeten'],
             'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
             'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
-            'no':  ['være', 'vere', 'ha', 'verte', 'bli', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
+            'no':  ['være', 'vere', 'ha', 'bli', 'verte', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
             'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
             'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna', 'skula', 'vara', 'kunnu', 'mega'],
-            'is':  ['vera', 'hafa', 'verða', 'geta', 'mega', 'munu', 'skulu', 'eiga'],
+            'is':  ['vera', 'hafa', 'blífa', 'verða', 'geta', 'fá', 'kunna', 'mega', 'vilja', 'munu', 'skulu', 'eiga'],
             'got': ['wisan'],
             # DZ: The Portuguese list is much longer than for the other Romance languages
             # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
@@ -1692,7 +1693,11 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'krl': ['olla', 'ei', 'voija', 'piteä'],
             'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
             'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
-            'sme': ['leat'],
+            'sme': ['leat', 'ii', 'sáhttit', 'galgat', 'fertet', 'áigut',
+                    'máhttit', 'dáidit', 'šaddat', 'lávet', 'bállet', 'orrut',
+                    'háliidit', 'sihtat', 'gártat', 'álgit', 'soaitit',
+                    'gillet', 'nagodit', 'berret', 'beassat', 'boahtit',
+                    'viggat', 'veadjit'],
             # Jack: i-gõl = should not
             'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'i-ǥõl', 'feʹrttjed', 'pâʹstted'],
             # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
@@ -1741,7 +1746,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Austro-Asiatic languages.
             'vi':  ['là'],
             # Austronesian languages.
-            'id':  ['adalah', 'ialah', 'akan', 'sedang', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'wajib', 'harus', 'seharusnya', 'sebaiknya'],
+            'id':  ['adalah', 'ialah', 'akan', 'bakal', 'sedang', 'tengah', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'perlu', 'wajib', 'harus', 'seharusnya', 'sebaiknya'],
             'tl':  ['may', 'kaya', 'sana', 'huwag'],
             'ifb': ['agguy', 'adi', 'gun', "'ahi"],
             # Australian languages: Pama-Nyungan and Tangkic.
@@ -1811,7 +1816,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Creole
             'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would'],
             # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
+            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen', 'be', 'tun'],
 
         }
         if lang == 'shopen':
@@ -1856,14 +1861,14 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
         # Besides AUX, the copula can also be a pronoun in some languages.
         copdict = {
             'en':  ['be'],
-            'af':  ['is', 'wees'],
+            'af':  ['wees'],
             'nl':  ['zijn'],
             'de':  ['sein'],
             'sv':  ['vara'],
             'no':  ['være', 'vere'], # 'vere' is the Nynorsk variant
             'da':  ['være'],
             'fo':  ['vera'],
-            'is':  ['vera'],
+            'is':  ['vera', 'blífa'],
             'got': ['wisan'],
             'pcm': ['be', 'bin', 'can', 'con', 'dey', 'do', 'don', 'gats', 'go', 'must', 'na', 'shall', 'should', 'will' ],
             # In Romance languages, both "ser" and "estar" qualify as copulas.
@@ -1988,9 +1993,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
+            'akk': ['anāku'],
             # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'sein'],
-            'akk': ['anāku']
+            'qtd': ['ol', 'i', 'sein', 'be']
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.

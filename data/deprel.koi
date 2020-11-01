@@ -2,12 +2,14 @@ acl:relcl
 advcl:lmod
 advcl:mmod
 advcl:tmod
+advmod:deg
 advmod:lmod
 advmod:mmod
 advmod:tmod
 aux:cnd
 aux:neg
 cc:preconj
+compound:prt
 flat:name
 nmod:lmod
 nmod:poss
@@ -15,3 +17,4 @@ nsubj:cop
 obl:agent
 obl:lmod
 obl:tmod
+xcomp:ds
