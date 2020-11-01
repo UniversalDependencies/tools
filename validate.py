@@ -1817,6 +1817,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would'],
             # Multilingual/code-switching
             'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen', 'be', 'tun'],
+            'nyq': ['دار'],
 
         }
         if lang == 'shopen':
