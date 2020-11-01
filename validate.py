@@ -1818,6 +1818,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
             # Multilingual/code-switching
             'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen', 'be', 'tun'],
             'nyq': ['دار'],
+            'soj': ['دار'],
 
         }
         if lang == 'shopen':
