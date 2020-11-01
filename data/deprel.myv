@@ -11,6 +11,7 @@ aux:opt
 aux:q
 cc:preconj
 compound:coll
+compound:prt
 compound:redup
 compound:svc
 csubj:cop

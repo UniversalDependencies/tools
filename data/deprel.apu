@@ -3,7 +3,6 @@ advcl:tmod
 advmod:lmod
 advmod:neg
 advmod:tmod
-aux:neg
 nmod:poss
 nsubj:cop
 obj:agent
