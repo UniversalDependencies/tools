@@ -14,6 +14,7 @@ import traceback
 #import re
 import regex as re
 import unicodedata
+import json
 
 
 THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__))) # The folder where this script resides.
@@ -22,7 +23,8 @@ THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__))) # The folde
 COLCOUNT=10
 ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
-TOKENSWSPACE=MISC+1 #one extra constant
+TOKENSWSPACE=MISC+1 # one extra constant
+AUX=MISC+2 # another extra constant
 
 # Global variables:
 curr_line=0 # Current line in the input file
@@ -1603,7 +1605,7 @@ def validate_whitespace(cols, tag_sets):
 # Level 5 tests. Annotation content vs. the guidelines, language-specific.
 #==============================================================================
 
-def validate_auxiliary_verbs(cols, children, nodes, line, lang):
+def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
@@ -1615,210 +1617,9 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
       'line' ....... line number of the node within the file
     """
     if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
-        ###!!! In the future, lists like this one will be read from a file.
-        auxdict = {
-            # ChrisManning 2019/04: Allow 'get' as aux for get passive construction. And 'ought'
-            'en':  ['be', 'have', 'do', 'will', 'would', 'may', 'might', 'can', 'could', 'shall', 'should', 'must', 'get', 'ought'],
-            # Peter Dirix 2020/10: 'is' is inflected form of 'wees', added 'moenie', 'behoort' and 'hoef'
-            'af':  ['is', 'wees', 'het', 'word', 'sal', 'wil', 'mag', 'durf', 'kan', 'moet', 'moenie', 'behoort', 'hoef'],
-            # Gosse Bouma: 'krijgen' is used as passive auxiliary in cases where an indirect object is promoted to subject (as in German 'kriegen'-passiv).
-            'nl':  ['zijn', 'hebben', 'worden', 'krijgen', 'kunnen', 'mogen', 'zullen', 'moeten'],
-            'de':  ['sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen'],
-            'sv':  ['vara', 'ha', 'bli', 'komma', 'få', 'kunna', 'kunde', 'vilja', 'torde', 'behöva', 'böra', 'skola', 'måste', 'må', 'lär', 'do'], # Note: 'do' is English and is included because of code switching (titles of songs).
-            'no':  ['være', 'vere', 'ha', 'bli', 'verte', 'få', 'kunne', 'ville', 'vilje', 'tørre', 'tore', 'burde', 'skulle', 'måtte'],
-            'da':  ['være', 'have', 'blive', 'kunne', 'ville', 'turde', 'burde', 'skulle', 'måtte'],
-            'fo':  ['vera', 'hava', 'verða', 'koma', 'fara', 'kunna', 'skula', 'vara', 'kunnu', 'mega'],
-            'is':  ['vera', 'hafa', 'blífa', 'verða', 'geta', 'fá', 'kunna', 'mega', 'vilja', 'munu', 'skulu', 'eiga'],
-            'got': ['wisan'],
-            # DZ: The Portuguese list is much longer than for the other Romance languages
-            # and I suspect that maybe not all these verbs are auxiliary in the UD sense,
-            # i.e. they neither construct a periphrastic tense, nor modality etc.
-            # This should be discussed further and perhaps shortened (and in any
-            # case, verbs that stay on the list must be explained in the Portuguese
-            # documentation!)
-            'pt':  ['ser', 'estar', 'haver', 'ter', 'andar', 'ir', 'poder', 'dever', 'continuar', 'passar', 'ameaçar',
-                    'recomeçar', 'ficar', 'começar', 'voltar', 'parecer', 'acabar', 'deixar', 'vir','chegar', 'costumar', 'quer',
-                    'querer','parar','procurar','interpretar','tender', 'viver','permitir','agredir','tornar', 'interpelar'],
-            'gl':  ['ser', 'estar', 'haber', 'ter', 'ir', 'poder', 'querer', 'deber', 'vir', 'semellar', 'seguir', 'deixar', 'quedar', 'levar', 'acabar'],
-            'es':  ['ser', 'estar', 'haber', 'tener', 'ir', 'poder', 'saber', 'querer', 'deber'],
-            'ca':  ['ser', 'estar', 'haver', 'anar', 'poder', 'saber'],
-            'fr':  ['être', 'avoir', 'faire', 'aller', 'pouvoir', 'savoir', 'vouloir', 'devoir'],
-            'it':  ['essere', 'stare', 'avere', 'fare', 'andare', 'venire', 'potere', 'sapere', 'volere', 'dovere'],
-            'ro':  ['fi', 'avea', 'putea', 'ști', 'vrea', 'trebui'],
-            #In Late Latin, also habeo appears as an auxiliary (like in the modern Romance languages), whereas it can happen a confusion between some forms of sum and fio (originally "to be made")
-			'la':  ['sum', 'habeo', 'fio'],
-            'cs':  ['být', 'bývat', 'bývávat'],
-            'sk':  ['byť', 'bývať', 'by'],
-            'hsb': ['być'],
-            # zostać is for passive-action, być for passive-state
-            # niech* are imperative markers (the only means in 3rd person; alternating with morphological imperative in 2nd person)
-            # "to" is a copula and the Polish team insists that, "according to current analyses of Polish", it is a verb and it contributes the present tense feature to the predicate
-            'pl':  ['być', 'bywać', 'by', 'zostać', 'zostawać', 'niech', 'niechby', 'niechże', 'niechaj', 'niechajże', 'to'],
-            'uk':  ['бути', 'бувати', 'би', 'б'],
-            'be':  ['быць', 'бы', 'б'],
-            'ru':  ['быть', 'бы', 'б'],
-            # Hanne says that negation is fused with the verb in the present tense and
-            # then the negative lemma is used. DZ: I believe that in the future
-            # the negative forms should get the affirmative lemma + the feature Polarity=Neg,
-            # as it is assumed in the guidelines and done in other languages.
-            'orv': ['быти', 'не быти', 'бы', 'бъ'],
-            'sl':  ['biti'],
-            'hr':  ['biti', 'htjeti'],
-            'sr':  ['biti', 'hteti'],
-            'bg':  ['съм', 'бъда', 'бивам', 'би', 'да', 'ще'],
-            'cu':  ['бꙑти', 'не.бꙑти'],
-            'lt':  ['būti'],
-            'lv':  ['būt', 'kļūt', 'tikt', 'tapt'], # see the comment in the list of copulas
-            'ga':  ['is'],
-            'gd':  ['is'],
-            'gv':  ['she'],
-            'cy':  ['bod', 'yn', 'wedi', 'newydd', 'heb', 'ar', 'y', 'a', 'mi', 'fe', 'am'],
-            'br':  ['bezañ', 'ober', 'e', 'a', 'kaout', 'gellout', 'gallout', 'em', 'o', 'en', 'ur', 'dleout', 'rankout', 'na', 'ra'],
-            'sq':  ['kam', 'jam', 'u'],
-            'grc': ['εἰμί'],
-            'el':  ['είμαι', 'έχω', 'πρέπει', 'θα', 'ας', 'να'],
-            'hy':  ['եմ', 'լինել', 'տալ', 'պիտի', 'պետք', 'ունեմ', 'կամ'],
-            'hit': ['ēš-', 'NU.GÁL'],
-            'kmr': ['bûn', 'hebûn'],
-            'fa':  ['است','#است','شد#شو','بود#باش','#هست','بایست#باید','خواست#خواه','بر#خواست#خواه','#توان','شد#شد','توانست#توان','داشت#دار','فرو#خواست#خواه','در#خواست#خواه','باز#خواست#خواه','کرد#کن','شایست#شاید','وا#خواست#خواه','فرا#خواست#خواه','گشت#گرد','داد#ده','ور#خواست#خواه'],
-            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
-            'sa':  ['अस्', 'as', 'भू', 'bhū', 'इ', 'i', 'कृ', 'kṛ', 'शक्', 'śak'],
-            'hi':  ['है', 'था', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाहिए', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'डाल', 'बैठ', 'उठ', 'रख', 'आ'],
-            'ur':  ['ہے', 'تھا', 'رہ', 'کر', 'جا', 'سک', 'پا', 'چاہیئے', 'ہو', 'پڑ', 'لگ', 'چک', 'لے', 'دے', 'بیٹھ', 'رکھ', 'آ'],
-            # The Bhojpuri list is suspiciously long. Some words may actually be inflected forms of other words.
-            'bho': ['हऽ', 'आ', 'स', 'बा', 'छी', 'भा', 'ना', 'गइल', 'रह', 'कर', 'जा', 'सक', 'पा', 'चाही', 'हो', 'पड़', 'लग', 'चुक', 'ले', 'दे', 'मार', 'डाल', 'बैठ', 'उठ', 'रख'],
-            'mr':  ['असणे', 'नाही', 'नका', 'होणे', 'शकणे', 'लागणे', 'देणे', 'येणे'],
-            # Uralic languages.
-            'fi':  ['olla', 'ei', 'voida', 'pitää', 'saattaa', 'täytyä', 'joutua', 'aikoa', 'taitaa', 'tarvita', 'mahtaa'],
-            'krl': ['olla', 'ei', 'voija', 'piteä'],
-            'olo': ['olla', 'ei', 'voija', 'pidiä', 'suaha', 'rotie'],
-            'et':  ['olema', 'ei', 'ära', 'võima', 'pidama', 'saama', 'näima', 'paistma', 'tunduma', 'tohtima'],
-            'sme': ['leat', 'ii', 'sáhttit', 'galgat', 'fertet', 'áigut',
-                    'máhttit', 'dáidit', 'šaddat', 'lávet', 'bállet', 'orrut',
-                    'háliidit', 'sihtat', 'gártat', 'álgit', 'soaitit',
-                    'gillet', 'nagodit', 'berret', 'beassat', 'boahtit',
-                    'viggat', 'veadjit'],
-            # Jack: i-gõl = should not
-            'sms': ['leeʹd', 'haaʹleed', 'ij', 'ni', 'õlggâd', 'urččmõš', 'iʹlla', 'i-ǥõl', 'feʹrttjed', 'pâʹstted'],
-            # Jack: copulas 'улемс', 'ульнемс', 'оль', 'арась'; negation а аволь апак иля эзь 'аш'
-            # "have to, need to, must": савомс савкшномс эрявомс
-            # "future; begin, start": кармамс
-            # "question particles": ли штоли
-            # mood: давайте давай бу кадык
-            # сашендовомс = have to
-            # 'аш' = does not exist
-            'myv': ['улемс', 'ульнемс', 'оль', 'арась', 'а', 'аволь', 'апак', 'иля', 'эзь', 'савомс', 'савкшномс', 'эрявомс', 'кармамс', 'ли', 'штоли', 'давайте', 'давай', 'бу', 'кадык'],
-            'mdf': ['улемс', 'оль', 'ашезь', 'аф', 'афи', 'афоль', 'апак', 'аш', 'эрявомс', 'савомс', 'сашендовомс', 'катк'],
-            # 'оз' is the negation verb analogous to Finnish 'ei'.
-            # Jack: абу 'exists not' in kpv with a usual deprel of aux:neg needs to be listed among the kpv AUX.
-            # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            'kpv': ['лоны', 'лолыны', 'овлывлыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'оз', 'абу', 'быть', 'эм'],
-            # Jack: вермыны 'be able', позьны 'be possible/allowed', ковны 'must'
-            # овлыны 'to be (habitual)'; 'не' negation from Russian
-            'koi': ['овны', 'овлыны', 'овлывлыны', 'вӧвны', 'бы', 'вермыны', 'ковны', 'позьны', 'оз', 'не', 'эм'],
-            'hu':  ['van', 'lesz', 'fog', 'volna', 'lehet', 'marad', 'elszenved', 'hoz'],
-            # Altaic languages.
-            'tr':  ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun'],
-            'kk':  ['бол', 'е'],
-            'ug':  ['بول', 'ئى', 'كەت', 'بەر'],
-            'bxr': ['бай', 'боло'],
-            'ko':  ['이+라는'],
-            'ja':  ['だ', 'た', 'ようだ', 'たい', 'いる', 'ない', 'なる', 'する', 'ある', 'おる', 'ます', 'れる', 'られる', 'すぎる', 'める', 'できる', 'しまう', 'せる', 'う', 'いく', '行く', '来る', 'ぬ', 'よう', 'くる', 'くれる', 'てる', 'そう', 'べし', 'くださる', 'もらう', 'みる', 'いただく', 'やすい', 'しれる', '始める', '続ける', 'らしい', 'みたい', 'ちゃう', 'える', 'いい', 'す', 'もらえる', 'させる', 'おく', 'いただける', 'ほしい', 'よい', 'なり', '付ける', 'にくい', '出す', 'いたす', 'っつう', 'きれる', 'でる', '切る', 'たり', 'いける', '易い', 'づらい', 'なさる', 'づける', '難い', '致す', '続く', '渡る', '抜く', '合う', 'がましい', '遅れる', '果てる', 'つくす', 'ごとし', 'がたい', 'ゆく', 'まじ', 'きる', 'や', 'いらっしゃる', 'はじめる', 'つづける', '行ける', '終わる', '終える', '損ねる', '慣れる', '忘れる', '尽くす', 'わたる', 'みたく', 'まいる', 'たがる', 'しめる', 'かかる', 'おける', '込む', '置く', '直す', '回る', '参る', 'らる', 'やる', 'まう', 'まい', 'ぬく', 'とく', 'てく', 'だす', 'じゃ', 'む', 'り', '亘る', 'ず', '呉れる', 'つう', '遣る', 'ぽい', '為さる', '辛い', '臭い', 'やがる', 'らし', 'へん', 'はる', 'ちまう', 'てらっしゃる', '熟す', 'とる', 'たる', 'けり', '交わす', 'ちゃる', '捲る', '付く', '果せる', 'よらす', 'なんだ', 'とらす', 'たげる', '給う', 'よる', 'やす', 'ずら', 'さす', 'じ'],
-            # Dravidian languages.
-            # போ / po “go” for future tense, follows the infinitive of the main verb
-            # மாட்டு / māṭṭu “will not” for negative future tense with human subject
-            # படு / paṭu “experience” for the passive voice
-            # வை / vai “put” for the causative voice
-            # இரு / iru “be”
-            # இல் / il (இல்லை / illai) “not be” for negation
-            # வேண்டு / veṇṭu “must”
-            # முடி / muṭi “can”
-            'ta':  ['போ', 'மாட்டு', 'படு', 'வை', 'இரு', 'இல்', 'வேண்டு', 'முயல்', 'கொள்', 'விடு', 'உள்', 'வரு', 'முடி', 'வா', 'செய்', 'ஆகு', 'கூடு', 'பெறு', 'தகு', 'வரல்', 'பிடு', 'வீடு', 'என்', 'கூறு', 'கூறு', 'கொடு', 'ஆவர்', 'விரி', 'கிடை', 'அல்'],
-            # Northeast Caucasian languages.
-            'lez': ['x̂ana', "k'an"],
-            # Sino-Tibetan languages.
-            # 爲, cop 儀 Nec 可 Pot 宜 Nec 得 Pot 敢 Des 欲 Des 肯 Des 能 Pot 足 Pot 須 Nec 被 Pass 見 Pass
-            'lzh': ['爲', '被', '見', '儀', '宜', '須', '可', '得', '能', '足', '敢', '欲', '肯', '應' ],
-            'zh':  ['是', '为', '為'],
-            'yue': ['係', '為'],
-            'lus': ['nii'],
-            'prx': ['in', 'd̪uk'],
-            # Austro-Asiatic languages.
-            'vi':  ['là'],
-            # Austronesian languages.
-            'id':  ['adalah', 'ialah', 'akan', 'bakal', 'sedang', 'tengah', 'telah', 'sudah', 'bisa', 'dapat', 'mampu', 'boleh', 'mungkin', 'perlu', 'wajib', 'harus', 'seharusnya', 'sebaiknya'],
-            'tl':  ['may', 'kaya', 'sana', 'huwag'],
-            'ifb': ['agguy', 'adi', 'gun', "'ahi"],
-            # Australian languages: Pama-Nyungan and Tangkic.
-            'wbp': ['ka'],
-            'zmu': ['yi'],
-            'gcd': ['kari', 'ŋka'],
-            # Afro-Asiatic languages.
-            'mt':  ['kien', 'għad', 'għadx', 'ġa', 'se', 'ħa', 'qed'],
-            # رُبَّمَا rubbamā "maybe, perhaps" is a modal auxiliary
-            # عَلَّ ʿalla "perhaps" is a modal auxiliary
-            # عَاد ʿād “return, no longer do” seems to be an aspectual auxiliary
-            # مَا mā "not" is negation. Maybe it should be PART/advmod rather than AUX/aux?
-            # هَل hal "whether" is a question particle. Maybe it should be PART/advmod rather than AUX/aux?
-            # أ ʾa "whether, indeed" is a question particle. It occurs together with the negative copula: "أليس" (ʾalays) "isn't it...". Maybe it should be PART/advmod rather than AUX/aux?
-            # The NYUAD treebank contains only some lemmas but they are romanized and unvocalized.
-            # We have to list them separately here.
-            'ar':  [
-                'كَان',
-                'لَيس',
-                'لسنا',
-                'هُوَ',
-                'سَوفَ',
-                'سَ', 's',
-                'قَد',
-                'رُبَّمَا',
-                'عَلَّ',
-                'عَاد',
-                'مَا',
-                'هَل',
-                'أَ'
-            ],
-            'ajp': [
-                'كَان', # copula
-                'عَم', # copula
-                'راح', # will
-                'قِدِر', # can
-                'حَب', # would (like to)
-                'مُمكِن', # could
-                'لَازِم' # must
-            ],
-            'he':  ['היה', 'הוא', 'זה'],
-            'aii': ['ܗܵܘܹܐ', 'ܟܸܐ', 'ܟܹܐ', 'ܟܲܕ', 'ܒܸܬ', 'ܒܹܬ', 'ܒܸܕ', 'ܒ', 'ܦܵܝܫ', 'ܡܵܨܸܢ', 'ܩܲܡ'],
-            # https://universaldependencies.org/cop/auxiliaries.html (as per mail from Amir 19.11.2019)
-            # https://universaldependencies.org/cop/dep/aux_.html
-            # existential elements ⲟⲩⲛ/ⲙⲛ in indefinite durative tenses (but not in pure existential clauses)
-            # 29.5.2020: added ϫⲡⲓ ‘jpi’: it means and is about as frequent as English ‘ought to’. It has the same syntax as other existing auxiliary verbs, such as ϣ ‘š’, “be able to”.
-            'cop': ['ⲟⲩⲛ', 'ⲙⲛ', 'ⲙⲛⲧⲉ', 'ϣⲁⲣⲉ', 'ϣⲁ', 'ⲙⲉⲣⲉ', 'ⲙⲉ', 'ⲁ', 'ⲙⲡⲉ', 'ⲙⲡ', 'ⲛⲉⲣⲉ', 'ⲛⲉ', 'ⲛⲁ', 'ⲛⲧⲉ', 'ⲧⲁⲣⲉ', 'ⲧⲁⲣ', 'ϣⲁⲛⲧⲉ', 'ⲙⲡⲁⲧⲉ', 'ⲛⲧⲉⲣⲉ', 'ⲉⲣϣⲁⲛ', 'ⲉϣ', 'ϣ', 'ϫⲡⲓ', 'ⲛⲉϣ', 'ⲉⲣⲉ', 'ⲛⲛⲉ', 'ⲙⲁⲣⲉ', 'ⲙⲡⲣⲧⲣⲉ'],
-            'gqa': ['ə', 'ni'],
-            'ha':  ['ce', 'ne', 'ta', 'ba'],
-            # Nilo-Saharan languages.
-            'laj': ['bèdò', 'bìnò'],
-            # Mande languages.
-            'mxx': ['à', 'yè'],
-            # Niger-Congo languages.
-            # DZ: Wolof auxiliaries taken from the documentation.
-            'wo':  ['di', 'a', 'da', 'la', 'na', 'bu', 'ngi', 'woon', 'avoir', 'être'], # Note: 'avoir' and 'être' are French and are included because of code switching.
-            'yo':  ['jẹ́', 'ní', 'kí', 'kìí', 'ń', 'ti', 'tí', 'yóò', 'máa', 'á', 'a', 'ó', 'yió', 'ìbá', 'ì', 'bá', 'lè', 'gbọdọ̀', 'má', 'máà'],
-            'kfz': ['la'],
-            'bav': ['lùu'],
-            # Yuman languages.
-            'mov': ['iðu:m'],
-            # Arawakan languages.
-            # Jack Rueter: 'kuna' is a negation marker. DZ: maybe it should then be PART rather than AUX?
-            'apu': ['awa', 'txa', 'kuna'],
-            # Tupian languages.
-            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
-            # Creole
-            'pcm': ['na', 'be', 'bin', 'can', 'cannot', 'con', 'could', 'dey', 'do', 'don', 'fit', 'for', 'gats', 'go', 'have', 'make', 'may', 'might', 'muna', 'must', 'never', 'shall', 'should', 'will', 'would'],
-            # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'mi', 'değil', 'bil', 'olacak', 'olduk', 'bulun', 'sein', 'haben', 'werden', 'dürfen', 'können', 'mögen', 'wollen', 'sollen', 'müssen', 'be', 'tun'],
-
-        }
+        auxdict = {}
+        if auxlist != []:
+            auxdict = {lang: auxlist}
         if lang == 'shopen':
             # 'desu', 'kudasai', 'yo' and 'sa' are romanized Japanese.
             lspecauxs = ['desu', 'kudasai', 'yo', 'sa']
@@ -1993,8 +1794,9 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
+            'akk': ['anāku'],
             # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'sein', 'be'],
+            'qtd': ['ol', 'i', 'sein', 'be']
         }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
@@ -2017,7 +1819,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             testmessage = "'%s' is not a copula in language [%s]" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
 
-def validate_lspec_annotation(tree, lang):
+def validate_lspec_annotation(tree, lang, tag_sets):
     """
     Checks language-specific consequences of the annotation guidelines.
     """
@@ -2061,7 +1863,7 @@ def validate_lspec_annotation(tree, lang):
             continue
         myline = lines.get(cols[ID], sentence_line)
         mychildren = children.get(cols[ID], [])
-        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
+        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang, tag_sets[AUX])
         validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
 
 
@@ -2092,7 +1894,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                 if args.level > 2:
                     validate_annotation(tree) # level 3
                     if args.level > 4:
-                        validate_lspec_annotation(sentence, args.lang) # level 5
+                        validate_lspec_annotation(sentence, args.lang, tag_sets) # level 5
             else:
                 testlevel = 2
                 testclass = 'Format'
@@ -2215,7 +2017,7 @@ if __name__=="__main__":
     if args.level < 4:
         args.lang = 'ud'
 
-    tagsets={XPOS:None,UPOS:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
+    tagsets={XPOS:None,UPOS:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None,AUX:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
 
     if args.lang:
         tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
@@ -2228,6 +2030,12 @@ if __name__=="__main__":
         tagsets[UPOS]=load_set("cpos.ud",None)
         tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
         tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
+        # Read the list of auxiliaries from the JSON file.
+        # This file must not be edited directly!
+        # Use the web interface at https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
+        with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
+            jsondata = json.load(f)
+        tagsets[AUX] = [x['lemma'] for x in jsondata['auxiliaries'] if x['lcode'] == args.lang]
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
 
