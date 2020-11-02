@@ -297,7 +297,7 @@
 {"lcode": "hit", "lemma": "ēš-", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hr", "lemma": "biti", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hr", "lemma": "htjeti", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "hsb", "lemma": "być", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "hsb", "lemma": "być", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Někotři rěčespytnicy měnja, zo sumeriska rěč móhła z mongolšćinu přiwuzna [być].", "exampleen": "Some linguists mean that the Sumerian language could be related to Mongolian.", "comment": "", "status": "documented", "lastchanged": "2020-11-02-11-52-41", "lastchanger": "dan-zeman"},
 {"lcode": "hu", "lemma": "elszenved", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hu", "lemma": "fog", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hu", "lemma": "hoz", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
