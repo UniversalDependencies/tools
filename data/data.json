@@ -52,7 +52,7 @@
 {"lcode": "bav", "lemma": "lùu", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "be", "lemma": "б", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "be", "lemma": "бы", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "be", "lemma": "быць", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "be", "lemma": "быць", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Пры гэтым сірыйскія прэпараты [будуць] даступныя ў беларускіх аптэках.", "exampleen": "At the same time, Syrian drugs will be available in Belarusian pharmacies.", "comment": "", "status": "documented", "lastchanged": "2020-11-02-08-01-07", "lastchanger": "dan-zeman"},
 {"lcode": "bg", "lemma": "би", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bg", "lemma": "бивам", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bg", "lemma": "бъда", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
