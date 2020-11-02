@@ -1742,7 +1742,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            'kpv': ['лоны', 'лолыны', 'овлывлыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть', 'эм'],
+            'kpv': ['лоны', 'лолыны', 'овлывлыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть', 'эм', 'эмышт'],
             # Komi Permyak: овлыны = to be (habitual) [Jack Rueter]
             'koi': ['овны', 'овлыны', 'овлывлыны', 'вӧвны', 'эм'],
             'hu':  ['van'],
