@@ -57,7 +57,7 @@
 {"lcode": "bg", "lemma": "бивам", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bg", "lemma": "бъда", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bg", "lemma": "да", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "bg", "lemma": "съм", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "bg", "lemma": "съм", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "basic non-iterative paradigm", "example": "Това [е] нашият общ интерес с България.", "exampleen": "This is our common interest with Bulgaria.", "comment": "", "status": "documented", "lastchanged": "2020-11-02-20-57-35", "lastchanger": "dan-zeman"},
 {"lcode": "bg", "lemma": "ще", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bho", "lemma": "आ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bho", "lemma": "उठ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
