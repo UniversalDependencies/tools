@@ -678,7 +678,7 @@
 {"lcode": "pl", "lemma": "niechże", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pl", "lemma": "to", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pl", "lemma": "zostawać", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "pl", "lemma": "zostać", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "pl", "lemma": "zostać", "function": "Periphrastic voice: passive", "rule": "combination of the auxiliary and a passive participle of the main verb", "deficient": "", "example": "Nauczycielka [została] zatrzymana.", "exampleen": "The teacher was detained.", "comment": "", "status": "documented", "lastchanged": "2020-11-03-13-03-01", "lastchanger": "dan-zeman"},
 {"lcode": "prx", "lemma": "d̪uk", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "prx", "lemma": "in", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "acabar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
