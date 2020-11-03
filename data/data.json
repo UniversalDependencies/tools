@@ -793,7 +793,7 @@
 {"lcode": "sq", "lemma": "jam", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sq", "lemma": "kam", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sq", "lemma": "u", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "sr", "lemma": "biti", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "sr", "lemma": "biti", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Esat Beriša [je] jedan takav primer.", "exampleen": "Esat Berisha is one such example.", "comment": "", "status": "documented", "lastchanged": "2020-11-03-12-15-04", "lastchanger": "dan-zeman"},
 {"lcode": "sr", "lemma": "hteti", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "behöva", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "bli", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
