@@ -616,7 +616,7 @@
 {"lcode": "nl", "lemma": "moeten", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "nl", "lemma": "mogen", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "nl", "lemma": "worden", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "nl", "lemma": "zijn", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "nl", "lemma": "zijn", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Dat [is] een categorie.", "exampleen": "That's a category.", "comment": "", "status": "documented", "lastchanged": "2020-11-04-12-36-41", "lastchanger": "dan-zeman"},
 {"lcode": "nl", "lemma": "zullen", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "no", "lemma": "bli", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "no", "lemma": "burde", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
