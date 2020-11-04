@@ -527,7 +527,7 @@
 {"lcode": "kpv", "lemma": "вӧвлыны", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "kpv", "lemma": "вӧвны", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "kpv", "lemma": "лолыны", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "kpv", "lemma": "лоны", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "kpv", "lemma": "лоны", "function": "Periphrastic tense: future", "rule": "combination of the auxiliary and main verb in evidetial past", "deficient": "", "example": "Найӧс [лоӧ] вежӧма шахтнӧй пачӧн.", "exampleen": "They will be changed for a mining furnace.", "comment": "example source: komicorpora.ru, Vojvyv kodzuv.", "status": "documented", "lastchanged": "2020-11-04-14-11-44", "lastchanger": "@rueter"},
 {"lcode": "kpv", "lemma": "овлывлыны", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "kpv", "lemma": "оз", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "kpv", "lemma": "эм", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
