@@ -800,7 +800,7 @@
 {"lcode": "sv", "lemma": "böra", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "do", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "få", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "sv", "lemma": "ha", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "sv", "lemma": "ha", "function": "Periphrastic aspect: perfect", "rule": "Combines with the supine form of the main verb to form perfect and pluperfect.", "deficient": "", "example": "hon [har] gjort det", "exampleen": "she [has] done it", "comment": "", "status": "documented", "lastchanged": "2020-11-04-14-02-28", "lastchanger": "jnivre"},
 {"lcode": "sv", "lemma": "komma", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "kunde", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "kunna", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
