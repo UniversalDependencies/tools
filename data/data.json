@@ -337,7 +337,7 @@
 {"lcode": "is", "lemma": "blífa", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "is", "lemma": "fá", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "is", "lemma": "geta", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "is", "lemma": "hafa", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "is", "lemma": "hafa", "function": "Periphrastic aspect: perfect", "rule": "combination of the auxiliary and a supine of the main verb", "deficient": "", "example": "Hann [hefur] mælt með pyntingum.", "exampleen": "He has recommended torture.", "comment": "", "status": "documented", "lastchanged": "2020-11-04-21-56-33", "lastchanger": "dan-zeman"},
 {"lcode": "is", "lemma": "kunna", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "is", "lemma": "mega", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "is", "lemma": "munu", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
