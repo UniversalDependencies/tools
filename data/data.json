@@ -594,7 +594,7 @@
 {"lcode": "myv", "lemma": "а", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "myv", "lemma": "аволь", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "myv", "lemma": "апак", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "myv", "lemma": "арась", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "myv", "lemma": "арась", "function": "Copula", "rule": "existential-possessive negative copula present and past", "deficient": "used in indicative present and past only", "example": "Паро - [араселить] кудосо.", "exampleen": "It is a good thing you weren't at home.", "comment": "GluxovP_KedrovojPeshtj", "status": "documented", "lastchanged": "2020-11-04-16-34-42", "lastchanger": "rueter"},
 {"lcode": "myv", "lemma": "бу", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "myv", "lemma": "давай", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "myv", "lemma": "давайте", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
