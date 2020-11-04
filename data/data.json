@@ -2,7 +2,7 @@
 
 "auxiliaries": [
 {"lcode": "af", "lemma": "behoort", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "af", "lemma": "durf", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "af", "lemma": "durf", "function": "Modal auxiliary: potential (“can, might”)", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "En dus, in die woorde van voormalige President Mandela, “[durf] ons nie talm nie, want ons lang pad is nog nie verby nie”.", "exampleen": "And so, in the words of former President Mandela, “we dare not linger, for our long road is not yet over”.", "comment": "", "status": "documented", "lastchanged": "2020-11-04-13-32-44", "lastchanger": "dan-zeman"},
 {"lcode": "af", "lemma": "het", "function": "Periphrastic aspect: perfect", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Toegang tot gesondheids- en onderwysgeriewe [het] verbeter.", "exampleen": "Access to health and education facilities has improved.", "comment": "", "status": "documented", "lastchanged": "2020-11-04-13-23-53", "lastchanger": "dan-zeman"},
 {"lcode": "af", "lemma": "hoef", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "af", "lemma": "is", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
