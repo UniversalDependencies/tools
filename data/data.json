@@ -161,7 +161,7 @@
 {"lcode": "da", "lemma": "ville", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "da", "lemma": "være", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "de", "lemma": "dürfen", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "de", "lemma": "haben", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "de", "lemma": "haben", "function": "Periphrastic aspect: perfect", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Ich [habe] mehrere ausprobiert und war nie richtig zufrieden.", "exampleen": "I've tried several and was never really satisfied.", "comment": "", "status": "documented", "lastchanged": "2020-11-04-08-21-15", "lastchanger": "dan-zeman"},
 {"lcode": "de", "lemma": "können", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "de", "lemma": "mögen", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "de", "lemma": "müssen", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
