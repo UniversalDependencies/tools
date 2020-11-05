@@ -620,7 +620,7 @@
 {"lcode": "no", "lemma": "bli", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "no", "lemma": "burde", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "no", "lemma": "få", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "no", "lemma": "ha", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "no", "lemma": "ha", "function": "Periphrastic aspect: perfect", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Jeg [har] gitt fedre omsorgen i enkelte saker.", "exampleen": "I have cared for fathers in some cases.", "comment": "", "status": "documented", "lastchanged": "2020-11-05-08-33-49", "lastchanger": "dan-zeman"},
 {"lcode": "no", "lemma": "kunne", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "no", "lemma": "måtte", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "no", "lemma": "skulle", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
