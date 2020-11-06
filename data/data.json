@@ -106,7 +106,7 @@
 {"lcode": "ca", "lemma": "haver", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ca", "lemma": "poder", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ca", "lemma": "saber", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "ca", "lemma": "ser", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "ca", "lemma": "ser", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "permanent state", "example": "L'agència [era] tan controlada com antiquada.", "exampleen": "The agency was as controlled as it was outdated.", "comment": "", "status": "documented", "lastchanged": "2020-11-06-23-19-24", "lastchanger": "dan-zeman"},
 {"lcode": "cop", "lemma": "ϣ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cop", "lemma": "ϣⲁ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cop", "lemma": "ϣⲁⲛⲧⲉ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
