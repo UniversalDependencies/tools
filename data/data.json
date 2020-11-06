@@ -691,7 +691,7 @@
 {"lcode": "pt", "lemma": "costumar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "deixar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "dever", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "pt", "lemma": "estar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "pt", "lemma": "estar", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "temporary state", "example": "Os portugueses [estão] em forma em o surf.", "exampleen": "The Portuguese are in shape in the surf.", "comment": "", "status": "documented", "lastchanged": "2020-11-06-18-55-26", "lastchanger": "dan-zeman"},
 {"lcode": "pt", "lemma": "ficar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "haver", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "interpelar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
