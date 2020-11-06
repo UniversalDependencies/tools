@@ -102,7 +102,7 @@
 {"lcode": "bxr", "lemma": "бай", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bxr", "lemma": "боло", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ca", "lemma": "anar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "ca", "lemma": "estar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "ca", "lemma": "estar", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "temporary state", "example": "De moment [està] lliure sota fiança.", "exampleen": "He is currently on bail.", "comment": "", "status": "documented", "lastchanged": "2020-11-06-23-21-22", "lastchanger": "dan-zeman"},
 {"lcode": "ca", "lemma": "haver", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ca", "lemma": "poder", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ca", "lemma": "saber", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
