@@ -250,7 +250,7 @@
 {"lcode": "gl", "lemma": "haber", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "gl", "lemma": "ir", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "gl", "lemma": "levar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "gl", "lemma": "poder", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "gl", "lemma": "poder", "function": "Modal auxiliary: potential (“can, might”)", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "A denuncia a tempo tamén [pode] gañar unha batalla.", "exampleen": "Timely denunciation can also win a battle.", "comment": "", "status": "documented", "lastchanged": "2020-11-06-18-46-00", "lastchanger": "dan-zeman"},
 {"lcode": "gl", "lemma": "quedar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "gl", "lemma": "querer", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "gl", "lemma": "seguir", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
