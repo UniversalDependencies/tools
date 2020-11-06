@@ -238,7 +238,7 @@
 {"lcode": "fr", "lemma": "pouvoir", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "fr", "lemma": "savoir", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "fr", "lemma": "vouloir", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "fr", "lemma": "être", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "fr", "lemma": "être", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Elles [furent] victimes de la Révolution française.", "exampleen": "They were victims of the French Revolution.", "comment": "", "status": "documented", "lastchanged": "2020-11-06-09-55-44", "lastchanger": "dan-zeman"},
 {"lcode": "ga", "lemma": "is", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "gcd", "lemma": "kari", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "gcd", "lemma": "ŋka", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
