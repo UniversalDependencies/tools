@@ -706,7 +706,7 @@
 {"lcode": "pt", "lemma": "quer", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "querer", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "recomeçar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "pt", "lemma": "ser", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "pt", "lemma": "ser", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "permanent state", "example": "Um de eles [era] seu filho, Sérgio Fioravanti.", "exampleen": "One of them was his son, Sérgio Fioravanti.", "comment": "", "status": "documented", "lastchanged": "2020-11-06-18-53-39", "lastchanger": "dan-zeman"},
 {"lcode": "pt", "lemma": "tender", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "ter", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "pt", "lemma": "tornar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
