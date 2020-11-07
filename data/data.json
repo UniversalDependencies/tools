@@ -348,7 +348,7 @@
 {"lcode": "it", "lemma": "andare", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "it", "lemma": "avere", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "it", "lemma": "dovere", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "it", "lemma": "essere", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "it", "lemma": "essere", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "permanent state", "example": "[È] solo gran confusione.", "exampleen": "It's just a lot of confusion.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-12-57-34", "lastchanger": "dan-zeman"},
 {"lcode": "it", "lemma": "fare", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "it", "lemma": "potere", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "it", "lemma": "sapere", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
