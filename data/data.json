@@ -733,7 +733,7 @@
 {"lcode": "qtd", "lemma": "werden", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "qtd", "lemma": "wollen", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ro", "lemma": "avea", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "ro", "lemma": "fi", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "ro", "lemma": "fi", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Riscul cel mai mare [este] moartea prin asfixiere.", "exampleen": "The greatest risk is death by suffocation.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-18-14-45", "lastchanger": "dan-zeman"},
 {"lcode": "ro", "lemma": "putea", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ro", "lemma": "trebui", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ro", "lemma": "vrea", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
