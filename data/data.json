@@ -505,7 +505,7 @@
 {"lcode": "kfz", "lemma": "la", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "kk", "lemma": "бол", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "kk", "lemma": "е", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "kmr", "lemma": "bûn", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "kmr", "lemma": "bûn", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Meheke Nîsanê [bû].", "exampleen": "It was the month of April.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-21-34-37", "lastchanger": "dan-zeman"},
 {"lcode": "kmr", "lemma": "hebûn", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ko", "lemma": "이+라는", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "koi", "lemma": "бы", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
