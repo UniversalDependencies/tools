@@ -280,7 +280,7 @@
 {"lcode": "hi", "lemma": "चुक", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hi", "lemma": "जा", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hi", "lemma": "डाल", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "hi", "lemma": "था", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "hi", "lemma": "था", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only", "example": "मंदिर समिति के अध्यक्ष मौजूद [थे] ।", "exampleen": "The chairman of the temple committee was present.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-22-42-08", "lastchanger": "dan-zeman"},
 {"lcode": "hi", "lemma": "दे", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hi", "lemma": "पड़", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hi", "lemma": "पा", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
