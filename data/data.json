@@ -143,7 +143,7 @@
 {"lcode": "cy", "lemma": "a", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cy", "lemma": "am", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cy", "lemma": "ar", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "cy", "lemma": "bod", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "cy", "lemma": "bod", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Mae]'n rhad ac am ddim.", "exampleen": "It's free.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-18-47-13", "lastchanger": "dan-zeman"},
 {"lcode": "cy", "lemma": "fe", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cy", "lemma": "heb", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "cy", "lemma": "mi", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
