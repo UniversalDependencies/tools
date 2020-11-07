@@ -72,7 +72,7 @@
 {"lcode": "bho", "lemma": "ना", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bho", "lemma": "पड़", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bho", "lemma": "पा", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "bho", "lemma": "बा", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "bho", "lemma": "बा", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Bhojpuri-specific form", "example": "जरूरी ईहो बा कि जवन काम हो रहल [बा] ओकरा के कम से कम झंडावाला लोग जरूर पढ़सु ।", "exampleen": "It is important that youth work should be done at least.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-22-49-55", "lastchanger": "dan-zeman"},
 {"lcode": "bho", "lemma": "बैठ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bho", "lemma": "भा", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "bho", "lemma": "मार", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
