@@ -805,7 +805,7 @@
 {"lcode": "sv", "lemma": "måste", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "skola", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sv", "lemma": "torde", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "sv", "lemma": "vara", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "sv", "lemma": "vara", "function": "Copula", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "En huvudtes i kibbutzideologin [är] fullständig jämställdhet mellan könen.", "exampleen": "One of the main themes in the kibbutz ideology is complete equality between the sexes.", "comment": "", "status": "documented", "lastchanged": "2020-11-07-18-56-32", "lastchanger": "dan-zeman"},
 {"lcode": "sv", "lemma": "vilja", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ta", "lemma": "அல்", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ta", "lemma": "ஆகு", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
