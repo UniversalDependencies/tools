@@ -555,7 +555,7 @@
 {"lcode": "lzh", "lemma": "應", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "lzh", "lemma": "敢", "function": "Mood=Des", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "lzh", "lemma": "欲", "function": "Mood=Des", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "lzh", "lemma": "爲", "function": "cop.AUX", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "lzh", "lemma": "爲", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "季任[為]任處守", "exampleen": "季任 is a place guard of country 任", "comment": "", "status": "documented", "lastchanged": "2020-11-08-11-58-28", "lastchanger": "dan-zeman"},
 {"lcode": "lzh", "lemma": "肯", "function": "Mood=Des", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "lzh", "lemma": "能", "function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "lzh", "lemma": "被", "function": "Voice=Pass", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
