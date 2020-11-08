@@ -314,7 +314,7 @@
 {"lcode": "hy", "lemma": "պետք", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hy", "lemma": "պիտի", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "hy", "lemma": "տալ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "id", "lemma": "adalah", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "id", "lemma": "adalah", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "adalah and ialah are interchangeable but adalah is more common", "example": "Periode tunggu saat ini [adalah] delapan minggu.", "exampleen": "The current waiting period is eight weeks.", "comment": "", "status": "documented", "lastchanged": "2020-11-08-12-39-18", "lastchanger": "dan-zeman"},
 {"lcode": "id", "lemma": "akan", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "id", "lemma": "bakal", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "id", "lemma": "bisa", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
