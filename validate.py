@@ -1779,6 +1779,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             'ajp': ['كَان', 'عم'],
             'he':  ['היה', 'הוא', 'זה'],
             'aii': ['ܗܵܘܹܐ'],
+            'akk': ['anāku'],
             'am':  ['ን'],
             'cop': ['ⲡⲉ', 'ⲡ'],
             'ha':  ['ce', 'ne'],
@@ -1794,7 +1795,6 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
             # Tupian languages.
             # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
             'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
-            'akk': ['anāku'],
             # Multilingual/code-switching
             'qtd': ['ol', 'i', 'sein', 'be']
         }
