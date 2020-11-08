@@ -767,7 +767,7 @@
 {"lcode": "sme", "lemma": "gártat", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sme", "lemma": "háliidit", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sme", "lemma": "ii", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "sme", "lemma": "leat", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "sme", "lemma": "leat", "function": "cop", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Dát ii sáhttán [leat] duohta.", "exampleen": "to be added", "comment": "", "status": "documented", "lastchanged": "2020-11-08-09-35-20", "lastchanger": "dan-zeman"},
 {"lcode": "sme", "lemma": "lávet", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sme", "lemma": "máhttit", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "sme", "lemma": "nagodit", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
