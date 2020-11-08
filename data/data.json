@@ -18,7 +18,7 @@
 {"lcode": "aii", "lemma": "ܒܸܕ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "aii", "lemma": "ܒܸܬ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "aii", "lemma": "ܒܹܬ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "aii", "lemma": "ܗܵܘܹܐ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "aii", "lemma": "ܗܵܘܹܐ", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ܐܲܠܵܗܵܐ ܜܵܒܼܵܐ [ܝܠܸܗ] ܘܡܪܲܚܡܵܢܵܐ ܘ ܦܚܠܵܢܵܐ .", "exampleen": "unknown", "comment": "", "status": "documented", "lastchanged": "2020-11-08-18-35-42", "lastchanger": "dan-zeman"},
 {"lcode": "aii", "lemma": "ܟܲܕ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "aii", "lemma": "ܟܸܐ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "aii", "lemma": "ܟܹܐ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
