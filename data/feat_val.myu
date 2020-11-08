@@ -2,3 +2,6 @@ Red=Ex
 Person=33
 Aspect=DurImp
 Noun=Clf
+Rel=Cont
+Rel=NCont
+Aspect=Compl
