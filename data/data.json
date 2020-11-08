@@ -892,7 +892,7 @@
 {"lcode": "yo", "lemma": "a", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "bá", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "gbọdọ̀", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "yo", "lemma": "jẹ́", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "yo", "lemma": "jẹ́", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Àsálẹ́ àti òwúrọ̀ [jẹ́] ọjọ́ kẹta.", "exampleen": "And the evening and the morning were the third day.", "comment": "", "status": "documented", "lastchanged": "2020-11-08-20-35-26", "lastchanger": "dan-zeman"},
 {"lcode": "yo", "lemma": "kìí", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "kí", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "lè", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
