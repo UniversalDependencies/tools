@@ -321,7 +321,7 @@
 {"lcode": "id", "lemma": "boleh", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "id", "lemma": "dapat", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "id", "lemma": "harus", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "id", "lemma": "ialah", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "id", "lemma": "ialah", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "adalah and ialah are interchangeable but ialah is less common", "example": "Ibu kotanya [ialah] Chita.", "exampleen": "Her capital is Chita.", "comment": "", "status": "documented", "lastchanged": "2020-11-08-12-41-05", "lastchanger": "dan-zeman"},
 {"lcode": "id", "lemma": "mampu", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "id", "lemma": "mungkin", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "id", "lemma": "perlu", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
