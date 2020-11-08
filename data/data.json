@@ -400,7 +400,7 @@
 {"lcode": "ja", "lemma": "たげる", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ja", "lemma": "たり", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ja", "lemma": "たる", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "ja", "lemma": "だ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "ja", "lemma": "だ", "function": "cop.AUX", "rule": "copula is suffixed on the non-verbal predicate", "deficient": "", "example": "奇妙な話[で]ある。", "exampleen": "It's a strange story.", "comment": "", "status": "documented", "lastchanged": "2020-11-08-11-50-10", "lastchanger": "dan-zeman"},
 {"lcode": "ja", "lemma": "だす", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ja", "lemma": "ちまう", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ja", "lemma": "ちゃう", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
