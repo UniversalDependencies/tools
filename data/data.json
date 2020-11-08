@@ -200,7 +200,7 @@
 {"lcode": "es", "lemma": "tener", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "et", "lemma": "ei", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "et", "lemma": "näima", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "et", "lemma": "olema", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "et", "lemma": "olema", "function": "cop", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Kõige hullem [oli] piiritustehase praaka kanda.", "exampleen": "The worst was to carry the distillery waste.", "comment": "", "status": "documented", "lastchanged": "2020-11-08-09-32-40", "lastchanger": "dan-zeman"},
 {"lcode": "et", "lemma": "paistma", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "et", "lemma": "pidama", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "et", "lemma": "saama", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
