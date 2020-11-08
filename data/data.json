@@ -899,7 +899,7 @@
 {"lcode": "yo", "lemma": "má", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "máa", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "máà", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "yo", "lemma": "ní", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "yo", "lemma": "ní", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "focus copula", "example": "Ọlọ́run sì pe òfúrufú [ní] “Ọ̀run.”", "exampleen": "And God called the firmament Heaven.", "comment": "", "status": "documented", "lastchanged": "2020-11-08-20-39-28", "lastchanger": "dan-zeman"},
 {"lcode": "yo", "lemma": "ti", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "tí", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "yo", "lemma": "yió", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
