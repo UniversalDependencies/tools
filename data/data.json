@@ -840,7 +840,7 @@
 {"lcode": "ta", "lemma": "விரி", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ta", "lemma": "வீடு", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ta", "lemma": "வேண்டு", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-{"lcode": "ta", "lemma": "வை", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "ta", "lemma": "வை", "function": "Voice=Cau", "rule": "combination of the auxiliary and a participle of the main verb", "deficient": "", "example": "சாகும் வரை சிறையில் ஏயே அடைத்து [வைத்தால்] உம்", "exampleen": "If you are imprisoned until death", "comment": "", "status": "documented", "lastchanged": "2020-11-09-11-31-16", "lastchanger": "dan-zeman"},
 {"lcode": "tl", "lemma": "huwag", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "tl", "lemma": "kaya", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "tl", "lemma": "may", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
