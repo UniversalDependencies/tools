@@ -37,6 +37,7 @@
 {"lcode": "apu", "lemma": "awa", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "apu", "lemma": "kuna", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "apu", "lemma": "txa", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+{"lcode": "aqz", "lemma": "otoa", "function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with the habitual or progressive aspect", "example": "oetara [otoa]", "exampleen": "I am going to sleep", "comment": "", "status": "documented", "lastchanged": "2020-11-09-15-46-30", "lastchanger": "@LanguageStructure"},
 {"lcode": "ar", "lemma": "s", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ar", "lemma": "أَ", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 {"lcode": "ar", "lemma": "رُبَّمَا", "function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": "", "status": "undocumented", "lastchanged": "", "lastchanger": ""},
