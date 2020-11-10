@@ -2035,7 +2035,7 @@ if __name__=="__main__":
         # Use the web interface at https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
         with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
             jsondata = json.load(f)
-        tagsets[AUX] = [x['lemma'] for x in jsondata['auxiliaries'] if x['lcode'] == args.lang]
+        tagsets[AUX] = [x['lemma'] for x in jsondata['auxiliaries'] if x['lcode'] == args.lang or args.lang == 'shopen']
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
 
