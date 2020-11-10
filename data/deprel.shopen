@@ -11,12 +11,14 @@ compound:redup
 compound:svc
 det:poss
 flat:name
+iobj:patient
 mark:relcl
 nmod:poss
-nsubj:ben
+nsubj:bfoc
 nsubj:caus
 nsubj:cop
-nsubj:loc
+nsubj:ifoc
+nsubj:lfoc
 nsubj:pass
 obj:agent
 obj:patient
