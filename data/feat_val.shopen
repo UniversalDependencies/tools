@@ -111,6 +111,7 @@ PartType=Dir
 PartType=Emph
 PartType=Inf
 PartType=Int
+PartType=Nfh
 Person[abs]=1
 Person[abs]=2
 Person[abs]=3
