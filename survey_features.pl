@@ -127,7 +127,7 @@ foreach my $folder (@folders)
             opendir(DIR, "$datapath/$folder") or die("Cannot read the contents of the folder '$datapath/$folder': $!");
             my @files = readdir(DIR);
             closedir(DIR);
-            my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
+            my @conllufiles = grep {-f "$datapath/$folder/$_" && m/\.conllu$/} (@files);
             foreach my $file (@conllufiles)
             {
                 # Read the file and look for language-specific subtypes in the DEPREL column.
