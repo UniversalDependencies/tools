@@ -123,9 +123,8 @@ foreach my $folder (@folders)
             $key = $langcode;
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $nhits = 0;
-            chdir("$datapath/$folder") or die("Cannot enter folder '$datapath/$folder': $!");
             # Look for the other files in the repository.
-            opendir(DIR, '.') or die("Cannot read the contents of the folder $folder");
+            opendir(DIR, "$datapath/$folder") or die("Cannot read the contents of the folder '$datapath/$folder': $!");
             my @files = readdir(DIR);
             closedir(DIR);
             my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
@@ -133,7 +132,7 @@ foreach my $folder (@folders)
             {
                 # Read the file and look for language-specific subtypes in the DEPREL column.
                 # We currently do not look for additional types in the DEPS column.
-                open(FILE, $file) or die("Cannot read $file: $!");
+                open(FILE, "$datapath/$folder/$file") or die("Cannot read '$datapath/$folder/$file': $!");
                 while(<FILE>)
                 {
                     if(m/^\d+\t/)
