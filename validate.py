@@ -25,6 +25,7 @@ ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 TOKENSWSPACE=MISC+1 # one extra constant
 AUX=MISC+2 # another extra constant
+COP=MISC+3 # another extra constant
 
 # Global variables:
 curr_line=0 # Current line in the input file
@@ -1641,7 +1642,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
             testmessage = "'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
 
-def validate_copula_lemmas(cols, children, nodes, line, lang):
+def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
@@ -1653,151 +1654,33 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
       'line' ....... line number of the node within the file
     """
     if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
-        ###!!! In the future, lists like this one will be read from a file.
-        # The UD guidelines narrow down the class of copulas to just the equivalent of "to be" (equivalence).
-        # Other verbs that may be considered copulas by the traditional grammar (such as the equivalents of
-        # "to become" or "to seem") are not copulas in UD; they head the nominal predicate, which is their xcomp.
-        # Existential "to be" can be copula only if it is the same verb as in equivalence ("John is a teacher").
-        # If the language uses two different verbs, then the existential one is not a copula.
-        # Besides AUX, the copula can also be a pronoun in some languages.
-        copdict = {
-            'en':  ['be'],
-            'af':  ['wees'],
-            'nl':  ['zijn'],
-            'de':  ['sein'],
-            'sv':  ['vara'],
-            'no':  ['være', 'vere'], # 'vere' is the Nynorsk variant
-            'da':  ['være'],
-            'fo':  ['vera'],
-            'is':  ['vera', 'blífa'],
-            'got': ['wisan'],
-            'pcm': ['be', 'bin', 'can', 'con', 'dey', 'do', 'don', 'gats', 'go', 'must', 'na', 'shall', 'should', 'will' ],
-            # In Romance languages, both "ser" and "estar" qualify as copulas.
-            'pt':  ['ser', 'estar'],
-            'gl':  ['ser', 'estar'],
-            'es':  ['ser', 'estar'],
-            'ca':  ['ser', 'estar'],
-            'fr':  ['être'],
-            'it':  ['essere'],
-            'ro':  ['fi'],
-            'la':  ['sum'],
+        copdict = {}
+        if coplist != []:
+            copdict = {lang: coplist}
             # In Slavic languages, the iteratives are still variants of "to be", although they have a different lemma (derived from the main one).
             # In addition, Polish and Russian also have pronominal copulas ("to" = "this/that").
-            'cs':  ['být', 'bývat', 'bývávat'],
-            'sk':  ['byť', 'bývať'],
-            'hsb': ['być'],
-            'pl':  ['być', 'bywać', 'to'],
-            'uk':  ['бути', 'бувати'],
-            'be':  ['быць', 'гэта'],
-            'ru':  ['быть', 'это'],
-            # See above (AUX verbs) for the comment on affirmative vs. negative lemma.
-            'orv': ['быти', 'не быти'],
-            'sl':  ['biti'],
-            'hr':  ['biti'],
-            'sr':  ['biti'],
-            'bg':  ['съм', 'бъда'],
-            # See above (AUX verbs) for the comment on affirmative vs. negative lemma.
-            'cu':  ['бꙑти', 'не.бꙑти'],
-            'lt':  ['būti'],
+            # 'orv': ['быти', 'не быти'] See above (AUX verbs) for the comment on affirmative vs. negative lemma.
             # Lauma says that all four should be copulas despite the fact that
             # kļūt and tapt correspond to English "to become", which is not
             # copula in UD. See also the discussion in
             # https://github.com/UniversalDependencies/docs/issues/622
-            'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
-            'ga':  ['is'],
-            'gd':  ['is'],
-            'gv':  ['she'],
-            'cy':  ['bod'],
-            'br':  ['bezañ'],
-            'sq':  ['jam'],
-            'grc': ['εἰμί'],
-            'el':  ['είμαι'],
-            'hy':  ['եմ'],
-            'hit': ['ēš-', 'NU.GÁL'],
-            'kmr': ['bûn'],
-            'fa':  ['است','#است','بود#باش','#هست'],
+            # 'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
             # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
-            'sa':  ['अस्', 'as', 'भू', 'bhū'],
-            'hi':  ['है', 'था'],
-            'ur':  ['ہے', 'تھا'],
-            'bho': ['हऽ', 'बा', 'भा'],
-            'mr':  ['असणे'],
-            'eu':  ['izan', 'egon', 'ukan'],
-            # Uralic languages.
-            'fi':  ['olla'],
-            'krl': ['olla'],
-            'olo': ['olla'],
-            'et':  ['olema'],
-            'sme': ['leat'],
-            # Jack: iʹlla = to not be
-            'sms': ['leeʹd', 'iʹlla'],
+            # Jack: [sms] iʹlla = to not be
             # Jack says about Erzya:
             # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
             # and the dependent morphology -оль (both preterit and non-past).
             # The neg арась occurs in locative/existential negation, and its
             # positive counterpart is realized in the three copulas above.
-            'myv': ['улемс', 'ульнемс', 'оль', 'арась'],
-            # The neg аш is locative/existential negation.
-            'mdf': ['улемс', 'оль', 'аш'],
+            # The neg аш in [mdf] is locative/existential negation.
             # Niko says about Komi:
             # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
             # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            'kpv': ['лоны', 'лолыны', 'овлывлыны', 'вӧвны', 'вӧвлыны', 'вӧвлывлыны', 'быть', 'эм', 'эмышт'],
             # Komi Permyak: овлыны = to be (habitual) [Jack Rueter]
-            'koi': ['овны', 'овлыны', 'овлывлыны', 'вӧвны', 'эм'],
-            'hu':  ['van'],
-            # Altaic languages.
-            'tr':  ['ol', 'i'],
-            'kk':  ['бол', 'е'],
-            'ug':  ['بول', 'ئى'],
-            'bxr': ['бай', 'боло'],
-            'ko':  ['이+라는'],
-            'ja':  ['だ'],
-            # Dravidian languages.
-            'ta':  ['முயல்'],
-            # Northeast Caucasian languages.
-            'lez': ['x̂ana'],
             # Sino-Tibetan languages.
             # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
             # 是(shi4) and 为/為(wei2) should be interchangeable.
             # Sam: In Cantonese, 為 is used only in the high-standard variety, not in colloquial speech.
-            'lzh': ['爲'],
-            'zh':  ['是', '为', '為'],
-            'yue': ['係', '為'],
-            'lus': ['nii'],
-            'prx': ['in', 'd̪uk'],
-            # Austro-Asiatic languages.
-            'vi':  ['là'],
-            # Austronesian languages.
-            'id':  ['adalah', 'ialah'],
-            'tl':  ['may'],
-            # Australian languages: Pama-Nyungan.
-            'zmu': ['yi'],
-            # Afro-Asiatic languages.
-            'mt':  ['kien'],
-            'ar':  ['كَان', 'لَيس', 'لسنا', 'هُوَ'],
-            'ajp': ['كَان', 'عم'],
-            'he':  ['היה', 'הוא', 'זה'],
-            'aii': ['ܗܵܘܹܐ'],
-            'akk': ['anāku'],
-            'am':  ['ን'],
-            'cop': ['ⲡⲉ', 'ⲡ'],
-            'ha':  ['ce', 'ne'],
-            # Nilo-Saharan languages.
-            'laj': ['bèdò'],
-            # Mande languages.
-            'mxx': ['à', 'yè'],
-            # Niger-Congo languages.
-            'wo':  ['di', 'la', 'ngi', 'être'], # 'être' is French and is needed because of code switching.
-            'yo':  ['jẹ́', 'ní'],
-            'kfz': ['la'],
-            'bav': ['lùu'],
-            # Tupian languages.
-            # 'iko' is the normal copula, 'nda'ei' and 'nda'ipoi' are negative copulas and 'ĩ' is locative copula.
-            'gun': ['iko', "nda'ei", "nda'ipoi", 'ĩ'],
-            # Multilingual/code-switching
-            'qtd': ['ol', 'i', 'sein', 'be']
-        }
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
             lspeccops = ['desu']
@@ -1864,7 +1747,7 @@ def validate_lspec_annotation(tree, lang, tag_sets):
         myline = lines.get(cols[ID], sentence_line)
         mychildren = children.get(cols[ID], [])
         validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang, tag_sets[AUX])
-        validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
+        validate_copula_lemmas(cols, mychildren, nodes, myline, lang, tag_sets[COP])
 
 
 
@@ -2035,7 +1918,8 @@ if __name__=="__main__":
         # Use the web interface at https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
         with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
             jsondata = json.load(f)
-        tagsets[AUX] = [x['lemma'] for x in jsondata['auxiliaries'] if x['lcode'] == args.lang or args.lang == 'shopen']
+        tagsets[AUX] = [x['lemma'] for x in jsondata['auxiliaries'] if (x['lcode'] == args.lang or args.lang == 'shopen') and x['function'] != 'cop.PRON']
+        tagsets[COP] = [x['lemma'] for x in jsondata['auxiliaries'] if (x['lcode'] == args.lang or args.lang == 'shopen') and re.match("^cop\.", x['function'])]
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
 
