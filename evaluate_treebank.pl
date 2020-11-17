@@ -218,7 +218,7 @@ if($verbose)
 if($n > 0)
 {
     $score{udapi} = 1;
-    my $command = get_udapi_command($folder);
+    my $command = get_udapi_command($folder, $record->{lcode});
     if(defined($command))
     {
         my $output = `$command`;
@@ -235,6 +235,8 @@ if($n > 0)
         }
         if($verbose)
         {
+            print STDERR ("Udapi:\n");
+            print STDERR ($output);
             print STDERR ("Udapi: found $nbugs bugs.\n");
             print STDERR ("Udapi: worst expected case (threshold) is one bug per $maxwordsperbug words. There are $n words.\n");
         }
@@ -405,6 +407,7 @@ sub get_validator_command
 sub get_udapi_command
 {
     my $folder = shift;
+    my $lcode = shift;
     my $command;
     # If evaluation runs under a CGI script on quest, Udapi must be called through an envelope script.
     if(-x './udapi-markbugs.sh')
@@ -413,7 +416,14 @@ sub get_udapi_command
     }
     elsif(which('udapy'))
     {
-        $command = "(cat $folder/*.conllu | udapy ud.MarkBugs 2>&1) | grep TOTAL";
+        # If Udapi knows the language (given as the zone of each sentence),
+        # it can customize selected tests for the language.
+        my $read_zone = 'read.Conllu';
+        if(defined($lcode))
+        {
+            $read_zone = "read.Conllu zone=$lcode";
+        }
+        $command = "(cat $folder/*.conllu | udapy $read_zone ud.MarkBugs 2>&1) | grep TOTAL";
     }
     return $command;
 }
