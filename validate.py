@@ -1919,14 +1919,17 @@ if __name__=="__main__":
         with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
             jsondata = json.load(f)
         auxdata = jsondata['auxiliaries']
-        auxdatalist = []
+        # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
+        # If any of the functions of the lemma is cop.*, it counts as a copula.
         if args.lang == 'shopen':
             for lcode in auxdata.keys():
-                auxdatalist = auxdatalist + auxdata[lcode]
+                lemmalist = auxdata[lcode].keys()
+                tagsets[AUX] = tagsets[AUX] + [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if y['function'] != 'cop.PRON']) > 0]
+                tagsets[COP] = tagsets[COP] + [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
         else:
-            auxdatalist = auxdata.get(args.lang, [])
-        tagsets[AUX] = [x['lemma'] for x in auxdatalist if x['function'] != 'cop.PRON']
-        tagsets[COP] = [x['lemma'] for x in auxdatalist if re.match("^cop\.", x['function'])]
+            lemmalist = auxdata.get(args.lang, {}).keys()
+            tagsets[AUX] = [x for x in lemmalist if len([y for y in auxdata[args.lang][x]['functions'] if y['function'] != 'cop.PRON']) > 0]
+            tagsets[COP] = [x for x in lemmalist if len([y for y in auxdata[args.lang][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
 
