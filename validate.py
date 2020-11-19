@@ -1918,8 +1918,15 @@ if __name__=="__main__":
         # Use the web interface at https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
         with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
             jsondata = json.load(f)
-        tagsets[AUX] = [x['lemma'] for x in jsondata['auxiliaries'] if (x['lcode'] == args.lang or args.lang == 'shopen') and x['function'] != 'cop.PRON']
-        tagsets[COP] = [x['lemma'] for x in jsondata['auxiliaries'] if (x['lcode'] == args.lang or args.lang == 'shopen') and re.match("^cop\.", x['function'])]
+        auxdata = jsondata['auxiliaries']
+        auxdatalist = []
+        if args.lang == 'shopen':
+            for lcode in auxdata.keys():
+                auxdatalist = auxdatalist + auxdata[lcode]
+        else:
+            auxdatalist = auxdata.get(args.lang, [])
+        tagsets[AUX] = [x['lemma'] for x in auxdatalist if x['function'] != 'cop.PRON']
+        tagsets[COP] = [x['lemma'] for x in auxdatalist if re.match("^cop\.", x['function'])]
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
 
