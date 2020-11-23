@@ -191,7 +191,7 @@ foreach my $f (@features)
     if(scalar(@values) > 50)
     {
         splice(@values, 50);
-        push(@values, '...');
+        push(@values, {'...' => {'' => ''}});
     }
     print("\#\# $f\n\n");
     print("[$f]()\n\n");
