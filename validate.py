@@ -600,8 +600,8 @@ def validate_character_constraints(cols):
             testmessage = "Invalid enhanced relation type: '%s'." % cols[DEPS]
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
-attr_val_re=re.compile('^([A-Z0-9][A-Z0-9a-z]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
-val_re=re.compile('^[A-Z0-9][A-Z0-9a-z]*',re.U)
+attr_val_re=re.compile('^([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$',re.U)
+val_re=re.compile('^[A-Z0-9][A-Za-z0-9]*',re.U)
 def validate_features(cols, tag_sets, args):
     """
     Checks general constraints on feature-value format. On level 4 and higher,
@@ -627,7 +627,7 @@ def validate_features(cols, tag_sets, args):
         if match is None:
             testlevel = 2
             testid = 'invalid-feature'
-            testmessage = "Spurious morphological feature: '%s'. Should be of the form Feature=Value and must start with [A-Z0-9] and only contain [A-Za-z0-9]." % f
+            testmessage = "Spurious morphological feature: '%s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]." % f
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
@@ -658,7 +658,7 @@ def validate_features(cols, tag_sets, args):
                     warn_on_missing_files.add("feat_val")
                     testlevel = 4
                     testid = 'unknown-feature-value'
-                    testmessage = "Unknown feature-value pair '%s=%s'." % (attr, v)
+                    testmessage = "Unknown (or undocumented) feature-value pair '%s=%s'." % (attr, v)
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if len(attr_set) != len(feat_list):
         testlevel = 2
@@ -1903,16 +1903,22 @@ if __name__=="__main__":
     tagsets={XPOS:None,UPOS:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None,AUX:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
 
     if args.lang:
-        tagsets[DEPREL]=load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
+        tagsets[DEPREL] = load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
         # One of them, "ref", is universal and we currently mention it directly
         # in the code, although there is also a file "edeprel.ud".
-        tagsets[DEPS]=tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
-        tagsets[FEATS]=load_set("feat_val.ud","feat_val."+args.lang)
-        tagsets[UPOS]=load_set("cpos.ud",None)
-        tagsets[TOKENSWSPACE]=load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
-        tagsets[TOKENSWSPACE]=[re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
+        tagsets[DEPS] = tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
+        tagsets[FEATS] = load_set("feat_val.ud","feat_val."+args.lang)
+        # Features cannot be used if they are not documented (listing them in tools/data is not enough).
+        # Feature values that are properly documented have been automatically collected from docs and saved in a JSON file.
+        with open(os.path.join(THISDIR, 'data', 'documented_features.json'), 'r', encoding='utf-8') as f:
+            documented_features = json.load(f)
+        # We assume that the file with the documented features contains all languages that have been registered with UD.
+        tagsets[FEATS] = [x for x in tagsets[FEATS] if x in documented_features[args.lang]]
+        tagsets[UPOS] = load_set("cpos.ud",None)
+        tagsets[TOKENSWSPACE] = load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
+        tagsets[TOKENSWSPACE] = [re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
         # Read the list of auxiliaries from the JSON file.
         # This file must not be edited directly!
         # Use the web interface at https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
