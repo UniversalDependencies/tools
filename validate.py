@@ -1915,6 +1915,21 @@ if __name__=="__main__":
         with open(os.path.join(THISDIR, 'data', 'docfeats.json'), 'r', encoding='utf-8') as f:
             documented_features = json.load(f)
         # We assume that the file with the documented features contains all languages that have been registered with UD.
+        undocumented_declared_features = [x for x in tagsets[FEATS] if not x in documented_features['lists'][args.lang]]
+        if len(undocumented_declared_features) > 0:
+            testlevel = 4
+            testclass = 'Morpho'
+            testid = 'feat-def-undoc'
+            testmessage = "Language-specific feature values not properly documented: %s" % undocumented_declared_features
+            if args.lang in documented_features['ldocs']:
+                testmessage = testmessage + "\nSome language-specific pages about features exist but they either do not document all values listed in data/feat_val." + args.lang + " or they are not in the prescribed format."
+                for f in documented_features['ldocs'][args.lang]:
+                    for e in documented_features['ldocs'][args.lang][f]['errors']:
+                        testmessage = testmessage + "\nERROR in " + f + ".md: " + e
+            else:
+                testmessage = testmessage + "\nIf a language needs a feature that is not documented in the universal guidelines, the feature must have a language-specific documentation page in a prescribed format."
+            testmessage = testmessage + "\nSee https://universaldependencies.org/contributing_language_specific.html for further guidelines."
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
         tagsets[FEATS] = [x for x in tagsets[FEATS] if x in documented_features['lists'][args.lang]]
         tagsets[UPOS] = load_set("cpos.ud",None)
         tagsets[TOKENSWSPACE] = load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
