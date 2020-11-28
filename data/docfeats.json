@@ -215,54 +215,6 @@
 "Voice": {"values": ["Act", "Mid", "Rcp", "Pass", "Antip", "Lfoc", "Bfoc", "Dir", "Inv", "Cau"], "errors": []}
 },
 "ldocs": {
-"abq": {
-
-}
-,
-"af": {
-
-}
-,
-"aii": {
-
-}
-,
-"ajp": {
-
-}
-,
-"akk": {
-
-}
-,
-"am": {
-
-}
-,
-"apu": {
-
-}
-,
-"aqz": {
-
-}
-,
-"ar": {
-
-}
-,
-"as": {
-
-}
-,
-"bav": {
-
-}
-,
-"be": {
-
-}
-,
 "bg": {
 "Animacy": {"values": [], "errors": ["No examples found under value 'Anim'.", "No examples found under value 'Nhum'.", "No examples found under value 'Inan'."]},
 "Aspect": {"values": ["Imp", "Perf"], "errors": []},
@@ -281,12 +233,7 @@
 "Tense": {"values": [], "errors": ["No examples found under value 'Imp'."]},
 "VerbForm": {"values": ["Fin", "Part", "Conv"], "errors": []},
 "Voice": {"values": ["Act", "Pass"], "errors": []}
-}
-,
-"bho": {
-
-}
-,
+},
 "bm": {
 "Aspect": {"values": ["Imp", "Perf", "Prog"], "errors": []},
 "Mood": {"values": ["Imp", "Subj", "Cond"], "errors": []},
@@ -298,40 +245,7 @@
 "Tense": {"values": ["Past", "Fut"], "errors": []},
 "Valency": {"values": [], "errors": ["No feature values found."]},
 "VerbForm": {"values": ["Part", "Vnoun"], "errors": []}
-}
-,
-"bn": {
-
-}
-,
-"br": {
-
-}
-,
-"bxr": {
-
-}
-,
-"ca": {
-
-}
-,
-"cgg": {
-
-}
-,
-"ckb": {
-
-}
-,
-"ckt": {
-
-}
-,
-"cop": {
-
-}
-,
+},
 "cs": {
 "Abbr": {"values": ["Yes"], "errors": []},
 "AdpType": {"values": ["Prep", "Voc", "Comprep"], "errors": []},
@@ -362,32 +276,10 @@
 "Variant": {"values": ["Short"], "errors": []},
 "VerbForm": {"values": ["Fin", "Inf", "Part", "Conv"], "errors": []},
 "Voice": {"values": ["Act", "Pass"], "errors": []}
-}
-,
-"cu": {
-
-}
-,
-"cy": {
-
-}
-,
-"da": {
-
-}
-,
+},
 "dar": {
 "Evident": {"values": ["Nfh"], "errors": []}
-}
-,
-"de": {
-
-}
-,
-"el": {
-
-}
-,
+},
 "en": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -406,12 +298,7 @@
 "Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"es": {
-
-}
-,
+},
 "et": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -422,17 +309,11 @@
 "Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
-}
-,
+},
 "eu": {
 "Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
-}
-,
-"fa": {
-
-}
-,
+},
 "fi": {
 "Abbr": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Case": {"values": [], "errors": ["No examples found under value 'Par'.", "Multiple definition of value 'Notes'.", "Documentation does not belong to UD v2 guidelines."]},
@@ -457,12 +338,7 @@
 "Typo": {"values": [], "errors": ["Unrecognized level 3 heading '### Diffs'.", "Documentation does not belong to UD v2 guidelines."]},
 "VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"fo": {
-
-}
-,
+},
 "fr": {
 "Animacy": {"values": [], "errors": ["No feature values found."]},
 "Aspect": {"values": [], "errors": ["No feature values found."]},
@@ -481,12 +357,7 @@
 "Tense": {"values": [], "errors": ["No feature values found."]},
 "VerbForm": {"values": [], "errors": ["No feature values found."]},
 "Voice": {"values": [], "errors": ["No feature values found."]}
-}
-,
-"fro": {
-
-}
-,
+},
 "ga": {
 "Case": {"values": [], "errors": ["Unrecognized level 3 heading '### `NomAcc` : common case'.", "Unrecognized level 3 heading '### `Voc` : vocative case'.", "Unrecognized level 3 heading '### `Gen` : genitive case'.", "Unrecognized level 3 heading '### `Dat` : dative case'.", "No feature values found."]},
 "Definite": {"values": [], "errors": ["Unrecognized level 3 heading '### `Def` : definite'.", "Unrecognized level 3 heading '### `Ind` : indefinite'.", "No feature values found."]},
@@ -508,28 +379,7 @@
 "Tense": {"values": [], "errors": ["Unrecognized level 3 heading '### `Past` : past tense'.", "Unrecognized level 3 heading '### `Pres` : present tense'.", "Unrecognized level 3 heading '### `Fut` : future tense'.", "No feature values found."]},
 "VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### `Inf` : infinitive'.", "Unrecognized level 3 heading '### `Cop` : copula'.", "Unrecognized level 3 heading '### `Part` : participle'.", "Unrecognized level 3 heading '### `Vnoun` : verbal noun'.", "No feature values found."]},
 "Voice": {"values": [], "errors": ["Unrecognized level 3 heading '### `Auto` : autonomous voice'.", "No feature values found."]}
-}
-,
-"gcd": {
-
-}
-,
-"gd": {
-
-}
-,
-"gl": {
-
-}
-,
-"got": {
-
-}
-,
-"gqa": {
-
-}
-,
+},
 "grc": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -537,48 +387,7 @@
 "Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Degree": {"values": [], "errors": ["No examples found under value 'Pos'.", "Documentation does not belong to UD v2 guidelines."]},
 "Gender": {"values": [], "errors": ["No examples found under value 'Com'.", "Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"gsw": {
-
-}
-,
-"gun": {
-
-}
-,
-"gv": {
-
-}
-,
-"ha": {
-
-}
-,
-"he": {
-
-}
-,
-"hi": {
-
-}
-,
-"hil": {
-
-}
-,
-"hit": {
-
-}
-,
-"hr": {
-
-}
-,
-"hsb": {
-
-}
-,
+},
 "hu": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -597,8 +406,7 @@
 "Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
-}
-,
+},
 "hy": {
 "Abbr": {"values": ["Yes"], "errors": []},
 "AdpType": {"values": ["Ambi", "Prep", "Post", "Comadp"], "errors": []},
@@ -632,20 +440,7 @@
 "Typo": {"values": ["Yes"], "errors": []},
 "VerbForm": {"values": ["Fin", "Inf", "Part", "Conv", "Gdv"], "errors": []},
 "Voice": {"values": ["Act", "Pass", "Mid", "Cau", "Rcp"], "errors": []}
-}
-,
-"id": {
-
-}
-,
-"ifb": {
-
-}
-,
-"is": {
-
-}
-,
+},
 "it": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -665,44 +460,10 @@
 "Tense": {"values": [], "errors": ["No examples found under value 'Imp'.", "No examples found under value 'Nar'.", "No examples found under value 'Pqp'."]},
 "VerbForm": {"values": [], "errors": ["No examples found under value 'Sup'.", "No examples found under value 'Trans'."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
-}
-,
-"ja": {
-
-}
-,
-"ka": {
-
-}
-,
-"kfm": {
-
-}
-,
-"kfz": {
-
-}
-,
-"kk": {
-
-}
-,
-"kmr": {
-
-}
-,
-"kn": {
-
-}
-,
-"ko": {
-
-}
-,
+},
 "koi": {
 "NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
+},
 "kpv": {
 "Case": {"values": [], "errors": ["No feature values found."]},
 "Clitic": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -719,92 +480,7 @@
 "Tense": {"values": [], "errors": ["No feature values found."]},
 "VerbForm": {"values": [], "errors": ["No feature values found."]},
 "VerbType": {"values": [], "errors": ["No feature values found."]}
-}
-,
-"krl": {
-
-}
-,
-"ky": {
-
-}
-,
-"la": {
-
-}
-,
-"lad": {
-
-}
-,
-"laj": {
-
-}
-,
-"lez": {
-
-}
-,
-"lt": {
-
-}
-,
-"lus": {
-
-}
-,
-"lv": {
-
-}
-,
-"lzh": {
-
-}
-,
-"lzz": {
-
-}
-,
-"mag": {
-
-}
-,
-"mdf": {
-
-}
-,
-"mga": {
-
-}
-,
-"mk": {
-
-}
-,
-"mn": {
-
-}
-,
-"mov": {
-
-}
-,
-"mr": {
-
-}
-,
-"mt": {
-
-}
-,
-"mxx": {
-
-}
-,
-"myu": {
-
-}
-,
+},
 "myv": {
 "AdpType": {"values": [], "errors": ["No feature values found."]},
 "AdvType": {"values": [], "errors": ["No feature values found."]},
@@ -828,56 +504,7 @@
 "Variant": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "VerbForm": {"values": [], "errors": ["No feature values found."]},
 "VerbType": {"values": [], "errors": ["No feature values found."]}
-}
-,
-"naq": {
-
-}
-,
-"ndg": {
-
-}
-,
-"nl": {
-
-}
-,
-"no": {
-
-}
-,
-"nyn": {
-
-}
-,
-"nyq": {
-
-}
-,
-"oc": {
-
-}
-,
-"olo": {
-
-}
-,
-"orv": {
-
-}
-,
-"osx": {
-
-}
-,
-"otk": {
-
-}
-,
-"pbv": {
-
-}
-,
+},
 "pcm": {
 "Aspect": {"values": ["Imp", "Perf", "Real"], "errors": []},
 "Case": {"values": ["Nom", "Acc"], "errors": []},
@@ -894,24 +521,7 @@
 "Tense": {"values": ["Past", "Pres", "Prosp"], "errors": []},
 "VerbForm": {"values": ["Fin", "Ger"], "errors": []},
 "VerbType": {"values": [], "errors": ["No feature values found."]}
-}
-,
-"pgl": {
-
-}
-,
-"pl": {
-
-}
-,
-"pnt": {
-
-}
-,
-"prx": {
-
-}
-,
+},
 "pt": {
 "AdpType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
@@ -925,32 +535,7 @@
 "Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "PrepCase": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Typo": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
-}
-,
-"qaf": {
-
-}
-,
-"qhe": {
-
-}
-,
-"qtd": {
-
-}
-,
-"quz": {
-
-}
-,
-"rm": {
-
-}
-,
-"ro": {
-
-}
-,
+},
 "ru": {
 "Animacy": {"values": [], "errors": ["No examples found under value 'Anim'.", "Unrecognized examples 'PDT examples of masculine animate nouns:'.", "No examples found under value 'Inan'.", "Unrecognized examples 'RNC (Russian National Corpus) examples of masculine inanimate nouns:'.", "Documentation does not belong to UD v2 guidelines."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
@@ -969,28 +554,7 @@
 "Variant": {"values": ["Short"], "errors": []},
 "VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"sa": {
-
-}
-,
-"sd": {
-
-}
-,
-"sga": {
-
-}
-,
-"shp": {
-
-}
-,
-"sk": {
-
-}
-,
+},
 "sl": {
 "Abbreviation": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "No examples found under value 'Yes'.", "Documentation does not belong to UD v2 guidelines."]},
 "Animacy": {"values": [], "errors": ["No examples found under value 'Anim'.", "Unrecognized level 3 heading '### Conversion from JOS'.", "No examples found under value 'Inan'.", "Documentation does not belong to UD v2 guidelines."]},
@@ -1014,36 +578,7 @@
 "Tense": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
 "Variant": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"sme": {
-
-}
-,
-"sms": {
-
-}
-,
-"so": {
-
-}
-,
-"soj": {
-
-}
-,
-"sq": {
-
-}
-,
-"sr": {
-
-}
-,
-"sux": {
-
-}
-,
+},
 "sv": {
 "Abbr": {"values": ["Yes"], "errors": []},
 "Case": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
@@ -1060,32 +595,7 @@
 "Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"swl": {
-
-}
-,
-"ta": {
-
-}
-,
-"te": {
-
-}
-,
-"th": {
-
-}
-,
-"tl": {
-
-}
-,
-"tpn": {
-
-}
-,
+},
 "tr": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
@@ -1107,12 +617,7 @@
 "Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "VerbForm": {"values": [], "errors": ["No examples found under value 'Trans'.", "Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"ug": {
-
-}
-,
+},
 "uk": {
 "Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
@@ -1130,12 +635,7 @@
 "Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
-}
-,
-"ur": {
-
-}
-,
+},
 "urj": {
 "Aspect": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
 "Case": {"values": [], "errors": ["No feature values found."]},
@@ -1153,34 +653,5 @@
 "VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
 "Voice": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]}
 }
-,
-"vi": {
-
-}
-,
-"wbp": {
-
-}
-,
-"wo": {
-
-}
-,
-"yo": {
-
-}
-,
-"yue": {
-
-}
-,
-"zh": {
-
-}
-,
-"zmu": {
-
-}
-
 }
 }
