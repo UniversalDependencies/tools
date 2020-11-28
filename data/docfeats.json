@@ -150,5 +150,1037 @@
 "yue": ["Abbr=Yes", "AdpType=Circ", "AdpType=Post", "AdpType=Prep", "AdpType=Voc", "AdvType=Cau", "AdvType=Deg", "AdvType=Loc", "AdvType=Man", "AdvType=Mod", "AdvType=Tim", "Animacy=Anim", "Animacy=Hum", "Animacy=Inan", "Animacy=Nhum", "Aspect=Hab", "Aspect=Imp", "Aspect=Iter", "Aspect=Perf", "Aspect=Prog", "Aspect=Prosp", "Case=Abe", "Case=Abl", "Case=Abs", "Case=Acc", "Case=Add", "Case=Ade", "Case=All", "Case=Ben", "Case=Cau", "Case=Cmp", "Case=Cns", "Case=Com", "Case=Dat", "Case=Del", "Case=Dis", "Case=Ela", "Case=Equ", "Case=Erg", "Case=Ess", "Case=Gen", "Case=Ill", "Case=Ine", "Case=Ins", "Case=Lat", "Case=Loc", "Case=Nom", "Case=Par", "Case=Per", "Case=Sub", "Case=Sup", "Case=Tem", "Case=Ter", "Case=Tra", "Case=Voc", "Clusivity=Ex", "Clusivity=In", "ConjType=Comp", "ConjType=Oper", "Definite=Com", "Definite=Cons", "Definite=Def", "Definite=Ind", "Definite=Spec", "Degree=Abs", "Degree=Cmp", "Degree=Equ", "Degree=Pos", "Degree=Sup", "Echo=Ech", "Echo=Rdp", "Evident=Fh", "Evident=Nfh", "Foreign=Yes", "Gender=Com", "Gender=Fem", "Gender=Masc", "Gender=Neut", "Gender[dat]=Fem", "Gender[dat]=Masc", "Gender[erg]=Fem", "Gender[erg]=Masc", "Gender[obj]=Fem", "Gender[obj]=Masc", "Gender[psor]=Fem", "Gender[psor]=Masc", "Gender[psor]=Neut", "Gender[subj]=Fem", "Gender[subj]=Masc", "Hyph=Yes", "Mood=Adm", "Mood=Cnd", "Mood=Des", "Mood=Imp", "Mood=Ind", "Mood=Jus", "Mood=Nec", "Mood=Opt", "Mood=Pot", "Mood=Prp", "Mood=Qot", "Mood=Sub", "NameType=Com", "NameType=Geo", "NameType=Giv", "NameType=Nat", "NameType=Oth", "NameType=Pro", "NameType=Prs", "NameType=Sur", "NounClass=Bantu1", "NounClass=Bantu10", "NounClass=Bantu11", "NounClass=Bantu12", "NounClass=Bantu13", "NounClass=Bantu14", "NounClass=Bantu15", "NounClass=Bantu16", "NounClass=Bantu17", "NounClass=Bantu18", "NounClass=Bantu19", "NounClass=Bantu2", "NounClass=Bantu20", "NounClass=Bantu21", "NounClass=Bantu22", "NounClass=Bantu23", "NounClass=Bantu3", "NounClass=Bantu4", "NounClass=Bantu5", "NounClass=Bantu6", "NounClass=Bantu7", "NounClass=Bantu8", "NounClass=Bantu9", "NounClass=Wol1", "NounClass=Wol10", "NounClass=Wol11", "NounClass=Wol12", "NounClass=Wol2", "NounClass=Wol3", "NounClass=Wol4", "NounClass=Wol5", "NounClass=Wol6", "NounClass=Wol7", "NounClass=Wol8", "NounClass=Wol9", "NounType=Class", "NumForm=Digit", "NumForm=Roman", "NumForm=Word", "NumType=Card", "NumType=Dist", "NumType=Frac", "NumType=Mult", "NumType=Ord", "NumType=Range", "NumType=Sets", "NumValue=1", "NumValue=2", "NumValue=3", "Number=Coll", "Number=Count", "Number=Dual", "Number=Grpa", "Number=Grpl", "Number=Inv", "Number=Pauc", "Number=Plur", "Number=Ptan", "Number=Sing", "Number=Tri", "Number[abs]=Plur", "Number[abs]=Sing", "Number[dat]=Plur", "Number[dat]=Sing", "Number[erg]=Plur", "Number[erg]=Sing", "Number[obj]=Plur", "Number[obj]=Sing", "Number[psed]=Plur", "Number[psed]=Sing", "Number[psor]=Plur", "Number[psor]=Sing", "Number[subj]=Plur", "Number[subj]=Sing", "PartType=Emp", "PartType=Inf", "PartType=Int", "PartType=Mod", "PartType=Res", "PartType=Vbp", "Person=0", "Person=1", "Person=2", "Person=3", "Person=4", "Person[abs]=1", "Person[abs]=2", "Person[abs]=3", "Person[dat]=1", "Person[dat]=2", "Person[dat]=3", "Person[erg]=1", "Person[erg]=2", "Person[erg]=3", "Person[obj]=1", "Person[obj]=2", "Person[obj]=3", "Person[psor]=1", "Person[psor]=2", "Person[psor]=3", "Person[subj]=1", "Person[subj]=2", "Person[subj]=3", "Polarity=Neg", "Polarity=Pos", "Polite=Elev", "Polite=Form", "Polite=Humb", "Polite=Infm", "Polite[abs]=Form", "Polite[abs]=Infm", "Polite[dat]=Form", "Polite[dat]=Infm", "Polite[erg]=Form", "Polite[erg]=Infm", "Poss=Yes", "PrepCase=Npr", "PrepCase=Pre", "PronType=Art", "PronType=Dem", "PronType=Emp", "PronType=Exc", "PronType=Ind", "PronType=Int", "PronType=Neg", "PronType=Prs", "PronType=Rcp", "PronType=Rel", "PronType=Tot", "PunctSide=Fin", "PunctSide=Ini", "PunctType=Brck", "PunctType=Colo", "PunctType=Comm", "PunctType=Dash", "PunctType=Excl", "PunctType=Peri", "PunctType=Qest", "PunctType=Quot", "PunctType=Semi", "Reflex=Yes", "Style=Arch", "Style=Coll", "Style=Expr", "Style=Form", "Style=Rare", "Style=Slng", "Style=Vrnc", "Style=Vulg", "Subcat=Intr", "Subcat=Tran", "Tense=Fut", "Tense=Imp", "Tense=Past", "Tense=Pqp", "Tense=Pres", "Typo=Yes", "VerbForm=Conv", "VerbForm=Fin", "VerbForm=Gdv", "VerbForm=Ger", "VerbForm=Inf", "VerbForm=Part", "VerbForm=Sup", "VerbForm=Vnoun", "VerbType=Aux", "VerbType=Cop", "VerbType=Light", "VerbType=Mod", "Voice=Act", "Voice=Antip", "Voice=Bfoc", "Voice=Cau", "Voice=Dir", "Voice=Inv", "Voice=Lfoc", "Voice=Mid", "Voice=Pass", "Voice=Rcp"],
 "zh": ["Abbr=Yes", "AdpType=Circ", "AdpType=Post", "AdpType=Prep", "AdpType=Voc", "AdvType=Cau", "AdvType=Deg", "AdvType=Loc", "AdvType=Man", "AdvType=Mod", "AdvType=Tim", "Animacy=Anim", "Animacy=Hum", "Animacy=Inan", "Animacy=Nhum", "Aspect=Hab", "Aspect=Imp", "Aspect=Iter", "Aspect=Perf", "Aspect=Prog", "Aspect=Prosp", "Case=Abe", "Case=Abl", "Case=Abs", "Case=Acc", "Case=Add", "Case=Ade", "Case=All", "Case=Ben", "Case=Cau", "Case=Cmp", "Case=Cns", "Case=Com", "Case=Dat", "Case=Del", "Case=Dis", "Case=Ela", "Case=Equ", "Case=Erg", "Case=Ess", "Case=Gen", "Case=Ill", "Case=Ine", "Case=Ins", "Case=Lat", "Case=Loc", "Case=Nom", "Case=Par", "Case=Per", "Case=Sub", "Case=Sup", "Case=Tem", "Case=Ter", "Case=Tra", "Case=Voc", "Clusivity=Ex", "Clusivity=In", "ConjType=Comp", "ConjType=Oper", "Definite=Com", "Definite=Cons", "Definite=Def", "Definite=Ind", "Definite=Spec", "Degree=Abs", "Degree=Cmp", "Degree=Equ", "Degree=Pos", "Degree=Sup", "Echo=Ech", "Echo=Rdp", "Evident=Fh", "Evident=Nfh", "Foreign=Yes", "Gender=Com", "Gender=Fem", "Gender=Masc", "Gender=Neut", "Gender[dat]=Fem", "Gender[dat]=Masc", "Gender[erg]=Fem", "Gender[erg]=Masc", "Gender[obj]=Fem", "Gender[obj]=Masc", "Gender[psor]=Fem", "Gender[psor]=Masc", "Gender[psor]=Neut", "Gender[subj]=Fem", "Gender[subj]=Masc", "Hyph=Yes", "Mood=Adm", "Mood=Cnd", "Mood=Des", "Mood=Imp", "Mood=Ind", "Mood=Jus", "Mood=Nec", "Mood=Opt", "Mood=Pot", "Mood=Prp", "Mood=Qot", "Mood=Sub", "NameType=Com", "NameType=Geo", "NameType=Giv", "NameType=Nat", "NameType=Oth", "NameType=Pro", "NameType=Prs", "NameType=Sur", "NounClass=Bantu1", "NounClass=Bantu10", "NounClass=Bantu11", "NounClass=Bantu12", "NounClass=Bantu13", "NounClass=Bantu14", "NounClass=Bantu15", "NounClass=Bantu16", "NounClass=Bantu17", "NounClass=Bantu18", "NounClass=Bantu19", "NounClass=Bantu2", "NounClass=Bantu20", "NounClass=Bantu21", "NounClass=Bantu22", "NounClass=Bantu23", "NounClass=Bantu3", "NounClass=Bantu4", "NounClass=Bantu5", "NounClass=Bantu6", "NounClass=Bantu7", "NounClass=Bantu8", "NounClass=Bantu9", "NounClass=Wol1", "NounClass=Wol10", "NounClass=Wol11", "NounClass=Wol12", "NounClass=Wol2", "NounClass=Wol3", "NounClass=Wol4", "NounClass=Wol5", "NounClass=Wol6", "NounClass=Wol7", "NounClass=Wol8", "NounClass=Wol9", "NounType=Class", "NumForm=Digit", "NumForm=Roman", "NumForm=Word", "NumType=Card", "NumType=Dist", "NumType=Frac", "NumType=Mult", "NumType=Ord", "NumType=Range", "NumType=Sets", "NumValue=1", "NumValue=2", "NumValue=3", "Number=Coll", "Number=Count", "Number=Dual", "Number=Grpa", "Number=Grpl", "Number=Inv", "Number=Pauc", "Number=Plur", "Number=Ptan", "Number=Sing", "Number=Tri", "Number[abs]=Plur", "Number[abs]=Sing", "Number[dat]=Plur", "Number[dat]=Sing", "Number[erg]=Plur", "Number[erg]=Sing", "Number[obj]=Plur", "Number[obj]=Sing", "Number[psed]=Plur", "Number[psed]=Sing", "Number[psor]=Plur", "Number[psor]=Sing", "Number[subj]=Plur", "Number[subj]=Sing", "PartType=Emp", "PartType=Inf", "PartType=Int", "PartType=Mod", "PartType=Res", "PartType=Vbp", "Person=0", "Person=1", "Person=2", "Person=3", "Person=4", "Person[abs]=1", "Person[abs]=2", "Person[abs]=3", "Person[dat]=1", "Person[dat]=2", "Person[dat]=3", "Person[erg]=1", "Person[erg]=2", "Person[erg]=3", "Person[obj]=1", "Person[obj]=2", "Person[obj]=3", "Person[psor]=1", "Person[psor]=2", "Person[psor]=3", "Person[subj]=1", "Person[subj]=2", "Person[subj]=3", "Polarity=Neg", "Polarity=Pos", "Polite=Elev", "Polite=Form", "Polite=Humb", "Polite=Infm", "Polite[abs]=Form", "Polite[abs]=Infm", "Polite[dat]=Form", "Polite[dat]=Infm", "Polite[erg]=Form", "Polite[erg]=Infm", "Poss=Yes", "PrepCase=Npr", "PrepCase=Pre", "PronType=Art", "PronType=Dem", "PronType=Emp", "PronType=Exc", "PronType=Ind", "PronType=Int", "PronType=Neg", "PronType=Prs", "PronType=Rcp", "PronType=Rel", "PronType=Tot", "PunctSide=Fin", "PunctSide=Ini", "PunctType=Brck", "PunctType=Colo", "PunctType=Comm", "PunctType=Dash", "PunctType=Excl", "PunctType=Peri", "PunctType=Qest", "PunctType=Quot", "PunctType=Semi", "Reflex=Yes", "Style=Arch", "Style=Coll", "Style=Expr", "Style=Form", "Style=Rare", "Style=Slng", "Style=Vrnc", "Style=Vulg", "Subcat=Intr", "Subcat=Tran", "Tense=Fut", "Tense=Imp", "Tense=Past", "Tense=Pqp", "Tense=Pres", "Typo=Yes", "VerbForm=Conv", "VerbForm=Fin", "VerbForm=Gdv", "VerbForm=Ger", "VerbForm=Inf", "VerbForm=Part", "VerbForm=Sup", "VerbForm=Vnoun", "VerbType=Aux", "VerbType=Cop", "VerbType=Light", "VerbType=Mod", "Voice=Act", "Voice=Antip", "Voice=Bfoc", "Voice=Cau", "Voice=Dir", "Voice=Inv", "Voice=Lfoc", "Voice=Mid", "Voice=Pass", "Voice=Rcp"],
 "zmu": ["Abbr=Yes", "AdpType=Circ", "AdpType=Post", "AdpType=Prep", "AdpType=Voc", "AdvType=Cau", "AdvType=Deg", "AdvType=Loc", "AdvType=Man", "AdvType=Mod", "AdvType=Tim", "Animacy=Anim", "Animacy=Hum", "Animacy=Inan", "Animacy=Nhum", "Aspect=Hab", "Aspect=Imp", "Aspect=Iter", "Aspect=Perf", "Aspect=Prog", "Aspect=Prosp", "Case=Abe", "Case=Abl", "Case=Abs", "Case=Acc", "Case=Add", "Case=Ade", "Case=All", "Case=Ben", "Case=Cau", "Case=Cmp", "Case=Cns", "Case=Com", "Case=Dat", "Case=Del", "Case=Dis", "Case=Ela", "Case=Equ", "Case=Erg", "Case=Ess", "Case=Gen", "Case=Ill", "Case=Ine", "Case=Ins", "Case=Lat", "Case=Loc", "Case=Nom", "Case=Par", "Case=Per", "Case=Sub", "Case=Sup", "Case=Tem", "Case=Ter", "Case=Tra", "Case=Voc", "Clusivity=Ex", "Clusivity=In", "ConjType=Comp", "ConjType=Oper", "Definite=Com", "Definite=Cons", "Definite=Def", "Definite=Ind", "Definite=Spec", "Degree=Abs", "Degree=Cmp", "Degree=Equ", "Degree=Pos", "Degree=Sup", "Echo=Ech", "Echo=Rdp", "Evident=Fh", "Evident=Nfh", "Foreign=Yes", "Gender=Com", "Gender=Fem", "Gender=Masc", "Gender=Neut", "Gender[dat]=Fem", "Gender[dat]=Masc", "Gender[erg]=Fem", "Gender[erg]=Masc", "Gender[obj]=Fem", "Gender[obj]=Masc", "Gender[psor]=Fem", "Gender[psor]=Masc", "Gender[psor]=Neut", "Gender[subj]=Fem", "Gender[subj]=Masc", "Hyph=Yes", "Mood=Adm", "Mood=Cnd", "Mood=Des", "Mood=Imp", "Mood=Ind", "Mood=Jus", "Mood=Nec", "Mood=Opt", "Mood=Pot", "Mood=Prp", "Mood=Qot", "Mood=Sub", "NameType=Com", "NameType=Geo", "NameType=Giv", "NameType=Nat", "NameType=Oth", "NameType=Pro", "NameType=Prs", "NameType=Sur", "NounClass=Bantu1", "NounClass=Bantu10", "NounClass=Bantu11", "NounClass=Bantu12", "NounClass=Bantu13", "NounClass=Bantu14", "NounClass=Bantu15", "NounClass=Bantu16", "NounClass=Bantu17", "NounClass=Bantu18", "NounClass=Bantu19", "NounClass=Bantu2", "NounClass=Bantu20", "NounClass=Bantu21", "NounClass=Bantu22", "NounClass=Bantu23", "NounClass=Bantu3", "NounClass=Bantu4", "NounClass=Bantu5", "NounClass=Bantu6", "NounClass=Bantu7", "NounClass=Bantu8", "NounClass=Bantu9", "NounClass=Wol1", "NounClass=Wol10", "NounClass=Wol11", "NounClass=Wol12", "NounClass=Wol2", "NounClass=Wol3", "NounClass=Wol4", "NounClass=Wol5", "NounClass=Wol6", "NounClass=Wol7", "NounClass=Wol8", "NounClass=Wol9", "NounType=Class", "NumForm=Digit", "NumForm=Roman", "NumForm=Word", "NumType=Card", "NumType=Dist", "NumType=Frac", "NumType=Mult", "NumType=Ord", "NumType=Range", "NumType=Sets", "NumValue=1", "NumValue=2", "NumValue=3", "Number=Coll", "Number=Count", "Number=Dual", "Number=Grpa", "Number=Grpl", "Number=Inv", "Number=Pauc", "Number=Plur", "Number=Ptan", "Number=Sing", "Number=Tri", "Number[abs]=Plur", "Number[abs]=Sing", "Number[dat]=Plur", "Number[dat]=Sing", "Number[erg]=Plur", "Number[erg]=Sing", "Number[obj]=Plur", "Number[obj]=Sing", "Number[psed]=Plur", "Number[psed]=Sing", "Number[psor]=Plur", "Number[psor]=Sing", "Number[subj]=Plur", "Number[subj]=Sing", "PartType=Emp", "PartType=Inf", "PartType=Int", "PartType=Mod", "PartType=Res", "PartType=Vbp", "Person=0", "Person=1", "Person=2", "Person=3", "Person=4", "Person[abs]=1", "Person[abs]=2", "Person[abs]=3", "Person[dat]=1", "Person[dat]=2", "Person[dat]=3", "Person[erg]=1", "Person[erg]=2", "Person[erg]=3", "Person[obj]=1", "Person[obj]=2", "Person[obj]=3", "Person[psor]=1", "Person[psor]=2", "Person[psor]=3", "Person[subj]=1", "Person[subj]=2", "Person[subj]=3", "Polarity=Neg", "Polarity=Pos", "Polite=Elev", "Polite=Form", "Polite=Humb", "Polite=Infm", "Polite[abs]=Form", "Polite[abs]=Infm", "Polite[dat]=Form", "Polite[dat]=Infm", "Polite[erg]=Form", "Polite[erg]=Infm", "Poss=Yes", "PrepCase=Npr", "PrepCase=Pre", "PronType=Art", "PronType=Dem", "PronType=Emp", "PronType=Exc", "PronType=Ind", "PronType=Int", "PronType=Neg", "PronType=Prs", "PronType=Rcp", "PronType=Rel", "PronType=Tot", "PunctSide=Fin", "PunctSide=Ini", "PunctType=Brck", "PunctType=Colo", "PunctType=Comm", "PunctType=Dash", "PunctType=Excl", "PunctType=Peri", "PunctType=Qest", "PunctType=Quot", "PunctType=Semi", "Reflex=Yes", "Style=Arch", "Style=Coll", "Style=Expr", "Style=Form", "Style=Rare", "Style=Slng", "Style=Vrnc", "Style=Vulg", "Subcat=Intr", "Subcat=Tran", "Tense=Fut", "Tense=Imp", "Tense=Past", "Tense=Pqp", "Tense=Pres", "Typo=Yes", "VerbForm=Conv", "VerbForm=Fin", "VerbForm=Gdv", "VerbForm=Ger", "VerbForm=Inf", "VerbForm=Part", "VerbForm=Sup", "VerbForm=Vnoun", "VerbType=Aux", "VerbType=Cop", "VerbType=Light", "VerbType=Mod", "Voice=Act", "Voice=Antip", "Voice=Bfoc", "Voice=Cau", "Voice=Dir", "Voice=Inv", "Voice=Lfoc", "Voice=Mid", "Voice=Pass", "Voice=Rcp"]
+},
+"gdocs": {
+"Abbr": {"values": ["Yes"], "errors": []},
+"AdpType": {"values": ["Prep", "Post", "Circ", "Voc"], "errors": []},
+"AdvType": {"values": ["Man", "Loc", "Tim", "Deg", "Cau", "Mod"], "errors": []},
+"Animacy": {"values": ["Anim", "Inan", "Hum", "Nhum"], "errors": []},
+"Aspect": {"values": ["Imp", "Perf", "Prosp", "Prog", "Hab", "Iter"], "errors": []},
+"Case": {"values": ["Nom", "Acc", "Abs", "Erg", "Dat", "Gen", "Voc", "Loc", "Ins", "Par", "Dis", "Ess", "Tra", "Com", "Abe", "Ine", "Ill", "Ela", "Add", "Ade", "All", "Abl", "Sup", "Sub", "Del", "Lat", "Per", "Tem", "Ter", "Cau", "Ben", "Cns", "Cmp", "Equ"], "errors": []},
+"Clusivity": {"values": ["In", "Ex"], "errors": []},
+"ConjType": {"values": ["Comp", "Oper"], "errors": []},
+"Definite": {"values": ["Ind", "Spec", "Def", "Cons", "Com"], "errors": []},
+"Degree": {"values": ["Pos", "Equ", "Cmp", "Sup", "Abs"], "errors": []},
+"Echo": {"values": ["Rdp", "Ech"], "errors": []},
+"Evident": {"values": ["Fh", "Nfh"], "errors": []},
+"Foreign": {"values": ["Yes"], "errors": []},
+"Gender": {"values": ["Masc", "Fem", "Neut", "Com"], "errors": []},
+"Gender[dat]": {"values": ["Masc", "Fem"], "errors": []},
+"Gender[erg]": {"values": ["Masc", "Fem"], "errors": []},
+"Gender[obj]": {"values": ["Masc", "Fem"], "errors": []},
+"Gender[psor]": {"values": ["Masc", "Fem", "Neut"], "errors": []},
+"Gender[subj]": {"values": ["Masc", "Fem"], "errors": []},
+"Hyph": {"values": ["Yes"], "errors": []},
+"Mood": {"values": ["Ind", "Imp", "Cnd", "Pot", "Sub", "Jus", "Prp", "Qot", "Opt", "Des", "Nec", "Adm"], "errors": []},
+"NameType": {"values": ["Geo", "Prs", "Giv", "Sur", "Nat", "Com", "Pro", "Oth"], "errors": []},
+"NounClass": {"values": ["Bantu1", "Bantu2", "Bantu3", "Bantu4", "Bantu5", "Bantu6", "Bantu7", "Bantu8", "Bantu9", "Bantu10", "Bantu11", "Bantu12", "Bantu13", "Bantu14", "Bantu15", "Bantu16", "Bantu17", "Bantu18", "Bantu19", "Bantu20", "Bantu21", "Bantu22", "Bantu23", "Wol1", "Wol2", "Wol3", "Wol4", "Wol5", "Wol6", "Wol7", "Wol8", "Wol9", "Wol10", "Wol11", "Wol12"], "errors": []},
+"NounType": {"values": ["Class"], "errors": []},
+"NumForm": {"values": ["Word", "Digit", "Roman"], "errors": []},
+"NumType": {"values": ["Card", "Ord", "Mult", "Frac", "Sets", "Dist", "Range"], "errors": []},
+"NumValue": {"values": ["1", "2", "3"], "errors": []},
+"Number": {"values": ["Sing", "Plur", "Dual", "Tri", "Pauc", "Grpa", "Grpl", "Inv", "Count", "Ptan", "Coll"], "errors": []},
+"Number[abs]": {"values": ["Sing", "Plur"], "errors": []},
+"Number[dat]": {"values": ["Sing", "Plur"], "errors": []},
+"Number[erg]": {"values": ["Sing", "Plur"], "errors": []},
+"Number[obj]": {"values": ["Sing", "Plur"], "errors": []},
+"Number[psed]": {"values": ["Sing", "Plur"], "errors": []},
+"Number[psor]": {"values": ["Sing", "Plur"], "errors": []},
+"Number[subj]": {"values": ["Sing", "Plur"], "errors": []},
+"PartType": {"values": ["Mod", "Emp", "Res", "Inf", "Int", "Vbp"], "errors": []},
+"Person": {"values": ["0", "1", "2", "3", "4"], "errors": []},
+"Person[abs]": {"values": ["1", "2", "3"], "errors": []},
+"Person[dat]": {"values": ["1", "2", "3"], "errors": []},
+"Person[erg]": {"values": ["1", "2", "3"], "errors": []},
+"Person[obj]": {"values": ["1", "2", "3"], "errors": []},
+"Person[psor]": {"values": ["1", "2", "3"], "errors": []},
+"Person[subj]": {"values": ["1", "2", "3"], "errors": []},
+"Polarity": {"values": ["Pos", "Neg"], "errors": []},
+"Polite": {"values": ["Infm", "Form", "Elev", "Humb"], "errors": []},
+"Polite[abs]": {"values": ["Infm", "Form"], "errors": []},
+"Polite[dat]": {"values": ["Infm", "Form"], "errors": []},
+"Polite[erg]": {"values": ["Infm", "Form"], "errors": []},
+"Poss": {"values": ["Yes"], "errors": []},
+"PrepCase": {"values": ["Npr", "Pre"], "errors": []},
+"PronType": {"values": ["Prs", "Rcp", "Art", "Int", "Rel", "Exc", "Dem", "Emp", "Tot", "Neg", "Ind"], "errors": []},
+"PunctSide": {"values": ["Ini", "Fin"], "errors": []},
+"PunctType": {"values": ["Peri", "Qest", "Excl", "Quot", "Brck", "Comm", "Colo", "Semi", "Dash"], "errors": []},
+"Reflex": {"values": ["Yes"], "errors": []},
+"Style": {"values": ["Arch", "Rare", "Form", "Coll", "Vrnc", "Slng", "Expr", "Vulg"], "errors": []},
+"Subcat": {"values": ["Intr", "Tran"], "errors": []},
+"Tense": {"values": ["Past", "Pres", "Fut", "Imp", "Pqp"], "errors": []},
+"Typo": {"values": ["Yes"], "errors": []},
+"VerbForm": {"values": ["Fin", "Inf", "Sup", "Part", "Conv", "Gdv", "Ger", "Vnoun"], "errors": []},
+"VerbType": {"values": ["Aux", "Cop", "Mod", "Light"], "errors": []},
+"Voice": {"values": ["Act", "Mid", "Rcp", "Pass", "Antip", "Lfoc", "Bfoc", "Dir", "Inv", "Cau"], "errors": []}
+},
+"ldocs": {
+"abq": {
+
+}
+,
+"af": {
+
+}
+,
+"aii": {
+
+}
+,
+"ajp": {
+
+}
+,
+"akk": {
+
+}
+,
+"am": {
+
+}
+,
+"apu": {
+
+}
+,
+"aqz": {
+
+}
+,
+"ar": {
+
+}
+,
+"as": {
+
+}
+,
+"bav": {
+
+}
+,
+"be": {
+
+}
+,
+"bg": {
+"Animacy": {"values": [], "errors": ["No examples found under value 'Anim'.", "No examples found under value 'Nhum'.", "No examples found under value 'Inan'."]},
+"Aspect": {"values": ["Imp", "Perf"], "errors": []},
+"Case": {"values": [], "errors": ["Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Examples'.", "No feature values found."]},
+"Definite": {"values": ["Ind", "Def"], "errors": []},
+"Degree": {"values": ["Pos", "Cmp", "Sup"], "errors": []},
+"Gender": {"values": ["Masc", "Fem", "Neut"], "errors": []},
+"Mood": {"values": ["Ind", "Imp", "Cnd"], "errors": []},
+"NumType": {"values": ["Card", "Ord", "Mult", "Frac"], "errors": []},
+"Number": {"values": ["Sing", "Plur", "Count", "Ptan", "Coll"], "errors": []},
+"Person": {"values": ["1", "2", "3"], "errors": []},
+"Polarity": {"values": ["Pos", "Neg"], "errors": []},
+"Poss": {"values": ["Yes"], "errors": []},
+"PronType": {"values": ["Prs", "Rcp", "Int", "Rel", "Dem", "Tot", "Neg", "Ind"], "errors": []},
+"Reflex": {"values": ["Yes"], "errors": []},
+"Tense": {"values": [], "errors": ["No examples found under value 'Imp'."]},
+"VerbForm": {"values": ["Fin", "Part", "Conv"], "errors": []},
+"Voice": {"values": ["Act", "Pass"], "errors": []}
+}
+,
+"bho": {
+
+}
+,
+"bm": {
+"Aspect": {"values": ["Imp", "Perf", "Prog"], "errors": []},
+"Mood": {"values": ["Imp", "Subj", "Cond"], "errors": []},
+"NumType": {"values": ["Card", "Ord"], "errors": []},
+"Number": {"values": [], "errors": ["No feature values found."]},
+"Person": {"values": [], "errors": ["No feature values found."]},
+"Polarity": {"values": [], "errors": ["No feature values found."]},
+"PronType": {"values": [], "errors": ["No examples found under value 'Emp'."]},
+"Tense": {"values": ["Past", "Fut"], "errors": []},
+"Valency": {"values": [], "errors": ["No feature values found."]},
+"VerbForm": {"values": ["Part", "Vnoun"], "errors": []}
+}
+,
+"bn": {
+
+}
+,
+"br": {
+
+}
+,
+"bxr": {
+
+}
+,
+"ca": {
+
+}
+,
+"cgg": {
+
+}
+,
+"ckb": {
+
+}
+,
+"ckt": {
+
+}
+,
+"cop": {
+
+}
+,
+"cs": {
+"Abbr": {"values": ["Yes"], "errors": []},
+"AdpType": {"values": ["Prep", "Voc", "Comprep"], "errors": []},
+"Animacy": {"values": ["Anim", "Inan"], "errors": []},
+"Aspect": {"values": ["Imp", "Perf"], "errors": []},
+"Case": {"values": ["Nom", "Gen", "Dat", "Acc", "Voc", "Loc", "Ins"], "errors": []},
+"ConjType": {"values": ["Oper"], "errors": []},
+"Degree": {"values": ["Pos", "Cmp", "Sup"], "errors": []},
+"Foreign": {"values": ["Yes"], "errors": []},
+"Gender": {"values": ["Masc", "Fem", "Neut"], "errors": []},
+"Gender[psor]": {"values": ["Masc", "Fem", "Neut"], "errors": []},
+"Hyph": {"values": ["Yes"], "errors": []},
+"Mood": {"values": ["Ind", "Imp", "Cnd"], "errors": []},
+"NameType": {"values": ["Geo", "Giv", "Sur", "Nat", "Com", "Pro", "Oth"], "errors": []},
+"NumForm": {"values": ["Word", "Digit", "Roman"], "errors": []},
+"NumType": {"values": ["Card", "Ord", "Mult", "Frac", "Sets"], "errors": []},
+"NumValue": {"values": ["1", "2", "3"], "errors": []},
+"Number": {"values": ["Sing", "Plur", "Dual", "Ptan", "Coll"], "errors": []},
+"Number[psor]": {"values": ["Sing", "Plur"], "errors": []},
+"Person": {"values": ["1", "2", "3"], "errors": []},
+"Polarity": {"values": ["Pos", "Neg"], "errors": []},
+"Poss": {"values": ["Yes"], "errors": []},
+"PrepCase": {"values": ["Npr", "Pre"], "errors": []},
+"PronType": {"values": ["Prs", "Int", "Rel", "Dem", "Emp", "Tot", "Neg", "Ind"], "errors": []},
+"Reflex": {"values": ["Yes"], "errors": []},
+"Style": {"values": ["Arch", "Rare", "Coll", "Vrnc", "Slng", "Expr", "Vulg"], "errors": []},
+"Tense": {"values": ["Past", "Pres", "Fut"], "errors": []},
+"Variant": {"values": ["Short"], "errors": []},
+"VerbForm": {"values": ["Fin", "Inf", "Part", "Conv"], "errors": []},
+"Voice": {"values": ["Act", "Pass"], "errors": []}
+}
+,
+"cu": {
+
+}
+,
+"cy": {
+
+}
+,
+"da": {
+
+}
+,
+"dar": {
+"Evident": {"values": ["Nfh"], "errors": []}
+}
+,
+"de": {
+
+}
+,
+"el": {
+
+}
+,
+"en": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Acc'.", "Documentation does not belong to UD v2 guidelines."]},
+"Definite": {"values": [], "errors": ["No examples found under value 'Ind'.", "No examples found under value 'Def'.", "Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["No examples found under value 'Masc'.", "No examples found under value 'Fem'.", "No examples found under value 'Neut'.", "Documentation does not belong to UD v2 guidelines."]},
+"Mood": {"values": [], "errors": ["No examples found under value 'Sub'.", "Documentation does not belong to UD v2 guidelines."]},
+"NumType": {"values": [], "errors": ["No examples found under value 'Mult'.", "Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["No examples found under value '1'.", "No examples found under value '2'.", "Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Poss": {"values": [], "errors": ["No examples found under value 'Yes'.", "Documentation does not belong to UD v2 guidelines."]},
+"PronType": {"values": [], "errors": ["No examples found under value 'Prs'.", "No examples found under value 'Art'.", "No examples found under value 'Dem'.", "Documentation does not belong to UD v2 guidelines."]},
+"Reflex": {"values": [], "errors": ["No examples found under value 'Yes'.", "Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"es": {
+
+}
+,
+"et": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Case": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+}
+,
+"eu": {
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+}
+,
+"fa": {
+
+}
+,
+"fi": {
+"Abbr": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Par'.", "Multiple definition of value 'Notes'.", "Documentation does not belong to UD v2 guidelines."]},
+"Clitic": {"values": [], "errors": ["Unrecognized level 3 heading '### `Kin`'.", "Unrecognized level 3 heading '### `Kaan`'.", "Unrecognized level 3 heading '### `Ko`'.", "Unrecognized level 3 heading '### `Han`'.", "Unrecognized level 3 heading '### `Pa`'.", "Unrecognized level 3 heading '### `S`'.", "Unrecognized level 3 heading '### `Ka`'.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Connegative": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Unrecognized level 3 heading '### Diff'.", "Documentation does not belong to UD v2 guidelines."]},
+"Derivation": {"values": [], "errors": ["Unrecognized level 3 heading '### Diffs'.", "Documentation does not belong to UD v2 guidelines."]},
+"Foreign": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"InfForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number[psor]": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"PartForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Person[psor]": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["No examples found under value 'Ind'.", "No examples found under value 'Notes'.", "Multiple definition of value 'Notes'.", "No examples found under value 'Notes'.", "Documentation does not belong to UD v2 guidelines."]},
+"Style": {"values": [], "errors": ["Unrecognized level 3 heading '### Turku Dependency Treebank'.", "Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Typo": {"values": [], "errors": ["Unrecognized level 3 heading '### Diffs'.", "Documentation does not belong to UD v2 guidelines."]},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"fo": {
+
+}
+,
+"fr": {
+"Animacy": {"values": [], "errors": ["No feature values found."]},
+"Aspect": {"values": [], "errors": ["No feature values found."]},
+"Case": {"values": [], "errors": ["No feature values found."]},
+"Definite": {"values": [], "errors": ["No feature values found."]},
+"Degree": {"values": [], "errors": ["No feature values found."]},
+"Gender": {"values": [], "errors": ["No feature values found."]},
+"Mood": {"values": [], "errors": ["No feature values found."]},
+"NumType": {"values": [], "errors": ["No feature values found."]},
+"Number": {"values": [], "errors": ["No feature values found."]},
+"Person": {"values": [], "errors": ["No feature values found."]},
+"Polarity": {"values": [], "errors": ["No feature values found."]},
+"Poss": {"values": [], "errors": ["No feature values found."]},
+"PronType": {"values": [], "errors": ["No feature values found."]},
+"Reflex": {"values": [], "errors": ["No feature values found."]},
+"Tense": {"values": [], "errors": ["No feature values found."]},
+"VerbForm": {"values": [], "errors": ["No feature values found."]},
+"Voice": {"values": [], "errors": ["No feature values found."]}
+}
+,
+"fro": {
+
+}
+,
+"ga": {
+"Case": {"values": [], "errors": ["Unrecognized level 3 heading '### `NomAcc` : common case'.", "Unrecognized level 3 heading '### `Voc` : vocative case'.", "Unrecognized level 3 heading '### `Gen` : genitive case'.", "Unrecognized level 3 heading '### `Dat` : dative case'.", "No feature values found."]},
+"Definite": {"values": [], "errors": ["Unrecognized level 3 heading '### `Def` : definite'.", "Unrecognized level 3 heading '### `Ind` : indefinite'.", "No feature values found."]},
+"Degree": {"values": [], "errors": ["Unrecognized level 3 heading '### `Pos` : positive, first degree'.", "Unrecognized level 3 heading '### `Cmp` : comparative, second degree'.", "Unrecognized level 3 heading '### `Sup` : superlative, third degree'.", "No feature values found."]},
+"Dialect": {"values": [], "errors": ["Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Examples'.", "No feature values found."]},
+"Form": {"values": [], "errors": ["Unrecognized level 3 heading '### `Ecl` : eclipsis'.", "Unrecognized level 3 heading '### `Emp` : emphatic'.", "Unrecognized level 3 heading '### `Len` : lenition'.", "Unrecognized level 3 heading '### `HPref` : h-prefix'.", "Unrecognized level 3 heading '### `VF` : Vowel form'.", "No feature values found."]},
+"Gender": {"values": [], "errors": ["Unrecognized level 3 heading '### `Masc` : masculine gender'.", "Unrecognized level 3 heading '### `Fem` : feminine gender'.", "No feature values found."]},
+"Mood": {"values": [], "errors": ["Unrecognized level 3 heading '### `Ind` : indicative mood'.", "Unrecognized level 3 heading '### `Cnd` : conditional mood'.", "Unrecognized level 3 heading '### `Imp` : imperative mood'.", "Unrecognized level 3 heading '### `Sub` : subjunctive mood'.", "No feature values found."]},
+"NounType": {"values": [], "errors": ["Unrecognized level 3 heading '### `Strong` : strong plurals'.", "Unrecognized level 3 heading '### `Weak` : weak plurals'.", "Unrecognized level 3 heading '### `NotSlender` : broad consonants'.", "Unrecognized level 3 heading '### `Slender` : slender consonants'.", "No feature values found."]},
+"NumType": {"values": [], "errors": ["Unrecognized level 3 heading '### `Card` : cardinal numbers'.", "Unrecognized level 3 heading '### `Ord` : ordinal numbers'.", "No feature values found."]},
+"Number": {"values": [], "errors": ["Unrecognized level 3 heading '### `Sing` : singular'."]},
+"PartType": {"values": [], "errors": ["Unrecognized level 3 heading '### `Ad` : adverbial'.", "Unrecognized level 3 heading '### `Cmpl` : complementizer'.", "Unrecognized level 3 heading '### `Comp` : comparative'.", "Unrecognized level 3 heading '### `Cop` : copular'.", "Unrecognized level 3 heading '### `Deg` : degree'.", "Unrecognized level 3 heading '### `Inf` : infinitive'.", "Unrecognized level 3 heading '### `Num` : numeral'.", "Unrecognized level 3 heading '### `Pat` : patronym'.", "Unrecognized level 3 heading '### `Vb` : verbal'.", "Unrecognized level 3 heading '### `Voc` : vocative'.", "No feature values found."]},
+"Person": {"values": [], "errors": ["Unrecognized level 3 heading '### `1` : first person'.", "Unrecognized level 3 heading '### `2` : second person'.", "Unrecognized level 3 heading '### `3` : third person'.", "No feature values found."]},
+"Polarity": {"values": [], "errors": ["Unrecognized level 3 heading '### `Neg` : negative'.", "No feature values found."]},
+"Poss": {"values": [], "errors": ["Unrecognized level 3 heading '### `Yes` : possessive'.", "No feature values found."]},
+"PrepForm": {"values": [], "errors": ["Unrecognized level 3 heading '### `Cmpd` : compound preposition'.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["Unrecognized level 3 heading '### `Art` : articles'.", "Unrecognized level 3 heading '### `Dem` : demonstrative'.", "Unrecognized level 3 heading '### `Ind` : indefinite'.", "Unrecognized level 3 heading '### `Int` : interrogative'.", "Unrecognized level 3 heading '### `Prs` : person'.", "Unrecognized level 3 heading '### `Rel` : relative'.", "No feature values found."]},
+"Reflex": {"values": [], "errors": ["Unrecognized level 3 heading '###  `Yes` : it is reflexive'.", "No feature values found."]},
+"Tense": {"values": [], "errors": ["Unrecognized level 3 heading '### `Past` : past tense'.", "Unrecognized level 3 heading '### `Pres` : present tense'.", "Unrecognized level 3 heading '### `Fut` : future tense'.", "No feature values found."]},
+"VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### `Inf` : infinitive'.", "Unrecognized level 3 heading '### `Cop` : copula'.", "Unrecognized level 3 heading '### `Part` : participle'.", "Unrecognized level 3 heading '### `Vnoun` : verbal noun'.", "No feature values found."]},
+"Voice": {"values": [], "errors": ["Unrecognized level 3 heading '### `Auto` : autonomous voice'.", "No feature values found."]}
+}
+,
+"gcd": {
+
+}
+,
+"gd": {
+
+}
+,
+"gl": {
+
+}
+,
+"got": {
+
+}
+,
+"gqa": {
+
+}
+,
+"grc": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Gen'.", "No examples found under value 'Dat'.", "No examples found under value 'Acc'.", "No examples found under value 'Voc'.", "Documentation does not belong to UD v2 guidelines."]},
+"Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Degree": {"values": [], "errors": ["No examples found under value 'Pos'.", "Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["No examples found under value 'Com'.", "Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"gsw": {
+
+}
+,
+"gun": {
+
+}
+,
+"gv": {
+
+}
+,
+"ha": {
+
+}
+,
+"he": {
+
+}
+,
+"hi": {
+
+}
+,
+"hil": {
+
+}
+,
+"hit": {
+
+}
+,
+"hr": {
+
+}
+,
+"hsb": {
+
+}
+,
+"hu": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Case": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Reflex": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+}
+,
+"hy": {
+"Abbr": {"values": ["Yes"], "errors": []},
+"AdpType": {"values": ["Ambi", "Prep", "Post", "Comadp"], "errors": []},
+"Animacy": {"values": [], "errors": ["No examples found under value 'Hum'.", "No examples found under value 'Nhum'."]},
+"Aspect": {"values": ["Imp", "Perf", "Prosp", "Prog", "Dur", "Iter"], "errors": []},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Gen'."]},
+"ConjType": {"values": ["Comp", "Oper"], "errors": []},
+"Connegative": {"values": ["Yes"], "errors": []},
+"Definite": {"values": ["Ind", "Def"], "errors": []},
+"Degree": {"values": ["Pos", "Cmp", "Sup", "Abs"], "errors": []},
+"Distance": {"values": ["Prox", "Mid", "Dist"], "errors": []},
+"Echo": {"values": [], "errors": ["No examples found under value 'Ech'."]},
+"Foreign": {"values": ["Yes"], "errors": []},
+"Hyph": {"values": ["Yes"], "errors": []},
+"Mood": {"values": ["Ind", "Imp", "Cnd", "Sub", "Nec"], "errors": []},
+"NameType": {"values": [], "errors": ["No examples found under value 'Prs'."]},
+"NumForm": {"values": ["Word", "Digit", "Roman", "Armenian"], "errors": []},
+"NumType": {"values": ["Card", "Ord", "Frac", "Dist", "Range"], "errors": []},
+"Number": {"values": ["Sing", "Plur", "Assoc", "Coll"], "errors": []},
+"Number[psor]": {"values": ["Sing", "Plur"], "errors": []},
+"Person": {"values": ["1", "2", "3"], "errors": []},
+"Person[psor]": {"values": ["1", "2", "3"], "errors": []},
+"Polarity": {"values": ["Pos", "Neg"], "errors": []},
+"Polite": {"values": ["Infm", "Form"], "errors": []},
+"Poss": {"values": ["Yes"], "errors": []},
+"PronType": {"values": [], "errors": ["No examples found under value 'Rel'."]},
+"Reflex": {"values": ["Yes"], "errors": []},
+"Style": {"values": [], "errors": ["No examples found under value 'Rare'.", "No examples found under value 'Vrnc'.", "No examples found under value 'Slng'.", "No examples found under value 'Expr'.", "Unrecognized examples 'Typical examples of expressive words in the Armenian data are diminutives:'.", "No examples found under value 'Vulg'."]},
+"Subcat": {"values": ["Intr", "Tran"], "errors": []},
+"Tense": {"values": ["Past", "Imp", "Pres"], "errors": []},
+"Typo": {"values": ["Yes"], "errors": []},
+"VerbForm": {"values": ["Fin", "Inf", "Part", "Conv", "Gdv"], "errors": []},
+"Voice": {"values": ["Act", "Pass", "Mid", "Cau", "Rcp"], "errors": []}
+}
+,
+"id": {
+
+}
+,
+"ifb": {
+
+}
+,
+"is": {
+
+}
+,
+"it": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Case": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Clitic": {"values": ["Yes"], "errors": []},
+"Definite": {"values": [], "errors": ["No examples found under value 'Red'.", "No examples found under value 'Com'."]},
+"Degree": {"values": [], "errors": ["No examples found under value 'Pos'.", "No examples found under value 'Sup'."]},
+"Gender": {"values": [], "errors": ["No examples found under value 'Neut'.", "No examples found under value 'Com'."]},
+"Mood": {"values": [], "errors": ["No examples found under value 'Pot'.", "No examples found under value 'Jus'.", "No examples found under value 'Qot'.", "No examples found under value 'Opt'.", "No examples found under value 'Des'.", "No examples found under value 'Nec'."]},
+"NumType": {"values": [], "errors": ["No examples found under value 'Mult'.", "No examples found under value 'Frac'.", "No examples found under value 'Sets'.", "No examples found under value 'Dist'.", "No examples found under value 'Range'.", "No examples found under value 'Gen'.", "Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["No examples found under value 'Ptan'.", "No examples found under value 'Coll'."]},
+"Person": {"values": [], "errors": ["No examples found under value 'Ptan'.", "No examples found under value 'Coll'.", "Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"PronType": {"values": [], "errors": ["No examples found under value 'Rcp'."]},
+"Reflex": {"values": ["Yes"], "errors": []},
+"Tense": {"values": [], "errors": ["No examples found under value 'Imp'.", "No examples found under value 'Nar'.", "No examples found under value 'Pqp'."]},
+"VerbForm": {"values": [], "errors": ["No examples found under value 'Sup'.", "No examples found under value 'Trans'."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+}
+,
+"ja": {
+
+}
+,
+"ka": {
+
+}
+,
+"kfm": {
+
+}
+,
+"kfz": {
+
+}
+,
+"kk": {
+
+}
+,
+"kmr": {
+
+}
+,
+"kn": {
+
+}
+,
+"ko": {
+
+}
+,
+"koi": {
+"NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"kpv": {
+"Case": {"values": [], "errors": ["No feature values found."]},
+"Clitic": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Connegative": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Definite": {"values": [], "errors": ["No feature values found."]},
+"Degree": {"values": [], "errors": ["No feature values found."]},
+"Derivation": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Gender": {"values": [], "errors": ["No feature values found."]},
+"Mood": {"values": [], "errors": ["No feature values found."]},
+"Number": {"values": [], "errors": ["No feature values found."]},
+"Person": {"values": [], "errors": ["No feature values found."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["No feature values found."]},
+"Tense": {"values": [], "errors": ["No feature values found."]},
+"VerbForm": {"values": [], "errors": ["No feature values found."]},
+"VerbType": {"values": [], "errors": ["No feature values found."]}
+}
+,
+"krl": {
+
+}
+,
+"ky": {
+
+}
+,
+"la": {
+
+}
+,
+"lad": {
+
+}
+,
+"laj": {
+
+}
+,
+"lez": {
+
+}
+,
+"lt": {
+
+}
+,
+"lus": {
+
+}
+,
+"lv": {
+
+}
+,
+"lzh": {
+
+}
+,
+"lzz": {
+
+}
+,
+"mag": {
+
+}
+,
+"mdf": {
+
+}
+,
+"mga": {
+
+}
+,
+"mk": {
+
+}
+,
+"mn": {
+
+}
+,
+"mov": {
+
+}
+,
+"mr": {
+
+}
+,
+"mt": {
+
+}
+,
+"mxx": {
+
+}
+,
+"myu": {
+
+}
+,
+"myv": {
+"AdpType": {"values": [], "errors": ["No feature values found."]},
+"AdvType": {"values": [], "errors": ["No feature values found."]},
+"Animacy": {"values": [], "errors": ["No feature values found."]},
+"Case": {"values": ["Nom", "Gen", "Abl"], "errors": []},
+"Clitic": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Connegative": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Definite": {"values": ["Def", "Ind"], "errors": []},
+"Degree": {"values": [], "errors": ["No feature values found."]},
+"Derivation": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Gender": {"values": [], "errors": ["No feature values found."]},
+"Mood": {"values": [], "errors": ["Unrecognized level 3 heading '### `CndCnj` conditional-conjunctive'.", "Unrecognized level 3 heading '### `Des` desiderative'.", "Unrecognized level 3 heading '### `Opt` optative'."]},
+"NameType": {"values": [], "errors": ["No feature values found."]},
+"NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": ["Sing", "Plur"], "errors": []},
+"Person": {"values": [], "errors": ["No feature values found."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["No feature values found."]},
+"Tense": {"values": [], "errors": ["No feature values found."]},
+"Valency": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Variant": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"VerbForm": {"values": [], "errors": ["No feature values found."]},
+"VerbType": {"values": [], "errors": ["No feature values found."]}
+}
+,
+"naq": {
+
+}
+,
+"ndg": {
+
+}
+,
+"nl": {
+
+}
+,
+"no": {
+
+}
+,
+"nyn": {
+
+}
+,
+"nyq": {
+
+}
+,
+"oc": {
+
+}
+,
+"olo": {
+
+}
+,
+"orv": {
+
+}
+,
+"osx": {
+
+}
+,
+"otk": {
+
+}
+,
+"pbv": {
+
+}
+,
+"pcm": {
+"Aspect": {"values": ["Imp", "Perf", "Real"], "errors": []},
+"Case": {"values": ["Nom", "Acc"], "errors": []},
+"Definite": {"values": ["Spec", "Def"], "errors": []},
+"Degree": {"values": ["Cmp", "Sup"], "errors": []},
+"Mood": {"values": ["Ind", "Imp", "Jus"], "errors": []},
+"NumType": {"values": ["Card", "Ord"], "errors": []},
+"Number": {"values": ["Sing", "Plur"], "errors": []},
+"PartType": {"values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"disc\">`Disc`</a>: discourse'."]},
+"Person": {"values": ["1", "2", "3"], "errors": []},
+"Polarity": {"values": [], "errors": ["No examples found under value 'Pos'."]},
+"Poss": {"values": ["Yes"], "errors": []},
+"PronType": {"values": [], "errors": ["No examples found under value 'Rcp'."]},
+"Tense": {"values": ["Past", "Pres", "Prosp"], "errors": []},
+"VerbForm": {"values": ["Fin", "Ger"], "errors": []},
+"VerbType": {"values": [], "errors": ["No feature values found."]}
+}
+,
+"pgl": {
+
+}
+,
+"pl": {
+
+}
+,
+"pnt": {
+
+}
+,
+"prx": {
+
+}
+,
+"pt": {
+"AdpType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Case": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Hyph": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number[psor]": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"PrepCase": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Typo": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+}
+,
+"qaf": {
+
+}
+,
+"qhe": {
+
+}
+,
+"qtd": {
+
+}
+,
+"quz": {
+
+}
+,
+"rm": {
+
+}
+,
+"ro": {
+
+}
+,
+"ru": {
+"Animacy": {"values": [], "errors": ["No examples found under value 'Anim'.", "Unrecognized examples 'PDT examples of masculine animate nouns:'.", "No examples found under value 'Inan'.", "Unrecognized examples 'RNC (Russian National Corpus) examples of masculine inanimate nouns:'.", "Documentation does not belong to UD v2 guidelines."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Acc'.", "Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"NameType": {"values": [], "errors": ["No examples found under value 'Prs'.", "No examples found under value 'Com'.", "No examples found under value 'Pro'.", "No examples found under value 'Oth'.", "Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Unrecognized level 3 heading '### Russian National Corpus'.", "Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"PronType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Reflex": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Variant": {"values": ["Short"], "errors": []},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"sa": {
+
+}
+,
+"sd": {
+
+}
+,
+"sga": {
+
+}
+,
+"shp": {
+
+}
+,
+"sk": {
+
+}
+,
+"sl": {
+"Abbreviation": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "No examples found under value 'Yes'.", "Documentation does not belong to UD v2 guidelines."]},
+"Animacy": {"values": [], "errors": ["No examples found under value 'Anim'.", "Unrecognized level 3 heading '### Conversion from JOS'.", "No examples found under value 'Inan'.", "Documentation does not belong to UD v2 guidelines."]},
+"Aspect": {"values": [], "errors": ["No examples found under value 'Imp'.", "Unrecognized level 3 heading '### Verbs without `Aspect`'.", "Unrecognized level 3 heading '### Conversion from JOS'.", "No examples found under value 'Perf'.", "Documentation does not belong to UD v2 guidelines."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Gen'.", "No examples found under value 'Dat'.", "No examples found under value 'Acc'.", "No examples found under value 'Loc'.", "Unrecognized level 3 heading '### Conversion from JOS'.", "No examples found under value 'Ins'.", "Documentation does not belong to UD v2 guidelines."]},
+"Definite": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Foreign": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Gender[psor]": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Mood": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"NumForm": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"NumType": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Number[psor]": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Poss": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"PronType": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Reflex": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion to JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]},
+"Variant": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### Conversion from JOS'.", "Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"sme": {
+
+}
+,
+"sms": {
+
+}
+,
+"so": {
+
+}
+,
+"soj": {
+
+}
+,
+"sq": {
+
+}
+,
+"sr": {
+
+}
+,
+"sux": {
+
+}
+,
+"sv": {
+"Abbr": {"values": ["Yes"], "errors": []},
+"Case": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Foreign": {"values": ["Yes"], "errors": []},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Polarity": {"values": ["Neg"], "errors": []},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"PronType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"swl": {
+
+}
+,
+"ta": {
+
+}
+,
+"te": {
+
+}
+,
+"th": {
+
+}
+,
+"tl": {
+
+}
+,
+"tpn": {
+
+}
+,
+"tr": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Com'.", "Documentation does not belong to UD v2 guidelines."]},
+"Definite": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Evidential": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"NumType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Number[psor]": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Person[psor]": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Reflex": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"VerbForm": {"values": [], "errors": ["No examples found under value 'Trans'.", "Documentation does not belong to UD v2 guidelines."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"ug": {
+
+}
+,
+"uk": {
+"Animacy": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Aspect": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Case": {"values": [], "errors": ["No examples found under value 'Nom'.", "No examples found under value 'Acc'.", "Documentation does not belong to UD v2 guidelines."]},
+"Degree": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Gender": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Mood": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"NumType": {"values": [], "errors": ["No examples found under value 'Ord'.", "Unrecognized examples '#### Adjectival examples'.", "Unrecognized examples '#### Adverbial examples'.", "Documentation does not belong to UD v2 guidelines."]},
+"Number": {"values": [], "errors": ["Unrecognized level 3 heading '### Ukrainian Dependency Treebank'.", "Documentation does not belong to UD v2 guidelines."]},
+"Person": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Poss": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"PronType": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Reflex": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"Voice": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]}
+}
+,
+"ur": {
+
+}
+,
+"urj": {
+"Aspect": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Case": {"values": [], "errors": ["No feature values found."]},
+"Definite": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Degree": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Mood": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"NumType": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Number": {"values": [], "errors": ["No feature values found."]},
+"Person": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Polarity": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Poss": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"PronType": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Reflex": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Tense": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
+"Voice": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]}
+}
+,
+"vi": {
+
+}
+,
+"wbp": {
+
+}
+,
+"wo": {
+
+}
+,
+"yo": {
+
+}
+,
+"yue": {
+
+}
+,
+"zh": {
+
+}
+,
+"zmu": {
+
+}
+
 }
 }
