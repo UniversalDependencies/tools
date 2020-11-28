@@ -1912,10 +1912,10 @@ if __name__=="__main__":
         tagsets[FEATS] = load_set("feat_val.ud","feat_val."+args.lang)
         # Features cannot be used if they are not documented (listing them in tools/data is not enough).
         # Feature values that are properly documented have been automatically collected from docs and saved in a JSON file.
-        with open(os.path.join(THISDIR, 'data', 'documented_features.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(THISDIR, 'data', 'docfeats.json'), 'r', encoding='utf-8') as f:
             documented_features = json.load(f)
         # We assume that the file with the documented features contains all languages that have been registered with UD.
-        tagsets[FEATS] = [x for x in tagsets[FEATS] if x in documented_features[args.lang]]
+        tagsets[FEATS] = [x for x in tagsets[FEATS] if x in documented_features['lists'][args.lang]]
         tagsets[UPOS] = load_set("cpos.ud",None)
         tagsets[TOKENSWSPACE] = load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
         tagsets[TOKENSWSPACE] = [re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
