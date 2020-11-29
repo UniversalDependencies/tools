@@ -1859,11 +1859,11 @@ def load_feat_set(filename_ud, filename_langspec, filename_docfeats, lcode):
                 msg += ', '.join(unavailable_langspec) + "\n"
                 msg += "The language-specific documentation of the features either omits these values or is not in required format.\n"
     if len(msg) > 10:
-        for f in documented_features['ldocs'][lcode]:
-            for e in documented_features['ldocs'][lcode][f]['errors']:
-                msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
-        sorted_documented_features = documented_features['lists'][lcode]
-        sorted_documented_features.sort()
+        if lcode in documented_features['ldocs']:
+            for f in documented_features['ldocs'][lcode]:
+                for e in documented_features['ldocs'][lcode][f]['errors']:
+                    msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
+        sorted_documented_features = sorted(res)
         msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
         msg += ', '.join(sorted_documented_features) + "\n"
         msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
