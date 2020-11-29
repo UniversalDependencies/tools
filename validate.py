@@ -34,8 +34,9 @@ sentence_id=None # The most recently read sentence id
 line_of_first_empty_node=None
 line_of_first_enhanced_orphan=None
 
-error_counter={} # key: error type value: error count
-warn_on_missing_files=set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
+error_counter = {} # key: error type value: error count
+warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
+warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
     Print the warning.
@@ -609,6 +610,7 @@ def validate_features(cols, tag_sets, args):
     must be allowed on level 2 because it could be defined as language-specific.
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
+    global warn_on_undoc_feats
     testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
@@ -658,7 +660,12 @@ def validate_features(cols, tag_sets, args):
                     warn_on_missing_files.add("feat_val")
                     testlevel = 4
                     testid = 'unknown-feature-value'
-                    testmessage = "Unknown (or undocumented) feature-value pair '%s=%s'." % (attr, v)
+                    # If some features were excluded because they are not documented,
+                    # tell the user when the first unknown feature is encountered in the data.
+                    # Then erase this (long) introductory message and do not repeat it with
+                    # other instances of unknown features.
+                    testmessage = warn_on_undoc_feats + ("Unknown (or undocumented) feature-value pair '%s=%s'." % (attr, v))
+                    warn_on_undoc_feats = ''
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if len(attr_set) != len(feat_list):
         testlevel = 2
@@ -1916,20 +1923,29 @@ if __name__=="__main__":
             documented_features = json.load(f)
         # We assume that the file with the documented features contains all languages that have been registered with UD.
         undocumented_declared_features = [x for x in tagsets[FEATS] if not x in documented_features['lists'][args.lang]]
+        # Prepare a report about undocumented features.
+        # Do not make it immediately a validation error.
+        # If the tested treebank does not contain any of the bad features,
+        # it is a problem of the other treebanks of the language, and this
+        # one should not be penalized.
         if len(undocumented_declared_features) > 0:
-            testlevel = 4
-            testclass = 'Morpho'
-            testid = 'feat-def-undoc'
-            testmessage = "Language-specific feature values not properly documented: %s" % undocumented_declared_features
+            msg = "Language-specific feature values not properly documented: %s\n" % undocumented_declared_features
             if args.lang in documented_features['ldocs']:
-                testmessage = testmessage + "\nSome language-specific pages about features exist but they either do not document all values listed in data/feat_val." + args.lang + " or they are not in the prescribed format."
+                msg += "Some language-specific pages about features exist but they either do not\n"
+                msg += "document all values listed in data/feat_val.%s or they are not in the\n" % args.lang
+                msg += "prescribed format.\n"
                 for f in documented_features['ldocs'][args.lang]:
                     for e in documented_features['ldocs'][args.lang][f]['errors']:
-                        testmessage = testmessage + "\nERROR in " + f + ".md: " + e
+                        msg += "ERROR in _%s/feat/%s.md: %s\n" % (args.lang, f, e)
             else:
-                testmessage = testmessage + "\nIf a language needs a feature that is not documented in the universal guidelines, the feature must have a language-specific documentation page in a prescribed format."
-            testmessage = testmessage + "\nSee https://universaldependencies.org/contributing_language_specific.html for further guidelines."
-            warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
+                msg += "If a language needs a feature that is not documented in the universal guidelines,\n"
+                msg += "the feature must have a language-specific documentation page in a prescribed\n"
+                msg += "format.\n"
+            msg += "See https://universaldependencies.org/contributing_language_specific.html\n"
+            msg += "for further guidelines.\n"
+            # Save the message in a global variable.
+            # We will add it to the first error message about an unknown feature in the data.
+            warn_on_undoc_feats = msg
         tagsets[FEATS] = [x for x in tagsets[FEATS] if x in documented_features['lists'][args.lang]]
         tagsets[UPOS] = load_set("cpos.ud",None)
         tagsets[TOKENSWSPACE] = load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
