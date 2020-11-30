@@ -1,12 +1,11 @@
 Definite=2
-Number[psed]=None
+Number[psed]=Plur
 Number[psed]=Sing
-Number[psor]=None
 Number[psor]=Plur
 Number[psor]=Sing
 Person[psor]=1
+Person[psor]=2
 Person[psor]=3
-Person[psor]=None
 VerbForm=PartFut
 VerbForm=PartPast
 VerbForm=PartPres
