@@ -384,7 +384,7 @@
 "Polarity": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "PronType": {"values": ["Prs", "Rcp", "Art", "Int", "Rel", "Dem", "Tot", "Neg", "Ind"], "errors": []},
 "Tense": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
-"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"VerbForm": {"values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Voice": {"values": ["Act", "Cau"], "errors": []}
 },
 "hy": {
