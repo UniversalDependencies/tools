@@ -1849,8 +1849,15 @@ def load_feat_set(filename_ud, filename_langspec, filename_docfeats, lcode):
             unavailable_langspec = []
             langspec = load_file(path_langspec)
             for fv in langspec:
+                # Watch for known and banned deviations from universal features.
+                deviation = False
+                for d in documented_features['deviations']:
+                    if re.match('^' + d['re'] + '$', fv, re.IGNORECASE):
+                        msg += "ERROR in %s feature %s: %s\n" % (filename_langspec, fv, d['msg'])
+                        deviation = True
                 if fv in documented_features['lists'][lcode]:
-                    res.add(fv)
+                    if not deviation:
+                        res.add(fv)
                 else:
                     unavailable_langspec.append(fv)
             if len(unavailable_langspec) > 0:
