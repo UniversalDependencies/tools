@@ -632,5 +632,11 @@
 "VerbForm": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
 "Voice": {"values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]}
 }
-}
+},
+"deviations": [
+{"re": "(Gender|Animacy|NounClass)(\\[[a-z]+\\])?=Nonhum", "msg": "The correct UD label for non-human animacy/gender is 'Nhum'."},
+{"re": "(Aspect=Perfect|Tense=Perf(ect)?)", "msg": "Use 'Aspect=Perf' to distinguish perfect from other forms."},
+{"re": "Tense=Pra?et(er(ite?)?)?", "msg": "The correct UD label for preterit is 'Tense=Past'."},
+{"re": "VerbForm=Finite?", "msg": "The correct UD label for finite verbs is 'VerbForm=Fin'."}
+]
 }
