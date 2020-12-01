@@ -1799,7 +1799,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
     validate_newlines(inp) # level 1
 
 def load_file(filename):
-    res=set()
+    res = set()
     with io.open(filename, 'r', encoding='utf-8') as f:
         for line in f:
             line=line.strip()
@@ -1815,7 +1815,7 @@ def load_upos_set(filename):
     res = load_file(os.path.join(THISDIR, 'data', filename))
     return res
 
-def load_feat_set(filename_ud, filename_langspec, filename_docfeats, lcode):
+def load_feat_set(filename_langspec, filename_docfeats, lcode):
     """
     Loads the list of permitted feature-value pairs and returns it as a set.
     If the language-specific file does not exist, loads nothing and returns
@@ -1827,7 +1827,14 @@ def load_feat_set(filename_ud, filename_langspec, filename_docfeats, lcode):
     # Feature values that are properly documented have been automatically collected from docs and saved in a JSON file.
     with open(os.path.join(THISDIR, 'data', filename_docfeats), 'r', encoding='utf-8') as f:
         documented_features = json.load(f)
-    res = load_file(os.path.join(THISDIR, 'data', filename_ud))
+    # We no longer need to read data/feat_val.ud (and keep it up-to-date when new values are added).
+    # Instead, we can take the list of universal features and values from the documentation.
+    res = set()
+    for f in documented_features['gdocs'].keys():
+        if documented_features['gdocs'][f]['type'] == 'universal':
+            for v in documented_features['gdocs'][f]['values']:
+                fv = f + '=' + v
+                res.add(fv)
     # Identify universal feature values that are not available for the current language.
     # Do not report them now. Keep the message and show it when the first unknown feature
     # value occurs in the data.
@@ -1843,7 +1850,7 @@ def load_feat_set(filename_ud, filename_langspec, filename_docfeats, lcode):
         msg += "The following %d universal feature values are not available in language [%s]:\n" % (len(unavailable_universal), lcode)
         msg += ', '.join(unavailable_universal) + "\n"
         msg += "The language-specific documentation of the features either omits these values or is not in required format.\n"
-    if filename_langspec is not None and filename_langspec != filename_ud:
+    if filename_langspec is not None:
         path_langspec = os.path.join(THISDIR, 'data', filename_langspec)
         if os.path.exists(path_langspec):
             unavailable_langspec = []
@@ -1896,7 +1903,7 @@ def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhan
     res = load_file(os.path.join(THISDIR, 'data', f_name_ud))
     # Now res holds UD
     # Next load and optionally check the langspec extensions
-    if f_name_langspec is not None and f_name_langspec!=f_name_ud:
+    if f_name_langspec is not None and f_name_langspec != f_name_ud:
         path_langspec = os.path.join(THISDIR,"data",f_name_langspec)
         if os.path.exists(path_langspec):
             global curr_fname
@@ -1982,11 +1989,12 @@ if __name__=="__main__":
     if args.level < 4:
         args.lang = 'ud'
 
-    tagsets={XPOS:None,UPOS:None,FEATS:None,DEPREL:None,DEPS:None,TOKENSWSPACE:None,AUX:None} #sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
+    # Sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
+    tagsets = {XPOS:None, UPOS:None, FEATS:None, DEPREL:None, DEPS:None, TOKENSWSPACE:None, AUX:None}
 
     if args.lang:
         tagsets[UPOS] = load_upos_set('cpos.ud')
-        tagsets[FEATS] = load_feat_set('feat_val.ud', 'feat_val.' + args.lang, 'docfeats.json', args.lang)
+        tagsets[FEATS] = load_feat_set('feat_val.' + args.lang, 'docfeats.json', args.lang)
         tagsets[DEPREL] = load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
