@@ -37,6 +37,7 @@ line_of_first_enhanced_orphan=None
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
+warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
 def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
     Print the warning.
@@ -688,6 +689,7 @@ def validate_upos(cols, tag_sets):
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 def validate_deprels(cols, tag_sets, args):
+    global warn_on_undoc_deps
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
     # Test only the universal part if testing at universal level.
@@ -700,7 +702,14 @@ def validate_deprels(cols, tag_sets, args):
         warn_on_missing_files.add("deprel")
         testclass = 'Syntax'
         testid = 'unknown-deprel'
+        # If some relations were excluded because they are not documented,
+        # tell the user when the first unknown relation is encountered in the data.
+        # Then erase this (long) introductory message and do not repeat it with
+        # other instances of unknown relations.
         testmessage = "Unknown DEPREL label: '%s'" % cols[DEPREL]
+        if len(warn_on_undoc_deps) > 0:
+            testmessage += "\n" + warn_on_undoc_deps
+            warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if DEPS >= len(cols):
         return # this has been already reported in trees()
@@ -1888,6 +1897,81 @@ def load_feat_set(filename_langspec, filename_docfeats, lcode):
         warn_on_undoc_feats = msg
     return res
 
+def load_deprel_set(filename_langspec, filename_docdeps, lcode):
+    """
+    Loads the list of permitted relation types and returns it as a set.
+    If the language-specific file does not exist, loads nothing and returns
+    None (i.e., relations are not checked for the given language).
+    If filename_langspec is None, only loads the universal relations.
+    """
+    global warn_on_undoc_deps
+    # Relations cannot be used if they are not documented (listing them in tools/data is not enough).
+    # Relation types that are properly documented have been automatically collected from docs and saved in a JSON file.
+    with open(os.path.join(THISDIR, 'data', filename_docdeps), 'r', encoding='utf-8') as f:
+        documented_relations = json.load(f)
+    # We no longer need to read data/deprel.ud (and keep it up-to-date when new values are added).
+    # Instead, we can take the list of universal features and values from the documentation.
+    res = set()
+    for r in documented_relations['gdocs'].keys():
+        if documented_relations['gdocs'][r]['type'] == 'universal':
+            res.add(r)
+    # If a universal relation is also documented locally and the documentation
+    # contains errors, we will block the relation until the errors are fixed.
+    # Do not report them now. Keep the message and show it when the first unknown feature
+    # value occurs in the data.
+    msg = ''
+    unavailable_universal = []
+    declared_universal = list(res) # we cannot use res in iteration if we want to remove elements on the fly
+    for r in declared_universal:
+        if r not in documented_relations['lists'][lcode]:
+            unavailable_universal.append(r)
+            res.remove(r)
+    if len(unavailable_universal) > 0:
+        unavailable_universal.sort()
+        msg += "The following %d universal relations are not available in language [%s]:\n" % (len(unavailable_universal), lcode)
+        msg += ', '.join(unavailable_universal) + "\n"
+        msg += "The language-specific documentation of the relations is not in required format. Fix it or remove it.\n"
+    if filename_langspec is not None:
+        path_langspec = os.path.join(THISDIR, 'data', filename_langspec)
+        if os.path.exists(path_langspec):
+            unavailable_langspec = []
+            langspec = load_file(path_langspec)
+            for r in langspec:
+                # Watch for known and banned deviations from universal features.
+                deviation = False
+                for d in documented_relations['deviations']:
+                    if re.match('^' + d['re'] + '$', r, re.IGNORECASE):
+                        msg += "ERROR in %s relation %s: %s\n" % (filename_langspec, r, d['msg'])
+                        deviation = True
+                if r in documented_relations['lists'][lcode]:
+                    if not deviation:
+                        res.add(r)
+                else:
+                    unavailable_langspec.append(r)
+            if len(unavailable_langspec) > 0:
+                unavailable_langspec.sort()
+                msg += "The following %d language-specific relations are declared in %s but lack proper documentation:\n" % (len(unavailable_langspec), filename_langspec)
+                msg += ', '.join(unavailable_langspec) + "\n"
+                msg += "The language-specific documentation of the relations is either missing or not in required format.\n"
+    if len(msg) > 10:
+        if lcode in documented_relations['ldocs']:
+            for r in documented_relations['ldocs'][lcode]:
+                file = re.sub(r':', r'-', r)
+                if file == 'aux':
+                    file = 'aux_'
+                for e in documented_relations['ldocs'][lcode][r]['errors']:
+                    msg += "ERROR in _%s/dep/%s.md: %s\n" % (lcode, file, e)
+        sorted_documented_relations = sorted(res)
+        msg += "The following %d relations are currently permitted in language [%s]:\n" % (len(sorted_documented_relations), lcode)
+        msg += ', '.join(sorted_documented_relations) + "\n"
+        msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation must\n"
+        msg += "have a language-specific documentation page in a prescribed format.\n"
+        msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+        # Save the message in a global variable.
+        # We will add it to the first error message about an unknown feature in the data.
+        warn_on_undoc_deps = msg
+    return res
+
 def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhanced=False):
     """
     Loads a list of values from the two files, and returns their
@@ -1995,7 +2079,7 @@ if __name__=="__main__":
     if args.lang:
         tagsets[UPOS] = load_upos_set('cpos.ud')
         tagsets[FEATS] = load_feat_set('feat_val.' + args.lang, 'docfeats.json', args.lang)
-        tagsets[DEPREL] = load_set("deprel.ud","deprel."+args.lang,validate_langspec=True)
+        tagsets[DEPREL] = load_deprel_set('deprel.' + args.lang, 'docdeps.json', args.lang)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
         # One of them, "ref", is universal and we currently mention it directly
