@@ -23,7 +23,7 @@
 "ckb": ["acl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "clf", "compound", "conj", "cop", "csubj", "dep", "det", "discourse", "dislocated", "expl", "fixed", "flat", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nummod", "obj", "obl", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "ckt": ["acl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "clf", "compound", "conj", "cop", "csubj", "dep", "det", "discourse", "dislocated", "expl", "fixed", "flat", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nummod", "obj", "obl", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "cop": ["acl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "compound", "conj", "cop", "csubj", "det", "discourse", "dislocated", "fixed", "flat", "iobj", "mark", "nmod", "nsubj", "nummod", "obj", "obl", "orphan", "parataxis", "punct", "vocative", "xcomp", "clf", "expl", "goeswith", "list", "reparandum"],
-"cs": ["acl", "advcl", "advmod", "advmod:emph", "amod", "appos", "aux", "aux:pass", "case", "cc", "ccomp", "compound", "conj", "cop", "csubj", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "discourse", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp", "clf", "dislocated", "expl"],
+"cs": ["acl", "acl:relcl", "advcl", "advmod", "advmod:emph", "amod", "appos", "aux", "aux:pass", "case", "cc", "ccomp", "compound", "conj", "cop", "csubj", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "discourse", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp", "clf", "dislocated", "expl"],
 "cu": ["acl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "clf", "compound", "conj", "cop", "csubj", "dep", "det", "discourse", "dislocated", "expl", "fixed", "flat", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nummod", "obj", "obl", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "cy": ["acl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "clf", "compound", "conj", "cop", "csubj", "dep", "det", "discourse", "dislocated", "expl", "fixed", "flat", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nummod", "obj", "obl", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "da": ["acl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "clf", "compound", "conj", "cop", "csubj", "dep", "det", "discourse", "dislocated", "expl", "fixed", "flat", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nummod", "obj", "obl", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
@@ -290,6 +290,7 @@
 },
 "cs": {
 "acl": {"type": "universal", "errors": []},
+"acl:relcl": {"type": "local", "errors": []},
 "advcl": {"type": "universal", "errors": []},
 "advmod": {"type": "universal", "errors": []},
 "advmod:emph": {"type": "local", "errors": []},
