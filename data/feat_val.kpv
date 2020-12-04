@@ -1,7 +1,9 @@
 AdpType=Post
+AdvType=Deg
 AdvType=Man
 AdvType=Tim
 Case=Apr
+Case=AprIll
 Case=Car
 Case=Cns
 Case=Comp
