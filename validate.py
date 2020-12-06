@@ -1827,11 +1827,11 @@ def load_upos_set(filename):
 def load_feat_set(filename_langspec, filename_docfeats, lcode):
     """
     Loads the list of permitted feature-value pairs and returns it as a set.
-    If the language-specific file does not exist, loads nothing and returns
-    None (i.e., features are not checked for the given language).
-    If filename_langspec is None, only loads the universal features.
     """
     global warn_on_undoc_feats
+    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+        all_features_0 = json.load(f)
+    all_features = all_features_0['features']
     # Features cannot be used if they are not documented (listing them in tools/data is not enough).
     # Feature values that are properly documented have been automatically collected from docs and saved in a JSON file.
     with open(os.path.join(THISDIR, 'data', filename_docfeats), 'r', encoding='utf-8') as f:
@@ -1839,62 +1839,31 @@ def load_feat_set(filename_langspec, filename_docfeats, lcode):
     # We no longer need to read data/feat_val.ud (and keep it up-to-date when new values are added).
     # Instead, we can take the list of universal features and values from the documentation.
     res = set()
-    for f in documented_features['gdocs'].keys():
-        if documented_features['gdocs'][f]['type'] == 'universal':
-            for v in documented_features['gdocs'][f]['values']:
-                fv = f + '=' + v
-                res.add(fv)
-    # Identify universal feature values that are not available for the current language.
+    for f in all_features[lcode]:
+        if all_features[lcode][f]['permitted'] > 0:
+            for v in all_features[lcode][f]['uvalues']:
+                res.add(f+'='+v)
+            for v in all_features[lcode][f]['lvalues']:
+                res.add(f+'='+v)
+    # Identify feature values that are not available for the current language.
     # Do not report them now. Keep the message and show it when the first unknown feature
     # value occurs in the data.
     msg = ''
-    unavailable_universal = []
-    declared_universal = list(res) # we cannot use res in iteration if we want to remove elements on the fly
-    for fv in declared_universal:
-        if fv not in documented_features['lists'][lcode]:
-            unavailable_universal.append(fv)
-            res.remove(fv)
-    if len(unavailable_universal) > 0:
-        unavailable_universal.sort()
-        msg += "The following %d universal feature values are not available in language [%s]:\n" % (len(unavailable_universal), lcode)
-        msg += ', '.join(unavailable_universal) + "\n"
-        msg += "The language-specific documentation of the features either omits these values or is not in required format.\n"
-    if filename_langspec is not None:
-        path_langspec = os.path.join(THISDIR, 'data', filename_langspec)
-        if os.path.exists(path_langspec):
-            unavailable_langspec = []
-            langspec = load_file(path_langspec)
-            for fv in langspec:
-                # Watch for known and banned deviations from universal features.
-                deviation = False
-                for d in documented_features['deviations']:
-                    if re.match('^' + d['re'] + '$', fv, re.IGNORECASE):
-                        msg += "ERROR in %s feature %s: %s\n" % (filename_langspec, fv, d['msg'])
-                        deviation = True
-                if fv in documented_features['lists'][lcode]:
-                    if not deviation:
-                        res.add(fv)
-                else:
-                    unavailable_langspec.append(fv)
-            if len(unavailable_langspec) > 0:
-                unavailable_langspec.sort()
-                msg += "The following %d language-specific feature values are declared in %s but lack proper documentation:\n" % (len(unavailable_langspec), filename_langspec)
-                msg += ', '.join(unavailable_langspec) + "\n"
-                msg += "The language-specific documentation of the features either omits these values or is not in required format.\n"
-    if len(msg) > 10:
-        if lcode in documented_features['ldocs']:
-            for f in documented_features['ldocs'][lcode]:
-                for e in documented_features['ldocs'][lcode][f]['errors']:
-                    msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
-        sorted_documented_features = sorted(res)
-        msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
-        msg += ', '.join(sorted_documented_features) + "\n"
-        msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
-        msg += "have a language-specific documentation page in a prescribed format.\n"
-        msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-        # Save the message in a global variable.
-        # We will add it to the first error message about an unknown feature in the data.
-        warn_on_undoc_feats = msg
+    if lcode in documented_features['ldocs']:
+        for f in documented_features['ldocs'][lcode]:
+            for e in documented_features['ldocs'][lcode][f]['errors']:
+                msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
+    sorted_documented_features = sorted(res)
+    msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
+    msg += ', '.join(sorted_documented_features) + "\n"
+    msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
+    msg += "have a language-specific documentation page in a prescribed format.\n"
+    msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+    msg += "Even universal features must be specifically turned on for each language in which they are used.\n"
+    msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
+    # Save the message in a global variable.
+    # We will add it to the first error message about an unknown feature in the data.
+    warn_on_undoc_feats = msg
     return res
 
 def load_deprel_set(filename_langspec, filename_docdeps, lcode):
@@ -2078,7 +2047,7 @@ if __name__=="__main__":
 
     if args.lang:
         tagsets[UPOS] = load_upos_set('cpos.ud')
-        tagsets[FEATS] = load_feat_set('feat_val.' + args.lang, 'docfeats.json', args.lang)
+        tagsets[FEATS] = load_feat_set('feats.json', 'docfeats.json', args.lang)
         tagsets[DEPREL] = load_deprel_set('deprel.' + args.lang, 'docdeps.json', args.lang)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.

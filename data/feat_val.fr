@@ -1,8 +1,0 @@
-Number[psor]=Sing
-Number[psor]=Plur
-PossNumber=Sing
-PossNumber=Plur
-PossPerson=1
-PossPerson=2
-PossPerson=3
-Typo=Yes
