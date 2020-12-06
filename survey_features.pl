@@ -167,8 +167,18 @@ foreach my $folder (@folders)
         }
     }
 }
-my @features = sort(keys(%hash));
-print <<EOF
+print_markdown(\%hash);
+
+
+
+#------------------------------------------------------------------------------
+# Prints an overview of features and their values as a MarkDown page.
+#------------------------------------------------------------------------------
+sub print_markdown
+{
+    my $hash = shift;
+    my @features = sort(keys(%{$hash}));
+    print <<EOF
 ---
 layout: base
 title:  'Features and Values'
@@ -177,21 +187,22 @@ udver: '2'
 
 This is an automatically generated list of features and values (both universal and language-specific) that occur in the UD data.
 EOF
-;
-foreach my $f (@features)
-{
-    my %ffolders;
-    my @values = sort(keys(%{$hash{$f}}));
-    print("\#\# $f\n\n");
-    print("[$f]()\n\n");
-    foreach my $v (@values)
+    ;
+    foreach my $f (@features)
     {
-        my @folders = sort(keys(%{$hash{$f}{$v}}));
-        foreach my $folder (@folders)
+        my %ffolders;
+        my @values = sort(keys(%{$hash->{$f}}));
+        print("\#\# $f\n\n");
+        print("[$f]()\n\n");
+        foreach my $v (@values)
         {
-            print("* $f=$v\t$folder\t$hash{$f}{$v}{$folder}\n");
-            $ffolders{$folder}++;
+            my @folders = sort(keys(%{$hash->{$f}{$v}}));
+            foreach my $folder (@folders)
+            {
+                print("* $f=$v\t$folder\t$hash->{$f}{$v}{$folder}\n");
+                $ffolders{$folder}++;
+            }
         }
+        print("\n");
     }
-    print("\n");
 }
