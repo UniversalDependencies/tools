@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Scans all UD treebanks for language-specific features and values.
+# Scans all UD treebanks for morphological features and values.
 # Copyright © 2016-2018, 2020 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
@@ -32,10 +32,11 @@ use udlib;
 
 sub usage
 {
-    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt\n");
+    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt > features.md\n");
     print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
     print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
+    print STDERR ("The overview will be printed to STDOUT in MarkDown format.\n");
 }
 
 my $datapath = '.';
@@ -165,32 +166,6 @@ foreach my $folder (@folders)
             }
         }
     }
-}
-# Check the permitted feature values in validator data. Are there values that do not occur in the data?
-chdir("$libpath/data") or die("Cannot enter folder '$libpath/data': $!");
-opendir(DIR, '.') or die("Cannot read the contents of the folder '$libpath/data': $!");
-my @files = readdir(DIR);
-closedir(DIR);
-my @featvalfiles = grep {-f $_ && m/^feat_val\..+/} (@files);
-foreach my $file (@featvalfiles)
-{
-    $file =~ m/^feat_val\.(.+)$/;
-    my $key = $1;
-    next if($key eq 'ud');
-    # Also skip treebanks where we did not find anything in the data (or did not find the data).
-    next if(!exists($hittreebanks{$key}));
-    open(FILE, $file) or die("Cannot read $file: $!");
-    while(<FILE>)
-    {
-        s/\r?\n$//;
-        my $feature = $_;
-        my ($f, $v) = split(/=/, $feature);
-        if(!m/^\s*$/ && !exists($hash{$f}{$v}{$key}))
-        {
-            $hash{$f}{$v}{$key} = 'ZERO BUT LISTED AS PERMITTED IN VALIDATOR DATA';
-        }
-    }
-    close(FILE);
 }
 my @features = sort(keys(%hash));
 print <<EOF
