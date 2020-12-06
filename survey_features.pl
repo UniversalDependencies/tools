@@ -15,8 +15,8 @@ BEGIN
     use Cwd;
     my $path = $0;
     my $currentpath = getcwd();
-    $currentpath =~ s/\r?\n$//;
     $libpath = $currentpath;
+    $path =~ s:\\:/:g;
     if($path =~ m:/:)
     {
         $path =~ s:/[^/]*$:/:;
@@ -39,6 +39,7 @@ sub usage
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
     print STDERR ("       --countby .... count occurrences separately for each treebank or for each language?\n");
     print STDERR ("       --oformat .... md or json; in JSON, the output will be organized for each UPOS tag separately\n");
+    print STDERR ("       --help ....... print usage and exit\n");
     print STDERR ("The overview will be printed to STDOUT in MarkDown format.\n");
 }
 
@@ -46,13 +47,20 @@ my $datapath = '.';
 my $tbklist;
 my $countby = 'treebank'; # or language
 my $oformat = 'markdown'; # or json
+my $help = 0;
 GetOptions
 (
     'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
     'tbklist=s'  => \$tbklist,  # path to file with treebank list; if defined, only treebanks on the list will be surveyed
     'countby=s'  => \$countby,  # count items by treebank or by language?
-    'oformat=s'  => \$oformat   # format output as MarkDown or JSON?
+    'oformat=s'  => \$oformat,  # format output as MarkDown or JSON?
+    'help'       => \$help
 );
+if($help)
+{
+    usage();
+    exit 0;
+}
 if($countby =~ m/^t/i)
 {
     $countby = 'treebank';
