@@ -32,20 +32,31 @@ use udlib;
 
 sub usage
 {
-    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt > features.md\n");
+    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby treebank|language > features.md\n");
     print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
     print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
+    print STDERR ("       --countby .... count occurrences separately for each treebank or for each language?\n");
     print STDERR ("The overview will be printed to STDOUT in MarkDown format.\n");
 }
 
 my $datapath = '.';
 my $tbklist;
+my $countby = 'treebank';
 GetOptions
 (
     'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
-    'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
+    'tbklist=s'  => \$tbklist,  # path to file with treebank list; if defined, only treebanks on the list will be surveyed
+    'countby=s'  => \$countby   # count items by treebank or by language?
 );
+if($countby =~ m/^t/i)
+{
+    $countby = 'treebank';
+}
+else
+{
+    $countby = 'language';
+}
 my %treebanks;
 if(defined($tbklist))
 {
@@ -122,7 +133,10 @@ foreach my $folder (@folders)
         {
             $langcode = $langcodes{$language};
             $key = $langcode;
-            $key .= '_'.lc($treebank) if($treebank ne '');
+            if($countby eq 'treebank' && $treebank ne '')
+            {
+                $key .= '_'.lc($treebank);
+            }
             my $nhits = 0;
             # Look for the other files in the repository.
             opendir(DIR, "$datapath/$folder") or die("Cannot read the contents of the folder '$datapath/$folder': $!");
@@ -131,7 +145,7 @@ foreach my $folder (@folders)
             my @conllufiles = grep {-f "$datapath/$folder/$_" && m/\.conllu$/} (@files);
             foreach my $file (@conllufiles)
             {
-                $nhits += read_conllu_file("$datapath/$folder/$file", \%hash);
+                $nhits += read_conllu_file("$datapath/$folder/$file", \%hash, $key);
             }
             # Remember treebanks where we found something.
             if($nhits>0)
@@ -153,6 +167,7 @@ sub read_conllu_file
 {
     my $path = shift;
     my $hash = shift;
+    my $key = shift;
     my $nhits = 0;
     open(FILE, $path) or die("Cannot read '$path': $!");
     while(<FILE>)
