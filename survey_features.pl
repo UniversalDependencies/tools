@@ -131,33 +131,7 @@ foreach my $folder (@folders)
             my @conllufiles = grep {-f "$datapath/$folder/$_" && m/\.conllu$/} (@files);
             foreach my $file (@conllufiles)
             {
-                # Read the file and look for language-specific subtypes in the DEPREL column.
-                # We currently do not look for additional types in the DEPS column.
-                open(FILE, "$datapath/$folder/$file") or die("Cannot read '$datapath/$folder/$file': $!");
-                while(<FILE>)
-                {
-                    if(m/^\d+\t/)
-                    {
-                        chomp();
-                        my @fields = split(/\t/, $_);
-                        my $features = $fields[5];
-                        unless($features eq '_')
-                        {
-                            my @features = split(/\|/, $features);
-                            foreach my $feature (@features)
-                            {
-                                my ($f, $vv) = split(/=/, $feature);
-                                # There may be several values delimited by commas.
-                                my @values = split(/,/, $vv);
-                                foreach my $v (@values)
-                                {
-                                    $hash{$f}{$v}{$key}++;
-                                    $nhits++;
-                                }
-                            }
-                        }
-                    }
-                }
+                $nhits += read_conllu_file("$datapath/$folder/$file", \%hash);
             }
             # Remember treebanks where we found something.
             if($nhits>0)
@@ -168,6 +142,46 @@ foreach my $folder (@folders)
     }
 }
 print_markdown(\%hash);
+
+
+
+#------------------------------------------------------------------------------
+# Reads one CoNLL-U file and notes all features in the global hash. Returns the
+# number of feature-value pair occurrences observed in this file.
+#------------------------------------------------------------------------------
+sub read_conllu_file
+{
+    my $path = shift;
+    my $hash = shift;
+    my $nhits = 0;
+    open(FILE, $path) or die("Cannot read '$path': $!");
+    while(<FILE>)
+    {
+        if(m/^\d+\t/)
+        {
+            chomp();
+            my @fields = split(/\t/, $_);
+            my $features = $fields[5];
+            unless($features eq '_')
+            {
+                my @features = split(/\|/, $features);
+                foreach my $feature (@features)
+                {
+                    my ($f, $vv) = split(/=/, $feature);
+                    # There may be several values delimited by commas.
+                    my @values = split(/,/, $vv);
+                    foreach my $v (@values)
+                    {
+                        $hash->{$f}{$v}{$key}++;
+                        $nhits++;
+                    }
+                }
+            }
+        }
+    }
+    close(FILE);
+    return $nhits;
+}
 
 
 
