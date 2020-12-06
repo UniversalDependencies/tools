@@ -109,7 +109,8 @@ foreach my $language (keys(%{$languages_from_yaml}))
     $langnames{$languages_from_yaml->{$language}{lcode}} = $language;
 }
 # Look for features in the data.
-my %hash;
+my %hash; # $hash{$feature}{$value}{$treebank/$language} = $count
+my %poshash; # $poshash{$upos}{$feature}{$value}{$treebank/$language} = $count
 my %hittreebanks;
 foreach my $folder (@folders)
 {
@@ -145,7 +146,7 @@ foreach my $folder (@folders)
             my @conllufiles = grep {-f "$datapath/$folder/$_" && m/\.conllu$/} (@files);
             foreach my $file (@conllufiles)
             {
-                $nhits += read_conllu_file("$datapath/$folder/$file", \%hash, $key);
+                $nhits += read_conllu_file("$datapath/$folder/$file", \%hash, \%poshash, $key);
             }
             # Remember treebanks where we found something.
             if($nhits>0)
@@ -167,6 +168,7 @@ sub read_conllu_file
 {
     my $path = shift;
     my $hash = shift;
+    my $poshash = shift;
     my $key = shift;
     my $nhits = 0;
     open(FILE, $path) or die("Cannot read '$path': $!");
@@ -176,6 +178,7 @@ sub read_conllu_file
         {
             chomp();
             my @fields = split(/\t/, $_);
+            my $upos = $fields[3];
             my $features = $fields[5];
             unless($features eq '_')
             {
@@ -188,6 +191,7 @@ sub read_conllu_file
                     foreach my $v (@values)
                     {
                         $hash->{$f}{$v}{$key}++;
+                        $poshash->{$upos}{$f}{$v}{$key}++;
                         $nhits++;
                     }
                 }
