@@ -33,21 +33,25 @@ use udlib;
 sub usage
 {
     print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby treebank|language > features.md\n");
+    print STDERR ("       perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby treebank|language --oformat json > features.json\n");
     print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
     print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
     print STDERR ("       --countby .... count occurrences separately for each treebank or for each language?\n");
+    print STDERR ("       --oformat .... md or json; in JSON, the output will be organized for each UPOS tag separately\n");
     print STDERR ("The overview will be printed to STDOUT in MarkDown format.\n");
 }
 
 my $datapath = '.';
 my $tbklist;
-my $countby = 'treebank';
+my $countby = 'treebank'; # or language
+my $oformat = 'markdown'; # or json
 GetOptions
 (
     'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
     'tbklist=s'  => \$tbklist,  # path to file with treebank list; if defined, only treebanks on the list will be surveyed
-    'countby=s'  => \$countby   # count items by treebank or by language?
+    'countby=s'  => \$countby,  # count items by treebank or by language?
+    'oformat=s'  => \$oformat   # format output as MarkDown or JSON?
 );
 if($countby =~ m/^t/i)
 {
@@ -56,6 +60,14 @@ if($countby =~ m/^t/i)
 else
 {
     $countby = 'language';
+}
+if($oformat =~ m/^m/i)
+{
+    $oformat = 'markdown';
+}
+else
+{
+    $oformat = 'json';
 }
 my %treebanks;
 if(defined($tbklist))
@@ -110,7 +122,7 @@ foreach my $language (keys(%{$languages_from_yaml}))
 }
 # Look for features in the data.
 my %hash; # $hash{$feature}{$value}{$treebank/$language} = $count
-my %poshash; # $poshash{$upos}{$feature}{$value}{$treebank/$language} = $count
+my %poshash; # $poshash{$treebank/$language}{$upos}{$feature}{$value} = $count
 my %hittreebanks;
 foreach my $folder (@folders)
 {
@@ -156,7 +168,14 @@ foreach my $folder (@folders)
         }
     }
 }
-print_markdown(\%hash);
+if($oformat eq 'markdown')
+{
+    print_markdown(\%hash);
+}
+else
+{
+    print_json(\%poshash);
+}
 
 
 
@@ -191,7 +210,7 @@ sub read_conllu_file
                     foreach my $v (@values)
                     {
                         $hash->{$f}{$v}{$key}++;
-                        $poshash->{$upos}{$f}{$v}{$key}++;
+                        $poshash->{$key}{$upos}{$f}{$v}++;
                         $nhits++;
                     }
                 }
@@ -238,4 +257,77 @@ EOF
         }
         print("\n");
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints the per-language statistics of upos-feature-value in JSON.
+#------------------------------------------------------------------------------
+sub print_json
+{
+    my $poshash = shift;
+    print("{\n");
+    my @languages = sort(keys(%{$poshash}));
+    my @ljsons = ();
+    foreach my $language (@languages)
+    {
+        my $ljson = '  "'.escape_json_string($language).'": {'."\n";
+        my @upos = sort(keys(%{$poshash->{$language}}));
+        my @ujsons = ();
+        foreach my $upos (@upos)
+        {
+            my $ujson = '    "'.escape_json_string($upos).'": {'."\n";
+            my @features = sort(keys(%{$poshash->{$language}{$upos}}));
+            my @fjsons = ();
+            foreach my $feature (@features)
+            {
+                my $fjson = '      "'.escape_json_string($feature).'": {';
+                my @values = sort(keys(%{$poshash->{$language}{$upos}{$feature}}));
+                my @vjsons = ();
+                foreach my $value (@values)
+                {
+                    my $vjson = '"'.escape_json_string($value).'": ';
+                    $vjson .= sprintf("%d", $poshash->{$language}{$upos}{$feature}{$value});
+                    push(@vjsons, $vjson);
+                }
+                $fjson .= join(', ', @vjsons);
+                $fjson .= '}';
+                push(@fjsons, $fjson);
+            }
+            $ujson .= join(",\n", @fjsons)."\n";
+            $ujson .= '    }';
+            push(@ujsons, $ujson);
+        }
+        $ljson .= join(",\n", @ujsons)."\n";
+        $ljson .= '  }';
+        push(@ljsons, $ljson);
+    }
+    print(join(",\n", @ljsons)."\n");
+    print("}\n");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a string and escapes characters that would prevent it from being used
+# in JSON. (For control characters, it throws a fatal exception instead of
+# escaping them because they should not occur in anything we export in this
+# block.)
+#------------------------------------------------------------------------------
+sub escape_json_string
+{
+    my $string = shift;
+    # https://www.ietf.org/rfc/rfc4627.txt
+    # The only characters that must be escaped in JSON are the following:
+    # \ " and control codes (anything less than U+0020)
+    # Escapes can be written as \uXXXX where XXXX is UTF-16 code.
+    # There are a few shortcuts, too: \\ \"
+    $string =~ s/\\/\\\\/g; # escape \
+    $string =~ s/"/\\"/g; # escape " # "
+    if($string =~ m/[\x{00}-\x{1F}]/)
+    {
+        log_fatal("The string must not contain control characters.");
+    }
+    return $string;
 }
