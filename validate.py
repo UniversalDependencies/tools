@@ -1824,7 +1824,7 @@ def load_upos_set(filename):
     res = load_file(os.path.join(THISDIR, 'data', filename))
     return res
 
-def load_feat_set(filename_langspec, filename_docfeats, lcode):
+def load_feat_set(filename_langspec, lcode):
     """
     Loads the list of permitted feature-value pairs and returns it as a set.
     """
@@ -1832,27 +1832,22 @@ def load_feat_set(filename_langspec, filename_docfeats, lcode):
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_features_0 = json.load(f)
     all_features = all_features_0['features']
-    # Features cannot be used if they are not documented (listing them in tools/data is not enough).
-    # Feature values that are properly documented have been automatically collected from docs and saved in a JSON file.
-    with open(os.path.join(THISDIR, 'data', filename_docfeats), 'r', encoding='utf-8') as f:
-        documented_features = json.load(f)
     # We no longer need to read data/feat_val.ud (and keep it up-to-date when new values are added).
     # Instead, we can take the list of universal features and values from the documentation.
     res = set()
-    for f in all_features[lcode]:
+    for f in all_features[lcode]: ###!!! Shouldn't I've asked for all_features[lcode].keys() here?
         if all_features[lcode][f]['permitted'] > 0:
             for v in all_features[lcode][f]['uvalues']:
                 res.add(f+'='+v)
             for v in all_features[lcode][f]['lvalues']:
                 res.add(f+'='+v)
-    # Identify feature values that are not available for the current language.
-    # Do not report them now. Keep the message and show it when the first unknown feature
-    # value occurs in the data.
+    # Identify feature values that are permitted in the current language.
+    # Keep the message and show it when the first unknown feature value occurs
+    # in the data.
     msg = ''
-    if lcode in documented_features['ldocs']:
-        for f in documented_features['ldocs'][lcode]:
-            for e in documented_features['ldocs'][lcode][f]['errors']:
-                msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
+    for f in all_features[lcode]: ###!!! Shouldn't I've asked for all_features[lcode].keys() here?
+        for e in all_features[lcode][f]['errors']:
+            msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
     sorted_documented_features = sorted(res)
     msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
     msg += ', '.join(sorted_documented_features) + "\n"
@@ -2047,7 +2042,7 @@ if __name__=="__main__":
 
     if args.lang:
         tagsets[UPOS] = load_upos_set('cpos.ud')
-        tagsets[FEATS] = load_feat_set('feats.json', 'docfeats.json', args.lang)
+        tagsets[FEATS] = load_feat_set('feats.json', args.lang)
         tagsets[DEPREL] = load_deprel_set('deprel.' + args.lang, 'docdeps.json', args.lang)
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
