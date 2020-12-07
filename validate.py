@@ -1854,7 +1854,7 @@ def load_feat_set(filename_langspec, lcode):
     msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
     msg += "have a language-specific documentation page in a prescribed format.\n"
     msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-    msg += "Even universal features must be specifically turned on for each language in which they are used.\n"
+    msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
     msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
     # Save the message in a global variable.
     # We will add it to the first error message about an unknown feature in the data.
