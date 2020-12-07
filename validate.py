@@ -1835,7 +1835,7 @@ def load_feat_set(filename_langspec, lcode):
     # We no longer need to read data/feat_val.ud (and keep it up-to-date when new values are added).
     # Instead, we can take the list of universal features and values from the documentation.
     res = set()
-    for f in all_features[lcode]: ###!!! Shouldn't I've asked for all_features[lcode].keys() here?
+    for f in all_features[lcode]:
         if all_features[lcode][f]['permitted'] > 0:
             for v in all_features[lcode][f]['uvalues']:
                 res.add(f+'='+v)
@@ -1845,7 +1845,7 @@ def load_feat_set(filename_langspec, lcode):
     # Keep the message and show it when the first unknown feature value occurs
     # in the data.
     msg = ''
-    for f in all_features[lcode]: ###!!! Shouldn't I've asked for all_features[lcode].keys() here?
+    for f in all_features[lcode]:
         for e in all_features[lcode][f]['errors']:
             msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
     sorted_documented_features = sorted(res)
