@@ -2403,6 +2403,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 584, "Inf": 6}, "VERB": {"Fin": 6643, "Inf": 1275}}}
 },
+"xnr": {
+
+},
 "yo": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Acc", "Gen", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Ill", "Ine", "Ins", "Lat", "Loc", "Par", "Per", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Acc": 4, "Nom": 1}, "ADP": {"Acc": 2}, "AUX": {"Nom": 4}, "CCONJ": {"Acc": 1}, "NOUN": {"Acc": 1, "Nom": 1}, "NUM": {"Acc": 1}, "PRON": {"Acc": 208, "Gen": 233, "Nom": 549}, "PROPN": {"Acc": 1, "Nom": 1}, "SCONJ": {"Acc": 1}}},
