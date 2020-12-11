@@ -1,2 +1,0 @@
-compound:redup
-nmod:poss
