@@ -5676,7 +5676,7 @@
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
-"orphan": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"orphan": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "parataxis": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
