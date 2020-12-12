@@ -1493,7 +1493,7 @@
 "amod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'amod'."]},
 "appos": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'appos'."]},
 "aux": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'aux'."]},
-"case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-12-21-46-04", "lastchanger": "dan-zeman"},
+"case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2020-12-12-21-50-39", "lastchanger": "dan-zeman"},
 "cc": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'cc'."]},
 "cc:preconj": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "ccomp": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
