@@ -6150,7 +6150,7 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"det:noun": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"det:noun": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det:pron": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
