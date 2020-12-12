@@ -553,7 +553,7 @@
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []}
 },
 "tpn": {
-"Case": {"type": "universal", "values": [], "errors": ["No examples found under value 'Ref'."]},
+"Case": {"type": "universal", "values": [], "errors": ["No examples found under value 'Loc'."]},
 "Rel": {"type": "local", "values": ["Cont", "NCont", "Abs"], "errors": []}
 },
 "tr": {
