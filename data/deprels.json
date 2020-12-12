@@ -6149,7 +6149,7 @@
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"det:adj": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"det:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det:noun": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "det:pron": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
