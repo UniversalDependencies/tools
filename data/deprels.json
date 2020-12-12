@@ -5679,7 +5679,7 @@
 "orphan": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "parataxis": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"reparandum": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"reparandum": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "xcomp": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]}
