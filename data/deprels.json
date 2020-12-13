@@ -5669,7 +5669,7 @@
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"nummod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nummod:entity": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod:gov": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
