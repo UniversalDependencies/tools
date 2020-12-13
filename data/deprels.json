@@ -5642,7 +5642,7 @@
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"cc:preconj": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"cc:preconj": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},

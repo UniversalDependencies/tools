@@ -1226,7 +1226,6 @@
 "aux:pass": {"type": "local", "errors": []},
 "case": {"type": "universal", "errors": []},
 "cc": {"type": "universal", "errors": []},
-"cc:preconj": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "ccomp": {"type": "universal", "errors": []},
 "compound": {"type": "universal", "errors": []},
 "conj": {"type": "universal", "errors": []},
