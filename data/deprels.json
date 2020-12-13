@@ -5652,7 +5652,7 @@
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"discourse": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
