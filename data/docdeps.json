@@ -1246,7 +1246,6 @@
 "iobj": {"type": "universal", "errors": []},
 "list": {"type": "universal", "errors": []},
 "mark": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
-"neg": {"type": "", "errors": ["Relation 'neg' is not a subtype of any approved main type.", "Documentation does not belong to UD v2 guidelines."]},
 "nmod": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nsubj": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nsubj:pass": {"type": "local", "errors": []},
