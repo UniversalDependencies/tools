@@ -1526,7 +1526,7 @@
 },
 "myu": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Aspect": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No feature values found.", "Unrecognized level 3 heading '### <a name=\"Compl\">`Compl`</a>:'.", "Unrecognized level 3 heading '### <a name=\"DurIprf\">`DurIprf`</a>:'.", "Unrecognized level 3 heading '### <a name=\"Imp\">`Imp`</a>:'.", "Unrecognized level 3 heading '### <a name=\"Perf\">`Perf`</a>:'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Compl", "DurImp", "Hab", "Imp", "Iter", "Perf", "Prog", "Prosp"], "byupos": {"VERB": {"Imp": 7, "Perf": 27}}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Compl", "DurIprf"], "evalues": ["DurImp", "Hab", "Iter", "Prog", "Prosp"], "byupos": {"VERB": {"Imp": 7, "Perf": 27}}},
 "Evident": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Nfh"], "lvalues": [], "unused_uvalues": ["Fh"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Nfh": 3}}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Incorp": {"type": "lspec", "doc": "none", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Yes"], "byupos": {}},
