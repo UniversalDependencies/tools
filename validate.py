@@ -658,7 +658,6 @@ def validate_features(cols, tag_sets, args):
                 # Level 4 also checks whether the feature value is on the list.
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
                 if args.level > 3 and tag_sets[FEATS] is not None and attr+'='+v not in tag_sets[FEATS]:
-                    warn_on_missing_files.add("feat_val")
                     testlevel = 4
                     testid = 'unknown-feature-value'
                     # If some features were excluded because they are not documented,
@@ -699,7 +698,6 @@ def validate_deprels(cols, tag_sets, args):
         deprel = lspec2ud(deprel)
         testlevel = 2
     if tag_sets[DEPREL] is not None and deprel not in tag_sets[DEPREL]:
-        warn_on_missing_files.add("deprel")
         testclass = 'Syntax'
         testid = 'unknown-deprel'
         # If some relations were excluded because they are not documented,
