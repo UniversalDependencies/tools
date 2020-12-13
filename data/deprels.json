@@ -5662,7 +5662,7 @@
 "goeswith": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"mark": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "neg": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "nmod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nmod:gmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
