@@ -5645,7 +5645,7 @@
 "cc:preconj": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-15-11", "lastchanger": "dan-zeman"},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"compound": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
+"compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-17-54", "lastchanger": "dan-zeman"},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
