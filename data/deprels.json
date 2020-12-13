@@ -5576,7 +5576,7 @@
 "ro": {
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"advcl:tcl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
