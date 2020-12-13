@@ -5655,7 +5655,7 @@
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"fixed": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "flat:foreign": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
