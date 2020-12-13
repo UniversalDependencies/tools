@@ -5640,7 +5640,7 @@
 "appos": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"case": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
+"case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-14-34", "lastchanger": "dan-zeman"},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
