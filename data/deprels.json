@@ -5664,7 +5664,7 @@
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "neg": {"type": "", "doc": "none", "permitted": 0, "errors": []},
-"nmod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:gmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
