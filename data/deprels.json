@@ -5650,7 +5650,7 @@
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"dep": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
+"dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-20-28", "lastchanger": "dan-zeman"},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
