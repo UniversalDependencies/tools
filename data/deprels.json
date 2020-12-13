@@ -5681,7 +5681,7 @@
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"vocative": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
+"vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-16-44", "lastchanger": "dan-zeman"},
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "sa": {
