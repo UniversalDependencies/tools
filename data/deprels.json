@@ -5638,7 +5638,7 @@
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-16-10", "lastchanger": "dan-zeman"},
-"aux": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
+"aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-20-00", "lastchanger": "dan-zeman"},
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-14-34", "lastchanger": "dan-zeman"},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
