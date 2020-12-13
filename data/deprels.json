@@ -5659,7 +5659,7 @@
 "flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"goeswith": {"type": "universal", "doc": "local", "permitted": 0, "errors": []},
+"goeswith": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-13-15-17-23", "lastchanger": "dan-zeman"},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
