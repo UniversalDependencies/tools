@@ -2356,7 +2356,7 @@
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Number": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Sing"], "lvalues": [], "unused_uvalues": ["Plur"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Sing": 1}, "NOUN": {"Sing": 1}, "PART": {"Sing": 1}, "VERB": {"Sing": 1}}, "lastchanged": "2020-12-12-18-08-44", "lastchanger": "@tatiana-merz"},
-"Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["3"], "unused_lvalues": [], "evalues": [], "byupos": {}, "lastchanged": "2020-12-14-21-24-11", "lastchanger": "@LanguageStructure"},
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Pres"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Fut": 1, "Pres": 1}}, "lastchanged": "2020-12-12-18-20-46", "lastchanger": "@tatiana-merz"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
