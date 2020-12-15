@@ -2237,6 +2237,7 @@
 "tpn": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hum"], "lvalues": [], "unused_uvalues": ["Anim", "Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Hum": 1}}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Compl"], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Loc", "Tra"], "lvalues": ["Ref"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Abe", "Abl", "Abs", "Acc", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Gen", "Ill", "Ine", "Ins", "Lat", "LocDif", "LocPunc", "Nom", "Par", "Per", "Sub", "Sup", "Tem", "Ter", "Voc"], "byupos": {"NOUN": {"Loc": 1, "Ref": 1, "Tra": 1}}, "lastchanged": "2020-12-12-11-27-12", "lastchanger": "@LanguageStructure"},
 "Clusivity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["In"], "lvalues": [], "unused_uvalues": ["Ex"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"In": 2}}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
