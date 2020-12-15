@@ -386,6 +386,9 @@
 "gd": {
 "PartType": {"type": "local", "values": ["Ad", "Cmpl", "Comp", "Inf", "Num", "Pat", "Vb", "Voc"], "errors": []}
 },
+"gl": {
+"Clitic": {"type": "local", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+},
 "grc": {
 "Case": {"type": "universal", "values": ["Nom", "Gen", "Dat", "Acc", "Voc"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup", "Abs"], "errors": []},
