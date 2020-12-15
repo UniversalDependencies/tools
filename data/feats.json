@@ -252,7 +252,7 @@
 "PronType": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Wrong value 'Refl'. The correct UD label for reflexive pronouns is 'PronType=Prs' together with 'Reflex=Yes'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fut": 10}, "PART": {"Past": 38}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Valency": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2"], "evalues": [], "byupos": {}},
+"Valency": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["1", "2"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"1": 1, "2": 1}, "VERB": {"1": 1, "2": 1}}, "lastchanged": "2020-12-15-09-19-53", "lastchanger": "dan-zeman"},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Part", "Vnoun"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 3}, "NOUN": {"Vnoun": 20}, "VERB": {"Part": 37}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cau"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Pass", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 15}}}
 },
