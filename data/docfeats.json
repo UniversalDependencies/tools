@@ -398,6 +398,9 @@
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup", "Abs"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut"], "errors": []}
 },
+"gub": {
+"Rel": {"type": "local", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+},
 "hu": {
 "Aspect": {"type": "universal", "values": ["Iter"], "errors": []},
 "Case": {"type": "universal", "values": ["Nom", "Acc", "Abs", "Dat", "Gen", "Loc", "Ins", "Dis", "Ess", "Tra", "Ine", "Ill", "Ela", "Ade", "All", "Abl", "Sup", "Sub", "Del", "Tem", "Ter", "Cau"], "errors": []},
