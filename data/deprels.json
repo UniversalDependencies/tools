@@ -2810,7 +2810,7 @@
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "case:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"cc:preconj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
