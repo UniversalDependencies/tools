@@ -2812,7 +2812,7 @@
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"clf": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:a": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:n": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
