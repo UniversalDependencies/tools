@@ -2360,7 +2360,7 @@
 "urb": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Hum", "Nhum"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Hum": 1, "Nhum": 1}, "PRON": {"Hum": 1, "Nhum": 1}}, "lastchanged": "2020-12-17-15-17-45", "lastchanger": "@LanguageStructure"},
-"Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Perf"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Perf"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PART": {"Perf": 1}}, "lastchanged": "2020-12-18-14-08-05", "lastchanger": "Mentha7"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Intense": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2020-12-17-16-16-00", "lastchanger": "@tatiana-merz"},
 "Mood": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Ind"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Ind": 1}}, "lastchanged": "2020-12-18-12-41-38", "lastchanger": "@LanguageStructure"},
