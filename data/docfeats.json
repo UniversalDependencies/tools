@@ -503,6 +503,7 @@
 "Number": {"type": "universal", "values": ["Sing", "Plur"], "errors": []}
 },
 "orv": {
+"Analyt": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "Variant": {"type": "local", "values": [], "errors": ["No feature values found."]}
 },
 "pcm": {
