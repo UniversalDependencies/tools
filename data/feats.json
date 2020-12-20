@@ -845,6 +845,7 @@
 "Polarity": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Neg"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Neg": 1}, "VERB": {"Neg": 1}}, "lastchanged": "2020-12-20-19-01-03", "lastchanger": "@l12maro"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Ind", "Int", "Prs"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1, "Ind": 1}, "PRON": {"Dem": 1, "Ind": 1, "Int": 1, "Prs": 1}}, "lastchanged": "2020-12-20-19-15-43", "lastchanger": "@l12maro"},
 "Rel": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Abs", "Cont", "NCont"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Abs": 1, "Cont": 1, "NCont": 1}, "NOUN": {"Abs": 1, "Cont": 1, "NCont": 1}}, "lastchanged": "2020-12-16-13-18-18", "lastchanger": "@LanguageStructure"},
+"Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fut"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cau"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "gun": {
