@@ -3429,7 +3429,7 @@
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-09-56", "lastchanger": "rueter"},
 "advmod:mmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod:neg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-10-28", "lastchanger": "rueter"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
