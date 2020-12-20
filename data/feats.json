@@ -2369,7 +2369,7 @@
 "Rel": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Cont"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Cont": 1}}, "lastchanged": "2020-12-18-14-09-12", "lastchanger": "Mentha7"},
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Pres"], "byupos": {"VERB": {"Fut": 1, "Pres": 1}}, "lastchanged": "2020-12-12-18-20-46", "lastchanger": "@tatiana-merz"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Caus"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Caus": 1}}, "lastchanged": "2020-12-18-14-06-50", "lastchanger": "Mentha7"}
+"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Caus"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Caus": 1}}, "lastchanged": "2020-12-20-17-29-24", "lastchanger": "@LanguageStructure"}
 },
 "vi": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
