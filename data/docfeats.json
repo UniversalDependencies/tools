@@ -497,6 +497,9 @@
 "NumType": {"type": "universal", "values": ["Card", "Dist", "Ord", "Mult", "Set", "OrdMult"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur"], "errors": []}
 },
+"orv": {
+"Variant": {"type": "local", "values": [], "errors": ["No feature values found."]}
+},
 "pcm": {
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Real"], "errors": []},
 "Case": {"type": "universal", "values": ["Nom", "Acc"], "errors": []},
