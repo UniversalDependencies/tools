@@ -353,6 +353,9 @@
 "grc": {
 "εἰμί": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Σαῦλος δὲ [ἦν] συνευδοκῶν τῇ ἀναιρέσει αὐτοῦ", "exampleen": "And Saul was consenting unto his death.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-14-47", "lastchanger": "dan-zeman"}
 },
+"gub": {
+"iko": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and the main verb in present tense", "deficient": "", "example": "ur [iko] a'e", "exampleen": "he is coming", "comment": ""}], "status": "documented", "lastchanged": "2020-12-21-17-25-45", "lastchanger": "@l12maro"}
+},
 "gun": {
 "iko": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "normal equative copula", "example": "Ha'e pero roju ore ko'ape heta [roiko].", "exampleen": "But there was a lot of people living with us.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-09-22-37-05", "lastchanger": "dan-zeman"},
 "nda'ei": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "negative copula", "example": "to be added [from] dooley", "exampleen": "unknown", "comment": ""}], "status": "documented", "lastchanged": "2020-11-09-22-51-58", "lastchanger": "dan-zeman"},
