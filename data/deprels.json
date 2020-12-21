@@ -2326,6 +2326,7 @@
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"case:voc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -2333,8 +2334,8 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"csubj:cleft": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"csubj:cop": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"csubj:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"csubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -2360,7 +2361,7 @@
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:pred": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []}
+"xcomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "ha": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
