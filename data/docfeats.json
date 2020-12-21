@@ -507,7 +507,7 @@
 },
 "orv": {
 "Analyt": {"type": "local", "values": ["Yes"], "errors": []},
-"Number": {"type": "universal", "values": [], "errors": ["Wrong value 'Adnum'. The correct UD label for the special form of noun after numeral is 'Number=Count'.", "No examples found under value 'Adnum'.", "No examples found under value 'Sing'.", "No examples found under value 'Plur'.", "Unrecognized level 3 heading '### TOROT'.", "No examples found under value 'Dual'."]},
+"Number": {"type": "universal", "values": [], "errors": ["Wrong value 'Adnum'. The correct UD label for the special form of noun after numeral is 'Number=Count'."]},
 "Variant": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "VerbForm": {"type": "universal", "values": [], "errors": ["No examples found under value 'Fin'.", "No examples found under value 'Inf'.", "Unrecognized level 3 heading '### <a name=\"PartRes\">`Part`</a>: resultative participle, l-form'.", "No examples found under value 'Conv'."]}
 },
