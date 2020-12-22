@@ -488,7 +488,7 @@
 "NumForm": {"type": "local", "values": ["Word", "Digit", "Combi", "Roman"], "errors": []}
 },
 "mdf": {
-"Case": {"type": "universal", "values": [], "errors": ["Wrong value 'Cmpr'. The correct UD label for comparative case is 'Case=Cmp'.", "Wrong value 'Temp'. The correct UD label for temporal case is 'Case=Tem'."]}
+"Case": {"type": "universal", "values": [], "errors": ["Wrong value 'Temp'. The correct UD label for temporal case is 'Case=Tem'."]}
 },
 "myu": {
 "Aspect": {"type": "universal", "values": ["DurIprf", "Imp", "Perf", "Compl", "Hab", "Iter", "Prog"], "errors": []},
@@ -499,7 +499,7 @@
 "Rel": {"type": "local", "values": ["Cont", "NCont"], "errors": []}
 },
 "myv": {
-"Case": {"type": "universal", "values": [], "errors": ["Wrong value 'Cmpr'. The correct UD label for comparative case is 'Case=Cmp'.", "Wrong value 'Temp'. The correct UD label for temporal case is 'Case=Tem'."]},
+"Case": {"type": "universal", "values": [], "errors": ["Wrong value 'Temp'. The correct UD label for temporal case is 'Case=Tem'."]},
 "Connegative": {"type": "local", "values": ["Yes"], "errors": []},
 "Definite": {"type": "universal", "values": ["Def", "Ind"], "errors": []},
 "Gender": {"type": "universal", "values": ["Fem", "Masc"], "errors": []},
