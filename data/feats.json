@@ -119,7 +119,7 @@
 "Possessed": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["No", "Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"No": 1, "Yes": 1}, "VERB": {"No": 1, "Yes": 1}}, "lastchanged": "2020-12-14-21-33-44", "lastchanger": "rueter"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": ["Inter"], "byupos": {"PRON": {"Prs": 51}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Vnoun"], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Gdv", "Ger", "Inf", "Part", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Vnoun": 2}, "VERB": {"Vnoun": 7}}}
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Vnoun"], "lvalues": [], "unused_uvalues": ["Fin", "Gdv", "Ger", "Inf", "Part", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Vnoun": 1}, "VERB": {"Conv": 1, "Vnoun": 1}}, "lastchanged": "2020-12-22-22-25-21", "lastchanger": "rueter"}
 },
 "aqz": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
