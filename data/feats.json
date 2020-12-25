@@ -95,7 +95,7 @@
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Past"], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Pqp", "Pres"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Past": 1}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Vnoun"], "lvalues": [], "unused_uvalues": ["Fin", "Gdv", "Ger", "Inf", "Part", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Vnoun": 149}, "VERB": {"Conv": 51, "Vnoun": 17}}},
-"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass", "Rcp"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Trans"], "evalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid"], "byupos": {"VERB": {"Cau": 92, "Pass": 137, "Rcp": 11}}}
+"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass", "Rcp"], "lvalues": ["Trans"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid"], "byupos": {"VERB": {"Cau": 1, "Pass": 1, "Rcp": 1, "Trans": 1}}, "lastchanged": "2020-12-25-01-03-53", "lastchanger": "dan-zeman"}
 },
 "apu": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
