@@ -26,7 +26,7 @@
 },
 "af": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"AdjType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Attr", "Pred"], "evalues": [], "byupos": {}},
+"AdjType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Attr", "Pred"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Attr": 1, "Pred": 1}}, "lastchanged": "2020-12-28-18-40-51", "lastchanger": "dan-zeman"},
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Post", "Voc"], "evalues": [], "byupos": {"ADP": {"Prep": 6286}}},
 "Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Acc", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Gen", "Ill", "Ine", "Ins", "Lat", "Loc", "Par", "Per", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Nom": 3172}, "PRON": {"Acc": 784, "Nom": 1418}}},
 "Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 3570, "Ind": 971}}},
