@@ -1136,7 +1136,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:agent": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'nmod:agent'."]},
+"nmod:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:ccomp": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:nsubj": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:obj": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
