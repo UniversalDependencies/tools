@@ -198,7 +198,7 @@
 "cy": {
 "a": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "am": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Mae hi [am] ddod", "exampleen": "She is about to come", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-42-39", "lastchanger": "jheinecke"},
-"ar": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"ar": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Roeddwn i [ar] ganu", "exampleen": "I was about to sing", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-43-50", "lastchanger": "jheinecke"},
 "bod": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Mae]'n rhad ac am ddim.", "exampleen": "It's free.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-47-13", "lastchanger": "dan-zeman"},
 "fe": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "heb": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
