@@ -206,7 +206,7 @@
 "newydd": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Mae o [newydd] fynd", "exampleen": "He has just gone", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-48-41", "lastchanger": "jheinecke"},
 "wedi": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Rydw i [wedi] gweithio", "exampleen": "I have worked", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-47-38", "lastchanger": "jheinecke"},
 "y": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"yn": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"yn": {"functions": [{"function": "Aspect=Imp", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Bydd hi ['n] canu", "exampleen": "She will be singing", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-49-38", "lastchanger": "jheinecke"}
 },
 "da": {
 "blive": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Rom [blev] ikke bygget på én dag.", "exampleen": "Rome was not built in one day.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-04-20-54-03", "lastchanger": "dan-zeman"},
