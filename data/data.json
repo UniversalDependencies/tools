@@ -204,7 +204,7 @@
 "heb": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Rydw i [heb] weithio", "exampleen": "I have not worked", "comment": "_heb_ is like _wedi_ but with implicit negation"}], "status": "documented", "lastchanged": "2020-12-29-16-46-36", "lastchanger": "jheinecke"},
 "mi": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "newydd": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"wedi": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"wedi": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Rydw i [wedi] gweithio", "exampleen": "I have worked", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-47-38", "lastchanger": "jheinecke"},
 "y": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "yn": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
