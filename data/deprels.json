@@ -3004,7 +3004,7 @@
 "parataxis:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"reparandum": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'reparandum'."]},
+"reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative:mention": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
