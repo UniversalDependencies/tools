@@ -2976,7 +2976,7 @@
 "expl:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "expl:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"flat": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'flat'."]},
+"flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "foreign": {"type": "", "doc": "none", "permitted": 0, "errors": []},
