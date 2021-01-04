@@ -196,16 +196,12 @@
 "не.бꙑти": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "cy": {
-"a": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "am": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Mae hi [am] ddod", "exampleen": "She is about to come", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-42-39", "lastchanger": "jheinecke"},
 "ar": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Roeddwn i [ar] ganu", "exampleen": "I was about to sing", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-43-50", "lastchanger": "jheinecke"},
-"bod": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Mae]'n rhad ac am ddim.", "exampleen": "It's free.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-47-13", "lastchanger": "dan-zeman"},
-"fe": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"bod": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Mae]'n rhad ac am ddim.", "exampleen": "It's free.", "comment": ""}], "status": "documented", "lastchanged": "2021-01-04-10-07-47", "lastchanger": "dan-zeman"},
 "heb": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Rydw i [heb] weithio", "exampleen": "I have not worked", "comment": "_heb_ is like _wedi_ but with implicit negation"}], "status": "documented", "lastchanged": "2020-12-29-16-46-36", "lastchanger": "jheinecke"},
-"mi": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "newydd": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Mae o [newydd] fynd", "exampleen": "He has just gone", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-48-41", "lastchanger": "jheinecke"},
 "wedi": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Rydw i [wedi] gweithio", "exampleen": "I have worked", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-47-38", "lastchanger": "jheinecke"},
-"y": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "yn": {"functions": [{"function": "Aspect=Imp", "rule": "combination of the auxiliary and a verbnoun", "deficient": "", "example": "Bydd hi ['n] canu", "exampleen": "She will be singing", "comment": ""}], "status": "documented", "lastchanged": "2020-12-29-16-49-38", "lastchanger": "jheinecke"}
 },
 "da": {
