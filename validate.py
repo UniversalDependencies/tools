@@ -1178,13 +1178,6 @@ def validate_upos_vs_deprel(id, tree):
         testid = 'rel-upos-cop'
         testmessage = "'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
-    # AUX is normally aux or cop. It can appear in many other relations if it is promoted due to ellipsis.
-    # However, I believe that it should not appear in compound. From the other side, compound can consist
-    # of many different part-of-speech categories but I don't think it can contain AUX.
-    if deprel == 'compound' and re.match(r"^(AUX)", cols[UPOS]):
-        testid = 'rel-upos-compound'
-        testmessage = "'compound' should not be 'AUX'"
-        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
