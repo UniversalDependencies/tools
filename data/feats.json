@@ -360,6 +360,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 52}, "PRON": {"Fin": 2}, "VERB": {"Fin": 5245, "Inf": 221}}}
 },
+"cpg": {
+
+},
 "cs": {
 "Abbr": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1730}, "ADP": {"Yes": 34}, "ADV": {"Yes": 971}, "CCONJ": {"Yes": 192}, "DET": {"Yes": 35}, "NOUN": {"Yes": 6825}, "PART": {"Yes": 3}, "PROPN": {"Yes": 15071}, "PUNCT": {"Yes": 79}, "SYM": {"Yes": 3570}, "VERB": {"Yes": 11}, "X": {"Yes": 12}}},
 "AdpType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Comprep", "Prep", "Voc"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Comprep": 408, "Prep": 195645, "Voc": 16464}}},
