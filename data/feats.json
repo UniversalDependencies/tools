@@ -1874,7 +1874,7 @@
 "Animacy": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Anim"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Valency": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2"], "evalues": [], "byupos": {}},
-"Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Antip", "Pass"], "unused_lvalues": [], "evalues": ["Anti"], "byupos": {}}
+"Voice": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Wrong value 'Anti'. The correct UD label for antipassive voice is 'Voice=Antip'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Anti", "Antip", "Pass"], "byupos": {}}
 },
 "quz": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
