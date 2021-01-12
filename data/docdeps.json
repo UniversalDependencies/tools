@@ -1240,6 +1240,9 @@
 "vocative": {"type": "universal", "errors": []},
 "xcomp": {"type": "universal", "errors": []}
 },
+"quc": {
+"aux:ss": {"type": "local", "errors": ["No examples found for relation 'aux:ss'."]}
+},
 "ro": {
 "acl": {"type": "universal", "errors": []},
 "advcl": {"type": "universal", "errors": []},
