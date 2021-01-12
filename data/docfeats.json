@@ -573,6 +573,7 @@
 },
 "quc": {
 "Person": {"type": "universal", "values": ["1", "2", "3"], "errors": []},
+"Valency": {"type": "local", "values": [], "errors": ["No examples found under value '1'.", "No examples found under value '2'."]},
 "Voice": {"type": "universal", "values": ["Pass", "Anti"], "errors": []}
 },
 "ro": {
