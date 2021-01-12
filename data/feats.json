@@ -1872,7 +1872,7 @@
 },
 "quc": {
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Valency": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value '1'.", "No examples found under value '2'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Valency": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2"], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Pass"], "unused_lvalues": ["Anti"], "evalues": [], "byupos": {}}
 },
 "quz": {
