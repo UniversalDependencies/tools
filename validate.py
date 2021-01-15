@@ -1825,6 +1825,16 @@ def load_feat_set(filename_langspec, lcode):
     all_features = all_features_0['features']
     # Extract the set of documented and permitted feature-value pairs.
     res = set()
+    ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
+    ###!!! regardless of language-specific documentation.
+    # Do not crash if the user asks for an unknown language.
+    if not lcode in all_features:
+        msg = ''
+        msg += "No feature-value pairs have been permitted for language [%s].\n" % (lcode)
+        msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
+        warn_on_undoc_feats = msg
+        return res
     for f in all_features[lcode]:
         if all_features[lcode][f]['permitted'] > 0:
             for v in all_features[lcode][f]['uvalues']:
@@ -1861,6 +1871,16 @@ def load_deprel_set(filename_langspec, lcode):
     all_deprels = all_deprels_0['deprels']
     # Extract the set of documented and permitted dependency relations.
     res = set()
+    ###!!! If lcode is 'ud', we should permit all universal dependency relations,
+    ###!!! regardless of language-specific documentation.
+    # Do not crash if the user asks for an unknown language.
+    if not lcode in all_deprels:
+        msg = ''
+        msg += "No dependency relation types have been permitted for language [%s].\n" % (lcode)
+        msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n"
+        warn_on_undoc_deps = msg
+        return res
     for r in all_deprels[lcode]:
         if all_deprels[lcode][r]['permitted'] > 0:
             res.add(r)
@@ -1963,10 +1983,10 @@ if __name__=="__main__":
     #io_group.add_argument('output', nargs='', help='Output file name, or "-" or nothing for standard output.')
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
-    list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator. It's also possible to use 'ud' for checking compliance with purely ud.")
+    list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator.")
+    list_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
 
     tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
-    tree_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
     meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
