@@ -512,8 +512,8 @@ def validate_cols(cols, tag_sets, args):
     """
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
+        validate_upos(cols, tag_sets) # level 2
         validate_features(cols, tag_sets, args) # level 2 and up (relevant code checks whether higher level is required)
-        validate_upos(cols,tag_sets) # level 2
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
@@ -657,18 +657,53 @@ def validate_features(cols, tag_sets, args):
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
                 # Level 4 also checks whether the feature value is on the list.
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
-                if args.level > 3 and tag_sets[FEATS] is not None and attr+'='+v not in tag_sets[FEATS]:
+                if args.level > 3 and tag_sets[FEATS] is not None:
                     testlevel = 4
-                    testid = 'unknown-feature-value'
-                    # If some features were excluded because they are not documented,
-                    # tell the user when the first unknown feature is encountered in the data.
-                    # Then erase this (long) introductory message and do not repeat it with
-                    # other instances of unknown features.
-                    testmessage = "Unknown (or undocumented) feature-value pair '%s=%s'." % (attr, v)
-                    if len(warn_on_undoc_feats) > 0:
-                        testmessage += "\n" + warn_on_undoc_feats
-                        warn_on_undoc_feats = ''
-                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                    # tag_sets[FEATS] is no longer a simple set of feature-value pairs.
+                    # It is a complex database that we read from feats.json.
+                    if attr not in tag_sets[FEATS]:
+                        testid = 'feature-unknown'
+                        testmessage = "Feature %s is not documented for language [%s]." % (attr, args.lang)
+                        if len(warn_on_undoc_feats) > 0:
+                            # If some features were excluded because they are not documented,
+                            # tell the user when the first unknown feature is encountered in the data.
+                            # Then erase this (long) introductory message and do not repeat it with
+                            # other instances of unknown features.
+                            testmessage += "\n" + warn_on_undoc_feats
+                            warn_on_undoc_feats = ''
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                    else:
+                        lfrecord = tag_sets[FEATS][attr]
+                        if lfrecord['permitted']==0:
+                            testid = 'feature-not-permitted'
+                            testmessage = "Feature %s is not permitted in language [%s]." % (attr, args.lang)
+                            if len(warn_on_undoc_feats) > 0:
+                                testmessage += "\n" + warn_on_undoc_feats
+                                warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                        else:
+                            values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
+                            if not v in values:
+                                testid = 'feature-value-unknown'
+                                testmessage = "Value %s is not documented for feature %s in language [%s]." % (v, attr, args.lang)
+                                if len(warn_on_undoc_feats) > 0:
+                                    testmessage += "\n" + warn_on_undoc_feats
+                                    warn_on_undoc_feats = ''
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                            elif not cols[UPOS] in lfrecord['byupos']:
+                                testid = 'feature-upos-not-permitted'
+                                testmessage = "Feature %s is not permitted with UPOS %s in language [%s]." % (attr, cols[UPOS], args.lang)
+                                if len(warn_on_undoc_feats) > 0:
+                                    testmessage += "\n" + warn_on_undoc_feats
+                                    warn_on_undoc_feats = ''
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                            elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
+                                testid = 'feature-value-upos-not-permitted'
+                                testmessage = "Value %s of feature %s is not permitted with UPOS %s in language [%s]." % (v, attr, cols[UPOS], args.lang)
+                                if len(warn_on_undoc_feats) > 0:
+                                    testmessage += "\n" + warn_on_undoc_feats
+                                    warn_on_undoc_feats = ''
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if len(attr_set) != len(feat_list):
         testlevel = 2
         testid = 'repeated-feature'
@@ -1823,8 +1858,7 @@ def load_feat_set(filename_langspec, lcode):
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_features_0 = json.load(f)
     all_features = all_features_0['features']
-    # Extract the set of documented and permitted feature-value pairs.
-    res = set()
+    # Extract the database of documented and permitted feature-value pairs.
     ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
     ###!!! regardless of language-specific documentation.
     # Do not crash if the user asks for an unknown language.
@@ -1834,13 +1868,7 @@ def load_feat_set(filename_langspec, lcode):
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
         warn_on_undoc_feats = msg
-        return res
-    for f in all_features[lcode]:
-        if all_features[lcode][f]['permitted'] > 0:
-            for v in all_features[lcode][f]['uvalues']:
-                res.add(f+'='+v)
-            for v in all_features[lcode][f]['lvalues']:
-                res.add(f+'='+v)
+        return {}
     # Identify feature values that are permitted in the current language.
     # Keep the message and show it when the first unknown feature value occurs
     # in the data.
@@ -1848,6 +1876,13 @@ def load_feat_set(filename_langspec, lcode):
     for f in all_features[lcode]:
         for e in all_features[lcode][f]['errors']:
             msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
+    res = set()
+    for f in all_features[lcode]:
+        if all_features[lcode][f]['permitted'] > 0:
+            for v in all_features[lcode][f]['uvalues']:
+                res.add(f+'='+v)
+            for v in all_features[lcode][f]['lvalues']:
+                res.add(f+'='+v)
     sorted_documented_features = sorted(res)
     msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
     msg += ', '.join(sorted_documented_features) + "\n"
@@ -1859,7 +1894,7 @@ def load_feat_set(filename_langspec, lcode):
     # Save the message in a global variable.
     # We will add it to the first error message about an unknown feature in the data.
     warn_on_undoc_feats = msg
-    return res
+    return all_features[lcode]
 
 def load_deprel_set(filename_langspec, lcode):
     """
