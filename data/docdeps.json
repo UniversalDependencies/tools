@@ -1623,6 +1623,7 @@
 }
 },
 "deviations": [
-{"re": "acl:rel", "msg": "The recommended label for relative clauses is 'acl:relcl'."}
+{"re": "acl:rel", "msg": "The recommended label for relative clauses is 'acl:relcl'."},
+{"re": "obl:loc", "msg": "The recommended label for locative oblique nominals is 'obl:lmod'."}
 ]
 }
