@@ -232,6 +232,9 @@
 "Subcat": {"type": "local", "values": ["Intr", "Prep", "Tran"], "errors": []},
 "VerbType": {"type": "local", "values": ["Cop", "Aux", "Pas", "Mod"], "errors": []}
 },
+"akk": {
+"Prohibitive": {"type": "local", "values": [], "errors": ["No feature values found."]}
+},
 "am": {
 "Case": {"type": "universal", "values": ["Ben", "Mal", "Loc", "Ins", "Abl"], "errors": []},
 "Voice": {"type": "universal", "values": ["Trans", "Cau", "Pass", "Rcp"], "errors": []}
