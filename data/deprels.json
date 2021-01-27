@@ -1502,6 +1502,7 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep:ana": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:infl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"dep:pos": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
