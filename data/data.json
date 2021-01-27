@@ -697,7 +697,7 @@
 "būt": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Jo pilsētā naudas nekad nevar [būt] par daudz.", "exampleen": "Because in the city money can never be too much.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-14-19-49", "lastchanger": "dan-zeman"},
 "kļūt": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "tapt": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"tikt": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"tikt": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a past passive participle of the main verb", "deficient": "", "example": "Grāmata [tika] lasīta.", "exampleen": "The book was read.", "comment": ""}], "status": "documented", "lastchanged": "2021-01-27-14-16-33", "lastchanger": "lrituma"}
 },
 "lzh": {
 "儀": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
