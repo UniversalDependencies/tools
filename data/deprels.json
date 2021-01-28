@@ -1530,7 +1530,7 @@
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
 "et": {
-"acl": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'acl'."]},
+"acl": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'acl'."]},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},

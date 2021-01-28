@@ -550,7 +550,7 @@
 "obl:mod": {"type": "local", "errors": []}
 },
 "et": {
-"acl": {"type": "universal", "errors": ["No examples found for relation 'acl'.", "Documentation does not belong to UD v2 guidelines."]},
+"acl": {"type": "universal", "errors": ["No examples found for relation 'acl'."]},
 "advcl": {"type": "universal", "errors": []},
 "advmod": {"type": "universal", "errors": []},
 "amod": {"type": "universal", "errors": ["No examples found for relation 'amod'.", "Documentation does not belong to UD v2 guidelines."]},
