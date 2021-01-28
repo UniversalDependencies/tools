@@ -1539,7 +1539,7 @@
 "appos": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'appos'."]},
 "aux": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'aux'."]},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-12-21-53-39", "lastchanger": "dan-zeman"},
-"cc": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'cc'."]},
+"cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
