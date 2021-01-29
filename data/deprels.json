@@ -4868,7 +4868,7 @@
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-13-45-23", "lastchanger": "@LanguageStructure"},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
