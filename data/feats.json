@@ -1693,7 +1693,8 @@
 },
 "ojp": {
 "Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Ind"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Imp": 1, "Ind": 1}}, "lastchanged": "2021-01-29-13-40-57", "lastchanger": "@LanguageStructure"},
-"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2021-01-29-13-43-17", "lastchanger": "@LanguageStructure"}
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2021-01-29-13-43-17", "lastchanger": "@LanguageStructure"},
+"Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Past", "Pres"], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Past": 1, "Pres": 1}}, "lastchanged": "2021-01-29-14-22-42", "lastchanger": "@LanguageStructure"}
 },
 "olo": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
