@@ -4860,7 +4860,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-13-53-49", "lastchanger": "@LanguageStructure"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
