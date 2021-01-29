@@ -4693,7 +4693,7 @@
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "foreign": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'foreign' is not a subtype of any approved main type."]},
-"goeswith": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"goeswith": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "list": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'list'."]},
 "mark": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
