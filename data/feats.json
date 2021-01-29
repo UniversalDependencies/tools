@@ -1692,7 +1692,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "ojp": {
-
+"Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Ind"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Imp": 1, "Ind": 1}}, "lastchanged": "2021-01-29-13-40-57", "lastchanger": "@LanguageStructure"}
 },
 "olo": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
