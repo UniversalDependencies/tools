@@ -4666,7 +4666,7 @@
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"amod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "aux": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
