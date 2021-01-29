@@ -4682,7 +4682,7 @@
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "csubjpass": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'csubjpass' is not a subtype of any approved main type."]},
-"dep": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'dep'."]},
+"dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse:filler": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
