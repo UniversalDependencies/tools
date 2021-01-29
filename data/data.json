@@ -810,6 +810,9 @@
 "nyq": {
 "دار": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and a present participle of the main verb", "deficient": "", "example": "مو [دار]ُن لباسُم واپوشن", "exampleen": "I am getting dressed.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-10-06-13-38", "lastchanger": "amirmojiry"}
 },
+"ojp": {
+"ari": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "motono mizuni [ara]-zu", "exampleen": "It is not the same (in origin) water", "comment": ""}], "status": "documented", "lastchanged": "2021-01-29-15-22-19", "lastchanger": "@LanguageStructure"}
+},
 "olo": {
 "ei": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "olla": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Tämä [on] kirjaine Peteras da se tuodih egläi.", "exampleen": "This letter is from Peter and it was delivered yesterday.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-09-27-46", "lastchanger": "dan-zeman"},
