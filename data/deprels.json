@@ -4712,7 +4712,7 @@
 "reparandum": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'reparandum'."]},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'vocative'."]},
-"xcomp": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]}
+"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "nyn": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
