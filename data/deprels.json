@@ -4686,7 +4686,7 @@
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse:filler": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"dislocated": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'dislocated'."]},
+"dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'fixed'."]},
 "flat": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
