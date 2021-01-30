@@ -1546,7 +1546,7 @@
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"cop": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "csubj:cop": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
