@@ -4676,7 +4676,7 @@
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'compound'."]},
-"compound:prt": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"compound:prt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
