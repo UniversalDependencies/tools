@@ -1116,7 +1116,7 @@
 "obj": {"type": "universal", "errors": []},
 "orphan": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "parataxis": {"type": "universal", "errors": []},
-"punct": {"type": "universal", "errors": ["No examples found for relation 'punct'.", "Documentation does not belong to UD v2 guidelines."]},
+"punct": {"type": "universal", "errors": ["No examples found for relation 'punct'."]},
 "root": {"type": "universal", "errors": []},
 "xcomp": {"type": "universal", "errors": []}
 },
