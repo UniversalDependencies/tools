@@ -4708,7 +4708,7 @@
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:deletion": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"punct": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'punct'."]},
+"punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
