@@ -4698,7 +4698,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "neg": {"type": "", "doc": "none", "permitted": 0, "errors": []},
-"nmod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubjpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
