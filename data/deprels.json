@@ -4705,7 +4705,7 @@
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"orphan": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:deletion": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "punct": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'punct'."]},
