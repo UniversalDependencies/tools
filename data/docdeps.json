@@ -1109,7 +1109,6 @@
 "goeswith": {"type": "universal", "errors": []},
 "iobj": {"type": "universal", "errors": []},
 "mark": {"type": "universal", "errors": []},
-"neg": {"type": "", "errors": ["Relation 'neg' is not a subtype of any approved main type.", "Documentation does not belong to UD v2 guidelines."]},
 "nmod": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nsubj": {"type": "universal", "errors": []},
 "nsubj:pass": {"type": "local", "errors": []},
