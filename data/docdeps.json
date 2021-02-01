@@ -1095,7 +1095,7 @@
 "case": {"type": "universal", "errors": []},
 "cc": {"type": "universal", "errors": []},
 "ccomp": {"type": "universal", "errors": []},
-"compound": {"type": "universal", "errors": ["No examples found for relation 'compound'.", "Documentation does not belong to UD v2 guidelines."]},
+"compound": {"type": "universal", "errors": ["No examples found for relation 'compound'."]},
 "compound:prt": {"type": "local", "errors": []},
 "conj": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "cop": {"type": "universal", "errors": []},
