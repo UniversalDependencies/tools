@@ -4704,7 +4704,7 @@
 "nsubjpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:deletion": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
