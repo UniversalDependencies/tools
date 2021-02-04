@@ -280,7 +280,10 @@ interval_re=re.compile('^([0-9]+)-([0-9]+)$',re.U)
 def validate_ID_sequence(tree):
     """
     Validates that the ID sequence is correctly formed.
+    Besides issuing a warning if an error is found, it also returns False to
+    the caller so it can avoid building a tree from corrupt ids.
     """
+    ok = True
     testlevel = 1
     testclass = 'Format'
     words=[]
@@ -302,12 +305,14 @@ def validate_ID_sequence(tree):
                 testid = 'invalid-word-interval'
                 testmessage = "Spurious word interval definition: '%s'." % cols[ID]
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                ok = False
                 continue
             beg,end=int(match.group(1)),int(match.group(2))
             if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
                 testid = 'misplaced-word-interval'
                 testmessage = 'Multiword range not before its first word.'
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                ok = False
                 continue
             tokens.append((beg,end))
         elif is_empty_node(cols):
@@ -316,6 +321,7 @@ def validate_ID_sequence(tree):
                 testid = 'misplaced-empty-node'
                 testmessage = 'Empty node id %s, expected %d.%d' % (cols[ID], current_word_id, next_empty_id)
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                ok = False
             next_empty_id += 1
     # Now let's do some basic sanity checks on the sequences
     wrdstrseq = ','.join(str(x) for x in words)
@@ -324,6 +330,7 @@ def validate_ID_sequence(tree):
         testid = 'word-id-sequence'
         testmessage = "Words do not form a sequence. Got '%s'. Expected '%s'." % (wrdstrseq, expstrseq)
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
+        ok = False
     # Check elementary sanity of word intervals.
     # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
     for (b, e) in tokens:
@@ -331,12 +338,15 @@ def validate_ID_sequence(tree):
             testid = 'reversed-word-interval'
             testmessage = 'Spurious token interval %d-%d' % (b,e)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            ok = False
             continue
         if b<1 or e>len(words): # out of range
             testid = 'word-interval-out'
             testmessage = 'Spurious token interval %d-%d (out of range)' % (b,e)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+            ok = False
             continue
+    return ok
 
 def validate_token_ranges(tree):
     """
@@ -1805,7 +1815,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
         tree_counter += 1
         #the individual lines have been validated already in trees()
         #here go tests which are done on the whole tree
-        validate_ID_sequence(sentence) # level 1
+        idseqok = validate_ID_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
@@ -1815,8 +1825,13 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
-            tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-            egraph = build_egraph(sentence) # level 2 test: egraph is connected
+            # Avoid building tree structure if the sequence of node ids is corrupted.
+            if idseqok:
+                tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+                egraph = build_egraph(sentence) # level 2 test: egraph is connected
+            else:
+                tree = None
+                egraph = None
             if tree:
                 if args.level > 2:
                     validate_annotation(tree) # level 3
