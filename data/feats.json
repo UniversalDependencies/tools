@@ -77,7 +77,7 @@
 "Subordinative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": ["Subordinative"], "byupos": {}},
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Past", "Pres"], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Pqp"], "unused_lvalues": [], "evalues": ["Perfect", "Preterit"], "byupos": {"VERB": {"Past": 2423, "Pres": 130}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Ventive": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Ventive": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Yes": 1}}, "lastchanged": "2021-02-10-12-46-25", "lastchanger": "Traubert"},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Inf"], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Gdv", "Ger", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": ["Finite", "Stative"], "byupos": {"VERB": {"Inf": 101}}},
 "Verbstem": {"type": "lspec", "doc": "none", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["D", "Dt", "G", "Gt", "Gtn", "N", "Ntn", "S", "St", "Stn"], "byupos": {}}
 },
