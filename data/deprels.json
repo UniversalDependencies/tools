@@ -1832,7 +1832,7 @@
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obj:lvc": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'obj:lvc'."]},
+"obj:lvc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:arg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
