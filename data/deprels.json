@@ -3510,6 +3510,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-10-57", "lastchanger": "rueter"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
