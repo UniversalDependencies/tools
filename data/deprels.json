@@ -1926,7 +1926,7 @@
 "csubj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'csubj'."]},
 "csubj:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"dep": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'dep'."]},
+"dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
