@@ -312,6 +312,7 @@
 "être": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Elles [furent] victimes de la Révolution française.", "exampleen": "They were victims of the French Revolution.", "comment": ""}, {"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of a main verb", "deficient": "", "example": "Lorgue de Barbarie portatif a [été] créé en 1890.", "exampleen": "The portable Lorgue de Barbarie was created in 1890.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-15-08-35-39", "lastchanger": "dan-zeman"}
 },
 "fro": {
+"avoir": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "En cest païs [avez] estet set anz.", "exampleen": "You have been seven years in this country.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-15-08-55-44", "lastchanger": "dan-zeman"},
 "estre": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Serai] ses hom par amur e par feid.", "exampleen": "Will be his man, my love and faith swearing.", "comment": "The Song of Roland"}], "status": "documented", "lastchanged": "2021-02-15-08-47-06", "lastchanger": "dan-zeman"}
 },
 "ga": {
