@@ -313,7 +313,7 @@
 },
 "fro": {
 "avoir": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "En cest païs [avez] estet set anz.", "exampleen": "You have been seven years in this country.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-15-08-55-44", "lastchanger": "dan-zeman"},
-"estre": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Serai] ses hom par amur e par feid.", "exampleen": "Will be his man, my love and faith swearing.", "comment": "The Song of Roland"}], "status": "documented", "lastchanged": "2021-02-15-08-47-06", "lastchanger": "dan-zeman"}
+"estre": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Serai] ses hom par amur e par feid.", "exampleen": "Will be his man, my love and faith swearing.", "comment": "The Song of Roland"}, {"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of a main verb", "deficient": "", "example": "Ne nus [seiuns] cunduiz a mendeier.", "exampleen": "And we would be reduced to beggary.", "comment": "The Song of Roland"}], "status": "documented", "lastchanged": "2021-02-15-09-06-59", "lastchanger": "dan-zeman"}
 },
 "ga": {
 "is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Dúirt sé [nach] múinteoir é.", "exampleen": "He said he is not a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-36-50", "lastchanger": "dan-zeman"}
