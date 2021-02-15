@@ -2512,6 +2512,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:conjv": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-02-15-10-58-29", "lastchanger": "dan-zeman"},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
