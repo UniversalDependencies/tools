@@ -311,6 +311,9 @@
 "faire": {"functions": [{"function": "Voice=Cau", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Il [fait] accélérer ses troupes.", "exampleen": "He accelerates his troops.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-06-10-04-20", "lastchanger": "dan-zeman"},
 "être": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Elles [furent] victimes de la Révolution française.", "exampleen": "They were victims of the French Revolution.", "comment": ""}, {"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of a main verb", "deficient": "", "example": "Lorgue de Barbarie portatif a [été] créé en 1890.", "exampleen": "The portable Lorgue de Barbarie was created in 1890.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-15-08-35-39", "lastchanger": "dan-zeman"}
 },
+"fro": {
+"estre": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Serai] ses hom par amur e par feid.", "exampleen": "Will be his man, my love and faith swearing.", "comment": "The Song of Roland"}], "status": "documented", "lastchanged": "2021-02-15-08-47-06", "lastchanger": "dan-zeman"}
+},
 "ga": {
 "is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Dúirt sé [nach] múinteoir é.", "exampleen": "He said he is not a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-36-50", "lastchanger": "dan-zeman"}
 },
