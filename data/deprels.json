@@ -3506,7 +3506,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:com": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"nmod:comp": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nmod:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
