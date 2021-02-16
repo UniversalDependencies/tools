@@ -238,7 +238,7 @@
 "Subordinative": {"type": "local", "values": ["Yes"], "errors": []},
 "Ventive": {"type": "local", "values": ["Yes"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Stat", "Fin", "Inf"], "errors": []},
-"VerbStem": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"D\">`Dt`</a>: Dt'.", "Unrecognized level 3 heading '### <a name=\"D\">`G`</a>: G'.", "Unrecognized level 3 heading '### <a name=\"D\">`Gt`</a>: Gt'.", "Unrecognized level 3 heading '### <a name=\"D\">`Gtn`</a>: Gtn'.", "Unrecognized level 3 heading '### <a name=\"D\">`N`</a>: N'.", "Unrecognized level 3 heading '### <a name=\"D\">`Ntn`</a>: Ntn'.", "Unrecognized level 3 heading '### <a name=\"D\">`S`</a>: S'.", "Unrecognized level 3 heading '### <a name=\"D\">`St`</a>: St'.", "Unrecognized level 3 heading '### <a name=\"D\">`Stn`</a>: Stn'."]}
+"VerbStem": {"type": "local", "values": [], "errors": ["No examples found under value 'D'.", "No examples found under value 'Dt'.", "No examples found under value 'G'.", "No examples found under value 'Gt'.", "No examples found under value 'Gtn'.", "No examples found under value 'N'.", "No examples found under value 'Ntn'.", "No examples found under value 'S'.", "No examples found under value 'St'."]}
 },
 "am": {
 "Case": {"type": "universal", "values": ["Ben", "Mal", "Loc", "Ins", "Abl"], "errors": []},
