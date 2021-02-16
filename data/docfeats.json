@@ -238,7 +238,7 @@
 "Subordinative": {"type": "local", "values": ["Yes"], "errors": []},
 "Ventive": {"type": "local", "values": ["Yes"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Stat", "Fin", "Inf"], "errors": []},
-"Verbstem": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"D\">`Dt`</a>: Dt'.", "Unrecognized level 3 heading '### <a name=\"D\">`G`</a>: G'.", "Unrecognized level 3 heading '### <a name=\"D\">`Gt`</a>: Gt'.", "Unrecognized level 3 heading '### <a name=\"D\">`Gtn`</a>: Gtn'.", "Unrecognized level 3 heading '### <a name=\"D\">`N`</a>: N'.", "Unrecognized level 3 heading '### <a name=\"D\">`Ntn`</a>: Ntn'.", "Unrecognized level 3 heading '### <a name=\"D\">`S`</a>: S'.", "Unrecognized level 3 heading '### <a name=\"D\">`St`</a>: St'.", "Unrecognized level 3 heading '### <a name=\"D\">`Stn`</a>: Stn'."]}
+"VerbStem": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"D\">`Dt`</a>: Dt'.", "Unrecognized level 3 heading '### <a name=\"D\">`G`</a>: G'.", "Unrecognized level 3 heading '### <a name=\"D\">`Gt`</a>: Gt'.", "Unrecognized level 3 heading '### <a name=\"D\">`Gtn`</a>: Gtn'.", "Unrecognized level 3 heading '### <a name=\"D\">`N`</a>: N'.", "Unrecognized level 3 heading '### <a name=\"D\">`Ntn`</a>: Ntn'.", "Unrecognized level 3 heading '### <a name=\"D\">`S`</a>: S'.", "Unrecognized level 3 heading '### <a name=\"D\">`St`</a>: St'.", "Unrecognized level 3 heading '### <a name=\"D\">`Stn`</a>: Stn'."]}
 },
 "am": {
 "Case": {"type": "universal", "values": ["Ben", "Mal", "Loc", "Ins", "Abl"], "errors": []},
