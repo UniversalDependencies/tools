@@ -645,7 +645,7 @@
 "koi": {
 "бы": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "вермыны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"вӧвны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"вӧвны": {"functions": [{"function": "cop.AUX", "rule": "past", "deficient": "used in past", "example": "кытӧн мудьӧт вылын сылӧн [вӧлі] ольпась", "exampleen": "where he had a bed on the ground", "comment": "existential and equivalence"}], "status": "documented", "lastchanged": "2021-02-17-11-59-54", "lastchanger": "rueter"},
 "ковны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "не": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "овлывлыны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
