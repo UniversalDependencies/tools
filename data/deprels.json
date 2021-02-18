@@ -4498,7 +4498,7 @@
 "aux:imp": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:opt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"aux:q": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"aux:q": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
@@ -4548,7 +4548,7 @@
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:ds": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []}
+"xcomp:ds": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "naq": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
