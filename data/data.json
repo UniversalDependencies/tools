@@ -650,7 +650,7 @@
 "не": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "овлывлыны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "овлыны": {"functions": [{"function": "cop.AUX", "rule": "present", "deficient": "present", "example": "Мортлӧ пыр [овлӧ] долыт, кӧр", "exampleen": "It is alway fun for a person, when", "comment": "experiencer"}], "status": "documented", "lastchanged": "2021-02-18-09-32-11", "lastchanger": "rueter"},
-"овны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"овны": {"functions": [{"function": "cop.AUX", "rule": "with converbs", "deficient": "with converbs", "example": "Сія пондыліс [овны] куриттӧг да вина ютӧг.", "exampleen": "He began being without smoking and drinking liqueur.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-18-10-56-55", "lastchanger": "rueter"},
 "оз": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "позьны": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "эм": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
