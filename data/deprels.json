@@ -3471,7 +3471,7 @@
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:ds": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []}
+"xcomp:ds": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "kpv": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
