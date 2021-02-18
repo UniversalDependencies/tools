@@ -20,7 +20,6 @@ BEGIN
     use Cwd;
     my $path = $0;
     my $currentpath = getcwd();
-    $currentpath =~ s/\r?\n$//;
     $libpath = $currentpath;
     if($path =~ m:/:)
     {
@@ -29,7 +28,6 @@ BEGIN
         $libpath = getcwd();
         chdir($currentpath);
     }
-    $libpath =~ s/\r?\n$//;
     #print STDERR ("libpath=$libpath\n");
 }
 use lib $libpath;
