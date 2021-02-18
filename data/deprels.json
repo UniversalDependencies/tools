@@ -1505,6 +1505,7 @@
 "dep:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-02-18-04-12-07", "lastchanger": "hayleypark"},
 "dep:emo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:infl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"dep:mark": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:pos": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
