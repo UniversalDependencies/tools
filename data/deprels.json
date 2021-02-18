@@ -1501,6 +1501,7 @@
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep:ana": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"dep:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:emo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:infl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:pos": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
