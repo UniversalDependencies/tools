@@ -1181,6 +1181,7 @@
 "nmod:obj": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"nmod:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
