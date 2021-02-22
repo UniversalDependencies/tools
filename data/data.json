@@ -725,7 +725,7 @@
 "оль": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "савомс": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "сашендовомс": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"улемс": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"улемс": {"functions": [{"function": "cop.AUX", "rule": "future, past", "deficient": "future, past", "example": "Сёксень вирсь [ульсь] пяк мазы,", "exampleen": "The autumn forest was very beautiful", "comment": "present and some past tense marking in copula complement"}], "status": "documented", "lastchanged": "2021-02-22-19-38-28", "lastchanger": "rueter"},
 "эрявомс": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "mov": {
