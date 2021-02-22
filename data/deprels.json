@@ -6929,7 +6929,7 @@
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"root": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'root'."]},
+"root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
