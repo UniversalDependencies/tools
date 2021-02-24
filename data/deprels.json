@@ -295,7 +295,7 @@
 "nsubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obj:agent": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obj:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
