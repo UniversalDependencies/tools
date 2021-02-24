@@ -264,7 +264,7 @@
 "advcl:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod:neg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
