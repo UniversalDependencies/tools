@@ -719,7 +719,7 @@
 "аф": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "афи": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "афоль": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"аш": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"аш": {"functions": [{"function": "cop.AUX", "rule": "existential-possessive negative copula present and past", "deficient": "used in indicative present and past only", "example": "кодама аньцек краскат сонь эсонза [ашельхть].", "exampleen": "what kinds of colors it did not have in it.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-24-10-11-40", "lastchanger": "rueter"},
 "ашезь": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "катк": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "оль": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
