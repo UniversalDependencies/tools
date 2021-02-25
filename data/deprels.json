@@ -1052,7 +1052,7 @@
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"aux": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["File must not be named 'aux.md' (portability across systems). Use 'aux_.md' instead."]},
+"aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
