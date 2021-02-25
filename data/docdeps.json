@@ -1504,7 +1504,7 @@
 "expl": {"type": "universal", "errors": ["No examples found for relation 'expl'."]},
 "fixed": {"type": "universal", "errors": []},
 "flat": {"type": "universal", "errors": []},
-"foreign": {"type": "", "errors": ["Relation 'foreign' is not a subtype of any approved main type.", "Documentation does not belong to UD v2 guidelines."]},
+"flat_foreign": {"type": "", "errors": ["Relation 'flat_foreign' does not have the prescribed form.", "Relation 'flat_foreign' is not a subtype of any approved main type.", "Documentation does not belong to UD v2 guidelines."]},
 "goeswith": {"type": "universal", "errors": []},
 "iobj": {"type": "universal", "errors": ["No examples found for relation 'iobj'.", "Documentation does not belong to UD v2 guidelines."]},
 "list": {"type": "universal", "errors": []},
