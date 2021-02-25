@@ -6910,7 +6910,7 @@
 "flat_foreign": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "foreign": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "goeswith": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"iobj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'iobj'."]},
+"iobj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "neg": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'neg' is not a subtype of any approved main type."]},

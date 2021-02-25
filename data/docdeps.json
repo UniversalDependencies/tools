@@ -1506,7 +1506,7 @@
 "flat": {"type": "universal", "errors": []},
 "flat:foreign": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "goeswith": {"type": "universal", "errors": []},
-"iobj": {"type": "universal", "errors": ["No examples found for relation 'iobj'.", "Documentation does not belong to UD v2 guidelines."]},
+"iobj": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "list": {"type": "universal", "errors": []},
 "mark": {"type": "universal", "errors": []},
 "neg": {"type": "", "errors": ["Relation 'neg' is not a subtype of any approved main type.", "Documentation does not belong to UD v2 guidelines."]},
