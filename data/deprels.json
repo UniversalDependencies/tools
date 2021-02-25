@@ -6896,7 +6896,7 @@
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:cop": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "csubjpass": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'csubjpass' is not a subtype of any approved main type."]},
-"dep": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'dep'."]},
+"dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det:predet": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
