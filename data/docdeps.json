@@ -1482,7 +1482,7 @@
 "advmod:emph": {"type": "local", "errors": []},
 "amod": {"type": "universal", "errors": []},
 "appos": {"type": "universal", "errors": []},
-"aux": {"type": "universal", "errors": ["File must not be named 'aux.md' (portability across systems). Use 'aux_.md' instead.", "Documentation does not belong to UD v2 guidelines."]},
+"aux": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "aux:q": {"type": "local", "errors": []},
 "auxpass": {"type": "", "errors": ["Relation 'auxpass' is not a subtype of any approved main type.", "No examples found for relation 'auxpass'.", "Documentation does not belong to UD v2 guidelines."]},
 "case": {"type": "universal", "errors": []},
