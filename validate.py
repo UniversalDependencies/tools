@@ -1923,8 +1923,12 @@ def load_deprel_set(filename_langspec, lcode):
     res = set()
     ###!!! If lcode is 'ud', we should permit all universal dependency relations,
     ###!!! regardless of language-specific documentation.
+    ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
+    if lcode == 'ud':
+        res = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop', 'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case', 'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan', 'goeswith', 'reparandum', 'punct', 'root', 'dep'])
+        return res
     # Do not crash if the user asks for an unknown language.
-    if not lcode in all_deprels:
+    elif not lcode in all_deprels:
         msg = ''
         msg += "No dependency relation types have been permitted for language [%s].\n" % (lcode)
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
