@@ -10,6 +10,7 @@ acl:jak
 acl:jakmile
 acl:jako
 acl:jakoby
+acl:jakoby_že
 acl:jako_k
 acl:jako_když
 acl:jako_na
@@ -30,6 +31,7 @@ acl:proti
 acl:proto
 acl:protože
 acl:relcl:jako
+acl:relcl:jakoby
 acl:s_zda
 acl:takže
 acl:totiž_že
@@ -161,6 +163,7 @@ nmod:aby
 nmod:acc
 nmod:a_la:nom
 nmod:a_le:nom
+nmod:ala:nom
 nmod:a:nom
 nmod:ať:ins
 nmod:až_do
@@ -234,10 +237,12 @@ nmod:místo
 nmod:místo:gen
 nmod:na
 nmod:na:acc
+nmod:na:nom
 nmod:nad
 nmod:nad:acc
 nmod:nad:gen
 nmod:nad:ins
+nmod:nad:nom
 nmod:na:gen
 nmod:na:loc
 nmod:namísto:gen
@@ -266,6 +271,7 @@ nmod:nom
 nmod:o
 nmod:o:acc
 nmod:od
+nmod:o:dat
 nmod:od:gen
 nmod:of
 nmod:of:gen
@@ -284,6 +290,7 @@ nmod:po:acc
 nmod:poblíž
 nmod:poblíž:gen
 nmod:počátek:gen
+nmod:počínat
 nmod:počínat:ins
 nmod:pod
 nmod:pod:acc
@@ -297,6 +304,7 @@ nmod:po:loc
 nmod:pomoc:gen
 nmod:pomocí
 nmod:pomocí:gen
+nmod:po:nom
 nmod:po_před:loc
 nmod:po_vzor:gen
 nmod:pro
@@ -420,6 +428,7 @@ nmod:za:nom
 nmod:z_ať:gen
 nmod:za_účel:gen
 nmod:z_byť:gen
+nmod:z:dat
 nmod:z:gen
 nmod:z_hledisko:gen
 nmod:z_jako:gen
@@ -434,10 +443,12 @@ nmod:z_titul:gen
 nmod:zvíci:gen
 nmod:že
 nmod:že:gen
+obl:a
 obl:aby
 obl:acc
 obl:ač
 obl:ač:ins
+obl:ačkoli
 obl:ačkoliv
 obl:ad:acc
 obl:ad:nom
@@ -482,6 +493,7 @@ obl:arg:o
 obl:arg:o:acc
 obl:arg:od
 obl:arg:o:dat
+obl:arg:od:dat
 obl:arg:od:gen
 obl:arg:o:gen
 obl:arg:okolo
@@ -514,6 +526,7 @@ obl:arg:s_byť:ins
 obl:arg:se:ins
 obl:arg:s:gen
 obl:arg:s:ins
+obl:arg:s:nom
 obl:arg:s_zřetel:dat
 obl:arg:s_zřetel_k:dat
 obl:arg:u:gen
@@ -574,6 +587,7 @@ obl:díky
 obl:díky:dat
 obl:dle:gen
 obl:do
+obl:do:acc
 obl:doba_po:gen
 obl:do:gen
 obl:dokud
@@ -606,7 +620,9 @@ obl:jak:nom
 obl:jako
 obl:jako:acc
 obl:jakoby:nom
+obl:jakoby_na:acc
 obl:jakoby_pod:ins
+obl:jakoby_z:gen
 obl:jako:ins
 obl:jako:nom
 obl:jako_u:gen
@@ -627,6 +643,8 @@ obl:k:nom
 obl:kolem
 obl:kolem:gen
 obl:konec:gen
+obl:koncem:gen
+obl:krom:gen
 obl:kromě
 obl:kromě:gen
 obl:kvůli_byť:dat
@@ -638,6 +656,7 @@ obl:loc
 obl:mezi
 obl:mezi:acc
 obl:mezi:ins
+obl:mezi:voc
 obl:mezi_než:acc
 obl:mimo
 obl:mimo:acc
@@ -730,6 +749,7 @@ obl:po:acc
 obl:poblíž:gen
 obl:počátek
 obl:počátek:gen
+obl:počátkem:gen
 obl:počátek_než:gen
 obl:počínaje:ins
 obl:počínat
@@ -763,6 +783,7 @@ obl:pro
 obl:pro:acc
 obl:pro:gen
 obl:pro_jako:acc
+obl:pro:nom
 obl:pro_případ:gen
 obl:prostřednictví
 obl:prostřednictví:gen
@@ -770,6 +791,7 @@ obl:prostřednictví:ins
 obl:prostřednictvím:gen
 obl:proti
 obl:proti:dat
+obl:proti:gen
 obl:protože
 obl:protože:nom
 obl:před
@@ -781,6 +803,7 @@ obl:před_než:ins
 obl:přes
 obl:přes:acc
 obl:přes:gen
+obl:přes:nom
 obl:přestože
 obl:přestože:acc
 obl:při
@@ -873,6 +896,7 @@ obl:v_k:dat
 obl:v_kombinace_s:ins
 obl:v_konfrontace_s:ins
 obl:v_kontext_s:ins
+obl:vliv
 obl:vliv:gen
 obl:v:loc
 obl:v_místo:acc
@@ -945,12 +969,14 @@ obl:v_závislost_na:loc
 obl:v_závislost_s:ins
 obl:vzdor:dat
 obl:vzhledem:dat
+obl:vzhledem_k
 obl:vzhledem_k:dat
 obl:v_znamení:gen
 obl:z
 obl:za
 obl:za:acc
 obl:začátek:gen
+obl:začátkem:gen
 obl:za:gen
 obl:za:ins
 obl:za_místo:acc
