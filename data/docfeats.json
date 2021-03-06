@@ -745,7 +745,7 @@
 "PronType": {"type": "universal", "values": ["Prs", "Rcp", "Int", "Dem", "Loc"], "errors": []},
 "Reflex": {"type": "universal", "values": ["Yes"], "errors": []},
 "Tense": {"type": "universal", "values": ["Past", "Fut", "Pres", "Pqp"], "errors": []},
-"VerbForm": {"type": "universal", "values": ["Fin", "Part", "Conv", "Vnoun"], "errors": []},
+"VerbForm": {"type": "universal", "values": ["Conv", "Fin", "Part", "Vnoun"], "errors": []},
 "Voice": {"type": "universal", "values": ["Pass", "Rcp", "Cau", "Rfl"], "errors": []}
 },
 "uk": {
