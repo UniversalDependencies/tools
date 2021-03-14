@@ -5,46 +5,74 @@
 This repository contains various scripts in Perl and Python that can be used as tools for Universal Dependencies.
 
 ## [validate.py](https://github.com/UniversalDependencies/tools/blob/master/validate.py)
-Reads a CoNLL-U file and verifies that it complies with the UD specification. It must be run with the language code and there must exist corresponding lists of treebank-specific features and dependency relations in order to check that they are valid, too.
 
-The script runs under Python 3 and needs the third-party module **regex**. If you do not have the **regex** module, install it using `pip install --user regex`.
+Reads a CoNLL-U file and verifies that it complies with the UD specification. It must be run with
+the language code and there must exist corresponding lists of treebank-specific features and
+dependency relations in order to check that they are valid, too.
 
-NOTE: Depending on the configuration of your system, it is possible that both Python 2 and 3 are installed; then you may have to run `python3` instead of `python`, and `pip3` instead of `pip`.
+The script runs under Python 3 and needs the third-party module **regex**. If you do not have the
+**regex** module, install it using `pip install --user regex`.
+
+NOTE: Depending on the configuration of your system, it is possible that both Python 2 and 3 are
+installed; then you may have to run `python3` instead of `python`, and `pip3` instead of `pip`.
 
 ```
 cat la_proiel-ud-train.conllu | python validate.py --lang la --max-err=0
 ```
 
-
 You can run `python validate.py --help` for a list of available options.
+
+
 
 ## [check_sentence_ids.pl](https://github.com/UniversalDependencies/tools/blob/master/check_sentence_ids.pl)
 
+Reads CoNLL-U files from STDIN and verifies that every sentence has a unique id in the sent_id
+comment. All files of one treebank (repository) must be supplied at once in order to test
+treebank-wide id uniqueness.
 
-Reads CoNLL-U files from STDIN and verifies that every sentence has a unique id in the sent_id comment. All files of one treebank (repository) must be supplied at once in order to test treebank-wide id uniqueness.
 ```
 cat *.conllu | perl check_sentence_ids.pl
 ```
 
-## [normalize_unicode.pl](https://github.com/UniversalDependencies/tools/blob/master/normalize_unicode.pl)
-Converts Unicode to the NFC normalized form. Can be applied to any UTF-8-encoded text file, including CoNLL-U. As a result, if there are character combinations that by definition must look the same, the same sequence of bytes will be used to represent the glyph, thus improving accuracy of models (as long as they are applied to normalized data too).
 
-**Beware**: The output may slightly differ depending on your version of Perl because the Unicode standard evolves and newer Perl versions incorporate newer versions of Unicode data.
+
+## [normalize_unicode.pl](https://github.com/UniversalDependencies/tools/blob/master/normalize_unicode.pl)
+
+Converts Unicode to the NFC normalized form. Can be applied to any UTF-8-encoded text file, including
+CoNLL-U. As a result, if there are character combinations that by definition must look the same,
+the same sequence of bytes will be used to represent the glyph, thus improving accuracy of models
+(as long as they are applied to normalized data too).
+
+**Beware**: The output may slightly differ depending on your version of Perl because the Unicode
+standard evolves and newer Perl versions incorporate newer versions of Unicode data.
+
 ```
 perl normalize_unicode.pl < input.conllu > normalized_output.conllu
 ```
+
+
 
 ## [conllu-stats.pl](https://github.com/UniversalDependencies/tools/blob/master/conllu-stats.pl)
 
 Reads a CoNLL-U file, collects various statistics and prints them. This Perl script
 should not be confused with conll-stats.py, an old Python 2 program that collects
-just a few very basic statistics. The Perl script (conllu-stats.pl) is used to generate the stats.xml files in each data repository.
+just a few very basic statistics. The Perl script (conllu-stats.pl) is used to generate
+the stats.xml files in each data repository.
+
+The script depends on Perl libraries `YAML` and `JSON::Parse` that may not be installed
+automatically with Perl. If they are not installed on your system, you should be able
+to install them with the `cpan` command: `cpan YAML` and `cpan JSON::Parse`.
+
 ```
 perl conllu-stats.pl *.conllu > stats.xml
 ```
 
+
+
 ## [mwtoken-stats.pl](https://github.com/UniversalDependencies/tools/blob/master/mwtoken-stats.pl)
+
 Reads a CoNLL-U file, collects statistics of multi-word tokens and prints them.
+
 ```
 cat *.conllu | perl mwtoken-stats.pl > mwtoken-stats.txt
 ```
