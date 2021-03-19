@@ -2775,7 +2775,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:att": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'nmod:att'."]},
+"nmod:att": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:attlvc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:obl": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'nmod:obl'."]},
 "nmod:obllvc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
