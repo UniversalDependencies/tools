@@ -35,8 +35,11 @@ if($folder =~ m:/:)
 }
 if($verbose)
 {
-    print STDERR ("Running the following version of tools/evaluate_treebank.pl:\n");
-    system("cd tools ; (git log evaluate_treebank.pl | head -3 1>&2) ; cd ..");
+    # Log the current version of evaluate_treebank.pl, validate.py, and the data files used by validate.py.
+    ###!!! Here we assume that 'tools' is a subfolder of the current folder.
+    ###!!! However, later we take validate.py from PATH and it could be a different copy at a different location!
+    print STDERR ("Running the following version of UD tools:\n");
+    system("cd tools ; (git log | head -3 1>&2) ; cd ..");
 }
 # The ranking that we apply to the list of treebanks of a given language (on UD title page)
 # should be based on the most recent official release, i.e., on the master branch.
@@ -219,6 +222,8 @@ if($n > 0)
 {
     $score{udapi} = 1;
     my $command = get_udapi_command($folder, $record->{lcode});
+    ###!!! In verbose mode we should log the exact version of Udapi that we used, like we do for the tools repository.
+    ###!!! This may be more difficult given that in CGI mode we use the copy in the curren folder instead of the git clone.
     if(defined($command))
     {
         my $output = `$command`;
