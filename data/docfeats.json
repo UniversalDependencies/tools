@@ -726,6 +726,7 @@
 "tpn": {
 "Aspect": {"type": "universal", "values": ["Compl", "Iter"], "errors": []},
 "Case": {"type": "universal", "values": ["Ref", "Loc", "Tra", "Per"], "errors": []},
+"Intens": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Compl\">`Yes`</a>: Yes'.", "No feature values found."]},
 "Mood": {"type": "universal", "values": ["Perm", "Sub"], "errors": []},
 "Nomzr": {"type": "local", "values": ["Circ", "DevPass", "Ag", "Rel"], "errors": []},
 "Person": {"type": "universal", "values": ["33", "1", "2", "3", "12", "13", "23"], "errors": []},
