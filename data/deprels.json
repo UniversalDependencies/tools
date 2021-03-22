@@ -2777,7 +2777,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:att": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"nmod:attlvc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nmod:attlvc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:obllvc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
