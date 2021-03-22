@@ -858,7 +858,7 @@
 "ccomp:pred": {"type": "local", "errors": []},
 "compound": {"type": "universal", "errors": []},
 "compound:preverb": {"type": "local", "errors": []},
-"fixed": {"type": "universal", "errors": ["No examples found for relation 'fixed'.", "Documentation does not belong to UD v2 guidelines."]},
+"fixed": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nmod:att": {"type": "local", "errors": []},
 "nmod:obl": {"type": "local", "errors": []}
 },
