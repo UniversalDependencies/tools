@@ -2754,7 +2754,7 @@
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"ccomp:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"ccomp:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:pred": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
