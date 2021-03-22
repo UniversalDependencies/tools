@@ -726,7 +726,7 @@
 "Aspect": {"type": "universal", "values": ["Compl"], "errors": []},
 "Case": {"type": "universal", "values": ["Ref", "Loc", "Tra"], "errors": []},
 "Nomzr": {"type": "local", "values": ["Circ", "DevPass"], "errors": []},
-"Person": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"1\">`123`</a>: Person=23'."]},
+"Person": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"1\">`23`</a>: Person=23'."]},
 "Poss": {"type": "universal", "values": ["Hum"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont", "NCont", "Abs"], "errors": []}
 },
