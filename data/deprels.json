@@ -2738,7 +2738,7 @@
 "advmod:mode": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod:que": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"advmod:tfrom": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod:tfrom'."]},
+"advmod:tfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:tlocy": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:to": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod:to'."]},
 "advmod:tto": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod:tto'."]},
