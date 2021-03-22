@@ -2733,7 +2733,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:from": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod:from'."]},
+"advmod:from": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "advmod:locy": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:mode": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},

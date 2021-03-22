@@ -845,7 +845,6 @@
 "xcomp:pred": {"type": "local", "errors": []}
 },
 "hu": {
-"advmod:from": {"type": "local", "errors": ["No examples found for relation 'advmod:from'."]},
 "advmod:locy": {"type": "local", "errors": []},
 "advmod:mode": {"type": "local", "errors": []},
 "advmod:que": {"type": "local", "errors": []},
