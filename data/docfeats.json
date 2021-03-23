@@ -726,6 +726,7 @@
 "tpn": {
 "Aspect": {"type": "universal", "values": ["Compl", "Iter"], "errors": []},
 "Case": {"type": "universal", "values": ["All", "Ref", "Loc", "Tra", "Per"], "errors": []},
+"Incorp": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"All\">`Incorp`</a>: Incorporation'.", "No feature values found."]},
 "Intens": {"type": "local", "values": ["Yes"], "errors": []},
 "Mood": {"type": "universal", "values": ["Perm", "Sub"], "errors": []},
 "Nomzr": {"type": "local", "values": ["Circ", "DevPass", "Ag", "Rel"], "errors": []},
