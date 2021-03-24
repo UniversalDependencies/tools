@@ -3653,7 +3653,7 @@
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj:expl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
