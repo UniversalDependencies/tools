@@ -3701,6 +3701,7 @@
 "nsubj:cleft": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nummod:gov": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-03-24-13-33-07", "lastchanger": "Stormur"},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:abs": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
