@@ -3665,6 +3665,7 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:numgov": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-03-24-13-28-53", "lastchanger": "Stormur"},
+"det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-03-24-13-29-39", "lastchanger": "Stormur"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated:acl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
