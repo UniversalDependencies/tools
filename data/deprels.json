@@ -3696,6 +3696,7 @@
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:advmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:appos": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-03-24-13-32-08", "lastchanger": "Stormur"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:cleft": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
