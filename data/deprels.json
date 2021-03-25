@@ -7005,7 +7005,7 @@
 "nmod:arg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:cau": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nmod:comp": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
-"nmod:part": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"nmod:part": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:pass": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
