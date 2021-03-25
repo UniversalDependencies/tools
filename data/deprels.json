@@ -7010,7 +7010,7 @@
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"nsubj:cop": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nsubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubjpass": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'nsubjpass' is not a subtype of any approved main type."]},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
