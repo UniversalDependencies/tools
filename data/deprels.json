@@ -6981,7 +6981,7 @@
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"csubj:cop": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"csubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubjpass": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'csubjpass' is not a subtype of any approved main type."]},
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
