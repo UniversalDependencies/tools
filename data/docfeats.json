@@ -648,7 +648,8 @@
 "VerbType": {"type": "local", "values": ["Ser"], "errors": []}
 },
 "pl": {
-"SubGender": {"type": "local", "values": ["Masc1", "Masc2", "Masc3"], "errors": []}
+"SubGender": {"type": "local", "values": ["Masc1", "Masc2", "Masc3"], "errors": []},
+"Variant": {"type": "local", "values": [], "errors": ["No examples found under value 'Long'."]}
 },
 "pt": {
 "Case": {"type": "universal", "values": ["Nom", "Acc", "Dat"], "errors": []},
