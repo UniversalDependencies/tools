@@ -3483,6 +3483,8 @@
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:deg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:foc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:freq": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-09-56", "lastchanger": "rueter"},
 "advmod:lmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
