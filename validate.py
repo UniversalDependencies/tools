@@ -28,16 +28,17 @@ AUX=MISC+2 # another extra constant
 COP=MISC+3 # another extra constant
 
 # Global variables:
-curr_line=0 # Current line in the input file
-sentence_line=0 # The line in the input file on which the current sentence starts
-sentence_id=None # The most recently read sentence id
-line_of_first_empty_node=None
-line_of_first_enhanced_orphan=None
-
+curr_line = 0 # Current line in the input file
+sentence_line = 0 # The line in the input file on which the current sentence starts
+sentence_id = None # The most recently read sentence id
+line_of_first_empty_node = None
+line_of_first_enhanced_orphan = None
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
+spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
+
 def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
     Print the warning.
@@ -434,32 +435,57 @@ def validate_sent_id(comments,known_ids,lcode):
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         known_ids.add(sid)
 
-text_re=re.compile('^# text\s*=\s*(.+)$')
+newdoc_re = re.compile('^#\s*newdoc(\s|$)')
+newpar_re = re.compile('^#\s*newpar(\s|$)')
+text_re = re.compile('^#\s*text\s*=\s*(.+)$')
 def validate_text_meta(comments,tree):
+    # Remember if SpaceAfter=No applies to the last word of the sentence.
+    # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+    global spaceafterno_in_effect
     testlevel = 2
     testclass = 'Metadata'
-    matched=[]
+    newdoc_matched = []
+    newpar_matched = []
+    text_matched = []
     for c in comments:
-        match=text_re.match(c)
-        if match:
-            matched.append(match)
-    if not matched:
+        newdoc_match = newdoc_re.match(c)
+        if newdoc_match:
+            newdoc_matched.append(newdoc_match)
+        newpar_match = newpar_re.match(c)
+        if newpar_match:
+            newpar_matched.append(newpar_match)
+        text_match = text_re.match(c)
+        if text_match:
+            text_matched.append(text_match)
+    if len(newdoc_matched) > 1:
+        testid = 'multiple-newdoc'
+        testmessage = 'Multiple newdoc attributes.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if len(newpar_matched) > 1:
+        testid = 'multiple-newpar'
+        testmessage = 'Multiple newpar attributes.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
+        testid = 'spaceafter-newdocpar'
+        testmessage = 'New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if not text_matched:
         testid = 'missing-text'
         testmessage = 'Missing the text attribute.'
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-    elif len(matched)>1:
+    elif len(text_matched) > 1:
         testid = 'multiple-text'
         testmessage = 'Multiple text attributes.'
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     else:
-        stext=matched[0].group(1)
+        stext = text_matched[0].group(1)
         if stext[-1].isspace():
             testid = 'text-trailing-whitespace'
             testmessage = 'The text attribute must not end with whitespace.'
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
         # Validate the text against the SpaceAfter attribute in MISC.
-        skip_words=set()
-        mismatch_reported=0 # do not report multiple mismatches in the same sentence; they usually have the same cause
+        skip_words = set()
+        mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
         for cols in tree:
             if MISC >= len(cols):
                 # This error has been reported elsewhere but we cannot check MISC now.
@@ -502,7 +528,10 @@ def validate_text_meta(comments,tree):
                     mismatch_reported=1
             else:
                 stext=stext[len(cols[FORM]):] # eat the form
-                if 'SpaceAfter=No' not in cols[MISC].split("|"):
+                if 'SpaceAfter=No' in cols[MISC].split("|"):
+                    spaceafterno_in_effect = True
+                else:
+                    spaceafterno_in_effect = False
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
                         testmessage = "'SpaceAfter=No' is missing in the MISC field of node #%s because the text is '%s'." % (cols[ID], shorten(cols[FORM]+stext))
