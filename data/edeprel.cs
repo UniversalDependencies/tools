@@ -269,6 +269,7 @@ nmod:pod_vliv:gen
 nmod:podle
 nmod:podle:gen
 nmod:podél:gen
+nmod:pomoc
 nmod:pomoc:gen
 nmod:pomocí
 nmod:pomocí:gen
