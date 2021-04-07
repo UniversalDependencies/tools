@@ -35,10 +35,12 @@ acl:že
 advcl:a_jestliže
 advcl:a_li
 advcl:a_pokud
+advcl:abi
 advcl:aby
 advcl:alespoň_pokud
 advcl:aniž
 advcl:ač
+advcl:ačkoli
 advcl:ačkoliv
 advcl:ať
 advcl:ať_už
@@ -46,25 +48,31 @@ advcl:až
 advcl:až_když
 advcl:byť
 advcl:co
+advcl:co_když
 advcl:do
 advcl:dokud
 advcl:hlavně_když
 advcl:hlavně_pokud
 advcl:hned_co
+advcl:hned_jak
 advcl:i_když
 advcl:i_pokud
 advcl:jak
 advcl:jak_aby
 advcl:jak_ad
+advcl:jakkoli
 advcl:jakkoliv
 advcl:jakmile
 advcl:jako
 advcl:jako_když
 advcl:jako_kupříkladu
 advcl:jako_že
+advcl:jakoby
 advcl:jelikož
+advcl:jelikož_do
 advcl:jen
 advcl:jen_aby
+advcl:jen_co
 advcl:jen_jestliže
 advcl:jen_když
 advcl:jen_pokud
@@ -76,6 +84,7 @@ advcl:ježto
 advcl:k
 advcl:kdežto
 advcl:kdy
+advcl:kdykoli
 advcl:kdykoliv
 advcl:když
 advcl:když_už
@@ -269,7 +278,6 @@ nmod:pod_vliv:gen
 nmod:podle
 nmod:podle:gen
 nmod:podél:gen
-nmod:pomoc
 nmod:pomoc:gen
 nmod:pomocí
 nmod:pomocí:gen
@@ -400,6 +408,7 @@ nmod:za:nom
 nmod:za_účel:gen
 nmod:začátek:gen
 nmod:zpoza:gen
+nmod:zvíci:gen
 nmod:že
 nmod:že:gen
 nsubj:pass
@@ -419,6 +428,7 @@ obl:arg:byť_s:ins
 obl:arg:co_do:gen
 obl:arg:dat
 obl:arg:do
+obl:arg:do:dat
 obl:arg:do:gen
 obl:arg:díky:dat
 obl:arg:gen
@@ -467,6 +477,7 @@ obl:arg:pro
 obl:arg:pro:acc
 obl:arg:proti
 obl:arg:proti:dat
+obl:arg:proti:nom
 obl:arg:před
 obl:arg:před:acc
 obl:arg:před:ins
@@ -474,8 +485,10 @@ obl:arg:přes
 obl:arg:přes:acc
 obl:arg:při:loc
 obl:arg:s
+obl:arg:s:gen
 obl:arg:s:ins
 obl:arg:s_zřetel_k:dat
+obl:arg:se:ins
 obl:arg:u:gen
 obl:arg:v
 obl:arg:v:acc
@@ -515,6 +528,7 @@ obl:bez_zřetel_k:dat
 obl:bez_zřetel_na:acc
 obl:blízko:dat
 obl:blízko:gen
+obl:blíž:dat
 obl:byť:acc
 obl:byť:gen
 obl:byť:ins
@@ -581,7 +595,9 @@ obl:jako_při:loc
 obl:jako_u:gen
 obl:jako_v:loc
 obl:jako_v_případ:gen
+obl:jakoby:nom
 obl:jakoby_pod:ins
+obl:jakoby_v:loc
 obl:jméno
 obl:jméno:gen
 obl:k
@@ -620,6 +636,7 @@ obl:na:loc
 obl:na:nom
 obl:na_báze:gen
 obl:na_mimo:loc
+obl:na_než:acc
 obl:na_podklad:gen
 obl:na_rozdíl_od
 obl:na_rozdíl_od:gen
@@ -683,6 +700,7 @@ obl:o:gen
 obl:o:loc
 obl:ob:acc
 obl:od
+obl:od:dat
 obl:od:gen
 obl:od:nom
 obl:ohled_na:ins
@@ -719,6 +737,7 @@ obl:postup:gen
 obl:pouze_v:loc
 obl:počátek
 obl:počátek:gen
+obl:počínaje:ins
 obl:počínat
 obl:počínat:ins
 obl:pro
@@ -727,6 +746,7 @@ obl:pro_případ:gen
 obl:prostřednictví
 obl:prostřednictví:gen
 obl:prostřednictví:ins
+obl:prostřednictvím:gen
 obl:proti
 obl:proti:dat
 obl:protože:nom
@@ -744,6 +764,7 @@ obl:při
 obl:při:loc
 obl:při_příležitost:gen
 obl:s
+obl:s:acc
 obl:s:gen
 obl:s:ins
 obl:s:nom
@@ -772,6 +793,7 @@ obl:spolu
 obl:spolu_s
 obl:spolu_s:dat
 obl:spolu_s:ins
+obl:stran:gen
 obl:stranou:dat
 obl:stranou:gen
 obl:takže
@@ -904,7 +926,7 @@ obl:závěr:gen
 obl:úměrně:dat
 obl:úměrně_k:dat
 obl:že_za:gen
-# Starší seznam je dole kvůli ostatním treebankům. Nahoře jsou nově opravené značky z PDT a CAC.
+# Starší seznam je dole kvůli ostatním treebankům. Nahoře jsou nově opravené značky z PDT, CAC a FicTree.
 acl:aby
 acl:ať
 acl:až
