@@ -3495,6 +3495,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux:nec": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
