@@ -2312,7 +2312,7 @@
 },
 "th": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"PART": {"Perf": 289, "Prog": 112}}},
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Perf": 1, "Prog": 1}, "PART": {}}, "lastchanged": "2021-04-10-17-10-48", "lastchanger": "dan-zeman"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Ind", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Imp": 1}, "VERB": {}}, "lastchanged": "2021-04-10-16-45-48", "lastchanger": "dan-zeman"},
 "Person": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["1", "2", "3"], "lvalues": [], "unused_uvalues": ["0", "4"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"1": 103, "2": 19, "3": 324}}},
