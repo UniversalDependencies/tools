@@ -3477,6 +3477,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
