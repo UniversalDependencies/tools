@@ -2698,7 +2698,7 @@
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"dep:alt": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"dep:alt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:numgov": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "det:nummod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
