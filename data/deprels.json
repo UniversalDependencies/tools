@@ -4169,6 +4169,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"obl:inst": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
