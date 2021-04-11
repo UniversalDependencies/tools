@@ -4157,6 +4157,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nmod:appos": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:bahuv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:part": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
