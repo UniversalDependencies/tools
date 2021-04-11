@@ -771,7 +771,8 @@
 "PronType": {"type": "universal", "values": ["Int", "Prs", "Ind"], "errors": []},
 "Red": {"type": "local", "values": ["Mo", "Di"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont", "NCont", "Abs", "Hum"], "errors": []},
-"Voice": {"type": "universal", "values": ["Com", "Cau"], "errors": []}
+"Voice": {"type": "universal", "values": ["Com", "Cau"], "errors": []},
+"number": {"type": "local", "values": [], "errors": ["Feature name 'number' does not have the prescribed form.", "Feature name 'number' differs from globally defined 'Number' in case."]}
 },
 "tr": {
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Prog", "Hab", "Rapid", "Dur", "Prosp"], "errors": []},
