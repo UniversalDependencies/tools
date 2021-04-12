@@ -1500,7 +1500,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "mdf": {
-"Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2021-04-12-09-24-44", "lastchanger": "rueter"},
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Prep", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 2}}},
 "AdvType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Deg", "Loc", "Man", "Tim"], "unused_uvalues": [], "unused_lvalues": ["Cau", "Mod"], "evalues": ["Sta"], "byupos": {"ADV": {"Deg": 1, "Loc": 1, "Man": 1, "Tim": 1}, "SCONJ": {"Tim": 1}}, "lastchanged": "2021-02-24-10-48-15", "lastchanger": "rueter"},
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Anim", "Hum"], "lvalues": [], "unused_uvalues": ["Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Anim": 1, "Hum": 1}, "PROPN": {"Anim": 1, "Hum": 1}}, "lastchanged": "2021-04-12-09-20-37", "lastchanger": "rueter"},
