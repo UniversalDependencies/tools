@@ -138,7 +138,9 @@ BEGIN
         'relcl'     => 'R',
         'relpron'   => 'W',
         'missing'   => 'M',
-        'enhanced'  => 'E'
+        'enhanced'  => 'E',
+        # only for debugging: these are subtypes of the above
+        'relcl-cycle' => 'Y'
     );
 }
 sub save_edge_type
@@ -160,71 +162,69 @@ sub save_edge_type
         $misc = \@misc;
         $node->set_misc($misc);
     }
+    # Extract from MISC all previous Edep attributes.
+    my @edep = grep {m/^Edep=/} (@{$misc});
+    @{$misc} = grep {!m/^Edep=/} (@{$misc});
     my $miscitem = "Edep=$shortcuts{$type}:$id:$deprel";
-    push(@{$misc}, $miscitem);
-    ###!!! Archive: In enhanced_graph_properties, we also collected the following statistics:
-    if(0)
+    push(@edep, $miscitem);
+    # Create a hash so that we can recognize repeated annotations of the same relation.
+    if(scalar(@edep) > 1)
     {
-        # enhanced and all other types that are enhanced only edges
-        $stats{edge_enhanced_only}++;
-        if($report_basenh)
+        my %edep;
+        foreach my $edep (@edep)
         {
-            $stats{basenh}{"edge enhanced only: $iedge->{deprel}"}++;
-        }
-                # The parent is the same node in basic and in enhanced. What about the relation type?
-                    $stats{edge_both_basic_and_enhanced}++;
-                    # cased
-                        $stats{edge_basic_parent_enhanced_type}++;
-                        # relabeled
-                        $stats{edge_basic_parent_incompatible_type}++;
-                    if($report_basenh)
-                    {
-                        $stats{basenh}{"edge enhanced type: $biedge->{deprel} --> $iedge->{deprel}"}++;
-                    }
-                $stats{edge_enhanced_only}++;
-                if($report_basenh)
-                {
-                    $stats{basenh}{"edge enhanced only: $iedge->{deprel}"}++;
-                }
-            $stats{edge_basic_only}++;
-            if($report_basenh)
+            if($edep =~ m/^Edep=([A-Z]+):(\d+(?:\.\d+)?):(.+)$/)
             {
-                # If we want to find the corpus position and investigate whether the annotation is correct,
-                # we may need to know the concrete constellation including parent ids.
-                my $edeps = $curnode->get_deps_string();
-                my $details;
-                if($edeps =~ m/^\d+(\.\d+)?:ref$/)
+                my $t = $1;
+                my $i = $2;
+                my $d = $3;
+                my $key = "$i:$d";
+                if(exists($edep{$key}))
                 {
-                    $details = "$biedge->{deprel}   ref";
-                }
-                elsif($edeps =~ m/^\d+\.\d+:([a-z:]+)$/)
-                {
-                    $details = "1 $biedge->{deprel}   1.1:$1";
+                    # If the previous record of the edge contains the current type, do nothing.
+                    # If the current type is not there yet, add it and sort the types alphabetically.
+                    my $types = $edep{$key};
+                    if($types !~ m/$t/)
+                    {
+                        $edep{$key} = join('', sort {$a cmp $b} ((split(//, $types)), $t));
+                    }
                 }
                 else
                 {
-                    $details = "$biedge->{id} $biedge->{deprel}   $edeps";
+                    $edep{$key} = $t;
                 }
-                $stats{basenh}{"edge basic only: $biedge->{deprel} [$details]"}++;
             }
-            # coparent
-            $stats{conj_effective_parent}++;
-            # codepend found
-            if($found)
+            else
             {
-                $stats{conj_shared_dependent}++;
+                die("Unknown edge record '$edep'");
             }
-            # xsubj
-        if(scalar(@coreprxgpr) > 0)
-        {
-            $stats{xsubj}++;
         }
-        # relcl
-                if(scalar(@refpr) > 0)
+        # Serialize the edeps again in MISC.
+        my @keys = sort
+        {
+            $a =~ m/^(\d+)(?:\.(\d+))?:(.+)$/;
+            my $amaj = $1;
+            my $amin = $2 // 0;
+            my $adep = $3;
+            $b =~ m/^(\d+)(?:\.(\d+))?:(.+)$/;
+            my $bmaj = $1;
+            my $bmin = $2 // 0;
+            my $bdep = $3;
+            my $r = $amaj <=> $bmaj;
+            unless($r)
+            {
+                $r = $amin <=> $bmin;
+                unless($r)
                 {
-                    $stats{relcl}++;
+                    $r = $adep cmp $bdep;
                 }
+            }
+            $r
+        }
+        (keys(%edep));
+        @edep = map {"Edep=$edep{$_}:$_"} (@keys);
     }
+    push(@{$misc}, @edep);
 }
 
 
@@ -288,6 +288,160 @@ sub is_path_from_to
 
 
 #------------------------------------------------------------------------------
+# Checks whether an edge can have been propagated from a parent of coordination
+# to a non-first conjunct.
+#------------------------------------------------------------------------------
+sub is_coparent
+{
+    my $iedge = shift; # the incoming edge to be checked
+    my $iedges = shift; # array ref: all incoming edges to the current node
+    my $graph = shift;
+    # Parent propagation in coordination: a node has at least two parents, one of them is conj,
+    # the other is not, and the other's parent is identical to a grandparent reachable via the conj parent.
+    if($iedge->{deprel} !~ m/^conj(:|$)/)
+    {
+        # Look for the other route via 'conj'.
+        my @candidates = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^conj(:|$)/} (@{$iedges});
+        foreach my $candidate (@candidates)
+        {
+            # The candidate is a conj parent. Check its parents (my grandparents).
+            # If one of them is also my parent from the $iedge we are checking,
+            # then we have an instance of coparent (we might also want to check
+            # whether the deprels are identical, or at least somehow compatible).
+            if(any {$_->{id} eq $iedge->{id}} (@{$graph->node($candidate->{id})->iedges()}))
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether an edge can have been propagated from a non-first conjunct to
+# a shared dependent of coordination.
+#------------------------------------------------------------------------------
+sub is_codepend
+{
+    my $iedge = shift; # the incoming edge to be checked
+    my $iedges = shift; # array ref: all incoming edges to the current node
+    my $graph = shift;
+    # Shared dependent in coordination: at least two non-conj parents
+    # (typically but not necessarily with same relation going to me),
+    # furthermore, the parents are connected with a conj relation.
+    if($iedge->{deprel} !~ m/^conj(:|$)/)
+    {
+        # Look for the other route via 'conj'.
+        my @candidates = grep {$_->{id} ne $iedge->{id} && $_->{deprel} !~ m/^conj(:|$)/} (@{$iedges});
+        foreach my $candidate (@candidates)
+        {
+            # The candidate we are looking for will have my other parent as its
+            # conj parent (my grandparent).
+            if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^conj(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether an edge can have been propagated as an external subject of a
+# controlled predicate.
+#------------------------------------------------------------------------------
+sub is_xsubj
+{
+    my $iedge = shift; # the incoming edge to be checked
+    my $iedges = shift; # array ref: all incoming edges to the current node
+    my $graph = shift;
+    # Subject propagation through xcomp: at least two parents, I am subject
+    # or object of one, and subject of the other. The latter parent is xcomp of the former.
+    if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+    {
+        # Look for the other route via subject/object/oblique and 'xcomp'.
+        my @candidates = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^([nc]subj|obj|iobj|obl)(:|$)/} (@{$iedges});
+        foreach my $candidate (@candidates)
+        {
+            # The candidate is my "direct" predicate parent. If it is a control verb,
+            # then the other parent (which we are checking) will be its xcomp child.
+            if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^xcomp(:|$)/} (@{$graph->node($candidate->{id})->oedges()}))
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether an edge can have been propagated from a nominal modified by
+# a copular relative clause (where the relative pronoun is the predicate) to
+# the subject of the relative clause.
+#------------------------------------------------------------------------------
+sub is_subj_of_copular_relcl
+{
+    my $iedge = shift; # the incoming edge to be checked
+    my $iedges = shift; # array ref: all incoming edges to the current node
+    my $graph = shift;
+    # Copular relative clauses where the relative pronoun is the predicate:
+    # we have a subject relation from the modified nominal to the subject of the copular clause.
+    # It means that the subject node has two incoming subject relations:
+    # one from the predicate of the relative clause (i.e. from the pronoun)
+    # and the other from the nominal outside the clause that is coreferential with the pronoun.
+    if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+    {
+        # Look for the other path via 'nsubj' and 'acl:relcl'.
+        my @candidates = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^[nc]subj(:|$)/} (@{$iedges});
+        foreach my $candidate (@candidates)
+        {
+            if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^acl(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Check whether an edge can come from a relative clause to the nominal the
+# clause modifies (i.e., there is a cycle).
+#------------------------------------------------------------------------------
+sub is_relcl_cycle
+{
+    my $iedge = shift; # the incoming edge to be checked
+    my $curnode = shift; # the current node (child of $iedge)
+    my $graph = shift;
+    # The incoming relation can be many things (nsubj, obj, obl, nmod etc.)
+    # but it cannot be conj.
+    return 0 if($iedge->{deprel} =~ m/^conj(:|$)/);
+    # The current node must be modified by a relative clause. The deprel should
+    # be preferably 'acl:relcl' but let's check just 'acl'.
+    my @oedges = @{$curnode->oedges()};
+    return 0 if(!any {$_->{deprel} =~ m/^acl(:|$)/} (@oedges));
+    # There must be a path from the current mode to $iedge->{id}; that make be
+    # cycle. The path must lead over the acl(:relcl) child that we just checked
+    # that exists. However, we currently do not verify this detail, we only
+    # check that a path exists.
+    if(is_path_from_to($graph, $curnode->{id}, $iedge->{id}, {}))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Tries to detect various types of enhancements defined in Enhanced UD v2.
 #------------------------------------------------------------------------------
 sub find_enhancements
@@ -297,35 +451,6 @@ sub find_enhancements
     {
         my @iedges = @{$curnode->iedges()};
         my @oedges = @{$curnode->oedges()};
-        # Parent propagation in coordination: 'conj' (always?) accompanied by another relation.
-        # Shared child propagation: node has at least two parents, one of them is 'conj' of the other.
-        my $coparent = 0;
-        if(scalar(@iedges) >= 2 &&
-           scalar(grep {$_->{deprel} =~ m/^conj(:|$)/} (@iedges)) > 0 &&
-           scalar(grep {$_->{deprel} !~ m/^conj(:|$)/} (@iedges)) > 0)
-        {
-            $coparent = 1;
-        }
-        my %gpconj;
-        if(scalar(@iedges) >= 2)
-        {
-            # Find grandparents such that their relation to the parent is 'conj' and my relation to the parent is not 'conj'.
-            # Later we will ask whether one of those grandparents is also my non-conj parent.
-            foreach my $iedge (@iedges)
-            {
-                if($iedge->{deprel} !~ m/^conj(:|$)/)
-                {
-                    my @gpedges = @{$graph->node($iedge->{id})->iedges()};
-                    foreach my $gpedge (@gpedges)
-                    {
-                        if($gpedge->{deprel} =~ m/^conj(:|$)/)
-                        {
-                            $gpconj{$gpedge->{id}}++;
-                        }
-                    }
-                }
-            }
-        }
         # Compare the enhanced incoming edges with the basic incoming edge
         # (if any; an empty node does not participate in any basic edge).
         my $biedge;
@@ -342,7 +467,8 @@ sub find_enhancements
             if($biedge)
             {
                 # The parent is different from the basic parent, hence this is an edge added in the enhanced graph.
-                if($biedge->{id} != $iedge->{id})
+                # Even if the parent is not different but the new label is 'ref', treat it as a new edge (this can happen with copular relative clauses).
+                if($biedge->{id} != $iedge->{id} || $iedge->{deprel} =~ m/^ref(:|$)/)
                 {
                     my $known_reason = 0;
                     # The parent is different from the basic parent. Is it an empty node?
@@ -352,38 +478,25 @@ sub find_enhancements
                         save_edge_type($curnode, 'gapping', $iedge->{id}, $iedge->{deprel});
                         $known_reason = 1;
                     }
-                    if($coparent && $iedge->{deprel} !~ m/^conj(:|$)/)
+                    # Parent propagation in coordination: a node has at least two parents, one of them is conj,
+                    # the other is not, and the other's parent is identical to a grandparent reachable via the conj parent.
+                    if(is_coparent($iedge, \@iedges, $graph))
                     {
                         save_edge_type($curnode, 'coparent', $iedge->{id}, $iedge->{deprel});
                         $known_reason = 1;
                     }
                     # Is one of my over-conj grandparents also my non-conj parent?
-                    if($iedge->{deprel} !~ m/^conj(:|$)/ && exists($gpconj{$iedge->{id}}))
+                    if(is_codepend($iedge, \@iedges, $graph))
                     {
                         save_edge_type($curnode, 'codepend', $iedge->{id}, $iedge->{deprel});
                         $known_reason = 1;
                     }
                     # Subject propagation through xcomp: at least two parents, I am subject
                     # or object of one, and subject of the other. The latter parent is xcomp of the former.
-                    if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+                    if(is_xsubj($iedge, \@iedges, $graph))
                     {
-                        my @parent_iedges = @{$graph->node($iedge->{id})->iedges()};
-                        foreach my $priedge (@parent_iedges)
-                        {
-                            if($priedge->{deprel} =~ m/^xcomp(:|$)/)
-                            {
-                                # $priedge->{id} is my grandparent over nsubj and xcomp (hence it is probably a control verb).
-                                # Is it at the same time my parent over a core arg or oblique relation?
-                                my $r = relation($priedge->{id}, $curnode->{id}, $graph);
-                                if(defined($r) && $r =~ m/^([nc]subj|obj|iobj|obl)(:|$)/)
-                                {
-                                    # I am the external subject of the xcomp predicate, and a subject or object of the control verb.
-                                    save_edge_type($curnode, 'xsubj', $iedge->{id}, $iedge->{deprel});
-                                    $known_reason = 1;
-                                    last;
-                                }
-                            }
-                        }
+                        save_edge_type($curnode, 'xsubj', $iedge->{id}, $iedge->{deprel});
+                        $known_reason = 1;
                     }
                     # Relative clauses: the ref relation.
                     if($iedge->{deprel} =~ m/^ref(:|$)/)
@@ -392,8 +505,8 @@ sub find_enhancements
                         save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
                         $known_reason = 1;
                     }
-                    # Relative clauses: a cycle (we should also check whether it contains acl:relcl but currently we don't).
-                    if(is_path_from_to($graph, $curnode->{id}, $iedge->{id}, {}))
+                    # Relative clauses: a cycle.
+                    if(is_relcl_cycle($iedge, $curnode, $graph))
                     {
                         save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
                         $known_reason = 1;
@@ -401,20 +514,10 @@ sub find_enhancements
                     # Copular relative clauses where the relative pronoun is the predicate: we have a subject relation from the modified nominal to the subject of the copular clause.
                     # It means that the subject node has two incoming subject relations: one from the predicate of the relative clause (i.e. from the pronoun)
                     # and the other from the nominal outside the clause that is coreferential with the pronoun.
-                    if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+                    if(is_subj_of_copular_relcl($iedge, \@iedges, $graph))
                     {
-                        # We assume that the other path has only one node in between, the relative pronoun.
-                        # In addition, the relative pronoun should be a [nc]subj parent of mine, and an acl:relcl child of $iedge->{id}.
-                        my @candidate_iedges = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^[nc]subj(:|$)/} (@iedges);
-                        foreach my $candidate (@candidate_iedges)
-                        {
-                            if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^acl(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
-                            {
-                                save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
-                                $known_reason = 1;
-                                last;
-                            }
-                        }
+                        save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
+                        $known_reason = 1;
                     }
                     unless($known_reason)
                     {
@@ -481,35 +584,22 @@ sub find_enhancements
                 {
                     save_edge_type($curnode, 'gapping', $iedge->{id}, $iedge->{deprel});
                 }
-                if($coparent && $iedge->{deprel} !~ m/^conj(:|$)/)
+                # Parent propagation in coordination: a node has at least two parents, one of them is conj,
+                # the other is not, and the other's parent is identical to a grandparent reachable via the conj parent.
+                if(is_coparent($iedge, \@iedges, $graph))
                 {
                     save_edge_type($curnode, 'coparent', $iedge->{id}, $iedge->{deprel});
                 }
                 # Is one of my over-conj grandparents also my non-conj parent?
-                if($iedge->{deprel} !~ m/^conj(:|$)/ && exists($gpconj{$iedge->{id}}))
+                if(is_codepend($iedge, \@iedges, $graph))
                 {
                     save_edge_type($curnode, 'codepend', $iedge->{id}, $iedge->{deprel});
                 }
                 # Subject propagation through xcomp: at least two parents, I am subject
                 # or object of one, and subject of the other. The latter parent is xcomp of the former.
-                if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+                if(is_xsubj($iedge, \@iedges, $graph))
                 {
-                    my @parent_iedges = @{$graph->node($iedge->{id})->iedges()};
-                    foreach my $priedge (@parent_iedges)
-                    {
-                        if($priedge->{deprel} =~ m/^xcomp(:|$)/)
-                        {
-                            # $priedge->{id} is my grandparent over nsubj and xcomp (hence it is probably a control verb).
-                            # Is it at the same time my parent over a core arg or oblique relation?
-                            my $r = relation($priedge->{id}, $curnode->{id}, $graph);
-                            if(defined($r) && $r =~ m/^([nc]subj|obj|iobj|obl)(:|$)/)
-                            {
-                                # I am the external subject of the xcomp predicate, and a subject or object of the control verb.
-                                save_edge_type($curnode, 'xsubj', $iedge->{id}, $iedge->{deprel});
-                                last;
-                            }
-                        }
-                    }
+                    save_edge_type($curnode, 'xsubj', $iedge->{id}, $iedge->{deprel});
                 }
                 # Relative clauses: the ref relation.
                 if($iedge->{deprel} =~ m/^ref(:|$)/)
@@ -517,27 +607,17 @@ sub find_enhancements
                     $ref_edge_found = 1;
                     save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
                 }
-                # Relative clauses: a cycle (we should also check whether it contains acl:relcl but currently we don't).
-                if(is_path_from_to($graph, $curnode->{id}, $iedge->{id}, {}))
+                # Relative clauses: a cycle.
+                if(is_relcl_cycle($iedge, $curnode, $graph))
                 {
                     save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
                 }
                 # Copular relative clauses where the relative pronoun is the predicate: we have a subject relation from the modified nominal to the subject of the copular clause.
                 # It means that the subject node has two incoming subject relations: one from the predicate of the relative clause (i.e. from the pronoun)
                 # and the other from the nominal outside the clause that is coreferential with the pronoun.
-                if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+                if(is_subj_of_copular_relcl($iedge, \@iedges, $graph))
                 {
-                    # We assume that the other path has only one node in between, the relative pronoun.
-                    # In addition, the relative pronoun should be a [nc]subj parent of mine, and an acl:relcl child of $iedge->{id}.
-                    my @candidate_iedges = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^[nc]subj(:|$)/} (@iedges);
-                    foreach my $candidate (@candidate_iedges)
-                    {
-                        if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^acl(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
-                        {
-                            save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
-                            last;
-                        }
-                    }
+                    save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
                 }
             }
         }
