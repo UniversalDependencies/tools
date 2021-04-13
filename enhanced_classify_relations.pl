@@ -398,6 +398,24 @@ sub find_enhancements
                         save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
                         $known_reason = 1;
                     }
+                    # Copular relative clauses where the relative pronoun is the predicate: we have a subject relation from the modified nominal to the subject of the copular clause.
+                    # It means that the subject node has two incoming subject relations: one from the predicate of the relative clause (i.e. from the pronoun)
+                    # and the other from the nominal outside the clause that is coreferential with the pronoun.
+                    if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+                    {
+                        # We assume that the other path has only one node in between, the relative pronoun.
+                        # In addition, the relative pronoun should be a [nc]subj parent of mine, and an acl:relcl child of $iedge->{id}.
+                        my @candidate_iedges = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^[nc]subj(:|$)/} (@iedges);
+                        foreach my $candidate (@candidate_iedges)
+                        {
+                            if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^acl(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
+                            {
+                                save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
+                                $known_reason = 1;
+                                last;
+                            }
+                        }
+                    }
                     unless($known_reason)
                     {
                         save_edge_type($curnode, 'enhanced', $iedge->{id}, $iedge->{deprel});
@@ -503,6 +521,23 @@ sub find_enhancements
                 if(is_path_from_to($graph, $curnode->{id}, $iedge->{id}, {}))
                 {
                     save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
+                }
+                # Copular relative clauses where the relative pronoun is the predicate: we have a subject relation from the modified nominal to the subject of the copular clause.
+                # It means that the subject node has two incoming subject relations: one from the predicate of the relative clause (i.e. from the pronoun)
+                # and the other from the nominal outside the clause that is coreferential with the pronoun.
+                if($iedge->{deprel} =~ m/^[nc]subj(:|$)/)
+                {
+                    # We assume that the other path has only one node in between, the relative pronoun.
+                    # In addition, the relative pronoun should be a [nc]subj parent of mine, and an acl:relcl child of $iedge->{id}.
+                    my @candidate_iedges = grep {$_->{id} ne $iedge->{id} && $_->{deprel} =~ m/^[nc]subj(:|$)/} (@iedges);
+                    foreach my $candidate (@candidate_iedges)
+                    {
+                        if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^acl(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
+                        {
+                            save_edge_type($curnode, 'relcl', $iedge->{id}, $iedge->{deprel});
+                            last;
+                        }
+                    }
                 }
             }
         }
