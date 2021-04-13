@@ -761,6 +761,7 @@
 "Aspect": {"type": "universal", "values": ["Compl", "Iter", "Suc"], "errors": []},
 "Case": {"type": "universal", "values": ["All", "Ref", "Loc", "Tra", "Per", "Voc"], "errors": []},
 "Dev": {"type": "local", "values": ["Pass"], "errors": []},
+"Emph": {"type": "local", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Incorp": {"type": "local", "values": ["Yes"], "errors": []},
 "Int": {"type": "local", "values": ["Yes"], "errors": []},
 "Intens": {"type": "local", "values": ["Yes"], "errors": []},
