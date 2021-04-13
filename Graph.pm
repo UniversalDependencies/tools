@@ -69,7 +69,7 @@ sub to_conllu_lines
     foreach my $node ($self->get_nodes(1))
     {
         my @fields = ($node->id(), $node->form(), $node->lemma(), $node->upos(), $node->xpos(), $node->get_feats_string(),
-                      $node->bparent(), $node->bdeprel(), $node->get_deps_string(), $node->get_misc_string());
+                      $node->bparent() // '_', $node->bdeprel() // '_', $node->get_deps_string(), $node->get_misc_string());
         push(@sentence, join("\t", @fields));
     }
     return @sentence;

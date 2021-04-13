@@ -19,6 +19,7 @@ BEGIN
 {
     use Cwd;
     my $path = $0;
+    $path =~ s:\\:/:g;
     my $currentpath = getcwd();
     $libpath = $currentpath;
     if($path =~ m:/:)
