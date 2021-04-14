@@ -3675,7 +3675,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"conj:expl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"conj:expl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj:cleft": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
