@@ -3652,7 +3652,7 @@
 "acl:nmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:abs": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"advcl:abs": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:agent": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advcl:appos": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advcl:arg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
