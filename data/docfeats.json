@@ -603,6 +603,7 @@
 "Aspect": {"type": "universal", "values": ["DurIprf", "Imp", "Perf", "Compl", "Hab", "Iter", "Prog", "Dec"], "errors": []},
 "Class": {"type": "local", "values": ["Round", "Seed"], "errors": []},
 "Incorp": {"type": "local", "values": ["Yes"], "errors": []},
+"Nomzr": {"type": "local", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Nomzr1": {"type": "local", "values": ["Pa", "Ag"], "errors": []},
 "Noun": {"type": "local", "values": ["Clf"], "errors": []},
 "Person": {"type": "universal", "values": ["33", "1", "2", "3", "12", "13"], "errors": []},
