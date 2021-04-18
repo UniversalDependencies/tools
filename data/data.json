@@ -1083,7 +1083,8 @@
 "huwag": {"functions": [{"function": "Mood=Imp", "rule": "the auxiliary precedes the main verb", "deficient": "", "example": "[Huwag] kayong umalis.", "exampleen": "Don't leave.", "comment": "Huwag marks negative imperative/optative."}], "status": "documented", "lastchanged": "2020-11-11-10-02-13", "lastchanger": "dan-zeman"}
 },
 "tpn": {
-"in": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ajeporakar wit[en]a", "exampleen": "I fish being seated/sitting", "comment": ""}], "status": "documented", "lastchanged": "2021-04-16-17-55-08", "lastchanger": "@LanguageStructure"}
+"in": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ajeporakar wit[en]a", "exampleen": "I fish being seated/sitting", "comment": ""}], "status": "documented", "lastchanged": "2021-04-16-17-55-08", "lastchanger": "@LanguageStructure"},
+"pop": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "Kog̃ũnpi be okapap kabuk [opop]", "exampleen": "The longhouse of my birth lies in the field", "comment": "Usually indicates lying down"}], "status": "documented", "lastchanged": "2021-04-18-12-21-54", "lastchanger": "@LanguageStructure"}
 },
 "tr": {
 "bil": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
