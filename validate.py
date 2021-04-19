@@ -38,6 +38,7 @@ warn_on_missing_files = set() # langspec files which you should warn about in ca
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
 spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
+auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
 
 def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
@@ -1701,6 +1702,10 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
       'line' ....... line number of the node within the file
     """
     if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
+        altlang = get_alt_language(cols[MISC])
+        if altlang:
+            lang = altlang
+            auxlist, coplist = get_auxdata_for_language(altlang)
         auxdict = {}
         if auxlist != []:
             auxdict = {lang: auxlist}
@@ -1737,6 +1742,10 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
       'line' ....... line number of the node within the file
     """
     if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
+        altlang = get_alt_language(cols[MISC])
+        if altlang:
+            lang = altlang
+            auxlist, coplist = get_auxdata_for_language(altlang)
         copdict = {}
         if coplist != []:
             copdict = {lang: coplist}
@@ -2055,6 +2064,47 @@ def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhan
                 res.add(v)
     return res
 
+def get_auxdata_for_language(lcode):
+    """
+    Searches the previously loaded database of auxiliary/copula lemmas. Returns
+    the AUX and COP lists for a given language code. For most CoNLL-U files,
+    this function is called only once at the beginning. However, some files
+    contain code-switched data and we may temporarily need to validate
+    another language.
+    """
+    global auxdata
+    # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
+    # If any of the functions of the lemma is cop.*, it counts as a copula.
+    auxlist = []
+    coplist = []
+    if lcode == 'shopen':
+        for lcode1 in auxdata.keys():
+            lemmalist = auxdata[lcode1].keys()
+            auxlist = auxlist + [x for x in lemmalist if len([y for y in auxdata[lcode1][x]['functions'] if y['function'] != 'cop.PRON']) > 0]
+            coplist = coplist + [x for x in lemmalist if len([y for y in auxdata[lcode1][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
+    else:
+        lemmalist = auxdata.get(lcode, {}).keys()
+        auxlist = [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if y['function'] != 'cop.PRON']) > 0]
+        coplist = [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
+    return auxlist, coplist
+
+def get_alt_language(misc):
+    """
+    Takes the value of the MISC column for a token and checks it for the
+    attribute Lang=xxx. If present, it is interpreted as the code of the
+    language in which the current token is. This is uselful for code switching,
+    if a phrase is in a language different from the main language of the
+    document. The validator can then temporarily switch to a different set
+    of language-specific tests.
+    """
+    misclist = misc.split('|')
+    p = re.compile(r'Lang=(.+)')
+    for attr in misclist:
+        m = p.match(attr)
+        if m:
+            return m.group(1)
+    return None
+
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
 
@@ -2111,17 +2161,7 @@ if __name__=="__main__":
         with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
             jsondata = json.load(f)
         auxdata = jsondata['auxiliaries']
-        # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
-        # If any of the functions of the lemma is cop.*, it counts as a copula.
-        if args.lang == 'shopen':
-            for lcode in auxdata.keys():
-                lemmalist = auxdata[lcode].keys()
-                tagsets[AUX] = tagsets[AUX] + [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if y['function'] != 'cop.PRON']) > 0]
-                tagsets[COP] = tagsets[COP] + [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
-        else:
-            lemmalist = auxdata.get(args.lang, {}).keys()
-            tagsets[AUX] = [x for x in lemmalist if len([y for y in auxdata[args.lang][x]['functions'] if y['function'] != 'cop.PRON']) > 0]
-            tagsets[COP] = [x for x in lemmalist if len([y for y in auxdata[args.lang][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
+        tagsets[AUX], tagsets[COP] = get_auxdata_for_language(args.lang)
 
     out=sys.stdout # hard-coding - does this ever need to be anything else?
 
