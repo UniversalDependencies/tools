@@ -1961,6 +1961,7 @@
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"vocative:mention": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "xcomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
