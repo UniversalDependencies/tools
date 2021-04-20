@@ -198,6 +198,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 2}, "AUX": {"Conv": 4, "Fin": 1548, "Inf": 103}, "NOUN": {"Fin": 2, "Part": 1}, "VERB": {"Conv": 302, "Fin": 21253, "Inf": 4560, "Part": 1802}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Mid", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 2}, "AUX": {"Act": 1651}, "NOUN": {"Act": 2, "Pass": 1}, "VERB": {"Act": 21531, "Mid": 4616, "Pass": 1764}}}
 },
+"bej": {
+
+},
 "bg": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Anim"], "lvalues": [], "unused_uvalues": ["Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Anim": 1}, "NUM": {"Anim": 9}, "PRON": {"Anim": 46}}},
