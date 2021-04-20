@@ -38,7 +38,9 @@ warn_on_missing_files = set() # langspec files which you should warn about in ca
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
 spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
+featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
 auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
+depreldata = {} # key: language code (deprel data loaded from deprels.json)
 
 def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
@@ -658,6 +660,14 @@ def validate_features(cols, tag_sets, args):
     feats=cols[FEATS]
     if feats == '_':
         return True
+    # List of permited features is language-specific.
+    # The current token may be in a different language due to code switching.
+    lang = args.lang
+    featset = tag_sets[FEATS]
+    altlang = get_alt_language(cols[MISC])
+    if altlang:
+        lang = altlang
+        featset = get_featdata_for_language(altlang)
     feat_list=feats.split('|')
     if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
         testlevel = 2
@@ -697,14 +707,14 @@ def validate_features(cols, tag_sets, args):
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
                 # Level 4 also checks whether the feature value is on the list.
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
-                if args.level > 3 and tag_sets[FEATS] is not None:
+                if args.level > 3 and featset is not None:
                     testlevel = 4
-                    # tag_sets[FEATS] is no longer a simple set of feature-value pairs.
+                    # The featset is no longer a simple set of feature-value pairs.
                     # It is a complex database that we read from feats.json.
-                    if attr not in tag_sets[FEATS]:
+                    if attr not in featset:
                         testid = 'feature-unknown'
-                        testmessage = "Feature %s is not documented for language [%s]." % (attr, args.lang)
-                        if len(warn_on_undoc_feats) > 0:
+                        testmessage = "Feature %s is not documented for language [%s]." % (attr, lang)
+                        if not altlang and len(warn_on_undoc_feats) > 0:
                             # If some features were excluded because they are not documented,
                             # tell the user when the first unknown feature is encountered in the data.
                             # Then erase this (long) introductory message and do not repeat it with
@@ -713,11 +723,11 @@ def validate_features(cols, tag_sets, args):
                             warn_on_undoc_feats = ''
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                     else:
-                        lfrecord = tag_sets[FEATS][attr]
+                        lfrecord = featset[attr]
                         if lfrecord['permitted']==0:
                             testid = 'feature-not-permitted'
-                            testmessage = "Feature %s is not permitted in language [%s]." % (attr, args.lang)
-                            if len(warn_on_undoc_feats) > 0:
+                            testmessage = "Feature %s is not permitted in language [%s]." % (attr, lang)
+                            if not altlang and len(warn_on_undoc_feats) > 0:
                                 testmessage += "\n" + warn_on_undoc_feats
                                 warn_on_undoc_feats = ''
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
@@ -725,22 +735,22 @@ def validate_features(cols, tag_sets, args):
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                             if not v in values:
                                 testid = 'feature-value-unknown'
-                                testmessage = "Value %s is not documented for feature %s in language [%s]." % (v, attr, args.lang)
-                                if len(warn_on_undoc_feats) > 0:
+                                testmessage = "Value %s is not documented for feature %s in language [%s]." % (v, attr, lang)
+                                if not altlang and len(warn_on_undoc_feats) > 0:
                                     testmessage += "\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                             elif not cols[UPOS] in lfrecord['byupos']:
                                 testid = 'feature-upos-not-permitted'
-                                testmessage = "Feature %s is not permitted with UPOS %s in language [%s]." % (attr, cols[UPOS], args.lang)
-                                if len(warn_on_undoc_feats) > 0:
+                                testmessage = "Feature %s is not permitted with UPOS %s in language [%s]." % (attr, cols[UPOS], lang)
+                                if not altlang and len(warn_on_undoc_feats) > 0:
                                     testmessage += "\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                             elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
                                 testid = 'feature-value-upos-not-permitted'
-                                testmessage = "Value %s of feature %s is not permitted with UPOS %s in language [%s]." % (v, attr, cols[UPOS], args.lang)
-                                if len(warn_on_undoc_feats) > 0:
+                                testmessage = "Value %s of feature %s is not permitted with UPOS %s in language [%s]." % (v, attr, cols[UPOS], lang)
+                                if not altlang and len(warn_on_undoc_feats) > 0:
                                     testmessage += "\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
@@ -766,13 +776,19 @@ def validate_deprels(cols, tag_sets, args):
     global warn_on_undoc_deps
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
+    # List of permited relations is language-specific.
+    # The current token may be in a different language due to code switching.
+    deprelset = tag_sets[DEPREL]
+    altlang = get_alt_language(cols[MISC])
+    if altlang:
+        deprelset = get_depreldata_for_language(altlang)
     # Test only the universal part if testing at universal level.
     deprel = cols[DEPREL]
     testlevel = 4
     if args.level < 4:
         deprel = lspec2ud(deprel)
         testlevel = 2
-    if tag_sets[DEPREL] is not None and deprel not in tag_sets[DEPREL]:
+    if deprelset is not None and deprel not in deprelset:
         testclass = 'Syntax'
         testid = 'unknown-deprel'
         # If some relations were excluded because they are not documented,
@@ -780,7 +796,7 @@ def validate_deprels(cols, tag_sets, args):
         # Then erase this (long) introductory message and do not repeat it with
         # other instances of unknown relations.
         testmessage = "Unknown DEPREL label: '%s'" % cols[DEPREL]
-        if len(warn_on_undoc_deps) > 0:
+        if not altlang and len(warn_on_undoc_deps) > 0:
             testmessage += "\n" + warn_on_undoc_deps
             warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
@@ -1004,7 +1020,7 @@ def validate_misc(tree):
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
         mamap = {}
         for ma in misc:
-            if re.match(r"^(SpaceAfter|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
+            if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
                 mamap.setdefault(ma[0], 0)
                 mamap[ma[0]] = mamap[ma[0]] + 1
         for a in list(mamap):
@@ -1907,97 +1923,125 @@ def load_feat_set(filename_langspec, lcode):
     """
     Loads the list of permitted feature-value pairs and returns it as a set.
     """
+    global featdata
     global warn_on_undoc_feats
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_features_0 = json.load(f)
-    all_features = all_features_0['features']
-    # Extract the database of documented and permitted feature-value pairs.
-    ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
-    ###!!! regardless of language-specific documentation.
-    # Do not crash if the user asks for an unknown language.
-    if not lcode in all_features:
-        msg = ''
+    featdata = all_features_0['features']
+    featset = get_featdata_for_language(lcode)
+    # Prepare a global message about permitted features and values. We will add
+    # it to the first error message about an unknown feature. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    msg = ''
+    if not lcode in featdata:
         msg += "No feature-value pairs have been permitted for language [%s].\n" % (lcode)
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
         warn_on_undoc_feats = msg
-        return {}
-    # Identify feature values that are permitted in the current language.
-    # Keep the message and show it when the first unknown feature value occurs
-    # in the data.
-    msg = ''
-    for f in all_features[lcode]:
-        for e in all_features[lcode][f]['errors']:
-            msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
-    res = set()
-    for f in all_features[lcode]:
-        if all_features[lcode][f]['permitted'] > 0:
-            for v in all_features[lcode][f]['uvalues']:
-                res.add(f+'='+v)
-            for v in all_features[lcode][f]['lvalues']:
-                res.add(f+'='+v)
-    sorted_documented_features = sorted(res)
-    msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
-    msg += ', '.join(sorted_documented_features) + "\n"
-    msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
-    msg += "have a language-specific documentation page in a prescribed format.\n"
-    msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-    msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
-    msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
-    # Save the message in a global variable.
-    # We will add it to the first error message about an unknown feature in the data.
-    warn_on_undoc_feats = msg
-    return all_features[lcode]
+    else:
+        # Identify feature values that are permitted in the current language.
+        for f in featset:
+            for e in featset[f]['errors']:
+                msg += "ERROR in _%s/feat/%s.md: %s\n" % (lcode, f, e)
+        res = set()
+        for f in featset:
+            if featset[f]['permitted'] > 0:
+                for v in featset[f]['uvalues']:
+                    res.add(f+'='+v)
+                for v in featset[f]['lvalues']:
+                    res.add(f+'='+v)
+        sorted_documented_features = sorted(res)
+        msg += "The following %d feature values are currently permitted in language [%s]:\n" % (len(sorted_documented_features), lcode)
+        msg += ', '.join(sorted_documented_features) + "\n"
+        msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
+        msg += "have a language-specific documentation page in a prescribed format.\n"
+        msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+        msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
+        msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
+        warn_on_undoc_feats = msg
+    return featset
+
+def get_featdata_for_language(lcode):
+    """
+    Searches the previously loaded database of feature-value combinations.
+    Returns the lists for a given language code. For most CoNLL-U files,
+    this function is called only once at the beginning. However, some files
+    contain code-switched data and we may temporarily need to validate
+    another language.
+    """
+    global featdata
+    ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
+    ###!!! regardless of language-specific documentation.
+    # Do not crash if the user asks for an unknown language.
+    if not lcode in featdata:
+        return {} ###!!! or None?
+    return featdata[lcode]
 
 def load_deprel_set(filename_langspec, lcode):
     """
     Loads the list of permitted relation types and returns it as a set.
     """
+    global depreldata
     global warn_on_undoc_deps
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_deprels_0 = json.load(f)
-    all_deprels = all_deprels_0['deprels']
-    # Extract the set of documented and permitted dependency relations.
-    res = set()
-    ###!!! If lcode is 'ud', we should permit all universal dependency relations,
-    ###!!! regardless of language-specific documentation.
-    ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
-    if lcode == 'ud':
-        res = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop', 'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case', 'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan', 'goeswith', 'reparandum', 'punct', 'root', 'dep'])
-        return res
-    # Do not crash if the user asks for an unknown language.
-    elif not lcode in all_deprels:
-        msg = ''
+    depreldata = all_deprels_0['deprels']
+    deprelset = get_depreldata_for_language(lcode)
+    # Prepare a global message about permitted relation labels. We will add
+    # it to the first error message about an unknown relation. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    msg = ''
+    if len(deprelset) == 0:
         msg += "No dependency relation types have been permitted for language [%s].\n" % (lcode)
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n"
-        warn_on_undoc_deps = msg
-        return res
-    for r in all_deprels[lcode]:
-        if all_deprels[lcode][r]['permitted'] > 0:
-            res.add(r)
-    # Identify dependency relations that are permitted in the current language.
-    # Keep the message and show it when the first unknown dependency occurs
-    # in the data.
-    msg = ''
-    for r in all_deprels[lcode]:
-        file = re.sub(r':', r'-', r)
-        if file == 'aux':
-            file = 'aux_'
-        for e in all_deprels[lcode][r]['errors']:
-            msg += "ERROR in _%s/dep/%s.md: %s\n" % (lcode, file, e)
-    sorted_documented_relations = sorted(res)
-    msg += "The following %d relations are currently permitted in language [%s]:\n" % (len(sorted_documented_relations), lcode)
-    msg += ', '.join(sorted_documented_relations) + "\n"
-    msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
-    msg += "must have a language-specific documentation page in a prescribed format.\n"
-    msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-    msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
-    msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
-    # Save the message in a global variable.
-    # We will add it to the first error message about an unknown feature in the data.
+    else:
+        # Identify dependency relations that are permitted in the current language.
+        # If there are errors in documentation, identify the erroneous doc file.
+        # Note that depreldata[lcode] may not exist even though we have a non-empty
+        # set of relations, if lcode is 'ud'.
+        if lcode in depreldata:
+            for r in depreldata[lcode]:
+                file = re.sub(r':', r'-', r)
+                if file == 'aux':
+                    file = 'aux_'
+                for e in depreldata[lcode][r]['errors']:
+                    msg += "ERROR in _%s/dep/%s.md: %s\n" % (lcode, file, e)
+        sorted_documented_relations = sorted(deprelset)
+        msg += "The following %d relations are currently permitted in language [%s]:\n" % (len(sorted_documented_relations), lcode)
+        msg += ', '.join(sorted_documented_relations) + "\n"
+        msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
+        msg += "must have a language-specific documentation page in a prescribed format.\n"
+        msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+        msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
+        msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
+        # Save the message in a global variable.
+        # We will add it to the first error message about an unknown feature in the data.
     warn_on_undoc_deps = msg
-    return res
+    return deprelset
+
+def get_depreldata_for_language(lcode):
+    """
+    Searches the previously loaded database of dependency relation labels.
+    Returns the lists for a given language code. For most CoNLL-U files,
+    this function is called only once at the beginning. However, some files
+    contain code-switched data and we may temporarily need to validate
+    another language.
+    """
+    global depreldata
+    deprelset = set()
+    # If lcode is 'ud', we should permit all universal dependency relations,
+    # regardless of language-specific documentation.
+    ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
+    if lcode == 'ud':
+        deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop', 'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case', 'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan', 'goeswith', 'reparandum', 'punct', 'root', 'dep'])
+    elif lcode in depreldata:
+        for r in depreldata[lcode]:
+            if depreldata[lcode][r]['permitted'] > 0:
+                deprelset.add(r)
+    return deprelset
 
 def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhanced=False):
     """
