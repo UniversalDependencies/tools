@@ -1823,7 +1823,7 @@
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Past", "Pres"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Prosp"], "evalues": [], "byupos": {"ADJ": {"Pres": 1}, "AUX": {"Past": 145, "Pres": 227}, "PART": {"Past": 1, "Pres": 1}, "PRON": {"Pres": 12}, "VERB": {"Past": 139, "Pres": 259}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fin"], "lvalues": [], "unused_uvalues": ["Ger", "Part"], "unused_lvalues": [], "evalues": ["Cop"], "byupos": {"AUX": {"Fin": 386}, "PART": {"Fin": 1}, "PRON": {"Fin": 12}, "VERB": {"Fin": 123}}},
-"VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ser"], "evalues": ["Cop", "Part"], "byupos": {}},
+"VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cop"], "evalues": ["Part", "Ser"], "byupos": {}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Pass": 8}}}
 },
 "pgl": {
