@@ -779,9 +779,18 @@ def validate_deprels(cols, tag_sets, args):
     # List of permited relations is language-specific.
     # The current token may be in a different language due to code switching.
     deprelset = tag_sets[DEPREL]
-    altlang = get_alt_language(cols[MISC])
-    if altlang:
-        deprelset = get_depreldata_for_language(altlang)
+    ###!!! Unlike with features and auxiliaries, with deprels it is less clear
+    ###!!! whether we actually want to switch the set of labels when the token
+    ###!!! belongs to another language. If the set is changed at all, then it
+    ###!!! should be a union of the main language and the token language.
+    ###!!! Otherwise we risk that, e.g., we have allowed 'flat:name' for our
+    ###!!! language, the maintainers of the other language have not allowed it,
+    ###!!! and then we could not use it when the foreign language is active.
+    ###!!! (This has actually happened in French GSD.)
+    altlang = None
+    #altlang = get_alt_language(cols[MISC])
+    #if altlang:
+    #    deprelset = get_depreldata_for_language(altlang)
     # Test only the universal part if testing at universal level.
     deprel = cols[DEPREL]
     testlevel = 4
