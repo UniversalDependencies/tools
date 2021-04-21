@@ -4262,6 +4262,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:freq": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:inst": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
