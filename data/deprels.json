@@ -5387,7 +5387,7 @@
 "nummod:periph": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:agent": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"obj:lvc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obj:lvc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:ad": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
