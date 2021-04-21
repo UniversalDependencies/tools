@@ -1805,7 +1805,7 @@
 },
 "pcm": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf"], "lvalues": [], "unused_uvalues": ["Prosp"], "unused_lvalues": ["Cons", "Real"], "evalues": [], "byupos": {"AUX": {"Imp": 3156, "Perf": 885}, "PRON": {"Perf": 1}, "VERB": {"Imp": 3}}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prosp"], "lvalues": ["Cons"], "unused_uvalues": [], "unused_lvalues": ["Real"], "evalues": [], "byupos": {"AUX": {"Cons": 1, "Imp": 1, "Perf": 1, "Prosp": 1}, "PRON": {"Perf": 1}, "VERB": {"Imp": 1}}, "lastchanged": "2021-04-21-11-17-05", "lastchanger": "bguil"},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Acc", "Nom"], "lvalues": [], "unused_uvalues": ["Gen"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Nom": 9}, "PART": {"Acc": 1}, "PRON": {"Acc": 2818, "Nom": 11884}, "SCONJ": {"Nom": 1}, "X": {"Nom": 6}}},
 "Definite": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Def", "Spec"], "lvalues": [], "unused_uvalues": ["Ind"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 2813, "Spec": 230}}},
 "Degree": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cmp", "Sup"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Cmp": 168, "Sup": 42}, "ADV": {"Cmp": 1}}},
