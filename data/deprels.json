@@ -5324,7 +5324,7 @@
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "adv:cleft": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"advcl:cleft": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"advcl:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:emph": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advcl:periph": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advcl:periph'."]},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
