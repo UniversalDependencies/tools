@@ -1253,7 +1253,6 @@
 "acl": {"type": "universal", "errors": []},
 "acl:cleft": {"type": "local", "errors": []},
 "acl:relcl": {"type": "local", "errors": []},
-"adv:cleft": {"type": "", "errors": ["Relation 'adv:cleft' is not a subtype of any approved main type."]},
 "advcl": {"type": "universal", "errors": []},
 "advcl:periph": {"type": "local", "errors": ["No examples found for relation 'advcl:periph'."]},
 "advmod": {"type": "universal", "errors": []},
