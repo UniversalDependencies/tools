@@ -6471,6 +6471,7 @@
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:deg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advmod:mmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
