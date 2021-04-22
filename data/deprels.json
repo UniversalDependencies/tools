@@ -7517,7 +7517,7 @@
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obj:appl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obj:appl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:caus": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:appl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
