@@ -7520,7 +7520,7 @@
 "obj:appl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:caus": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obl:appl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obl:appl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
