@@ -2179,7 +2179,7 @@
 },
 "sms": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Prep", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1}}},
+"AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post", "Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1, "Prep": 1}}, "lastchanged": "2021-04-22-13-17-57", "lastchanger": "rueter"},
 "AdvType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Tim"], "unused_uvalues": [], "unused_lvalues": ["Cau", "Deg", "Loc", "Man", "Mod"], "evalues": [], "byupos": {"ADV": {"Tim": 31}, "SCONJ": {"Tim": 1}}},
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hum"], "lvalues": [], "unused_uvalues": ["Anim", "Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Hum": 53}, "PROPN": {"Hum": 10}}},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Perf"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Perf": 2}, "VERB": {"Perf": 15}}},
