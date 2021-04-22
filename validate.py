@@ -719,7 +719,7 @@ def validate_features(cols, tag_sets, args):
                             # tell the user when the first unknown feature is encountered in the data.
                             # Then erase this (long) introductory message and do not repeat it with
                             # other instances of unknown features.
-                            testmessage += "\n" + warn_on_undoc_feats
+                            testmessage += "\n\n" + warn_on_undoc_feats
                             warn_on_undoc_feats = ''
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                     else:
@@ -728,7 +728,7 @@ def validate_features(cols, tag_sets, args):
                             testid = 'feature-not-permitted'
                             testmessage = "Feature %s is not permitted in language [%s]." % (attr, lang)
                             if not altlang and len(warn_on_undoc_feats) > 0:
-                                testmessage += "\n" + warn_on_undoc_feats
+                                testmessage += "\n\n" + warn_on_undoc_feats
                                 warn_on_undoc_feats = ''
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                         else:
@@ -737,21 +737,21 @@ def validate_features(cols, tag_sets, args):
                                 testid = 'feature-value-unknown'
                                 testmessage = "Value %s is not documented for feature %s in language [%s]." % (v, attr, lang)
                                 if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n" + warn_on_undoc_feats
+                                    testmessage += "\n\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                             elif not cols[UPOS] in lfrecord['byupos']:
                                 testid = 'feature-upos-not-permitted'
                                 testmessage = "Feature %s is not permitted with UPOS %s in language [%s]." % (attr, cols[UPOS], lang)
                                 if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n" + warn_on_undoc_feats
+                                    testmessage += "\n\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                             elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
                                 testid = 'feature-value-upos-not-permitted'
                                 testmessage = "Value %s of feature %s is not permitted with UPOS %s in language [%s]." % (v, attr, cols[UPOS], lang)
                                 if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n" + warn_on_undoc_feats
+                                    testmessage += "\n\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if len(attr_set) != len(feat_list):
@@ -806,7 +806,7 @@ def validate_deprels(cols, tag_sets, args):
         # other instances of unknown relations.
         testmessage = "Unknown DEPREL label: '%s'" % cols[DEPREL]
         if not altlang and len(warn_on_undoc_deps) > 0:
-            testmessage += "\n" + warn_on_undoc_deps
+            testmessage += "\n\n" + warn_on_undoc_deps
             warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if DEPS >= len(cols):
