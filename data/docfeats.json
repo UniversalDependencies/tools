@@ -258,7 +258,7 @@
 "VerbType": {"type": "local", "values": ["Vido"], "errors": []}
 },
 "aqz": {
-"Dem": {"type": "local", "values": [], "errors": ["Wrong value 'Prox'. Did you mean 'Deixis=Prox|Med|Remt|...'?"]},
+"Dem": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Dem=Prox\">`Prox`</a>: Proximity'.", "No feature values found."]},
 "Nomzr": {"type": "local", "values": ["Circ", "Obj"], "errors": []},
 "Person": {"type": "universal", "values": ["1", "2", "3"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont"], "errors": []},
