@@ -258,7 +258,6 @@
 "VerbType": {"type": "local", "values": ["Vido"], "errors": []}
 },
 "aqz": {
-"Dem": {"type": "local", "values": [], "errors": ["Wrong value 'Prox'. Did you mean 'Deixis=Prox|Med|Remt|...'?"]},
 "Nomzr": {"type": "local", "values": ["Circ", "Obj"], "errors": []},
 "Person": {"type": "universal", "values": ["1", "2", "3"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont"], "errors": []},
