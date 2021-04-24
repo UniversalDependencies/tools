@@ -741,6 +741,9 @@
 "mov": {
 "iðu:m": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"mpu": {
+"pīxe": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "nãpẽrenã kito eapītera [pīxe]", "exampleen": "Meanwhile, the man was thinking [standing up]", "comment": ""}], "status": "documented", "lastchanged": "2021-04-24-15-02-48", "lastchanger": "carolinaaragon"}
+},
 "mr": {
 "असणे": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "साप [आहे] तो मेला!", "exampleen": "The snake is dead!", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-22-55-05", "lastchanger": "dan-zeman"},
 "देणे": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
