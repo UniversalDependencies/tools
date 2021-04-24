@@ -4,6 +4,7 @@ acl:дык
 acl:каб
 acl:как
 acl:калі
+acl:па:dat
 acl:то
 acl:ці
 acl:што
