@@ -46,7 +46,7 @@
 "apu": {
 "awa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "kuna": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"txa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"txa": {"functions": [{"function": "cop.AUX", "rule": "combination of the conjugated auxiliary and adjective or noun in positive polarity", "deficient": "", "example": "Iũpiri xuxuri atuku [itxa].", "exampleen": "The green oropendola is similar to the japiim.", "comment": "Lima-Padovani:2020:342:1 iũpiri"}], "status": "documented", "lastchanged": "2021-04-24-12-39-54", "lastchanger": "rueter"}
 },
 "aqz": {
 "jã": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Used with the progressive aspect .", "example": "potʃek momo [tejã] otek etʃe", "exampleen": "The notebook stayed for long time in my house", "comment": "Also an independent verb"}], "status": "documented", "lastchanged": "2020-11-09-16-07-10", "lastchanger": "@LanguageStructure"},
