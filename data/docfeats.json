@@ -264,7 +264,7 @@
 "Rel": {"type": "local", "values": ["Cont"], "errors": []},
 "Tense": {"type": "universal", "values": ["Fut"], "errors": []},
 "Trans": {"type": "local", "values": ["Yes"], "errors": []},
-"Tv": {"type": "local", "values": [], "errors": ["No feature values found."]}
+"Tv": {"type": "local", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
 },
 "be": {
 "Variant": {"type": "local", "values": ["Short"], "errors": []}
