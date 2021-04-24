@@ -609,6 +609,7 @@
 "Deixis": {"type": "local", "values": ["Prox", "Dist"], "errors": []},
 "Nomzr": {"type": "local", "values": ["Circ", "Obj", "Ag"], "errors": []},
 "Pcl": {"type": "local", "values": ["Dub"], "errors": []},
+"Red": {"type": "local", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "Rel": {"type": "local", "values": ["Cont", "NCont"], "errors": []}
 },
 "myu": {
