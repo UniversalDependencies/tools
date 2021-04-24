@@ -1570,6 +1570,7 @@
 },
 "mpu": {
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf"], "lvalues": [], "unused_uvalues": ["Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Hab": 1, "Imp": 1, "Perf": 1}}, "lastchanged": "2021-04-24-09-09-04", "lastchanger": "@LanguageStructure"},
+"Polarity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Neg"], "lvalues": [], "unused_uvalues": ["Pos"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Neg": 1}}, "lastchanged": "2021-04-24-09-11-33", "lastchanger": "@LanguageStructure"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2021-04-24-09-09-55", "lastchanger": "@LanguageStructure"}
 },
 "mr": {
