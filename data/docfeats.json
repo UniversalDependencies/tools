@@ -606,6 +606,7 @@
 "Variant": {"type": "local", "values": ["Long", "Short"], "errors": []}
 },
 "mpu": {
+"Dem": {"type": "local", "values": [], "errors": ["Wrong value 'Prox'. Did you mean 'Deixis=Prox|Med|Remt|...'?", "Wrong value 'Dist'. Did you mean 'Deixis=Prox|Med|Remt|...'?"]},
 "Nomzr": {"type": "local", "values": ["Circ", "Obj", "Ag"], "errors": []},
 "Pcl": {"type": "local", "values": ["Dub"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont", "NCont"], "errors": []}
