@@ -1221,7 +1221,7 @@
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past", "Pres"], "lvalues": [], "unused_uvalues": ["Imp", "Pqp"], "unused_lvalues": [], "evalues": ["Aor", "FutPlan"], "byupos": {"AUX": {"Fut": 3, "Past": 180, "Pres": 50}, "VERB": {"Fut": 19, "Past": 571, "Pres": 1}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Ger", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": ["Cov"], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Ger": 1, "Inf": 1, "Part": 1}, "VERB": {"Conv": 1, "Fin": 1, "Ger": 1, "Inf": 1, "Part": 1}}, "lastchanged": "2021-04-25-20-14-36", "lastchanger": "dan-zeman"},
-"Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": ["Coop"], "byupos": {"VERB": {"Pass": 235}}}
+"Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pass", "Rcp"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid"], "unused_lvalues": [], "evalues": ["Coop"], "byupos": {"VERB": {"Pass": 1, "Rcp": 1}}, "lastchanged": "2021-04-25-21-10-35", "lastchanger": "dan-zeman"}
 },
 "kmr": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
