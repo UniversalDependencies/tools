@@ -287,8 +287,10 @@ obl:нада:ins
 obl:наконт:gen
 obl:напачатку:loc
 obl:напрацягу:gen
+obl:напрыканцы:gen
 obl:напярэдадні:gen
 obl:насуперак:dat
+obl:насупрадзь:gen
 obl:насупраць:gen
 obl:насустрач:dat
 obl:наўздагон:dat
