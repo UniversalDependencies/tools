@@ -7232,7 +7232,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:abl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"nmod:cau": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nmod:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:clas": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:ins": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
