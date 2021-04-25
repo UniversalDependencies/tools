@@ -916,6 +916,7 @@
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Fem": 1, "Masc": 1}, "NOUN": {"Fem": 1, "Masc": 1}, "PRON": {"Fem": 1, "Masc": 1}, "PROPN": {"Fem": 1, "Masc": 1}}, "lastchanged": "2021-04-25-15-07-14", "lastchanger": "kscanne"},
+"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Plur": 1, "Sing": 1}, "DET": {"Plur": 1, "Sing": 1}, "NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Plur": 1, "Sing": 1}, "PROPN": {"Plur": 1, "Sing": 1}, "VERB": {"Plur": 1, "Sing": 1}}, "lastchanged": "2021-04-25-15-10-32", "lastchanger": "kscanne"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 2}}}
 },
 "ha": {
