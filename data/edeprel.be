@@ -172,6 +172,7 @@ nmod:у_галіна:gen
 nmod:у_гонар:gen
 nmod:у_дачыненне_да:gen
 nmod:у_з:loc
+nmod:у_сувязь_з:ins
 nmod:у_тое_лік:acc
 nmod:у_тое_лік:gen
 nmod:у_той_лік
@@ -270,7 +271,6 @@ obl:каля:gen
 obl:колькі:loc
 obl:ля
 obl:ля:gen
-obl:малакафаўна:gen
 obl:між:gen
 obl:між:ins
 obl:міма:gen
@@ -350,6 +350,7 @@ obl:супроць:gen
 obl:сьпераду:gen
 obl:сярод:gen
 obl:у
+obl:у_адпаведнасць_з
 obl:у_адпаведнасць_з:ins
 obl:у_асоба:gen
 obl:у_дачыненне_да:gen
