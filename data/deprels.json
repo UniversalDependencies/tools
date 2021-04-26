@@ -7237,7 +7237,7 @@
 "nmod:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:ins": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:loc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"nmod:part": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nmod:part": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:pass": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nmod:ref": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
