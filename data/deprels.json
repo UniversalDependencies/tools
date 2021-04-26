@@ -4660,6 +4660,7 @@
 "advmod:deg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"advmod:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:mmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
