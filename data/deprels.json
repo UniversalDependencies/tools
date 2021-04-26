@@ -7306,7 +7306,7 @@
 "flat:range": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:repeat": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "flat:sibl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"flat:title": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"flat:title": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
