@@ -6421,7 +6421,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"parataxis:discourse": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"parataxis:discourse": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:restart": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
