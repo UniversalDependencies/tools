@@ -7209,7 +7209,7 @@
 "ug": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:cond": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"advcl:cond": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advmod:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
