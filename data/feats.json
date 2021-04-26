@@ -914,6 +914,7 @@
 },
 "gv": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Degree": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cmp", "Sup"], "lvalues": [], "unused_uvalues": ["Abs", "Equ", "Pos"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Cmp": 1, "Sup": 1}}, "lastchanged": "2021-04-26-20-21-05", "lastchanger": "kscanne"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Fem": 1, "Masc": 1}, "NOUN": {"Fem": 1, "Masc": 1}, "PRON": {"Fem": 1, "Masc": 1}, "PROPN": {"Fem": 1, "Masc": 1}}, "lastchanged": "2021-04-25-15-07-14", "lastchanger": "kscanne"},
 "Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cnd", "Imp", "Ind", "Sub"], "lvalues": [], "unused_uvalues": ["Adm", "Des", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Cnd": 1}, "VERB": {"Cnd": 1, "Imp": 1, "Ind": 1, "Sub": 1}}, "lastchanged": "2021-04-26-01-55-41", "lastchanger": "kscanne"},
