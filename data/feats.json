@@ -914,6 +914,7 @@
 },
 "gv": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dat", "Gen"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Acc", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Ill", "Ine", "Ins", "Lat", "Loc", "Nom", "Par", "Per", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Gen": 1}, "NOUN": {"Dat": 1, "Gen": 1}, "PROPN": {"Gen": 1}}, "lastchanged": "2021-04-27-04-09-21", "lastchanger": "kscanne"},
 "Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Ind", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 1}}, "lastchanged": "2021-04-27-04-04-22", "lastchanger": "kscanne"},
 "Degree": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cmp", "Sup"], "lvalues": [], "unused_uvalues": ["Abs", "Equ", "Pos"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Cmp": 1, "Sup": 1}}, "lastchanged": "2021-04-26-20-21-05", "lastchanger": "kscanne"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
