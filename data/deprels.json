@@ -7079,7 +7079,7 @@
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"iobj:patient": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"iobj:patient": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
