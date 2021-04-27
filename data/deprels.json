@@ -7087,7 +7087,7 @@
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:bfoc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nsubj:ifoc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"nsubj:lfoc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nsubj:lfoc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
