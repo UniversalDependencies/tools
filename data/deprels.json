@@ -7304,7 +7304,7 @@
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "flat:range": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"flat:repeat": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"flat:repeat": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:sibl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:title": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
