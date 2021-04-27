@@ -4533,7 +4533,7 @@
 "aux:part": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"case:det": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"case:det": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
