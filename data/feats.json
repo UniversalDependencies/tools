@@ -2391,7 +2391,7 @@
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Emp", "Ind", "Int", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Exc", "Neg", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Int": 1}, "ADV": {"Dem": 8, "Int": 3}, "DET": {"Emp": 1, "Ind": 8, "Tot": 2}, "PRON": {"Dem": 2, "Int": 1, "Prs": 52}, "VERB": {"Int": 2}}},
 "Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 5}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Bfoc", "Lfoc", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Cau", "Dir", "Inv", "Mid", "Rcp"], "unused_lvalues": [], "evalues": ["Ifoc"], "byupos": {"VERB": {"Act": 59, "Bfoc": 1, "Lfoc": 6, "Pass": 32}}}
+"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Bfoc", "Lfoc", "Pass"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ifoc"], "evalues": ["Antip", "Cau", "Dir", "Inv", "Mid", "Rcp"], "byupos": {"VERB": {"Act": 59, "Bfoc": 1, "Lfoc": 6, "Pass": 32}}}
 },
 "tpn": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
