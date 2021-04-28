@@ -2384,7 +2384,7 @@
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"dep:mod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"dep:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse:q": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
