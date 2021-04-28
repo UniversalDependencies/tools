@@ -2402,7 +2402,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obl:sentcon": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obl:sentcon": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis:rep": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
