@@ -1042,7 +1042,7 @@
 },
 "sv": {
 "behöva": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"bli": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"bli": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "hunden [blev] jagad av katten", "exampleen": "the dog was chased by the cat", "comment": ""}], "status": "documented", "lastchanged": "2021-04-28-13-49-48", "lastchanger": "jnivre"},
 "böra": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "få": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "ha": {"functions": [{"function": "Aspect=Perf", "rule": "Combines with the supine form of the main verb to form perfect and pluperfect.", "deficient": "", "example": "hon [har] gjort det", "exampleen": "she [has] done it", "comment": ""}], "status": "documented", "lastchanged": "2021-04-19-21-28-09", "lastchanger": "dan-zeman"},
