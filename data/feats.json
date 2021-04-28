@@ -895,6 +895,7 @@
 "gun": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Clusivity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Ex", "In"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Ex": 28, "In": 29}, "VERB": {"Ex": 1}}},
+"Clusivity[obj]": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Ex", "In"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Ex": 1, "In": 1}}, "lastchanged": "2021-04-28-11-50-17", "lastchanger": "dan-zeman"},
 "Clusivity[psor]": {"type": "lspec", "doc": "none", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Ex", "In"], "byupos": {}},
 "Clusivity[subj]": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Ex", "In"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Ex": 1, "In": 1}}, "lastchanged": "2021-04-28-10-52-16", "lastchanger": "dan-zeman"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
