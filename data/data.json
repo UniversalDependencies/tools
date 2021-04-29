@@ -520,7 +520,7 @@
 "たい": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "たがる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "たげる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"たり": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"たり": {"functions": [{"function": "Aspect=Perf", "rule": "postposition of verb ", "deficient": "", "example": "生ひ[たる]", "exampleen": "has grown", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-08-47-24", "lastchanger": "masayu-a"},
 "たる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "だ": {"functions": [{"function": "cop.AUX", "rule": "copula is suffixed on the non-verbal predicate", "deficient": "", "example": "奇妙な話[で]ある。", "exampleen": "It's a strange story.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-50-10", "lastchanger": "dan-zeman"},
 "だす": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
