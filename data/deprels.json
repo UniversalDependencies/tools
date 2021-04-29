@@ -1692,7 +1692,7 @@
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
-"flat:num": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"flat:num": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
