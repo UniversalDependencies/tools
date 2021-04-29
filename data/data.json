@@ -516,7 +516,7 @@
 "ずら": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "せる": {"functions": [{"function": "Voice=Cau", "rule": "postposition of verb (mizen-form)", "deficient": "", "example": "買わ[せる]", "exampleen": "buy (causative)", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-08-16-53", "lastchanger": "masayu-a"},
 "そう": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"た": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"た": {"functions": [{"function": "Aspect=Perf", "rule": "postposition of verb (renyo-form)", "deficient": "", "example": "寝[た]", "exampleen": "has slept", "comment": ""}, {"function": "Tense=Past", "rule": "postposition of verb (renyo-form)", "deficient": "", "example": "食べ[た]", "exampleen": "ate", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-08-18-58", "lastchanger": "masayu-a"},
 "たい": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "たがる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "たげる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
