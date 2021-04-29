@@ -3582,6 +3582,7 @@
 "nmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"nmod:prp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-16-47", "lastchanger": "rueter"},
