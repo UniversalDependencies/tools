@@ -6937,7 +6937,7 @@
 "obl:cmpr": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "obl:inst": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "obl:loc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"obl:pmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obl:pmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:soc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
