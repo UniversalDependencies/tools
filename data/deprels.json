@@ -6476,7 +6476,7 @@
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:obj": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"xcomp:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "xcomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "sms": {
