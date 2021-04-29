@@ -575,7 +575,7 @@
 "ゆく": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "よい": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "よう": {"functions": [{"function": "Mood=Irr", "rule": "postposition of verb ", "deficient": "", "example": "食べる[よう]", "exampleen": "may eat", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-09-21-42", "lastchanger": "masayu-a"},
-"ようだ": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"ようだ": {"functions": [{"function": "Mood=Irr", "rule": "postposition of verb ", "deficient": "", "example": "食べる[ようだ]", "exampleen": "may eat", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-09-22-37", "lastchanger": "masayu-a"},
 "よらす": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "よる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "らし": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
