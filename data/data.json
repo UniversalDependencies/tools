@@ -558,7 +558,7 @@
 "まい": {"functions": [{"function": "Mood=Irr", "rule": "postposition of verb ", "deficient": "", "example": "食べ[まい]", "exampleen": "not to eat", "comment": ""}, {"function": "Mood=Des", "rule": "postposition of verb ", "deficient": "", "example": "食べ[まい]", "exampleen": "want not to eat", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-09-09-35", "lastchanger": "masayu-a"},
 "まいる": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "まう": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"まじ": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"まじ": {"functions": [{"function": "Mood=Des", "rule": "postposition of verb ", "deficient": "", "example": "ある[まじき]", "exampleen": "unworthy", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-09-53-29", "lastchanger": "masayu-a"},
 "ます": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "みたい": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "みたく": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
