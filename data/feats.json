@@ -1137,6 +1137,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Gdv", "Inf", "Part"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 3}, "AUX": {"Fin": 3607, "Part": 38}, "VERB": {"Conv": 9, "Fin": 1962, "Gdv": 671, "Inf": 594, "Part": 3513}}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Cau", "Mid", "Pass", "Rcp"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Act": 3492, "Cau": 24, "Mid": 2717, "Pass": 510, "Rcp": 4}}}
 },
+"hyw": {
+
+},
 "id": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 30}, "PROPN": {"Yes": 74}}},
 "Clusivity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Ex", "In"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Ex": 68, "In": 120}}},
