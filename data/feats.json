@@ -224,7 +224,7 @@
 "Singulative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fut"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "TokenType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aff", "Clit", "Stem"], "evalues": [], "byupos": {}},
-"VerbClass": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["V1", "V2"], "evalues": [], "byupos": {}},
+"VerbClass": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["V1", "V2"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"V1": 1, "V2": 1}, "VERB": {"V1": 1, "V2": 1}}, "lastchanged": "2021-04-30-16-38-16", "lastchanger": "RZiane"},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Conv", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aux", "Cop", "Light"], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cau", "Mid", "Pass", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {}}
