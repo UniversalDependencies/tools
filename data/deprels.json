@@ -1957,7 +1957,7 @@
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:advneg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obj:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obj:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:advmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "obl:mod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
