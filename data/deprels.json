@@ -1956,7 +1956,7 @@
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obj:advneg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obj:advneg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:advmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
