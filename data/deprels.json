@@ -1959,7 +1959,7 @@
 "obj:advneg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"obl:advmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obl:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:mod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
