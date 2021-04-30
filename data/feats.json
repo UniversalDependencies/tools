@@ -218,7 +218,7 @@
 "Polarity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Neg"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Polite": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Form"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Poss": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2021-04-29-17-08-45", "lastchanger": "dan-zeman"},
-"PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dem", "Int", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"PronType": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Dem", "Int", "Rel"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Int": 1}, "DET": {"Dem": 1}, "PRON": {"Dem": 1, "Int": 1}, "SCONJ": {"Rel": 1}}, "lastchanged": "2021-05-01-00-50-04", "lastchanger": "RZiane"},
 "Reflex": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "ReportedSpeech": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Singulative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
