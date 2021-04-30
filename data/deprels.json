@@ -1951,7 +1951,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:appos": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"nsubj:advmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nsubj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
