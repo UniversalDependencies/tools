@@ -1148,7 +1148,8 @@
 "ہے": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "شکیل اور پروین بیگم کی حالت تشویشناک [ہے]۔", "exampleen": "The condition of Shakeel and Parveen Begum is critical.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-22-19-43", "lastchanger": "dan-zeman"}
 },
 "urb": {
-"'y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ne ihẽ ke remusak ['y]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2020-12-20-18-47-48", "lastchanger": "@LanguageStructure"}
+"'y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ne ihẽ ke remusak ['y]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2020-12-20-18-47-48", "lastchanger": "@LanguageStructure"},
+"ʔɪ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the main verb and the auxiliary ", "deficient": "", "example": "ne ihẽke remusak [ʔɪ]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2021-05-01-00-03-30", "lastchanger": "Mentha7"}
 },
 "vi": {
 "là": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Đó [là] cuộc chiến tranh phi nghĩa.", "exampleen": "It is a senseless war.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-12-31-41", "lastchanger": "dan-zeman"}
