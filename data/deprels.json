@@ -2939,6 +2939,7 @@
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-24-14", "lastchanger": "myavrum"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-24-37", "lastchanger": "myavrum"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
