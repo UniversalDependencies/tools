@@ -40,9 +40,11 @@ acl:where
 acl:whether
 acl:with
 advcl:about
+advcl:about_how
 advcl:after
 advcl:against
 advcl:albeit
+advcl:along_with
 advcl:although
 advcl:altough
 advcl:as
@@ -76,6 +78,8 @@ advcl:for_to
 advcl:from
 advcl:give
 advcl:given
+advcl:how
+advcl:how_to
 advcl:if
 advcl:ig
 advcl:in
@@ -84,13 +88,16 @@ advcl:in_order
 advcl:in_order_to
 advcl:in_that
 advcl:inside
+advcl:insofar_as
 advcl:instead_of
 advcl:into
 advcl:it
 advcl:lest
 advcl:like
+advcl:like_by
 advcl:of
 advcl:of_if
+advcl:of_whether
 advcl:of_why
 advcl:on
 advcl:once
@@ -106,6 +113,7 @@ advcl:since
 advcl:so
 advcl:so_as_to
 advcl:so_that
+advcl:so_when
 advcl:such_as
 advcl:th
 advcl:than
@@ -386,6 +394,7 @@ obl:notwithstanding
 obl:npmod
 obl:of
 obl:off
+obl:off_of
 obl:on
 obl:on_board
 obl:onto
@@ -407,8 +416,10 @@ obl:regardless
 obl:round
 obl:s
 obl:sans
+obl:save
 obl:side
 obl:since
+obl:slash
 obl:such_as
 obl:ta
 obl:than
@@ -432,6 +443,8 @@ obl:unto
 obl:up
 obl:up_to
 obl:upon
+obl:versus
+obl:versus_per
 obl:via
 obl:w
 obl:whilst
