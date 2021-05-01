@@ -2955,6 +2955,7 @@
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-25-02", "lastchanger": "myavrum"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"iobj:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
