@@ -6987,6 +6987,7 @@
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-02-10-56-49", "lastchanger": "dan-zeman"},
 "compound:nv": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
