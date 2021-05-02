@@ -7017,7 +7017,7 @@
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:ben": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"obl:cmpr": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obl:cmpr": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:inst": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-02-10-36-10", "lastchanger": "dan-zeman"},
 "obl:loc": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
