@@ -70,6 +70,7 @@ nmod:ва:acc
 nmod:ва:gen
 nmod:ва:loc
 nmod:вакол:gen
+nmod:гэта_значыць:nom
 nmod:гэта_значыць:acc
 nmod:да
 nmod:да:gen
