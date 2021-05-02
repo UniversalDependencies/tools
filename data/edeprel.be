@@ -21,6 +21,7 @@ advcl:паколькі
 advcl:пакуль
 advcl:пры_тое_што
 advcl:прычым
+advcl:раз
 advcl:так_як
 advcl:таму
 advcl:таму_што
