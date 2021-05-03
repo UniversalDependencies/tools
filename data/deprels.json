@@ -7818,7 +7818,7 @@
 "mark:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "mark:advb": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "mark:comp": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"mark:prt": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"mark:prt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "mark:rel": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "mark:relcl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
