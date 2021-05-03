@@ -7757,7 +7757,7 @@
 "nsubj:periph": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"obj:periph": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"obj:periph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:patient": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
