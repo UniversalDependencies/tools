@@ -963,6 +963,7 @@
 "wollen": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "quc": {
+"taj": {"functions": [{"function": "Mood=Irr", "rule": "used with negation (man) and in irrealis", "deficient": "", "example": "We [ta] kape le jabʼ kamik.", "exampleen": "If the rain were to come today.", "comment": ""}], "status": "documented", "lastchanged": "2021-05-03-16-41-27", "lastchanger": "ftyers"},
 "tajin": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and a finite form of the main verb", "deficient": "", "example": "Man [tajin] ta kinchakunik.", "exampleen": "I am not working.", "comment": ""}], "status": "documented", "lastchanged": "2021-01-12-18-12-36", "lastchanger": "ftyers"}
 },
 "ro": {
