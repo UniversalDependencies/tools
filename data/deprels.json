@@ -7754,7 +7754,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"nsubj:periph": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nsubj:periph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:periph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
