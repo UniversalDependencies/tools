@@ -85,6 +85,7 @@ advcl:ig
 advcl:in
 advcl:in_case
 advcl:in_order
+advcl:in_order_for
 advcl:in_order_to
 advcl:in_that
 advcl:inside
@@ -113,6 +114,7 @@ advcl:since
 advcl:so
 advcl:so_as_to
 advcl:so_that
+advcl:so_that_when
 advcl:so_when
 advcl:such_as
 advcl:th
