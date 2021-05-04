@@ -2535,7 +2535,7 @@
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"compound:affix": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"compound:affix": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:smixut": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
