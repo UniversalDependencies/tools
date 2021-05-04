@@ -979,7 +979,7 @@
 },
 "ckt": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"acl:attr": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"acl:attr": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "acl:relat": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
