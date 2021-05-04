@@ -112,6 +112,7 @@ advcl:waar
 advcl:wanneer
 advcl:want
 advcl:zij_het
+advcl:zijn_het
 advcl:zo
 advcl:zoals
 advcl:zodat
@@ -172,6 +173,7 @@ conj:tot
 conj:tot_en_met
 conj:tot_schuine_streep_met
 conj:van
+conj:ver
 conj:verder
 conj:versus
 conj:want
@@ -207,6 +209,7 @@ nmod:in_combinatie_met
 nmod:in_de_loop_van
 nmod:ingevolge
 nmod:in_het_kader_van
+nmod:in_naam_van
 nmod:in_opdracht_van
 nmod:in_plaats_van
 nmod:in_ruil_voor
@@ -245,6 +248,7 @@ nmod:op_basis_van
 nmod:op_grond_van
 nmod:op_het_gebied_van
 nmod:op_kosten_van
+nmod:op_kost_van
 nmod:over
 nmod:per
 nmod:plus
@@ -256,6 +260,7 @@ nmod:rondom
 nmod:sinds
 nmod:te
 nmod:te_aanzien_van
+nmod:te_aan_zien_van
 nmod:te_baat_van
 nmod:te_behoeve_van
 nmod:te_bevordering_van
@@ -277,8 +282,11 @@ nmod:te_vervanging_van
 nmod:te_voordeel_van
 nmod:te_waarde_van
 nmod:te_weerszijden_van
+nmod:te_weerszijde_van
 nmod:te_zuiden_van
 nmod:te_zuid_oosten_van
+nmod:te_zuidoosten_van
+nmod:te_zuidwesten_van
 nmod:tijdens
 nmod:tot
 nmod:tot_en_met
@@ -314,8 +322,10 @@ obl:anno
 obl:a_raison_van
 obl:beneden
 obl:betreffende
+obl:betreffen
 obl:bij
 obl:bij_monde_van
+obl:bij_mond_van
 obl:bij_wijze_van
 obl:binnen
 obl:blijkens
@@ -327,6 +337,7 @@ obl:conform
 obl:danken_zij
 obl:dankzij
 obl:dank_zij
+obl:dank_zijn
 obl:dd
 obl:desondanks
 obl:dichtbij
@@ -334,6 +345,7 @@ obl:dicht_bij
 obl:door
 obl:doorheen
 obl:door_middel_van
+obl:door_toe_doen_van
 obl:gaandeweg
 obl:gedurende
 obl:getuige
@@ -393,6 +405,7 @@ obl:omwille_van
 obl:ondanks
 obl:onder
 obl:onder_auspicien_van
+obl:onder_auspicën_van
 obl:onder_invloed_van
 obl:onder_leiding_van
 obl:onderuit
@@ -415,12 +428,14 @@ obl:per
 obl:plus
 obl:qua
 obl:relobj
+obl:richting
 obl:rond
 obl:rondom
 obl:sedert
 obl:sinds
 obl:te
 obl:te_aanzien_van
+obl:te_aan_zien_van
 obl:te_behoeve_van
 obl:te_detriment_van
 obl:te_eer_van
@@ -474,4 +489,5 @@ obl:voorbij
 obl:voor_het_laat
 obl:voor_rekening_van
 obl:wegens
+obl:zien
 obl:zonder
