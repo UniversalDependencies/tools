@@ -2043,6 +2043,7 @@
 },
 "quc": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}}, "lastchanged": "2021-01-12-17-33-57", "lastchanger": "ftyers"},
+"AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Dir"], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Anim"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Anim": 1}, "PRON": {"Anim": 1}}, "lastchanged": "2021-01-12-16-04-59", "lastchanger": "ftyers"},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Prog": 1}, "VERB": {"Imp": 1, "Perf": 1}}, "lastchanged": "2021-01-12-16-17-57", "lastchanger": "ftyers"},
 "Clitic": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2021-01-13-00-18-39", "lastchanger": "ftyers"},
