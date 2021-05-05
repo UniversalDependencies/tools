@@ -338,6 +338,8 @@ foreach my $folder (@folders)
                 $n_errors++;
             }
             # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
+            # UD_Akkadian-RIAO: I am not registering an exception yet but I think they told me that the treebank would grow; in the first version, they have only 20K test and no train.
+            # UD_Czech-CLTT: The data needs a lot of fixes but ultimately I may want to re-split it, too. No exception at the moment.
             # Exception: UD_Armenian-ArmTDP decided to have only about 5K test, do not ping them.
             # Exception: UD_English-ESL are just below 10K test, and they do not participate in shared tasks anyway.
             # Exception: UD_English-GUMReddit has just 1840 words test. It does not participate in shared tasks (and if so, it can be merged with GUM).
