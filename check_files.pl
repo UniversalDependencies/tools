@@ -1293,6 +1293,7 @@ sub get_potentially_misspelled_contributors
     my $ok = 1;
     my @contributors = @_;
     my @character_hashes;
+    my %problematic_names;
     for(my $i = 0; $i <= $#contributors; $i++)
     {
         $character_hashes[$i] = get_character_hash($contributors[$i]);
@@ -1315,7 +1316,6 @@ sub get_potentially_misspelled_contributors
     }
     # We must compare every name with every other name (N^2).
     # Hashing will not help us identify suspicious pairs.
-    my %problematic_names;
     for(my $i = 0; $i <= $#contributors; $i++)
     {
         for(my $j = $i+1; $j <= $#contributors; $j++)
