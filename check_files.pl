@@ -338,12 +338,19 @@ foreach my $folder (@folders)
                 $n_errors++;
             }
             # Exception: PUD parallel data are currently test only, even if in some languages there is more than 20K words.
+            # Exception: UD_Armenian-ArmTDP decided to have only about 5K test, do not ping them.
+            # Exception: UD_English-ESL are just below 10K test, and they do not participate in shared tasks anyway.
+            # Exception: UD_English-GUMReddit has just 1840 words test. It does not participate in shared tasks (and if so, it can be merged with GUM).
+            # Exception: UD_Faroese-FarPaHC has 8644 words test. I think I did not ask them about it but they have already relased it this way.
             # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
+            # Exception: UD_French-Spoken is just below 10K test, and the total treebank is only slightly over 30K.
             # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
+            # Exception: UD_Hindi_English-HIENCS has only 3K test; they do not participate in shared tasks.
+            # Exception: UD_Italian-TWITTIRO overlaps with POSTWITA and tries to match its data split.
             # Exception: ParTUT has some portions smaller because of other limitations (sync across languages and with UD_Italian).
-            # Exception: TWITTIRO overlaps with POSTWITA and tries to match its data split.
+            # Exception: UD_Sanskrit-Vedic is just below 10K test, and the total treebank is only slightly over 20K.
             # Exception: UD_Scottish_Gaelic-ARCOSG is close to 10K test tokens but they could not get there if they did not want to split documents.
-            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-ParTUT|Italian-TWITTIRO|Scottish_Gaelic-ARCOSG)$/)
+            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-ParTUT|Armenian-ArmTDP|English-(ESL|GUMReddit)|Faroese-FarPaHC|French-Spoken|Hindi_English-HIENCS|Italian-TWITTIRO|Sanskrit-Vedic|Scottish_Gaelic-ARCOSG)$/)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
