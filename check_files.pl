@@ -827,7 +827,8 @@ sub check_metadata
             '2.4' => ['Assyrian-AS', 'Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'German-LIT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_East_Slavic-RNC', 'Old_East_Slavic-TOROT', 'Polish-PUD', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB'],
             '2.5' => ['Bhojpuri-BHTB', 'Chinese-GSDSimp', 'English-Pronouns', 'Italian-TWITTIRO', 'Komi_Permyak-UH', 'Livvi-KKPP', 'Moksha-JR', 'Romanian-SiMoNERo', 'Scottish_Gaelic-ARCOSG', 'Skolt_Sami-Giellagas', 'Swiss_German-UZH'],
             '2.6' => ['Albanian-TSA', 'English-GUMReddit', 'Icelandic-PUD', 'Latin-LLCT', 'Sanskrit-Vedic', 'Tagalog-Ugnayan'],
-            '2.7' => ['Akkadian-RIAO', 'Akuntsu-TuDeT', 'Apurina-UFPA', 'Chukchi-HSE', 'Faroese-FarPaHC', 'Finnish-OOD', 'Icelandic-IcePaHC', 'Indonesian-CSUI', 'Khunsari-AHA', 'Manx-Cadhan', 'Munduruku-TuDeT', 'Nayini-AHA', 'Old_Turkish-Tonqq', 'Persian-PerDT', 'Soi-AHA', 'South_Levantine_Arabic-MADAR', 'Tamil-MWTT', 'Tupinamba-TuDeT', 'Turkish-BOUN', 'Turkish_German-SAGT']
+            '2.7' => ['Akkadian-RIAO', 'Akuntsu-TuDeT', 'Apurina-UFPA', 'Chukchi-HSE', 'Faroese-FarPaHC', 'Finnish-OOD', 'Icelandic-IcePaHC', 'Indonesian-CSUI', 'Khunsari-AHA', 'Manx-Cadhan', 'Munduruku-TuDeT', 'Nayini-AHA', 'Old_Turkish-Tonqq', 'Persian-PerDT', 'Soi-AHA', 'South_Levantine_Arabic-MADAR', 'Tamil-MWTT', 'Tupinamba-TuDeT', 'Turkish-BOUN', 'Turkish_German-SAGT'],
+            '2.8' => ['Beja-NSC', 'Frisian_Dutch-Fame', 'Guajajara-TuDeT', 'Icelandic-Modern', 'Irish-TwittIrish', 'Italian-Valico', 'Kaapor-TuDeT', 'Kangri-KDTB', 'Kiche-IU', 'Latin-UDante', 'Low_Saxon-LSDC', 'Makurap-TuDeT', 'Romanian-ArT', 'Turkish-FrameNet', 'Turkish-Kenet', 'Turkish-Penn', 'Turkish-Tourism', 'Western_Armenian-ArmTDP', 'Yupik-SLI']
         );
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
