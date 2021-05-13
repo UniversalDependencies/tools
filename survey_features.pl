@@ -37,10 +37,10 @@ sub usage
     print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
     print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
-    print STDERR ("       --countby .... count occurrences separately for each treebank or for each language?\n");
-    print STDERR ("       --oformat .... md or json; in JSON, the output will be organized for each UPOS tag separately\n");
+    print STDERR ("       --countby .... count occurrences separately for each treebank (default) or for each language?\n");
+    print STDERR ("       --oformat .... markdown (default) or json; in JSON, the output will be organized for each UPOS tag separately\n");
     print STDERR ("       --help ....... print usage and exit\n");
-    print STDERR ("The overview will be printed to STDOUT in MarkDown format.\n");
+    print STDERR ("The overview will be printed to STDOUT.\n");
 }
 
 my $datapath = '.';
@@ -250,18 +250,14 @@ EOF
     ;
     foreach my $f (@features)
     {
-        my %ffolders;
         my @values = sort(keys(%{$hash->{$f}}));
         print("\#\# $f\n\n");
         print("[$f]()\n\n");
         foreach my $v (@values)
         {
             my @folders = sort(keys(%{$hash->{$f}{$v}}));
-            foreach my $folder (@folders)
-            {
-                print("* $f=$v\t$folder\t$hash->{$f}{$v}{$folder}\n");
-                $ffolders{$folder}++;
-            }
+            my @folders_with_frequencies = map {"$_&nbsp;($hash->{$f}{$v}{$_})"} (@folders);
+            print('* `'.$v.'` ('.join(', ', @folders_with_frequencies).')'."\n");
         }
         print("\n");
     }
