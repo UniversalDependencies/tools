@@ -238,12 +238,27 @@ sub print_markdown
 {
     my $hash = shift;
     my @features = sort(keys(%{$hash}));
+    # The CSS style:
+    # Normally we would want position (of the bullet) outside, which is the default.
+    # But if we want to manipulate the indentation of the first line, we want the
+    # bullet to be a part of it so that it moves along, hence position: inside.
+    # The negative text-indent moves the start of the first line of each item to
+    # the left. The margin-left flips the logic: the first line will start at
+    # position 0, while the start of all other lines is moved to the right.
     print <<EOF
 ---
 layout: base
 title:  'Features and Values'
 udver: '2'
 ---
+
+<style>
+  ul {
+    list-style-position: inside;
+    text-indent: -3em;
+    margin-left: 3em;
+  }
+</style>
 
 This is an automatically generated list of features and values (both universal and language-specific) that occur in the UD data.
 EOF
