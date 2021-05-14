@@ -241,7 +241,7 @@ EOF
             {
                 my @keys = sort(keys(%{$hash->{$deprel}}));
                 #my @keys_with_frequencies = map {"$_&nbsp;($hash->{$deprel}{$_})"} (@keys);
-                print("* [$deprel]():".join(', ', @keys)."\n");
+                print("* [$deprel](): ".join(', ', @keys)."\n");
             }
         }
     }
