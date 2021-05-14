@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Scans all UD treebanks for morphological features and values.
-# Copyright © 2016-2018, 2020 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016-2018, 2020-2021 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -242,6 +242,8 @@ layout: base
 title:  'Features and Values'
 udver: '2'
 ---
+
+# Features and Values in the Data
 
 This is an automatically generated list of features and values (both universal and language-specific) that occur in the UD data.
 EOF
