@@ -32,12 +32,12 @@ use udlib;
 
 sub usage
 {
-    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby treebank|language > features.md\n");
-    print STDERR ("       perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby treebank|language --oformat json > features.json\n");
+    print STDERR ("Usage: perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby language|treebank > features.md\n");
+    print STDERR ("       perl survey_features.pl --datapath /net/projects/ud --tbklist udsubset.txt --countby language|treebank --oformat json > features.json\n");
     print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
     print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
     print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
-    print STDERR ("       --countby .... count occurrences separately for each treebank (default) or for each language?\n");
+    print STDERR ("       --countby .... count occurrences separately for each language (default) or for each treebank?\n");
     print STDERR ("       --oformat .... markdown (default) or json; in JSON, the output will be organized for each UPOS tag separately\n");
     print STDERR ("       --help ....... print usage and exit\n");
     print STDERR ("The overview will be printed to STDOUT.\n");
@@ -45,7 +45,7 @@ sub usage
 
 my $datapath = '.';
 my $tbklist;
-my $countby = 'treebank'; # or language
+my $countby = 'language'; # or treebank
 my $oformat = 'markdown'; # or json
 my $help = 0;
 GetOptions
@@ -131,7 +131,6 @@ foreach my $language (keys(%{$languages_from_yaml}))
 # Look for features in the data.
 my %hash; # $hash{$feature}{$value}{$treebank/$language} = $count
 my %poshash; # $poshash{$treebank/$language}{$upos}{$feature}{$value} = $count
-my %hittreebanks;
 foreach my $folder (@folders)
 {
     # If we received the list of treebanks to be released, skip all other treebanks.
@@ -153,25 +152,23 @@ foreach my $folder (@folders)
         if(exists($langcodes{$language}))
         {
             $langcode = $langcodes{$language};
-            $key = $langcode;
             if($countby eq 'treebank' && $treebank ne '')
             {
-                $key .= '_'.lc($treebank);
+                $key = $langcode.'_'.lc($treebank);
             }
-            my $nhits = 0;
-            # Look for the other files in the repository.
+            else
+            {
+                # In the MarkDown output, we want full language names rather than just codes.
+                $key = $language;
+            }
+            # Look for CoNLL-U files in the repository.
             opendir(DIR, "$datapath/$folder") or die("Cannot read the contents of the folder '$datapath/$folder': $!");
             my @files = readdir(DIR);
             closedir(DIR);
             my @conllufiles = grep {-f "$datapath/$folder/$_" && m/\.conllu$/} (@files);
             foreach my $file (@conllufiles)
             {
-                $nhits += read_conllu_file("$datapath/$folder/$file", \%hash, \%poshash, $key);
-            }
-            # Remember treebanks where we found something.
-            if($nhits>0)
-            {
-                $hittreebanks{$key}++;
+                read_conllu_file("$datapath/$folder/$file", \%hash, \%poshash, $key);
             }
         }
     }
@@ -253,7 +250,7 @@ EOF
         my @values = sort(keys(%{$hash->{$f}}));
         print("\#\# $f\n\n");
         print("[$f]()\n\n");
-        # The CSS style:
+        # We have to switch from MarkDown to HTML because we need the CSS style:
         # Normally we would want position (of the bullet) outside, which is the default.
         # But if we want to manipulate the indentation of the first line, we want the
         # bullet to be a part of it so that it moves along, hence position: inside.
@@ -265,7 +262,7 @@ EOF
         {
             my @folders = sort(keys(%{$hash->{$f}{$v}}));
             my @folders_with_frequencies = map {"$_&nbsp;($hash->{$f}{$v}{$_})"} (@folders);
-            print('<li><code class="language-plaintext highlighter-rouge">'.$v.'</code> ('.join(', ', @folders_with_frequencies).')</li>'."\n");
+            print('<li><code class="language-plaintext highlighter-rouge">'.$v.'</code>: '.join(', ', @folders_with_frequencies).'</li>'."\n");
         }
         print("</ul>\n\n");
     }
