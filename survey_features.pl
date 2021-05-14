@@ -265,7 +265,7 @@ EOF
         {
             my @folders = sort(keys(%{$hash->{$f}{$v}}));
             my @folders_with_frequencies = map {"$_&nbsp;($hash->{$f}{$v}{$_})"} (@folders);
-            print('<li> `'.$v.'` ('.join(', ', @folders_with_frequencies).')</li>'."\n");
+            print('<li><code class="language-plaintext highlighter-rouge">'.$v.'</code> ('.join(', ', @folders_with_frequencies).')</li>'."\n");
         }
         print("</ul>\n\n");
     }
