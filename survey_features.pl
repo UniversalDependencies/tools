@@ -160,6 +160,7 @@ foreach my $folder (@folders)
             {
                 # In the MarkDown output, we want full language names rather than just codes.
                 $key = $language;
+                $key =~ s/_/ /g;
             }
             # Look for CoNLL-U files in the repository.
             opendir(DIR, "$datapath/$folder") or die("Cannot read the contents of the folder '$datapath/$folder': $!");
@@ -260,9 +261,9 @@ EOF
         print("<ul style='list-style-position: inside; text-indent: -3em; margin-left: 3em;'>\n");
         foreach my $v (@values)
         {
-            my @folders = sort(keys(%{$hash->{$f}{$v}}));
-            my @folders_with_frequencies = map {"$_&nbsp;($hash->{$f}{$v}{$_})"} (@folders);
-            print('<li><code class="language-plaintext highlighter-rouge">'.$v.'</code>: '.join(', ', @folders_with_frequencies).'</li>'."\n");
+            my @keys = sort(keys(%{$hash->{$f}{$v}}));
+            #my @keys_with_frequencies = map {"$_&nbsp;($hash->{$f}{$v}{$_})"} (@keys);
+            print('<li><code class="language-plaintext highlighter-rouge">'.$v.'</code>: '.join(', ', @keys).'</li>'."\n");
         }
         print("</ul>\n\n");
     }
