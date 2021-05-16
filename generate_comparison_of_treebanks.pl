@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
-# Generates a shell script that calls conllu-stats.pl for all sets of treebanks that need comparison.
-# Copyright © 2017 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Calls conllu-stats.pl for all sets of treebanks that need comparison.
+# Copyright © 2017, 2021 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -21,8 +21,24 @@ BEGIN
 use lib "$toolsdir";
 use udlib;
 
+sub usage
+{
+    print STDERR ("Usage: perl generate_comparison_of_treebanks.pl [UD_XXX, UD_YYY, ...]\n");
+    print STDERR ("       Generates a MarkDown page with comparison of treebanks in each language where there are multiple treebanks.\n");
+    print STDERR ("       Saves the page in docs/treebanks/$LCODE-comparison.md.\n");
+    print STDERR ("       If no UD folders are provided as arguments, scans all UD_* subfolders of the current folder.\n");
+}
+
 my $languages = udlib::get_language_hash();
-my @folders = udlib::list_ud_folders(); # the list comes sorted
+my @folders;
+if(scalar(@ARGV) > 0)
+{
+    @folders = sort(@ARGV);
+}
+else
+{
+    @folders = udlib::list_ud_folders(); # the list comes sorted
+}
 my $current_language;
 my @current_group;
 foreach my $folder (@folders)
