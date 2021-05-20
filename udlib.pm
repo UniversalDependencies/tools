@@ -454,7 +454,7 @@ sub escape_jekyll
 {
     my $text = shift;
     # Wrap every occurrence of '{{' or '}}' in the Jekyll escape block {% raw %} ... {% endraw %}.
-    $text =~ s/(\{\{|\}\})/\{% raw %\}$1{% endraw %\}/g;
+    $text =~ s/(\{\{|\}\})/\{\% raw \%\}$1\{\% endraw \%\}/g;
     return $text;
 }
 
