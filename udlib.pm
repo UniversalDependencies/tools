@@ -437,10 +437,25 @@ sub generate_markdown_treebank_overview
         }
     }
     $md .= "\n";
-    $md .= "\#\# Description\n".$metadata->{sections}{summary};
+    $md .= "\#\# Description\n".escape_jekyll($metadata->{sections}{summary});
     $md .= "\n".$metadata->{sections}{introduction};
-    $md .= "\#\# Acknowledgments\n".$metadata->{sections}{acknowledgments};
+    $md .= "\#\# Acknowledgments\n".escape_jekyll($metadata->{sections}{acknowledgments});
     return $md;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Reads a (MarkDown) text and makes it processable by Jekyll, i.e., escapes all
+# character sequences that Jekyll could mistake for instructions. Specifically,
+# double curly braces in BibTeX are dangerous.
+#------------------------------------------------------------------------------
+sub escape_jekyll
+{
+    my $text = shift;
+    # Wrap every occurrence of '{{' or '}}' in the Jekyll escape block {% raw %} ... {% endraw %}.
+    $text =~ s/(\{\{|\}\})/\{% raw %\}$1{% endraw %\}/g;
+    return $text;
 }
 
 
