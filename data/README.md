@@ -12,4 +12,5 @@ and you can edit them here if you need to modify them:
 * `edeprel.xx` – list of relations that are permitted in DEPS but not in DEPREL for language xx
 * `tokens_w_space.xx` – list of regular expressions describing permitted exceptions where a word
   may contain a space in language xx
+
 In the future, the method of registering these data types will probably change as well.
