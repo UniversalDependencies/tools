@@ -472,7 +472,8 @@ sub find_enhancements
                 {
                     my $known_reason = 0;
                     # The parent is different from the basic parent. Is it an empty node?
-                    if($iedge->{id} =~ m/\./)
+                    # Note: In a collapsed form, paths over empty nodes are represented as edges whose labels contain one or more '>' characters.
+                    if($iedge->{id} =~ m/\./ || $iedge->{deprel} =~ m/>/)
                     {
                         $empty_parent_found = 1;
                         save_edge_type($curnode, 'gapping', $iedge->{id}, $iedge->{deprel});
