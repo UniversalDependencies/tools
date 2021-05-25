@@ -531,6 +531,14 @@ sub find_enhancements
                     save_edge_type($curnode, 'basic', $iedge->{id}, $iedge->{deprel});
                     $biedge_found++;
                 }
+                # If the parent is the same node in basic and in enhanced but the relation type differs,
+                # it is possible that we are working with collapsed empty nodes and we see enhanced
+                # 'conj>nsubj' vs. basic 'conj'.
+                elsif($iedge->{deprel} =~ m/>/)
+                {
+                    $empty_parent_found = 1;
+                    save_edge_type($curnode, 'gapping', $iedge->{id}, $iedge->{deprel});
+                }
                 else
                 {
                     # Edge differs from basic edge in subtype but not in main type, e.g., basic='obl', enhanced='obl:in'.
@@ -547,30 +555,6 @@ sub find_enhancements
                         save_edge_type($curnode, 'relabeled', $iedge->{id}, $iedge->{deprel});
                     }
                     $biedge_found++;
-                    if(0)
-                    {
-                        # Adpositions and case features in enhanced relations.
-                        ###!!! Non-ASCII characters, underscores, or multiple colons in relation labels signal this enhancement.
-                        ###!!! However, none of them is a necessary condition. We can have a simple 'obl:between'.
-                        ###!!! We would probably have to look at the basic dependency and compare it with the enhanced relation.
-                        my @unusual = grep {$_->{deprel} =~ m/(:.*:|[^a-z:])/} (@iedges);
-                        if(scalar(@unusual) > 0)
-                        {
-                            $stats{case_deprel}++;
-                        }
-                        else
-                        {
-                            my $basic_parent = $curnode->bparent();
-                            my $basic_deprel = $curnode->bdeprel();
-                            my @matchingpr = grep {$_->{id} == $basic_parent} (@iedges);
-                            my @extendedpr = grep {$_->{deprel} =~ m/^$basic_deprel:.+/} (@matchingpr);
-                            if(scalar(@extendedpr) > 0)
-                            {
-                                $stats{case_deprel}++;
-                            }
-                        }
-                        ###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    }
                 }
             }
             else # no basic incoming edge => all incoming edges are enhanced-only
