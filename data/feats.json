@@ -169,6 +169,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Inf", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 119}, "AUX": {"Fin": 197}, "NOUN": {"Part": 22}, "VERB": {"Fin": 10081}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 134, "Pass": 40}, "ADP": {"Act": 38, "Pass": 2}, "ADV": {"Act": 2}, "AUX": {"Act": 4717, "Pass": 7}, "CCONJ": {"Act": 9}, "DET": {"Act": 5}, "NOUN": {"Act": 147, "Pass": 22}, "NUM": {"Act": 2}, "PRON": {"Act": 19}, "PROPN": {"Act": 673, "Pass": 20}, "PUNCT": {"Act": 7}, "SCONJ": {"Act": 7, "Pass": 1}, "VERB": {"Act": 73078, "Pass": 5107}, "X": {"Act": 202, "Pass": 3}}}
 },
+"arr": {
+
+},
 "as": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
