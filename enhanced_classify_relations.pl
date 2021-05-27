@@ -331,17 +331,26 @@ sub is_codepend
     # Shared dependent in coordination: at least two non-conj parents
     # (typically but not necessarily with same relation going to me),
     # furthermore, the parents are connected with a conj relation.
+    # Not all incoming relations should be classified as codepend.
+    # The one that comes from the higher (first) conjunct is not special
+    # because it exists even in the basic tree. The one(s) that come from the
+    # lower (non-first) conjunct(s) should be classified as codepend.
     if($iedge->{deprel} !~ m/^conj(:|$)/)
     {
-        # Look for the other route via 'conj'.
+        # Assuming that the current parent is a non-first conjunct, look for the higher conjunct parent.
         my @candidates = grep {$_->{id} ne $iedge->{id} && $_->{deprel} !~ m/^conj(:|$)/} (@{$iedges});
-        foreach my $candidate (@candidates)
+        if(scalar(@candidates) > 0)
         {
-            # The candidate we are looking for will have my other parent as its
-            # conj parent (my grandparent).
-            if(any {$_->{id} eq $iedge->{id} && $_->{deprel} =~ m/^conj(:|$)/} (@{$graph->node($candidate->{id})->iedges()}))
+            # Now verify that the examined parent is attached to the candidate parent via 'conj'.
+            my $current_parent = $graph->node($iedge->{id});
+            my @conjgparents = grep {$_->{deprel} =~ m/^conj(:|$)/} (@{$current_parent->iedges()});
+            foreach my $grandparent (@conjgparents)
             {
-                return 1;
+                # Is this conj grandparent identical to one of the candidate first conjunct parents?
+                if(any {$_->{id} eq $grandparent->{id}} (@candidates))
+                {
+                    return 1;
+                }
             }
         }
     }
