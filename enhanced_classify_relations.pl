@@ -43,6 +43,7 @@ use Node;
 #    'report-basenh' => \$report_basenh
 #);
 
+my %stats;
 my @sentence;
 while(<>)
 {
@@ -61,6 +62,12 @@ while(<>)
 if(scalar(@sentence) > 0)
 {
     process_sentence(@sentence);
+}
+# Print the statistics to STDERR.
+my @types = sort(keys(%stats));
+foreach my $type (@types)
+{
+    print STDERR ("$type = $stats{$type}\n");
 }
 
 
@@ -153,7 +160,12 @@ sub save_edge_type
     {
         die("Unknown edge type '$type'");
     }
-    ###!!! We have to deal with the possibility that there are no MISC attributes so far.
+    # Keep statistics of edge types in a global hash.
+    else
+    {
+        $stats{$shortcuts{$type}}++;
+    }
+    # We have to deal with the possibility that there are no MISC attributes so far.
     ###!!! Perhaps there could be support for this directly in the Node class.
     my @misc = ();
     my $misc = $node->misc();
