@@ -2762,6 +2762,7 @@
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"det:numgov": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-06-03-11-17-28", "lastchanger": "tsamardzic"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
