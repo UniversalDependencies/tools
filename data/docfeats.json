@@ -389,6 +389,7 @@
 "Case": {"type": "universal", "values": ["Nom", "Acc"], "errors": []},
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup"], "errors": []},
+"ExtPos": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"ADP\">`ADP`</a>'.", "Unrecognized level 3 heading '### <a name=\"ADV\">`ADV`</a>'.", "Unrecognized level 3 heading '### <a name=\"AUX\">`AUX`</a>'.", "Unrecognized level 3 heading '### <a name=\"CCONJ\">`CCONJ`</a>'.", "Unrecognized level 3 heading '### <a name=\"SCONJ\">`SCONJ`</a>'.", "No feature values found."]},
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp", "Sub"], "errors": []},
 "NumType": {"type": "universal", "values": ["Card", "Ord", "Mult", "Frac"], "errors": []},
