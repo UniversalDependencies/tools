@@ -303,6 +303,30 @@ sub read_readme
         $metadata{sections}{$current_section_heading} = $current_section_text;
     }
     close(README);
+    # Most README files in UD are MarkDown sources rather than plain text, and
+    # the text of the sections we extracted may contain MarkDown syntax such as
+    # italics and hypertext links. Provide a plain text version of the summary
+    # for those who want to copy it to non-MarkDown environments.
+    if(defined($metadata{summary}))
+    {
+        $metadata{summary_plaintext} = $metadata{summary};
+        # Gradually identify and remove selected kinds of MarkDown syntax.
+        my $hit;
+        do
+        {
+            $hit = 0;
+            $hit = 1 if($metadata{summary_plaintext} =~ s/\*\*\*([^*]+)\*\*\*/$1/; # bold italic
+            $hit = 1 if($metadata{summary_plaintext} =~ s/___([^_]+)___/$1/; # bold
+            $hit = 1 if($metadata{summary_plaintext} =~ s/\*\*([^*]+)\*\*/$1/; # bold
+            $hit = 1 if($metadata{summary_plaintext} =~ s/__([^_]+)__/$1/; # bold
+            $hit = 1 if($metadata{summary_plaintext} =~ s/\*([^*]+)\*/$1/; # italic
+            $hit = 1 if($metadata{summary_plaintext} =~ s/_([^_]+)_/$1/; # italic
+            $hit = 1 if($metadata{summary_plaintext} =~ s/\`([^`]+)\`/$1/; # code `
+            $hit = 1 if($metadata{summary_plaintext} =~ s/!\[.*?\]\(.*?\)//; # image
+            $hit = 1 if($metadata{summary_plaintext} =~ s/\[(.*?)\]\(.*?\)/$1/; # link
+        }
+        while($hit);
+    }
     return \%metadata;
 }
 
