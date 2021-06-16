@@ -315,15 +315,15 @@ sub read_readme
         do
         {
             $hit = 0;
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\*\*\*([^*]+)\*\*\*/$1/); # bold italic
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/___([^_]+)___/$1/); # bold
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\*\*([^*]+)\*\*/$1/); # bold
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/__([^_]+)__/$1/); # bold
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\*([^*]+)\*/$1/); # italic
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/_([^_]+)_/$1/); # italic
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\`([^`]+)\`/$1/); # code `
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/!\[.*?\]\(.*?\)//); # image
-            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\[(.*?)\]\(.*?\)/$1/); # link
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\*\*\*([^*]+)\*\*\*/$1/s); # bold italic
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/___([^_]+)___/$1/s); # bold
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\*\*([^*]+)\*\*/$1/s); # bold
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/__([^_]+)__/$1/s); # bold
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\*([^*]+)\*/$1/s); # italic
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/_([^_]+)_/$1/s); # italic
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\`([^`]+)\`/$1/s); # code `
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/!\[.*?\]\(.*?\)//s); # image
+            $hit = 1 if($metadata{sections}{summary_plaintext} =~ s/\[(.*?)\]\(.*?\)/$1/s); # link
         }
         while($hit);
     }
