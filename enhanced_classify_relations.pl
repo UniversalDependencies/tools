@@ -64,11 +64,23 @@ if(scalar(@sentence) > 0)
     process_sentence(@sentence);
 }
 # Print the statistics to STDERR.
+my @stderr = ();
 my @types = sort(keys(%stats));
 foreach my $type (@types)
 {
-    print STDERR ("$type = $stats{$type}\n");
+    push(@stderr, "$type = $stats{$type}");
 }
+my $n_relabeled = $stats{C} + $stats{L};
+my $n_added = $stats{G} + $stats{P} + $stats{S} + $stats{X} + $stats{R} + $stats{E};
+my $n_removed = $stats{O} + $stats{W} + $stats{M};
+my $n_basic = $stats{B} + $n_relabeled + $n_removed;
+my $n_enhanced = $stats{B} + $n_relabeled + $n_added;
+push(@stderr, "basic = $n_basic");
+push(@stderr, "enhanced = $n_enhanced");
+push(@stderr, "relabeled = $n_relabeled");
+push(@stderr, "added = $n_added");
+push(@stderr, "removed = $n_removed");
+print STDERR (join(', ', @stderr), "\n");
 
 
 
