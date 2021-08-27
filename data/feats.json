@@ -1770,6 +1770,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Inf", "Part", "Vnoun"], "lvalues": [], "unused_uvalues": ["Fin", "Gdv", "Ger", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Inf": 4}, "NOUN": {"Inf": 2, "Vnoun": 9}, "VERB": {"Conv": 269, "Inf": 348, "Part": 42, "Vnoun": 55}}},
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Aux"], "unused_uvalues": [], "unused_lvalues": ["Cop", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {"AUX": {"Aux": 77}}}
 },
+"nap": {
+
+},
 "naq": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
