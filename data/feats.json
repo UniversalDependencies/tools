@@ -337,6 +337,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Ger", "Inf"], "lvalues": [], "unused_uvalues": ["Gdv", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": ["Coverb"], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Ger": 1, "Inf": 1}, "VERB": {"Conv": 1, "Fin": 1, "Ger": 1, "Inf": 1}}, "lastchanged": "2020-12-17-20-13-12", "lastchanger": "dan-zeman"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cau", "Rcp"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Pass"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 14, "Rcp": 17}}}
 },
+"bzd": {
+
+},
 "ca": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Post", "Voc"], "evalues": ["Preppron"], "byupos": {"ADJ": {"Prep": 1}, "ADP": {"Prep": 73302}, "ADV": {"Prep": 276}}},
