@@ -1254,6 +1254,9 @@
 "Polarity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Neg"], "lvalues": [], "unused_uvalues": ["Pos"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Neg": 2240}, "AUX": {"Neg": 10666}, "NOUN": {"Neg": 1072}, "SCONJ": {"Neg": 57}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
+"jv": {
+
+},
 "ka": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
