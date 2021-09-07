@@ -456,7 +456,7 @@
 "sedang": {"functions": [{"function": "Tense=Pres", "rule": "combination of the auxiliary and a VERB or ADJ", "deficient": "used in present tense only", "example": "Kami [sedang] membahasnya.", "exampleen": "We are discussing it.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-07-05-22-30", "lastchanger": "ialfina"},
 "seharusnya": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "sudah": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"telah": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a VERB", "deficient": "used in past tense pr past perfect tense.", "example": "Dia [telah] wafat tahun lalu.", "exampleen": "He died last year.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-07-05-29-30", "lastchanger": "ialfina"},
+"telah": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Dia [telah] pergi.", "exampleen": "He has gone.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-07-07-07-29", "lastchanger": "ialfina"},
 "tengah": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "wajib": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
