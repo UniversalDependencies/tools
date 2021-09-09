@@ -643,7 +643,7 @@
 "難い": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "jv": {
-"sampun": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Para tamu [sampun] sami rawuh.", "exampleen": "The guest have arrived.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-09-09-47-40", "lastchanger": "ialfina"},
+"sampun": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Para tamu [sampun] sami rawuh.", "exampleen": "The guests have arrived.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-09-18-52-42", "lastchanger": "ialfina"},
 "wis": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Anak-anak [wis] padha teka.", "exampleen": "The children have come.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-09-09-46-00", "lastchanger": "ialfina"}
 },
 "kfm": {
