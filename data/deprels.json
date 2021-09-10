@@ -4169,6 +4169,7 @@
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl:impers": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-09-10-07-39-51", "lastchanger": "jeanm"},
+"expl:pv": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-09-10-07-40-06", "lastchanger": "jeanm"},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
