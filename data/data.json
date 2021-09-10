@@ -644,7 +644,8 @@
 },
 "jv": {
 "sampun": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Para tamu [sampun] sami rawuh.", "exampleen": "The guests have arrived.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-09-18-52-42", "lastchanger": "ialfina"},
-"wis": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Anak-anak [wis] padha teka.", "exampleen": "The children have come.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-09-09-46-00", "lastchanger": "ialfina"}
+"wis": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Anak-anak [wis] padha teka.", "exampleen": "The children have come.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-09-09-46-00", "lastchanger": "ialfina"},
+"yaiku": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Kapasitas seri 705 [yaiku] 75 penumpang.", "exampleen": "The capacity of the 705 series is 75 passengers.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-10-14-39-12", "lastchanger": "ialfina"}
 },
 "kfm": {
 "دار": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "“مُن [دار]ُن رِختا ما کول مِکِرُن.”", "exampleen": "-ing", "comment": ""}], "status": "documented", "lastchanged": "2020-11-01-20-08-00", "lastchanger": "amirmojiry"}
