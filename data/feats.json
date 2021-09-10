@@ -1494,7 +1494,8 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "lij": {
-"Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 1, "Ind": 1}}, "lastchanged": "2021-09-10-07-42-52", "lastchanger": "jeanm"}
+"Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 1, "Ind": 1}}, "lastchanged": "2021-09-10-07-42-52", "lastchanger": "jeanm"},
+"Degree": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Abs", "Cmp"], "lvalues": [], "unused_uvalues": ["Equ", "Pos", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Abs": 1, "Cmp": 1}, "ADV": {"Cmp": 1}}, "lastchanged": "2021-09-10-07-44-38", "lastchanger": "jeanm"}
 },
 "lt": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 146}, "X": {"Yes": 866}}},
