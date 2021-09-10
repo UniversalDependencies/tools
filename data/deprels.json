@@ -3086,7 +3086,6 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep:prt": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
