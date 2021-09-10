@@ -718,6 +718,7 @@
 "x̂ana": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Rušaz reǧü [x̂ana] k'an tuširwiläj.", "exampleen": "Because he did not want the girl to be embarrassed.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-21-18-17", "lastchanger": "dan-zeman"}
 },
 "lij": {
+"avei": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "No gh’an idea de chi l‘[agge] scrito", "exampleen": "They have no idea who wrote it.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-10-08-15-42", "lastchanger": "jeanm"},
 "ëse": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Zena a l’[é] unna çittæ.", "exampleen": "Genoa [is] a city.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-10-08-13-39", "lastchanger": "jeanm"}
 },
 "lt": {
