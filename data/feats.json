@@ -2013,7 +2013,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "pra": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Perf"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Perf": 1}}, "lastchanged": "2021-09-25-18-44-05", "lastchanger": "aryamanarora"}
 },
 "prx": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
