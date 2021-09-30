@@ -645,6 +645,7 @@
 "難い": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "jv": {
+"bakal": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Saben makluk [bakal] mati.", "exampleen": "Everyone will die.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-30-13-28-02", "lastchanger": "ialfina"},
 "iso": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Dracula [iso] dibasmi.", "exampleen": "Dracula can be exterminated.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-30-08-26-56", "lastchanger": "ialfina"},
 "kedah": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Kriteria punika [kedah] dipunterapaken.", "exampleen": "This criteria has been implemented.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-27-12-31-27", "lastchanger": "ialfina"},
 "kudu": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "[kudu] diluwari", "exampleen": "must be redeemed", "comment": ""}], "status": "documented", "lastchanged": "2021-09-11-15-09-33", "lastchanger": "ialfina"},
