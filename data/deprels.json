@@ -6487,6 +6487,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-04-01-15-29-00", "lastchanger": "verginicabm"},
 "obl:pmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-01-15-45-40", "lastchanger": "verginicabm"},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
