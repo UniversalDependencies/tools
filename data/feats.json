@@ -2586,6 +2586,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Part", "Vnoun"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {}, "ADP": {}, "ADV": {}, "AUX": {"Conv": 1, "Fin": 1, "Part": 1, "Vnoun": 1}, "DET": {}, "INTJ": {}, "NOUN": {}, "NUM": {}, "PRON": {}, "PROPN": {}, "VERB": {"Conv": 1, "Fin": 1, "Part": 1, "Vnoun": 1}}, "lastchanged": "2021-04-30-21-34-53", "lastchanger": "coltekin"},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass", "Rcp"], "lvalues": ["CauCau", "CauCauPass", "CauPass", "CauPassRcp", "CauRcp", "PassPass", "PassRcp", "PassRfl", "Rfl"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Cau": 1, "CauCau": 1, "CauCauPass": 1, "CauPass": 1, "CauPassRcp": 1, "CauRcp": 1, "Pass": 1, "PassPass": 1, "PassRcp": 1, "PassRfl": 1, "Rcp": 1, "Rfl": 1}, "VERB": {"Cau": 1, "CauCau": 1, "CauCauPass": 1, "CauPass": 1, "CauPassRcp": 1, "CauRcp": 1, "Pass": 1, "PassPass": 1, "PassRcp": 1, "PassRfl": 1, "Rcp": 1, "Rfl": 1}}, "lastchanged": "2021-04-30-18-51-20", "lastchanger": "coltekin"}
 },
+"tt": {
+
+},
 "ug": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Perf"], "lvalues": [], "unused_uvalues": ["Imp", "Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": ["DurPerf", "DurPerfProg", "DurProg", "ProgRapid", "Rapid"], "byupos": {"AUX": {"Hab": 1, "Perf": 1}, "PART": {"Hab": 1}, "VERB": {"Hab": 1, "Perf": 1}}, "lastchanged": "2021-04-26-00-05-58", "lastchanger": "dan-zeman"},
