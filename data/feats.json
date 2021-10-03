@@ -1901,6 +1901,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Ger", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 46, "Ger": 1, "Inf": 2, "Part": 1}, "NOUN": {"Fin": 1}, "VERB": {"Fin": 200, "Ger": 5, "Inf": 33, "Part": 11}, "X": {"Fin": 1}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 46, "Pass": 1}, "NOUN": {"Act": 1}, "VERB": {"Act": 189, "Pass": 13}, "X": {"Act": 1}}}
 },
+"or": {
+
+},
 "orv": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 7}, "ADV": {"Yes": 2}, "DET": {"Yes": 32}, "NOUN": {"Yes": 287}}},
 "Analyt": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Yes": 1}, "PRON": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2021-01-19-08-53-25", "lastchanger": "olesar"},
