@@ -908,7 +908,7 @@
 "gats": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "go": {"functions": [{"function": "Aspect=Prosp", "rule": "Marks the prospective aspect", "deficient": "", "example": "you [go] steam your face", "exampleen": "you'll steam your face", "comment": ""}], "status": "documented", "lastchanged": "2021-10-04-09-52-37", "lastchanger": "emmettstr"},
 "have": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"make": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"make": {"functions": [{"function": "", "rule": "Used to mark the optative mood", "deficient": "", "example": "God abeg [make] you just try help us.", "exampleen": "God please may you try to help us.", "comment": "Roughly corresponds to optative may in English"}], "status": "documented", "lastchanged": "2021-10-04-10-07-50", "lastchanger": "emmettstr"},
 "may": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "might": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "muna": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
