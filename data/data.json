@@ -902,7 +902,7 @@
 "could": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "dey": {"functions": [{"function": "cop.AUX", "rule": "NA", "deficient": "Primarily used to connect subject to adjectives or in locative constrictions", "example": "e no [dey] easy", "exampleen": "it's not easy", "comment": ""}], "status": "documented", "lastchanged": "2021-04-20-14-47-55", "lastchanger": "emmettstr"},
 "do": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"don": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"don": {"functions": [{"function": "Aspect=Perf", "rule": "Used to mark verbs in perfective aspect", "deficient": "", "example": "you [don] get new daughter", "exampleen": "you've gotten a new daughter", "comment": ""}], "status": "documented", "lastchanged": "2021-10-04-09-51-08", "lastchanger": "emmettstr"},
 "fit": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "for": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "gats": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
