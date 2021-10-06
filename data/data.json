@@ -878,6 +878,9 @@
 "nyq": {
 "دار": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and a present participle of the main verb", "deficient": "", "example": "مو [دار]ُن لباسُم واپوشن", "exampleen": "I am getting dressed.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-10-06-13-38", "lastchanger": "amirmojiry"}
 },
+"oc": {
+"èsser": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Aquestes persècs [son] los melhors que ai manjat.", "exampleen": "Those peaches are the best I ever ate.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-06-21-13-09", "lastchanger": "maartenpt"}
+},
 "ojp": {
 "ari": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "motono mizuni [ara]-zu", "exampleen": "It is not the same (in origin) water", "comment": ""}], "status": "documented", "lastchanged": "2021-01-29-15-22-19", "lastchanger": "@LanguageStructure"}
 },
