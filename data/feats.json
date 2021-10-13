@@ -185,7 +185,7 @@
 "OblTop": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": ["12", "13", "23", "33", "3Imp"], "evalues": [], "byupos": {}},
 "Poss": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Hum"], "evalues": [], "byupos": {}},
-"PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Ind", "Int", "Prs"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"PronType": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Int", "Prs"], "lvalues": [], "unused_uvalues": ["Ind"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Int": 1, "Prs": 1}}, "lastchanged": "2021-10-13-16-01-11", "lastchanger": "LanguageStructure"},
 "Red": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Di", "Mo"], "evalues": [], "byupos": {}},
 "Rel": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Abs", "Cont", "Hum", "NCont"], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Header title 'Person' does not match the file name 'Tense'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
