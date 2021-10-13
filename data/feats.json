@@ -188,7 +188,7 @@
 "PronType": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Int", "Prs"], "lvalues": [], "unused_uvalues": ["Ind"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Int": 1, "Prs": 1}}, "lastchanged": "2021-10-13-16-01-11", "lastchanger": "LanguageStructure"},
 "Red": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Di", "Mo"], "evalues": [], "byupos": {}},
 "Rel": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Abs", "Cont", "Hum", "NCont"], "evalues": [], "byupos": {}},
-"Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fut", "Past"], "unused_lvalues": ["RPast"], "evalues": [], "byupos": {}},
+"Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past"], "lvalues": ["RPast"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fut": 1, "Past": 1, "RPast": 1}, "VERB": {"Fut": 1, "Past": 1, "RPast": 1}}, "lastchanged": "2021-10-13-16-21-22", "lastchanger": "LanguageStructure"},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cau", "Mid"], "unused_lvalues": ["Com"], "evalues": [], "byupos": {}}
 },
 "as": {
