@@ -192,6 +192,7 @@
 "Red": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Di", "Mo"], "evalues": [], "byupos": {}},
 "Rel": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Abs", "Cont", "Hum", "NCont"], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past"], "lvalues": ["RPast"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fut": 1, "Past": 1, "RPast": 1}, "VERB": {"Fut": 1, "Past": 1, "RPast": 1}}, "lastchanged": "2021-10-13-16-21-22", "lastchanger": "LanguageStructure"},
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Ger"], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Gdv", "Inf", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Ger": 1}}, "lastchanged": "2021-10-13-16-42-32", "lastchanger": "LanguageStructure"},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cau", "Mid"], "unused_lvalues": ["Com"], "evalues": [], "byupos": {}}
 },
 "as": {
