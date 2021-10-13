@@ -176,6 +176,7 @@
 "ConjType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Disj"], "evalues": [], "byupos": {}},
 "Dev": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Pass"], "evalues": [], "byupos": {}},
 "Emph": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Evident": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fh", "Nfh"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PART": {"Fh": 1, "Nfh": 1}}, "lastchanged": "2021-10-13-16-29-04", "lastchanger": "LanguageStructure"},
 "Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem"], "lvalues": [], "unused_uvalues": ["Com", "Masc", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Fem": 1}}, "lastchanged": "2021-10-13-16-25-30", "lastchanger": "LanguageStructure"},
 "Incorp": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Int": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
