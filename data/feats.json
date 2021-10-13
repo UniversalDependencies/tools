@@ -184,7 +184,8 @@
 "Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Plur", "Sing"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "OblTop": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": ["12", "13", "23", "33"], "evalues": [], "byupos": {}},
-"Poss": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Hum"], "evalues": [], "byupos": {}}
+"Poss": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Hum"], "evalues": [], "byupos": {}},
+"PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Ind", "Int", "Prs"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "as": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
