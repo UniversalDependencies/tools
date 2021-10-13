@@ -183,7 +183,7 @@
 "Nomzr": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ag", "CCirc", "Circ", "Pas", "Rel"], "evalues": [], "byupos": {}},
 "Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Plur", "Sing"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "OblTop": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
-"Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": ["12", "13", "23", "33"], "evalues": [], "byupos": {}},
+"Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": ["12", "13", "23", "33", "3Imp"], "evalues": [], "byupos": {}},
 "Poss": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Hum"], "evalues": [], "byupos": {}},
 "PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Ind", "Int", "Prs"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Red": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Di", "Mo"], "evalues": [], "byupos": {}},
