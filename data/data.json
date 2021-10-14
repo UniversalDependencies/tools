@@ -923,7 +923,7 @@
 "never": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "shall": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "should": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"will": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"will": {"functions": [{"function": "Tense=Fut", "rule": "Future auxiliary occasionally used in Naija", "deficient": "", "example": "if dem see snake, de [will] kill am", "exampleen": "if they see a snake, they will kill it", "comment": ""}], "status": "documented", "lastchanged": "2021-10-14-11-07-10", "lastchanger": "emmettstr"},
 "would": {"functions": [{"function": "Mood=Cnd", "rule": "Rarely-used conditional auxiliary", "deficient": "", "example": "people [would] fit look down", "exampleen": "people would be able to look down.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-14-10-30-49", "lastchanger": "emmettstr"}
 },
 "pl": {
