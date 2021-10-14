@@ -924,7 +924,7 @@
 "shall": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "should": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "will": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"would": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"would": {"functions": [{"function": "Mood=Cnd", "rule": "Rarely-used conditional auxiliary", "deficient": "", "example": "people [would] fit look down", "exampleen": "people would be able to look down.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-14-10-30-49", "lastchanger": "emmettstr"}
 },
 "pl": {
 "by": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Bardzo chciał[by]m z nim pogadać.", "exampleen": "I'd love to talk to him.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-12-59-27", "lastchanger": "dan-zeman"},
