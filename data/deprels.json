@@ -4010,6 +4010,7 @@
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"flat:gov": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'flat:gov'."]},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},

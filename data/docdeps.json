@@ -1268,6 +1268,7 @@
 "dislocated:csubj": {"type": "local", "errors": []},
 "dislocated:nsubj": {"type": "local", "errors": []},
 "dislocated:obj": {"type": "local", "errors": []},
+"flat:gov": {"type": "local", "errors": ["No examples found for relation 'flat:gov'."]},
 "nsubj:cleft": {"type": "local", "errors": []},
 "obl:cmpr": {"type": "local", "errors": []},
 "obl:lmod": {"type": "local", "errors": []},
