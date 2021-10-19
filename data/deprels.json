@@ -580,6 +580,7 @@
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-19-17-06-31", "lastchanger": "sylvainkahane"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
