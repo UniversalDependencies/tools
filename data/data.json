@@ -646,6 +646,7 @@
 "難い": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "jv": {
+"arep": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Aku [arep] lunga.", "exampleen": "I want to go.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-20-05-07-02", "lastchanger": "ialfina"},
 "bakal": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Saben makluk [bakal] mati.", "exampleen": "Everyone will die.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-30-13-28-02", "lastchanger": "ialfina"},
 "isa": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Euryarchaeota [isa] urip ing lingkungan ekstrem.", "exampleen": "Euryarchaeota can survive in extreme environments.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-08-07-08-50", "lastchanger": "ialfina"},
 "iso": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Dracula [iso] dibasmi.", "exampleen": "Dracula can be exterminated.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-30-08-26-56", "lastchanger": "ialfina"},
