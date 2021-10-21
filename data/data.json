@@ -843,7 +843,7 @@
 "эрявомс": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and main verb", "deficient": "required to do", "example": "Зяро ёрокчи [эряви] парцунонь анокстамс!", "exampleen": "It takes a lot of skill to prepare the forms!", "comment": "BryzhinskijMixail Kirdazht manu:3402"}], "status": "documented", "lastchanged": "2020-11-06-15-37-11", "lastchanger": "rueter"}
 },
 "nap": {
-"avé": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Chĕ [hajĕ] fattŏ?", "exampleen": "What have you done?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-21-15-34-19", "lastchanger": "robasile"}
+"avé": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Chĕ [hajĕ] fattŏ?", "exampleen": "What have you done?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-21-15-35-46", "lastchanger": "robasile"}
 },
 "nds": {
 "doon": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary in past tense and an infinitive of the main verb", "deficient": "", "example": "ik [dea] em dat nich seggen", "exampleen": "I would not tell him", "comment": ""}], "status": "documented", "lastchanged": "2021-04-21-13-52-15", "lastchanger": "jasiewert"},
