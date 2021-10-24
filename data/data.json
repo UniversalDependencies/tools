@@ -74,7 +74,7 @@
 "arr": {
 "nã": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "abegahmõm [nã]", "exampleen": "I got quiet/calmed down", "comment": ""}], "status": "documented", "lastchanged": "2021-10-24-10-20-12", "lastchanger": "LanguageStructure"},
 "waʔye": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "məy maʔpəy ŋa [waʔye]", "exampleen": "So, there was a woman", "comment": ""}], "status": "documented", "lastchanged": "2021-10-24-15-43-55", "lastchanger": "LanguageStructure"},
-"ʔe": {"functions": [{"function": "", "rule": "with lexical verb in the gerund", "deficient": "", "example": "mɨy mãm péŋ [ʔep] toʔwa", "exampleen": "", "comment": ""}], "status": "documented", "lastchanged": "2021-10-24-15-41-17", "lastchanger": "LanguageStructure"}
+"ʔe": {"functions": [{"function": "", "rule": "with lexical verb in the gerund", "deficient": "", "example": "mɨy mãm péŋ [ʔep] toʔwa", "exampleen": "Long ago, there was a white man", "comment": ""}], "status": "documented", "lastchanged": "2021-10-24-15-44-16", "lastchanger": "LanguageStructure"}
 },
 "bav": {
 "lùu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Tíi ŋwāa [lùu] wúu ndâa.", "exampleen": "My father is a blacksmith.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-41-44", "lastchanger": "dan-zeman"}
