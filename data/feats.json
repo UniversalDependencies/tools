@@ -328,7 +328,8 @@
 "Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Ind", "Sub"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Imp", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Ind": 1, "Sub": 1}}, "lastchanged": "2021-10-24-23-18-42", "lastchanger": "dan-zeman"},
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}}, "lastchanged": "2021-10-24-23-17-03", "lastchanger": "dan-zeman"},
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pres"], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Past", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Pres": 1}}, "lastchanged": "2021-10-24-23-20-04", "lastchanger": "dan-zeman"},
-"Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Inf", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Fin": 1}}, "lastchanged": "2021-10-24-23-20-44", "lastchanger": "dan-zeman"}
 },
 "br": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
