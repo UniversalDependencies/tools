@@ -527,7 +527,7 @@ def validate_text_meta(comments,tree):
                 if not mismatch_reported:
                     testid = 'text-form-mismatch'
                     testmessage = "Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" % (cols[ID], cols[FORM], stext[:len(cols[FORM])+20])
-                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                     mismatch_reported=1
             else:
                 stext=stext[len(cols[FORM]):] # eat the form
