@@ -133,6 +133,9 @@
 "tɛ́na": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "Ko barisa ko ale [tèna] segin ka a kòròkèw to, ko a fana bè taga dennin nyini, o fana ka fara u kan.", "exampleen": "Because he will not return to let his oldest brother rest, he also goes to search for the little girl, he also helps with that.", "comment": "negative future"}], "status": "documented", "lastchanged": "2020-12-26-22-42-29", "lastchanger": "dan-zeman"},
 "ye": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "O [ye] o dun.", "exampleen": "This has eaten this.", "comment": "perfect transitive"}], "status": "documented", "lastchanged": "2020-12-15-10-00-38", "lastchanger": "dan-zeman"}
 },
+"bn": {
+"পারা": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "তুমি গান গাইতে [পারো] ?", "exampleen": "Can you sing?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-25-21-46-16", "lastchanger": "dan-zeman"}
+},
 "br": {
 "a": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "bezañ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Bras [eo] an den.", "exampleen": "The man is big.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-53-11", "lastchanger": "dan-zeman"},
