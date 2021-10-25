@@ -1633,7 +1633,7 @@
 "nsubj:cop": {"type": "local", "errors": []}
 },
 "sjo": {
-"mark:adv": {"type": "local", "errors": ["No examples found for relation 'mark:adv'.", "Documentation does not belong to UD v2 guidelines."]}
+"mark:adv": {"type": "local", "errors": ["No examples found for relation 'mark:adv'."]}
 },
 "sl": {
 "conj:extend": {"type": "local", "errors": []},
