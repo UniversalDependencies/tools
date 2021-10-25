@@ -445,6 +445,7 @@ def validate_text_meta(comments,tree):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
     global spaceafterno_in_effect
+    global sentence_line
     testlevel = 2
     testclass = 'Metadata'
     newdoc_matched = []
@@ -489,6 +490,7 @@ def validate_text_meta(comments,tree):
         # Validate the text against the SpaceAfter attribute in MISC.
         skip_words = set()
         mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
+        iline = 0
         for cols in tree:
             if MISC >= len(cols):
                 # This error has been reported elsewhere but we cannot check MISC now.
@@ -496,12 +498,12 @@ def validate_text_meta(comments,tree):
             if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
                 testid = 'nospaceafter-yes'
                 testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
             if '.' in cols[ID]: # empty node
                 if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                     testid = 'spaceafter-empty-node'
                     testmessage = "'SpaceAfter=No' cannot occur with empty nodes."
-                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                 continue
             elif '-' in cols[ID]: # multi-word token
                 beg,end=cols[ID].split('-')
@@ -517,7 +519,7 @@ def validate_text_meta(comments,tree):
                 if 'SpaceAfter=No' in cols[MISC]:
                     testid = 'spaceafter-mwt-node'
                     testmessage = "'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                 continue
             else:
                 # Err, I guess we have nothing to do here. :)
@@ -527,7 +529,7 @@ def validate_text_meta(comments,tree):
                 if not mismatch_reported:
                     testid = 'text-form-mismatch'
                     testmessage = "Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" % (cols[ID], cols[FORM], stext[:len(cols[FORM])+20])
-                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     mismatch_reported=1
             else:
                 stext=stext[len(cols[FORM]):] # eat the form
@@ -538,8 +540,9 @@ def validate_text_meta(comments,tree):
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
                         testmessage = "'SpaceAfter=No' is missing in the MISC field of node #%s because the text is '%s'." % (cols[ID], shorten(cols[FORM]+stext))
-                        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     stext=stext.lstrip()
+            iline += 1
         if stext:
             testid = 'text-extra-chars'
             testmessage = "Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'" % stext
