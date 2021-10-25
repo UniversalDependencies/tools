@@ -6992,6 +6992,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-25-23-37-30", "lastchanger": "hzh1-cl"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-25-23-35-17", "lastchanger": "hzh1-cl"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
