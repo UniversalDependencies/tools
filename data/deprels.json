@@ -803,6 +803,7 @@
 },
 "bn": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-26-15-08-24", "lastchanger": "dan-zeman"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
