@@ -826,7 +826,8 @@
 },
 "fy": {
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Sing", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NUM": {"Plur": 1}}, "lastchanged": "2021-10-26-16-38-18", "lastchanger": "heeringa0"},
-"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2021-10-26-16-35-29", "lastchanger": "heeringa0"}
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2021-10-26-16-35-29", "lastchanger": "heeringa0"},
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Inf", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 1}}, "lastchanged": "2021-10-26-16-41-58", "lastchanger": "heeringa0"}
 },
 "ga": {
 "Abbr": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["True"], "byupos": {"ADJ": {"Yes": 1}, "ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PROPN": {"Yes": 1}, "SYM": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2021-04-04-14-34-00", "lastchanger": "dan-zeman"},
