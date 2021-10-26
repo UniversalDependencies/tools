@@ -827,6 +827,7 @@
 "fy": {
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NUM": {"Plur": 1, "Sing": 1}}, "lastchanged": "2021-10-26-16-45-37", "lastchanger": "heeringa"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2021-10-26-16-35-29", "lastchanger": "heeringa0"},
+"Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pres"], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Past", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Pres": 1}}, "lastchanged": "2021-10-26-16-55-21", "lastchanger": "heeringa0"},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Inf", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 1}}, "lastchanged": "2021-10-26-16-41-58", "lastchanger": "heeringa0"}
 },
 "ga": {
