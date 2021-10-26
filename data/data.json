@@ -134,6 +134,7 @@
 "ye": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "O [ye] o dun.", "exampleen": "This has eaten this.", "comment": "perfect transitive"}], "status": "documented", "lastchanged": "2020-12-15-10-00-38", "lastchanger": "dan-zeman"}
 },
 "bn": {
+"চাওয়া": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and an infinitive or participle of the main verb", "deficient": "", "example": "আমি তোমাকে দেখতে [চাই]।", "exampleen": "I want to see you.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-26-09-30-14", "lastchanger": "dan-zeman"},
 "পারা": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "তুমি গান গাইতে [পারো] ?", "exampleen": "Can you sing?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-25-21-46-16", "lastchanger": "dan-zeman"},
 "হওয়া": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and an imperfect participle of the main verb", "deficient": "", "example": "তোমাকে আর একটু থাকতে [হবে]।", "exampleen": "You will have to stay a bit longer.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-26-09-19-28", "lastchanger": "dan-zeman"}
 },
