@@ -3123,6 +3123,7 @@
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:dist": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"flat:frac": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-25-02", "lastchanger": "myavrum"},
 "flat:range": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
