@@ -5924,6 +5924,7 @@
 "parataxis:discourse": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:dislocated": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:insert": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"parataxis:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:parenth": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
