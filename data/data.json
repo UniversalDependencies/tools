@@ -1215,6 +1215,7 @@
 "urb": {
 "'y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ne ihẽ ke remusak ['y]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2020-12-20-18-47-48", "lastchanger": "@LanguageStructure"},
 "ho": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "mahem arapuha himiʔu o[ho]", "exampleen": "The deer will find some food", "comment": ""}], "status": "documented", "lastchanged": "2021-05-01-02-17-08", "lastchanger": "Mentha7"},
+"ʃo": {"functions": [{"function": "", "rule": "to be in movement", "deficient": "", "example": "jaʃi riki pejupeju [oʃo]", "exampleen": "It is a turtle (that) (is) playing", "comment": "Kakumasu, 1990:130"}], "status": "documented", "lastchanged": "2021-10-28-19-52-03", "lastchanger": "tatiana-merz"},
 "ʔɪ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the main verb and the auxiliary ", "deficient": "", "example": "ne ihẽke remusak [ʔɪ]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2021-05-01-00-03-30", "lastchanger": "Mentha7"}
 },
 "vi": {
