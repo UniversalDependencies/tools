@@ -186,6 +186,7 @@ conj:versus
 conj:vs
 conj:yet
 csubj:pass
+csubj:pass:xsubj
 csubj:xsubj
 det:predet
 flat:foreign
@@ -312,6 +313,7 @@ nmod:within
 nmod:without
 nmod:x
 nsubj:pass
+nsubj:pass:xsubj
 nsubj:xsubj
 obl:aboard
 obl:about
