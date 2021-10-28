@@ -51,16 +51,16 @@ my $oldpath = '/net/data/universal-dependencies-2.7';
 ###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
 (
-    'release'       => \$current_release,
-    'next-expected' => \$next_release_expected,
-    'ann-min-size'  => \$announcement_min_size,
-    'ann-max-size'  => \$announcement_max_size,
-    'oldpath'       => \$oldpath,
-    'future'        => \$include_future,
-    'pull'          => \$pull,
-    'validate'      => \$validate,
-    'stats'         => \$recompute_stats,
-    'tag=s'         => \$tag
+    'release=s'       => \$current_release,
+    'next-expected=s' => \$next_release_expected,
+    'ann-min-size=s'  => \$announcement_min_size,
+    'ann-max-size=s'  => \$announcement_max_size,
+    'oldpath=s'       => \$oldpath,
+    'future'          => \$include_future,
+    'pull'            => \$pull,
+    'validate'        => \$validate,
+    'stats'           => \$recompute_stats,
+    'tag=s'           => \$tag
 );
 
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
@@ -677,7 +677,8 @@ sub get_files
         $folder eq 'UD_English-GUMReddit' && $_ eq 'get_text.py' ||
         $folder eq 'UD_Hindi_English-HIENCS' && $_ =~ m/^(merge\/?|crawl_tweets\.py)$/ ||
         $folder eq 'UD_Japanese-KTC' && $_ =~ m/^merge/ ||
-        $folder eq 'UD_Japanese-BCCWJ' && $_ =~ m/^merge/
+        $folder eq 'UD_Japanese-BCCWJ' && $_ =~ m/^merge/ ||
+        $folder eq 'UD_Japanese-BCCWJLUW' && $_ =~ m/^merge/
     )}
     (@extrafiles);
     my %files =
