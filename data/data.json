@@ -784,7 +784,7 @@
 },
 "mdf": {
 "апак": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"аф": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"аф": {"functions": [{"function": "neg", "rule": "combination of the auxiliary and the conjugated main verb in non-past", "deficient": "non-past negation", "example": "..., [аф] содасы таньфонц.", "exampleen": "..., does [not] know its flavor.", "comment": "this has other siblings in the paradigm of negation that show person and number."}], "status": "documented", "lastchanged": "2021-10-28-21-12-40", "lastchanger": "rueter"},
 "афи": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "афоль": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "аш": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in indicative present and past only", "example": "кодама аньцек краскат сонь эсонза [ашельхть].", "exampleen": "what kinds of colors it [did not] have in it.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-28-21-03-17", "lastchanger": "rueter"},
