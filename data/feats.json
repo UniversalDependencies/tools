@@ -952,7 +952,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "gub": {
-"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Prog"], "lvalues": [], "unused_uvalues": ["Perf"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Prog": 1}}, "lastchanged": "2020-12-20-21-39-32", "lastchanger": "@l12maro"},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Perf", "Prog"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Prog": 1}, "VERB": {"Perf": 1}}, "lastchanged": "2021-10-29-11-21-30", "lastchanger": "l12maro"},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["All", "Dat", "Loc"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Ben", "Ins", "Tra"], "byupos": {"ADP": {"All": 1, "Ben": 1, "Dat": 1, "Ins": 1, "Loc": 1, "Tra": 1}}, "lastchanged": "2021-03-28-18-01-37", "lastchanger": "@l12maro"},
 "Clusivity": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Ex", "In"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Ex": 1, "In": 1}, "PRON": {"Ex": 1, "In": 1}, "VERB": {"Ex": 1, "In": 1}}, "lastchanged": "2021-03-28-17-56-29", "lastchanger": "@l12maro"},
 "Dimin": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}}, "lastchanged": "2021-10-24-11-35-36", "lastchanger": "@l12maro"},
