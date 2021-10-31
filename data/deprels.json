@@ -7002,6 +7002,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"mark:plur": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'mark:plur'."]},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-25-23-31-31", "lastchanger": "hzh1-cl"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},

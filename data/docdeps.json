@@ -1640,7 +1640,8 @@
 "nsubj:cop": {"type": "local", "errors": []}
 },
 "sjo": {
-"mark:adv": {"type": "local", "errors": []}
+"mark:adv": {"type": "local", "errors": []},
+"mark:plur": {"type": "local", "errors": ["No examples found for relation 'mark:plur'.", "Documentation does not belong to UD v2 guidelines."]}
 },
 "sl": {
 "conj:extend": {"type": "local", "errors": []},
