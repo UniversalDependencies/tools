@@ -70,6 +70,7 @@ advcl:как_если_бы_если
 advcl:как_только
 advcl:когда
 advcl:коли
+advcl:коли_скоро
 advcl:коль_скоро
 advcl:кроме
 advcl:лишь_бы
@@ -126,6 +127,7 @@ advcl:что
 advcl:что_то
 advcl:чтоб
 advcl:чтобы
+advcl:чтобы_как
 ccomp:чтобы
 nmod:acc
 nmod:dat
@@ -171,6 +173,7 @@ nmod:во:acc
 nmod:во:loc
 nmod:во_время:gen
 nmod:во_глава:gen
+nmod:во_глава_с
 nmod:во_глава_с:ins
 nmod:возле:gen
 nmod:вокруг
@@ -345,6 +348,7 @@ nmod:столько_в:loc
 nmod:столько_перед:ins
 nmod:типа
 nmod:то:gen
+nmod:то_быть_от:gen
 nmod:то_с:gen
 nmod:у
 nmod:у:gen
@@ -457,6 +461,7 @@ obl:если_в:loc
 obl:если_до:gen
 obl:если_на:acc
 obl:если_на:loc
+obl:если_по:dat
 obl:если_порядка:gen
 obl:если_у:gen
 obl:за
@@ -693,6 +698,7 @@ obl:то:gen
 obl:то:ins
 obl:то:nom
 obl:то_быть_без:gen
+obl:то_быть_в:acc
 obl:то_быть_в:loc
 obl:то_быть_вместо:gen
 obl:то_быть_к:dat
@@ -705,6 +711,7 @@ obl:то_на:gen
 obl:то_про:acc
 obl:то_против:gen
 obl:то_с:gen
+obl:то_у:gen
 obl:точно:acc
 obl:точно:nom
 obl:у
