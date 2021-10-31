@@ -7003,7 +7003,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "mark:plur": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"mark:rel": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'mark:rel' is not a subtype of any approved main type."]},
+"mark:rel": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-25-23-31-31", "lastchanger": "hzh1-cl"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
