@@ -1876,7 +1876,7 @@
 "Polite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Form"], "lvalues": [], "unused_uvalues": ["Elev", "Humb", "Infm"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Form": 1}, "PRON": {"Form": 1}, "VERB": {"Form": 1}}, "lastchanged": "2021-10-31-17-55-50", "lastchanger": "jasiewert"},
 "Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2021-10-31-17-55-15", "lastchanger": "jasiewert"},
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Past", "Pres"], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Past": 1, "Pres": 1}, "VERB": {"Past": 1, "Pres": 1}}, "lastchanged": "2021-10-31-17-51-49", "lastchanger": "jasiewert"},
-"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Inf", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Inf": 1, "Part": 1}, "VERB": {"Inf": 1, "Part": 1}}, "lastchanged": "2021-10-31-17-54-42", "lastchanger": "jasiewert"}
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 1, "Inf": 1, "Part": 1}, "VERB": {"Fin": 1, "Inf": 1, "Part": 1}}, "lastchanged": "2021-10-31-17-56-23", "lastchanger": "jasiewert"}
 },
 "ne": {
 
