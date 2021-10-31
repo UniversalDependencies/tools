@@ -5260,6 +5260,7 @@
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-31-18-21-13", "lastchanger": "jasiewert"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
