@@ -1047,6 +1047,7 @@
 "शक्": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "sah": {
+"баар": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "copula of existence ", "example": "Бу аан [баар]", "exampleen": "There is a door", "comment": ""}], "status": "documented", "lastchanged": "2021-10-31-09-00-15", "lastchanger": "tatiana-merz"},
 "буол": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "The auxiliary can be attached to other tenses except immediate past or remote past", "example": "харса суох [буол]", "exampleen": "to be brave", "comment": ""}], "status": "documented", "lastchanged": "2021-10-27-11-52-34", "lastchanger": "tatiana-merz"},
 "э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "an event variable e- can only be attached to immediate past or remote past", "example": "кини быраас [этэ]", "exampleen": "he/she/it was a doctor", "comment": ""}], "status": "documented", "lastchanged": "2021-10-27-11-45-38", "lastchanger": "tatiana-merz"}
 },
