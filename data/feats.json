@@ -1865,6 +1865,7 @@
 },
 "nds": {
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post", "Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1, "Prep": 1}}, "lastchanged": "2021-10-31-17-22-34", "lastchanger": "jasiewert"},
+"Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Ind", "Sub"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Imp", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Ind": 1, "Sub": 1}}, "lastchanged": "2021-10-31-17-45-55", "lastchanger": "jasiewert"},
 "PartType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Inf", "Neg"], "unused_uvalues": [], "unused_lvalues": ["Emp", "Int", "Mod", "Vbp"], "evalues": [], "byupos": {"PART": {"Inf": 1, "Neg": 1}}, "lastchanged": "2021-10-31-17-28-31", "lastchanger": "jasiewert"}
 },
 "ne": {
