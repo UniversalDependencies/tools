@@ -1641,7 +1641,8 @@
 },
 "sjo": {
 "mark:adv": {"type": "local", "errors": []},
-"mark:plur": {"type": "local", "errors": []}
+"mark:plur": {"type": "local", "errors": []},
+"mark:rel": {"type": "", "errors": ["Relation 'mark:rel' is not a subtype of any approved main type."]}
 },
 "sl": {
 "conj:extend": {"type": "local", "errors": []},
