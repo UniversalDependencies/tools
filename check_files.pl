@@ -470,6 +470,15 @@ print("Treebank codes: ", join(' ', @langcodes), "\n\n");
 my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@langcodes);
 my @langcodes1 = sort(keys(%langcodes1));
 print("Language codes: ", join(' ', @langcodes1), "\n\n");
+# Sometimes we need the ISO 639-3 codes (as opposed to the mix of -1 and -3 codes),
+# e.g. when listing the languages in Lindat.
+my %lcode2iso3;
+foreach my $lname (keys(%{$languages_from_yaml}))
+{
+    $lcode2iso3{$languages_from_yaml->{$lname}{lcode}} = $languages_from_yaml->{$lname}{iso3};
+}
+my @iso3codes = sort(grep {!m/^q[a-t][a-z]$/} (map {$lcode2iso3{$_}} (@langcodes1)));
+print("ISO 639-3 codes: ", join(' ', @iso3codes), "\n\n");
 my @licenses = sort(keys(%licenses));
 print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n\n");
 my @genres = sort(keys(%genres));
