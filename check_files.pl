@@ -477,8 +477,8 @@ foreach my $lname (keys(%{$languages_from_yaml}))
 {
     $lcode2iso3{$languages_from_yaml->{$lname}{lcode}} = $languages_from_yaml->{$lname}{iso3};
 }
-my @iso3codes = sort(grep {!m/^q[a-t][a-z]$/} (map {$lcode2iso3{$_}} (@langcodes1)));
-print("ISO 639-3 codes: ", join(' ', @iso3codes), "\n\n");
+my @iso3codes = sort(grep {defined($_) && $_ ne '' && !m/^q[a-t][a-z]$/} (map {$lcode2iso3{$_}} (@langcodes1)));
+print(scalar(@iso3codes), " ISO 639-3 codes: ", join(' ', @iso3codes), "\n\n");
 my @licenses = sort(keys(%licenses));
 print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n\n");
 my @genres = sort(keys(%genres));
