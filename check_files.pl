@@ -339,14 +339,14 @@ foreach my $folder (@folders)
             }
             # Exception: ParTUT has some portions smaller because of other limitations (sync across languages and with UD_Italian).
             # Exception: PUD parallel data (including Japanese-PUDLUW) are currently test only, even if in some languages there is more than 20K words.
-            # UD_Akkadian-RIAO: I am not registering an exception yet but I think they told me that the treebank would grow; in the first version, they have only 20K test and no train.
+            # UD_Akkadian-RIAO: I think they told me that the treebank would grow; in the first version, they have only 20K test and no train.
             # UD_Czech-CLTT: The data needs a lot of fixes but ultimately I may want to re-split it, too. No exception at the moment.
             # Exception: UD_Armenian-ArmTDP decided to have only about 5K test, do not ping them.
             # Exception: UD_English-ESL are just below 10K test, and they do not participate in shared tasks anyway.
             # Exception: UD_English-GUMReddit has just 1840 words test. It does not participate in shared tasks (and if so, it can be merged with GUM).
             # Exception: UD_Faroese-FarPaHC has 8644 words test. I think I did not ask them about it but they have already relased it this way.
             # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
-            # Exception: UD_French-Spoken is just below 10K test, and the total treebank is only slightly over 30K.
+            # Exception: UD_French-Rhapsodie (formerly Spoken) is just below 10K test, and the total treebank is only slightly over 30K.
             # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
             # Exception: UD_Hindi_English-HIENCS has only 3K test; they do not participate in shared tasks.
             # Exception: UD_Italian-TWITTIRO overlaps with POSTWITA and tries to match its data split.
@@ -356,12 +356,12 @@ foreach my $folder (@folders)
             # Exception: UD_Scottish_Gaelic-ARCOSG is close to 10K test tokens but they could not get there if they did not want to split documents.
             # Exception: UD_Turkish-FrameNet uses a 80-10-10% split, although the treebank is rather small (also, the sizes are computed in terms of number of frames rather than words).
             # Exception: UD_Turkish-Penn keeps the train-dev-test split from the original treebank where there are only 3K words dev and 4K words test.
-            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-ParTUT|Armenian-ArmTDP|English-(ESL|GUMReddit)|Faroese-FarPaHC|French-Spoken|Hindi_English-HIENCS|Italian-TWITTIRO|Sanskrit-Vedic|Scottish_Gaelic-ARCOSG|Turkish-FrameNet|Turkish-Penn)$/)
+            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-ParTUT|Armenian-ArmTDP|English-(ESL|GUMReddit)|Faroese-FarPaHC|French-(Rhapsodie|Spoken)|Hindi_English-HIENCS|Italian-TWITTIRO|Sanskrit-Vedic|Scottish_Gaelic-ARCOSG|Turkish-FrameNet|Turkish-Penn)$/)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
             }
-            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/^UD_(French-FQB|German-LIT|.+-PUD|.+-ParTUT)$/)
+            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/^UD_(Akkadian-RIAO|French-FQB|German-LIT|.+-PUD(LUW)|.+-ParTUT)$/)
             {
                 print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
                 $n_errors++;
