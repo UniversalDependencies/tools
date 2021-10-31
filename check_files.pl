@@ -361,7 +361,7 @@ foreach my $folder (@folders)
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
             }
-            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/^UD_(Akkadian-RIAO|French-FQB|German-LIT|.+-PUD(LUW)|.+-ParTUT)$/)
+            if($nwall>20000 && $nwtrain<10000 && $folder !~ m/^UD_(Akkadian-RIAO|French-FQB|German-LIT|.+-PUD(LUW)?|.+-ParTUT)$/)
             {
                 print("$folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
                 $n_errors++;
