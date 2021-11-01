@@ -820,6 +820,7 @@
 "Case": {"type": "universal", "values": ["Nom", "Acc", "Dat"], "errors": []},
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup", "Abs"], "errors": []},
+"ExtPos": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "Gender": {"type": "universal", "values": ["Masc", "Fem"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur"], "errors": []},
 "Person": {"type": "universal", "values": ["1", "2", "3"], "errors": []}
