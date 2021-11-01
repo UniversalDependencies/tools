@@ -2712,7 +2712,8 @@
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Polarity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Neg", "Pos"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dem", "Ind", "Int", "Neg", "Prs", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Reflex": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Reflex": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fut", "Past", "Pres"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "ug": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
