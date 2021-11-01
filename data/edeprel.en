@@ -243,6 +243,7 @@ nmod:du
 nmod:due_to
 nmod:during
 nmod:except
+nmod:except_for
 nmod:exclude
 nmod:f
 nmod:fo
