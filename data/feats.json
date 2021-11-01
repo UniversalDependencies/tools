@@ -2701,7 +2701,7 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass", "Rcp"], "lvalues": ["CauCau", "CauCauPass", "CauPass", "CauPassRcp", "CauRcp", "PassPass", "PassRcp", "PassRfl", "Rfl"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Cau": 1, "CauCau": 1, "CauCauPass": 1, "CauPass": 1, "CauPassRcp": 1, "CauRcp": 1, "Pass": 1, "PassPass": 1, "PassRcp": 1, "PassRfl": 1, "Rcp": 1, "Rfl": 1}, "VERB": {"Cau": 1, "CauCau": 1, "CauCauPass": 1, "CauPass": 1, "CauPassRcp": 1, "CauRcp": 1, "Pass": 1, "PassPass": 1, "PassRcp": 1, "PassRfl": 1, "Rcp": 1, "Rfl": 1}}, "lastchanged": "2021-04-30-18-51-20", "lastchanger": "coltekin"}
 },
 "tt": {
-"Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Perf", "Prog"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2021-11-01-18-33-58", "lastchanger": "chipewyan"},
 "Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abl", "Acc", "Dat", "Equ", "Gen", "Loc", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "ug": {
