@@ -2709,7 +2709,8 @@
 "NumType": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Sets'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Number[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}},
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Polarity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Neg", "Pos"], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Polarity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Neg", "Pos"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dem", "Ind", "Int", "Neg", "Prs", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "ug": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
