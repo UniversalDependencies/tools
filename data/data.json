@@ -1189,6 +1189,9 @@
 "olacak": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "olduk": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"tt": {
+"иде": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only when used as a copula", "example": "Мин укытучы [идем]", "exampleen": "I was a teacher", "comment": ""}], "status": "documented", "lastchanged": "2021-11-02-03-42-42", "lastchanger": "chipewyan"}
+},
 "ug": {
 "ئى": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "suffixed copula can provide only some forms", "example": "ئۆيىمىز بولسا ئارا تام قوشنا [ئىدى].", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-24-47", "lastchanger": "dan-zeman"},
 "بول": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used when the suffixed copula cannot provide the corresponding form", "example": "ئۆيىمىز [بولسا] ئارا تام قوشنا ئىدى.", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-21-08", "lastchanger": "dan-zeman"},
