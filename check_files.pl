@@ -358,6 +358,7 @@ foreach my $folder (@folders)
             # Exception: UD_English-GUMReddit has just 1840 words test. It does not participate in shared tasks (and if so, it can be merged with GUM).
             # Exception: UD_Faroese-FarPaHC has 8644 words test. I think I did not ask them about it but they have already relased it this way.
             # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
+            # Exception: UD_French-ParisStories is just below 10K test, and the total treebank is slightly below 30K.
             # Exception: UD_French-Rhapsodie (formerly Spoken) is just below 10K test, and the total treebank is only slightly over 30K.
             # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
             # Exception: UD_Hindi_English-HIENCS has only 3K test; they do not participate in shared tasks.
@@ -369,7 +370,7 @@ foreach my $folder (@folders)
             # Exception: UD_Turkish-Atis is parallel with UD_English-Atis (see above) and uses the same split.
             # Exception: UD_Turkish-FrameNet uses a 80-10-10% split, although the treebank is rather small (also, the sizes are computed in terms of number of frames rather than words).
             # Exception: UD_Turkish-Penn keeps the train-dev-test split from the original treebank where there are only 3K words dev and 4K words test.
-            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-Atis|.+-ParTUT|Armenian-ArmTDP|English-(ESL|GUMReddit)|Faroese-FarPaHC|French-(Rhapsodie|Spoken)|Hindi_English-HIENCS|Italian-TWITTIRO|Sanskrit-Vedic|Scottish_Gaelic-ARCOSG|Turkish-FrameNet|Turkish-Penn)$/)
+            if($nwall>10000 && $nwtest<10000 && $folder !~ m/^UD_(.+-Atis|.+-ParTUT|Armenian-ArmTDP|English-(ESL|GUMReddit)|Faroese-FarPaHC|French-(ParisStories|Rhapsodie|Spoken)|Hindi_English-HIENCS|Italian-TWITTIRO|Sanskrit-Vedic|Scottish_Gaelic-ARCOSG|Turkish-FrameNet|Turkish-Penn)$/)
             {
                 print("$folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
                 $n_errors++;
