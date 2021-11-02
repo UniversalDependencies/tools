@@ -2712,7 +2712,7 @@
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Polarity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Neg", "Pos"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dem", "Ind", "Int", "Neg", "Prs", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Reflex": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Reflex": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2021-11-02-01-53-52", "lastchanger": "chipewyan"},
 "Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fut", "Past", "Pres"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cau", "Pass", "Rcp"], "unused_lvalues": ["CauPass", "CauPassRcp", "CauRcp", "PassRcp"], "evalues": [], "byupos": {}}
