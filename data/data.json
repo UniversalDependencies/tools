@@ -1190,7 +1190,8 @@
 "olduk": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "tt": {
-"иде": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only when used as a copula", "example": "Мин укытучы [идем]", "exampleen": "I was a teacher", "comment": ""}], "status": "documented", "lastchanged": "2021-11-02-03-42-42", "lastchanger": "chipewyan"}
+"иде": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only when used as a copula", "example": "Мин укытучы [идем]", "exampleen": "I was a teacher", "comment": ""}], "status": "documented", "lastchanged": "2021-11-02-03-42-42", "lastchanger": "chipewyan"},
+"икән": {"functions": [{"function": "", "rule": "combination of the auxiliary and the predicate", "deficient": "", "example": "Бу алма [икән]", "exampleen": "This is (apparently) an apple", "comment": "This function has something to do with evidentiality (indirect evidence), so I would love to have one in the funcition dropdown section."}], "status": "documented", "lastchanged": "2021-11-02-03-55-19", "lastchanger": "chipewyan"}
 },
 "ug": {
 "ئى": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "suffixed copula can provide only some forms", "example": "ئۆيىمىز بولسا ئارا تام قوشنا [ئىدى].", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-24-47", "lastchanger": "dan-zeman"},
