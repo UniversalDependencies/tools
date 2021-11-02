@@ -259,6 +259,7 @@ foreach my $folder (@folders)
             # If there are more data files, zero or one of each of the following is expected: train, dev.
             # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
             # Exception 2: German HDT has two train files: train-a, train-b.
+            # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
             # No other CoNLL-U files are expected.
             # It is also expected that if there is dev, there is also train.
             # And if there is train, it should be same size or larger (in words) than both dev and test.
@@ -284,6 +285,16 @@ foreach my $folder (@folders)
                 $stats = collect_statistics_about_ud_file("$prefix-train-b-1.conllu");
                 $nwtrain += $stats->{nword};
                 $stats = collect_statistics_about_ud_file("$prefix-train-b-2.conllu");
+                $nwtrain += $stats->{nword};
+            }
+            elsif($folder eq 'UD_Russian-SynTagRus')
+            {
+                # The data is split into three files because of the size limits.
+                my $stats = collect_statistics_about_ud_file("$prefix-train-a.conllu");
+                $nwtrain = $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-b.conllu");
+                $nwtrain += $stats->{nword};
+                $stats = collect_statistics_about_ud_file("$prefix-train-c.conllu");
                 $nwtrain += $stats->{nword};
             }
             else # all other treebanks
@@ -663,7 +674,8 @@ sub get_files
         'stats\.xml',
         # split data files of large treebanks
         'cs_pdt-ud-train-[clmv]\.conllu',
-        'de_hdt-ud-train-[ab]-[12]\.conllu'
+        'de_hdt-ud-train-[ab]-[12]\.conllu',
+        'ru_syntagrus-ud-train-[abc]\.conllu'
     );
     my $tolerated_re = join('|', @tolerated);
     my @extrafiles = map
@@ -738,6 +750,7 @@ sub check_files
     # If there are more data files, zero or one of each of the following is expected: train, dev.
     # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
     # Exception 2: German HDT has two train files: train-a, train-b.
+    # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
     # No other CoNLL-U files are expected.
     # It is also expected that if there is dev, there is also train.
     if($folder eq 'UD_Czech-PDT')
@@ -761,6 +774,20 @@ sub check_files
         {
             $ok = 0;
             push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab]-[12].conllu\n");
+            $$n_errors++;
+        }
+        else
+        {
+            $train_found = 1;
+        }
+    }
+    elsif($folder eq 'UD_Russian-SynTagRus')
+    {
+        # The data is split into three files because of the size limits.
+        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu" || !-f "$prefix-train-c.conllu")
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[abc].conllu\n");
             $$n_errors++;
         }
         else
