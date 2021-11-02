@@ -1190,6 +1190,7 @@
 "olduk": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "tt": {
+"ал": {"functions": [{"function": "Mood=Pot", "rule": "combination of the predicate in a progressive converb form and this auxiliary", "deficient": "", "example": "бара [ал]ам", "exampleen": "I can go", "comment": ""}], "status": "documented", "lastchanged": "2021-11-02-10-05-59", "lastchanger": "chipewyan"},
 "бар": {"functions": [{"function": "", "rule": "combination of the auxiliary and the predicate", "deficient": "", "example": "тыңлап [бар]а", "exampleen": "He is listening", "comment": ""}], "status": "documented", "lastchanged": "2021-11-02-05-09-33", "lastchanger": "chipewyan"},
 "иде": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only when used as a copula", "example": "Мин укытучы [идем]", "exampleen": "I was a teacher", "comment": ""}], "status": "documented", "lastchanged": "2021-11-02-03-42-42", "lastchanger": "chipewyan"},
 "икән": {"functions": [{"function": "", "rule": "combination of the auxiliary and the predicate", "deficient": "", "example": "Бу алма [икән]", "exampleen": "This is (apparently) an apple", "comment": "This function has something to do with evidentiality (indirect evidence), so I would love to have one in the funcition dropdown section."}], "status": "documented", "lastchanged": "2021-11-02-03-55-19", "lastchanger": "chipewyan"}
