@@ -1,7 +1,9 @@
 acl:about
 acl:after
 acl:against
+acl:although
 acl:as
+acl:as_if
 acl:at
 acl:before
 acl:behind
@@ -9,6 +11,7 @@ acl:between
 acl:beyond
 acl:but_to
 acl:concerning
+acl:except_that
 acl:for
 acl:for_to
 acl:from
@@ -20,6 +23,8 @@ acl:into
 acl:like
 acl:near
 acl:of
+acl:of_if
+acl:of_why
 acl:on
 acl:over
 acl:prior_to
@@ -238,6 +243,7 @@ nmod:du
 nmod:due_to
 nmod:during
 nmod:except
+nmod:except_for
 nmod:exclude
 nmod:f
 nmod:fo
@@ -247,6 +253,7 @@ nmod:for
 nmod:form
 nmod:fro
 nmod:from
+nmod:from_over
 nmod:in
 nmod:include
 nmod:including
