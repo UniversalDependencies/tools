@@ -870,6 +870,7 @@
 "willen": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "ik [wil] dat morgen doon", "exampleen": "I will do it tomorrow", "comment": ""}, {"function": "Mood=Cnd", "rule": "combination of the auxiliary in past tense and an infinitive of the main verb", "deficient": "", "example": "hee sea, hee [wul] dat doon", "exampleen": "he said that he would do it", "comment": ""}, {"function": "Mood=Des", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "see [wil] uns besöken", "exampleen": "she wants to visit us", "comment": ""}], "status": "documented", "lastchanged": "2021-04-21-14-03-28", "lastchanger": "jasiewert"}
 },
 "nhi": {
+"ma": {"functions": [{"function": "Mood=Irr", "rule": "Combination of the auxilary and a finite verb", "deficient": "", "example": "Ojkon onechilwij para [ma]nioj.", "exampleen": "They said that I should leave.", "comment": ""}], "status": "documented", "lastchanged": "2021-11-29-03-58-48", "lastchanger": "ftyers"},
 "o": {"functions": [{"function": "Tense=Past", "rule": "Combination of the auxilary and a finite", "deficient": "", "example": "N Lupita [o]wits.", "exampleen": "Lupita fell.", "comment": ""}], "status": "documented", "lastchanged": "2021-11-29-01-06-20", "lastchanger": "ftyers"}
 },
 "nl": {
