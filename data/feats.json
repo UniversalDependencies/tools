@@ -1900,7 +1900,7 @@
 
 },
 "nhi": {
-
+"Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "CCONJ": {"Yes": 1}, "DET": {"Yes": 1}, "INTJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PART": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "PUNCT": {"Yes": 1}, "SCONJ": {"Yes": 1}, "SYM": {"Yes": 1}, "VERB": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2021-11-29-04-01-00", "lastchanger": "ftyers"}
 },
 "nl": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"X": {"Yes": 164}}},
