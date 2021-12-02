@@ -871,7 +871,8 @@
 },
 "nhi": {
 "ma": {"functions": [{"function": "Mood=Irr", "rule": "Combination of the auxilary and a finite verb", "deficient": "", "example": "Ojkon onechilwij para [ma]nioj.", "exampleen": "They said that I should leave.", "comment": ""}], "status": "documented", "lastchanged": "2021-11-29-03-58-48", "lastchanger": "ftyers"},
-"o": {"functions": [{"function": "Tense=Past", "rule": "Combination of the auxilary and a finite", "deficient": "", "example": "N Lupita [o]wits.", "exampleen": "Lupita fell.", "comment": ""}], "status": "documented", "lastchanged": "2021-11-29-01-06-20", "lastchanger": "ftyers"}
+"o": {"functions": [{"function": "Tense=Past", "rule": "Combination of the auxilary and a finite", "deficient": "", "example": "N Lupita [o]wits.", "exampleen": "Lupita fell.", "comment": ""}], "status": "documented", "lastchanged": "2021-11-29-01-06-20", "lastchanger": "ftyers"},
+"yej": {"functions": [{"function": "cop.PRON", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Orthography with -j- ", "example": "[Yej] ojkon milawak otechweyikamojti.", "exampleen": "Así de veras nos espantó grandemente.", "comment": ""}], "status": "documented", "lastchanged": "2021-12-02-06-13-41", "lastchanger": "ftyers"}
 },
 "nl": {
 "hebben": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Ik [heb] gedaan wat ik kon.", "exampleen": "I did what I could.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-04-12-40-58", "lastchanger": "dan-zeman"},
