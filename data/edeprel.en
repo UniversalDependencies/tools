@@ -378,6 +378,7 @@ obl:follow
 obl:following
 obl:for
 obl:from
+obl:from_among
 obl:from_behind
 obl:give
 obl:given
