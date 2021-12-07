@@ -961,6 +961,9 @@
 "mark:q": {"type": "local", "errors": []},
 "nsubj:cop": {"type": "local", "errors": []}
 },
+"hit": {
+"advmoc_loc": {"type": "", "errors": ["Relation 'advmoc_loc' does not have the prescribed form.", "Relation 'advmoc_loc' is not a subtype of any approved main type.", "No examples found for relation 'advmoc_loc'."]}
+},
 "hsb": {
 "dep:alt": {"type": "local", "errors": []}
 },

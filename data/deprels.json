@@ -2867,6 +2867,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmoc_loc": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmoc_loc'.", "Relation 'advmoc_loc' does not have the prescribed form.", "Relation 'advmoc_loc' is not a subtype of any approved main type."]},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
