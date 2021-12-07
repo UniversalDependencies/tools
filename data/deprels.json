@@ -2884,6 +2884,7 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"discourse_conn": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'discourse_conn'.", "Relation 'discourse_conn' does not have the prescribed form.", "Relation 'discourse_conn' is not a subtype of any approved main type."]},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},

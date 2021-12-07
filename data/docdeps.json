@@ -962,7 +962,8 @@
 "nsubj:cop": {"type": "local", "errors": []}
 },
 "hit": {
-"advmoc_loc": {"type": "", "errors": ["Relation 'advmoc_loc' does not have the prescribed form.", "Relation 'advmoc_loc' is not a subtype of any approved main type.", "No examples found for relation 'advmoc_loc'."]}
+"advmoc_loc": {"type": "", "errors": ["Relation 'advmoc_loc' does not have the prescribed form.", "Relation 'advmoc_loc' is not a subtype of any approved main type.", "No examples found for relation 'advmoc_loc'."]},
+"discourse_conn": {"type": "", "errors": ["Relation 'discourse_conn' does not have the prescribed form.", "Relation 'discourse_conn' is not a subtype of any approved main type.", "No examples found for relation 'discourse_conn'."]}
 },
 "hsb": {
 "dep:alt": {"type": "local", "errors": []}
