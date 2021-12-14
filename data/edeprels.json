@@ -4,6 +4,7 @@
 "en": {
 "aboard": {"extends": ["nmod", "obl"], "functions": [{"function": "Sup", "example": "Yuri Gagarin lifted off [aboard Vostok 1] into space.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-57-52", "lastchanger": "dan-zeman"},
 "above": {"extends": ["nmod", "obl"], "functions": [{"function": "Spe", "example": "Feel yourself floating [above the earth and sea].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-39-06", "lastchanger": "dan-zeman"},
+"across": {"extends": ["nmod", "obl"], "functions": [{"function": "Crs", "example": "Christopher Columbus sailed [across the Atlantic Ocean].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-53-22", "lastchanger": "dan-zeman"},
 "alongside": {"extends": ["nmod", "obl"], "functions": [{"function": "Apu", "example": "He had a lead role [alongside acclaimed actor Peter O’Toole].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-37-56", "lastchanger": "dan-zeman"},
 "around": {"extends": ["nmod", "obl"], "functions": [{"function": "Rnd", "example": "The debris formed a ring [around the Earth’s equator].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-49-35", "lastchanger": "dan-zeman"},
 "aside": {"extends": ["nmod", "obl"], "functions": [{"function": "Apu", "example": "These islands sit [aside the vital sea lanes of the Strait of Malacca].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-36-44", "lastchanger": "dan-zeman"},
