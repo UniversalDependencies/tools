@@ -3,6 +3,7 @@
 "edeprels": {
 "en": {
 "at": {"extends": ["nmod", "obl"], "functions": [{"function": "Ade", "example": "They are setting the road blocks [at the exact same positions].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-47-53", "lastchanger": "dan-zeman"},
-"in": {"extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "My mother is sitting [in the little room].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-06-11", "lastchanger": "dan-zeman"}
+"in": {"extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "My mother is sitting [in the little room].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-06-11", "lastchanger": "dan-zeman"},
+"near": {"extends": ["nmod", "obl"], "functions": [{"function": "Prx", "example": "Zawahiri is thought to be somewhere [near the border of Pakistan and Afghanistan].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-50-16", "lastchanger": "dan-zeman"}
 }
 }}
