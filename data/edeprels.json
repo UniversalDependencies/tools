@@ -62,6 +62,7 @@
 "up_to": {"extends": ["nmod", "obl"], "functions": [{"function": "Lat", "example": "Mesoamerica is the geographic area stretching from north of Panama [up to the desert of central Mexico].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-18-02-38", "lastchanger": "dan-zeman"},
 "upon": {"extends": ["nmod", "obl"], "functions": [{"function": "Tat", "example": "The plans had suffered a setback [upon the arrest of Khalid Shaikh Mohammed].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-18-16-51", "lastchanger": "dan-zeman"},
 "via": {"extends": ["nmod", "obl"], "functions": [{"function": "Per", "example": "Her immediate family spent about USD 20,000 to return to Detroit [via Syria and Jordan].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-17-50-57", "lastchanger": "dan-zeman"},
+"whilst": {"extends": ["nmod", "obl"], "functions": [{"function": "Tdg", "example": "Emperors are referred to by their given names, both [whilst alive] and posthumously.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-18-23-16", "lastchanger": "dan-zeman"},
 "within": {"extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "The information comes from burial sites and the grave goods contained [within them].", "exampleen": "", "comment": ""}, {"function": "Tdg", "example": "[Within a few months], the village people began to notice their wells were running dry.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-18-21-56", "lastchanger": "dan-zeman"}
 }
 }}
