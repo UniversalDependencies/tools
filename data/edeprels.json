@@ -12,6 +12,7 @@
 "nearby": {"extends": ["nmod", "obl"], "functions": [{"function": "Prx", "example": "All 15 people were seated [nearby the individual] on their flight into New Zealand.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-51-10", "lastchanger": "dan-zeman"},
 "nigh": {"extends": ["nmod", "obl"], "functions": [{"function": "Prx", "example": "He drew [nigh that gigantic reef].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-51-58", "lastchanger": "dan-zeman"},
 "on": {"extends": ["nmod", "obl"], "functions": [{"function": "Sup", "example": "They work [on Wall Street].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-55-26", "lastchanger": "dan-zeman"},
+"on_board": {"extends": ["nmod", "obl"], "functions": [{"function": "Sup", "example": "We are much safer today [on board ship].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-10-12-06", "lastchanger": "dan-zeman"},
 "within": {"extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "The information comes from burial sites and the grave goods contained [within them].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-54-29", "lastchanger": "dan-zeman"}
 }
 }}
