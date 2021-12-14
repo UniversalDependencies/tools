@@ -3,7 +3,7 @@
 "edeprels": {
 "en": {
 "aboard": {"extends": ["nmod", "obl"], "functions": [{"function": "Sup", "example": "Yuri Gagarin lifted off [aboard Vostok 1] into space.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-57-52", "lastchanger": "dan-zeman"},
-"about": {"extends": ["nmod", "obl"], "functions": [{"function": "Tpc", "example": "Developed countries get to publicly question each other [about their plans and ambitions].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-21-40-46", "lastchanger": "dan-zeman"},
+"about": {"extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Tpc", "example": "Developed countries get to publicly question each other [about their plans and ambitions].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-21-52-16", "lastchanger": "dan-zeman"},
 "above": {"extends": ["nmod", "obl"], "functions": [{"function": "Spe", "example": "Feel yourself floating [above the earth and sea].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-39-06", "lastchanger": "dan-zeman"},
 "according_to": {"extends": ["nmod", "obl"], "functions": [{"function": "Src", "example": "[According to the city’s police department], a fight broke out.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-21-46-02", "lastchanger": "dan-zeman"},
 "across": {"extends": ["nmod", "obl"], "functions": [{"function": "Crs", "example": "Christopher Columbus sailed [across the Atlantic Ocean].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-53-22", "lastchanger": "dan-zeman"},
