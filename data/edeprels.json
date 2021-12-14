@@ -46,6 +46,7 @@
 "thru": {"extends": ["nmod", "obl"], "functions": [{"function": "Per", "example": "We can walk [thru it].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-17-49-28", "lastchanger": "dan-zeman"},
 "under": {"extends": ["nmod", "obl"], "functions": [{"function": "Sbe", "example": "It can be put [under the tank].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-42-15", "lastchanger": "dan-zeman"},
 "underneath": {"extends": ["nmod", "obl"], "functions": [{"function": "Sbe", "example": "We walked [underneath the bleachers].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-16-43-08", "lastchanger": "dan-zeman"},
+"via": {"extends": ["nmod", "obl"], "functions": [{"function": "Per", "example": "Her immediate family spent about USD 20,000 to return to Detroit [via Syria and Jordan].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-17-50-57", "lastchanger": "dan-zeman"},
 "within": {"extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "The information comes from burial sites and the grave goods contained [within them].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-09-54-29", "lastchanger": "dan-zeman"}
 }
 }}
