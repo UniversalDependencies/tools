@@ -2,7 +2,8 @@
 
 "edeprels": {
 "cs": {
-"aby": {"lex": "aby", "morph": "", "extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Cau", "example": "Požádali jsme jiné země, [aby nám pomohly rozšířit zoo o další druhy zvířat].", "exampleen": "We have asked other countries to help us expand the zoo with other species.", "comment": ""}], "lastchanged": "2021-12-15-10-18-48", "lastchanger": "dan-zeman"}
+"aby": {"lex": "aby", "morph": "", "extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Cau", "example": "Požádali jsme jiné země, [aby nám pomohly rozšířit zoo o další druhy zvířat].", "exampleen": "We have asked other countries to help us expand the zoo with other species.", "comment": ""}], "lastchanged": "2021-12-15-10-18-48", "lastchanger": "dan-zeman"},
+"ať": {"lex": "ať", "morph": "", "extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Rls", "example": "Trudeau takto pozve 45. prezidenta Spojených států, [ať jím bude kdokoliv].", "exampleen": "Trudeau will invite the 45th President of the United States, whoever he is.", "comment": ""}], "lastchanged": "2021-12-15-10-35-21", "lastchanger": "dan-zeman"}
 },
 "en": {
 "aboard": {"lex": "aboard", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Sup", "example": "Yuri Gagarin lifted off [aboard Vostok 1] into space.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-15-10-03-49", "lastchanger": "dan-zeman"},
