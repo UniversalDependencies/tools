@@ -136,6 +136,6 @@
 "whilst": {"extends": ["nmod", "obl"], "functions": [{"function": "Tdg", "example": "Emperors are referred to by their given names, both [whilst alive] and posthumously.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-18-23-16", "lastchanger": "dan-zeman"},
 "with": {"extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Com", "example": "They used the same venue to meet [with technology lobbyists].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-15-09-52-04", "lastchanger": "dan-zeman"},
 "within": {"extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "The information comes from burial sites and the grave goods contained [within them].", "exampleen": "", "comment": ""}, {"function": "Tdg", "example": "[Within a few months], the village people began to notice their wells were running dry.", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-18-21-56", "lastchanger": "dan-zeman"},
-"without": {"extends": ["nmod", "obl"], "functions": [{"function": "Abe", "example": "They’d rather watch it [without me].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-14-20-23-26", "lastchanger": "dan-zeman"}
+"without": {"extends": ["advcl", "nmod", "obl"], "functions": [{"function": "Abe", "example": "They’d rather watch it [without me].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-15-09-52-20", "lastchanger": "dan-zeman"}
 }
 }}
