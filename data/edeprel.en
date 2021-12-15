@@ -59,22 +59,19 @@ advcl:as_opposed_to
 advcl:as_though
 advcl:as_to
 advcl:as_well_as
-advcl:ask
 advcl:at
-advcl:bc
-advcl:beacuse
 advcl:because
-advcl:becouse
-advcl:becuse
 advcl:before
 advcl:behind
 advcl:besides
 advcl:beyond
+advcl:but
 advcl:by
 advcl:cause
 advcl:coz
 advcl:despite
 advcl:due_to
+advcl:due_to_that
 advcl:during
 advcl:except
 advcl:except_that
@@ -86,7 +83,6 @@ advcl:given
 advcl:how
 advcl:how_to
 advcl:if
-advcl:ig
 advcl:in
 advcl:in_case
 advcl:in_order
@@ -97,7 +93,6 @@ advcl:inside
 advcl:insofar_as
 advcl:instead_of
 advcl:into
-advcl:it
 advcl:lest
 advcl:like
 advcl:like_by
@@ -113,7 +108,6 @@ advcl:prior_to
 advcl:provided
 advcl:rather
 advcl:rather_than
-advcl:seince
 advcl:should
 advcl:since
 advcl:so
@@ -122,12 +116,10 @@ advcl:so_that
 advcl:so_that_when
 advcl:so_when
 advcl:such_as
-advcl:th
 advcl:than
 advcl:than_if
 advcl:that
 advcl:the
-advcl:then
 advcl:though
 advcl:through
 advcl:til
@@ -139,7 +131,6 @@ advcl:under
 advcl:unless
 advcl:until
 advcl:upon
-advcl:wether
 advcl:when
 advcl:whenever
 advcl:where
@@ -155,9 +146,6 @@ aux:pass
 cc:preconj
 compound:prt
 conj:a
-conj:adn
-conj:afnd
-conj:an
 conj:and
 conj:and_also
 conj:and_not
@@ -174,7 +162,6 @@ conj:et
 conj:for
 conj:let_alone
 conj:minus
-conj:n
 conj:nor
 conj:not
 conj:not_to_mention
