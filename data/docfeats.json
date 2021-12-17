@@ -191,7 +191,7 @@
 "AdvType": {"type": "global", "values": ["Man", "Loc", "Tim", "Deg", "Cau", "Mod"], "errors": []},
 "Animacy": {"type": "universal", "values": ["Anim", "Inan", "Hum", "Nhum"], "errors": []},
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Prosp", "Prog", "Hab", "Iter"], "errors": []},
-"Case": {"type": "universal", "values": ["Nom", "Acc", "Abs", "Erg", "Dat", "Gen", "Voc", "Loc", "Ins", "Par", "Dis", "Ess", "Tra", "Com", "Abe", "Ine", "Ill", "Ela", "Add", "Ade", "All", "Abl", "Sup", "Sub", "Del", "Lat", "Per", "Tem", "Ter", "Cau", "Ben", "Cns", "Cmp", "Equ"], "errors": []},
+"Case": {"type": "universal", "values": ["Nom", "Acc", "Abs", "Erg", "Dat", "Gen", "Voc", "Ins", "Par", "Dis", "Ess", "Tra", "Com", "Abe", "Loc", "Lat", "Ine", "Ill", "Ela", "Add", "Ade", "All", "Abl", "Sup", "Sub", "Del", "Per", "Tem", "Ter", "Cau", "Ben", "Cns", "Cmp", "Equ"], "errors": []},
 "Clusivity": {"type": "universal", "values": ["In", "Ex"], "errors": []},
 "Clusivity[obj]": {"type": "global", "values": ["In", "Ex"], "errors": []},
 "Clusivity[psor]": {"type": "global", "values": ["In", "Ex"], "errors": []},
