@@ -37,10 +37,12 @@ error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
+warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
 spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
 featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
 auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
 depreldata = {} # key: language code (deprel data loaded from deprels.json)
+edepreldata = {} # key: language code (edeprel data loaded from edeprels.json)
 
 def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
     """
@@ -777,6 +779,7 @@ def validate_upos(cols, tag_sets):
 
 def validate_deprels(cols, tag_sets, args):
     global warn_on_undoc_deps
+    global warn_on_undoc_edeps
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
     # List of permited relations is language-specific.
@@ -831,6 +834,9 @@ def validate_deprels(cols, tag_sets, args):
                 testclass = 'Enhanced'
                 testid = 'unknown-edeprel'
                 testmessage = "Unknown enhanced relation type '%s' in '%s'" % (deprel, head_deprel)
+                if not altlang and len(warn_on_undoc_edeps) > 0:
+                    testmessage += "\n\n" + warn_on_undoc_edeps
+                    warn_on_undoc_edeps = ''
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
 ##### Tests applicable to the whole sentence
@@ -2055,6 +2061,57 @@ def get_depreldata_for_language(lcode):
                 deprelset.add(r)
     return deprelset
 
+def load_edeprel_set(filename_langspec, lcode, basic_deprels):
+    """
+    Loads the list of permitted enhanced relation types (case markers) and returns it as a set.
+    """
+    global edepreldata
+    global warn_on_undoc_edeps
+    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+        all_edeprels_0 = json.load(f)
+    edepreldata = all_edeprels_0['edeprels']
+    edeprelset = get_edepreldata_for_language(lcode, basic_deprels)
+    # Prepare a global message about permitted relation labels. We will add
+    # it to the first error message about an unknown relation. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    msg = ''
+    if len(edeprelset) == 0:
+        msg += "No enhanced dependency relation types (case markers) have been permitted for language [%s].\n" % (lcode)
+        msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n"
+    else:
+        # Identify dependency relations that are permitted in the current language.
+        # If there are errors in documentation, identify the erroneous doc file.
+        # Note that depreldata[lcode] may not exist even though we have a non-empty
+        # set of relations, if lcode is 'ud'.
+        sorted_case_markers = sorted(edeprelset)
+        msg += "The following %d enhanced relations are currently permitted in language [%s]:\n" % (len(sorted_case_markers), lcode)
+        msg += ', '.join(sorted_case_markers) + "\n"
+        msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
+        # Save the message in a global variable.
+        # We will add it to the first error message about an unknown feature in the data.
+    warn_on_undoc_edeps = msg
+    return edeprelset
+
+def get_edepreldata_for_language(lcode, basic_deprels):
+    """
+    Searches the previously loaded database of enhanced case markers.
+    Returns the lists for a given language code. For most CoNLL-U files,
+    this function is called only once at the beginning. However, some files
+    contain code-switched data and we may temporarily need to validate
+    another language.
+    """
+    global edepreldata
+    edeprelset = basic_deprels|{'ref'}
+    if lcode in edepreldata:
+        for c in edepreldata[lcode]:
+            for deprel in edepreldata[lcode][c]['extends']:
+                for bdeprel in basic_deprels:
+                    if bdeprel == deprel or re.match(r'^'+deprel+':', bdeprel):
+                        edeprelset.add(bdeprel+':'+c)
+    return edeprelset
+
 def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhanced=False):
     """
     Loads a list of values from the two files, and returns their
@@ -2168,8 +2225,6 @@ if __name__=="__main__":
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
     io_group.add_argument('input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
-    #I don't think output makes much sense now that we allow multiple inputs, so it will default to /dev/stdout
-    #io_group.add_argument('output', nargs='', help='Output file name, or "-" or nothing for standard output.')
 
     list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator.")
@@ -2208,9 +2263,10 @@ if __name__=="__main__":
         # In addition, there might be relations that are only allowed in DEPS.
         # One of them, "ref", is universal and we currently mention it directly
         # in the code, although there is also a file "edeprel.ud".
-        tagsets[DEPS] = tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
-        tagsets[TOKENSWSPACE] = load_set("tokens_w_space.ud","tokens_w_space."+args.lang)
-        tagsets[TOKENSWSPACE] = [re.compile(regex,re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
+        #tagsets[DEPS] = tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
+        tagsets[DEPS] = load_edeprel_set('edeprels.json', args.lang, tagsets[DEPREL])
+        tagsets[TOKENSWSPACE] = load_set('tokens_w_space.ud', 'tokens_w_space.'+args.lang)
+        tagsets[TOKENSWSPACE] = [re.compile(regex, re.U) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
         # Read the list of auxiliaries from the JSON file.
         # This file must not be edited directly!
         # Use the web interface at https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
