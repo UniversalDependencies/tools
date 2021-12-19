@@ -835,7 +835,9 @@ sub check_files
     if($stats->{nsent} < 20 || $stats->{nword} < 100)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder: treebank is too small: found only $stats->{nsent} sentences and $stats->{nword} words\n");
+        my $ss = $stats->{nsent} > 1 ? 's' : '';
+        my $ws = $stats->{nword} > 1 ? 's' : '';
+        push(@{$errors}, "[L0 Repo treebank-size] $folder: treebank is too small: found only $stats->{nsent} sentence$ss and $stats->{nword} word$ws\n");
         $$n_errors++;
     }
     return $ok;
