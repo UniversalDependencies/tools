@@ -90,7 +90,7 @@ if(scalar(@ARGV)==1)
             chdir($folder) or die("Cannot enter folder $folder");
             my $files = get_files($folder, $prefix, '.');
             # Check that the expected files are present and that there are no extra files.
-            check_files($folder, $prefix, $files, \@errors, \$n_errors);
+            check_files($folder, $key, $files, \@errors, \$n_errors);
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             my $metadata = udlib::read_readme('.');
             if(!defined($metadata))
@@ -202,7 +202,7 @@ foreach my $folder (@folders)
             }
             # Check that the expected files are present and that there are no extra files.
             my @errors;
-            if(!check_files($folder, $prefix, $files, \@errors, \$n_errors))
+            if(!check_files($folder, $key, $files, \@errors, \$n_errors))
             {
                 print(join('', @errors));
                 splice(@errors);
@@ -722,7 +722,7 @@ sub get_files
 sub check_files
 {
     my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
-    my $prefix = shift; # prefix of names of data files, e.g. 'cs_pdt-ud'
+    my $key = shift; # language and treebank code, e.g. 'cs_pdt'
     my $files = shift; # hash of files in the folder as collected by get_files()
     my $errors = shift; # reference to array of error messages
     my $n_errors = shift; # reference to error counter
@@ -746,6 +746,7 @@ sub check_files
         $$n_errors++;
     }
     # Check the data files.
+    my $prefix = "$key-ud";
     my $train_found = 0;
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
@@ -828,6 +829,14 @@ sub check_files
         $ok = 0;
         push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
         $$n_errors += scalar(@{$files->{extra}});
+    }
+    # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
+    my $stats = collect_statistics_about_ud_treebank('.', $key);
+    if($stats->{nsent} < 20 || $stats->{nword} < 100)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo files] $folder: treebank is too small: found only $stats->{nsent} sentences and $stats->{nword} words\n");
+        $$n_errors++;
     }
     return $ok;
 }
