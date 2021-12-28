@@ -1929,6 +1929,7 @@
 
 },
 "nhi": {
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Perf": 1, "Prog": 1}, "VERB": {"Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2021-12-28-12-03-35", "lastchanger": "ftyers"},
 "Number[obj]": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Plur", "Sing"], "unused_uvalues": [], "unused_lvalues": ["Dual"], "evalues": [], "byupos": {"ADJ": {"Plur": 1, "Sing": 1}, "NOUN": {"Plur": 1, "Sing": 1}, "VERB": {"Plur": 1, "Sing": 1}}, "lastchanged": "2021-12-02-06-07-55", "lastchanger": "ftyers"},
 "Number[psor]": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Plur", "Sing"], "unused_uvalues": [], "unused_lvalues": ["Dual"], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}}, "lastchanged": "2021-12-02-06-08-11", "lastchanger": "ftyers"},
 "Number[subj]": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Plur", "Sing"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Plur": 1, "Sing": 1}, "NOUN": {"Plur": 1, "Sing": 1}, "VERB": {"Plur": 1, "Sing": 1}}, "lastchanged": "2021-12-02-06-07-05", "lastchanger": "ftyers"},
