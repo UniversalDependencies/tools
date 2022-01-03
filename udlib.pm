@@ -564,4 +564,50 @@ sub scan
 
 
 
+#------------------------------------------------------------------------------
+# Compares UD release numbers and returns -1, 0, or 1 if the first number is
+# less than, equal to, or greater than the second number.
+#------------------------------------------------------------------------------
+sub cmp_release_numbers
+{
+    my $a = shift;
+    my $b = shift;
+    my $amaj = $a;
+    my $amin = 0;
+    my $bmaj = $b;
+    my $bmin = 0;
+    if($a =~ m/^(\d+)\.(\d+)$/)
+    {
+        $amaj = $1;
+        $amin = $2;
+    }
+    if($b =~ m/^(\d+)\.(\d+)$/)
+    {
+        $bmaj = $1;
+        $bmin = $2;
+    }
+    if($amaj < $bmaj)
+    {
+        return -1;
+    }
+    elsif($amaj > $bmaj)
+    {
+        return 1;
+    }
+    elsif($amin < $bmin)
+    {
+        return -1;
+    }
+    elsif($amin > $bmin)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+
 1;
