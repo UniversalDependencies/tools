@@ -21,6 +21,7 @@ sub usage
 
 use Getopt::Long;
 use LWP::Simple;
+use version 0.77; # to sort version numbers
 # Dan's sorting library
 use csort;
 # If this script is called from the parent folder, how can it find the UD library?
@@ -900,7 +901,7 @@ sub check_metadata
             push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
             $$n_errors++;
         }
-        elsif(!defined($correct) && $claimed < $current_release)
+        elsif(!defined($correct) && version->parse($claimed) < version->parse($current_release))
         {
             $ok = 0;
             push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
