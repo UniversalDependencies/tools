@@ -1128,11 +1128,14 @@ def get_projection(id, tree, projection):
     Like proj() above, but works with the tree data structure. Collects node ids
     in the set called projection.
     """
-    for child in tree['children'][id]:
-        if child in projection:
-            continue # cycle is or will be reported elsewhere
-        projection.add(child)
-        get_projection(child, tree, projection)
+    nodes  = list((id,))
+    while nodes:
+        id = nodes.pop()
+        for child in tree['children'][id]:
+            if child in projection:
+                continue; # skip cycles
+            projection.add(child)
+            nodes.append(child)
     return projection
 
 def build_egraph(sentence):
