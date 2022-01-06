@@ -2104,6 +2104,9 @@ def get_edepreldata_for_language(lcode, basic_deprels):
     """
     global edepreldata
     edeprelset = basic_deprels|{'ref'}
+    for bdeprel in basic_deprels:
+        if re.match(r'^[nc]subj(:|$)', bdeprel):
+            edeprelset.add(bdeprel+':xsubj')
     if lcode in edepreldata:
         for c in edepreldata[lcode]:
             for deprel in edepreldata[lcode][c]['extends']:
