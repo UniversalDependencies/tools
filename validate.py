@@ -31,6 +31,8 @@ COP=MISC+3 # another extra constant
 curr_line = 0 # Current line in the input file
 sentence_line = 0 # The line in the input file on which the current sentence starts
 sentence_id = None # The most recently read sentence id
+line_of_first_enhanced_graph = None
+line_of_first_tree_without_enhanced_graph = None
 line_of_first_empty_node = None
 line_of_first_enhanced_orphan = None
 error_counter = {} # key: error type value: error count
@@ -1128,7 +1130,7 @@ def get_projection(id, tree, projection):
     Like proj() above, but works with the tree data structure. Collects node ids
     in the set called projection.
     """
-    nodes  = list((id,))
+    nodes = list((id,))
     while nodes:
         id = nodes.pop()
         for child in tree['children'][id]:
@@ -1156,6 +1158,8 @@ def build_egraph(sentence):
               lineno ... line number in the file (needed in error messages)
     """
     global sentence_line # the line of the first token/word of the current tree (skipping comments!)
+    global line_of_first_enhanced_graph
+    global line_of_first_tree_without_enhanced_graph
     node_line = sentence_line - 1
     egraph_exists = False # enhanced deps are optional
     rootnode = {
@@ -1201,8 +1205,25 @@ def build_egraph(sentence):
             egraph.setdefault(h, {})
             egraph[h].setdefault('children', set()).add(cols[ID])
     # We are currently testing the existence of enhanced graphs separately for each sentence.
-    # It is thus possible to have one sentence with connected egraph and another without enhanced dependencies.
-    if not egraph_exists:
+    # However, we should not allow that one sentence has a connected egraph and another
+    # has no enhanced dependencies. Such inconsistency could come as a nasty surprise
+    # to the users.
+    testlevel = 2
+    testclass = 'Enhanced'
+    if egraph_exists:
+        if not line_of_first_enhanced_graph:
+            line_of_first_enhanced_graph = sentence_line
+            if line_of_first_tree_without_enhanced_graph:
+                testid = 'edeps-only-sometimes'
+                testmessage = "Enhanced graph must be empty because we saw empty DEPS on line %s" % line_of_first_tree_without_enhanced_graph
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line)
+    else:
+        if not line_of_first_tree_without_enhanced_graph:
+            line_of_first_tree_without_enhanced_graph = sentence_line
+            if line_of_first_enhanced_graph:
+                testid = 'edeps-only-sometimes'
+                testmessage = "Enhanced graph cannot be empty because we saw non-empty DEPS on line %s" % line_of_first_enhanced_graph
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line)
         return None
     # Check that the graph is connected. The UD v2 guidelines do not license unconnected graphs.
     # Compute projection of every node. Beware of cycles.
@@ -1211,8 +1232,6 @@ def build_egraph(sentence):
     unreachable = nodeids - projection
     if unreachable:
         sur = sorted(unreachable)
-        testlevel = 2
-        testclass = 'Enhanced'
         testid = 'unconnected-egraph'
         testmessage = "Enhanced graph is not connected. Nodes %s are not reachable from any root" % sur
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, lineno=False)
@@ -1220,11 +1239,18 @@ def build_egraph(sentence):
     return egraph
 
 def get_graph_projection(id, graph, projection):
-    for child in graph[id]['children']:
-        if child in projection:
-            continue; # skip cycles
-        projection.add(child)
-        get_graph_projection(child, graph, projection)
+    """
+    Like get_projection() above, but works with the enhanced graph data structure.
+    Collects node ids in the set called projection.
+    """
+    nodes = list((id,))
+    while nodes:
+        id = nodes.pop()
+        for child in graph[id]['children']:
+            if child in projection:
+                continue; # skip cycles
+            projection.add(child)
+            nodes.append(child)
     return projection
 
 
