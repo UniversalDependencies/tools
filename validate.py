@@ -33,6 +33,7 @@ sentence_line = 0 # The line in the input file on which the current sentence sta
 sentence_id = None # The most recently read sentence id
 line_of_first_enhanced_graph = None
 line_of_first_tree_without_enhanced_graph = None
+line_of_first_enhancement = None # any difference between non-empty DEPS and HEAD:DEPREL
 line_of_first_empty_node = None
 line_of_first_enhanced_orphan = None
 error_counter = {} # key: error type value: error count
@@ -958,6 +959,7 @@ def validate_deps(tree):
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS.
     """
+    global line_of_first_enhancement
     testlevel = 2
     node_line = sentence_line - 1
     for cols in tree:
@@ -966,6 +968,10 @@ def validate_deps(tree):
             continue
         if DEPS >= len(cols):
             continue # this has been already reported in trees()
+        # Remember whether there is at least one difference between the basic
+        # tree and the enhanced graph in the entire dataset.
+        if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
+            line_of_first_enhancement = node_line
         try:
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
@@ -2323,6 +2329,14 @@ if __name__=="__main__":
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for curr_fname,inp in zip(args.input,open_files):
             validate(inp,out,args,tagsets,known_sent_ids)
+        # After reading the entire treebank (perhaps multiple files), check whether
+        # the DEPS annotation was not a mere copy of the basic trees.
+        if args.level>2 and line_of_first_enhanced_graph and not line_of_first_enhancement:
+            testlevel = 3
+            testclass = 'Enhanced'
+            testid = 'deps-identical-to-basic-trees'
+            testmessage = "Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     except:
         warn('Exception caught!', 'Format')
         # If the output is used in an HTML page, it must be properly escaped
