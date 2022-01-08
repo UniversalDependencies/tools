@@ -5935,7 +5935,7 @@
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
 "pa": {
-"acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -5944,7 +5944,7 @@
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -5972,7 +5972,7 @@
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
+"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "pbv": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
