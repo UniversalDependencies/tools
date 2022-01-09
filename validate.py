@@ -2334,7 +2334,7 @@ if __name__=="__main__":
         if args.level>2 and line_of_first_enhanced_graph and not line_of_first_enhancement:
             testlevel = 3
             testclass = 'Enhanced'
-            testid = 'deps-identical-to-basic-trees'
+            testid = 'edeps-identical-to-basic-trees'
             testmessage = "Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     except:
