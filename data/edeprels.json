@@ -431,6 +431,7 @@
 "yet": {"lex": "yet", "morph": "", "extends": ["conj"], "functions": [{"function": "Advs", "example": "[The world may be enraging and absurd – yet at least someone has the self-respect to keep protesting against that fact.]", "exampleen": "", "comment": ""}], "lastchanged": "2022-01-06-21-28-06", "lastchanger": "dan-zeman"}
 },
 "it": {
+"a": {"lex": "a", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Ade", "example": "Raffaella abita [a Cremona].", "exampleen": "Raffaella lives in Cremona.", "comment": ""}, {"function": "Lat", "example": "I carri armati, quando si muovevano, andavano [a Budapest] e [a Praga].", "exampleen": "The tanks, when they moved, went to Budapest and Prague.", "comment": ""}], "lastchanged": "2022-01-11-11-23-36", "lastchanger": "dan-zeman"},
 "da": {"lex": "da", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Abl", "example": "Alcune chiamate partirono [dal Quirinale].", "exampleen": "Some calls came from the Quirinale.", "comment": ""}], "lastchanged": "2022-01-11-11-16-25", "lastchanger": "dan-zeman"}
 },
 "sk": {
