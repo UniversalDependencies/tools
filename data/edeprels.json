@@ -430,6 +430,9 @@
 "without": {"lex": "without", "morph": "", "extends": ["advcl", "nmod", "obl"], "functions": [{"function": "Abe", "example": "They’d rather watch it [without me].", "exampleen": "", "comment": ""}], "lastchanged": "2021-12-15-09-52-20", "lastchanger": "dan-zeman"},
 "yet": {"lex": "yet", "morph": "", "extends": ["conj"], "functions": [{"function": "Advs", "example": "[The world may be enraging and absurd – yet at least someone has the self-respect to keep protesting against that fact.]", "exampleen": "", "comment": ""}], "lastchanged": "2022-01-06-21-28-06", "lastchanger": "dan-zeman"}
 },
+"it": {
+"da": {"lex": "da", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Abl", "example": "Alcune chiamate partirono [dal Quirinale].", "exampleen": "Some calls came from the Quirinale.", "comment": ""}], "lastchanged": "2022-01-11-11-16-25", "lastchanger": "dan-zeman"}
+},
 "sk": {
 "aby": {"lex": "aby", "morph": "", "extends": ["acl", "advcl"], "functions": [{"function": "Cau", "example": "[Aby to bolo možné], musí sa človek celej svojej hriešnej prirodzenosti zbaviť a prekonať ju.", "exampleen": "For this to be possible, one must get rid of all of sinful nature and overcome it.", "comment": ""}], "lastchanged": "2021-12-15-10-18-48", "lastchanger": "dan-zeman"},
 "acc": {"lex": "", "morph": "acc", "extends": ["nmod", "obl"], "functions": [{"function": "Tat", "example": "Pacient, ktorému chirurg [minulý piatok] omylom okrem chorej nohy amputoval aj zdravú, včera zomrel.", "exampleen": "The patient, whose surgeon mistakenly amputated a healthy leg in addition to his sick leg last Friday, died yesterday.", "comment": ""}, {"function": "Tdg", "example": "Naša mačka je už [druhý deň] veľmi nepokojná.", "exampleen": "Our cat is very restless for two days in a row.", "comment": ""}], "lastchanged": "2021-12-18-15-16-58", "lastchanger": "dan-zeman"},
