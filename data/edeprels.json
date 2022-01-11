@@ -433,6 +433,7 @@
 "it": {
 "a": {"lex": "a", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Ade", "example": "Raffaella abita [a Cremona].", "exampleen": "Raffaella lives in Cremona.", "comment": ""}, {"function": "Lat", "example": "I carri armati, quando si muovevano, andavano [a Budapest] e [a Praga].", "exampleen": "The tanks, when they moved, went to Budapest and Prague.", "comment": ""}], "lastchanged": "2022-01-11-11-23-36", "lastchanger": "dan-zeman"},
 "da": {"lex": "da", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Abl", "example": "Alcune chiamate partirono [dal Quirinale].", "exampleen": "Some calls came from the Quirinale.", "comment": ""}], "lastchanged": "2022-01-11-11-16-25", "lastchanger": "dan-zeman"},
+"di": {"lex": "di", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Gen", "example": "Vi sono migliaia [di casi [di questo genere]].", "exampleen": "There are thousands of such cases.", "comment": ""}], "lastchanged": "2022-01-11-11-52-37", "lastchanger": "dan-zeman"},
 "e": {"lex": "e", "morph": "", "extends": ["conj"], "functions": [{"function": "Conj", "example": "[I tre avevano da poco lasciato la cima e stavano cominciando la discesa.]", "exampleen": "The three had just left the summit and were beginning to descend.", "comment": ""}], "lastchanged": "2022-01-11-11-27-10", "lastchanger": "dan-zeman"}
 },
 "sk": {
