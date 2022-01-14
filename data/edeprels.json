@@ -757,5 +757,8 @@
 "či": {"lex": "či", "morph": "", "extends": ["acl", "advcl"], "functions": [{"function": "Dep", "example": "Nevdojak som sa poobzeral, [či neuvidím Háda].", "exampleen": "I looked around to see if I could see Hades.", "comment": ""}], "lastchanged": "2022-01-10-01-17-05", "lastchanger": "dan-zeman"},
 "čo": {"lex": "čo", "morph": "", "extends": ["advcl"], "functions": [{"function": "Tps", "example": "Podľa jedného z nich vyskočil Pegasos z tela svojej matky Medúzy potom, [čo jej Perseus usekol hlavu].", "exampleen": "According to one of them, Pegasus jumped out of his mother Medusa's body after Perseus cut off her head.", "comment": ""}], "lastchanged": "2021-12-15-10-45-01", "lastchanger": "dan-zeman"},
 "že": {"lex": "že", "morph": "", "extends": ["acl", "advcl"], "functions": [{"function": "Atr", "example": "Výsledok tam bol natoľko tesný, [že by ešte mohol zvrátiť výsledok volieb].", "exampleen": "The result there was so tight that it could still reverse the election result.", "comment": ""}], "lastchanged": "2021-12-15-12-07-25", "lastchanger": "dan-zeman"}
+},
+"sv": {
+"av": {"lex": "av", "morph": "", "extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Agt", "example": "Spillrorna bildade en ring runt jordens ekvator och drogs så småningom samman [av gravitation] för att bilda månen.", "exampleen": "The debris formed a ring around the Earth's equator and eventually contracted by gravity to form the moon.", "comment": ""}], "lastchanged": "2022-01-14-21-57-02", "lastchanger": "dan-zeman"}
 }
 }}
