@@ -2257,7 +2257,7 @@ def get_alt_language(misc):
     return None
 
 if __name__=="__main__":
-    opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script")
+    opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
     io_group=opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail.')
