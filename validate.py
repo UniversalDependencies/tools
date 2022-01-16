@@ -833,7 +833,6 @@ def validate_deprels(cols, tag_sets, args):
             if args.level < 4:
                 deprel = lspec2ud(deprel)
             if deprel not in tag_sets[DEPS]:
-                warn_on_missing_files.add("edeprel")
                 testclass = 'Enhanced'
                 testid = 'unknown-edeprel'
                 testmessage = "Unknown enhanced relation type '%s' in '%s'" % (deprel, head_deprel)
