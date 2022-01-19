@@ -376,7 +376,8 @@
 "VerbForm": {"type": "universal", "values": ["Part", "Vnoun"], "errors": []}
 },
 "ceb": {
-"Link": {"type": "local", "values": ["Yes"], "errors": []}
+"Link": {"type": "local", "values": ["Yes"], "errors": []},
+"definitizer": {"type": "local", "values": [], "errors": ["Feature name 'definitizer' does not have the prescribed form.", "Header title 'Definitizer' does not match the file name 'definitizer'."]}
 },
 "cs": {
 "Abbr": {"type": "universal", "values": ["Yes"], "errors": []},
