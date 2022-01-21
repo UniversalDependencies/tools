@@ -7,9 +7,8 @@ overwritten by the validation-documentation system. See the
 [documentation](https://universaldependencies.org/release_checklist.html#validation)
 on how to enable specific features and relation types in individual languages.
 
-As of UD release 2.8, certain data types for the validation are still registered directly here
+As of UD release 2.10, certain data types for the validation are still registered directly here
 and you can edit them here if you need to modify them:
-* `edeprel.xx` – list of relations that are permitted in DEPS but not in DEPREL for language xx
 * `tokens_w_space.xx` – list of regular expressions describing permitted exceptions where a word
   may contain a space in language xx
 
