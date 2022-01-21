@@ -408,7 +408,7 @@ def validate_newlines(inp):
 
 ###### Metadata tests #########
 
-def validate_sent_id(comments,known_ids,lcode):
+def validate_sent_id(comments, known_ids, lcode):
     testlevel = 2
     testclass = 'Metadata'
     matched=[]
@@ -446,7 +446,7 @@ def validate_sent_id(comments,known_ids,lcode):
 newdoc_re = re.compile('^#\s*newdoc(\s|$)')
 newpar_re = re.compile('^#\s*newpar(\s|$)')
 text_re = re.compile('^#\s*text\s*=\s*(.+)$')
-def validate_text_meta(comments,tree):
+def validate_text_meta(comments, tree):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
     global spaceafterno_in_effect
@@ -1912,6 +1912,63 @@ def validate_lspec_annotation(tree, lang, tag_sets):
 
 
 #==============================================================================
+# Level 6 tests for annotation of coreference and named entities. This is
+# tested on demand only, as the requirements are not compulsory for UD
+# releases.
+#==============================================================================
+
+def validate_misc_entity(sentence):
+    """
+    Optionally checks the well-formedness of the MISC attributes that pertain
+    to coreference and named entities.
+    """
+    global sentence_line
+    testlevel = 6
+    testclass = 'Coref'
+    iline = 0
+    for cols in sentence:
+        if MISC >= len(cols):
+            # This error has been reported elsewhere but we cannot check MISC now.
+            return
+        misc = cols[MISC].split('|')
+        entity = [x for x in misc if re.match(r'^Entity=', x)]
+        bridge = [x for x in misc if re.match(r'^Bridge=', x)]
+        splitante = [x for x in misc if re.match(r'^SplitAnte=', x)]
+        if '-' in cols[ID] and (len(entity)>0 or len(bridge)>0 or len(splitante)>0):
+            testid = 'entity-mwt'
+            testmessage = "Entity or coreference annotation must not occur at a multiword-token line."
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            continue
+        if len(entity)>1:
+            testid = 'multiple-entity-statements'
+            testmessage = "There can be at most one 'Entity=' statement in MISC but we have %s." % (str(misc))
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            continue
+        if len(bridge)>1:
+            testid = 'multiple-bridge-statements'
+            testmessage = "There can be at most one 'Bridge=' statement in MISC but we have %s." % (str(misc))
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            continue
+        if len(splitante)>1:
+            testid = 'multiple-splitante-statements'
+            testmessage = "There can be at most one 'SplitAnte=' statement in MISC but we have %s." % (str(misc))
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            continue
+        if len(bridge)>0 and len(entity)==0:
+            testid = 'bridge-without-entity'
+            testmessage = "The 'Bridge=' statement can only occur together with 'Entity=' in MISC but we have %s." % (str(misc))
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            continue
+        if len(splitante)>0 and len(entity)==0:
+            testid = 'splitante-without-entity'
+            testmessage = "The 'SplitAnte=' statement can only occur together with 'Entity=' in MISC but we have %s." % (str(misc))
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            continue
+        iline += 1
+
+
+
+#==============================================================================
 # Main part.
 #==============================================================================
 
@@ -1931,6 +1988,8 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
+            if args.check_coref:
+                validate_misc_entity(sentence) # optional for CorefUD treebanks
             # Avoid building tree structure if the sequence of node ids is corrupted.
             if idseqok:
                 tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
@@ -2258,21 +2317,24 @@ def get_alt_language(misc):
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
-    io_group=opt_parser.add_argument_group("Input / output options")
+    io_group = opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--quiet', dest="quiet", action="store_true", default=False, help='Do not print any error messages. Exit with 0 on pass, non-zero on fail.')
     io_group.add_argument('--max-err', action="store", type=int, default=20, help='How many errors to output before exiting? 0 for all. Default: %(default)d.')
     io_group.add_argument('input', nargs='*', help='Input file name(s), or "-" or nothing for standard input.')
 
-    list_group=opt_parser.add_argument_group("Tag sets","Options relevant to checking tag sets.")
+    list_group = opt_parser.add_argument_group("Tag sets", "Options relevant to checking tag sets.")
     list_group.add_argument("--lang", action="store", required=True, default=None, help="Which langauge are we checking? If you specify this (as a two-letter code), the tags will be checked using the language-specific files in the data/ directory of the validator.")
     list_group.add_argument("--level", action="store", type=int, default=5, dest="level", help="Level 1: Test only CoNLL-U backbone. Level 2: UD format. Level 3: UD contents. Level 4: Language-specific labels. Level 5: Language-specific contents.")
 
-    tree_group=opt_parser.add_argument_group("Tree constraints","Options for checking the validity of the tree.")
+    tree_group = opt_parser.add_argument_group("Tree constraints", "Options for checking the validity of the tree.")
     tree_group.add_argument("--multiple-roots", action="store_false", default=True, dest="single_root", help="Allow trees with several root words (single root required by default).")
 
-    meta_group=opt_parser.add_argument_group("Metadata constraints","Options for checking the validity of tree metadata.")
+    meta_group = opt_parser.add_argument_group("Metadata constraints", "Options for checking the validity of tree metadata.")
     meta_group.add_argument("--no-tree-text", action="store_false", default=True, dest="check_tree_text", help="Do not test tree text. For internal use only, this test is required and on by default.")
     meta_group.add_argument("--no-space-after", action="store_false", default=True, dest="check_space_after", help="Do not test presence of SpaceAfter=No.")
+
+    coref_group = opt_parser.add_argument_group("Coreference / entity constraints", "Options for checking coreference and entity annotation.")
+    coref_group.add_argument('--coref', action='store_true', default=False, dest='check_coref', help='Test coreference and entity-related annotation in MISC.')
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} # Incremented by warn()  {key: error type value: its count}
@@ -2326,8 +2388,8 @@ if __name__=="__main__":
                 open_files.append(sys.stdin)
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
-        for curr_fname,inp in zip(args.input,open_files):
-            validate(inp,out,args,tagsets,known_sent_ids)
+        for curr_fname, inp in zip(args.input, open_files):
+            validate(inp, out, args, tagsets, known_sent_ids)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
         if args.level>2 and line_of_first_enhanced_graph and not line_of_first_enhancement:
