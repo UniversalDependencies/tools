@@ -1988,6 +1988,9 @@ def validate_misc_entity(comments, sentence):
         if MISC >= len(cols):
             # This error has been reported elsewhere but we cannot check MISC now.
             return
+        # Add the current word to all currently open mentions. We will use it in error messages.
+        for m in open_entity_mentions:
+            m[2].append(cols[FORM])
         misc = cols[MISC].split('|')
         entity = [x for x in misc if re.match(r'^Entity=', x)]
         bridge = [x for x in misc if re.match(r'^Bridge=', x)]
@@ -2081,7 +2084,7 @@ def validate_misc_entity(comments, sentence):
                         attributes = e.split('-')
                         eid = attributes[entity_attribute_index['eid']]
                         # Remember the line where the entity mention starts.
-                        mention = (eid, sentence_line+iline)
+                        mention = (eid, sentence_line+iline, [cols[FORM]])
                         open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
@@ -2106,14 +2109,14 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         else:
                             open_entities_message = str(open_entity_mentions) # serialize including the item we are about to pop
-                            open_eid, opening_line = open_entity_mentions.pop()
+                            open_eid, opening_line, words = open_entity_mentions.pop()
                             if eid != open_eid:
                                 testid = 'ill-nested-entities'
                                 testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, open_entities_message)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 # To prevent the subsequent error messages from growing infinitely, close as many mentions as necessary.
                                 while len(open_entity_mentions)>0:
-                                    open_eid, opening_line = open_entity_mentions.pop()
+                                    open_eid, opening_line, words = open_entity_mentions.pop()
                                     if open_eid == eid:
                                         break
         iline += 1
