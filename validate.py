@@ -29,13 +29,15 @@ COP=MISC+3 # another extra constant
 
 # Global variables:
 curr_line = 0 # Current line in the input file
-sentence_line = 0 # The line in the input file on which the current sentence starts
+comment_start_line = 0 # The line in the input file on which the current sentence starts, including sentence-level comments.
+sentence_line = 0 # The line in the input file on which the current sentence starts (the first node/token line, skipping comments)
 sentence_id = None # The most recently read sentence id
 line_of_first_enhanced_graph = None
 line_of_first_tree_without_enhanced_graph = None
 line_of_first_enhancement = None # any difference between non-empty DEPS and HEAD:DEPREL
 line_of_first_empty_node = None
 line_of_first_enhanced_orphan = None
+line_of_global_entity = None
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
@@ -127,15 +129,24 @@ def trees(inp, tag_sets, args):
 
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
+
+    This function is a generator. The caller can call it in a 'for x in ...'
+    loop. In each iteration of the caller's loop, the generator will generate
+    the next sentence, that is, it will read the next sentence from the input
+    stream. (Technically, the function returns an object, and the object will
+    then read the sentences within the caller's loop.)
     """
-    global curr_line, sentence_line, sentence_id
+    global curr_line, comment_start_line, sentence_line, sentence_id
     comments = [] # List of comment lines to go with the current sentence
     lines = [] # List of token/word lines of the current sentence
     corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
+    comment_start_line = None
     testlevel = 1
     testclass = 'Format'
     for line_counter, line in enumerate(inp):
         curr_line = line_counter+1
+        if not comment_start_line:
+            comment_start_line = curr_line
         line = line.rstrip(u"\n")
         if is_whitespace(line):
             testid = 'pseudo-empty-line'
@@ -148,6 +159,7 @@ def trees(inp, tag_sets, args):
                 comments = []
                 lines = []
                 corrupted = False
+                comment_start_line = None
         elif not line: # empty line
             if lines: # sentence done
                 if not corrupted:
@@ -155,6 +167,7 @@ def trees(inp, tag_sets, args):
                 comments=[]
                 lines=[]
                 corrupted = False
+                comment_start_line = None
             else:
                 testid = 'extra-empty-line'
                 testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
@@ -1917,14 +1930,28 @@ def validate_lspec_annotation(tree, lang, tag_sets):
 # releases.
 #==============================================================================
 
-def validate_misc_entity(sentence):
+global_entity_re = re.compile('^#\s*global\.Entity\s*=\s*(.+)$')
+def validate_misc_entity(comments, sentence):
     """
     Optionally checks the well-formedness of the MISC attributes that pertain
     to coreference and named entities.
     """
+    global comment_start_line
     global sentence_line
+    global line_of_global_entity
     testlevel = 6
     testclass = 'Coref'
+    iline = 0
+    for c in comments:
+        global_entity_match = global_entity_re.match(c)
+        if global_entity_match:
+            if line_of_global_entity:
+                testid = 'multiple-global-entity'
+                testmessage = 'Repeated declaration of global.Entity. The first declaration occurred on line %d.' % (line_of_global_entity)
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+            else:
+                line_of_global_entity = comment_start_line + iline
+        iline += 1
     iline = 0
     for cols in sentence:
         if MISC >= len(cols):
@@ -1989,7 +2016,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
             if args.check_coref:
-                validate_misc_entity(sentence) # optional for CorefUD treebanks
+                validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
             # Avoid building tree structure if the sequence of node ids is corrupted.
             if idseqok:
                 tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
