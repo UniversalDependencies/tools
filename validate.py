@@ -1947,10 +1947,25 @@ def validate_misc_entity(comments, sentence):
         if global_entity_match:
             if line_of_global_entity:
                 testid = 'multiple-global-entity'
-                testmessage = 'Repeated declaration of global.Entity. The first declaration occurred on line %d.' % (line_of_global_entity)
+                testmessage = "Repeated declaration of global.Entity. The first declaration occurred on line %d." % (line_of_global_entity)
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
             else:
                 line_of_global_entity = comment_start_line + iline
+                global_entity_attribute_string = global_entity_match.group(1)
+                if not re.match(r'^[a-z]+(-[a-z]+)*$', global_entity_attribute_string):
+                    testid = 'spurious-global-entity'
+                    testmessage = "Cannot parse global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                else:
+                    global_entity_attributes = global_entity_attribute_string.split('-')
+                    if not 'eid' in global_entity_attributes:
+                        testid = 'spurious-global-entity'
+                        testmessage = "Global.Entity attribute declaration '%s' does not include 'eid'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    elif global_entity_attributes[0] != 'eid':
+                        testid = 'spurious-global-entity'
+                        testmessage = "Attribute 'eid' must come first in global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
         iline += 1
     iline = 0
     for cols in sentence:
@@ -1991,6 +2006,46 @@ def validate_misc_entity(comments, sentence):
             testmessage = "The 'SplitAnte=' statement can only occur together with 'Entity=' in MISC but we have %s." % (str(misc))
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
             continue
+        # There is at most one Entity (and only if it is there, there may be also one Bridge and/or one SplitAnte).
+        if len(entity)>0:
+            if not line_of_global_entity:
+                testid = 'entity-without-global-entity'
+                testmessage = "No global.Entity comment was found before the first 'Entity' in MISC."
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                continue
+            match = re.match(r'^Entity=(\([^( )]+(-[^( )]+)*\)?|[^( )]+\))+$', entity[0])
+            if not match:
+                testid = 'spurious-entity-statement'
+                testmessage = "Cannot parse the Entity statement '%s'." % (entity[0])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            else:
+                entity_string = match.group(1)
+                # Items of entities are pairs of [012] and a string.
+                # 0 ... opening bracket; 1 ... closing bracket; 2 ... both brackets
+                entities = []
+                while entity_string:
+                    match = re.match(r'^\(([^( )]+(-[^( )]+)*)\)', entity_string)
+                    if match:
+                        entities.append((2, match.group(1)))
+                        entity_string = re.sub(r'^\([^( )]+(-[^( )]+)*\)', '', entity_string)
+                        continue
+                    match = re.match(r'^\(([^( )]+(-[^( )]+)*)', entity_string)
+                    if match:
+                        entities.append((0, match.group(1)))
+                        entity_string = re.sub(r'^\([^( )]+(-[^( )]+)*', '', entity_string)
+                        continue
+                    match = re.match(r'^([^( )]+)\)', entity_string)
+                    if match:
+                        entities.append((1, match.group(1)))
+                        entity_string = re.sub(r'^[^( )]+\)', '', entity_string)
+                        continue
+                for b, e in entities:
+                    if b==0 or b==2:
+                        # Check all attributes of the entity.
+                        attributes = e.split('-')
+                    else:
+                        # Check only well-nestedness of brackets.
+                        eid = e
         iline += 1
 
 
