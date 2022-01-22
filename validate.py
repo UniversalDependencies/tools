@@ -38,6 +38,7 @@ line_of_first_enhancement = None # any difference between non-empty DEPS and HEA
 line_of_first_empty_node = None
 line_of_first_enhanced_orphan = None
 line_of_global_entity = None
+global_entity_attribute_string = None # to be able to check that repeated declarations are identical
 entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
 open_entity_mentions = [] # items are tuples with entity mention information
 error_counter = {} # key: error type value: error count
@@ -1941,6 +1942,7 @@ def validate_misc_entity(comments, sentence):
     global comment_start_line
     global sentence_line
     global line_of_global_entity
+    global global_entity_attribute_string
     global entity_attribute_index
     global open_entity_mentions
     testlevel = 6
@@ -1949,10 +1951,15 @@ def validate_misc_entity(comments, sentence):
     for c in comments:
         global_entity_match = global_entity_re.match(c)
         if global_entity_match:
+            # As a global declaration, global.Entity is expected only once per file.
+            # However, we may be processing multiple files or people may have created
+            # the file by concatening smaller files, so we will allow repeated
+            # declarations iff they are identical to the first one.
             if line_of_global_entity:
-                testid = 'multiple-global-entity'
-                testmessage = "Repeated declaration of global.Entity. The first declaration occurred on line %d." % (line_of_global_entity)
-                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                if global_entity_match.group(1) != global_entity_attribute_string:
+                    testid = 'global-entity-mismatch'
+                    testmessage = "New declaration of global.Entity '%s' does not match the first declaration '%s' on line %d." % (global_entity_match.group(1), global_entity_attribute_string, line_of_global_entity)
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
             else:
                 line_of_global_entity = comment_start_line + iline
                 global_entity_attribute_string = global_entity_match.group(1)
