@@ -2108,22 +2108,23 @@ def validate_misc_entity(comments, sentence):
                             testmessage = "Cannot close entity '%s' because there are no open entities." % (eid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         else:
-                            open_entities_message = str(open_entity_mentions) # serialize including the item we are about to pop
-                            open_eid, opening_line, words = open_entity_mentions.pop()
+                            open_eid, opening_line, words = open_entity_mentions[-1]
                             if eid != open_eid:
                                 testid = 'ill-nested-entities'
-                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, open_entities_message)
+                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, str(open_entity_mentions))
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                # To prevent the subsequent error messages from growing infinitely, close as many mentions as necessary.
-                                while len(open_entity_mentions)>0:
-                                    open_eid, opening_line, words = open_entity_mentions.pop()
-                                    if open_eid == eid:
-                                        break
+                            # To prevent the subsequent error messages from growing infinitely, try to find and close the entity whether or not it was well-nested.
+                            for i in reversed(range(len(open_entity_mentions))):
+                                if open_entity_mentions[i][0] == eid:
+                                    open_entity_mentions.pop(i)
+                                    break
         iline += 1
     if len(open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
         testmessage = "Entity mentions must not cross sentence boundaries; still open at sentence end: %s." % (str(open_entity_mentions))
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+        # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
+        open_entity_mentions = []
 
 
 
