@@ -2100,17 +2100,22 @@ def validate_misc_entity(comments, sentence):
                         seen1 = True
                         # Check only well-nestedness of brackets.
                         eid = e
-                        open_entities_message = str(open_entity_mentions) # serialize including the item we are about to pop
-                        open_eid, opening_line = open_entity_mentions.pop()
-                        if eid != open_eid:
+                        if len(open_entity_mentions)==0:
                             testid = 'ill-nested-entities'
-                            testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, open_entities_message)
+                            testmessage = "Cannot close entity '%s' because there are no open entities." % (eid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            # To prevent the subsequent error messages from growing infinitely, close as many mentions as necessary.
-                            while len(open_entity_mentions)>0:
-                                open_eid, opening_line = open_entity_mentions.pop()
-                                if open_eid == eid:
-                                    break
+                        else:
+                            open_entities_message = str(open_entity_mentions) # serialize including the item we are about to pop
+                            open_eid, opening_line = open_entity_mentions.pop()
+                            if eid != open_eid:
+                                testid = 'ill-nested-entities'
+                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, open_entities_message)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                # To prevent the subsequent error messages from growing infinitely, close as many mentions as necessary.
+                                while len(open_entity_mentions)>0:
+                                    open_eid, opening_line = open_entity_mentions.pop()
+                                    if open_eid == eid:
+                                        break
         iline += 1
     if len(open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
