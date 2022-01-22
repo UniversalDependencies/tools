@@ -38,6 +38,8 @@ line_of_first_enhancement = None # any difference between non-empty DEPS and HEA
 line_of_first_empty_node = None
 line_of_first_enhanced_orphan = None
 line_of_global_entity = None
+entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
+open_entity_mentions = [] # items are tuples with entity mention information
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
@@ -1939,6 +1941,8 @@ def validate_misc_entity(comments, sentence):
     global comment_start_line
     global sentence_line
     global line_of_global_entity
+    global entity_attribute_index
+    global open_entity_mentions
     testlevel = 6
     testclass = 'Coref'
     iline = 0
@@ -1966,6 +1970,11 @@ def validate_misc_entity(comments, sentence):
                         testid = 'spurious-global-entity'
                         testmessage = "Attribute 'eid' must come first in global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    # Fill the global dictionary that maps attribute names to list indices.
+                    i = 0
+                    for a in global_entity_attributes:
+                        entity_attribute_index[a] = i
+                        i += 1
         iline += 1
     iline = 0
     for cols in sentence:
@@ -2013,13 +2022,16 @@ def validate_misc_entity(comments, sentence):
                 testmessage = "No global.Entity comment was found before the first 'Entity' in MISC."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                 continue
-            match = re.match(r'^Entity=(\([^( )]+(-[^( )]+)*\)?|[^( )]+\))+$', entity[0])
+            match = re.match(r'^Entity=((?:\([^( )]+(?:-[^( )]+)*\)?|[^( )]+\))+)$', entity[0])
             if not match:
                 testid = 'spurious-entity-statement'
                 testmessage = "Cannot parse the Entity statement '%s'." % (entity[0])
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
             else:
                 entity_string = match.group(1)
+                # We cannot check the rest if we cannot identify the 'eid' attribute.
+                if not 'eid' in entity_attribute_index:
+                    continue
                 # Items of entities are pairs of [012] and a string.
                 # 0 ... opening bracket; 1 ... closing bracket; 2 ... both brackets
                 entities = []
@@ -2027,26 +2039,76 @@ def validate_misc_entity(comments, sentence):
                     match = re.match(r'^\(([^( )]+(-[^( )]+)*)\)', entity_string)
                     if match:
                         entities.append((2, match.group(1)))
-                        entity_string = re.sub(r'^\([^( )]+(-[^( )]+)*\)', '', entity_string)
+                        entity_string = re.sub(r'^\([^( )]+(-[^( )]+)*\)', '', entity_string, count=1)
                         continue
                     match = re.match(r'^\(([^( )]+(-[^( )]+)*)', entity_string)
                     if match:
                         entities.append((0, match.group(1)))
-                        entity_string = re.sub(r'^\([^( )]+(-[^( )]+)*', '', entity_string)
+                        entity_string = re.sub(r'^\([^( )]+(-[^( )]+)*', '', entity_string, count=1)
                         continue
                     match = re.match(r'^([^( )]+)\)', entity_string)
                     if match:
                         entities.append((1, match.group(1)))
-                        entity_string = re.sub(r'^[^( )]+\)', '', entity_string)
+                        entity_string = re.sub(r'^[^( )]+\)', '', entity_string, count=1)
                         continue
+                    # If we pre-checked the string well, we should never arrive here!
+                    warn('INTERNAL ERROR', testclass)
+                # All 1 cases should precede all 0 cases.
+                # The 2 cases can be either before the first 1 case, or after the last 0 case.
+                seen0 = False
+                seen1 = False
+                seen2 = False
                 for b, e in entities:
-                    if b==0 or b==2:
+                    if b==0:
+                        if seen2 and not seen1:
+                            testid = 'spurious-entity-statement'
+                            testmessage = "If there are no closing entity brackets, all single-node entities must follow all opening entity brackets in '%s'." % (entity[0])
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        if seen0 and seen2:
+                            testid = 'spurious-entity-statement'
+                            testmessage = "All single-node entities must either precede all closing entity brackets or follow all opening entity brackets in '%s'." % (entity[0])
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        seen0 = True
+                        seen2 = False
                         # Check all attributes of the entity.
                         attributes = e.split('-')
-                    else:
+                        eid = attributes[entity_attribute_index['eid']]
+                        # Remember the line where the entity mention starts.
+                        mention = (eid, sentence_line+iline)
+                        open_entity_mentions.append(mention)
+                    elif b==2:
+                        if seen1 and not seen0:
+                            testid = 'spurious-entity-statement'
+                            testmessage = "If there are no opening entity brackets, all single-node entities must precede all closing entity brackets in '%s'." % (entity[0])
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        seen2 = True
+                        # Check all attributes of the entity.
+                        attributes = e.split('-')
+                        eid = attributes[entity_attribute_index['eid']]
+                    else: # b==1
+                        if seen0:
+                            testid = 'spurious-entity-statement'
+                            testmessage = "All closing entity brackets must precede all opening entity brackets in '%s'." % (entity[0])
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        seen1 = True
                         # Check only well-nestedness of brackets.
                         eid = e
+                        open_entities_message = str(open_entity_mentions) # serialize including the item we are about to pop
+                        open_eid, opening_line = open_entity_mentions.pop()
+                        if eid != open_eid:
+                            testid = 'ill-nested-entities'
+                            testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, open_entities_message)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            # To prevent the subsequent error messages from growing infinitely, close as many mentions as necessary.
+                            while len(open_entity_mentions)>0:
+                                open_eid, opening_line = open_entity_mentions.pop()
+                                if open_eid == eid:
+                                    break
         iline += 1
+    if len(open_entity_mentions)>0:
+        testid = 'cross-sentence-mention'
+        testmessage = "Entity mentions must not cross sentence boundaries; still open at sentence end: %s." % (str(open_entity_mentions))
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
 
 
 
