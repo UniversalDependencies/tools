@@ -1990,7 +1990,7 @@ def validate_misc_entity(comments, sentence):
             return
         # Add the current word to all currently open mentions. We will use it in error messages.
         for m in open_entity_mentions:
-            m[2].append(cols[FORM])
+            m[2] += ' '+cols[FORM]
         misc = cols[MISC].split('|')
         entity = [x for x in misc if re.match(r'^Entity=', x)]
         bridge = [x for x in misc if re.match(r'^Bridge=', x)]
@@ -2084,7 +2084,7 @@ def validate_misc_entity(comments, sentence):
                         attributes = e.split('-')
                         eid = attributes[entity_attribute_index['eid']]
                         # Remember the line where the entity mention starts.
-                        mention = (eid, sentence_line+iline, [cols[FORM]])
+                        mention = [eid, sentence_line+iline, cols[FORM]]
                         open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
