@@ -1977,10 +1977,35 @@ def validate_misc_entity(comments, sentence):
                         testid = 'spurious-global-entity'
                         testmessage = "Attribute 'eid' must come first in global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    if not 'etype' in global_entity_attributes:
+                        testid = 'spurious-global-entity'
+                        testmessage = "Global.Entity attribute declaration '%s' does not include 'etype'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    elif global_entity_attributes[1] != 'etype':
+                        testid = 'spurious-global-entity'
+                        testmessage = "Attribute 'etype' must come second in global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    if not 'head' in global_entity_attributes:
+                        testid = 'spurious-global-entity'
+                        testmessage = "Global.Entity attribute declaration '%s' does not include 'head'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    elif global_entity_attributes[2] != 'head':
+                        testid = 'spurious-global-entity'
+                        testmessage = "Attribute 'head' must come third in global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                    if 'other' in global_entity_attributes and global_entity_attributes[3] != 'other':
+                        testid = 'spurious-global-entity'
+                        testmessage = "Attribute 'other', if present, must come fourth in global.Entity attribute declaration '%s'." % (global_entity_attribute_string)
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
                     # Fill the global dictionary that maps attribute names to list indices.
                     i = 0
                     for a in global_entity_attributes:
-                        entity_attribute_index[a] = i
+                        if a in entity_attribute_index:
+                            testid = 'spurious-global-entity'
+                            testmessage = "Attribute '%s' occurs more than once in global.Entity attribute declaration '%s'." % (a, global_entity_attribute_string)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=comment_start_line+iline)
+                        else:
+                            entity_attribute_index[a] = i
                         i += 1
         iline += 1
     iline = 0
