@@ -39,6 +39,7 @@ line_of_first_empty_node = None
 line_of_first_enhanced_orphan = None
 line_of_global_entity = None
 global_entity_attribute_string = None # to be able to check that repeated declarations are identical
+entity_attribute_number = 0 # to be able to check that an entity does not have extra attributes
 entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
 open_entity_mentions = [] # items are tuples with entity mention information
 error_counter = {} # key: error type value: error count
@@ -1943,6 +1944,7 @@ def validate_misc_entity(comments, sentence):
     global sentence_line
     global line_of_global_entity
     global global_entity_attribute_string
+    global entity_attribute_number
     global entity_attribute_index
     global open_entity_mentions
     testlevel = 6
@@ -2007,6 +2009,7 @@ def validate_misc_entity(comments, sentence):
                         else:
                             entity_attribute_index[a] = i
                         i += 1
+                    entity_attribute_number = len(global_entity_attributes)
         iline += 1
     iline = 0
     for cols in sentence:
@@ -2094,6 +2097,18 @@ def validate_misc_entity(comments, sentence):
                 seen1 = False
                 seen2 = False
                 for b, e in entities:
+                    if b==0 or b==2:
+                        # Check all attributes of the entity.
+                        attributes = e.split('-')
+                        # Fewer attributes are allowed because trailing empty values can be omitted.
+                        # More attributes are not allowed.
+                        if len(attributes) > entity_attribute_number:
+                            testid = 'too-many-entity-attributes'
+                            testmessage = "Entity '%s' has %d attributes while only %d attributes are globally declared." % (e, len(attributes), entity_attribute_number)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        eid = attributes[entity_attribute_index['eid']]
+                    else:
+                        eid = e
                     if b==0:
                         if seen2 and not seen1:
                             testid = 'spurious-entity-statement'
@@ -2105,9 +2120,6 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen0 = True
                         seen2 = False
-                        # Check all attributes of the entity.
-                        attributes = e.split('-')
-                        eid = attributes[entity_attribute_index['eid']]
                         # Remember the line where the entity mention starts.
                         mention = [eid, sentence_line+iline, cols[FORM]]
                         open_entity_mentions.append(mention)
@@ -2117,9 +2129,6 @@ def validate_misc_entity(comments, sentence):
                             testmessage = "If there are no opening entity brackets, all single-node entities must precede all closing entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
-                        # Check all attributes of the entity.
-                        attributes = e.split('-')
-                        eid = attributes[entity_attribute_index['eid']]
                     else: # b==1
                         if seen0:
                             testid = 'spurious-entity-statement'
@@ -2127,7 +2136,6 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen1 = True
                         # Check only well-nestedness of brackets.
-                        eid = e
                         if len(open_entity_mentions)==0:
                             testid = 'ill-nested-entities'
                             testmessage = "Cannot close entity '%s' because there are no open entities." % (eid)
