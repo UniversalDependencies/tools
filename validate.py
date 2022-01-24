@@ -2110,7 +2110,7 @@ def validate_misc_entity(comments, sentence):
                             etype = attributes[entity_attribute_index['etype']]
                             # For etype values tentatively approved for CorefUD 1.0, see
                             # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
-                            if not re.match(r'^(person|place|organization|animal|plant|object|substance|time|abstract|event|other)$', etype):
+                            if not re.match(r'^(person|place|organization|animal|plant|object|substance|time|abstract|event|other)?$', etype):
                                 testid = 'spurious-entity-type'
                                 testmessage = "Spurious entity type '%s'." % (etype)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
