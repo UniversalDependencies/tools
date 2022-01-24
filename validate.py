@@ -2106,6 +2106,14 @@ def validate_misc_entity(comments, sentence):
                             testid = 'too-many-entity-attributes'
                             testmessage = "Entity '%s' has %d attributes while only %d attributes are globally declared." % (e, len(attributes), entity_attribute_number)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
+                            etype = attributes[entity_attribute_index['etype']]
+                            # For etype values tentatively approved for CorefUD 1.0, see
+                            # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
+                            if not re.match(r'^(person|place|organization|animal|plant|object|substance|time|abstract|event|other)$', etype):
+                                testid = 'spurious-entity-type'
+                                testmessage = "Spurious entity type '%s'." % (etype)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         eid = attributes[entity_attribute_index['eid']]
                     else:
                         eid = e
