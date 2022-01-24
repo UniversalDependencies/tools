@@ -41,7 +41,7 @@ line_of_global_entity = None
 global_entity_attribute_string = None # to be able to check that repeated declarations are identical
 entity_attribute_number = 0 # to be able to check that an entity does not have extra attributes
 entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
-entity_types = {} # key: entity (cluster) id; value: pair: (type of the entity, line of the first mention)
+entity_types = {} # key: entity (cluster) id; value: tuple: (type of the entity, identity (Wikipedia etc.), line of the first mention)
 open_entity_mentions = [] # items are tuples with entity mention information
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
@@ -2109,6 +2109,8 @@ def validate_misc_entity(comments, sentence):
                             testmessage = "Entity '%s' has %d attributes while only %d attributes are globally declared." % (e, len(attributes), entity_attribute_number)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         eid = attributes[entity_attribute_index['eid']]
+                        etype = ''
+                        identity = ''
                         if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
                             etype = attributes[entity_attribute_index['etype']]
                             # For etype values tentatively approved for CorefUD 1.0, see
@@ -2117,14 +2119,23 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'spurious-entity-type'
                                 testmessage = "Spurious entity type '%s'." % (etype)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
+                            identity = attributes[entity_attribute_index['identity']]
+                        # If this is the first mention of the entity, remember the values
+                        # of the attributes that should be identical at all mentions.
+                        if not eid in entity_types:
+                            entity_types[eid] = (etype, identity, sentence_line+iline)
+                        else:
                             # All mentions of one entity (cluster) must have the same entity type.
-                            if eid in entity_types:
-                                if etype != entity_types[eid][0]:
-                                    testid = 'entity-type-mismatch'
-                                    testmessage = "Entity '%s' cannot have type '%s' that does not match '%s' from the first mention on line %d." % (eid, etype, entity_types[eid][0], entity_types[eid][1])
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            else:
-                                entity_types[eid] = (etype, sentence_line+iline)
+                            if etype != entity_types[eid][0]:
+                                testid = 'entity-type-mismatch'
+                                testmessage = "Entity '%s' cannot have type '%s' that does not match '%s' from the first mention on line %d." % (eid, etype, entity_types[eid][0], entity_types[eid][2])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
+                            if identity != entity_types[eid][1]:
+                                testid = 'entity-identity-mismatch'
+                                testmessage = "Entity '%s' cannot have identity '%s' that does not match '%s' from the first mention on line %d." % (eid, identity, entity_types[eid][1], entity_types[eid][2])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     else:
                         eid = e
                     if b==0:
