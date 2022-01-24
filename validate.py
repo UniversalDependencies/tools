@@ -2108,7 +2108,30 @@ def validate_misc_entity(comments, sentence):
                             testid = 'too-many-entity-attributes'
                             testmessage = "Entity '%s' has %d attributes while only %d attributes are globally declared." % (e, len(attributes), entity_attribute_number)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                        eid = attributes[entity_attribute_index['eid']]
+                        # The raw eid (bracket eid) may include an identification of a part of a discontinuous mention,
+                        # as in 'e155[1/2]'. This is fine for matching opening and closing brackets
+                        # because the closing bracket must contain it too. However, to identify the
+                        # cluster, we need to take the real id.
+                        beid = attributes[entity_attribute_index['eid']]
+                        match = re.match(r'^(.+)\[([1-9]\d*)/([1-9]\d*)\]$', beid)
+                        if match:
+                            eid = match.group(1)
+                            ipart = int(match.group(2))
+                            npart = int(match.group(3))
+                            if ipart > npart:
+                                testid = 'spurious-entity-id'
+                                testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            ###!!! We should also check that all announced parts exist!
+                            ###!!! If the current part is not the first part, check that the part with the previous index has been encountered.
+                            ###!!! This does not have to be the latest mention of the same entity, as there might be nested mentions.
+                            ###!!! At the end of the sentence (document, file), check that all parts of each mention have been encountered.
+                        else:
+                            if re.match(r'[\[\]]', beid):
+                                testid = 'spurious-entity-id'
+                                testmessage = "Entity id '%s' contains square brackets but does not have the form used in discontinuous mentions." % (beid)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            eid = beid
                         etype = ''
                         identity = ''
                         if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
@@ -2137,7 +2160,7 @@ def validate_misc_entity(comments, sentence):
                                 testmessage = "Entity '%s' cannot have identity '%s' that does not match '%s' from the first mention on line %d." % (eid, identity, entity_types[eid][1], entity_types[eid][2])
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     else:
-                        eid = e
+                        beid = e
                     if b==0:
                         if seen2 and not seen1:
                             testid = 'spurious-entity-statement'
@@ -2150,7 +2173,7 @@ def validate_misc_entity(comments, sentence):
                         seen0 = True
                         seen2 = False
                         # Remember the line where the entity mention starts.
-                        mention = [eid, sentence_line+iline, cols[FORM]]
+                        mention = [beid, sentence_line+iline, cols[FORM]]
                         open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
@@ -2167,17 +2190,17 @@ def validate_misc_entity(comments, sentence):
                         # Check only well-nestedness of brackets.
                         if len(open_entity_mentions)==0:
                             testid = 'ill-nested-entities'
-                            testmessage = "Cannot close entity '%s' because there are no open entities." % (eid)
+                            testmessage = "Cannot close entity '%s' because there are no open entities." % (beid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         else:
-                            open_eid, opening_line, words = open_entity_mentions[-1]
-                            if eid != open_eid:
+                            open_beid, opening_line, words = open_entity_mentions[-1]
+                            if beid != open_beid:
                                 testid = 'ill-nested-entities'
-                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_eid, opening_line, str(open_entity_mentions))
+                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_beid, opening_line, str(open_entity_mentions))
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             # To prevent the subsequent error messages from growing infinitely, try to find and close the entity whether or not it was well-nested.
                             for i in reversed(range(len(open_entity_mentions))):
-                                if open_entity_mentions[i][0] == eid:
+                                if open_entity_mentions[i][0] == beid:
                                     open_entity_mentions.pop(i)
                                     break
         iline += 1
