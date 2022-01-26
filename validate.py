@@ -2322,8 +2322,9 @@ def validate_misc_entity(comments, sentence):
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                 else:
                     antecedents = match.group(1).split(',')
-                    # Hash src<tgt pairs and make sure they are not repeated.
+                    # Hash src<tgt pairs and make sure they are not repeated. Also remember the number of antecedents for each target.
                     srctgt = {}
+                    nante = {}
                     for a in antecedents:
                         match = re.match(r'^([^(< :>)]+)<([^(< :>)]+)$', a)
                         if match:
@@ -2339,7 +2340,15 @@ def validate_misc_entity(comments, sentence):
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             else:
                                 srctgt[srceid+'<'+tgteid] = True
-                    ###!!! Also check that there are at least two different sources for this target.
+                            if tgteid in nante:
+                                nante[tgteid] += 1
+                            else:
+                                nante[tgteid] = 1
+                    for tgteid in nante:
+                        if nante[tgteid] == 1:
+                            testid = 'only-one-split-antecedent'
+                            testmessage = "SplitAnte relation '%s' must specify at least two antecedents for entity '%s'." % (splitante[0], tgteid)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
         iline += 1
     if len(open_entity_mentions)>0:
