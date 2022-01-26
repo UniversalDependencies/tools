@@ -44,6 +44,8 @@ entity_attribute_index = {} # key: entity attribute name; value: the index of th
 entity_types = {} # key: entity (cluster) id; value: tuple: (type of the entity, identity (Wikipedia etc.), line of the first mention)
 open_entity_mentions = [] # items are dictionaries with entity mention information
 open_discontinuous_mentions = {} # key: entity id; describes last part of a discontinuous mention of that entity; item is dict, its keys: last_ipart, npart, line
+entity_ids_this_document = {}
+entity_ids_other_documents = {}
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
@@ -1951,11 +1953,14 @@ def validate_misc_entity(comments, sentence):
     global entity_types
     global open_entity_mentions
     global open_discontinuous_mentions
+    global entity_ids_this_document
+    global entity_ids_other_documents
     testlevel = 6
     testclass = 'Coref'
     iline = 0
     for c in comments:
         global_entity_match = global_entity_re.match(c)
+        newdoc_match = newdoc_re.match(c)
         if global_entity_match:
             # As a global declaration, global.Entity is expected only once per file.
             # However, we may be processing multiple files or people may have created
@@ -2014,6 +2019,10 @@ def validate_misc_entity(comments, sentence):
                             entity_attribute_index[a] = i
                         i += 1
                     entity_attribute_number = len(global_entity_attributes)
+        elif newdoc_match:
+            for eid in entity_ids_this_document:
+                entity_ids_other_documents[eid] = entity_ids_this_document[eid]
+            entity_ids_this_document = {}
         iline += 1
     iline = 0
     for cols in sentence:
@@ -2166,6 +2175,12 @@ def validate_misc_entity(comments, sentence):
                                 testmessage = "Entity id '%s' contains square brackets but does not have the form used in discontinuous mentions." % (beid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             eid = beid
+                        if eid in entity_ids_other_documents:
+                            testid = 'entity-across-newdoc'
+                            testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        elif not eid in entity_ids_this_document:
+                            entity_ids_this_document[eid] = sentence_line+iline
                         etype = ''
                         identity = ''
                         if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
