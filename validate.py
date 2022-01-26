@@ -2280,6 +2280,20 @@ def validate_misc_entity(comments, sentence):
                                         ending_mentions[ending_mention_key] = beid
                                     open_entity_mentions.pop(i)
                                     break
+            # Now we are done with checking the 'Entity=' statement.
+            # If there are also 'Bridge=' or 'SplitAnte=' statements, check them too.
+            if len(bridge) > 0:
+                match = re.match(r'^Bridge=[^(< :>)]+<[^(< :>)]+(:[a-z]+)?(,[^(< :>)]+<[^(< :>)]+(:[a-z]+)?)*$', bridge[0])
+                if not match:
+                    testid = 'spurious-bridge-statement'
+                    testmessage = "Cannot parse the Bridge statement '%s'." % (bridge[0])
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            if len(splitante) > 0:
+                match = re.match(r'^SplitAnte=[^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*$', splitante[0])
+                if not match:
+                    testid = 'spurious-splitante-statement'
+                    testmessage = "Cannot parse the SplitAnte statement '%s'." % (splitante[0])
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
         iline += 1
     if len(open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
