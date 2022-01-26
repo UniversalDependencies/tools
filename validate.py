@@ -2102,6 +2102,7 @@ def validate_misc_entity(comments, sentence):
                 seen1 = False
                 seen2 = False
                 for b, e in entities:
+                    head = 0
                     if b==0 or b==2:
                         # Check all attributes of the entity.
                         attributes = e.split('-')
@@ -2175,6 +2176,16 @@ def validate_misc_entity(comments, sentence):
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
                             identity = attributes[entity_attribute_index['identity']]
+                        if 'head' in entity_attribute_index and len(attributes) >= entity_attribute_index['head']+1:
+                            if not re.match(r'^[1-9][0-9]*$', attributes[entity_attribute_index['head']]):
+                                testid = 'spurious-mention-head'
+                                testmessage = "Entity head index '%s' must be a non-zero-starting integer." % (attributes[entity_attribute_index['head']])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            head = int(attributes[entity_attribute_index['head']])
+                            if head == 0:
+                                testid = 'mention-head-out-of-range'
+                                testmessage = "Entity head index must not be zero."
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         # If this is the first mention of the entity, remember the values
                         # of the attributes that should be identical at all mentions.
                         if not eid in entity_types:
@@ -2204,7 +2215,7 @@ def validate_misc_entity(comments, sentence):
                         seen0 = True
                         seen2 = False
                         # Remember the line where the entity mention starts.
-                        mention = {'beid': beid, 'line': sentence_line+iline, 'text': cols[FORM], 'length': 1}
+                        mention = {'beid': beid, 'line': sentence_line+iline, 'text': cols[FORM], 'length': 1, 'head': head}
                         open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
@@ -2212,6 +2223,10 @@ def validate_misc_entity(comments, sentence):
                             testmessage = "If there are no opening entity brackets, all single-node entities must precede all closing entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
+                        if head > 1:
+                            testid = 'mention-head-out-of-range'
+                            testmessage = "Entity head index must be 1 for single-word mentions."
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     else: # b==1
                         if seen0:
                             testid = 'spurious-entity-statement'
@@ -2231,6 +2246,12 @@ def validate_misc_entity(comments, sentence):
                             # To prevent the subsequent error messages from growing infinitely, try to find and close the entity whether or not it was well-nested.
                             for i in reversed(range(len(open_entity_mentions))):
                                 if open_entity_mentions[i]['beid'] == beid:
+                                    # Before we close the mention, check that it had enough nodes for the specified head index.
+                                    ###!!! This implementation may falsely fail for discontinuous mentions, as we know only the length of the current part!
+                                    if open_entity_mentions[i]['length'] < open_entity_mentions[i]['head']:
+                                        testid = 'mention-head-out-of-range'
+                                        testmessage = "Entity mention head was specified as %d on line %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], open_entity_mentions[i]['length'])
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     open_entity_mentions.pop(i)
                                     break
         iline += 1
