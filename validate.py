@@ -2124,6 +2124,9 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'spurious-entity-id'
                                 testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            # We want to check values of all attributes except the eid (which differs in the brackets).
+                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
+                            attrstring_to_match = '-'.join(attributes_without_eid)
                             if eid in open_discontinuous_mentions:
                                 if npart != open_discontinuous_mentions[eid]['npart']:
                                     testid = 'misplaced-mention-part'
@@ -2133,8 +2136,12 @@ def validate_misc_entity(comments, sentence):
                                     testid = 'misplaced-mention-part'
                                     testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eid]['last_ipart'], open_discontinuous_mentions[eid]['npart'], open_discontinuous_mentions[eid]['line'])
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                elif attrstring_to_match != open_discontinuous_mentions[eid]['attributes']:
+                                    testid = 'mention-attribute-mismatch'
+                                    testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eid]['attributes'])
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 if ipart<npart:
-                                    open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline}
+                                    open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match}
                                 else:
                                     open_discontinuous_mentions.pop(eid)
                             else:
@@ -2148,7 +2155,7 @@ def validate_misc_entity(comments, sentence):
                                     testmessage = "Entity id '%s' of discontinuous mention says the total number of parts is less than 2." % (beid)
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 else:
-                                    open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline}
+                                    open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match}
                         else:
                             if re.match(r'[\[\]]', beid):
                                 testid = 'spurious-entity-id'
