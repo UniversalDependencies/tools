@@ -46,6 +46,8 @@ open_entity_mentions = [] # items are dictionaries with entity mention informati
 open_discontinuous_mentions = {} # key: entity id; describes last part of a discontinuous mention of that entity; item is dict, its keys: last_ipart, npart, line
 entity_ids_this_document = {}
 entity_ids_other_documents = {}
+entity_bridge_relations = {} # key: srceid<tgteid pair; value: type of the entity (may be empty)
+entity_split_antecedents = {} # key: tgteid; value: sorted list of srceids, serialized to string
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
@@ -1955,6 +1957,8 @@ def validate_misc_entity(comments, sentence):
     global open_discontinuous_mentions
     global entity_ids_this_document
     global entity_ids_other_documents
+    global entity_bridge_relations # key: srceid<tgteid pair; value: type of the entity (may be empty)
+    global entity_split_antecedents # key: tgteid; value: sorted list of srceids, serialized to string
     testlevel = 6
     testclass = 'Coref'
     iline = 0
@@ -2313,7 +2317,15 @@ def validate_misc_entity(comments, sentence):
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             else:
                                 srctgt[srceid+'<'+tgteid] = True
-                    ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
+                            # Check in the global dictionary whether this relation has been specified at another mention.
+                            if srceid+'<'+tgteid in entity_bridge_relations:
+                                if relation != entity_bridge_relations[srceid+'<'+tgteid]:
+                                    testid = 'bridge-relation-mismatch'
+                                    testmessage = "Bridge relation '%s' type does not match the type '%s' from previous instances of the same relation." % (b, entity_bridge_relations[srceid+'<'+tgteid])
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                    ###!!! TODO: Report the line where the previous mention occurred.
+                            else:
+                                entity_bridge_relations[srceid+'<'+tgteid] = relation
             if len(splitante) > 0:
                 match = re.match(r'^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$', splitante[0])
                 if not match:
@@ -2349,7 +2361,16 @@ def validate_misc_entity(comments, sentence):
                             testid = 'only-one-split-antecedent'
                             testmessage = "SplitAnte relation '%s' must specify at least two antecedents for entity '%s'." % (splitante[0], tgteid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
+                        # Check in the global dictionary whether this relation has been specified at another mention.
+                        ###!!! TODO: We now have the number of antecedents but we need their list!
+                        if tgteid in entity_split_antecedents:
+                            if nante[tgteid] != entity_split_antecedents[tgteid]:
+                                testid = 'split-antecedent-mismatch'
+                                testmessage = "Split antecedent of entity '%s' does not match '%s' specified earlier." % (tgteid, entity_split_antecedents[tgteid])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                ###!!! TODO: Report the line where the previous mention occurred.
+                        else:
+                            entity_split_antecedents[tgteid] = nante[tgteid]
         iline += 1
     if len(open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
