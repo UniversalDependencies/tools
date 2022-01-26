@@ -43,6 +43,7 @@ entity_attribute_number = 0 # to be able to check that an entity does not have e
 entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
 entity_types = {} # key: entity (cluster) id; value: tuple: (type of the entity, identity (Wikipedia etc.), line of the first mention)
 open_entity_mentions = [] # items are tuples with entity mention information
+open_discontinuous_mentions = {} # key: entity id; describes last part of a discontinuous mention of that entity; item is dict, its keys: last_ipart, npart, line
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
@@ -1949,6 +1950,7 @@ def validate_misc_entity(comments, sentence):
     global entity_attribute_index
     global entity_types
     global open_entity_mentions
+    global open_discontinuous_mentions
     testlevel = 6
     testclass = 'Coref'
     iline = 0
@@ -2122,10 +2124,32 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'spurious-entity-id'
                                 testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            ###!!! We should also check that all announced parts exist!
-                            ###!!! If the current part is not the first part, check that the part with the previous index has been encountered.
-                            ###!!! This does not have to be the latest mention of the same entity, as there might be nested mentions.
                             ###!!! At the end of the sentence (document, file), check that all parts of each mention have been encountered.
+                            if eid in open_discontinuous_mentions:
+                                if npart != open_discontinuous_mentions[eid]['npart']:
+                                    testid = 'misplaced-mention-part'
+                                    testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eid]['last_ipart'], open_discontinuous_mentions[eid]['npart'], open_discontinuous_mentions[eid]['line'])
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                elif ipart != open_discontinuous_mentions[eid]['last_ipart']+1:
+                                    testid = 'misplaced-mention-part'
+                                    testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eid]['last_ipart'], open_discontinuous_mentions[eid]['npart'], open_discontinuous_mentions[eid]['line'])
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                if ipart<npart:
+                                    open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline}
+                                else:
+                                    open_discontinuous_mentions.pop(eid)
+                            else:
+                                if ipart > 1:
+                                    testid = 'misplaced-mention-part'
+                                    testmessage = "Unexpected part of discontinuous mention '%s': first part not encountered." % (beid)
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                # Do not allow [1/1].
+                                elif npart < 2:
+                                    testid = 'spurious-entity-id'
+                                    testmessage = "Entity id '%s' of discontinuous mention says the total number of parts is less than 2." % (beid)
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                else:
+                                    open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline}
                         else:
                             if re.match(r'[\[\]]', beid):
                                 testid = 'spurious-entity-id'
