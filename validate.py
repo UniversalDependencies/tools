@@ -2124,7 +2124,6 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'spurious-entity-id'
                                 testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            ###!!! At the end of the sentence (document, file), check that all parts of each mention have been encountered.
                             if eid in open_discontinuous_mentions:
                                 if npart != open_discontinuous_mentions[eid]['npart']:
                                     testid = 'misplaced-mention-part'
@@ -2234,6 +2233,12 @@ def validate_misc_entity(comments, sentence):
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
         # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
         open_entity_mentions = []
+    if len(open_discontinuous_mentions)>0:
+        testid = 'cross-sentence-mention'
+        testmessage = "Entity mentions must not cross sentence boundaries; still open at sentence end: %s." % (str(open_discontinuous_mentions))
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+        # Close the mentions forcibly. Otherwise one omission would cause the error messages to to explode because the words would be collected from the remainder of the file.
+        open_discontinuous_mentions = {}
 
 
 
