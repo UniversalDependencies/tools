@@ -2101,6 +2101,8 @@ def validate_misc_entity(comments, sentence):
                 seen0 = False
                 seen1 = False
                 seen2 = False
+                # To be able to check that no two mentions have the same span, we will hash start-end intervals for mentions that end here.
+                ending_mentions = {}
                 for b, e in entities:
                     head = 0
                     if b==0 or b==2:
@@ -2252,6 +2254,15 @@ def validate_misc_entity(comments, sentence):
                                         testid = 'mention-head-out-of-range'
                                         testmessage = "Entity mention head was specified as %d on line %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], open_entity_mentions[i]['length'])
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                    # Check that no two mentions have identical spans.
+                                    ###!!! Again, we will have to refine the implementation so that discontinuous mentions work, too.
+                                    ending_mention_key = str(open_entity_mentions[i]['line'])
+                                    if ending_mention_key in ending_mentions:
+                                        testid = 'same-span-entity-mentions'
+                                        testmessage = "Entity mentions '%s' and '%s' from line %d have the same span." % (ending_mentions[ending_mention_key], beid, open_entity_mentions[i]['line'])
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                    else:
+                                        ending_mentions[ending_mention_key] = beid
                                     open_entity_mentions.pop(i)
                                     break
         iline += 1
