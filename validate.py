@@ -42,7 +42,7 @@ global_entity_attribute_string = None # to be able to check that repeated declar
 entity_attribute_number = 0 # to be able to check that an entity does not have extra attributes
 entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
 entity_types = {} # key: entity (cluster) id; value: tuple: (type of the entity, identity (Wikipedia etc.), line of the first mention)
-open_entity_mentions = [] # items are tuples with entity mention information
+open_entity_mentions = [] # items are dictionaries with entity mention information
 open_discontinuous_mentions = {} # key: entity id; describes last part of a discontinuous mention of that entity; item is dict, its keys: last_ipart, npart, line
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
@@ -2022,7 +2022,8 @@ def validate_misc_entity(comments, sentence):
             return
         # Add the current word to all currently open mentions. We will use it in error messages.
         for m in open_entity_mentions:
-            m[2] += ' '+cols[FORM]
+            m['text'] += ' '+cols[FORM]
+            m['length'] += 1
         misc = cols[MISC].split('|')
         entity = [x for x in misc if re.match(r'^Entity=', x)]
         bridge = [x for x in misc if re.match(r'^Bridge=', x)]
@@ -2203,7 +2204,7 @@ def validate_misc_entity(comments, sentence):
                         seen0 = True
                         seen2 = False
                         # Remember the line where the entity mention starts.
-                        mention = [beid, sentence_line+iline, cols[FORM]]
+                        mention = {'beid': beid, 'line': sentence_line+iline, 'text': cols[FORM], 'length': 1}
                         open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
@@ -2223,14 +2224,13 @@ def validate_misc_entity(comments, sentence):
                             testmessage = "Cannot close entity '%s' because there are no open entities." % (beid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         else:
-                            open_beid, opening_line, words = open_entity_mentions[-1]
-                            if beid != open_beid:
+                            if beid != open_entity_mentions[-1]['beid']:
                                 testid = 'ill-nested-entities'
-                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_beid, opening_line, str(open_entity_mentions))
+                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_entity_mentions[-1]['beid'], open_entity_mentions[-1]['line'], str(open_entity_mentions))
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             # To prevent the subsequent error messages from growing infinitely, try to find and close the entity whether or not it was well-nested.
                             for i in reversed(range(len(open_entity_mentions))):
-                                if open_entity_mentions[i][0] == beid:
+                                if open_entity_mentions[i]['beid'] == beid:
                                     open_entity_mentions.pop(i)
                                     break
         iline += 1
