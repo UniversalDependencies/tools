@@ -2110,7 +2110,9 @@ def validate_misc_entity(comments, sentence):
                 seen0 = False
                 seen1 = False
                 seen2 = False
+                # To be able to check validity of Bridge and SplitAnte, we will hash eids of mentions that start here.
                 # To be able to check that no two mentions have the same span, we will hash start-end intervals for mentions that end here.
+                starting_mentions = {}
                 ending_mentions = {}
                 for b, e in entities:
                     head = 0
@@ -2133,6 +2135,8 @@ def validate_misc_entity(comments, sentence):
                             eid = match.group(1)
                             ipart = int(match.group(2))
                             npart = int(match.group(3))
+                            if ipart == 1:
+                                starting_mentions[eid] = True
                             if ipart > npart:
                                 testid = 'spurious-entity-id'
                                 testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
@@ -2175,6 +2179,7 @@ def validate_misc_entity(comments, sentence):
                                 testmessage = "Entity id '%s' contains square brackets but does not have the form used in discontinuous mentions." % (beid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             eid = beid
+                            starting_mentions[eid] = True
                         if eid in entity_ids_other_documents:
                             testid = 'entity-across-newdoc'
                             testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
@@ -2283,17 +2288,44 @@ def validate_misc_entity(comments, sentence):
             # Now we are done with checking the 'Entity=' statement.
             # If there are also 'Bridge=' or 'SplitAnte=' statements, check them too.
             if len(bridge) > 0:
-                match = re.match(r'^Bridge=[^(< :>)]+<[^(< :>)]+(:[a-z]+)?(,[^(< :>)]+<[^(< :>)]+(:[a-z]+)?)*$', bridge[0])
+                match = re.match(r'^Bridge=([^(< :>)]+<[^(< :>)]+(:[a-z]+)?(,[^(< :>)]+<[^(< :>)]+(:[a-z]+)?)*)$', bridge[0])
                 if not match:
                     testid = 'spurious-bridge-statement'
                     testmessage = "Cannot parse the Bridge statement '%s'." % (bridge[0])
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                else:
+                    bridges = match.group(1).split(',')
+                    for b in bridges:
+                        match = re.match(r'([^(< :>)]+)<([^(< :>)]+)(?::([a-z]+))?^$', b)
+                        if match:
+                            srceid = match.group(1)
+                            tgteid = match.group(2)
+                            relation = match.group(3) # optional
+                            if not tgteid in starting_mentions:
+                                testid = 'misplaced-bridge-statement'
+                                testmessage = "Bridge relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (b, tgteid)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                    ###!!! Also check that the same srceid<tgteid pair is not repeated in one Bridge statement.
+                    ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
             if len(splitante) > 0:
-                match = re.match(r'^SplitAnte=[^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*$', splitante[0])
+                match = re.match(r'^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$', splitante[0])
                 if not match:
                     testid = 'spurious-splitante-statement'
                     testmessage = "Cannot parse the SplitAnte statement '%s'." % (splitante[0])
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                else:
+                    antecedents = match.group(1).split(',')
+                    for a in antecedents:
+                        match = re.match(r'^([^(< :>)]+)<([^(< :>)]+)$', a)
+                        if match:
+                            srceid = match.group(1)
+                            tgteid = match.group(2)
+                            if not tgteid in starting_mentions:
+                                testid = 'misplaced-bridge-statement'
+                                testmessage = "SplitAnte relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (a, tgteid)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                    ###!!! Also check that there are at least two different sources for this target, and that this pair srceid<tgteid is not repeated.
+                    ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
         iline += 1
     if len(open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
