@@ -2295,6 +2295,8 @@ def validate_misc_entity(comments, sentence):
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                 else:
                     bridges = match.group(1).split(',')
+                    # Hash src<tgt pairs and make sure they are not repeated.
+                    srctgt = {}
                     for b in bridges:
                         match = re.match(r'([^(< :>)]+)<([^(< :>)]+)(?::([a-z]+))?^$', b)
                         if match:
@@ -2305,7 +2307,12 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'misplaced-bridge-statement'
                                 testmessage = "Bridge relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (b, tgteid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    ###!!! Also check that the same srceid<tgteid pair is not repeated in one Bridge statement.
+                            if srceid+'<'+tgteid in srctgt:
+                                testid = 'repeated-bridge-relation'
+                                testmessage = "Bridge relation '%s' must not be repeated in '%s'." % (srceid+'<'+tgteid, b)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            else:
+                                srctgt[srceid+'<'+tgteid] = True
                     ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
             if len(splitante) > 0:
                 match = re.match(r'^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$', splitante[0])
@@ -2315,6 +2322,8 @@ def validate_misc_entity(comments, sentence):
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                 else:
                     antecedents = match.group(1).split(',')
+                    # Hash src<tgt pairs and make sure they are not repeated.
+                    srctgt = {}
                     for a in antecedents:
                         match = re.match(r'^([^(< :>)]+)<([^(< :>)]+)$', a)
                         if match:
@@ -2324,7 +2333,13 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'misplaced-bridge-statement'
                                 testmessage = "SplitAnte relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (a, tgteid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    ###!!! Also check that there are at least two different sources for this target, and that this pair srceid<tgteid is not repeated.
+                            if srceid+'<'+tgteid in srctgt:
+                                testid = 'repeated-splitante-relation'
+                                testmessage = "SplitAnte relation '%s' must not be repeated in '%s'." % (srceid+'<'+tgteid, a)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            else:
+                                srctgt[srceid+'<'+tgteid] = True
+                    ###!!! Also check that there are at least two different sources for this target.
                     ###!!! And if the relation between these two entities is repeated at another mention, it must have identical relation type!
         iline += 1
     if len(open_entity_mentions)>0:
