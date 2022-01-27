@@ -2266,7 +2266,7 @@ def validate_misc_entity(comments, sentence):
                                 else:
                                     open_discontinuous_mentions[eid]['length'] = mention_length
                             else:
-                                warn('something is wrong; open discontinuous mentions = %s' % (str(open_discontinuous_mentions)), testclass, testlevel=testlevel, testid='xxx', nodelineno=sentence_line+iline)
+                                warn('something is wrong; beid = %s; eid = %s; ipart = %d; npart = %d; open discontinuous mentions = %s' % (beid, eid, ipart, npart, str(open_discontinuous_mentions)), testclass, testlevel=testlevel, testid='xxx', nodelineno=sentence_line+iline)
                         if ipart == npart and mention_length < head:
                             testid = 'mention-head-out-of-range'
                             testmessage = "Entity mention head is specified as %d in '%s' but the mention has only %d nodes." % (head, e, mention_length)
