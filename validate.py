@@ -2258,12 +2258,15 @@ def validate_misc_entity(comments, sentence):
                         seen2 = True
                         # Check that head is not outside. Head does not have to be 1 if this is a part of a discontinuous mention.
                         mention_length = 1
-                        if npart > 1 and eid in open_discontinuous_mentions:
-                            if 'length' in open_discontinuous_mentions[eid]:
-                                open_discontinuous_mentions[eid]['length'] += mention_length
-                                mention_length = open_discontinuous_mentions[eid]['length']
+                        if npart > 1:
+                            if eid in open_discontinuous_mentions:
+                                if 'length' in open_discontinuous_mentions[eid]:
+                                    open_discontinuous_mentions[eid]['length'] += mention_length
+                                    mention_length = open_discontinuous_mentions[eid]['length']
+                                else:
+                                    open_discontinuous_mentions[eid]['length'] = mention_length
                             else:
-                                open_discontinuous_mentions[eid]['length'] = mention_length
+                                warn('something is wrong', testclass, testlevel=testlevel, testid='xxx', nodelineno=sentence_line+iline)
                         if ipart == npart and mention_length < head:
                             testid = 'mention-head-out-of-range'
                             testmessage = "Entity mention head is specified as %d in '%s' but the mention has only %d nodes." % (head, e, mention_length)
