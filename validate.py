@@ -2251,7 +2251,7 @@ def validate_misc_entity(comments, sentence):
                         seen2 = True
                         if head > 1:
                             testid = 'mention-head-out-of-range'
-                            testmessage = "Entity head index must be 1 for single-word mentions."
+                            testmessage = "Entity head index must be 1 for single-word mention '%s'." % (e)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     else: # b==1
                         if seen0:
