@@ -2186,15 +2186,15 @@ def validate_misc_entity(comments, sentence):
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 # Update the information about the discontinuous mention.
                                 # If this is the last part, we will remove the information after we completely process the current part.
-                                open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match}
+                                length = open_discontinuous_mentions[eid]['length']
+                                open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': length}
                             else:
                                 if ipart > 1:
                                     testid = 'misplaced-mention-part'
                                     testmessage = "Unexpected part of discontinuous mention '%s': first part not encountered." % (beid)
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 else:
-                                    length = open_discontinuous_mentions[eid]['length'] if eid in open_discontinuous_mentions else 0
-                                    open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': length}
+                                    open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0}
                         if eid in entity_ids_other_documents:
                             testid = 'entity-across-newdoc'
                             testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
