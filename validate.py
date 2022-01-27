@@ -2302,8 +2302,8 @@ def validate_misc_entity(comments, sentence):
                                         testmessage = "Entity mention head was specified as %d on line %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], mention_length)
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     # Check that no two mentions have identical spans.
-                                    ###!!! Again, we will have to refine the implementation so that discontinuous mentions work, too.
-                                    ending_mention_key = str(open_entity_mentions[i]['line'])
+                                    ###!!! Line + length is a hack that may not be enough! The previous parts of a discontinous mention may have the same length but different spans.
+                                    ending_mention_key = str(open_entity_mentions[i]['line'])+str(mention_length)
                                     if ending_mention_key in ending_mentions:
                                         testid = 'same-span-entity-mentions'
                                         testmessage = "Entity mentions '%s' and '%s' from line %d have the same span." % (ending_mentions[ending_mention_key], beid, open_entity_mentions[i]['line'])
