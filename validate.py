@@ -2035,6 +2035,7 @@ def validate_misc_entity(comments, sentence):
             return
         # Add the current word to all currently open mentions. We will use it in error messages.
         for m in open_entity_mentions:
+            m['span'].append(cols[ID])
             m['text'] += ' '+cols[FORM]
             m['length'] += 1
         misc = cols[MISC].split('|')
@@ -2248,7 +2249,7 @@ def validate_misc_entity(comments, sentence):
                         seen0 = True
                         seen2 = False
                         # Remember the line where the entity mention starts.
-                        mention = {'beid': beid, 'line': sentence_line+iline, 'text': cols[FORM], 'length': 1, 'head': head}
+                        mention = {'beid': beid, 'line': sentence_line+iline, 'span': [cols[ID]], 'text': cols[FORM], 'length': 1, 'head': head}
                         open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
@@ -2306,7 +2307,7 @@ def validate_misc_entity(comments, sentence):
                                     ending_mention_key = str(open_entity_mentions[i]['line'])+str(mention_length)
                                     if ending_mention_key in ending_mentions:
                                         testid = 'same-span-entity-mentions'
-                                        testmessage = "Entity mentions '%s' and '%s' from line %d have the same span." % (ending_mentions[ending_mention_key], beid, open_entity_mentions[i]['line'])
+                                        testmessage = "Entity mentions '%s' and '%s' from line %d have the same span %s (%s)." % (ending_mentions[ending_mention_key], beid, open_entity_mentions[i]['line'], str(open_entity_mentions[i]['span']), open_entity_mentions[i]['text'])
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     else:
                                         ending_mentions[ending_mention_key] = beid
