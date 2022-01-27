@@ -2119,10 +2119,9 @@ def validate_misc_entity(comments, sentence):
                 starting_mentions = {}
                 ending_mentions = {}
                 for b, e in entities:
-                    head = 0
+                    # First get attributes, entity id, and if applicable, part of discontinuous mention.
+                    attributes = e.split('-')
                     if b==0 or b==2:
-                        # Check all attributes of the entity.
-                        attributes = e.split('-')
                         # Fewer attributes are allowed because trailing empty values can be omitted.
                         # More attributes are not allowed.
                         if len(attributes) > entity_attribute_number:
@@ -2134,18 +2133,42 @@ def validate_misc_entity(comments, sentence):
                         # because the closing bracket must contain it too. However, to identify the
                         # cluster, we need to take the real id.
                         beid = attributes[entity_attribute_index['eid']]
-                        match = re.match(r'^(.+)\[([1-9]\d*)/([1-9]\d*)\]$', beid)
-                        if match:
-                            eid = match.group(1)
-                            ipart = int(match.group(2))
-                            npart = int(match.group(3))
-                            if ipart == 1:
-                                starting_mentions[eid] = True
-                            if ipart > npart:
-                                testid = 'spurious-entity-id'
-                                testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            # We want to check values of all attributes except the eid (which differs in the brackets).
+                    else:
+                        # No attributes other than eid are expected at the closing bracket.
+                        if len(attributes) > 1:
+                            testid = 'too-many-entity-attributes'
+                            testmessage = "Entity '%s' has %d attributes while only eid is expected at the closing bracket." % (e, len(attributes))
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        beid = attributes[0]
+                    eid = beid
+                    ipart = 1
+                    npart = 1
+                    match = re.match(r'^(.+)\[([1-9]\d*)/([1-9]\d*)\]$', beid)
+                    if match:
+                        eid = match.group(1)
+                        ipart = int(match.group(2))
+                        npart = int(match.group(3))
+                        # We should omit the square brackets if they would be [1/1].
+                        if ipart == 1 and npart == 1:
+                            testid = 'spurious-entity-id'
+                            testmessage = "Discontinuous mention must have at least two parts but it has one in '%s'." % (beid)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        if ipart > npart:
+                            testid = 'spurious-entity-id'
+                            testmessage = "Entity id '%s' of discontinuous mention says the current part is higher than total number of parts." % (beid)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                    else:
+                        if re.match(r'[\[\]]', beid):
+                            testid = 'spurious-entity-id'
+                            testmessage = "Entity id '%s' contains square brackets but does not have the form used in discontinuous mentions." % (beid)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                    head = 0
+                    if b==0 or b==2:
+                        if ipart == 1:
+                            starting_mentions[eid] = True
+                        # Check all attributes of the entity.
+                        if npart > 1:
+                            # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
                             attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
                             attrstring_to_match = '-'.join(attributes_without_eid)
                             if eid in open_discontinuous_mentions:
@@ -2170,20 +2193,8 @@ def validate_misc_entity(comments, sentence):
                                     testid = 'misplaced-mention-part'
                                     testmessage = "Unexpected part of discontinuous mention '%s': first part not encountered." % (beid)
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                # Do not allow [1/1].
-                                elif npart < 2:
-                                    testid = 'spurious-entity-id'
-                                    testmessage = "Entity id '%s' of discontinuous mention says the total number of parts is less than 2." % (beid)
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 else:
                                     open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match}
-                        else:
-                            if re.match(r'[\[\]]', beid):
-                                testid = 'spurious-entity-id'
-                                testmessage = "Entity id '%s' contains square brackets but does not have the form used in discontinuous mentions." % (beid)
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            eid = beid
-                            starting_mentions[eid] = True
                         if eid in entity_ids_other_documents:
                             testid = 'entity-across-newdoc'
                             testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
@@ -2208,10 +2219,6 @@ def validate_misc_entity(comments, sentence):
                                 testmessage = "Entity head index '%s' must be a non-zero-starting integer." % (attributes[entity_attribute_index['head']])
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             head = int(attributes[entity_attribute_index['head']])
-                            if head == 0:
-                                testid = 'mention-head-out-of-range'
-                                testmessage = "Entity head index must not be zero."
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         # If this is the first mention of the entity, remember the values
                         # of the attributes that should be identical at all mentions.
                         if not eid in entity_types:
@@ -2227,16 +2234,16 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'entity-identity-mismatch'
                                 testmessage = "Entity '%s' cannot have identity '%s' that does not match '%s' from the first mention on line %d." % (eid, identity, entity_types[eid][1], entity_types[eid][2])
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    else:
-                        beid = e
+                    # Now we know the beid, eid, as well as all other attributes.
+                    # We can check the well-nestedness of brackets.
                     if b==0:
                         if seen2 and not seen1:
                             testid = 'spurious-entity-statement'
-                            testmessage = "If there are no closing entity brackets, all single-node entities must follow all opening entity brackets in '%s'." % (entity[0])
+                            testmessage = "If there are no closing entity brackets, single-node entity must follow all opening entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         if seen0 and seen2:
                             testid = 'spurious-entity-statement'
-                            testmessage = "All single-node entities must either precede all closing entity brackets or follow all opening entity brackets in '%s'." % (entity[0])
+                            testmessage = "Single-node entity must either precede all closing entity brackets or follow all opening entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen0 = True
                         seen2 = False
@@ -2246,12 +2253,20 @@ def validate_misc_entity(comments, sentence):
                     elif b==2:
                         if seen1 and not seen0:
                             testid = 'spurious-entity-statement'
-                            testmessage = "If there are no opening entity brackets, all single-node entities must precede all closing entity brackets in '%s'." % (entity[0])
+                            testmessage = "If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
-                        if head > 1:
+                        # Check that head is not outside. Head does not have to be 1 if this is a part of a discontinuous mention.
+                        mention_length = 1
+                        if npart > 1 and eid in open_discontinuous_mentions:
+                            if 'length' in open_discontinuous_mentions[eid]:
+                                open_discontinuous_mentions[eid]['length'] += mention_length
+                                mention_length = open_discontinuous_mentions[eid]['length']
+                            else:
+                                open_discontinuous_mentions[eid]['length'] = mention_length
+                        if ipart == npart and mention_length < head:
                             testid = 'mention-head-out-of-range'
-                            testmessage = "Entity head index must be 1 for single-word mention '%s'." % (e)
+                            testmessage = "Entity mention head is specified as %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], mention_length)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     else: # b==1
                         if seen0:
@@ -2273,10 +2288,17 @@ def validate_misc_entity(comments, sentence):
                             for i in reversed(range(len(open_entity_mentions))):
                                 if open_entity_mentions[i]['beid'] == beid:
                                     # Before we close the mention, check that it had enough nodes for the specified head index.
-                                    ###!!! This implementation may falsely fail for discontinuous mentions, as we know only the length of the current part!
-                                    if open_entity_mentions[i]['length'] < open_entity_mentions[i]['head']:
+                                    # If this is a part of a discontinuous mention, update the total length of the mention.
+                                    mention_length = open_entity_mentions[i]['length']
+                                    if npart > 1 and eid in open_discontinuous_mentions:
+                                        if 'length' in open_discontinuous_mentions[eid]:
+                                            open_discontinuous_mentions[eid]['length'] += mention_length
+                                            mention_length = open_discontinuous_mentions[eid]['length']
+                                        else:
+                                            open_discontinuous_mentions[eid]['length'] = mention_length
+                                    if ipart == npart and mention_length < open_entity_mentions[i]['head']:
                                         testid = 'mention-head-out-of-range'
-                                        testmessage = "Entity mention head was specified as %d on line %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], open_entity_mentions[i]['length'])
+                                        testmessage = "Entity mention head was specified as %d on line %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], mention_length)
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     # Check that no two mentions have identical spans.
                                     ###!!! Again, we will have to refine the implementation so that discontinuous mentions work, too.
