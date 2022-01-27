@@ -2184,10 +2184,9 @@ def validate_misc_entity(comments, sentence):
                                     testid = 'mention-attribute-mismatch'
                                     testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eid]['attributes'])
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                if ipart<npart:
-                                    open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match}
-                                else:
-                                    open_discontinuous_mentions.pop(eid)
+                                # Update the information about the discontinuous mention.
+                                # If this is the last part, we will remove the information after we completely process the current part.
+                                open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match}
                             else:
                                 if ipart > 1:
                                     testid = 'misplaced-mention-part'
@@ -2315,6 +2314,11 @@ def validate_misc_entity(comments, sentence):
                                         ending_mentions[ending_mention_key] = beid
                                     open_entity_mentions.pop(i)
                                     break
+                    # At the end of the last part of a discontinuous mention, remove the information about the mention.
+                    if b==2 or b==1:
+                        if npart > 1 and ipart == npart:
+                            if eid in open_discontinuous_mentions:
+                                open_discontinuous_mentions.pop(eid)
             # Now we are done with checking the 'Entity=' statement.
             # If there are also 'Bridge=' or 'SplitAnte=' statements, check them too.
             if len(bridge) > 0:
