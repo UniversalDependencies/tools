@@ -2372,7 +2372,7 @@
 },
 "gn": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -2401,6 +2401,8 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
