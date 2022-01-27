@@ -2307,25 +2307,25 @@ def validate_misc_entity(comments, sentence):
                             srceid = match.group(1)
                             tgteid = match.group(2)
                             relation = match.group(3) # optional
+                            bridgekey = srceid+'<'+tgteid
                             if not tgteid in starting_mentions:
                                 testid = 'misplaced-bridge-statement'
                                 testmessage = "Bridge relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (b, tgteid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            if srceid+'<'+tgteid in srctgt:
+                            if bridgekey in srctgt:
                                 testid = 'repeated-bridge-relation'
-                                testmessage = "Bridge relation '%s' must not be repeated in '%s'." % (srceid+'<'+tgteid, b)
+                                testmessage = "Bridge relation '%s' must not be repeated in '%s'." % (bridgekey, b)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             else:
-                                srctgt[srceid+'<'+tgteid] = True
+                                srctgt[bridgekey] = True
                             # Check in the global dictionary whether this relation has been specified at another mention.
-                            if srceid+'<'+tgteid in entity_bridge_relations:
-                                if relation != entity_bridge_relations[srceid+'<'+tgteid]:
+                            if bridgekey in entity_bridge_relations:
+                                if relation != entity_bridge_relations[bridgekey]['relation']:
                                     testid = 'bridge-relation-mismatch'
-                                    testmessage = "Bridge relation '%s' type does not match the type '%s' from previous instances of the same relation." % (b, entity_bridge_relations[srceid+'<'+tgteid])
+                                    testmessage = "Bridge relation '%s' type does not match '%s' specified earlier on line %d." % (b, entity_bridge_relations[bridgekey]['relation'], entity_bridge_relations[bridgekey]['line'])
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                    ###!!! TODO: Report the line where the previous mention occurred.
                             else:
-                                entity_bridge_relations[srceid+'<'+tgteid] = relation
+                                entity_bridge_relations[bridgekey] = {'relation': relation, 'line': sentence_line+iline}
             if len(splitante) > 0:
                 match = re.match(r'^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$', splitante[0])
                 if not match:
@@ -2336,7 +2336,7 @@ def validate_misc_entity(comments, sentence):
                     antecedents = match.group(1).split(',')
                     # Hash src<tgt pairs and make sure they are not repeated. Also remember the number of antecedents for each target.
                     srctgt = {}
-                    nante = {}
+                    tgtante = {}
                     for a in antecedents:
                         match = re.match(r'^([^(< :>)]+)<([^(< :>)]+)$', a)
                         if match:
@@ -2348,29 +2348,28 @@ def validate_misc_entity(comments, sentence):
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             if srceid+'<'+tgteid in srctgt:
                                 testid = 'repeated-splitante-relation'
-                                testmessage = "SplitAnte relation '%s' must not be repeated in '%s'." % (srceid+'<'+tgteid, a)
+                                testmessage = "SplitAnte relation '%s' must not be repeated in '%s'." % (srceid+'<'+tgteid, ','.join(antecedents))
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             else:
                                 srctgt[srceid+'<'+tgteid] = True
-                            if tgteid in nante:
-                                nante[tgteid] += 1
+                            if tgteid in tgtante:
+                                tgtante[tgteid].append(srceid)
                             else:
-                                nante[tgteid] = 1
-                    for tgteid in nante:
-                        if nante[tgteid] == 1:
+                                tgtante[tgteid] = [srceid]
+                    for tgteid in tgtante:
+                        if len(tgtante[tgteid]) == 1:
                             testid = 'only-one-split-antecedent'
-                            testmessage = "SplitAnte relation '%s' must specify at least two antecedents for entity '%s'." % (splitante[0], tgteid)
+                            testmessage = "SplitAnte statement '%s' must specify at least two antecedents for entity '%s'." % (','.join(antecedents), tgteid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         # Check in the global dictionary whether this relation has been specified at another mention.
-                        ###!!! TODO: We now have the number of antecedents but we need their list!
+                        tgtante[tgteid].sort()
                         if tgteid in entity_split_antecedents:
-                            if nante[tgteid] != entity_split_antecedents[tgteid]:
+                            if tgtante[tgteid] != entity_split_antecedents[tgteid]['antecedents']:
                                 testid = 'split-antecedent-mismatch'
-                                testmessage = "Split antecedent of entity '%s' does not match '%s' specified earlier." % (tgteid, entity_split_antecedents[tgteid])
+                                testmessage = "Split antecedent of entity '%s' does not match '%s' specified earlier on line %d." % (tgteid, entity_split_antecedents[tgteid]['antecedents'], entity_split_antecedents[tgteid]['line'])
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                ###!!! TODO: Report the line where the previous mention occurred.
                         else:
-                            entity_split_antecedents[tgteid] = nante[tgteid]
+                            entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': sentence_line+iline}
         iline += 1
     if len(open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
