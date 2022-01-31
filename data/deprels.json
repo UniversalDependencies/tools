@@ -4169,8 +4169,9 @@
 "la": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:appos": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"acl:cmpr": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"acl:cmpr": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "acl:nmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"acl:pass": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'acl:pass'."]},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:abs": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
