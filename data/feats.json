@@ -967,7 +967,7 @@
 "Rel": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Abs", "Cont", "Corf", "NCont"], "unused_uvalues": [], "unused_lvalues": ["Hum"], "evalues": [], "byupos": {"ADP": {"Abs": 1, "Cont": 1, "Corf": 1, "NCont": 1}, "NOUN": {"Abs": 1, "Cont": 1, "Corf": 1, "NCont": 1}}, "lastchanged": "2022-01-27-09-47-36", "lastchanger": "LanguageStructure"},
 "Speech": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Man", "Woman"], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past"], "lvalues": ["FutPast"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Imp", "Pqp", "Pres"], "byupos": {"NOUN": {"Fut": 1, "FutPast": 1, "Past": 1}, "VERB": {"Fut": 1, "Past": 1}}, "lastchanged": "2022-01-27-13-28-23", "lastchanger": "LanguageStructure"},
-"Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cau", "Mid", "Rcp"], "unused_lvalues": ["Com"], "evalues": [], "byupos": {}}
+"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Rcp"], "lvalues": ["Com"], "unused_uvalues": ["Mid"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Cau": 1, "Com": 1, "Rcp": 1}, "VERB": {"Cau": 1, "Com": 1, "Rcp": 1}}, "lastchanged": "2022-02-01-09-02-25", "lastchanger": "LanguageStructure"}
 },
 "got": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
