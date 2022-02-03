@@ -2282,10 +2282,12 @@ def validate_misc_entity(comments, sentence):
                             testmessage = "Cannot close entity '%s' because there are no open entities." % (beid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         else:
+                            # If the closing bracket does not occur where expected, it is currently only a warning.
+                            # We have crossing mention spans in CorefUD 1.0 and it has not been decided yet whether all of them should be illegal.
                             if beid != open_entity_mentions[-1]['beid']:
-                                testid = 'ill-nested-entities'
-                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (eid, open_entity_mentions[-1]['beid'], open_entity_mentions[-1]['line'], str(open_entity_mentions))
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                testid = 'ill-nested-entities-warning'
+                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (beid, open_entity_mentions[-1]['beid'], open_entity_mentions[-1]['line'], str(open_entity_mentions))
+                                warn(testmessage, 'Warning', testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             # To prevent the subsequent error messages from growing infinitely, try to find and close the entity whether or not it was well-nested.
                             for i in reversed(range(len(open_entity_mentions))):
                                 if open_entity_mentions[i]['beid'] == beid:
@@ -2314,6 +2316,11 @@ def validate_misc_entity(comments, sentence):
                                             ending_mentions[ending_mention_key] = beid
                                     open_entity_mentions.pop(i)
                                     break
+                            else:
+                                # If we did not find the entity to close, then the warning above was not enough and we have to make it a validation error.
+                                testid = 'ill-nested-entities'
+                                testmessage = "Cannot close entity '%s' because it was not found among open entities: %s" % (beid, str(open_entity_mentions))
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     # At the end of the last part of a discontinuous mention, remove the information about the mention.
                     if b==2 or b==1:
                         if npart > 1 and ipart == npart:
