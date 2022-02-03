@@ -73,18 +73,18 @@ def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodeline
     global curr_fname, curr_line, sentence_line, sentence_id, error_counter, tree_counter, args
     error_counter[error_type] = error_counter.get(error_type, 0)+1
     if not args.quiet:
-        if args.max_err>0 and error_counter[error_type]==args.max_err:
+        if args.max_err > 0 and error_counter[error_type] == args.max_err:
             print(('...suppressing further errors regarding ' + error_type), file=sys.stderr)
-        elif args.max_err>0 and error_counter[error_type]>args.max_err:
-            pass #suppressed
+        elif args.max_err > 0 and error_counter[error_type] > args.max_err:
+            pass # suppressed
         else:
-            if len(args.input)>1: #several files, should report which one
-                if curr_fname=="-":
-                    fn="(in STDIN) "
+            if len(args.input) > 1: # several files, should report which one
+                if curr_fname=='-':
+                    fn = '(in STDIN) '
                 else:
-                    fn="(in "+os.path.basename(curr_fname)+") "
+                    fn = '(in '+os.path.basename(curr_fname)+') '
             else:
-                fn=""
+                fn = ''
             sent = ''
             node = ''
             # Global variable (last read sentence id): sentence_id
@@ -2822,7 +2822,7 @@ if __name__=="__main__":
         auxdata = jsondata['auxiliaries']
         tagsets[AUX], tagsets[COP] = get_auxdata_for_language(args.lang)
 
-    out=sys.stdout # hard-coding - does this ever need to be anything else?
+    out = sys.stdout # hard-coding - does this ever need to be anything else?
 
     try:
         known_sent_ids=set()
@@ -2852,17 +2852,29 @@ if __name__=="__main__":
         # because the traceback can contain e.g. "<module>". However, escaping
         # is beyond the goal of validation, which can be also run in a console.
         traceback.print_exc()
-    if not error_counter:
+    # Summarize the warnings and errors.
+    passed = True
+    nerror = 0
+    if error_counter:
+        for k, v in sorted(error_counter.items()):
+            if k == 'Warning':
+                errors = 'Warnings'
+            else:
+                errors = k+' errors'
+                nerror += v
+                passed = False
+            if not args.quiet:
+                print('%s: %d' % (errors, v), file=sys.stderr)
+    # Print the final verdict and exit.
+    if passed:
         if not args.quiet:
             print('*** PASSED ***', file=sys.stderr)
         sys.exit(0)
     else:
         if not args.quiet:
-            for k,v in sorted(error_counter.items()):
-                print('%s errors: %d' %(k, v), file=sys.stderr)
-            print('*** FAILED *** with %d errors'%sum(v for k,v in iter(error_counter.items())), file=sys.stderr)
+            print('*** FAILED *** with %d errors' % nerror, file=sys.stderr)
         for f_name in sorted(warn_on_missing_files):
             filepath = os.path.join(THISDIR, 'data', f_name+'.'+args.lang)
             if not os.path.exists(filepath):
-                print('The language-specific file %s does not exist.'%filepath, file=sys.stderr)
+                print('The language-specific file %s does not exist.' % filepath, file=sys.stderr)
         sys.exit(1)
