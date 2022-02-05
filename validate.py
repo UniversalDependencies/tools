@@ -2260,9 +2260,15 @@ def validate_misc_entity(comments, sentence):
                                     open_discontinuous_mentions[eidnpart] = {'last_ipart': 1, 'npart': npart, 'line': opening_line, 'attributes': attrstring_to_match, 'length': mention_length, 'span': mention_span}
                             # If this is other than the first part, update the attributes that have to be updated after each part.
                             else:
-                                open_discontinuous_mentions[eidnpart]['last_ipart'] = ipart
-                                open_discontinuous_mentions[eidnpart]['length'] += mention_length
-                                open_discontinuous_mentions[eidnpart]['span'] += mention_span
+                                if eidnpart in open_discontinuous_mentions:
+                                    open_discontinuous_mentions[eidnpart]['last_ipart'] = ipart
+                                    open_discontinuous_mentions[eidnpart]['length'] += mention_length
+                                    open_discontinuous_mentions[eidnpart]['span'] += mention_span
+                                else:
+                                    testid = 'misplaced-mention-part'
+                                    testmessage = "Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                    open_discontinuous_mentions[eidnpart] = {'last_ipart': ipart, 'npart': npart, 'line': opening_line, 'attributes': attrstring_to_match, 'length': mention_length, 'span': mention_span}
                                 # Update mention_length and mention_span to reflect the whole span up to this point rather than just the last part.
                                 mention_length = open_discontinuous_mentions[eidnpart]['length']
                                 mention_span = open_discontinuous_mentions[eidnpart]['span']
