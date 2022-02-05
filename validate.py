@@ -2177,20 +2177,6 @@ def validate_misc_entity(comments, sentence):
                             attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
                             # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
                             attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
-                            if eidnpart in open_discontinuous_mentions:
-                                if ipart != open_discontinuous_mentions[eidnpart][-1]['last_ipart']+1:
-                                    testid = 'misplaced-mention-part'
-                                    testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eidnpart][-1]['last_ipart'], open_discontinuous_mentions[eidnpart][-1]['npart'], open_discontinuous_mentions[eidnpart][-1]['line'])
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                elif attrstring_to_match != open_discontinuous_mentions[eidnpart][-1]['attributes']:
-                                    testid = 'mention-attribute-mismatch'
-                                    testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eidnpart][-1]['attributes'])
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            else:
-                                if ipart > 1:
-                                    testid = 'misplaced-mention-part'
-                                    testmessage = "Unexpected part of discontinuous mention '%s': first part not encountered." % (beid)
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             # We will update information about the discontinuous mention whose part just started
                             # only when we encounter the closing bracket. That way we enable nested discontinuous
                             # mentions of the same entity.
@@ -2260,6 +2246,14 @@ def validate_misc_entity(comments, sentence):
                             # If this is other than the first part, update the attributes that have to be updated after each part.
                             else:
                                 if eidnpart in open_discontinuous_mentions:
+                                    if ipart != open_discontinuous_mentions[eidnpart][-1]['last_ipart']+1:
+                                        testid = 'misplaced-mention-part'
+                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eidnpart][-1]['last_ipart'], open_discontinuous_mentions[eidnpart][-1]['npart'], open_discontinuous_mentions[eidnpart][-1]['line'])
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                    elif attrstring_to_match != open_discontinuous_mentions[eidnpart][-1]['attributes']:
+                                        testid = 'mention-attribute-mismatch'
+                                        testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eidnpart][-1]['attributes'])
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     open_discontinuous_mentions[eidnpart][-1]['last_ipart'] = ipart
                                     open_discontinuous_mentions[eidnpart][-1]['length'] += mention_length
                                     open_discontinuous_mentions[eidnpart][-1]['span'] += mention_span
