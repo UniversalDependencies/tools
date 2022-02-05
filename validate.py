@@ -2175,7 +2175,8 @@ def validate_misc_entity(comments, sentence):
                         if npart > 1:
                             # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
                             attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
-                            attrstring_to_match = '-'.join(attributes_without_eid)
+                            # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
+                            attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
                             if eidnpart in open_discontinuous_mentions:
                                 if ipart != open_discontinuous_mentions[eidnpart]['last_ipart']+1:
                                     testid = 'misplaced-mention-part'
