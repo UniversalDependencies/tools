@@ -2144,11 +2144,13 @@ def validate_misc_entity(comments, sentence):
                     eid = beid
                     ipart = 1
                     npart = 1
+                    eidnpart = eid
                     match = re.match(r'^(.+)\[([1-9]\d*)/([1-9]\d*)\]$', beid)
                     if match:
                         eid = match.group(1)
                         ipart = int(match.group(2))
                         npart = int(match.group(3))
+                        eidnpart = eid+'['+match.group(3)+']'
                         # We should omit the square brackets if they would be [1/1].
                         if ipart == 1 and npart == 1:
                             testid = 'spurious-entity-id'
@@ -2167,36 +2169,33 @@ def validate_misc_entity(comments, sentence):
                     if b==0 or b==2:
                         if ipart == 1:
                             starting_mentions[eid] = True
-                        # Check all attributes of the entity.
+                        #----------------------------------------------------------------------------------------------
+                        # Check the opening bracket of a part of a discontinuous mention.
                         if npart > 1:
                             # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
                             attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
                             attrstring_to_match = '-'.join(attributes_without_eid)
-                            if eid in open_discontinuous_mentions:
-                                if npart != open_discontinuous_mentions[eid]['npart']:
+                            if eidnpart in open_discontinuous_mentions:
+                                if ipart != open_discontinuous_mentions[eidnpart]['last_ipart']+1:
                                     testid = 'misplaced-mention-part'
-                                    testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eid]['last_ipart'], open_discontinuous_mentions[eid]['npart'], open_discontinuous_mentions[eid]['line'])
+                                    testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eidnpart]['last_ipart'], open_discontinuous_mentions[eidnpart]['npart'], open_discontinuous_mentions[eidnpart]['line'])
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                elif ipart != open_discontinuous_mentions[eid]['last_ipart']+1:
-                                    testid = 'misplaced-mention-part'
-                                    testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eid]['last_ipart'], open_discontinuous_mentions[eid]['npart'], open_discontinuous_mentions[eid]['line'])
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                elif attrstring_to_match != open_discontinuous_mentions[eid]['attributes']:
+                                elif attrstring_to_match != open_discontinuous_mentions[eidnpart]['attributes']:
                                     testid = 'mention-attribute-mismatch'
-                                    testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eid]['attributes'])
+                                    testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eidnpart]['attributes'])
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 # Update the information about the discontinuous mention.
                                 # If this is the last part, we will remove the information after we completely process the current part.
-                                length = open_discontinuous_mentions[eid]['length']
-                                span = open_discontinuous_mentions[eid]['span']
-                                open_discontinuous_mentions[eid] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': length, 'span': span}
+                                open_discontinuous_mentions[eidnpart] = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': open_discontinuous_mentions[eidnpart]['length'], 'span': open_discontinuous_mentions[eidnpart]['span']}
                             else:
                                 if ipart > 1:
                                     testid = 'misplaced-mention-part'
                                     testmessage = "Unexpected part of discontinuous mention '%s': first part not encountered." % (beid)
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 else:
-                                    open_discontinuous_mentions[eid] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                                    open_discontinuous_mentions[eidnpart] = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                        #----------------------------------------------------------------------------------------------
+                        # Check all attributes of the entity, except those that must be examined at the closing bracket.
                         if eid in entity_ids_other_documents:
                             testid = 'entity-across-newdoc'
                             testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
@@ -2261,13 +2260,10 @@ def validate_misc_entity(comments, sentence):
                         # Check that head is not outside. Head does not have to be 1 if this is a part of a discontinuous mention.
                         mention_length = 1
                         if npart > 1:
-                            if eid in open_discontinuous_mentions:
-                                if 'length' in open_discontinuous_mentions[eid]:
-                                    open_discontinuous_mentions[eid]['length'] += mention_length
-                                    mention_length = open_discontinuous_mentions[eid]['length']
-                                else:
-                                    open_discontinuous_mentions[eid]['length'] = mention_length
-                                open_discontinuous_mentions[eid]['span'] += [cols[ID]]
+                            if eidnpart in open_discontinuous_mentions:
+                                open_discontinuous_mentions[eidnpart]['length'] += mention_length
+                                mention_length = open_discontinuous_mentions[eidnpart]['length']
+                                open_discontinuous_mentions[eidnpart]['span'] += [cols[ID]]
                         if ipart == npart and mention_length < head:
                             testid = 'mention-head-out-of-range'
                             testmessage = "Entity mention head is specified as %d in '%s' but the mention has only %d nodes." % (head, e, mention_length)
@@ -2297,14 +2293,11 @@ def validate_misc_entity(comments, sentence):
                                     # If this is a part of a discontinuous mention, update the total length of the mention.
                                     mention_length = open_entity_mentions[i]['length']
                                     mention_span = open_entity_mentions[i]['span']
-                                    if npart > 1 and eid in open_discontinuous_mentions:
-                                        if 'length' in open_discontinuous_mentions[eid]:
-                                            open_discontinuous_mentions[eid]['length'] += mention_length
-                                            mention_length = open_discontinuous_mentions[eid]['length']
-                                        else:
-                                            open_discontinuous_mentions[eid]['length'] = mention_length
-                                        open_discontinuous_mentions[eid]['span'] += open_entity_mentions[i]['span']
-                                        mention_span = open_discontinuous_mentions[eid]['span']
+                                    if npart > 1 and eidnpart in open_discontinuous_mentions:
+                                        open_discontinuous_mentions[eidnpart]['length'] += mention_length
+                                        mention_length = open_discontinuous_mentions[eidnpart]['length']
+                                        open_discontinuous_mentions[eidnpart]['span'] += open_entity_mentions[i]['span']
+                                        mention_span = open_discontinuous_mentions[eidnpart]['span']
                                     if ipart == npart and mention_length < open_entity_mentions[i]['head']:
                                         testid = 'mention-head-out-of-range'
                                         testmessage = "Entity mention head was specified as %d on line %d but the mention has only %d nodes." % (open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], mention_length)
@@ -2328,8 +2321,8 @@ def validate_misc_entity(comments, sentence):
                     # At the end of the last part of a discontinuous mention, remove the information about the mention.
                     if b==2 or b==1:
                         if npart > 1 and ipart == npart:
-                            if eid in open_discontinuous_mentions:
-                                open_discontinuous_mentions.pop(eid)
+                            if eidnpart in open_discontinuous_mentions:
+                                open_discontinuous_mentions.pop(eidnpart)
             # Now we are done with checking the 'Entity=' statement.
             # If there are also 'Bridge=' or 'SplitAnte=' statements, check them too.
             if len(bridge) > 0:
