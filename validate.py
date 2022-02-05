@@ -2310,7 +2310,7 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
                         # Perform checks that can only be done after reading the entire continuous part of a mention.
-                        closing_bracket(1, cols[ID], head, sentence_line+iline, attrstring_to_match)
+                        closing_bracket(1, [cols[ID]], head, sentence_line+iline, attrstring_to_match)
                     else: # b==1
                         if seen0:
                             testid = 'spurious-entity-statement'
