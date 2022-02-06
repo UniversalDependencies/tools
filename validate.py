@@ -2179,11 +2179,11 @@ def validate_misc_entity(comments, sentence):
                         # If this is a part of a discontinuous mention, remember the attribute string.
                         # At the beginning of each part, we will check that its attribute string is identical to the first part.
                         if npart > 1:
+                            # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
+                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
+                            # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
+                            attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
                             if ipart == 1:
-                                # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
-                                attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
-                                # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
-                                attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
                                 # If this is the first part, create a new record for the mention in the global dictionary.
                                 # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
                                 # The length and the span of the mention will be updated when we encounter the closing bracket of the current part.
