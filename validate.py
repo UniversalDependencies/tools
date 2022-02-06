@@ -2232,6 +2232,7 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'spurious-mention-head'
                                 testmessage = "Entity head index '%s' must be a non-zero-starting integer." % (attributes[entity_attribute_index['head']])
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                head = 0
                             else:
                                 head = int(attributes[entity_attribute_index['head']])
                         # If this is the first mention of the entity, remember the values
