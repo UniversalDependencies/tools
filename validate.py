@@ -2171,10 +2171,6 @@ def validate_misc_entity(comments, sentence):
                     # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
                     # We assume that we have already parsed beid and established whether this is a part of a discontinuous mention.
                     def opening_bracket():
-                        """
-                        We do not need parameters, as we are at the opening bracket and everything we know about the part so far
-                        is readily available in the outer function's variables.
-                        """
                         attrstring_to_match = ''
                         # If this is a part of a discontinuous mention, remember the attribute string.
                         # At the beginning of each part, we will check that its attribute string is identical to the first part.
@@ -2261,13 +2257,39 @@ def validate_misc_entity(comments, sentence):
 
                     #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the closing brackets of multi-node continuous parts.
-                    def closing_bracket(mention_length, mention_span, head, opening_line):
-                        """
-                        mention_length ... number of nodes in the continuous part we are closing now
-                        mention_span ..... list of nodes in the continuous part we are closing now
-                        head ............. head index as specified at the opening bracket of the part we are closing now
-                        opening_line ..... for error messages: line where the corresponding opening bracket occurred
-                        """
+                    def closing_bracket():
+                        # Find the corresponding opening bracket and extract the information we need to know.
+                        mention_length = 0
+                        mention_span = []
+                        head = 0
+                        opening_line = 0
+                        if len(open_entity_mentions)==0:
+                            testid = 'ill-nested-entities'
+                            testmessage = "Cannot close entity '%s' because there are no open entities." % (beid)
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            return
+                        else:
+                            # If the closing bracket does not occur where expected, it is currently only a warning.
+                            # We have crossing mention spans in CorefUD 1.0 and it has not been decided yet whether all of them should be illegal.
+                            if beid != open_entity_mentions[-1]['beid']:
+                                testid = 'ill-nested-entities-warning'
+                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (beid, open_entity_mentions[-1]['beid'], open_entity_mentions[-1]['line'], str(open_entity_mentions))
+                                warn(testmessage, 'Warning', testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            # Try to find and close the entity whether or not it was well-nested.
+                            for i in reversed(range(len(open_entity_mentions))):
+                                if open_entity_mentions[i]['beid'] == beid:
+                                    mention_length = open_entity_mentions[i]['length']
+                                    mention_span = open_entity_mentions[i]['span']
+                                    head = open_entity_mentions[i]['head']
+                                    opening_line = open_entity_mentions[i]['line']
+                                    open_entity_mentions.pop(i)
+                                    break
+                            else:
+                                # If we did not find the entity to close, then the warning above was not enough and we have to make it a validation error.
+                                testid = 'ill-nested-entities'
+                                testmessage = "Cannot close entity '%s' because it was not found among open entities: %s" % (beid, str(open_entity_mentions))
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                return
                         # If this is a part of a discontinuous mention, update the information about the whole mention.
                         # We do this after reading the new part (and not when we see its opening bracket) so that nested
                         # discontinuous mentions of the same entity are possible.
@@ -2334,45 +2356,14 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
                         opening_bracket()
-                        ###!!! We now have a record in open_entity_mentions even for single-word parts, so we must destruct it here again.
-                        if len(open_entity_mentions) == 0 or beid != open_entity_mentions[-1]['beid'] or open_entity_mentions[-1]['length'] != 1:
-                            testid = 'internal-error'
-                            testmessage = "INTERNAL ERROR: single-word mention part not in open_entity_mentions."
-                            warn(testmessage, 'Internal', testlevel=0, testid=testid, nodelineno=sentence_line+iline)
-                        else:
-                            # Perform checks that can only be done after reading the entire continuous part of a mention.
-                            closing_bracket(1, [cols[ID]], head, sentence_line+iline)
-                            open_entity_mentions.pop()
+                        closing_bracket()
                     else: # b==1
                         if seen0:
                             testid = 'spurious-entity-statement'
                             testmessage = "All closing entity brackets must precede all opening entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen1 = True
-                        # Check only well-nestedness of brackets.
-                        if len(open_entity_mentions)==0:
-                            testid = 'ill-nested-entities'
-                            testmessage = "Cannot close entity '%s' because there are no open entities." % (beid)
-                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                        else:
-                            # If the closing bracket does not occur where expected, it is currently only a warning.
-                            # We have crossing mention spans in CorefUD 1.0 and it has not been decided yet whether all of them should be illegal.
-                            if beid != open_entity_mentions[-1]['beid']:
-                                testid = 'ill-nested-entities-warning'
-                                testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (beid, open_entity_mentions[-1]['beid'], open_entity_mentions[-1]['line'], str(open_entity_mentions))
-                                warn(testmessage, 'Warning', testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            # To prevent the subsequent error messages from growing infinitely, try to find and close the entity whether or not it was well-nested.
-                            for i in reversed(range(len(open_entity_mentions))):
-                                if open_entity_mentions[i]['beid'] == beid:
-                                    # Perform checks that can only be done after reading the entire continuous part of a mention.
-                                    closing_bracket(open_entity_mentions[i]['length'], open_entity_mentions[i]['span'], open_entity_mentions[i]['head'], open_entity_mentions[i]['line'])
-                                    open_entity_mentions.pop(i)
-                                    break
-                            else:
-                                # If we did not find the entity to close, then the warning above was not enough and we have to make it a validation error.
-                                testid = 'ill-nested-entities'
-                                testmessage = "Cannot close entity '%s' because it was not found among open entities: %s" % (beid, str(open_entity_mentions))
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        closing_bracket()
             # Now we are done with checking the 'Entity=' statement.
             # If there are also 'Bridge=' or 'SplitAnte=' statements, check them too.
             if len(bridge) > 0:
