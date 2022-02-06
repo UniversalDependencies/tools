@@ -2211,6 +2211,47 @@ def validate_misc_entity(comments, sentence):
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
                                     open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                        # Check all attributes of the entity, except those that must be examined at the closing bracket.
+                        if eid in entity_ids_other_documents:
+                            testid = 'entity-across-newdoc'
+                            testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
+                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        elif not eid in entity_ids_this_document:
+                            entity_ids_this_document[eid] = sentence_line+iline
+                        etype = ''
+                        identity = ''
+                        if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
+                            etype = attributes[entity_attribute_index['etype']]
+                            # For etype values tentatively approved for CorefUD 1.0, see
+                            # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
+                            if not re.match(r'^(person|place|organization|animal|plant|object|substance|time|abstract|event|other)?$', etype):
+                                testid = 'spurious-entity-type'
+                                testmessage = "Spurious entity type '%s'." % (etype)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                        if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
+                            identity = attributes[entity_attribute_index['identity']]
+                        # Check the form of the head index now. The value will be checked at the end of the mention, when we know the mention length.
+                        if 'head' in entity_attribute_index and len(attributes) >= entity_attribute_index['head']+1:
+                            if not re.match(r'^[1-9][0-9]*$', attributes[entity_attribute_index['head']]):
+                                testid = 'spurious-mention-head'
+                                testmessage = "Entity head index '%s' must be a non-zero-starting integer." % (attributes[entity_attribute_index['head']])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            head = int(attributes[entity_attribute_index['head']])
+                        # If this is the first mention of the entity, remember the values
+                        # of the attributes that should be identical at all mentions.
+                        if not eid in entity_types:
+                            entity_types[eid] = (etype, identity, sentence_line+iline)
+                        else:
+                            # All mentions of one entity (cluster) must have the same entity type.
+                            if etype != entity_types[eid][0]:
+                                testid = 'entity-type-mismatch'
+                                testmessage = "Entity '%s' cannot have type '%s' that does not match '%s' from the first mention on line %d." % (eid, etype, entity_types[eid][0], entity_types[eid][2])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
+                            if identity != entity_types[eid][1]:
+                                testid = 'entity-identity-mismatch'
+                                testmessage = "Entity '%s' cannot have identity '%s' that does not match '%s' from the first mention on line %d." % (eid, identity, entity_types[eid][1], entity_types[eid][2])
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         # Remember the line where (the current part of) the entity mention starts.
                         mention = {'beid': beid, 'line': sentence_line+iline, 'span': [cols[ID]], 'text': cols[FORM], 'length': 1, 'head': head, 'attrstring': attrstring_to_match}
                         open_entity_mentions.append(mention)
@@ -2274,46 +2315,6 @@ def validate_misc_entity(comments, sentence):
                             starting_mentions[eid] = True
                         opening_bracket()
                         #----------------------------------------------------------------------------------------------
-                        # Check all attributes of the entity, except those that must be examined at the closing bracket.
-                        if eid in entity_ids_other_documents:
-                            testid = 'entity-across-newdoc'
-                            testmessage = "Same entity id should not occur in multiple documents; '%s' first seen on line %d, before the last newdoc." % (eid, entity_ids_other_documents[eid])
-                            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                        elif not eid in entity_ids_this_document:
-                            entity_ids_this_document[eid] = sentence_line+iline
-                        etype = ''
-                        identity = ''
-                        if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
-                            etype = attributes[entity_attribute_index['etype']]
-                            # For etype values tentatively approved for CorefUD 1.0, see
-                            # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
-                            if not re.match(r'^(person|place|organization|animal|plant|object|substance|time|abstract|event|other)?$', etype):
-                                testid = 'spurious-entity-type'
-                                testmessage = "Spurious entity type '%s'." % (etype)
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                        if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
-                            identity = attributes[entity_attribute_index['identity']]
-                        if 'head' in entity_attribute_index and len(attributes) >= entity_attribute_index['head']+1:
-                            if not re.match(r'^[1-9][0-9]*$', attributes[entity_attribute_index['head']]):
-                                testid = 'spurious-mention-head'
-                                testmessage = "Entity head index '%s' must be a non-zero-starting integer." % (attributes[entity_attribute_index['head']])
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            head = int(attributes[entity_attribute_index['head']])
-                        # If this is the first mention of the entity, remember the values
-                        # of the attributes that should be identical at all mentions.
-                        if not eid in entity_types:
-                            entity_types[eid] = (etype, identity, sentence_line+iline)
-                        else:
-                            # All mentions of one entity (cluster) must have the same entity type.
-                            if etype != entity_types[eid][0]:
-                                testid = 'entity-type-mismatch'
-                                testmessage = "Entity '%s' cannot have type '%s' that does not match '%s' from the first mention on line %d." % (eid, etype, entity_types[eid][0], entity_types[eid][2])
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                            # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
-                            if identity != entity_types[eid][1]:
-                                testid = 'entity-identity-mismatch'
-                                testmessage = "Entity '%s' cannot have identity '%s' that does not match '%s' from the first mention on line %d." % (eid, identity, entity_types[eid][1], entity_types[eid][2])
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     # Now we know the beid, eid, as well as all other attributes.
                     # We can check the well-nestedness of brackets.
                     if b==0:
