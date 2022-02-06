@@ -2327,7 +2327,7 @@ def validate_misc_entity(comments, sentence):
                         else:
                             # Perform checks that can only be done after reading the entire continuous part of a mention.
                             closing_bracket(1, [cols[ID]], head, sentence_line+iline, open_entity_mentions[-1]['attrstring'])
-                            open_entity_mentions.pop(i)
+                            open_entity_mentions.pop()
                     else: # b==1
                         if seen0:
                             testid = 'spurious-entity-statement'
