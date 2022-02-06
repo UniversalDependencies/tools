@@ -2217,7 +2217,7 @@ def validate_misc_entity(comments, sentence):
 
                     #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the closing brackets of multi-node continuous parts.
-                    def closing_bracket(mention_length, mention_span, head, opening_line, attrstring_to_match):
+                    def closing_bracket(mention_length, mention_span, head, opening_line):
                         """
                         mention_length ... number of nodes in the continuous part we are closing now
                         mention_span ..... list of nodes in the continuous part we are closing now
