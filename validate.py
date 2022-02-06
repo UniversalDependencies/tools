@@ -2255,6 +2255,9 @@ def validate_misc_entity(comments, sentence):
                         # Remember the line where (the current part of) the entity mention starts.
                         mention = {'beid': beid, 'line': sentence_line+iline, 'span': [cols[ID]], 'text': cols[FORM], 'length': 1, 'head': head, 'attrstring': attrstring_to_match}
                         open_entity_mentions.append(mention)
+                        # The set of mentions starting at the current line will be needed later when checking Bridge and SplitAnte statements.
+                        if ipart == 1:
+                            starting_mentions[eid] = True
 
                     #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the closing brackets of multi-node continuous parts.
@@ -2310,11 +2313,6 @@ def validate_misc_entity(comments, sentence):
                                     open_discontinuous_mentions.pop(eidnpart)
                     #--------------------------------------------------------------------------------------------------------------------------------
 
-                    if b==0 or b==2:
-                        if ipart == 1:
-                            starting_mentions[eid] = True
-                        opening_bracket()
-                        #----------------------------------------------------------------------------------------------
                     # Now we know the beid, eid, as well as all other attributes.
                     # We can check the well-nestedness of brackets.
                     if b==0:
@@ -2328,12 +2326,14 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen0 = True
                         seen2 = False
+                        opening_bracket()
                     elif b==2:
                         if seen1 and not seen0:
                             testid = 'spurious-entity-statement'
                             testmessage = "If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
+                        opening_bracket()
                         ###!!! We now have a record in open_entity_mentions even for single-word parts, so we must destruct it here again.
                         if len(open_entity_mentions) == 0 or beid != open_entity_mentions[-1]['beid'] or open_entity_mentions[-1]['length'] != 1:
                             testid = 'internal-error'
