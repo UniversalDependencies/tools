@@ -2170,16 +2170,7 @@ def validate_misc_entity(comments, sentence):
                     if b==0 or b==2:
                         if ipart == 1:
                             starting_mentions[eid] = True
-                        #----------------------------------------------------------------------------------------------
-                        # Check the opening bracket of a part of a discontinuous mention.
-                        if npart > 1:
-                            # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
-                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
-                            # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
-                            attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
-                            # We will update information about the discontinuous mention whose part just started
-                            # only when we encounter the closing bracket. That way we enable nested discontinuous
-                            # mentions of the same entity.
+                        opening_bracket()
                         #----------------------------------------------------------------------------------------------
                         # Check all attributes of the entity, except those that must be examined at the closing bracket.
                         if eid in entity_ids_other_documents:
@@ -2222,6 +2213,32 @@ def validate_misc_entity(comments, sentence):
                                 testmessage = "Entity '%s' cannot have identity '%s' that does not match '%s' from the first mention on line %d." % (eid, identity, entity_types[eid][1], entity_types[eid][2])
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
 
+                    # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
+                    # We assume that we have already parsed beid and established whether this is a part of a discontinuous mention.
+                    def opening_bracket():
+                        """
+                        We do not need parameters, as we are at the opening bracket and everything we know about the part so far
+                        is readily available in the outer function's variables.
+                        """
+                        # If this is a part of a discontinuous mention, remember the attribute string.
+                        # At the beginning of each part, we will check that its attribute string is identical to the first part.
+                        if npart > 1 and ipart == 1:
+                            # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
+                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
+                            # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
+                            attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
+                            # If this is the first part, create a new record for the mention in the global dictionary.
+                            # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
+                            # The length and the span of the mention will be updated when we encounter the closing bracket of the current part.
+                            discontinuous_mention = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                            if eidnpart in open_discontinuous_mentions:
+                                open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
+                            else:
+                                open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                        # Remember the line where (the current part of) the entity mention starts.
+                        mention = {'beid': beid, 'line': sentence_line+iline, 'span': [cols[ID]], 'text': cols[FORM], 'length': 1, 'head': head, 'attrstring': attrstring_to_match}
+                        open_entity_mentions.append(mention)
+
                     # The code that we will have to execute at single-node continuous parts and at the closing brackets of multi-node continuous parts.
                     def closing_bracket(mention_length, mention_span, head, opening_line, attrstring_to_match):
                         """
@@ -2235,16 +2252,8 @@ def validate_misc_entity(comments, sentence):
                         # We do this after reading the new part (and not when we see its opening bracket) so that nested
                         # discontinuous mentions of the same entity are possible.
                         if npart > 1:
-                            # If this is the first part, create a new record for the mention in the global dictionary.
-                            # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
-                            if ipart == 1:
-                                discontinuous_mention = {'last_ipart': 1, 'npart': npart, 'line': opening_line, 'attributes': attrstring_to_match, 'length': mention_length, 'span': mention_span}
-                                if eidnpart in open_discontinuous_mentions:
-                                    open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
-                                else:
-                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             # If this is other than the first part, update the attributes that have to be updated after each part.
-                            else:
+                            if ipart > 1:
                                 if eidnpart in open_discontinuous_mentions:
                                     discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
                                     if ipart != discontinuous_mention['last_ipart']+1:
@@ -2304,17 +2313,21 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen0 = True
                         seen2 = False
-                        # Remember the line where the entity mention starts.
-                        mention = {'beid': beid, 'line': sentence_line+iline, 'span': [cols[ID]], 'text': cols[FORM], 'length': 1, 'head': head, 'attrstring': attrstring_to_match}
-                        open_entity_mentions.append(mention)
                     elif b==2:
                         if seen1 and not seen0:
                             testid = 'spurious-entity-statement'
                             testmessage = "If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '%s'." % (entity[0])
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                         seen2 = True
-                        # Perform checks that can only be done after reading the entire continuous part of a mention.
-                        closing_bracket(1, [cols[ID]], head, sentence_line+iline, attrstring_to_match)
+                        ###!!! We now have a record in open_entity_mentions even for single-word parts, so we must destruct it here again.
+                        if len(open_entity_mentions) == 0 or beid != open_entity_mentions[-1]['beid'] or open_entity_mentions[-1]['length'] != 1:
+                            testid = 'internal-error'
+                            testmessage = "INTERNAL ERROR: single-word mention part not in open_entity_mentions."
+                            warn(testmessage, 'Internal', testlevel=0, testid=testid, nodelineno=sentence_line+iline)
+                        else:
+                            # Perform checks that can only be done after reading the entire continuous part of a mention.
+                            closing_bracket(1, [cols[ID]], head, sentence_line+iline, attrstring_to_match)
+                            open_entity_mentions.pop(i)
                     else: # b==1
                         if seen0:
                             testid = 'spurious-entity-statement'
