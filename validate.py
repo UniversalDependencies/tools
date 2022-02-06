@@ -2167,6 +2167,7 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     head = 0
 
+                    #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
                     # We assume that we have already parsed beid and established whether this is a part of a discontinuous mention.
                     def opening_bracket():
@@ -2177,23 +2178,44 @@ def validate_misc_entity(comments, sentence):
                         attrstring_to_match = ''
                         # If this is a part of a discontinuous mention, remember the attribute string.
                         # At the beginning of each part, we will check that its attribute string is identical to the first part.
-                        if npart > 1 and ipart == 1:
-                            # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
-                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
-                            # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
-                            attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
-                            # If this is the first part, create a new record for the mention in the global dictionary.
-                            # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
-                            # The length and the span of the mention will be updated when we encounter the closing bracket of the current part.
-                            discontinuous_mention = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
-                            if eidnpart in open_discontinuous_mentions:
-                                open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
+                        if npart > 1:
+                            if ipart == 1:
+                                # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
+                                attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
+                                # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
+                                attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
+                                # If this is the first part, create a new record for the mention in the global dictionary.
+                                # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
+                                # The length and the span of the mention will be updated when we encounter the closing bracket of the current part.
+                                discontinuous_mention = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                                if eidnpart in open_discontinuous_mentions:
+                                    open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
+                                else:
+                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             else:
-                                open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                if eidnpart in open_discontinuous_mentions:
+                                    discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                                    if ipart != discontinuous_mention['last_ipart']+1:
+                                        testid = 'misplaced-mention-part'
+                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, discontinuous_mention['last_ipart'], discontinuous_mention['npart'], discontinuous_mention['line'])
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                        # We will update last_ipart at closing bracket, i.e., after the current part has been entirely processed.
+                                        # Otherwise nested discontinuous mentions might wrongly assess where they belong.
+                                    elif attrstring_to_match != discontinuous_mention['attributes']:
+                                        testid = 'mention-attribute-mismatch'
+                                        testmessage = "Attribute mismatch of discontinuous mention: current part has '%s', first part '%s' was at line %d." % (attrstring_to_match, discontinuous_mention['attributes'], discontinuous_mention['line'])
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                else:
+                                    testid = 'misplaced-mention-part'
+                                    testmessage = "Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                                    discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                         # Remember the line where (the current part of) the entity mention starts.
                         mention = {'beid': beid, 'line': sentence_line+iline, 'span': [cols[ID]], 'text': cols[FORM], 'length': 1, 'head': head, 'attrstring': attrstring_to_match}
                         open_entity_mentions.append(mention)
 
+                    #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the closing brackets of multi-node continuous parts.
                     def closing_bracket(mention_length, mention_span, head, opening_line, attrstring_to_match):
                         """
@@ -2211,20 +2233,12 @@ def validate_misc_entity(comments, sentence):
                             if ipart > 1:
                                 if eidnpart in open_discontinuous_mentions:
                                     discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
-                                    if ipart != discontinuous_mention['last_ipart']+1:
-                                        testid = 'misplaced-mention-part'
-                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, discontinuous_mention['last_ipart'], discontinuous_mention['npart'], discontinuous_mention['line'])
-                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                    elif attrstring_to_match != discontinuous_mention['attributes']:
-                                        testid = 'mention-attribute-mismatch'
-                                        testmessage = "Attribute mismatch of discontinuous mention: current part '%s' starts at line %d, first part '%s' was at line %d." % (attrstring_to_match, opening_line, discontinuous_mention['attributes'], discontinuous_mention['line'])
-                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     discontinuous_mention['last_ipart'] = ipart
                                     discontinuous_mention['length'] += mention_length
                                     discontinuous_mention['span'] += mention_span
-                                else:
+                                else: ###!!! This should have been taken care of at the opening bracket. Once we remove it, we can also remove attrstring_to_match as a parameter from this function.
                                     testid = 'misplaced-mention-part'
-                                    testmessage = "Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
+                                    testmessage = "INTERNAL ERROR: Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                     discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': opening_line, 'attributes': attrstring_to_match, 'length': mention_length, 'span': mention_span}
                                     open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
@@ -2254,6 +2268,7 @@ def validate_misc_entity(comments, sentence):
                                     open_discontinuous_mentions[eidnpart].pop()
                                 else:
                                     open_discontinuous_mentions.pop(eidnpart)
+                    #--------------------------------------------------------------------------------------------------------------------------------
 
                     if b==0 or b==2:
                         if ipart == 1:
