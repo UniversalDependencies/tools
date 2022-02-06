@@ -2165,7 +2165,6 @@ def validate_misc_entity(comments, sentence):
                             testid = 'spurious-entity-id'
                             testmessage = "Entity id '%s' contains square brackets but does not have the form used in discontinuous mentions." % (beid)
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    attrstring_to_match = ''
                     head = 0
 
                     # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
@@ -2175,6 +2174,7 @@ def validate_misc_entity(comments, sentence):
                         We do not need parameters, as we are at the opening bracket and everything we know about the part so far
                         is readily available in the outer function's variables.
                         """
+                        attrstring_to_match = ''
                         # If this is a part of a discontinuous mention, remember the attribute string.
                         # At the beginning of each part, we will check that its attribute string is identical to the first part.
                         if npart > 1 and ipart == 1:
@@ -2326,7 +2326,7 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, 'Internal', testlevel=0, testid=testid, nodelineno=sentence_line+iline)
                         else:
                             # Perform checks that can only be done after reading the entire continuous part of a mention.
-                            closing_bracket(1, [cols[ID]], head, sentence_line+iline, attrstring_to_match)
+                            closing_bracket(1, [cols[ID]], head, sentence_line+iline, open_entity_mentions[-1]['attrstring'])
                             open_entity_mentions.pop(i)
                     else: # b==1
                         if seen0:
