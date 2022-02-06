@@ -2246,17 +2246,18 @@ def validate_misc_entity(comments, sentence):
                             # If this is other than the first part, update the attributes that have to be updated after each part.
                             else:
                                 if eidnpart in open_discontinuous_mentions:
-                                    if ipart != open_discontinuous_mentions[eidnpart][-1]['last_ipart']+1:
+                                    discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                                    if ipart != discontinuous_mention['last_ipart']+1:
                                         testid = 'misplaced-mention-part'
-                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, open_discontinuous_mentions[eidnpart][-1]['last_ipart'], open_discontinuous_mentions[eidnpart][-1]['npart'], open_discontinuous_mentions[eidnpart][-1]['line'])
+                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, discontinuous_mention['last_ipart'], discontinuous_mention['npart'], discontinuous_mention['line'])
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                    elif attrstring_to_match != open_discontinuous_mentions[eidnpart][-1]['attributes']:
+                                    elif attrstring_to_match != discontinuous_mention['attributes']:
                                         testid = 'mention-attribute-mismatch'
-                                        testmessage = "Attribute mismatch of discontinuous mention: current part '%s', previous part '%s'." % (attrstring_to_match, open_discontinuous_mentions[eidnpart][-1]['attributes'])
+                                        testmessage = "Attribute mismatch of discontinuous mention: current part '%s' starts at line %d, first part '%s' was at line %d." % (attrstring_to_match, opening_line, discontinuous_mention['attributes'], discontinuous_mention['line'])
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                    open_discontinuous_mentions[eidnpart][-1]['last_ipart'] = ipart
-                                    open_discontinuous_mentions[eidnpart][-1]['length'] += mention_length
-                                    open_discontinuous_mentions[eidnpart][-1]['span'] += mention_span
+                                    discontinuous_mention['last_ipart'] = ipart
+                                    discontinuous_mention['length'] += mention_length
+                                    discontinuous_mention['span'] += mention_span
                                 else:
                                     testid = 'misplaced-mention-part'
                                     testmessage = "Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
