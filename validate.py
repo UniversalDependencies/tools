@@ -2223,28 +2223,27 @@ def validate_misc_entity(comments, sentence):
                         mention_span ..... list of nodes in the continuous part we are closing now
                         head ............. head index as specified at the opening bracket of the part we are closing now
                         opening_line ..... for error messages: line where the corresponding opening bracket occurred
-                        attrstring_to_match ... if this is the first part of a discontinuous mention, we need to store its attributes (to be checked at subsequent parts)
                         """
                         # If this is a part of a discontinuous mention, update the information about the whole mention.
                         # We do this after reading the new part (and not when we see its opening bracket) so that nested
                         # discontinuous mentions of the same entity are possible.
                         if npart > 1:
-                            # If this is other than the first part, update the attributes that have to be updated after each part.
-                            if ipart > 1:
-                                if eidnpart in open_discontinuous_mentions:
-                                    discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
-                                    discontinuous_mention['last_ipart'] = ipart
-                                    discontinuous_mention['length'] += mention_length
-                                    discontinuous_mention['span'] += mention_span
-                                else: ###!!! This should have been taken care of at the opening bracket. Once we remove it, we can also remove attrstring_to_match as a parameter from this function.
-                                    testid = 'misplaced-mention-part'
-                                    testmessage = "INTERNAL ERROR: Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                    discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': opening_line, 'attributes': attrstring_to_match, 'length': mention_length, 'span': mention_span}
-                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
-                                # Update mention_length and mention_span to reflect the whole span up to this point rather than just the last part.
-                                mention_length = open_discontinuous_mentions[eidnpart][-1]['length']
-                                mention_span = open_discontinuous_mentions[eidnpart][-1]['span']
+                            # Update the attributes that have to be updated after each part.
+                            if eidnpart in open_discontinuous_mentions:
+                                discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                                discontinuous_mention['last_ipart'] = ipart
+                                discontinuous_mention['length'] += mention_length
+                                discontinuous_mention['span'] += mention_span
+                            else:
+                                # This should have been taken care of at the opening bracket.
+                                testid = 'internal-error'
+                                testmessage = "INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in open_discontinuous_mentions."
+                                warn(testmessage, 'Internal', testlevel=0, testid=testid, nodelineno=sentence_line+iline)
+                                discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': opening_line, 'attributes': '', 'length': mention_length, 'span': mention_span}
+                                open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                            # Update mention_length and mention_span to reflect the whole span up to this point rather than just the last part.
+                            mention_length = open_discontinuous_mentions[eidnpart][-1]['length']
+                            mention_span = open_discontinuous_mentions[eidnpart][-1]['span']
                         # We need to know the length (number of nodes) of the mention to check whether the head attribute is within limits.
                         # We need to know the span (list of nodes) of the mention to check that no two mentions have the same span.
                         # We only check these requirements after the last part of the discontinuous span (or after the single part of a continuous one).
@@ -2341,7 +2340,7 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, 'Internal', testlevel=0, testid=testid, nodelineno=sentence_line+iline)
                         else:
                             # Perform checks that can only be done after reading the entire continuous part of a mention.
-                            closing_bracket(1, [cols[ID]], head, sentence_line+iline, open_entity_mentions[-1]['attrstring'])
+                            closing_bracket(1, [cols[ID]], head, sentence_line+iline)
                             open_entity_mentions.pop()
                     else: # b==1
                         if seen0:
@@ -2365,7 +2364,7 @@ def validate_misc_entity(comments, sentence):
                             for i in reversed(range(len(open_entity_mentions))):
                                 if open_entity_mentions[i]['beid'] == beid:
                                     # Perform checks that can only be done after reading the entire continuous part of a mention.
-                                    closing_bracket(open_entity_mentions[i]['length'], open_entity_mentions[i]['span'], open_entity_mentions[i]['head'], open_entity_mentions[i]['line'], open_entity_mentions[i]['attrstring'])
+                                    closing_bracket(open_entity_mentions[i]['length'], open_entity_mentions[i]['span'], open_entity_mentions[i]['head'], open_entity_mentions[i]['line'])
                                     open_entity_mentions.pop(i)
                                     break
                             else:
