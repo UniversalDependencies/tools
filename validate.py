@@ -2183,7 +2183,7 @@ def validate_misc_entity(comments, sentence):
                                 # If this is the first part, create a new record for the mention in the global dictionary.
                                 # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
                                 # The length and the span of the mention will be updated when we encounter the closing bracket of the current part.
-                                discontinuous_mention = {'last_ipart': 1, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                                discontinuous_mention = {'last_ipart': 1, 'npart': npart, 'first_part_line': sentence_line+iline, 'last_part_line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
                                 if eidnpart in open_discontinuous_mentions:
                                     open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
                                 else:
@@ -2193,19 +2193,19 @@ def validate_misc_entity(comments, sentence):
                                     discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
                                     if ipart != discontinuous_mention['last_ipart']+1:
                                         testid = 'misplaced-mention-part'
-                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, discontinuous_mention['last_ipart'], discontinuous_mention['npart'], discontinuous_mention['line'])
+                                        testmessage = "Unexpected part of discontinuous mention '%s': last part was '%d/%d' on line %d." % (beid, discontinuous_mention['last_ipart'], discontinuous_mention['npart'], discontinuous_mention['last_part_line'])
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                         # We will update last_ipart at closing bracket, i.e., after the current part has been entirely processed.
                                         # Otherwise nested discontinuous mentions might wrongly assess where they belong.
                                     elif attrstring_to_match != discontinuous_mention['attributes']:
                                         testid = 'mention-attribute-mismatch'
-                                        testmessage = "Attribute mismatch of discontinuous mention: current part has '%s', first part '%s' was at line %d." % (attrstring_to_match, discontinuous_mention['attributes'], discontinuous_mention['line'])
+                                        testmessage = "Attribute mismatch of discontinuous mention: current part has '%s', first part '%s' was at line %d." % (attrstring_to_match, discontinuous_mention['attributes'], discontinuous_mention['first_part_line'])
                                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                                 else:
                                     testid = 'misplaced-mention-part'
                                     testmessage = "Unexpected part of discontinuous mention '%s': this is part %d but we do not have information about the previous parts." % (beid, ipart)
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                                    discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
+                                    discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'first_part_line': sentence_line+iline, 'last_part_line': sentence_line+iline, 'attributes': attrstring_to_match, 'length': 0, 'span': []}
                                     open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                         # Check all attributes of the entity, except those that must be examined at the closing bracket.
                         if eid in entity_ids_other_documents:
@@ -2300,6 +2300,7 @@ def validate_misc_entity(comments, sentence):
                             if eidnpart in open_discontinuous_mentions:
                                 discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
                                 discontinuous_mention['last_ipart'] = ipart
+                                discontinuous_mention['last_part_line'] = opening_line
                                 discontinuous_mention['length'] += mention_length
                                 discontinuous_mention['span'] += mention_span
                             else:
@@ -2307,7 +2308,7 @@ def validate_misc_entity(comments, sentence):
                                 testid = 'internal-error'
                                 testmessage = "INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in open_discontinuous_mentions."
                                 warn(testmessage, 'Internal', testlevel=0, testid=testid, nodelineno=sentence_line+iline)
-                                discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'line': opening_line, 'attributes': '', 'length': mention_length, 'span': mention_span}
+                                discontinuous_mention = {'last_ipart': ipart, 'npart': npart, 'first_part_line': opening_line, 'last_part_line': opening_line, 'attributes': '', 'length': mention_length, 'span': mention_span}
                                 open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             # Update mention_length and mention_span to reflect the whole span up to this point rather than just the last part.
                             mention_length = open_discontinuous_mentions[eidnpart][-1]['length']
