@@ -2340,12 +2340,13 @@ def validate_misc_entity(comments, sentence):
                             # sentences but we do not expect cross-sentence mentions to be frequent.
                             myset = set(mention_span)
                             # Check whether any other mention of the same entity has span that crosses the current one.
-                            for m in entity_mention_spans[eid][sentid]:
-                                ms = entity_mention_spans[eid][sentid][m]
-                                if ms.intersection(myset) and not ms.issubset(myset) and not myset.issubset(ms):
-                                    testid = 'crossing-mentions-same-entity'
-                                    testmessage = "Mentions of entity '%s' have crossing spans: '%s' vs. '%s'." % (eid, m, str(mention_span))
-                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            if eid in entity_mention_spans and sentid in entity_mention_spans[eid]:
+                                for m in entity_mention_spans[eid][sentid]:
+                                    ms = entity_mention_spans[eid][sentid][m]
+                                    if ms.intersection(myset) and not ms.issubset(myset) and not myset.issubset(ms):
+                                        testid = 'crossing-mentions-same-entity'
+                                        testmessage = "Mentions of entity '%s' have crossing spans: '%s' vs. '%s'." % (eid, m, str(mention_span))
+                                        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             entity_mention_spans[eid][sentid][str(mention_span)] = myset
                         # At the end of the last part of a discontinuous mention, remove the information about the mention.
                         if npart > 1 and ipart == npart:
