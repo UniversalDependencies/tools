@@ -2491,7 +2491,9 @@ def validate_misc_entity(comments, sentence):
         # Close the mentions forcibly. Otherwise one omission would cause the error messages to to explode because the words would be collected from the remainder of the file.
         open_discontinuous_mentions = {}
     # Since we only test mentions within one sentence at present, we do not have to carry all mention spans until the end of the corpus.
-    entity_mention_spans[eid].pop(sentid)
+    for eid in entity_mention_spans:
+        if sentid in entity_mention_spans[eid]:
+            entity_mention_spans[eid].pop(sentid)
 
 
 
