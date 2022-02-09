@@ -2342,7 +2342,7 @@ def validate_misc_entity(comments, sentence):
                             # Check whether any other mention of the same entity has span that crosses the current one.
                             for m in entity_mention_spans[eid][sentid]:
                                 ms = entity_mention_spans[eid][sentid][m]
-                                if ms.intersection(myset) and !ms.issubset(myset) and !myset.issubset(ms):
+                                if ms.intersection(myset) and not ms.issubset(myset) and not myset.issubset(ms):
                                     testid = 'crossing-mentions-same-entity'
                                     testmessage = "Mentions of entity '%s' have crossing spans: '%s' vs. '%s'." % (eid, m, str(mention_span))
                                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
