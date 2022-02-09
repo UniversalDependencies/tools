@@ -2420,8 +2420,12 @@ def validate_misc_entity(comments, sentence):
                         if match:
                             srceid = match.group(1)
                             tgteid = match.group(2)
-                            if not tgteid in starting_mentions:
-                                testid = 'misplaced-bridge-statement'
+                            if srceid == tgteid:
+                                testid = 'spurious-splitante-relation'
+                                testmessage = "SplitAnte must not point from an entity to itself: '%s'." % (srceid+'<'+tgteid)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            elif not tgteid in starting_mentions:
+                                testid = 'misplaced-splitante-statement'
                                 testmessage = "SplitAnte relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (a, tgteid)
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             if srceid+'<'+tgteid in srctgt:
