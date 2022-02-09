@@ -48,6 +48,7 @@ entity_ids_this_document = {}
 entity_ids_other_documents = {}
 entity_bridge_relations = {} # key: srceid<tgteid pair; value: type of the entity (may be empty)
 entity_split_antecedents = {} # key: tgteid; value: sorted list of srceids, serialized to string
+entity_mention_spans = {} # key: [eid][sentid][str(mention_span)]; value: set of node ids
 error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
@@ -1959,12 +1960,15 @@ def validate_misc_entity(comments, sentence):
     global entity_ids_other_documents
     global entity_bridge_relations # key: srceid<tgteid pair; value: type of the entity (may be empty)
     global entity_split_antecedents # key: tgteid; value: sorted list of srceids, serialized to string
+    global entity_mention_spans # key: [eid][sentid][str(mention_span)]; value: set of node ids
     testlevel = 6
     testclass = 'Coref'
     iline = 0
+    sentid = ''
     for c in comments:
         global_entity_match = global_entity_re.match(c)
         newdoc_match = newdoc_re.match(c)
+        sentid_match = sentid_re.match(c)
         if global_entity_match:
             # As a global declaration, global.Entity is expected only once per file.
             # However, we may be processing multiple files or people may have created
@@ -2027,6 +2031,8 @@ def validate_misc_entity(comments, sentence):
             for eid in entity_ids_this_document:
                 entity_ids_other_documents[eid] = entity_ids_this_document[eid]
             entity_ids_this_document = {}
+        elif sentid_match:
+            sentid = sentid_match.group(1)
         iline += 1
     iline = 0
     for cols in sentence:
@@ -2329,6 +2335,18 @@ def validate_misc_entity(comments, sentence):
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             else:
                                 ending_mentions[ending_mention_key] = beid
+                            # Remember the span of the current mention so that we can later check whether it crosses the span of another mention.
+                            # Use the current sentence id to partially qualify the node ids. It will not work well for mentions that span multiple
+                            # sentences but we do not expect cross-sentence mentions to be frequent.
+                            myset = set(mention_span)
+                            # Check whether any other mention of the same entity has span that crosses the current one.
+                            for m in entity_mention_spans[eid][sentid]:
+                                ms = entity_mention_spans[eid][sentid][m]
+                                if ms.intersection(myset) and !ms.issubset(myset) and !myset.issubset(ms):
+                                    testid = 'crossing-mentions-same-entity'
+                                    testmessage = "Mentions of entity '%s' have crossing spans: '%s' vs. '%s'." % (eid, m, str(mention_span))
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+                            entity_mention_spans[eid][sentid][str(mention_span)] = myset
                         # At the end of the last part of a discontinuous mention, remove the information about the mention.
                         if npart > 1 and ipart == npart:
                             if eidnpart in open_discontinuous_mentions:
