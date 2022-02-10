@@ -260,8 +260,8 @@ def validate_unicode_normalization(text):
         testmessage = "Unicode not normalized: %s.character[%d] is %s, should be %s." % (COLNAMES[firsti], firstj, inpfirst, nfcfirst)
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
 
-whitespace_re=re.compile('.*\s',re.U)
-whitespace2_re=re.compile('.*\s\s', re.U)
+whitespace_re = re.compile('.*\s', re.U)
+whitespace2_re = re.compile('.*\s\s', re.U)
 def validate_cols_level1(cols):
     """
     Tests that can run on a single line and pertain only to the CoNLL-U file
@@ -309,7 +309,7 @@ def validate_cols_level1(cols):
 
 ##### Tests applicable to the whole tree
 
-interval_re=re.compile('^([0-9]+)-([0-9]+)$',re.U)
+interval_re = re.compile('^([0-9]+)-([0-9]+)$', re.U)
 def validate_ID_sequence(tree):
     """
     Validates that the ID sequence is correctly formed.
@@ -2040,10 +2040,12 @@ def validate_misc_entity(comments, sentence):
             # This error has been reported elsewhere but we cannot check MISC now.
             return
         # Add the current word to all currently open mentions. We will use it in error messages.
-        for m in open_entity_mentions:
-            m['span'].append(cols[ID])
-            m['text'] += ' '+cols[FORM]
-            m['length'] += 1
+        # Do this for regular and empty nodes but not for multi-word-token lines.
+        if not '-' in cols[ID]:
+            for m in open_entity_mentions:
+                m['span'].append(cols[ID])
+                m['text'] += ' '+cols[FORM]
+                m['length'] += 1
         misc = cols[MISC].split('|')
         entity = [x for x in misc if re.match(r'^Entity=', x)]
         bridge = [x for x in misc if re.match(r'^Bridge=', x)]
