@@ -380,6 +380,7 @@
 },
 "gub": {
 "iko": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and the main verb in present tense", "deficient": "", "example": "ur [iko] a'e", "exampleen": "he is coming", "comment": ""}], "status": "documented", "lastchanged": "2020-12-21-17-25-45", "lastchanger": "@l12maro"},
+"in": {"functions": [{"function": "", "rule": "combination of the auxiliary and a conjugated verb", "deficient": "", "example": "iʔi zekaipo zawaruhu [in] ɨwɨkwar pupe wanupe", "exampleen": "said the jaguar while sitting inside the hole", "comment": ""}], "status": "documented", "lastchanged": "2022-02-11-12-24-55", "lastchanger": "l12maro"},
 "muwà": {"functions": [{"function": "Aspect=Prog", "rule": "After main verb", "deficient": "", "example": "upɨhɨk [imuwà]", "exampleen": "He/She picked it up", "comment": ""}], "status": "documented", "lastchanged": "2021-12-15-18-14-04", "lastchanger": "l12maro"}
 },
 "gun": {
