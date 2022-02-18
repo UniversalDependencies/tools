@@ -1355,7 +1355,9 @@ def validate_upos_vs_deprel(id, tree):
         testmessage = "'case' should not be '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
-    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
+    ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
+    ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
+    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", cols[UPOS]) and not 'fixed' in childrels:
         testid = 'rel-upos-mark'
         testmessage = "'mark' should not be '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
