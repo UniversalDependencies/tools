@@ -32,6 +32,7 @@ curr_line = 0 # Current line in the input file
 comment_start_line = 0 # The line in the input file on which the current sentence starts, including sentence-level comments.
 sentence_line = 0 # The line in the input file on which the current sentence starts (the first node/token line, skipping comments)
 sentence_id = None # The most recently read sentence id
+line_of_first_morpho_feature = None # features are optional, but if the treebank has features, then some become required
 line_of_first_enhanced_graph = None
 line_of_first_tree_without_enhanced_graph = None
 line_of_first_enhancement = None # any difference between non-empty DEPS and HEAD:DEPREL
@@ -686,12 +687,16 @@ def validate_features(cols, tag_sets, args):
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
     global warn_on_undoc_feats
+    global line_of_first_morpho_feature
+    global curr_line
     testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
-    feats=cols[FEATS]
+    feats = cols[FEATS]
     if feats == '_':
         return True
+    if not line_of_first_morpho_feature:
+        line_of_first_morpho_feature = curr_line
     # List of permited features is language-specific.
     # The current token may be in a different language due to code switching.
     lang = args.lang
@@ -1644,6 +1649,21 @@ def validate_goeswith_span(id, tree):
         if nospaceafter:
             testid = 'goeswith-nospace'
             testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace"
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
+        # This is not about the span of the interrupted word, but since we already
+        # know that we are at the head of a goeswith word, let's do it here, too.
+        # Every goeswith parent should also have Typo=Yes. However, this is not
+        # required if the treebank does not have features at all.
+        ###!!! At present, this error is reported only if it occurs after at least
+        ###!!! one morphological feature. In the unlikely case that this would be
+        ###!!! the first feature in the corpus, the error is not reported. We would
+        ###!!! have to remember that we have seen a goeswith parent without Typo=Yes,
+        ###!!! and report the error later if we encounter a feature.
+        testclass = 'Morpho'
+        global line_of_first_morpho_feature
+        if line_of_first_morpho_feature and not 'Typo=Yes' in tree['nodes'][id][FEATS].split('|'):
+            testid = 'goeswith-missing-typo'
+            testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_goeswith_morphology_and_edeps(id, tree):
