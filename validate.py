@@ -1664,7 +1664,7 @@ def validate_goeswith_morphology_and_edeps(id, tree):
             testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
         if tree['nodes'][id][FEATS] != '_':
-            testid = 'goeswith-upos'
+            testid = 'goeswith-feats'
             testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
         testclass = 'Enhanced'
