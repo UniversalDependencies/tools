@@ -1646,6 +1646,33 @@ def validate_goeswith_span(id, tree):
             testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace"
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
+def validate_goeswith_morphology_and_edeps(id, tree):
+    """
+    If a node has the 'goeswith' incoming relation, it is a non-first part of
+    a mistakenly interrupted word. The lemma, upos tag and morphological features
+    of the word should be annotated at the first part, not here.
+    """
+    testlevel = 3
+    if lspec2ud(tree['nodes'][id][DEPREL]) == 'goeswith':
+        testclass = 'Morpho'
+        if tree['nodes'][id][LEMMA] != '_':
+            testid = 'goeswith-lemma'
+            testmessage = "The lemma of a 'goeswith'-connected word must be annotated only at the first part."
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
+        if tree['nodes'][id][UPOS] != 'X':
+            testid = 'goeswith-upos'
+            testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
+        if tree['nodes'][id][FEATS] != '_':
+            testid = 'goeswith-upos'
+            testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
+        testclass = 'Enhanced'
+        if tree['nodes'][id][DEPS] != '_' and tree['nodes'][id][DEPS] != tree['nodes'][id][HEAD]+':'+tree['nodes'][id][DEPREL]:
+            testid = 'goeswith-edeps'
+            testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
+
 def validate_fixed_span(id, tree):
     """
     Like with goeswith, the fixed relation should not in general skip words that
@@ -1708,6 +1735,7 @@ def validate_annotation(tree):
         validate_functional_leaves(id, tree)
         validate_fixed_span(id, tree)
         validate_goeswith_span(id, tree)
+        validate_goeswith_morphology_and_edeps(id, tree)
         validate_projective_punctuation(id, tree)
 
 def validate_enhanced_annotation(graph):
