@@ -834,7 +834,7 @@ def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid,
         else:
             if not testid in delayed_feature_errors:
                 delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
-            delayed_feature_errors[testid][occurrences].append({'nodeid': nodeid, 'nodelineno': nodelineno})
+            delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'nodelineno': nodelineno})
 
 def validate_upos(cols, tag_sets):
     if UPOS >= len(cols):
