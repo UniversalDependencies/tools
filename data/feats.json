@@ -615,6 +615,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1064}, "VERB": {"Conv": 102, "Fin": 5400, "Inf": 242, "Part": 123}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 466, "Pass": 599}, "VERB": {"Act": 4073, "Pass": 1794}}}
 },
+"eme": {
+
+},
 "en": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "CCONJ": {"Yes": 1}, "DET": {"Yes": 1}, "INTJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PART": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2021-05-02-19-24-09", "lastchanger": "dan-zeman"},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Acc", "Nom"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Nom": 265}, "ADP": {"Nom": 37}, "ADV": {"Nom": 128}, "AUX": {"Nom": 2}, "CCONJ": {"Nom": 16}, "DET": {"Nom": 12}, "INTJ": {"Nom": 2}, "NOUN": {"Nom": 458}, "NUM": {"Nom": 6}, "PART": {"Nom": 1}, "PRON": {"Acc": 5649, "Nom": 20069}, "PROPN": {"Nom": 143}, "SCONJ": {"Nom": 214}, "VERB": {"Nom": 312}, "X": {"Nom": 2}}},
