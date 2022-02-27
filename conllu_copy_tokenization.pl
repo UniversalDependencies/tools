@@ -41,6 +41,7 @@ my $sli = 0; # src line number
 my $tboff = 0;
 my $tbuffer = '';
 my $sbuffer = '';
+my $lasttgtid; # last regular node (inside or outside MWT) id in tgt, that was actually printed
 while(my $tgtline = <TGT>)
 {
     $tli++;
@@ -102,8 +103,13 @@ while(my $tgtline = <TGT>)
             ###!!! This actually means that empty nodes may now be out of place!
             # The simplest case: There is one line on each side. Just take the
             # target line, i.e., do nothing now.
+            if(scalar(@srclines) == 1 && scalar(@tgtlines) == 1)
+            {
+                my @tf = split(/\t/, $tgtlines[0]);
+                $lasttgtid = $tf[0]; ###!!! But we should also modify $tf[0] if there were token split previously in this sentence!
+            }
             # If there are multiple source lines, copy them to the target.
-            if(!(scalar(@srclines) == 1 && scalar(@tgtlines) == 1))
+            else
             {
                 # Before copying the source line to target, copy annotation
                 # that should be preserved from target to source.
@@ -121,6 +127,7 @@ while(my $tgtline = <TGT>)
                         {
                             my $srcline = $srclines[$i];
                             my @sf = split(/\t/, $srcline);
+                            $sf[0] = ++$lasttgtid; # id ###!!! what about multi-word tokens?
                             $sf[2] = $tf[2]; # lemma
                             $sf[3] = $tf[3]; # upos
                             $sf[4] = $tf[4]; # xpos
@@ -139,6 +146,7 @@ while(my $tgtline = <TGT>)
                                 $sf[7] = 'dep'; # deprel
                                 $sf[8] = "$srcid0:dep"; # edeps
                             }
+                            $srclines[$i] = join("\t", @sf);
                         }
                         last;
                     }
