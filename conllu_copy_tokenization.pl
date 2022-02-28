@@ -102,11 +102,20 @@ while(my $tgtline = <TGT>)
             # empty nodes, which have been discarded.
             ###!!! This actually means that empty nodes may now be out of place!
             # The simplest case: There is one line on each side. Just take the
-            # target line, i.e., do nothing now.
+            # target line.
             if(scalar(@srclines) == 1 && scalar(@tgtlines) == 1)
             {
+                # We may have to adjust the node id if there were token splits
+                # in this sentence.
                 my @tf = split(/\t/, $tgtlines[0]);
-                $lasttgtid = $tf[0]; ###!!! But we should also modify $tf[0] if there were token split previously in this sentence!
+                # Sanity check: This should be a regular node, not a multi-word
+                # token interval line.
+                if($tf[0] =~ m/-/)
+                {
+                    die("Regular node expected, found '$tf[0]'");
+                }
+                $tf[0] = ++$lasttgtid;
+                $tgtlines[0] = join("\t", @tf);
             }
             # If there are multiple source lines, copy them to the target.
             else
@@ -127,7 +136,15 @@ while(my $tgtline = <TGT>)
                         {
                             my $srcline = $srclines[$i];
                             my @sf = split(/\t/, $srcline);
-                            $sf[0] = ++$lasttgtid; # id ###!!! what about multi-word tokens?
+                            if($sf[0] =~ m/^(\d+)-(\d+)$/)
+                            {
+                                my $diff = $2-$1;
+                                $sf[0] = ($lasttgtid+1).'-'.($lasttgtid+1+$diff);
+                            }
+                            else # regular node
+                            {
+                                $sf[0] = ++$lasttgtid;
+                            }
                             $sf[2] = $tf[2]; # lemma
                             $sf[3] = $tf[3]; # upos
                             $sf[4] = $tf[4]; # xpos
