@@ -16,19 +16,20 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Carp;
 
 if(scalar(@ARGV) != 2)
 {
-    die("Usage: $0 src.conllu tgt.conllu > tgt-resegmented.conllu");
+    confess("Usage: $0 src.conllu tgt.conllu > tgt-resegmented.conllu");
 }
 my $srcpath = $ARGV[0];
 my $tgtpath = $ARGV[1];
-open(SRC, $srcpath) or die("Cannot read $srcpath: $!");
-open(TGT, $tgtpath) or die("Cannot read $tgtpath: $!");
+open(SRC, $srcpath) or confess("Cannot read $srcpath: $!");
+open(TGT, $tgtpath) or confess("Cannot read $tgtpath: $!");
 my $sli = 0; # src line number
 my $tli = 0; # tgt line number
 my $srcline = get_next_token_line(*SRC, \$sli); # the next source token
-die("Source token expected but not found at line $sli") if(!defined($srcline));
+confess("Source token expected but not found at line $sli") if(!defined($srcline));
 my @comments;
 my @tokens;
 while(my $tgtline = <TGT>)
@@ -49,7 +50,7 @@ while(my $tgtline = <TGT>)
         my $sform = $sf[1];
         if($sform ne $tform)
         {
-            die("Source form '$sform' at line $sli does not match target form '$tform' at line $tli");
+            confess("Source form '$sform' at line $sli does not match target form '$tform' at line $tli");
         }
         push(@tokens, $tgtline);
         # Check whether the source sentence ends here. Read the next source token.
@@ -66,7 +67,7 @@ while(my $tgtline = <TGT>)
             @tokens = ();
             # Get the real next token. This time it should not be undefined.
             $srcline = get_next_token_line(*SRC, \$sli);
-            die("Source token expected but not found at line $sli") if(!defined($srcline));
+            confess("Source token expected but not found at line $sli") if(!defined($srcline));
         }
     }
 }
@@ -76,7 +77,7 @@ if(scalar(@comments) > 0 || scalar(@tokens) > 0)
 {
     print STDERR (join('', @comments));
     print STDERR (join('', @tokens));
-    die("Some target lines did not make it to the output (tgt line $tli, src line $sli); perhaps the target input ended prematurely");
+    confess("Some target lines did not make it to the output (tgt line $tli, src line $sli); perhaps the target input ended prematurely");
 }
 close(SRC);
 close(TGT);
@@ -113,5 +114,5 @@ sub get_next_token_line
             return $line;
         }
     }
-    die("File ended without terminating the last sentence (src line $sli, tgt line $tli)");
+    confess("File ended without terminating the last sentence (src line $sli, tgt line $tli)");
 }
