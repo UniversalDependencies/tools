@@ -32,6 +32,8 @@ my $srcline = get_next_token_line(*SRC, \$sli); # the next source token
 confess("Source token expected but not found at line $sli") if(!defined($srcline));
 my @comments;
 my @tokens;
+my $last_sentid;
+my %used_sentids;
 while(my $tgtline = <TGT>)
 {
     $tli++;
@@ -99,8 +101,9 @@ while(my $tgtline = <TGT>)
             my $text_found = 0;
             for(my $i = 0; $i <= $#comments; $i++)
             {
-                if($comments[$i] =~ m/^\#\s*sent_id\s*=/)
+                if($comments[$i] =~ m/^\#\s*sent_id\s*=\s*(\S+)/)
                 {
+                    $last_sentid = $1;
                     if($sentid_found)
                     {
                         splice(@comments, $i--, 1);
@@ -108,6 +111,14 @@ while(my $tgtline = <TGT>)
                     else
                     {
                         $sentid_found = 1;
+                        if(exists($used_sentids{$last_sentid}))
+                        {
+                            die("Unexpected duplicite sentence id");
+                        }
+                        else
+                        {
+                            $used_sentids{$last_sentid}++;
+                        }
                     }
                 }
                 elsif($comments[$i] =~ m/^\#\s*text\s*=/)
@@ -122,6 +133,20 @@ while(my $tgtline = <TGT>)
                         $text_found = 1;
                     }
                 }
+            }
+            if(!$sentid_found)
+            {
+                my $sentid = $last_sentid;
+                # The $last_sentid may not have been used if it was in a merged sentence with another id.
+                # If it has been used, add a letter to distinguish it.
+                my $code = 65; # 'A'
+                while(exists($used_sentids{$sentid}))
+                {
+                    $code++;
+                    $sentid = $last_sentid.chr($code);
+                }
+                $used_sentids{$sentid}++;
+                push(@comments, "\# sent_id = $sentid\n");
             }
             if(!$text_found)
             {
