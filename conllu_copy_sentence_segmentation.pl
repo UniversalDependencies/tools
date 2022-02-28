@@ -93,6 +93,7 @@ while(my $tgtline = <TGT>)
                 }
                 $token = join("\t", @f)."\n";
             }
+            $text =~ s/\s+$//;
             # Make sure that the comments contain just one sent_id and text, and that they are correct.
             my $sentid_found = 0;
             my $text_found = 0;
