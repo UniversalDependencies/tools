@@ -131,15 +131,16 @@ while(my $tgtline = <TGT>)
                 ###!!! to the new tokens, so we will simply take the annotation
                 ###!!! from the first original token and distribute it to all
                 ###!!! new tokens.
-                foreach $tgtline (@tgtlines)
+                foreach my $tgtline (@tgtlines)
                 {
                     if($tgtline =~ m/^\d+\t/)
                     {
+                        $tgtline =~ s/\r?\n$//;
                         my @tf = split(/\t/, $tgtline);
                         my @tmisc = grep {!m/^(_|SpaceAfter=No)$/} (split(/\|/, $tf[9]));
-                        for(my $i = 0; $i <= $#srclines; $i++)
+                        foreach my $srcline (@srclines)
                         {
-                            my $srcline = $srclines[$i];
+                            $srcline =~ s/\r?\n$//;
                             my @sf = split(/\t/, $srcline);
                             if($sf[0] =~ m/^(\d+)-(\d+)$/)
                             {
@@ -169,7 +170,7 @@ while(my $tgtline = <TGT>)
                                 push(@misc, 'SpaceAfter=No');
                             }
                             $sf[9] = scalar(@misc) == 0 ? '_' : join('|', @misc);
-                            $srclines[$i] = join("\t", @sf);
+                            $srcline = join("\t", @sf)."\n";
                         }
                         last;
                     }
