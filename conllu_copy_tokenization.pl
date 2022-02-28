@@ -136,7 +136,6 @@ while(my $tgtline = <TGT>)
                     if($tgtline =~ m/^\d+\t/)
                     {
                         my @tf = split(/\t/, $tgtline);
-                        my $srcid0;
                         for(my $i = 0; $i <= $#srclines; $i++)
                         {
                             my $srcline = $srclines[$i];
@@ -154,20 +153,13 @@ while(my $tgtline = <TGT>)
                             $sf[3] = $tf[3]; # upos
                             $sf[4] = $tf[4]; # xpos
                             $sf[5] = $tf[5]; # feats
-                            ###!!! Referring to $i==0 may be wrong if the first line is a MWT interval line.
-                            if($i == 0)
-                            {
-                                $srcid0 = $sf[0];
-                                $sf[6] = $tf[6]; # head
-                                $sf[7] = $tf[7]; # deprel
-                                $sf[8] = $tf[8]; # edeps
-                            }
-                            else
-                            {
-                                $sf[6] = $srcid0; # head
-                                $sf[7] = 'dep'; # deprel
-                                $sf[8] = "$srcid0:dep"; # edeps
-                            }
+                            ###!!! At present we assume that there is no syntactic annotation yet.
+                            ###!!! If there is such annotation, then we not only must decide about
+                            ###!!! the newly created tokens but we also may have to renumber the
+                            ###!!! head references elsewhere in the sentence.
+                            $sf[6] = '_'; # head
+                            $sf[7] = '_'; # deprel
+                            $sf[8] = '_'; # deps
                             $srclines[$i] = join("\t", @sf);
                         }
                         last;
