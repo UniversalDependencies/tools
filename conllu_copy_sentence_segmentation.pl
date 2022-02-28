@@ -70,11 +70,13 @@ while(my $tgtline = <TGT>)
         }
     }
 }
+# If there is more data in source, the source sentence may not end  when the
+# target ends, meaning that the final part of the target will not be printed.
 if(scalar(@comments) > 0 || scalar(@tokens) > 0)
 {
     print STDERR (join('', @comments));
     print STDERR (join('', @tokens));
-    die("Some target lines did not make it to the output (tgt line $tli, src line $sli)");
+    die("Some target lines did not make it to the output (tgt line $tli, src line $sli); perhaps the target input ended prematurely");
 }
 close(SRC);
 close(TGT);
@@ -111,5 +113,5 @@ sub get_next_token_line
             return $line;
         }
     }
-    die("File ended without terminating the last sentence");
+    die("File ended without terminating the last sentence (src line $sli, tgt line $tli)");
 }
