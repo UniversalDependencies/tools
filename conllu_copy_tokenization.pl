@@ -41,7 +41,7 @@ my $sli = 0; # src line number
 my $tboff = 0;
 my $tbuffer = '';
 my $sbuffer = '';
-my $lasttgtid; # last regular node (inside or outside MWT) id in tgt, that was actually printed
+my $lasttgtid = 0; # last regular node (inside or outside MWT) id in tgt, that was actually printed
 while(my $tgtline = <TGT>)
 {
     $tli++;
@@ -78,6 +78,11 @@ while(my $tgtline = <TGT>)
         $tform =~ s/\s//g;
         $tbuffer .= $tform;
         $new_tgt_token_read = 1;
+    }
+    # End of sentence.
+    elsif($tgtline =~ m/^\s*$/)
+    {
+        $lasttgtid = 0;
     }
     if($new_tgt_token_read)
     {
