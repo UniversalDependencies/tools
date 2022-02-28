@@ -58,6 +58,70 @@ while(my $tgtline = <TGT>)
         # Undefined $srcline means end of src sentence.
         if(!defined($srcline))
         {
+            # The token ids may need renumbering.
+            ###!!! We currently do not assume there is any syntactic annotation, so we do not care about HEAD and DEPS.
+            my $id = 1;
+            my $text = '';
+            my $mwtto = 0;
+            foreach my $token (@tokens)
+            {
+                $token =~ s/\r?\n$//;
+                my @f = split(/\t/, $token);
+                if($f[0] =~ m/^(\d+)-(\d+)$/)
+                {
+                    my $diff = $2-$1;
+                    $mwtto = $id+$diff;
+                    $f[0] = $id.'-'.$mwtto;
+                    $text .= $f[1];
+                    unless($f[9] ne '_' && grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
+                    {
+                        $text .= ' ';
+                    }
+                }
+                elsif($f[0] =~ m/^(\d+)$/)
+                {
+                    $f[0] = $id;
+                    unless($id <= $mwtto)
+                    {
+                        $text .= $f[1];
+                        unless($f[9] ne '_' && grep {m/^SpaceAfter=No$/} (split(/\|/, $f[9])))
+                        {
+                            $text .= ' ';
+                        }
+                    }
+                    $id++;
+                }
+                $token = join("\t", @f)."\n";
+            }
+            # Make sure that the comments contain just one sent_id and text, and that they are correct.
+            my $sentid_found = 0;
+            my $text_found = 0;
+            for(my $i = 0; $i <= $#comments; $i++)
+            {
+                if($comments[$i] =~ m/^\#\s*sent_id\s*=/)
+                {
+                    if($sentid_found)
+                    {
+                        splice(@comments, $i--, 1);
+                    }
+                    else
+                    {
+                        $sentid_found = 1;
+                    }
+                }
+                elsif($comments[$i] =~ m/^\#\s*text\s*=/)
+                {
+                    if($text_found)
+                    {
+                        splice(@comments, $i--, 1);
+                    }
+                    else
+                    {
+                        $comments[$i] = "\# text = $text\n";
+                        $text_found = 1;
+                    }
+                }
+            }
             # Print the sentence accummulated so far.
             print(join('', @comments));
             print(join('', @tokens));
