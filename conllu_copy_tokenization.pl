@@ -136,6 +136,7 @@ while(my $tgtline = <TGT>)
                     if($tgtline =~ m/^\d+\t/)
                     {
                         my @tf = split(/\t/, $tgtline);
+                        my @tmisc = grep {!m/^(_|SpaceAfter=No)$/} (split(/\|/, $tf[9]));
                         for(my $i = 0; $i <= $#srclines; $i++)
                         {
                             my $srcline = $srclines[$i];
@@ -160,6 +161,14 @@ while(my $tgtline = <TGT>)
                             $sf[6] = '_'; # head
                             $sf[7] = '_'; # deprel
                             $sf[8] = '_'; # deps
+                            # Copy most of MISC from tgt. Only SpaceAfter=No should be adjusted
+                            # to the new tokenization.
+                            my @misc = @tmisc;
+                            if(grep {m/^SpaceAfter=No$/} (split(m/\|/, $sf[9])))
+                            {
+                                push(@misc, 'SpaceAfter=No');
+                            }
+                            $sf[9] = scalar(@misc) == 0 ? '_' : join('|', @misc);
                             $srclines[$i] = join("\t", @sf);
                         }
                         last;
