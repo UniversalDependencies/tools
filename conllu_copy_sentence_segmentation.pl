@@ -70,15 +70,11 @@ while(my $tgtline = <TGT>)
         }
     }
 }
-if(scalar(@comments) > 0)
+if(scalar(@comments) > 0 || scalar(@tokens) > 0)
 {
     print STDERR (join('', @comments));
-    die("Target sentence-level comments did not make it to the output");
-}
-if(scalar(@tokens) > 0)
-{
     print STDERR (join('', @tokens));
-    die("Some target tokens did not make it to the output");
+    die("Some target lines did not make it to the output (tgt line $tli, src line $sli)");
 }
 close(SRC);
 close(TGT);
