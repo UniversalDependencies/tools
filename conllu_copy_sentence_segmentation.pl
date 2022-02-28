@@ -65,9 +65,9 @@ while(my $tgtline = <TGT>)
             # Reset the variables to collect the next sentence.
             @comments = ();
             @tokens = ();
-            # Get the real next token. This time it should not be undefined.
+            # Get the real next token. This time it should not be undefined
+            # unless we are at the end of both files.
             $srcline = get_next_token_line(*SRC, \$sli);
-            confess("Source token expected but not found at line $sli") if(!defined($srcline));
         }
     }
 }
@@ -114,5 +114,9 @@ sub get_next_token_line
             return $line;
         }
     }
-    confess("File ended without terminating the last sentence (src line $sli, tgt line $tli)");
+    # If we are here, we are at the end of the file. This can happen because
+    # after we return an end of sentence, we are immediatelly called again for
+    # the first token of the next sentence. After the last sentence of the
+    # file, we obviously have nothing more to offer.
+    return undef;
 }
