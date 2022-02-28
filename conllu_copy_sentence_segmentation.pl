@@ -123,6 +123,10 @@ while(my $tgtline = <TGT>)
                     }
                 }
             }
+            if(!$text_found)
+            {
+                push(@comments, "\# text = $text\n");
+            }
             # Print the sentence accummulated so far.
             print(join('', @comments));
             print(join('', @tokens));
