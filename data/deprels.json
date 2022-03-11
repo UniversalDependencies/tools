@@ -2666,7 +2666,7 @@
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
