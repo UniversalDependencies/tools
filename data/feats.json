@@ -1407,7 +1407,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "jaa": {
-
+"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Plur": 1, "Sing": 1}, "VERB": {"Plur": 1, "Sing": 1}}, "lastchanged": "2022-03-17-10-51-41", "lastchanger": "LanguageStructure"}
 },
 "jv": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "CCONJ": {"Yes": 1}, "DET": {"Yes": 1}, "INTJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PART": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2021-09-11-17-33-57", "lastchanger": "ialfina"},
