@@ -673,6 +673,9 @@
 "遣る": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "難い": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"jaa": {
+"na": {"functions": [{"function": "", "rule": "Used to carry affixes for the verbs which cannot do it", "deficient": "", "example": "Mese bata [onahareka]", "exampleen": "I removed a layer", "comment": ""}], "status": "documented", "lastchanged": "2022-03-22-08-20-55", "lastchanger": "LanguageStruture"}
+},
 "jv": {
 "arep": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Aku [arep] lunga.", "exampleen": "I want to go.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-20-05-07-02", "lastchanger": "ialfina"},
 "bakal": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Saben makluk [bakal] mati.", "exampleen": "Everyone will die.", "comment": ""}], "status": "documented", "lastchanged": "2021-09-30-13-28-02", "lastchanger": "ialfina"},
