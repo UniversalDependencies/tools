@@ -35,7 +35,7 @@
 
 # Command line usage
 # ------------------
-# iwpt20_eud_eval.py3 [-v] [-c] gold_conllu_file system_conllu_file
+# eval.py [-v] [-c] gold_conllu_file system_conllu_file
 #
 # - if no -v is given, only the official IWPT 2020 Shared Task evaluation metrics
 #   are printed
