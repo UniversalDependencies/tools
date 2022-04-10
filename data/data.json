@@ -694,7 +694,7 @@
 },
 "lzh": {
 "儀": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"可": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"可": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "[可]謂孝矣", "exampleen": "(we) can speak (it as) 孝", "comment": ""}], "status": "documented", "lastchanged": "2022-04-10-11-42-18", "lastchanger": "KoichiYasuoka"},
 "宜": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "得": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "應": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
