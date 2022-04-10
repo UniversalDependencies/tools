@@ -699,7 +699,7 @@
 "肯": {"functions": [{"function": "Mood=Des", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "能": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "被": {"functions": [{"function": "Voice=Pass", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"見": {"functions": [{"function": "Voice=Pass", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"見": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "盆成括[見]殺", "exampleen": "盆成括 was killed", "comment": ""}], "status": "documented", "lastchanged": "2022-04-10-11-30-40", "lastchanger": "KoichiYasuoka"},
 "足": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "須": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
