@@ -916,7 +916,7 @@
 "VerbForm": {"type": "universal", "values": ["Fin", "Part", "Conv", "Inf"], "errors": []},
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []},
 "qpm-DegreeMod": {"type": "local", "values": [], "errors": ["Feature name 'qpm-DegreeMod' does not have the prescribed form."]},
-"qpm-PartType": {"type": "local", "values": [], "errors": ["Feature name 'qpm-PartType' does not have the prescribed form.", "Header title 'PartType' does not match the file name 'qpm-PartType'."]}
+"qpm-PartType": {"type": "local", "values": [], "errors": ["Feature name 'qpm-PartType' does not have the prescribed form."]}
 },
 "qtd": {
 "Mood": {"type": "universal", "values": ["Ind", "Gen", "Imp", "Prs", "Opt", "Nec", "GenNec", "Pot", "GenPot", "Sub", "Cnd", "CndGen", "CndPot", "Des"], "errors": []},
