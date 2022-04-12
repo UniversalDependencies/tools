@@ -915,8 +915,7 @@
 "Tense": {"type": "universal", "values": ["Past", "Pres"], "errors": []},
 "Variant": {"type": "local", "values": ["Short"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Fin", "Part", "Conv", "Inf"], "errors": []},
-"Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []},
-"qpm-PartType": {"type": "local", "values": [], "errors": ["Feature name 'qpm-PartType' does not have the prescribed form."]}
+"Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []}
 },
 "qtd": {
 "Mood": {"type": "universal", "values": ["Ind", "Gen", "Imp", "Prs", "Opt", "Nec", "GenNec", "Pot", "GenPot", "Sub", "Cnd", "CndGen", "CndPot", "Des"], "errors": []},
