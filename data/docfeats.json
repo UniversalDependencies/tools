@@ -915,7 +915,6 @@
 "Variant": {"type": "local", "values": ["Short"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Fin", "Part", "Conv", "Inf"], "errors": []},
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []},
-"qpm-DegreeMod": {"type": "local", "values": [], "errors": ["Feature name 'qpm-DegreeMod' does not have the prescribed form."]},
 "qpm-PartType": {"type": "local", "values": [], "errors": ["Feature name 'qpm-PartType' does not have the prescribed form."]}
 },
 "qtd": {
