@@ -914,7 +914,6 @@
 "Tense": {"type": "universal", "values": ["Past", "Pres"], "errors": []},
 "Variant": {"type": "local", "values": ["Short"], "errors": []},
 "VerbForm": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### Examples'."]},
-"Voice.1": {"type": "local", "values": [], "errors": ["Feature name 'Voice.1' does not have the prescribed form.", "Header title 'Voice' does not match the file name 'Voice.1'."]},
 "qpm-DegreeMod": {"type": "local", "values": [], "errors": ["Feature name 'qpm-DegreeMod' does not have the prescribed form."]},
 "qpm-PartType": {"type": "local", "values": [], "errors": ["Feature name 'qpm-PartType' does not have the prescribed form.", "Header title 'PartType' does not match the file name 'qpm-PartType'."]}
 },
