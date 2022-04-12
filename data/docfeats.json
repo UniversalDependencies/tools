@@ -899,7 +899,7 @@
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup"], "errors": []},
 "Deixis": {"type": "local", "values": ["Prox", "Remt"], "errors": []},
-"DeixisRef": {"type": "local", "values": [], "errors": ["No examples found under value '2'."]},
+"DeixisRef": {"type": "local", "values": [], "errors": ["No examples found under value '2'.", "Unrecognized examples '<!-- Please provide examples of adjectives, many adjectives, adverbs-->'."]},
 "Foreign": {"type": "universal", "values": ["Yes"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp"], "errors": []},
