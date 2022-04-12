@@ -907,6 +907,7 @@
 "NumType": {"type": "universal", "values": ["Card", "Ord", "Mult"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur", "Count", "Ptan", "Coll"], "errors": []},
 "Number[psor]": {"type": "local", "values": ["Sing", "Plur"], "errors": []},
+"PartTypeQpm": {"type": "local", "values": [], "errors": ["Header title 'PartType' does not match the file name 'PartTypeQpm'."]},
 "Person": {"type": "universal", "values": ["1", "2", "3"], "errors": []},
 "Polarity": {"type": "universal", "values": ["Neg"], "errors": []},
 "Poss": {"type": "universal", "values": ["Yes"], "errors": []},
