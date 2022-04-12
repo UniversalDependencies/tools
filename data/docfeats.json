@@ -898,6 +898,7 @@
 "Case": {"type": "universal", "values": ["Nom", "Gen", "Acc", "Voc"], "errors": []},
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup"], "errors": []},
+"DegreeModQpm": {"type": "local", "values": [], "errors": ["Header title 'qpm-DegreeMod' does not match the file name 'DegreeModQpm'."]},
 "Deixis": {"type": "local", "values": ["Prox", "Remt"], "errors": []},
 "DeixisRef": {"type": "local", "values": ["1", "2"], "errors": []},
 "Foreign": {"type": "universal", "values": ["Yes"], "errors": []},
