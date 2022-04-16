@@ -527,6 +527,7 @@
 "ja": {
 "う": {"functions": [{"function": "Mood=Irr", "rule": "postposition of verb ", "deficient": "desiderative, hortative or volitive", "example": "行こ[う]", "exampleen": "let's go", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-09-05-41", "lastchanger": "masayu-a"},
 "かもしれない": {"functions": [{"function": "", "rule": "Others", "deficient": "", "example": "猫[かもしれない]", "exampleen": "may be a cat", "comment": ""}], "status": "documented", "lastchanged": "2022-04-10-11-11-52", "lastchanger": "@masayu-a"},
+"かもしれません": {"functions": [{"function": "Mood=Irr", "rule": "Others", "deficient": "", "example": "猫[かもしれません]", "exampleen": "may be a cat", "comment": ""}], "status": "documented", "lastchanged": "2022-04-16-11-29-19", "lastchanger": "masayu-a"},
 "き": {"functions": [{"function": "Tense=Past", "rule": "Others", "deficient": "", "example": "あり[き]", "exampleen": "existed", "comment": ""}], "status": "documented", "lastchanged": "2022-04-10-11-31-52", "lastchanger": "masayu-a"},
 "けり": {"functions": [{"function": "Tense=Past", "rule": "postposition of verb ", "deficient": "", "example": "降り[けり]", "exampleen": "fell", "comment": ""}], "status": "documented", "lastchanged": "2021-04-29-08-43-34", "lastchanger": "masayu-a"},
 "ごとし": {"functions": [{"function": "", "rule": "Others", "deficient": "", "example": "暗夜の[如く]", "exampleen": "[like] a dark night", "comment": ""}], "status": "documented", "lastchanged": "2022-04-10-13-37-52", "lastchanger": "masayu-a"},
