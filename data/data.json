@@ -587,6 +587,7 @@
 "わけにはいかない": {"functions": [{"function": "Mood=Pot", "rule": "Others", "deficient": "", "example": "食べる[わけにはいかない]", "exampleen": "can't eat", "comment": ""}], "status": "documented", "lastchanged": "2022-04-16-12-04-14", "lastchanger": "masayu-a"},
 "下さる": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "食べて[くださる]", "exampleen": "eat", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-12-33", "lastchanger": "masayu-a"},
 "出来る": {"functions": [{"function": "Mood=Pot", "rule": "Others", "deficient": "", "example": "移動[できる]", "exampleen": "movable", "comment": "be able to"}], "status": "documented", "lastchanged": "2022-04-23-07-09-46", "lastchanger": "masayu-a"},
+"為さる": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "来[なさる]", "exampleen": "come", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-16-09", "lastchanger": "masayu-a"},
 "頂く": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "食べて[いただく]", "exampleen": "eat", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-13-26", "lastchanger": "masayu-a"}
 },
 "jaa": {
