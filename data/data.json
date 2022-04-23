@@ -593,6 +593,7 @@
 "無い": {"functions": [{"function": "Mood=Irr", "rule": "Others", "deficient": "", "example": "食べ[ない]", "exampleen": "not eat", "comment": ""}], "status": "documented", "lastchanged": "2022-04-23-07-41-54", "lastchanger": "masayu-a"},
 "致す": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "お答え[いたし]ます", "exampleen": "answer", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-38-17", "lastchanger": "masayu-a"},
 "良い": {"functions": [{"function": "Mood=Des", "rule": "Others", "deficient": "", "example": "住み[良い]", "exampleen": "Good to live", "comment": ""}], "status": "documented", "lastchanged": "2022-04-23-07-48-41", "lastchanger": "masayu-a"},
+"辛い": {"functions": [{"function": "Mood=Pot", "rule": "Others", "deficient": "", "example": "食べ[づらい]", "exampleen": "hard to eat", "comment": ""}], "status": "documented", "lastchanged": "2022-04-23-07-57-06", "lastchanger": "masayu-a"},
 "難い": {"functions": [{"function": "Mood=Pot", "rule": "Others", "deficient": "", "example": "食べ[にくい]", "exampleen": "hard to eat", "comment": ""}], "status": "documented", "lastchanged": "2022-04-23-07-55-44", "lastchanger": "masayu-a"},
 "頂く": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "食べて[いただく]", "exampleen": "eat", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-13-26", "lastchanger": "masayu-a"}
 },
