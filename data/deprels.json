@@ -4143,6 +4143,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-10-57", "lastchanger": "rueter"},
 "obl:lmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
