@@ -3049,7 +3049,7 @@
 
 },
 "xum": {
-
+"Person": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["1", "2", "3"], "lvalues": [], "unused_uvalues": ["0", "4"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"1": 1, "2": 1, "3": 1}, "DET": {"1": 1, "2": 1, "3": 1}, "PRON": {"1": 1, "2": 1, "3": 1}, "VERB": {"1": 1, "2": 1, "3": 1}}, "lastchanged": "2022-04-25-10-01-10", "lastchanger": "MathieuDehouck"}
 },
 "yo": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
