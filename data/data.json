@@ -1258,6 +1258,9 @@
 "woon": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "Dem [woon] na a.", "exampleen": "I left.", "comment": ""}], "status": "documented", "lastchanged": "2021-04-22-19-40-35", "lastchanger": "dan-zeman"},
 "être": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "French copula occurs in French foreign material", "example": "Kon soo ko seetee, làkki jambuur wi ñu fi saxal ab jumtukaay la itam bu ñuy noote ak a naaxale askan wi, maanaan “c'[est] un instrument de domination et d'infantilasation aussi du peuple”!", "exampleen": "“it is also an instrument of domination and infantilization of the people”!", "comment": ""}], "status": "documented", "lastchanged": "2020-11-16-11-28-23", "lastchanger": "dan-zeman"}
 },
+"xum": {
+"fuiom": {"functions": [{"function": "Aspect=Perf", "rule": "auxiliary combinied with a past participle", "deficient": "", "example": "inuk ukar pihaz [fust]", "exampleen": "then the mount will have been purified", "comment": ""}], "status": "documented", "lastchanged": "2022-04-26-10-35-31", "lastchanger": "MathieuDehouck"}
+},
 "yo": {
 "a": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "bá": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
