@@ -2890,6 +2890,7 @@
 "mark:q": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"nmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
