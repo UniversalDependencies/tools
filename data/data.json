@@ -401,9 +401,8 @@
 "היה": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "הוא [היה] איש", "exampleen": "he was a man", "comment": ""}], "status": "documented", "lastchanged": "2021-12-21-03-25-52", "lastchanger": "mr-martian"}
 },
 "he": {
-"הוא": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "היה": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in non-present tense", "example": "מסתבר ש[הייתי] תמים.", "exampleen": "Turns out I was innocent.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-18-29-06", "lastchanger": "dan-zeman"},
-"זה": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"זה": {"functions": [{"function": "cop.PRON", "rule": "used between a subject and predicate which is not a finite verb", "deficient": "used in the present tense only", "example": "להיות גיי פרנדלי [זה] להיות מודרני", "exampleen": "Being gay friendly is being modern", "comment": ""}], "status": "documented", "lastchanged": "2022-04-27-18-59-25", "lastchanger": "amir-zeldes"}
 },
 "hi": {
 "आ": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
