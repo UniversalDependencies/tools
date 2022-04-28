@@ -431,7 +431,7 @@
 "हो": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "hit": {
-"ēš": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "URU-Kattitimuwaašmamu tákšuul [eešta]", "exampleen": "The city of Kattitimuwa was at peace to me.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-10-55-52", "lastchanger": "dan-zeman"},
+"ēš": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "URU-Kattitimuwaašmamu tákšuul [eešta]", "exampleen": "The city of Kattitimuwa was at peace to me.", "comment": ""}, {"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "nu URU-Ne-ri-iq-qa-aš ku-it IŠ-TU UD-UM m-Ḫa-an-ti-li ar-ḫa ḫar-ga-an-za [e-ešta] na-an EGIR-pa ú-e-da-aḫ-ḫu-un", "exampleen": "And because the city of Neriq had been destroyed from the days of Ḫantili, I built it again.", "comment": ""}], "status": "documented", "lastchanged": "2022-04-28-10-57-10", "lastchanger": "eraander"},
 "ḫark": {"functions": [{"function": "Aspect=Perf", "rule": "combines with a past participle of the main verb", "deficient": "", "example": "ḫar-na-u-aš-za ku-it MUNUS-za A-NA DINGIR-LIM EN-YA še-er SAG.DU-za šar-ni-in-kán [ḫar-mi]", "exampleen": "Since I am a woman of the birthing stool, I have made restitution personally on behalf of the god, my lord.", "comment": ""}], "status": "documented", "lastchanged": "2022-04-28-10-32-26", "lastchanger": "eraander"}
 },
 "hr": {
