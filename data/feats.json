@@ -845,6 +845,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 5}, "AUX": {"Fin": 28623, "Inf": 1915, "Part": 2980}, "VERB": {"Fin": 40334, "Inf": 19390, "Part": 35475}, "X": {"Fin": 1, "Part": 1}}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Pass"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Pass": 4339}}}
 },
+"frm": {
+
+},
 "fro": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Def": 2179}, "AUX": {"Def": 1}, "DET": {"Def": 8710, "Ind": 1238}}},
