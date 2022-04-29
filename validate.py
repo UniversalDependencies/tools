@@ -742,53 +742,63 @@ def validate_features(cols, tag_sets, args):
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
                 # Level 4 also checks whether the feature value is on the list.
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
-                if args.level > 3 and featset is not None:
+                if args.level > 3:
                     testlevel = 4
-                    # The featset is no longer a simple set of feature-value pairs.
-                    # It is a complex database that we read from feats.json.
-                    if attr not in featset:
-                        testid = 'feature-unknown'
-                        testmessage = "Feature %s is not documented for language [%s]." % (attr, lang)
-                        if not altlang and len(warn_on_undoc_feats) > 0:
-                            # If some features were excluded because they are not documented,
-                            # tell the user when the first unknown feature is encountered in the data.
-                            # Then erase this (long) introductory message and do not repeat it with
-                            # other instances of unknown features.
-                            testmessage += "\n\n" + warn_on_undoc_feats
-                            warn_on_undoc_feats = ''
-                        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-                    else:
-                        lfrecord = featset[attr]
-                        if lfrecord['permitted']==0:
-                            testid = 'feature-not-permitted'
-                            testmessage = "Feature %s is not permitted in language [%s]." % (attr, lang)
+                    # In case of code switching, the current token may not be in the default language
+                    # and then its features are checked against a different feature set. An exception
+                    # is the feature Foreign, which always relates to the default language of the
+                    # corpus (but Foreign=Yes should probably be allowed for all UPOS categories in
+                    # all languages).
+                    effective_featset = featset
+                    effective_lang = lang
+                    if attr == 'Foreign':
+                        # Revert to the default.
+                        effective_featset = tag_sets[FEATS]
+                        effective_lang = args.lang
+                    if effective_featset is not None:
+                        if attr not in effective_featset:
+                            testid = 'feature-unknown'
+                            testmessage = "Feature %s is not documented for language [%s]." % (attr, effective_lang)
                             if not altlang and len(warn_on_undoc_feats) > 0:
+                                # If some features were excluded because they are not documented,
+                                # tell the user when the first unknown feature is encountered in the data.
+                                # Then erase this (long) introductory message and do not repeat it with
+                                # other instances of unknown features.
                                 testmessage += "\n\n" + warn_on_undoc_feats
                                 warn_on_undoc_feats = ''
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                         else:
-                            values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
-                            if not v in values:
-                                testid = 'feature-value-unknown'
-                                testmessage = "Value %s is not documented for feature %s in language [%s]." % (v, attr, lang)
+                            lfrecord = effective_featset[attr]
+                            if lfrecord['permitted']==0:
+                                testid = 'feature-not-permitted'
+                                testmessage = "Feature %s is not permitted in language [%s]." % (attr, effective_lang)
                                 if not altlang and len(warn_on_undoc_feats) > 0:
                                     testmessage += "\n\n" + warn_on_undoc_feats
                                     warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-                            elif not cols[UPOS] in lfrecord['byupos']:
-                                testid = 'feature-upos-not-permitted'
-                                testmessage = "Feature %s is not permitted with UPOS %s in language [%s]." % (attr, cols[UPOS], lang)
-                                if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n\n" + warn_on_undoc_feats
-                                    warn_on_undoc_feats = ''
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-                            elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
-                                testid = 'feature-value-upos-not-permitted'
-                                testmessage = "Value %s of feature %s is not permitted with UPOS %s in language [%s]." % (v, attr, cols[UPOS], lang)
-                                if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n\n" + warn_on_undoc_feats
-                                    warn_on_undoc_feats = ''
-                                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                            else:
+                                values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
+                                if not v in values:
+                                    testid = 'feature-value-unknown'
+                                    testmessage = "Value %s is not documented for feature %s in language [%s]." % (v, attr, effective_lang)
+                                    if not altlang and len(warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + warn_on_undoc_feats
+                                        warn_on_undoc_feats = ''
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                                elif not cols[UPOS] in lfrecord['byupos']:
+                                    testid = 'feature-upos-not-permitted'
+                                    testmessage = "Feature %s is not permitted with UPOS %s in language [%s]." % (attr, cols[UPOS], effective_lang)
+                                    if not altlang and len(warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + warn_on_undoc_feats
+                                        warn_on_undoc_feats = ''
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                                elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
+                                    testid = 'feature-value-upos-not-permitted'
+                                    testmessage = "Value %s of feature %s is not permitted with UPOS %s in language [%s]." % (v, attr, cols[UPOS], effective_lang)
+                                    if not altlang and len(warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + warn_on_undoc_feats
+                                        warn_on_undoc_feats = ''
+                                    warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     if len(attr_set) != len(feat_list):
         testlevel = 2
         testid = 'repeated-feature'
