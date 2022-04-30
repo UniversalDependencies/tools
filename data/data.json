@@ -76,6 +76,7 @@
 "arr": {
 "kap": {"functions": [{"function": "Tense=Fut", "rule": "followed by lexical verb in the gerund", "deficient": "", "example": "aʔwero toba [okay]", "exampleen": "I will listen to him", "comment": ""}], "status": "documented", "lastchanged": "2021-10-24-15-46-18", "lastchanger": "LanguageStructure"},
 "nã": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "appear with predicate nominals", "example": "mãygãra cú aʔ[nã]n", "exampleen": "It is a/the big snake", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-43-08", "lastchanger": "tatiana-merz"},
+"waʔye": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with affirmative meaning in indicative clauses", "example": "məy yét maʔpəy ŋa [waʔye] cán nã makɨra", "exampleen": "Then this woman started a fire", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-53-08", "lastchanger": "tatiana-merz"},
 "ʔe": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "to say or do", "example": "kanãy yét péŋ [ʔe]t", "exampleen": "Then this white man said/did", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-49-48", "lastchanger": "tatiana-merz"}
 },
 "bav": {
