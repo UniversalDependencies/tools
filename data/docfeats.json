@@ -738,6 +738,9 @@
 "Tense": {"type": "universal", "values": ["Past", "Pres", "Fut", "Imp"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Fin", "Inf", "Part", "Ger"], "errors": []}
 },
+"jaa": {
+"Morning": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
+},
 "kk": {
 "NumType": {"type": "universal", "values": ["Card", "Coll", "Ord"], "errors": []}
 },
