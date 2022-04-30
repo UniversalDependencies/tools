@@ -670,7 +670,7 @@
 "頂く": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "食べて[いただく]", "exampleen": "eat", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-13-26", "lastchanger": "masayu-a"}
 },
 "jaa": {
-"na": {"functions": [{"function": "", "rule": "Used to carry affixes for the verbs which cannot do it", "deficient": "", "example": "Mese bata [onahareka]", "exampleen": "I removed a layer", "comment": ""}], "status": "documented", "lastchanged": "2022-03-22-08-20-55", "lastchanger": "LanguageStruture"}
+"ama": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Taha me ini kitate me [amake]", "exampleen": "Bees have sharp teeth", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-11-14", "lastchanger": "@languagestructure"}
 },
 "jv": {
 "arep": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Aku [arep] lunga.", "exampleen": "I want to go.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-20-05-07-02", "lastchanger": "ialfina"},
