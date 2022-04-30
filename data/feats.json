@@ -647,7 +647,7 @@
 "Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Yes": 1}}, "lastchanged": "2022-04-30-14-44-38", "lastchanger": "tatiana-merz"},
 "Rel": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Cont", "NCont"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Cont": 1, "NCont": 1}, "NOUN": {"Cont": 1, "NCont": 1}}, "lastchanged": "2022-04-30-11-26-16", "lastchanger": "ulyavedenina"},
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut"], "lvalues": [], "unused_uvalues": ["Imp", "Past", "Pqp", "Pres"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Fut": 1}, "VERB": {"Fut": 1}}, "lastchanged": "2022-04-30-11-10-38", "lastchanger": "@languagestructure"},
-"Top": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Top": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2022-04-30-14-49-42", "lastchanger": "tatiana-merz"},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau"], "lvalues": ["CauFact"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Pass", "Rcp"], "byupos": {"NOUN": {"Cau": 1}, "VERB": {"Cau": 1, "CauFact": 1}}, "lastchanged": "2022-04-30-14-45-09", "lastchanger": "tatiana-merz"}
 },
 "en": {
