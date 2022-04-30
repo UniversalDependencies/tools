@@ -249,6 +249,7 @@
 "πρέπει": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "eme": {
+"ate": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with third person marks existence", "example": "teko [ate]", "exampleen": "he is Teko", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-07-54", "lastchanger": "tatiana-merz"},
 "dʒu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "copula of existence", "example": "tekoate ere[dʒu]", "exampleen": "you are Teko?", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-02-19", "lastchanger": "tatiana-merz"}
 },
 "en": {
