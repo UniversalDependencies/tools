@@ -249,7 +249,7 @@
 "πρέπει": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "eme": {
-"dʒu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "tekoate ere[dʒu]", "exampleen": "you are Teko?", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-14-13-37", "lastchanger": "tatiana-merz"}
+"dʒu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "copula of existence", "example": "tekoate ere[dʒu]", "exampleen": "you are Teko?", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-02-19", "lastchanger": "tatiana-merz"}
 },
 "en": {
 "be": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "He [is] a teacher.", "exampleen": "", "comment": ""}, {"function": "Aspect=Prog", "rule": "combination of the auxiliary and a present participle of a main verb", "deficient": "", "example": "And what [am] I doing about it?", "exampleen": "", "comment": ""}, {"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of a main verb", "deficient": "", "example": "A clean and redlined version [are] attached.", "exampleen": "", "comment": ""}], "status": "documented", "lastchanged": "2020-11-23-08-46-42", "lastchanger": "dan-zeman"},
