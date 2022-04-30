@@ -672,7 +672,8 @@
 "頂く": {"functions": [{"function": "int", "rule": "Others", "deficient": "", "example": "食べて[いただく]", "exampleen": "eat", "comment": "honorific"}], "status": "documented", "lastchanged": "2022-04-23-07-13-26", "lastchanger": "masayu-a"}
 },
 "jaa": {
-"ama": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Auxiliaries need to be memorised. There is no rule for which of the auxiliaries is required.", "example": "Taha me ini kitate me [amake]", "exampleen": "Bees have sharp teeth", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-17-02-54", "lastchanger": "@languagestructure"}
+"ama": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Auxiliaries need to be memorised. There is no rule for which of the auxiliaries is required.", "example": "Taha me ini kitate me [amake]", "exampleen": "Bees have sharp teeth", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-17-02-54", "lastchanger": "@languagestructure"},
+"na": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Unpredictable rule. Which auxiliary a verb used needs to be memorised.", "example": "Mese bata [onahareka]", "exampleen": "I took off a layer", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-17-04-49", "lastchanger": "@languagestructure"}
 },
 "jv": {
 "arep": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and a VERB", "deficient": "", "example": "Aku [arep] lunga.", "exampleen": "I want to go.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-20-05-07-02", "lastchanger": "ialfina"},
