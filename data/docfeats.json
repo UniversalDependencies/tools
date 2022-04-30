@@ -740,6 +740,7 @@
 },
 "jaa": {
 "Decl": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
+"Intension": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Morning": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]}
 },
 "kk": {
