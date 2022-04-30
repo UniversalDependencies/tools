@@ -250,6 +250,7 @@
 },
 "eme": {
 "ate": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with third person marks existence", "example": "teko [ate]", "exampleen": "he is Teko", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-09-18", "lastchanger": "tatiana-merz"},
+"dati": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "incompatibility of nominoid", "example": "[dati]sikədʒi teko", "exampleen": "It's if there was no Emerillon.", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-24-38", "lastchanger": "ulyavedenina"},
 "dʒu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "copula of existence", "example": "tekoate ere[dʒu]", "exampleen": "you are Teko?", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-15-02-19", "lastchanger": "tatiana-merz"}
 },
 "en": {
