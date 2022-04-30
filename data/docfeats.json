@@ -290,7 +290,7 @@
 "Deixis": {"type": "local", "values": ["Prox", "Dist"], "errors": []},
 "Nomzr": {"type": "local", "values": ["Circ", "Obj"], "errors": []},
 "Person": {"type": "universal", "values": ["1", "2", "3"], "errors": []},
-"Redup": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Yes\">`Yes`</a>'.", "No feature values found."]},
+"Redup": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Redup\">`Circ`</a>: Reduplication'.", "No feature values found."]},
 "Rel": {"type": "local", "values": ["Cont"], "errors": []},
 "Tense": {"type": "universal", "values": ["Fut"], "errors": []},
 "Trans": {"type": "local", "values": ["Yes"], "errors": []},
