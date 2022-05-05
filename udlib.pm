@@ -627,8 +627,7 @@ sub check_files
 {
     my $udpath = shift; # path to the folder with UD treebanks as subfolders (default: current folder, i.e., '.')
     my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDT'
-    my $key = shift; # language and treebank code, e.g. 'cs_pdt'
-    my $files = shift; # hash of files in the folder as collected by get_files()
+    my $key = shift; # language and treebank code, e.g. 'cs_pdt' ###!!! We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.
     my $errors = shift; # reference to array where we can add error messages
     my $n_errors = shift; # reference to error counter
     my $ok = 1;
@@ -656,6 +655,13 @@ sub check_files
     {
         $ok = 0;
         push(@{$errors}, "[L0 Repo files] $folder: missing LICENSE.txt\n");
+        $$n_errors++;
+    }
+    # Check the existence of the CONTRIBUTING file.
+    if(!-f 'CONTRIBUTING.md')
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo files] $folder: missing CONTRIBUTING.md\n");
         $$n_errors++;
     }
     # Check the data files.
@@ -717,13 +723,6 @@ sub check_files
         push(@{$errors}, "[L0 Repo files] $folder: missing test data file $prefix-test.conllu\n");
         $$n_errors++;
     }
-    # Extra files have already been identified but not registered as an error.
-    if(scalar(@{$files->{extra}})>0)
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
-        $$n_errors += scalar(@{$files->{extra}});
-    }
     # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
     my $stats = collect_statistics_about_ud_treebank($treebank_path, $key);
     if($stats->{nsent} < 20 || $stats->{nword} < 100)
@@ -733,6 +732,65 @@ sub check_files
         my $ws = $stats->{nword} > 1 ? 's' : '';
         push(@{$errors}, "[L0 Repo treebank-size] $folder: treebank is too small: found only $stats->{nsent} sentence$ss and $stats->{nword} word$ws\n");
         $$n_errors++;
+    }
+    # Check all files and folders in the treebank folder to see if there are any unpermitted extra files.
+    opendir(DIR, '.') or confess("Cannot read the contents of the folder '$treebank_path': $!");
+    my @files = readdir(DIR);
+    closedir(DIR);
+    # Some extra files are tolerated in the Github repository although we do not include them in the release package; these are not reported.
+    my @tolerated =
+    (
+        # tolerated but not released
+        '\.\.?',
+        '\.git(ignore|attributes)?',
+        '\.travis\.yml',
+        'not-to-release',
+        # expected and released
+        'README\.(txt|md)',
+        'LICENSE\.txt',
+        'CONTRIBUTING\.md',
+        'stats\.xml'
+    );
+    if(exists($train_exceptions{$folder}))
+    {
+        push(@tolerated, '('.$train_exceptions{$folder}{desc}.'|'.$prefix.'-(dev|test)\.conllu)');
+    }
+    else
+    {
+        push(@tolerated, $prefix.'-(train|dev|test)\.conllu');
+    }
+    my $tolerated_re = join('|', @tolerated);
+    my @extrafiles = map
+    {
+        $_ .= '/' if(-d $_);
+        $_
+    }
+    grep
+    {
+        !m/^($tolerated_re)$/
+    }
+    (@files);
+    # Some treebanks have exceptional extra files that have been approved and released previously.
+    # The treebanks without underlying text need a program that merges the CoNLL-U files with the separately distributed text.
+    my %extra_exceptions =
+    (
+        'UD_Arabic-NYUAD'         => '^merge\.jar$',
+        'UD_English-ESL'          => '^merge\.py$',
+        'UD_English-GUMReddit'    => '^get_text\.py$',
+        'UD_Hindi_English-HIENCS' => '^(merge/?|crawl_tweets\.py)$',
+        'UD_Japanese-KTC'         => '^merge',
+        'UD_Japanese-BCCWJ'       => '^merge',
+        'UD_Japanese-BCCWJLUW'    => '^merge'
+    );
+    if(exists($extra_exceptions{$folder}))
+    {
+        @extrafiles = grep {!m/$extra_exceptions{$folder}/} (@extrafiles);
+    }
+    if(scalar(@extrafiles) > 0)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@extrafiles))."\n");
+        $$n_errors += scalar(@extrafiles);
     }
     # Change current folder back where we were when entering this function.
     chdir($current_path) or confess("Cannot change current folder back to '$currentpath': $!");

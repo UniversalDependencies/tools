@@ -88,9 +88,8 @@ if(scalar(@ARGV)==1)
             $key .= '_'.lc($treebank) if($treebank ne '');
             my $prefix = $key.'-ud';
             chdir($folder) or die("Cannot enter folder $folder");
-            my $files = get_files($folder, $prefix, '.');
             # Check that the expected files are present and that there are no extra files.
-            udlib::check_files('..', $folder, $key, $files, \@errors, \$n_errors);
+            udlib::check_files('..', $folder, $key, \@errors, \$n_errors);
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             my $metadata = udlib::read_readme('.');
             if(!defined($metadata))
@@ -202,7 +201,7 @@ foreach my $folder (@folders)
             }
             # Check that the expected files are present and that there are no extra files.
             my @errors;
-            if(!udlib::check_files('..', $folder, $key, $files, \@errors, \$n_errors))
+            if(!udlib::check_files('..', $folder, $key, \@errors, \$n_errors))
             {
                 print(join('', @errors));
                 splice(@errors);
@@ -645,8 +644,7 @@ sub get_validation_results
 
 
 #------------------------------------------------------------------------------
-# Gets the list of files in a UD folder. Returns the list of CoNLL-U files, and
-# the list of unexpected extra files.
+# Gets the list of files in a UD folder. Returns the list of CoNLL-U files.
 #------------------------------------------------------------------------------
 sub get_files
 {
@@ -658,57 +656,9 @@ sub get_files
     my @files = readdir(DIR);
     closedir(DIR);
     my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-    # Look for additional files so they can be reported.
-    # Some extra files are tolerated in the Github repository although we do not include them in the release package; these are not reported.
-    my @tolerated =
-    (
-        # tolerated but not released
-        '\.\.?',
-        '\.git(ignore|attributes)?',
-        '\.travis\.yml',
-        'not-to-release',
-        # expected and released
-        'README\.(txt|md)',
-        'LICENSE\.txt',
-        'CONTRIBUTING\.md',
-        $prefix.'-(train|dev|test)\.conllu',
-        'stats\.xml',
-        # split data files of large treebanks
-        'cs_pdt-ud-train-[clmv]\.conllu',
-        'de_hdt-ud-train-[ab]-[12]\.conllu',
-        'ru_syntagrus-ud-train-[abc]\.conllu'
-    );
-    my $tolerated_re = join('|', @tolerated);
-    my @extrafiles = map
-    {
-        $_ .= '/' if(-d $_);
-        $_
-    }
-    grep
-    {
-        !m/^($tolerated_re)$/
-    }
-    (@files);
-    # Some treebanks have exceptional extra files that have been approved and released previously.
-    # The treebanks without underlying text need a program that merges the CoNLL-U files with the separately distributed text.
-    # Learner corpora need extra columns to annotate "distributional tag", "distributional head", "distributional relation" and "alignment".
-    ###!!! But we now have guidelines for extra columns from the PARSEME project, so there will be a CoNLL-U-Plus format, .conllup.
-    @extrafiles = grep
-    {!(
-        $folder eq 'UD_Arabic-NYUAD' && $_ eq 'merge.jar' ||
-        $folder eq 'UD_Chinese-CFL' && $_ eq 'zh_cfl-ud-test.conllux' ||
-        $folder eq 'UD_English-ESL' && $_ eq 'merge.py' ||
-        $folder eq 'UD_English-GUMReddit' && $_ eq 'get_text.py' ||
-        $folder eq 'UD_Hindi_English-HIENCS' && $_ =~ m/^(merge\/?|crawl_tweets\.py)$/ ||
-        $folder eq 'UD_Japanese-KTC' && $_ =~ m/^merge/ ||
-        $folder eq 'UD_Japanese-BCCWJ' && $_ =~ m/^merge/ ||
-        $folder eq 'UD_Japanese-BCCWJLUW' && $_ =~ m/^merge/
-    )}
-    (@extrafiles);
     my %files =
     (
-        'conllu' => \@conllufiles,
-        'extra'  => \@extrafiles
+        'conllu' => \@conllufiles
     );
     return \%files;
 }
