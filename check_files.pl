@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Checks files to be distributed as Universal Dependencies.
-# Copyright © 2015, 2016, 2017, 2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2015, 2016, 2017, 2018, 2022 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -39,15 +39,15 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.8;
+my $current_release = 2.10;
 # Month and year when the next release is expected. We use it in the announcement.
-my $next_release_expected = 'November 2021';
+my $next_release_expected = 'November 2022';
 my $announcement_min_size = 'less than 1,000 tokens';
 my $announcement_max_size = 'over 3 million tokens';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.7';
+my $oldpath = '/net/data/universal-dependencies-2.9';
 ###!!! Also check the new_treebanks_by_release hash in check_metadata()!
 GetOptions
 (
@@ -214,7 +214,7 @@ foreach my $folder (@folders)
                 print("$folder: cannot read the README file: $!\n");
                 $n_errors++;
             }
-            if(exists($metadata->{firstrelease}) && $metadata->{firstrelease} <= $current_release)
+            if(exists($metadata->{firstrelease}) && udlib::cmp_release_numbers($metadata->{firstrelease}, $current_release) <= 0)
             {
                 $metadata->{release} = 1;
             }
