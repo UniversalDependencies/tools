@@ -634,9 +634,10 @@ sub check_files
     my $ok = 1;
     # We need to change the current folder to the treebank folder. In order to
     # be able to return when we are done, remember the current folder.
-    my $currentpath = getcwd();
+    my $current_path = getcwd();
     $udpath = '.' if(!defined($udpath));
-    chdir("$udpath/$folder") or confess("Cannot change current folder to '$udpath/$folder': $!");
+    my $treebank_path = "$udpath/$folder";
+    chdir($treebank_path) or confess("Cannot change current folder to '$treebank_path': $!");
     # Check the existence of the README file.
     if(!-f 'README.txt' && !-f 'README.md')
     {
@@ -662,54 +663,35 @@ sub check_files
     my $train_found = 0;
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
+    # There are exceptions for large treebanks that must split their train files because of Github size limits (the splitting is undone in the released UD packages).
     # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
     # Exception 2: German HDT has two train files: train-a, train-b.
     # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
+    my %train_exceptions =
+    (
+        'UD_Czech-PDT'         => {'desc' => 'cs_pdt-ud-train-[clmv].conllu',      'files' => ['train-c', 'train-l', 'train-m', 'train-v']},
+        'UD_German-HDT'        => {'desc' => 'de_hdt-ud-train-[ab]-[12].conllu',   'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
+        'UD_Russian-SynTagRus' => {'desc' => 'ru_syntagrus-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']}
+    );
     # No other CoNLL-U files are expected.
     # It is also expected that if there is dev, there is also train.
-    if($folder eq 'UD_Czech-PDT')
+    if(exists($train_exceptions{$folder}))
     {
-        # The data is split into four files because of the size limits.
-        if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
+        $train_found = 1;
+        foreach my $trainpart (@{$train_exceptions{$folder}{files}})
         {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[clmv].conllu\n");
-            $$n_errors++;
-        }
-        else
-        {
-            $train_found = 1;
+            my $trainpartfile = "$prefix-$trainpart.conllu";
+            if(!-f $trainpartfile)
+            {
+                $train_found = 0;
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $train_exceptions{$folder}{desc}");
+                $$n_errors++;
+                last;
+            }
         }
     }
-    elsif($folder eq 'UD_German-HDT')
-    {
-        # The data is split into four files because of the size limits.
-        if(!-f "$prefix-train-a-1.conllu" || !-f "$prefix-train-a-2.conllu" || !-f "$prefix-train-b-1.conllu" || !-f "$prefix-train-b-2.conllu")
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab]-[12].conllu\n");
-            $$n_errors++;
-        }
-        else
-        {
-            $train_found = 1;
-        }
-    }
-    elsif($folder eq 'UD_Russian-SynTagRus')
-    {
-        # The data is split into three files because of the size limits.
-        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu" || !-f "$prefix-train-c.conllu")
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[abc].conllu\n");
-            $$n_errors++;
-        }
-        else
-        {
-            $train_found = 1;
-        }
-    }
-    else # all other treebanks
+    else # normal treebank, no exceptions
     {
         if(-f "$prefix-train.conllu")
         {
@@ -743,7 +725,7 @@ sub check_files
         $$n_errors += scalar(@{$files->{extra}});
     }
     # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
-    my $stats = collect_statistics_about_ud_treebank('.', $key);
+    my $stats = collect_statistics_about_ud_treebank($treebank_path, $key);
     if($stats->{nsent} < 20 || $stats->{nword} < 100)
     {
         $ok = 0;
@@ -753,7 +735,7 @@ sub check_files
         $$n_errors++;
     }
     # Change current folder back where we were when entering this function.
-    chdir($currentpath) or confess("Cannot change current folder back to '$currentpath': $!");
+    chdir($current_path) or confess("Cannot change current folder back to '$currentpath': $!");
     return $ok;
 }
 
