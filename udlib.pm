@@ -759,4 +759,96 @@ sub check_files
 
 
 
+#==============================================================================
+# Functions to collect statistics about UD data.
+#==============================================================================
+
+
+
+#------------------------------------------------------------------------------
+# Examines a UD treebank and counts the number of tokens in all .conllu files.
+#------------------------------------------------------------------------------
+sub collect_statistics_about_ud_treebank
+{
+    my $treebank_path = shift;
+    my $treebank_code = shift;
+    my $prefix = "$treebank_code-ud";
+    # All .conllu files with the given prefix in the given folder are considered disjunct parts of the treebank.
+    # Hence we do not have to bother with Czech exceptions in file naming etc.
+    # But we have to be careful if we look at a future release where the folders may not yet be clean.
+    opendir(DIR, $treebank_path) or die("Cannot read folder $treebank_path: $!");
+    my @files = grep {m/^$prefix-.+\.conllu$/} (readdir(DIR));
+    closedir(DIR);
+    my $nsent = 0;
+    my $ntok = 0;
+    my $nfus = 0;
+    my $nword = 0;
+    foreach my $file (@files)
+    {
+        my $stats = collect_statistics_about_ud_file("$treebank_path/$file");
+        $nsent += $stats->{nsent};
+        $ntok += $stats->{ntok};
+        $nfus += $stats->{nfus};
+        $nword += $stats->{nword};
+    }
+    my $stats =
+    {
+        'nsent' => $nsent,
+        'ntok'  => $ntok,
+        'nfus'  => $nfus,
+        'nword' => $nword
+    };
+    return $stats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Counts the number of tokens in a .conllu file.
+#------------------------------------------------------------------------------
+sub collect_statistics_about_ud_file
+{
+    my $file_path = shift;
+    my $nsent = 0;
+    my $ntok = 0;
+    my $nfus = 0;
+    my $nword = 0;
+    open(CONLLU, $file_path) or die("Cannot read file $file_path: $!");
+    while(<CONLLU>)
+    {
+        # Skip comment lines.
+        next if(m/^\#/);
+        # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
+        if(m/^\s*$/)
+        {
+            $nsent++;
+        }
+        # Lines with fused tokens do not contain features but we want to count the fusions.
+        elsif(m/^(\d+)-(\d+)\t(\S+)/)
+        {
+            my $i0 = $1;
+            my $i1 = $2;
+            my $size = $i1-$i0+1;
+            $ntok -= $size-1;
+            $nfus++;
+        }
+        else
+        {
+            $ntok++;
+            $nword++;
+        }
+    }
+    close(CONLLU);
+    my $stats =
+    {
+        'nsent' => $nsent,
+        'ntok'  => $ntok,
+        'nfus'  => $nfus,
+        'nword' => $nword
+    };
+    return $stats;
+}
+
+
+
 1;
