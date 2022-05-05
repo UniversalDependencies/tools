@@ -90,7 +90,7 @@ if(scalar(@ARGV)==1)
             chdir($folder) or die("Cannot enter folder $folder");
             my $files = get_files($folder, $prefix, '.');
             # Check that the expected files are present and that there are no extra files.
-            check_files($folder, $key, $files, \@errors, \$n_errors);
+            udlib::check_files('..', $folder, $key, $files, \@errors, \$n_errors);
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             my $metadata = udlib::read_readme('.');
             if(!defined($metadata))
@@ -202,7 +202,7 @@ foreach my $folder (@folders)
             }
             # Check that the expected files are present and that there are no extra files.
             my @errors;
-            if(!check_files($folder, $key, $files, \@errors, \$n_errors))
+            if(!udlib::check_files('..', $folder, $key, $files, \@errors, \$n_errors))
             {
                 print(join('', @errors));
                 splice(@errors);
@@ -711,136 +711,6 @@ sub get_files
         'extra'  => \@extrafiles
     );
     return \%files;
-}
-
-
-
-#------------------------------------------------------------------------------
-# Checks whether a UD repository contains the expected files. Expects that the
-# repository is our current folder.
-#------------------------------------------------------------------------------
-sub check_files
-{
-    my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
-    my $key = shift; # language and treebank code, e.g. 'cs_pdt'
-    my $files = shift; # hash of files in the folder as collected by get_files()
-    my $errors = shift; # reference to array of error messages
-    my $n_errors = shift; # reference to error counter
-    my $ok = 1;
-    if(!-f 'README.txt' && !-f 'README.md')
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder: missing README.txt|md\n");
-        $$n_errors++;
-    }
-    if(-f 'README.txt' && -f 'README.md')
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder: both README.txt and README.md are present\n");
-        $$n_errors++;
-    }
-    if(!-f 'LICENSE.txt')
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder: missing LICENSE.txt\n");
-        $$n_errors++;
-    }
-    # Check the data files.
-    my $prefix = "$key-ud";
-    my $train_found = 0;
-    # In general, every treebank should have at least the test data.
-    # If there are more data files, zero or one of each of the following is expected: train, dev.
-    # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
-    # Exception 2: German HDT has two train files: train-a, train-b.
-    # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
-    # No other CoNLL-U files are expected.
-    # It is also expected that if there is dev, there is also train.
-    if($folder eq 'UD_Czech-PDT')
-    {
-        # The data is split into four files because of the size limits.
-        if(!-f "$prefix-train-c.conllu" || !-f "$prefix-train-l.conllu" || !-f "$prefix-train-m.conllu" || !-f "$prefix-train-v.conllu")
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[clmv].conllu\n");
-            $$n_errors++;
-        }
-        else
-        {
-            $train_found = 1;
-        }
-    }
-    elsif($folder eq 'UD_German-HDT')
-    {
-        # The data is split into four files because of the size limits.
-        if(!-f "$prefix-train-a-1.conllu" || !-f "$prefix-train-a-2.conllu" || !-f "$prefix-train-b-1.conllu" || !-f "$prefix-train-b-2.conllu")
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[ab]-[12].conllu\n");
-            $$n_errors++;
-        }
-        else
-        {
-            $train_found = 1;
-        }
-    }
-    elsif($folder eq 'UD_Russian-SynTagRus')
-    {
-        # The data is split into three files because of the size limits.
-        if(!-f "$prefix-train-a.conllu" || !-f "$prefix-train-b.conllu" || !-f "$prefix-train-c.conllu")
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $prefix-train-[abc].conllu\n");
-            $$n_errors++;
-        }
-        else
-        {
-            $train_found = 1;
-        }
-    }
-    else # all other treebanks
-    {
-        if(-f "$prefix-train.conllu")
-        {
-            # Not finding train is not automatically an error. The treebank can be test-only.
-            $train_found = 1;
-        }
-    }
-    # Look for development data. They are optional and not finding them is not an error.
-    if(-f "$prefix-dev.conllu")
-    {
-        # However, if there is dev data, there should also be training data!
-        if(!$train_found)
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo files] $folder: missing training data although there is dev data\n");
-            $$n_errors++;
-        }
-    }
-    # Look for test data. Unlike train and dev, test data is mandatory!
-    if(!-f "$prefix-test.conllu")
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder: missing test data file $prefix-test.conllu\n");
-        $$n_errors++;
-    }
-    # Extra files have already been identified but not registered as an error.
-    if(scalar(@{$files->{extra}})>0)
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@{$files->{extra}}))."\n");
-        $$n_errors += scalar(@{$files->{extra}});
-    }
-    # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
-    my $stats = collect_statistics_about_ud_treebank('.', $key);
-    if($stats->{nsent} < 20 || $stats->{nword} < 100)
-    {
-        $ok = 0;
-        my $ss = $stats->{nsent} > 1 ? 's' : '';
-        my $ws = $stats->{nword} > 1 ? 's' : '';
-        push(@{$errors}, "[L0 Repo treebank-size] $folder: treebank is too small: found only $stats->{nsent} sentence$ss and $stats->{nword} word$ws\n");
-        $$n_errors++;
-    }
-    return $ok;
 }
 
 
