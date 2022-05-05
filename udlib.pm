@@ -52,64 +52,39 @@ sub decompose_repo_name
 
 
 #------------------------------------------------------------------------------
-# Returns reference to hash of known UD treebank codes (key = treebank name,
-# without the UD_ prefix but with underscores instead of spaces; value =
-# language_treebank code). Reads the JSON file in the docs repository.
-# Takes the path to the main UD folder (contains docs as subfolder). Default: .
+# Takes a name of a UD treebank repository, e.g., UD_Ancient_Greek-PROIEL.
+# Returns the corresponding lowercase ltcode, which is expected as the prefix
+# of the CoNLL-U data files within the treebank (e.g., grc_proiel). Can use
+# already loaded language hash, otherwise tries to load it. Throws an exception
+# if the repo name has wrong form or unknown language.
 #------------------------------------------------------------------------------
-sub get_ltcode_hash
+sub get_ltcode_from_repo_name
 {
-    my $path = shift;
-    print STDERR ("WARNING: udlib::get_ltcode_hash() is obsolete because the file lcodes.json in docs is no longer maintained!\n");
-    print STDERR ("WARNING: Use udlib::get_language_hash() instead, which reads docs-automation/codes_and_flags.yaml.\n");
-    $path = '.' if(!defined($path));
-    if (-d "$path/docs")
+    my $repo = shift;
+    my $languages_from_yaml = shift;
+    if(!defined($languages_from_yaml))
     {
-        $path .= '/docs';
+        $languages_from_yaml = get_language_hash();
     }
-    my $lcodes;
-    if (-f "$path/gen_index/lcodes.json")
+    my ($language, $treebank) = udlib::decompose_repo_name($repo);
+    if(defined($language))
     {
-        $lcodes = json_file_to_perl("$path/gen_index/lcodes.json");
-        # For example:
-        # $lcodes->{'Finnish-FTB'} eq 'fi_ftb'
-    }
-    die("Cannot find or read $path/docs/gen_index/lcodes.json") if (!defined($lcodes));
-    return $lcodes;
-}
-
-
-
-#------------------------------------------------------------------------------
-# Same as get_ltcode_hash() but collects only language names/codes, without the
-# optional treebank identifier.
-#------------------------------------------------------------------------------
-sub get_lcode_hash
-{
-    my $path = shift;
-    my $ltcodes = get_ltcode_hash($path);
-    my %lcodes;
-    foreach my $key (keys(%{$ltcodes}))
-    {
-        my $lkey = $key;
-        my $lcode = $ltcodes->{$lkey};
-        # Remove treebank name/code if any. Keep only language name/code.
-        $lkey =~ s/-.*//;
-        $lcode =~ s/_.*//;
-        if(!exists($lcodes{$lkey}))
+        if(exists($languages_from_yaml->{$language}))
         {
-            $lcodes{$lkey} = $lcode;
+            my $langcode = $languages_from_yaml->{$language}{lcode};
+            my $ltcode = $langcode;
+            $ltcode .= '_'.lc($treebank) unless($treebank eq '');
+            return $ltcode;
         }
-        # Sanity check: all treebanks with one language name should use the same language code.
         else
         {
-            if($lcodes{$lkey} ne $lcode)
-            {
-                die("Code conflict for language '$lkey': old code '$lcodes{$lkey}', new code '$lcode'");
-            }
+            confess("Unknown language '$language'");
         }
     }
-    return \%lcodes;
+    else
+    {
+        confess("Cannot parse repo name '$repo'");
+    }
 }
 
 
@@ -1118,6 +1093,75 @@ sub collect_statistics_about_ud_file
         'nword' => $nword
     };
     return $stats;
+}
+
+
+
+#==============================================================================
+# Deprecated functions. These will be removed in the future.
+#==============================================================================
+
+
+
+#------------------------------------------------------------------------------
+# Returns reference to hash of known UD treebank codes (key = treebank name,
+# without the UD_ prefix but with underscores instead of spaces; value =
+# language_treebank code). Reads the JSON file in the docs repository.
+# Takes the path to the main UD folder (contains docs as subfolder). Default: .
+#------------------------------------------------------------------------------
+sub get_ltcode_hash
+{
+    my $path = shift;
+    print STDERR ("WARNING: udlib::get_ltcode_hash() is obsolete because the file lcodes.json in docs is no longer maintained!\n");
+    print STDERR ("WARNING: Use udlib::get_language_hash() instead, which reads docs-automation/codes_and_flags.yaml.\n");
+    $path = '.' if(!defined($path));
+    if (-d "$path/docs")
+    {
+        $path .= '/docs';
+    }
+    my $lcodes;
+    if (-f "$path/gen_index/lcodes.json")
+    {
+        $lcodes = json_file_to_perl("$path/gen_index/lcodes.json");
+        # For example:
+        # $lcodes->{'Finnish-FTB'} eq 'fi_ftb'
+    }
+    die("Cannot find or read $path/docs/gen_index/lcodes.json") if (!defined($lcodes));
+    return $lcodes;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Same as get_ltcode_hash() but collects only language names/codes, without the
+# optional treebank identifier.
+#------------------------------------------------------------------------------
+sub get_lcode_hash
+{
+    my $path = shift;
+    my $ltcodes = get_ltcode_hash($path);
+    my %lcodes;
+    foreach my $key (keys(%{$ltcodes}))
+    {
+        my $lkey = $key;
+        my $lcode = $ltcodes->{$lkey};
+        # Remove treebank name/code if any. Keep only language name/code.
+        $lkey =~ s/-.*//;
+        $lcode =~ s/_.*//;
+        if(!exists($lcodes{$lkey}))
+        {
+            $lcodes{$lkey} = $lcode;
+        }
+        # Sanity check: all treebanks with one language name should use the same language code.
+        else
+        {
+            if($lcodes{$lkey} ne $lcode)
+            {
+                die("Code conflict for language '$lkey': old code '$lcodes{$lkey}', new code '$lcode'");
+            }
+        }
+    }
+    return \%lcodes;
 }
 
 

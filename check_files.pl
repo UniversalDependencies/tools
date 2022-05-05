@@ -71,6 +71,7 @@ my $languages_from_yaml = udlib::get_language_hash();
 # on one treebank.
 if(scalar(@ARGV)==1)
 {
+    my $udpath = '.';
     my $folder = $ARGV[0];
     $folder =~ s:/$::;
     my $n_errors = 0;
@@ -82,35 +83,30 @@ if(scalar(@ARGV)==1)
     {
         if(exists($languages_from_yaml->{$language}))
         {
-            $langcode = $languages_from_yaml->{$language}{lcode};
-            my $key = $langcode;
-            $key .= '_'.lc($treebank) if($treebank ne '');
-            my $prefix = $key.'-ud';
-            chdir($folder) or die("Cannot enter folder $folder");
+            my $langcode = $languages_from_yaml->{$language}{lcode};
+            my $key = udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml);
             # Check that the expected files are present and that there are no extra files.
-            udlib::check_files('..', $folder, $key, \@errors, \$n_errors);
-            # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
-            my $metadata = udlib::read_readme('.');
+            udlib::check_files($udpath, $folder, $key, \@errors, \$n_errors);
+            # Check that all required metadata items are present in the README file.
+            my $metadata = udlib::read_readme($folder, $udpath);
             if(!defined($metadata))
             {
-                push(@errors, "$folder: cannot read the README file: $!\n");
+                push(@errors, "[L0 Repo files] $folder: cannot read the README file: $!\n");
                 $n_errors++;
             }
-            # Check that all required metadata items are present in the README file.
             udlib::check_metadata($folder, $metadata, $current_release, \@errors, \$n_errors);
-            chdir('..') or die("Cannot return to the upper folder");
             # Check that the language-specific documentation has at least the index (summary) page.
-            udlib::check_documentation('.', $folder, $langcode, \@errors, \$n_errors);
+            udlib::check_documentation($udpath, $folder, $langcode, \@errors, \$n_errors);
         }
         else
         {
-            push(@errors, "Unknown language $language.\n");
+            push(@errors, "[L0 Repo files] $folder: Unknown language '$language'.\n");
             $n_errors++;
         }
     }
     else
     {
-        push(@errors, "Cannot parse folder name $folder.\n");
+        push(@errors, "[L0 Repo files] $folder: Cannot parse folder name '$folder'.\n");
         $n_errors++;
     }
     if($n_errors>0)
