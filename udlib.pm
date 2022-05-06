@@ -719,7 +719,7 @@ sub check_files
     }
     my $nwall = $nwtrain+$nwdev+$nwtest;
     # Make the sizes available for the caller so they do not have to compute them themselves.
-    $sizes->{'train'} = $nwtrain
+    $sizes->{'train'} = $nwtrain;
     $sizes->{'dev'} = $nwdev;
     $sizes->{'test'} = $nwtest;
     $sizes->{'all'} = $nwall;
