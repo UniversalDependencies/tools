@@ -537,7 +537,7 @@ sub get_announcement
     my $nth;
     for(my $i = 0; $i<=$#release_list; $i++)
     {
-        if($release_list[$i]==$release)
+        if($release_list[$i] eq $release)
         {
             $nth = $nth_vocabulary[$i];
         }
