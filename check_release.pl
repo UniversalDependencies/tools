@@ -11,7 +11,7 @@ binmode(STDERR, ':utf8');
 
 sub usage
 {
-    print STDERR ("Usage: tools/check_release.pl\n");
+    print STDERR ("Usage: tools/check_release.pl --release 2.10 --next-expected 'November 2022' --oldpath /net/data/universal-dependencies-2.9 |& tee release-2.10-report.txt | less\n");
     print STDERR ("       Must be called from the folder where all UD repositories are cloned as subfolders.\n");
     print STDERR ("       Will produce a complete report for the next UD release.\n");
 }
@@ -20,8 +20,28 @@ use Getopt::Long;
 use LWP::Simple;
 # Dan's sorting library
 use csort;
-# If this script is called from the parent folder, how can it find the UD library?
-use lib 'tools';
+# We need to tell Perl where to find my udlib module (same folder as this script).
+# While we are at it, we will also remember the path to the superordinate folder,
+# which should be the UD root (all UD treebanks should be its subfolders).
+BEGIN
+{
+    use Cwd;
+    my $path = $0;
+    $path =~ s:\\:/:g;
+    my $currentpath = getcwd();
+    $libpath = $currentpath;
+    if($path =~ m:/:)
+    {
+        $path =~ s:/[^/]*$:/:;
+        chdir($path);
+        $libpath = getcwd();
+    }
+    chdir('..');
+    $udpath = getcwd();
+    chdir($currentpath);
+    #print STDERR ("libpath=$libpath\n");
+}
+use lib $libpath;
 use udlib;
 
 # Include reports on future repositories (not scheduled for the upcoming release)?
@@ -36,15 +56,15 @@ my $recompute_stats = 0;
 # Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
 my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
-my $current_release = 2.10;
+my $current_release;
 # Month and year when the next release is expected. We use it in the announcement.
-my $next_release_expected = 'November 2022';
+my $next_release_expected;
 my $announcement_min_size = 'less than 1,000 tokens';
 my $announcement_max_size = 'over 3 million tokens';
 # Path to the previous release is needed to compare the number of sentences and words.
 # zen:/net/data/universal-dependencies-1.2
 # mekong:C:\Users\Dan\Documents\Lingvistika\Projekty\universal-dependencies\release-1.2
-my $oldpath = '/net/data/universal-dependencies-2.9';
+my $oldpath;
 GetOptions
 (
     'release=s'       => \$current_release,
@@ -58,6 +78,13 @@ GetOptions
     'stats'           => \$recompute_stats,
     'tag=s'           => \$tag
 );
+# Options that change with every release have no defaults and must be specified
+# on the command line. Check that we received them.
+if(!defined($current_release) || !defined($next_release_expected) || !defined($oldpath))
+{
+    usage();
+    die("Missing option");
+}
 
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
 my $languages_from_yaml = udlib::get_language_hash();
@@ -98,10 +125,8 @@ foreach my $folder (@folders)
         if(exists($languages_from_yaml->{$language}))
         {
             $langcode = $languages_from_yaml->{$language}{lcode};
-            my $key = $langcode;
-            $key .= '_'.lc($treebank) if($treebank ne '');
+            my $key = udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml);
             $tcode_to_treebank_name{$key} = join(' ', ($language, $treebank));
-            my $prefix = $key.'-ud';
             chdir($folder) or die("Cannot enter folder $folder");
             # Skip folders that are not Git repositories even if they otherwise look OK.
             if(!-d '.git')
@@ -119,8 +144,7 @@ foreach my $folder (@folders)
                 print(`git status`);
             }
             # Skip folders that do not contain any data, i.e. CoNLL-U files.
-            my $files = get_files($folder, $prefix, '.');
-            my $n = scalar(@{$files->{conllu}});
+            my $n = get_number_of_conllu_files('.');
             if($n==0)
             {
                 push(@empty_folders, $folder);
@@ -141,6 +165,10 @@ foreach my $folder (@folders)
                 print(join('', @errors));
                 splice(@errors);
             }
+            ###!!! We may want to consolidate somehow the ways how we collect and
+            ###!!! store various statistics. This hash-in-hash is another by-product
+            ###!!! of checking the files in udlib.
+            $stats{$key} = $nw{$folder}{stats};
             # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
             my $metadata = udlib::read_readme('.');
             if(!defined($metadata))
@@ -179,14 +207,6 @@ foreach my $folder (@folders)
                 print(join('', @errors));
                 splice(@errors);
             }
-            if(!-f 'LICENSE.txt') ###!!! We have already reported that the file does not exist but that was a function where README contents is not known and no generating attempt was made.
-            {
-                print("$folder: missing LICENSE.txt (README says license is '$metadata->{License}')\n");
-                generate_license($metadata->{License});
-                $n_errors++;
-            }
-            ###!!! Do we really have to collect the statistics again? Don't we have them already?
-            $stats{$key} = udlib::collect_statistics_about_ud_treebank('.', $key);
             # Summarize metadata.
             if($metadata->{'License'} ne '')
             {
@@ -334,12 +354,12 @@ my $stats11 = collect_statistics_about_ud_release($oldpath);
 my @languages11 = sort(keys(%{$stats11}));
 foreach my $l (@languages11)
 {
-    print("$l\tt=$stats11->{$l}{ntok}\tw=$stats11->{$l}{nword}\tf=$stats11->{$l}{nfus}\ts=$stats11->{$l}{nsent}\n");
     if($stats11->{$l}{ntok}  != $stats{$l}{ntok}  ||
        $stats11->{$l}{nword} != $stats{$l}{nword} ||
        $stats11->{$l}{nfus}  != $stats{$l}{nfus}  ||
        $stats11->{$l}{nsent} != $stats{$l}{nsent})
     {
+        print("$l\tt=$stats11->{$l}{ntok}\tw=$stats11->{$l}{nword}\tf=$stats11->{$l}{nfus}\ts=$stats11->{$l}{nsent}\n");
         print(" NOW:\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
     }
 }
@@ -446,53 +466,19 @@ sub get_validation_results
 
 
 #------------------------------------------------------------------------------
-# Gets the list of files in a UD folder. Returns the list of CoNLL-U files.
+# Gets the number of CoNLL-U files in a UD treebank folder. We need to know
+# whether the treebank is empty (but we will not say that it is empty if it
+# contains one empty CoNLL-U file).
 #------------------------------------------------------------------------------
-sub get_files
+sub get_number_of_conllu_files
 {
-    my $folder = shift; # name of the UD repository
-    my $prefix = shift; # prefix of data files, i.e., language code _ treebank code
     my $path = shift; # path to the repository (default: '.')
     $path = '.' if(!defined($path));
-    opendir(DIR, $path) or die("Cannot read the contents of the folder $folder");
+    opendir(DIR, $path) or die("Cannot read folder '$path': $!");
     my @files = readdir(DIR);
     closedir(DIR);
     my @conllufiles = grep {-f $_ && m/\.conllu$/} (@files);
-    my %files =
-    (
-        'conllu' => \@conllufiles
-    );
-    return \%files;
-}
-
-
-
-#------------------------------------------------------------------------------
-# Generates the LICENSE.txt file for a Creative Commons license.
-#------------------------------------------------------------------------------
-sub generate_license
-{
-    my $license = shift;
-    ###!!! Currently all missing licenses are CC BY-NC-SA 3.0 so I am not going to make this more general.
-    if($license ne 'CC BY-NC-SA 3.0')
-    {
-        print("WARNING: Cannot generate LICENSE.txt for license '$license'\n");
-        return;
-    }
-    my $text = <<EOF
-This work is licensed under the Creative Commons Attribution-NonCommercial-
-ShareAlike 3.0 Generic License. To view a copy of this license, visit
-
-http://creativecommons.org/licenses/by-nc-sa/3.0/
-
-or send a letter to
-Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
-EOF
-    ;
-    open(LICENSE, '>LICENSE.txt') or die("Cannot write LICENSE.txt: $!");
-    print LICENSE ($text);
-    close(LICENSE);
-    system('git add LICENSE.txt');
+    return scalar(@conllufiles);
 }
 
 

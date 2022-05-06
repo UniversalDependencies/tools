@@ -647,6 +647,7 @@ sub check_files
     my $nwtrain = 0;
     my $nwdev = 0;
     my $nwtest = 0;
+    my $stats = {};
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
     # There are exceptions for large treebanks that must split their train files because of Github size limits (the splitting is undone in the released UD packages).
@@ -669,8 +670,9 @@ sub check_files
             my $trainpartfile = "$prefix-$trainpart.conllu";
             if(-f $trainpartfile)
             {
-                my $stats = collect_statistics_about_ud_file($trainpartfile);
-                $nwtrain += $stats->{nword};
+                my $fstats = collect_statistics_about_ud_file($trainpartfile);
+                $nwtrain += $fstats->{nword};
+                add_statistics($stats, $fstats);
             }
             else
             {
@@ -688,15 +690,17 @@ sub check_files
         {
             # Not finding train is not automatically an error. The treebank can be test-only.
             $train_found = 1;
-            my $stats = collect_statistics_about_ud_file("$prefix-train.conllu");
-            $nwtrain = $stats->{nword};
+            my $fstats = collect_statistics_about_ud_file("$prefix-train.conllu");
+            $nwtrain = $fstats->{nword};
+            add_statistics($stats, $fstats);
         }
     }
     # Look for development data. They are optional and not finding them is not an error.
     if(-f "$prefix-dev.conllu")
     {
-        my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
-        $nwdev = $stats->{nword};
+        my $fstats = collect_statistics_about_ud_file("$prefix-dev.conllu");
+        $nwdev = $fstats->{nword};
+        add_statistics($stats, $fstats);
         # If there is dev data, there should also be training data!
         if(!$train_found)
         {
@@ -708,8 +712,9 @@ sub check_files
     # Look for test data. Unlike train and dev, test data is mandatory!
     if(-f "$prefix-test.conllu")
     {
-        my $stats = collect_statistics_about_ud_file("$prefix-test.conllu");
-        $nwtest = $stats->{nword};
+        my $fstats = collect_statistics_about_ud_file("$prefix-test.conllu");
+        $nwtest = $fstats->{nword};
+        add_statistics($stats, $fstats);
     }
     else
     {
@@ -723,6 +728,7 @@ sub check_files
     $sizes->{'dev'} = $nwdev;
     $sizes->{'test'} = $nwtest;
     $sizes->{'all'} = $nwall;
+    $sizes->{'stats'} = $stats;
     # Check the proportion of the sizes of train, dev, and test. The minimum sizes
     # are only a recommendation, as individual treebanks may have good reasons why
     # they need a different split. Hence we have a number of exceptions here.
@@ -806,8 +812,6 @@ sub check_files
         $$n_errors++;
     }
     # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
-    ###!!! Inefficient. We have already measured each file separately. We don't have to do it again; we should just sum the sizes.
-    my $stats = collect_statistics_about_ud_treebank($treebank_path, $key);
     if($stats->{nsent} < 20 || $stats->{nword} < 100)
     {
         $ok = 0;
@@ -1134,25 +1138,17 @@ sub collect_statistics_about_ud_treebank
     opendir(DIR, $treebank_path) or confess("Cannot read folder $treebank_path: $!");
     my @files = grep {m/^$prefix-.+\.conllu$/} (readdir(DIR));
     closedir(DIR);
-    my $nsent = 0;
-    my $ntok = 0;
-    my $nfus = 0;
-    my $nword = 0;
-    foreach my $file (@files)
-    {
-        my $stats = collect_statistics_about_ud_file("$treebank_path/$file");
-        $nsent += $stats->{nsent};
-        $ntok += $stats->{ntok};
-        $nfus += $stats->{nfus};
-        $nword += $stats->{nword};
-    }
     my $stats =
     {
-        'nsent' => $nsent,
-        'ntok'  => $ntok,
-        'nfus'  => $nfus,
-        'nword' => $nword
+        'nsent' => 0,
+        'ntok'  => 0,
+        'nfus'  => 0,
+        'nword' => 0
     };
+    foreach my $file (@files)
+    {
+        add_statistics($stats, collect_statistics_about_ud_file("$treebank_path/$file"));
+    }
     return $stats;
 }
 
@@ -1202,6 +1198,25 @@ sub collect_statistics_about_ud_file
         'nword' => $nword
     };
     return $stats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Sums statistics of two .conllu files, as they are returned by the functions
+# collect_statistics_about_ud_file() and collect_statistics_about_ud_treebank().
+# Takes two hash references and adds the numbers from the second hash to the
+# first hash, i.e., the first hash will be modified in-place!
+#------------------------------------------------------------------------------
+sub add_statistics
+{
+    my $tgt = shift; # hash ref
+    my $src = shift; # hash ref
+    $tgt->{nsent} += $src->{nsent};
+    $tgt->{ntok}  += $src->{ntok};
+    $tgt->{nfus}  += $src->{nfus};
+    $tgt->{nword} += $src->{nword};
+    return $tgt;
 }
 
 
