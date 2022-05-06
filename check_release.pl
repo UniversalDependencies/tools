@@ -540,8 +540,8 @@ sub get_announcement
         if($release_list[$i] eq $release)
         {
             $nth = $nth_vocabulary[$i];
+            last;
         }
-        last if($release_list[$i] ge $release);
     }
     $nth = "WARNING: UNKNOWN RELEASE '$release'" if(!defined($nth));
     my $guidelines_version = int($release);
