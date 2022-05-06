@@ -532,8 +532,8 @@ sub get_announcement
     my $next_release_available_in = shift; # 'March 2017'
     my $contlistref = shift;
     my $changelog = shift;
-    my @release_list   =   (1.0,  1.1,   1.2,  1.3,   1.4,  2.0,  2.1,    2.2,   2.3,  2.4,  2.5,     2.6,    2.7,       2.8,       2.9,      2.10,     2.11,       2.12,      2.13,      2.14);
-    my @nth_vocabulary = qw(first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
+    my @release_list   =   ('1.0', '1.1', '1.2', '1.3', '1.4', '2.0', '2.1',  '2.2', '2.3', '2.4', '2.5',   '2.6',  '2.7',     '2.8',     '2.9',    '2.10',   '2.11',     '2.12',    '2.13',    '2.14');
+    my @nth_vocabulary = qw(first  second third  fourth fifth  sixth  seventh eighth ninth  tenth  eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
     my $nth;
     for(my $i = 0; $i<=$#release_list; $i++)
     {
