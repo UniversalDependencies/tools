@@ -767,6 +767,8 @@ sub check_files
         'UD_Italian-TWITTIRO'       => {'test' => 1},
         # UD_Manx-Cadhan: No exception but wait. 2021-05-06 Kevin writes: I have another 20k words that are mostly correct but need one more editing pass. I decided to stick with the 20k in test for now, with the aim of doing a 3-way split for the next release (if that's ok). My aim is to eventually get to 100k total.
         # UD_Old_East_Slavic-RNC: No exception but wait. 2021-05-05 Olga writes: Another 20k portion of the RNC orv data is planned as dev, it has not been released yet. I would keep it as is if possible: the current 20 k test were reported as test in some of our experiments.
+        # UD_Pomak-Philotis: Test has only 8804 words. Stella: Well, yes, we followed the 10%-10%-80% rule.
+        'UD_Pomak-Philotis'         => {'test' => 1},
         # Exception: UD_Sanskrit-Vedic is just below 10K test, and the total treebank is only slightly over 20K.
         'UD_Sanskrit-Vedic'         => {'test' => 1},
         # Exception: UD_Scottish_Gaelic-ARCOSG is close to 10K test tokens but they could not get there if they did not want to split documents.
