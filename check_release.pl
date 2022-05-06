@@ -253,26 +253,26 @@ foreach my $folder (@folders)
 }
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
 print("\n");
-print("Found ", scalar(@folders), " folders.\n");
+print("Found ", scalar(@folders), " folders.\n\n");
 if(scalar(@unknown_folders) > 0)
 {
-    print(scalar(@unknown_folders), " folders skipped because their language cannot be identified: ", join(', ', @unknown_folders), "\n");
+    print(scalar(@unknown_folders), " folders skipped because their language cannot be identified: ", join(', ', @unknown_folders), "\n\n");
 }
 if(scalar(@nongit_folders) > 0)
 {
-    print(scalar(@nongit_folders), " folders ignored because they are not git repositories: ", join(', ', @nongit_folders), "\n");
+    print(scalar(@nongit_folders), " folders ignored because they are not git repositories: ", join(', ', @nongit_folders), "\n\n");
 }
 if(scalar(@empty_folders) > 0)
 {
-    print(scalar(@empty_folders), " folders ignored because they are empty: ", join(', ', @empty_folders), "\n");
+    print(scalar(@empty_folders), " folders ignored because they are empty: ", join(', ', @empty_folders), "\n\n");
 }
 if(scalar(@future_folders) > 0)
 {
-    print(scalar(@future_folders), " folders ignored because their README says they should be released later: ", join(', ', @future_folders), "\n");
+    print(scalar(@future_folders), " folders ignored because their README says they should be released later: ", join(', ', @future_folders), "\n\n");
 }
 if(scalar(@invalid_folders) > 0)
 {
-    print(scalar(@invalid_folders), " folders ignored because at least one file does not pass validation: ", join(', ', @invalid_folders), "\n");
+    print(scalar(@invalid_folders), " folders ignored because at least one file does not pass validation: ", join(', ', @invalid_folders), "\n\n");
 }
 # Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
 print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");
