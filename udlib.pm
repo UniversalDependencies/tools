@@ -781,7 +781,6 @@ sub check_metadata
 {
     my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
     my $metadata = shift; # reference to hash returned by udlib::read_readme()
-    my $current_release = shift; # needed to know whether changelog is required
     my $errors = shift; # reference to array of error messages
     my $n_errors = shift; # reference to error counter
     my $ok = 1;
@@ -793,7 +792,7 @@ sub check_metadata
         # The value 'Data available since' must not change from release to release.
         # It must forever refer to the first release of the treebank in UD.
         # Therefore, this script will remember the correct value, too, and shout if it changes in the README.
-        my %new_treebanks_by_release =
+        my @new_treebanks_by_release =
         (
             '1.0' => ['Czech-PDT', 'English-EWT', 'Finnish-TDT', 'French-GSD', 'German-GSD', 'Hungarian-Szeged', 'Irish-IDT', 'Italian-ISDT', 'Spanish-GSD', 'Swedish-Talbanken'],
             '1.1' => ['Basque-BDT', 'Bulgarian-BTB', 'Croatian-SET', 'Danish-DDT', 'Finnish-FTB', 'Greek-GDT', 'Hebrew-HTB', 'Indonesian-GSD', 'Persian-Seraji'],
@@ -811,6 +810,8 @@ sub check_metadata
             '2.8' => ['Beja-NSC', 'Frisian_Dutch-Fame', 'Guajajara-TuDeT', 'Icelandic-Modern', 'Irish-TwittIrish', 'Italian-Valico', 'Kaapor-TuDeT', 'Kangri-KDTB', 'Kiche-IU', 'Latin-UDante', 'Low_Saxon-LSDC', 'Makurap-TuDeT', 'Romanian-ArT', 'Turkish-FrameNet', 'Turkish-Kenet', 'Turkish-Penn', 'Turkish-Tourism', 'Western_Armenian-ArmTDP', 'Yupik-SLI'],
             '2.9' => ['Armenian-BSUT', 'Bengali-BRU', 'English-Atis', 'French-ParisStories', 'Japanese-BCCWJLUW', 'Japanese-GSDLUW', 'Japanese-PUDLUW', 'Javanese-CSUI', 'Karo-TuDeT', 'Ligurian-GLT', 'Neapolitan-RB', 'Tatar-NMCTT', 'Turkish-Atis', 'Xibe-XDT', 'Yakut-YKTDT']
         );
+        my %new_treebanks_by_release = @new_treebanks_by_release;
+        my $last_release = $new_treebanks_by_release[-2];
         my $correct;
         foreach my $release (keys(%new_treebanks_by_release))
         {
@@ -829,10 +830,10 @@ sub check_metadata
             push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
             $$n_errors++;
         }
-        elsif(!defined($correct) && cmp_release_numbers($claimed, $current_release) < 0)
+        elsif(!defined($correct) && cmp_release_numbers($claimed, $last_release) <= 0)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not released prior to UD v$current_release.\n");
+            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not yet released.\n");
             $$n_errors++;
         }
     }
@@ -941,10 +942,10 @@ sub check_metadata
         push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
         $$n_errors++;
     }
-    if($metadata->{'Data available since'} =~ m/UD\s*v([0-9]+\.[0-9]+)/ && $1 < $current_release && !$metadata->{changelog})
+    if(!$metadata->{changelog})
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Old treebank ($metadata->{'Data available since'}) but README does not contain 'ChangeLog'\n");
+        push(@{$errors}, "[L0 Repo readme] $folder README: README does not contain 'ChangeLog'\n");
         $$n_errors++;
     }
     # Add a link to the guidelines for README files. Add it to the last error message.
@@ -1022,7 +1023,7 @@ sub collect_statistics_about_ud_treebank
     # All .conllu files with the given prefix in the given folder are considered disjunct parts of the treebank.
     # Hence we do not have to bother with Czech exceptions in file naming etc.
     # But we have to be careful if we look at a future release where the folders may not yet be clean.
-    opendir(DIR, $treebank_path) or die("Cannot read folder $treebank_path: $!");
+    opendir(DIR, $treebank_path) or confess("Cannot read folder $treebank_path: $!");
     my @files = grep {m/^$prefix-.+\.conllu$/} (readdir(DIR));
     closedir(DIR);
     my $nsent = 0;
@@ -1059,7 +1060,7 @@ sub collect_statistics_about_ud_file
     my $ntok = 0;
     my $nfus = 0;
     my $nword = 0;
-    open(CONLLU, $file_path) or die("Cannot read file $file_path: $!");
+    open(CONLLU, $file_path) or confess("Cannot read file $file_path: $!");
     while(<CONLLU>)
     {
         # Skip comment lines.
