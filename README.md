@@ -183,7 +183,17 @@ you have to know something about the tagset driver (-f source_tagset above) you 
 
 
 ## [check_files.pl](https://github.com/UniversalDependencies/tools/blob/master/check_files.pl)
-This script must be run in a folder where all the data repositories (UD_*) are stored as subfolders. It checks the contents of the data repositories for various issues that we want to solve before a new release of UD is published.
+This script checks the contents of one data repositories for missing/extra files,
+invalid metadata in README etc. Together with validate.py, which checks the contents
+of individual CoNLL-U files, this script assesses whether a treebank is valid and
+ready to be released.
+
+
+
+## [check_release.pl](https://github.com/UniversalDependencies/tools/blob/master/check_release.pl)
+This script must be run in a folder where all the data repositories (UD_*) are
+stored as subfolders. It checks the contents of the data repositories for various
+issues that we want to solve before a new release of UD is published.
 
 
 

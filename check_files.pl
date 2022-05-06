@@ -13,7 +13,6 @@ sub usage
 {
     print STDERR ("Usage: tools/check_files.pl UD_Ancient_Greek-PROIEL\n");
     print STDERR ("       Will just check files and metadata of one treebank, report errors and exit.\n");
-    print STDERR ("       Must be called from the folder where all UD repositories are cloned as subfolders.\n");
 }
 
 # We need to tell Perl where to find my udlib module (same folder as this script).

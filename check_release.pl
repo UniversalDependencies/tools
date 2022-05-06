@@ -11,12 +11,9 @@ binmode(STDERR, ':utf8');
 
 sub usage
 {
-    print STDERR ("Usage: tools/check_files.pl\n");
+    print STDERR ("Usage: tools/check_release.pl\n");
     print STDERR ("       Must be called from the folder where all UD repositories are cloned as subfolders.\n");
     print STDERR ("       Will produce a complete report for the next UD release.\n");
-    print STDERR ("\n");
-    print STDERR ("   or: tools/check_files.pl UD_Ancient_Greek-PROIEL\n");
-    print STDERR ("       Will just check files and metadata of one treebank, report errors and exit.\n");
 }
 
 use Getopt::Long;
@@ -64,64 +61,6 @@ GetOptions
 
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes and families.
 my $languages_from_yaml = udlib::get_language_hash();
-
-# If there is one argument, we interpret it as a treebank name, check the files
-# and metadata of that treebank, and exit. We should check the arguments after
-# options were read, although we do not expect options if the script is called
-# on one treebank.
-if(scalar(@ARGV)==1)
-{
-    my $udpath = '.';
-    my $folder = $ARGV[0];
-    $folder =~ s:/$::;
-    my $n_errors = 0;
-    my @errors;
-    # The name of the folder: 'UD_' + language name + optional treebank identifier.
-    # Example: UD_Ancient_Greek-PROIEL
-    my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    if(defined($language))
-    {
-        if(exists($languages_from_yaml->{$language}))
-        {
-            my $langcode = $languages_from_yaml->{$language}{lcode};
-            my $key = udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml);
-            # Check that the expected files are present and that there are no extra files.
-            udlib::check_files($udpath, $folder, $key, \@errors, \$n_errors);
-            # Check that all required metadata items are present in the README file.
-            my $metadata = udlib::read_readme($folder, $udpath);
-            if(!defined($metadata))
-            {
-                push(@errors, "[L0 Repo files] $folder: cannot read the README file: $!\n");
-                $n_errors++;
-            }
-            udlib::check_metadata($folder, $metadata, \@errors, \$n_errors);
-            # Check that the language-specific documentation has at least the index (summary) page.
-            udlib::check_documentation($udpath, $folder, $langcode, \@errors, \$n_errors);
-        }
-        else
-        {
-            push(@errors, "[L0 Repo files] $folder: Unknown language '$language'.\n");
-            $n_errors++;
-        }
-    }
-    else
-    {
-        push(@errors, "[L0 Repo files] $folder: Cannot parse folder name '$folder'.\n");
-        $n_errors++;
-    }
-    if($n_errors>0)
-    {
-        print(join('', @errors));
-        print("*** FAILED ***\n");
-    }
-    else
-    {
-        # Output similar to the validator.
-        print("*** PASSED ***\n");
-    }
-    # Exit 0 is considered success by the operating system.
-    exit($n_errors);
-}
 
 # This script expects to be invoked in the folder in which all the UD_folders
 # are placed.
@@ -196,7 +135,8 @@ foreach my $folder (@folders)
             }
             # Check that the expected files are present and that there are no extra files.
             my @errors;
-            if(!udlib::check_files('..', $folder, $key, \@errors, \$n_errors))
+            $nw{$folder} = {};
+            if(!udlib::check_files('..', $folder, $key, \@errors, \$n_errors, $nw{$folder}))
             {
                 print(join('', @errors));
                 splice(@errors);
@@ -246,93 +186,10 @@ foreach my $folder (@folders)
                 $n_errors++;
             }
             # Check the names and sizes of the data files.
-            my $nwtrain = 0;
-            my $nwdev = 0;
-            my $nwtest = 0;
-            # In general, every treebank should have at least the test data.
-            # If there are more data files, zero or one of each of the following is expected: train, dev.
-            # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
-            # Exception 2: German HDT has two train files: train-a, train-b.
-            # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
-            # No other CoNLL-U files are expected.
-            # It is also expected that if there is dev, there is also train.
-            # And if there is train, it should be same size or larger (in words) than both dev and test.
-            if($folder eq 'UD_Czech-PDT')
-            {
-                # The data is split into four files because of the size limits.
-                my $stats = udlib::collect_statistics_about_ud_file("$prefix-train-c.conllu");
-                $nwtrain = $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-l.conllu");
-                $nwtrain += $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-m.conllu");
-                $nwtrain += $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-v.conllu");
-                $nwtrain += $stats->{nword};
-            }
-            elsif($folder eq 'UD_German-HDT')
-            {
-                # The data is split into four files because of the size limits.
-                my $stats = udlib::collect_statistics_about_ud_file("$prefix-train-a-1.conllu");
-                $nwtrain = $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-a-2.conllu");
-                $nwtrain += $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-b-1.conllu");
-                $nwtrain += $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-b-2.conllu");
-                $nwtrain += $stats->{nword};
-            }
-            elsif($folder eq 'UD_Russian-SynTagRus')
-            {
-                # The data is split into three files because of the size limits.
-                my $stats = udlib::collect_statistics_about_ud_file("$prefix-train-a.conllu");
-                $nwtrain = $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-b.conllu");
-                $nwtrain += $stats->{nword};
-                $stats = udlib::collect_statistics_about_ud_file("$prefix-train-c.conllu");
-                $nwtrain += $stats->{nword};
-            }
-            else # all other treebanks
-            {
-                if(-f "$prefix-train.conllu")
-                {
-                    my $stats = udlib::collect_statistics_about_ud_file("$prefix-train.conllu");
-                    $nwtrain = $stats->{nword};
-                    # If required, check that the file is valid.
-                    if($validate && !is_valid_conllu("$prefix-train.conllu", $key))
-                    {
-                        print("$folder: invalid file $prefix-train.conllu\n");
-                        $n_errors++;
-                    }
-                }
-            }
-            # Look for development data.
-            if(-f "$prefix-dev.conllu")
-            {
-                my $stats = udlib::collect_statistics_about_ud_file("$prefix-dev.conllu");
-                $nwdev = $stats->{nword};
-                # If required, check that the file is valid.
-                if($validate && !is_valid_conllu("$prefix-dev.conllu", $key))
-                {
-                    print("$folder: invalid file $prefix-dev.conllu\n");
-                    $n_errors++;
-                }
-            }
-            # Look for test data.
-            if(-f "$prefix-test.conllu")
-            {
-                my $stats = udlib::collect_statistics_about_ud_file("$prefix-test.conllu");
-                $nwtest = $stats->{nword};
-                # If required, check that the file is valid.
-                if($validate && !is_valid_conllu("$prefix-test.conllu", $key))
-                {
-                    print("$folder: invalid file $prefix-test.conllu\n");
-                    $n_errors++;
-                }
-            }
-            # Remember the numbers of words. We will need them for some tests
-            # that can only be done when all folders have been scanned.
-            my $nwall = $nwtrain+$nwdev+$nwtest;
-            $nw{$folder} = { 'train' => $nwtrain, 'dev' => $nwdev, 'test' => $nwtest, 'all' => $nwall };
+            my $nwtrain = $nw{$folder}{train};
+            my $nwdev = $nw{$folder}{dev};
+            my $nwtest = $nw{$folder}{test};
+            my $nwall = $nw{$folder}{all};
             # For small and growing treebanks, we expect the files to appear roughly in the following order:
             # 1. test (>=10K tokens if possible);
             # 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample);

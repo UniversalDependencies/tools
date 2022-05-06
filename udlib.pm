@@ -605,6 +605,8 @@ sub check_files
     my $key = shift; # language and treebank code, e.g. 'cs_pdt' ###!!! We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.
     my $errors = shift; # reference to array where we can add error messages
     my $n_errors = shift; # reference to error counter
+    my $sizes = shift; # optional hash ref; the caller may be interested in the train-dev-test sizes that we compute here, and we will put them for the caller in this hash if provided
+    $sizes = {} if(!defined($sizes));
     my $ok = 1;
     # We need to change the current folder to the treebank folder. In order to
     # be able to return when we are done, remember the current folder.
@@ -642,6 +644,9 @@ sub check_files
     # Check the data files.
     my $prefix = "$key-ud";
     my $train_found = 0;
+    my $nwtrain = 0;
+    my $nwdev = 0;
+    my $nwtest = 0;
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
     # There are exceptions for large treebanks that must split their train files because of Github size limits (the splitting is undone in the released UD packages).
@@ -662,7 +667,12 @@ sub check_files
         foreach my $trainpart (@{$train_exceptions{$folder}{files}})
         {
             my $trainpartfile = "$prefix-$trainpart.conllu";
-            if(!-f $trainpartfile)
+            if(-f $trainpartfile)
+            {
+                my $stats = collect_statistics_about_ud_file($trainpartfile);
+                $nwtrain += $stats->{nword};
+            }
+            else
             {
                 $train_found = 0;
                 $ok = 0;
@@ -678,12 +688,16 @@ sub check_files
         {
             # Not finding train is not automatically an error. The treebank can be test-only.
             $train_found = 1;
+            my $stats = collect_statistics_about_ud_file("$prefix-train.conllu");
+            $nwtrain = $stats->{nword};
         }
     }
     # Look for development data. They are optional and not finding them is not an error.
     if(-f "$prefix-dev.conllu")
     {
-        # However, if there is dev data, there should also be training data!
+        my $stats = collect_statistics_about_ud_file("$prefix-dev.conllu");
+        $nwdev = $stats->{nword};
+        # If there is dev data, there should also be training data!
         if(!$train_found)
         {
             $ok = 0;
@@ -692,12 +706,23 @@ sub check_files
         }
     }
     # Look for test data. Unlike train and dev, test data is mandatory!
-    if(!-f "$prefix-test.conllu")
+    if(-f "$prefix-test.conllu")
+    {
+        my $stats = collect_statistics_about_ud_file("$prefix-test.conllu");
+        $nwtest = $stats->{nword};
+    }
+    else
     {
         $ok = 0;
         push(@{$errors}, "[L0 Repo files] $folder: missing test data file $prefix-test.conllu\n");
         $$n_errors++;
     }
+    my $nwall = $nwtrain+$nwdev+$nwtest;
+    # Make the sizes available for the caller so they do not have to compute them themselves.
+    $sizes->{'train'} = $nwtrain
+    $sizes->{'dev'} = $nwdev;
+    $sizes->{'test'} = $nwtest;
+    $sizes->{'all'} = $nwall;
     # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
     my $stats = collect_statistics_about_ud_treebank($treebank_path, $key);
     if($stats->{nsent} < 20 || $stats->{nword} < 100)
