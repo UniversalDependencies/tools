@@ -716,6 +716,7 @@
 },
 "kmr": {
 "bûn": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Meheke Nîsanê [bû].", "exampleen": "It was the month of April.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-21-34-37", "lastchanger": "dan-zeman"},
+"dan": {"functions": [{"function": "Voice=Cau", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Kurdan bi vê rewşê bi cîranên xwe [daye] nasîn jî.", "exampleen": "The Kurds have also introduced this situation to their neighbors.", "comment": "As a lexical verb, dan means to give."}], "status": "documented", "lastchanged": "2022-05-26-21-27-32", "lastchanger": "dan-zeman"},
 "dê": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "[Dê] ragihandineke baş pêk neyê.", "exampleen": "There [will] be no good communication.", "comment": ""}], "status": "documented", "lastchanged": "2022-05-26-21-14-43", "lastchanger": "dan-zeman"}
 },
 "ko": {
