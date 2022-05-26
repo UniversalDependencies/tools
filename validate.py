@@ -297,13 +297,14 @@ def validate_cols_level1(cols):
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
     # If it contains a space, it does not make sense to treat it as a MWT.
-    for col_idx in (FORM, LEMMA):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]):
-            testid = 'invalid-whitespace-mwt'
-            testmessage = "White space not allowed in multi-word token '%s'. If it contains a space, it is not one surface token." % (cols[col_idx])
-            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if is_multiword_token(cols):
+        for col_idx in (FORM, LEMMA):
+            if col_idx >= len(cols):
+                break # this has been already reported in trees()
+            if whitespace_re.match(cols[col_idx]):
+                testid = 'invalid-whitespace-mwt'
+                testmessage = "White space not allowed in multi-word token '%s'. If it contains a space, it is not one surface token." % (cols[col_idx])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
     # These columns must not have whitespace.
     for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
         if col_idx >= len(cols):
