@@ -295,8 +295,17 @@ def validate_cols_level1(cols):
                 testid = 'repeated-whitespace'
                 testmessage = 'Two or more consecutive whitespace characters not allowed in column %s.' % (COLNAMES[col_idx])
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-    # These columns must not have whitespace
-    for col_idx in (ID,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS):
+    # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
+    # If it contains a space, it does not make sense to treat it as a MWT.
+    for col_idx in (FORM, LEMMA):
+        if col_idx >= len(cols):
+            break # this has been already reported in trees()
+        if whitespace_re.match(cols[col_idx]):
+            testid = 'invalid-whitespace-mwt'
+            testmessage = "White space not allowed in multi-word token '%s'. If it contains a space, it is not one surface token." % (cols[col_idx])
+            warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    # These columns must not have whitespace.
+    for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         if whitespace_re.match(cols[col_idx]):
@@ -1853,11 +1862,15 @@ def validate_whitespace(cols, tag_sets):
     """
     testlevel = 4
     testclass = 'Format'
-    for col_idx in (FORM,LEMMA):
+    # We already verified that a multiword token does not contain a space (see validate_cols_level1()).
+    if is_multiword_token(cols):
+        return
+    for col_idx in (FORM, LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         if whitespace_re.match(cols[col_idx]) is not None:
-            # Whitespace found - does it pass?
+            # Whitespace found.
+            # Does the FORM/LEMMA pass one of the regular expressions that define permitted words with spaces in this language?
             for regex in tag_sets[TOKENSWSPACE]:
                 if regex.fullmatch(cols[col_idx]):
                     break
