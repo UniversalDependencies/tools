@@ -844,13 +844,7 @@
 },
 "mr": {
 "असणे": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "साप [आहे] तो मेला!", "exampleen": "The snake is dead!", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-22-55-05", "lastchanger": "dan-zeman"},
-"देणे": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"नका": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"नाही": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"येणे": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"लागणे": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"शकणे": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"होणे": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"शकणे": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "ते तेंव्हा बाहेर खेळू [शकले] नाहीत.", "exampleen": "They [could]n't play outside then.", "comment": ""}], "status": "documented", "lastchanged": "2022-05-28-11-25-18", "lastchanger": "dan-zeman"}
 },
 "mt": {
 "għad": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
