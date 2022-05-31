@@ -1471,20 +1471,24 @@ def validate_single_subject(id, tree):
     requirement may be weaker: it could have an overt subject if it is
     correferential with a particular argument of the matrix verb. Hence we do
     not check zero subjects of xcomp dependents at present.
-    Furthermore, in some situations we must allow two subjects (but not three or more).
-    If a clause acts as a nonverbal predicate of another clause, and if there is
-    no copula, then we must attach two subjects to the predicate of the inner
-    clause: one is the predicate of the inner clause, the other is the predicate
-    of the outer clause. This could in theory be recursive but in practice it isn't.
+    Furthermore, in some situations we must allow multiple subjects. If a clause
+    acts as a nonverbal predicate of another clause, then we must attach two
+    subjects to the predicate of the inner clause: one is the predicate of the
+    inner clause, the other is the predicate of the outer clause. This could in
+    theory be recursive but in practice it isn't. As of UD 2.10, an amendment
+    of the guidelines says that the inner predicate of the predicate clause
+    should govern both subjects even if there is a copula (previously such
+    cases were an exception from the UD approach that copulas should not be
+    heads); however, the outer subjects should be attached as [nc]subj:outer.
     See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
     """
-    subjects = sorted([x for x in tree['children'][id] if re.search(r"subj", lspec2ud(tree['nodes'][x][DEPREL]))])
-    if len(subjects) > 2:
+    subjects = sorted([x for x in tree['children'][id] if re.search(r'subj', lspec2ud(tree['nodes'][x][DEPREL])) and not re.match(r'^[nc]subj:outer$', tree['nodes'][x][DEPREL])])
+    if len(subjects) > 1:
         # We test for more than 2, but in the error message we still say more than 1, so that we do not have to explain the exceptions.
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
-        testmessage = "Node has more than one subject: %s" % str(subjects)
+        testmessage = "Node has more than one subject that is not subtyped as ':outer': %s. Outer subjects are allowed if a clause acts as the predicate of another clause." % str(subjects)
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_orphan(id, tree):
