@@ -1480,6 +1480,7 @@ def validate_single_subject(id, tree):
     should govern both subjects even if there is a copula (previously such
     cases were an exception from the UD approach that copulas should not be
     heads); however, the outer subjects should be attached as [nc]subj:outer.
+    See https://universaldependencies.org/changes.html#multiple-subjects.
     See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
     """
     subjects = sorted([x for x in tree['children'][id] if re.search(r'subj', lspec2ud(tree['nodes'][x][DEPREL])) and not re.match(r'^[nc]subj:outer$', tree['nodes'][x][DEPREL])])
