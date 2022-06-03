@@ -8843,6 +8843,7 @@
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"clf:det": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "compound:dir": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:ext": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
