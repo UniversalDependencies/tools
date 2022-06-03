@@ -1345,6 +1345,7 @@
 },
 "yue": {
 "係": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "this form is used in colloquial Cantonese", "example": "剩落呢啲都[係]冇用㗎喇！", "exampleen": "The rest are all unusable!", "comment": "See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas."}], "status": "documented", "lastchanged": "2020-11-08-12-20-56", "lastchanger": "dan-zeman"},
+"可以": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "爺爺，我[可唔可以]睇新一集嘅龍珠呀？", "exampleen": "Grandpa, [can] I watch the new episode of Dragon Ball?", "comment": ""}], "status": "documented", "lastchanged": "2022-06-03-17-18-25", "lastchanger": "dan-zeman"},
 "為": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "in Cantonese, this form is used only in the high-standard variety, not in colloquial speech", "example": "剩落呢啲都[係]冇用㗎喇！", "exampleen": "The rest are all unusable!", "comment": "See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas."}], "status": "documented", "lastchanged": "2020-11-08-12-19-30", "lastchanger": "dan-zeman"}
 },
 "zh": {
