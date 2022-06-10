@@ -1265,9 +1265,7 @@
 },
 "ug": {
 "ئى": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "suffixed copula can provide only some forms", "example": "ئۆيىمىز بولسا ئارا تام قوشنا [ئىدى].", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-24-47", "lastchanger": "dan-zeman"},
-"بول": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used when the suffixed copula cannot provide the corresponding form", "example": "ئۆيىمىز [بولسا] ئارا تام قوشنا ئىدى.", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-21-08", "lastchanger": "dan-zeman"},
-"بەر": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"كەت": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"بول": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used when the suffixed copula cannot provide the corresponding form", "example": "ئۆيىمىز [بولسا] ئارا تام قوشنا ئىدى.", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2022-06-10-14-40-18", "lastchanger": "dan-zeman"}
 },
 "uk": {
 "б": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Коли [б] я не прийшла надвечір, занесеш веприкові.", "exampleen": "If I don't come in the evening, you'll bring it to the boar.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-02-16-16-45", "lastchanger": "dan-zeman"},
