@@ -26,6 +26,10 @@ GetOptions
     'first=s' => \$firstsid,
     'last=s'  => \$lastsid
 );
+if(!defined($firstsid) && !defined($lastsid))
+{
+    print STDERR ("WARNING: Neither the first nor the last sentence specified; the entire input will be passed through.\n");
+}
 
 my $inside = !defined($firstsid);
 my @sentence = ();
@@ -45,6 +49,10 @@ while(<>)
 if(!$inside)
 {
     print STDERR ("WARNING: The first sentence of the section, '$firstsid', was not found.\n");
+}
+elsif(defined($lastid))
+{
+    print STDERR ("WARNING: The last sentence of the section, '$lastsid', was not found.\n");
 }
 
 sub process_sentence()
