@@ -5,7 +5,7 @@
 # * Makes sure that all sentences have a unique sentence id.
 # * Makes sure that all sentences have the full text comment and that it matches the SpaceAfter=No annotations (but if both exist in the input and they don't match, the script gives up).
 # Usage: perl conllu-quick-fix.pl < input.conllu > fixed.conllu
-# Copyright © 2019, 2020 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2019, 2020, 2022 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -48,6 +48,7 @@ sub process_sentence
     my $resttext;
     my $collected_text = '';
     my $mwtto;
+    local $rootid;
     foreach my $line (@sentence)
     {
         $line =~ s/\r?\n$//;
@@ -390,6 +391,7 @@ sub fix_head_deprel
         {
             $head = 0;
             $deprel = 'root';
+            $rootid = 1;
         }
         else
         {
@@ -426,6 +428,20 @@ sub fix_head_deprel
     {
         # Second attempt: take 'dep'.
         $deprel = 'dep';
+    }
+    # Only one node should be the root in the basic tree. If this is root and
+    # we have already seen another root, reattach this one to the previous one.
+    if($head == 0)
+    {
+        if(defined($rootid) && $rootid != $id)
+        {
+            $head = $rootid;
+            $deprel = 'parataxis';
+        }
+        else
+        {
+            $rootid = $id;
+        }
     }
     return ($head, $deprel);
 }
