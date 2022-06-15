@@ -53,7 +53,7 @@ foreach my $language (@languages)
             }
             unless($itype eq $jtype)
             {
-                my $command = "overlap.py $ifile $jfile";
+                my $command = "overlap.py --raw $ifile $jfile";
                 print("$command\n");
                 system($command);
             }

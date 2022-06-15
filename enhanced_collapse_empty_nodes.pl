@@ -21,6 +21,7 @@ BEGIN
 {
     use Cwd;
     my $path = $0;
+    $path =~ s:\\:/:g;
     my $currentpath = getcwd();
     $currentpath =~ s/\r?\n$//;
     $libpath = $currentpath;
@@ -72,6 +73,8 @@ sub process_sentence
     # Now get the list of CoNLL-U lines from the modified graph.
     @sentence = $graph->to_conllu_lines();
     print_sentence(@sentence);
+    # Make sure that the graph gets properly destroyed. Remove cyclic references.
+    $graph->remove_all_nodes();
 }
 
 
@@ -109,6 +112,16 @@ sub collapse_empty_nodes
     my @okedges = grep {$_->[0] =~ m/^\d+$/ && $_->[-1] =~ m/^\d+$/} (@edges);
     my @epedges = grep {$_->[0] =~ m/^\d+\.\d+$/} (@edges); # including those that have also empty child
     my @ecedges = grep {$_->[-1] =~ m/^\d+\.\d+$/} (@edges); # including those that have also empty parent
+    my %epedges; # hash of serialized edges: make sure not to add an edge that is already there
+    foreach my $epedge (@epedges)
+    {
+        $epedges{join(' ', @{$epedge})}++;
+    }
+    my %ecedges;
+    foreach my $ecedge (@ecedges)
+    {
+        $ecedges{join(' ', @{$ecedge})}++;
+    }
     while(@epedges)
     {
         my $epedge = shift(@epedges);
@@ -150,11 +163,20 @@ sub collapse_empty_nodes
                 {
                     if($newedge[0] =~ m/^\d+\.\d+$/)
                     {
-                        push(@epedges, \@newedge);
+                        my $serialized = join(' ', @newedge);
+                        unless(exists($epedges{$serialized}))
+                        {
+                            push(@epedges, \@newedge);
+                            $epedges{$serialized}++;
+                        }
                     }
                     if($newedge[-1] =~ m/^\d+\.\d+$/)
                     {
-                        push(@ecedges, \@newedge);
+                        my $serialized = join(' ', @newedge);
+                        unless(exists($ecedges{$serialized}))
+                        {
+                            push(@ecedges, \@newedge);
+                        }
                     }
                 }
                 else

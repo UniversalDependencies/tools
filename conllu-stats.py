@@ -4,7 +4,7 @@ import file_util
 from file_util import FORM,LEMMA,CPOSTAG,FEATS,DEPREL,DEPS #column index for the columns we'll need
 import argparse
 import os
-import codecs 
+import codecs
 import json
 import traceback
 
@@ -20,7 +20,7 @@ class Stats(object):
         self.words_with_deps_count=0
         self.f_val_counter={} #key:f=val  value: count
         self.deprel_counter={} #key:deprel value: count
-        
+
     def count_cols(self,cols):
         if cols[0].isdigit() or u"." in cols[0]: #word or empty word
             self.word_count+=1
@@ -45,7 +45,7 @@ class Stats(object):
             for head_and_deprel in cols[DEPS].split(u"|"):
                 head,deprel=head_and_deprel.split(u":",1)
                 self.deprel_counter[deprel]=self.deprel_counter.get(deprel,0)+1
-    
+
     def print_basic_stats(self,out):
         print >> out, "Tree count: ", self.tree_count
         print >> out, "Word count: ", self.word_count
@@ -61,7 +61,7 @@ class Stats(object):
         ud_rels=len(set(deprel.split(u":")[0] for deprel in self.deprel_counter.iterkeys()))
         d={"tree_count":self.tree_count,"word_count":self.word_count,"token_count":self.token_count,"deprels":len(self.deprel_counter),"langspec_deprels":langspec, "universal_deprels":ud_rels, "postags":sum(1 for cat_is_val in self.f_val_counter if cat_is_val.startswith(u"CPOSTAG=")),"catvals":sum(1 for cat_is_val in self.f_val_counter if not cat_is_val.startswith(u"CPOSTAG=")),"words_with_lemma_count":self.words_with_lemma_count,"words_with_deps_count":self.words_with_deps_count}
         return d
-        
+
 
 
     def print_deprels(self,out,which=u"UD+langspec",sort="freq"):
@@ -82,12 +82,16 @@ class Stats(object):
     def print_features(self,out,which=u"UD+langspec",sort="freq"):
         #1) get UD features
         ud_cats=set()
-        with codecs.open(os.path.join(THISDIR,"data","feats.ud"),"r","utf-8") as f:
-            for line in f:
-                line=line.strip()
-                if not line or line.startswith(u"#"):
-                    continue
-                ud_cats.add(line)
+        # Documentation and listing of feature-value pairs has changed after release 2.7.
+        # The file feats.ud no longer exists. Turn the reading of the file off so that
+        # the script does not crash.
+        ###!!! This means that all feature-value pairs are now treated as language-specific in the stats!
+        #with codecs.open(os.path.join(THISDIR,"data","feats.ud"),"r","utf-8") as f:
+        #    for line in f:
+        #        line=line.strip()
+        #        if not line or line.startswith(u"#"):
+        #            continue
+        #        ud_cats.add(line)
         if sort=="freq":
             key=lambda x:-x[1]
         elif sort=="alph":
@@ -99,8 +103,8 @@ class Stats(object):
             cat,val=cat_is_val.split(u"=",1)
             if not cat==u"CPOSTAG" and ((u"UD" in which and cat in ud_cats) or (u"langspec" in which and cat not in ud_cats)):
                 print >> out, cat_is_val
-        
-        
+
+
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description='Script for basic stats generation. Assumes a validated input.')
@@ -108,7 +112,7 @@ if __name__=="__main__":
     opt_parser.add_argument('--stats',action='store_true',default=False, help='Print basic stats')
     opt_parser.add_argument('--jsonstats',action='store_true',default=False, help='Print basic stats as json dictionary')
     opt_parser.add_argument('--deprels',default=None,help='Print deprels. The option can be "UD", "langspec", or "UD+langspec".')
-    opt_parser.add_argument('--catvals',default=None,help='Print category=value pairs. The option can be "UD", "langspec", or "UD+langspec". This distinction is based on the feature, not the value.')
+    opt_parser.add_argument('--catvals',default=None,help='Print category=value pairs. The option can be "UD", "langspec", or "UD+langspec". This distinction is based on the feature, not the value. WARNING: THIS DISTINCTION CURRENTLY DOES NOT WORK; USE UD+langspec.')
     opt_parser.add_argument('--sort',default='freq',help='Sort the values by their frequency (freq) or alphabetically (alph). Default: %(default)s.')
     args = opt_parser.parse_args() #Parsed command-line arguments
     args.output="-"
@@ -134,7 +138,3 @@ if __name__=="__main__":
         stats.print_deprels(out,args.deprels,args.sort)
     if args.catvals:
         stats.print_features(out,args.catvals,args.sort)
-
-    
-
-

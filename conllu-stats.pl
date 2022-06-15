@@ -1984,7 +1984,7 @@ sub sort_and_truncate_examples
     }
     (@{$selected_keys});
     splice(@examples, $limit);
-    # Some treebanks (Czech CLTT) have very tokens. If we put the statistics
+    # Some treebanks (Czech CLTT) have very long tokens. If we put the statistics
     # of such a treebank to a table where multiple treebanks are compared
     # side-by-side, this treebank will have much wider column than it deserves
     # because the long tokens cannot be broken. Add zero-width spaces to
@@ -1996,16 +1996,21 @@ sub sort_and_truncate_examples
     # some associated class, see e.g.
     # https://www.w3schools.com/cssref/tryit.asp?filename=trycss3_word-wrap,
     # https://caniuse.com/wordwrap/embed .
-    @examples = map
-    {
-        if(length($_)>20)
-        {
-            my @characters = split(//, $_);
-            $_ = join("\x{200B}", @characters);
-        }
-        $_
-    }
-    (@examples);
+    ###!!! Dan:
+    # This damn hack stroke back at me, as it actually inserts the spaces also
+    # in stats.xml, and they appear in diffs. Turning off.
+    # In the future I may apply Sampo's suggestion to the <table> generated
+    # above at line (currently) 280: <table style='word-wrap: break-word'>
+    #@examples = map
+    #{
+    #    if(length($_)>20)
+    #    {
+    #        my @characters = split(//, $_);
+    #        $_ = join("\x{200B}", @characters);
+    #    }
+    #    $_
+    #}
+    #(@examples);
     return @examples;
 }
 

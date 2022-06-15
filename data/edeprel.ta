@@ -1,5 +1,8 @@
+acl:ஆறு
 acl:என்
 acl:போல்
+acl:போது
+advcl:ஆறு
 advcl:ஆக
 advcl:ஆகு
 advcl:உம்
@@ -12,9 +15,12 @@ advcl:தொடர்
 advcl:போது
 advcl:போல்
 advcl:முன்
+det:nummod
 nmod:acc
 nmod:com
+nmod:cmp
 nmod:dat
+nmod:emph
 nmod:gen
 nmod:loc
 nmod:nom
@@ -46,6 +52,7 @@ nmod:போல்:nom
 nmod:மீது:nom
 nmod:முறையே:nom
 nmod:வழி:nom
+obl:abl
 obl:arg:dat
 obl:arg:ins
 obl:arg:இடம்:gen
@@ -59,6 +66,7 @@ obl:dat
 obl:ins
 obl:loc
 obl:nom
+obl:soc
 obl:அன்று:nom
 obl:அருகே:nom
 obl:அல்:nom

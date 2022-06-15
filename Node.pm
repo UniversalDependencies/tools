@@ -10,7 +10,7 @@ use Graph;
 
 
 
-has 'graph'   => (is => 'rw', isa => 'Graph', documentation => 'Refers to the graph (sentence) this node belongs to.');
+has 'graph'   => (is => 'rw', isa => 'Maybe[Graph]', documentation => 'Refers to the graph (sentence) this node belongs to.');
 has 'id'      => (is => 'rw', isa => 'Str', required => 1, documentation => 'The ID column in CoNLL-U file.');
 has 'form'    => (is => 'rw', isa => 'Str', documentation => 'The FORM column in CoNLL-U file.');
 has 'lemma'   => (is => 'rw', isa => 'Str', documentation => 'The LEMMA column in CoNLL-U file.');
@@ -201,8 +201,23 @@ sub basic_depends_on
     my $self = shift;
     confess('Node is not member of a graph') if(!defined($self->graph()));
     my $aid = shift; # ancestor id
-    my $pid = $self->bparent();
-    return defined($pid) && ($pid==$aid || $self->graph()->get_node($pid)->basic_depends_on($aid));
+    # Avoid deep recursion in large trees (e.g., the Gothic treebank contains
+    # a sentence of 165 words that form one long apposition chain). Avoid
+    # recursion completely.
+    my $graph = $self->graph();
+    my $id = $self->bparent();
+    while(defined($id))
+    {
+        if($id==$aid)
+        {
+            return 1;
+        }
+        else
+        {
+            $id = $graph->get_node($id)->bparent();
+        }
+    }
+    return 0;
 }
 
 
@@ -383,6 +398,32 @@ sub cmpids
 
 
 #------------------------------------------------------------------------------
+# Checks whether the node corresponds to a multi-word token (which means it is
+# not a normal node, just a storage place for the token's attributes).
+#------------------------------------------------------------------------------
+sub is_mwt
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    my $self = shift;
+    return $self->id() =~ m/-/;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether the node is empty, i.e., it does not correspond to an overt
+# surface token and has a decimal id.
+#------------------------------------------------------------------------------
+sub is_empty
+{
+    confess('Incorrect number of arguments') if(scalar(@_) != 1);
+    my $self = shift;
+    return $self->id() =~ m/\./;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Returns the number of incoming edges.
 #------------------------------------------------------------------------------
 sub get_in_degree
@@ -469,6 +510,24 @@ discarded and replaced by the new one.
 =item $feats = $node->get_feats_string ();
 
 Returns features as a string that can be used in a CoNLL-U file.
+
+=item $node->is_mwt ();
+
+Checks whether the node corresponds to a multi-word token (which means it is
+not a normal node, just a storage place for the token's attributes).
+
+=item $node->is_empty ();
+
+Checks whether the node is empty, i.e., it does not correspond to an overt
+surface token and has a decimal id.
+
+=item $indeg = $node->get_in_degree ();
+
+Returns the number of incoming edges to the node.
+
+=item $outdeg = $node->get_out_degree ();
+
+Returns the number of outgoing edges from the node.
 
 =back
 
