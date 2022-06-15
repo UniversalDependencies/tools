@@ -144,14 +144,15 @@ def _encode(text):
 CASE_DEPRELS = {'obl','nmod','conj','advcl'}
 UNIVERSAL_DEPREL_EXTENSIONS = {'pass','relcl','xsubj'}
 
-# modify the set of deps produced by system to be in accordance with gold treebank type
-# return a (filtered) list of (hd,dependency_path) tuples. -- GB
+# Modify the set of deps produced by system to be in accordance with gold treebank type.
+# Return a (filtered) list of (hd, dependency_path) tuples.
 def process_enhanced_deps(deps) :
     edeps = []
-    for edep in deps.split('|') :
-        (hd,path) = edep.split(':',1)
-        steps = path.split('>') # collapsing empty nodes gives rise to paths like this : 3:conj:en>obl:voor
-        edeps.append((hd,steps))   # (3,['conj:en','obj:voor'])
+    if deps != '' and deps != '_':
+        for edep in deps.split('|') :
+            (hd, path) = edep.split(':', 1)
+            steps = path.split('>') # collapsing empty nodes gives rise to paths like this : 3:conj:en>obl:voor
+            edeps.append((hd,steps))   # (3,['conj:en','obj:voor'])
     return edeps
 
 # Load given CoNLL-U file into internal representation
