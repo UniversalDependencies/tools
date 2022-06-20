@@ -2418,6 +2418,7 @@
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
