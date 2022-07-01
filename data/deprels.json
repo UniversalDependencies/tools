@@ -8323,6 +8323,7 @@
 "nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-07-01-18-50-50", "lastchanger": "coltekin"},
 "nsubjpass": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "Relation 'nsubjpass' is not a subtype of any approved main type."]},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
