@@ -642,6 +642,7 @@
 "Polarity": {"type": "universal", "values": ["Neg", "Pos"], "errors": []},
 "Poss": {"type": "universal", "values": ["Yes"], "errors": []},
 "PronType": {"type": "universal", "values": ["Prs", "Dem", "Ind", "Int", "Tot"], "errors": []},
+"Prp": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Red": {"type": "local", "values": ["Mo", "Di"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont", "NCont", "Abs", "Corf"], "errors": []},
 "Speech": {"type": "local", "values": ["Fem", "FF", "Masc", "MM"], "errors": []},
