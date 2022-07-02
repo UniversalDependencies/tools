@@ -643,6 +643,7 @@
 "PronType": {"type": "universal", "values": ["Prs", "Dem", "Ind", "Int", "Tot"], "errors": []},
 "Red": {"type": "local", "values": ["Mo", "Di"], "errors": []},
 "Rel": {"type": "local", "values": ["Cont", "NCont", "Abs", "Corf"], "errors": []},
+"Speech": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Tense": {"type": "universal", "values": ["Fut", "Past"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Ger"], "errors": []},
 "Voice": {"type": "universal", "values": ["Cau", "Com"], "errors": []}
