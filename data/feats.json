@@ -84,6 +84,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf"], "lvalues": ["Stat"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Conv", "Finite", "Gdv", "Ger", "Part", "Stative", "Sup", "Vnoun"], "byupos": {"ADJ": {"Stat": 1}, "NOUN": {"Stat": 1}, "VERB": {"Fin": 1, "Inf": 1, "Stat": 1}}, "lastchanged": "2021-02-16-14-01-33", "lastchanger": "Traubert"},
 "VerbStem": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["D", "Dt", "G", "Gt", "Gtn", "N", "Ntn", "S", "St", "Stn"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"D": 1, "Dt": 1, "G": 1, "Gt": 1, "Gtn": 1, "N": 1, "Ntn": 1, "S": 1, "St": 1, "Stn": 1}}, "lastchanged": "2021-02-16-13-49-33", "lastchanger": "Traubert"}
 },
+"aln": {
+
+},
 "am": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Abl", "Ben", "Ins", "Loc"], "lvalues": ["Mal"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Abe", "Abs", "Acc", "Add", "Ade", "All", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Gen", "Ill", "Ine", "Lat", "Nom", "Par", "Per", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "byupos": {"ADP": {"Abl": 1, "Ben": 1, "Ins": 1, "Loc": 1, "Mal": 1}}, "lastchanged": "2020-12-23-22-52-14", "lastchanger": "dan-zeman"},
