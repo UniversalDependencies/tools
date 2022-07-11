@@ -1321,7 +1321,6 @@
 },
 "la": {
 "acl:cmpr": {"type": "local", "errors": []},
-"acl:pass": {"type": "local", "errors": ["No examples found for relation 'acl:pass'."]},
 "advcl:abs": {"type": "local", "errors": []},
 "advcl:cmpr": {"type": "local", "errors": []},
 "advcl:pred": {"type": "local", "errors": []},
