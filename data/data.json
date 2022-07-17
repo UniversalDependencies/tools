@@ -372,7 +372,8 @@
 "ŋka": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "gd": {
-"is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[An] iad a b’ fhearr na bacon?", "exampleen": "Are they better than bacon?", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-41-08", "lastchanger": "dan-zeman"}
+"is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[An] iad a b’ fhearr na bacon?", "exampleen": "Are they better than bacon?", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-41-08", "lastchanger": "dan-zeman"},
+"rach": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and the verbal noun", "deficient": "", "example": "[chaidh] sreapadair a thogail far beanntan", "exampleen": "a climber was lifted off the mountains", "comment": ""}], "status": "documented", "lastchanged": "2022-07-17-21-54-11", "lastchanger": "colinbatchelor"}
 },
 "gl": {
 "acabar": {"functions": [{"function": "Tense=Fut", "rule": "Combined with a gerund to express future.", "deficient": "", "example": "PSA e a Zona Franca [acabarán] entendéndose, pero para iso tiveron que escenificar antes o seu desencontro nos medios.", "exampleen": "PSA and the Zona Franca will eventually understand each other, but for that they had to stage their disagreement in the media first.", "comment": ""}], "status": "documented", "lastchanged": "2020-12-14-09-46-36", "lastchanger": "marcospln"},
