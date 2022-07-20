@@ -812,7 +812,6 @@
 "ConjType": {"type": "local", "values": ["Cmpr", "Expl"], "errors": []},
 "Emphatic": {"type": "local", "values": ["Yes"], "errors": []},
 "Form": {"type": "local", "values": ["Emp"], "errors": []},
-"Gender[inherent]": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "InflClass": {"type": "local", "values": ["IndEurA", "IndEurO", "IndEurX", "IndEurI", "IndEurU", "IndEurE", "LatPron", "LatA", "LatE", "LatX", "LatI", "LatI2", "LatAnom", "Ind"], "errors": []},
 "InflClass[nominal]": {"type": "local", "values": ["IndEurA", "IndEurO", "IndEurX", "IndEurI", "IndEurU", "Ind"], "errors": []},
 "NameType": {"type": "local", "values": ["Ast", "Cal", "Com", "Geo", "Giv", "Let", "Lit", "Nat", "Rel", "Sur", "Oth"], "errors": []},
