@@ -8487,7 +8487,8 @@
 "acl:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:sp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:sp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "advcl:svc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:det": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
@@ -8526,7 +8527,8 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nsubj:sp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nsubj:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:sp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "nsubj:x": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nummod:gov": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
@@ -8543,7 +8545,8 @@
 "vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative:cl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:sp": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
+"xcomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"xcomp:sp": {"type": "local", "doc": "none", "permitted": 0, "errors": []}
 },
 "ur": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
