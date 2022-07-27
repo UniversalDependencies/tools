@@ -314,7 +314,8 @@
 "ukan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "ownership or existential copula (to have)", "example": "Familia eta gertuko komunitatea euskaldunak [dituzte] guztiz.", "exampleen": "The family and the nearby community are completely Basque.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-23-19-42", "lastchanger": "dan-zeman"}
 },
 "fa": {
-"است": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "present copula", "example": "آیا تو قاتل حضرمی [نیستی]؟", "exampleen": "Aren't you a murderer?", "comment": ""}], "status": "documented", "lastchanged": "2022-07-27-15-37-44", "lastchanger": "dan-zeman"}
+"است": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "present copula", "example": "آیا تو قاتل حضرمی [نیستی]؟", "exampleen": "Aren't you a murderer?", "comment": ""}], "status": "documented", "lastchanged": "2022-07-27-15-37-44", "lastchanger": "dan-zeman"},
+"بود": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "past and subjunctive copula", "example": "معلم [بودم].", "exampleen": "I [was] a teacher.", "comment": "https://wordadaypersian.wordpress.com/2013/06/04/verb-conjugation-ii-to-be/"}], "status": "documented", "lastchanged": "2022-07-27-15-40-53", "lastchanger": "dan-zeman"}
 },
 "fi": {
 "aikoa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
