@@ -447,7 +447,7 @@
 "Variant": {"type": "local", "values": ["Short"], "errors": []}
 },
 "el": {
-"Aspect": {"type": "universal", "values": [], "errors": ["Header title 'DegreeModEl' does not match the file name 'Aspect'.", "No feature values found."]},
+"Aspect": {"type": "universal", "values": [], "errors": ["No feature values found."]},
 "el-DegreeMod": {"type": "local", "values": [], "errors": ["Feature name 'el-DegreeMod' does not have the prescribed form.", "Unrecognized level 3 heading '### <a name=\"Diminutive\">`Diminutive`</a>'.", "Unrecognized level 3 heading '### <a name=\"Magnifier\">`Magnifier`</a>'.", "Header title 'el-Degree Modification' does not match the file name 'el-DegreeMod'.", "No feature values found."]}
 },
 "eme": {
