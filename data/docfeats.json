@@ -454,7 +454,7 @@
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur"], "errors": []},
-"PronType": {"type": "universal", "values": ["Prs", "Rcp", "Art", "Int", "Rel", "Exc", "Dem", "Emp", "Tot", "Neg", "Ind"], "errors": []},
+"PronType": {"type": "universal", "values": ["Art", "Int", "Prs", "Rcp", "Rel", "Exc", "Dem", "Emp", "Tot", "Neg", "Ind"], "errors": []},
 "Tense": {"type": "universal", "values": ["Past", "Pres", "Fut"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Fin", "Inf", "Part", "Conv"], "errors": []},
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []}
