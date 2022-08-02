@@ -452,6 +452,7 @@
 "Aspect": {"type": "universal", "values": ["Imp", "Perf"], "errors": []},
 "Case": {"type": "universal", "values": ["Nom", "Gen", "Acc", "Voc"], "errors": []},
 "ElDegreeMod": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Diminutive\">`Diminutive`</a>'.", "Unrecognized level 3 heading '### <a name=\"Magnifier\">`Magnifier`</a>'.", "Header title 'el-Degree Modification' does not match the file name 'ElDegreeMod'.", "No feature values found."]},
+"Foreing": {"type": "local", "values": [], "errors": ["Header title 'Foreign' does not match the file name 'Foreing'."]},
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur"], "errors": []},
