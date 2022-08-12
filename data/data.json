@@ -41,7 +41,8 @@
 "anāku": {"functions": [{"function": "cop.PRON", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "šarru dannu šar māt Aššur šar kibrāt arba’i Šamšu kiššat nišī [anāku]", "exampleen": "he is the king of Assyria", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-55-37", "lastchanger": "dan-zeman"}
 },
 "aln": {
-"jam": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "filmi [ishte] pa ze", "exampleen": "the movie was without sound", "comment": ""}], "status": "documented", "lastchanged": "2022-08-11-17-52-49", "lastchanger": "crebert"}
+"jam": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "filmi [ishte] pa ze", "exampleen": "the movie was without sound", "comment": ""}], "status": "documented", "lastchanged": "2022-08-11-17-52-49", "lastchanger": "crebert"},
+"kam": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the non-finite form of the main verb", "deficient": "", "example": "[ka] pa", "exampleen": "(he/she) has seen", "comment": ""}], "status": "documented", "lastchanged": "2022-08-12-13-21-26", "lastchanger": "crebert"}
 },
 "am": {
 "ሆን": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "ምን [ይሆን] የሚል ።", "exampleen": "What [will] happen?", "comment": ""}], "status": "documented", "lastchanged": "2022-05-30-21-37-24", "lastchanger": "dan-zeman"},
