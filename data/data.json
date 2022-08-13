@@ -1302,7 +1302,7 @@
 "پا": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "پڑ": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "چاہیئے": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"کر": {"functions": [{"function": "Aspect=Hab", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"کر": {"functions": [{"function": "Aspect=Dur", "rule": "combination of the auxiliary and a perfective participle of the main verb", "deficient": "", "example": "میں لمحہ بھر کے لیے ٹھٹک [کر] رہ گئی۔", "exampleen": "I was stunned for a moment.", "comment": "Habitual, not durative?"}], "status": "documented", "lastchanged": "2022-08-13-15-26-23", "lastchanger": "dan-zeman"},
 "ہو": {"functions": [{"function": "Mood=Nec", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "ہے": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "شکیل اور پروین بیگم کی حالت تشویشناک [ہے]۔", "exampleen": "The condition of Shakeel and Parveen Begum is critical.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-22-19-43", "lastchanger": "dan-zeman"}
 },
