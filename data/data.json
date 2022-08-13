@@ -1296,7 +1296,7 @@
 },
 "ur": {
 "تھا": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only", "example": "ان کے والد خاصے امیر [تھے]۔", "exampleen": "His father was very rich.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-22-23-38", "lastchanger": "dan-zeman"},
-"جا": {"functions": [{"function": "Voice=Pass", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"جا": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a perfective participle of the main verb", "deficient": "", "example": "چنانچہ دونوں کو حیدرآباد روانہ کیا [گیا]۔", "exampleen": "So both [were] sent to Hyderabad.", "comment": ""}], "status": "documented", "lastchanged": "2022-08-13-15-29-06", "lastchanger": "dan-zeman"},
 "رہ": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary, the stem of the main verb and the auxiliary hai-tha", "deficient": "", "example": "یہ آج بھی کینسر کی طرح پھیل [رہی] ہے۔", "exampleen": "It is still spreading like a cancer.", "comment": ""}], "status": "documented", "lastchanged": "2022-08-13-15-11-06", "lastchanger": "dan-zeman"},
 "سک": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "پا": {"functions": [{"function": "Mood=Pot", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
