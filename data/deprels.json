@@ -8726,6 +8726,7 @@
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:number": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"flat:time": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "foreign": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
