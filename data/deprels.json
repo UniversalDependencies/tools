@@ -8702,6 +8702,7 @@
 "compound:dir": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:pron": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:prt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"compound:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-31-13-42-54", "lastchanger": "dan-zeman"},
 "compound:verbnoun": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:vmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
