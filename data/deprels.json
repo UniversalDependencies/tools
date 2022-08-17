@@ -8685,6 +8685,7 @@
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"appos:nmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "auxpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
