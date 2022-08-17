@@ -1978,7 +1978,6 @@
 "vocative": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]}
 },
 "vi": {
-"acomp": {"type": "", "errors": ["Relation 'acomp' is not a subtype of any approved main type."]},
 "advcl:objective": {"type": "local", "errors": []},
 "advmod": {"type": "universal", "errors": []},
 "advmod:neg": {"type": "local", "errors": []},
