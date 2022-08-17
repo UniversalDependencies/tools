@@ -8698,6 +8698,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:amod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"compound:apr": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:pron": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:prt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-31-13-42-54", "lastchanger": "dan-zeman"},
