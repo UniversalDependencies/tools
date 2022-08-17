@@ -8721,6 +8721,7 @@
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"obj:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:about": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
