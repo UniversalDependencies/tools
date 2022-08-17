@@ -8724,6 +8724,7 @@
 "obj:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:about": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:iobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-31-13-41-08", "lastchanger": "dan-zeman"},
