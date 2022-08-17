@@ -8674,6 +8674,7 @@
 },
 "vi": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "acl:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "acl:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "acl:tonp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
