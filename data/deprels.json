@@ -8720,6 +8720,7 @@
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:nn": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
