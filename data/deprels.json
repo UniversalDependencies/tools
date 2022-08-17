@@ -8708,6 +8708,7 @@
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"mark:pcomp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
