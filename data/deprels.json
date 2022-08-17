@@ -8756,7 +8756,8 @@
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
+"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"xcomp:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "wbp": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
