@@ -241,6 +241,15 @@ def load_conllu(file,treebank_type):
                 # replace head positions of enhanced dependencies with parent word object -- GB
                 processed_deps = []
                 for (head,steps) in word.columns[DEPS] :       # (3,['conj:en','obj:voor'])
+                    # Empty nodes should have been collapsed during preprocessing.
+                    # If not, we cannot evaluate gapping correctly. However, people
+                    # may care just about basic trees and may not want to bother
+                    # with preprocessing.
+                    if '.' in head:
+                        if treebank_type['no_empty_nodes']:
+                            raise UDError("The collapsed CoNLL-U file still contains references to empty nodes: {}".format(_encode(line)))
+                        else:
+                            continue
                     hd = int(head)
                     parent = ud.words[sentence_start + hd -1] if hd else hd  # just assign '0' to parent for root cases
                     processed_deps.append((parent,steps))
@@ -352,9 +361,16 @@ def load_conllu(file,treebank_type):
             raise UDError("The CoNLL-U line does not contain 10 tab-separated columns: '{}'".format(_encode(line)))
 
         # Skip empty nodes
-        # After collapsing empty nodes into the enhancements, these should not occur --GB
+        # If we are evaluating enhanced graphs, empty nodes should have been collapsed
+        # during preprocessing and should not occur here. However, we cannot raise
+        # an exception if they do because the user may be interested just in the
+        # basic tree and may not want to bother with preprocessing.
         if "." in columns[ID]:
-            raise UDError("The collapsed CoNLL-U line still contains empty nodes: {}".format(_encode(line)))
+            # When launching this script, we can specify that empty nodes should be considered errors.
+            if treebank_type['no_empty_nodes']:
+                raise UDError("The collapsed CoNLL-U line still contains empty nodes: {}".format(_encode(line)))
+            else:
+                continue
 
         # Delete spaces from FORM, so gold.characters == system.characters
         # even if one of them tokenizes the space. Use any Unicode character
@@ -645,6 +661,7 @@ def evaluate_wrapper(args):
     treebank_type['no_control'] = 1 if '4' in enhancements else 0
     treebank_type['no_external_arguments_of_relative_clauses'] = 1 if '5' in enhancements else 0
     treebank_type['no_case_info'] = 1 if '6' in enhancements else 0
+    treebank_type['no_empty_nodes'] = args.no_empty_nodes
 
     # Load CoNLL-U files
     gold_ud = load_conllu_file(args.gold_file,treebank_type)
@@ -664,6 +681,8 @@ def main():
                         help="Print raw counts of correct/gold/system/aligned words instead of prec/rec/F1 for all metrics.")
     parser.add_argument("--enhancements", type=str, default='0',
                         help="Level of enhancements in the gold data (see guidelines) 0=all (default), 1=no gapping, 2=no shared parents, 3=no shared dependents 4=no control, 5=no external arguments, 6=no lemma info, combinations: 12=both 1 and 2 apply, etc.")
+    parser.add_argument("--no-empty-nodes", default=False,
+                        help="Empty nodes have been collapsed (needed to correctly evaluate enhanced/gapping). Raise exception if an empty node is encountered.")
     args = parser.parse_args()
 
     # Evaluate
