@@ -156,7 +156,7 @@ def process_enhanced_deps(deps) :
     return edeps
 
 # Load given CoNLL-U file into internal representation
-def load_conllu(file,treebank_type):
+def load_conllu(file, treebank_type):
     # Internal representation classes
     class UDRepresentation:
         def __init__(self):
@@ -248,7 +248,7 @@ def load_conllu(file,treebank_type):
                     # may care just about basic trees and may not want to bother
                     # with preprocessing.
                     if '.' in head:
-                        if treebank_type['no_empty_nodes']:
+                        if treebank_type.get('no_empty_nodes', False):
                             raise UDError("The collapsed CoNLL-U file still contains references to empty nodes at line {}: {}".format(line_idx, _encode(line)))
                         else:
                             continue
@@ -260,7 +260,7 @@ def load_conllu(file,treebank_type):
                 # ignore rel>rel dependencies, and instead append the original hd/rel edge
                 # note that this also ignores other extensions (like adding lemma's)
                 # note that this sometimes introduces duplicates (if orig hd/rel was already included in DEPS)
-                if (treebank_type['no_gapping']) : # enhancement 1
+                if treebank_type.get('no_gapping', False) : # enhancement 1
                     processed_deps = []
                     for (parent,steps) in enhanced_deps :
                         if len(steps) > 1 :
@@ -273,7 +273,7 @@ def load_conllu(file,treebank_type):
                     enhanced_deps = processed_deps
 
                 # for a given conj node, any rel other than conj in DEPS can be ignored
-                if treebank_type['no_shared_parents_in_coordination'] :   # enhancement  2
+                if treebank_type.get('no_shared_parents_in_coordination', False) :   # enhancement  2
                     for (hd,steps) in enhanced_deps :
                         if len(steps) == 1 and steps[0].startswith('conj') :
                             enhanced_deps = [(hd,steps)]
@@ -281,7 +281,7 @@ def load_conllu(file,treebank_type):
                 # deprels not matching ud_hd/ud_dep are spurious.
                 #  czech/pud estonian/ewt syntagrus finnish/pud
                 # TO DO: treebanks that do not mark xcomp and relcl subjects
-                if treebank_type['no_shared_dependents_in_coordination'] : # enhancement  3
+                if treebank_type.get('no_shared_dependents_in_coordination', False) : # enhancement  3
                     processed_deps = []
                     for (hd,steps) in enhanced_deps :
                         duplicate = 0
@@ -295,7 +295,7 @@ def load_conllu(file,treebank_type):
                 # if treebank does not have control relations: subjects of xcomp parents in system are to be skipped
                 # note that rel is actually a path sometimes rel1>rel2 in theory rel2 could be subj?
                 # from lassy-small: 7:conj:en>nsubj:pass|7:conj:en>nsubj:xsubj    (7,['conj:en','nsubj:xsubj'])
-                if (treebank_type['no_control']) : # enhancement 4
+                if treebank_type.get('no_control', False) : # enhancement 4
                     processed_deps = []
                     for (parent,steps) in enhanced_deps :
                         include = 1
@@ -307,7 +307,7 @@ def load_conllu(file,treebank_type):
                             processed_deps.append((parent,steps))
                     enhanced_deps = processed_deps
 
-                if (treebank_type['no_external_arguments_of_relative_clauses']) : # enhancement 5
+                if treebank_type.get('no_external_arguments_of_relative_clauses', False) : # enhancement 5
                     processed_deps = []
                     for (parent,steps) in enhanced_deps :
                         if (steps[0] == 'ref') :
@@ -322,7 +322,7 @@ def load_conllu(file,treebank_type):
                     enhanced_deps = processed_deps
 
                 # treebanks where no lemma info has been added
-                if treebank_type['no_case_info'] :  # enhancement number 6
+                if treebank_type.get('no_case_info', False) :  # enhancement number 6
                     processed_deps = []
                     for (hd,steps) in enhanced_deps :
                         processed_steps = []
@@ -369,7 +369,7 @@ def load_conllu(file,treebank_type):
         # basic tree and may not want to bother with preprocessing.
         if "." in columns[ID]:
             # When launching this script, we can specify that empty nodes should be considered errors.
-            if treebank_type['no_empty_nodes']:
+            if treebank_type.get('no_empty_nodes', False):
                 raise UDError("The collapsed CoNLL-U line still contains empty nodes at line {}: {}".format(line_idx, _encode(line)))
             else:
                 continue
@@ -651,7 +651,10 @@ def evaluate(gold_ud, system_ud):
     }
 
 
-def load_conllu_file(path,treebank_type):
+def load_conllu_file(path, treebank_type=None):
+    if treebank_type is None:
+        treebank_type = {}
+
     _file = open(path, mode="r", **({"encoding": "utf-8"} if sys.version_info >= (3, 0) else {}))
     return load_conllu(_file,treebank_type)
 
@@ -667,9 +670,46 @@ def evaluate_wrapper(args):
     treebank_type['no_empty_nodes'] = args.no_empty_nodes
 
     # Load CoNLL-U files
-    gold_ud = load_conllu_file(args.gold_file,treebank_type)
-    system_ud = load_conllu_file(args.system_file,treebank_type)
+    gold_ud = load_conllu_file(args.gold_file, treebank_type)
+    system_ud = load_conllu_file(args.system_file, treebank_type)
     return evaluate(gold_ud, system_ud)
+
+def build_evaluation_table(evaluation, verbose, counts):
+    text = []
+
+    # Print the evaluation
+    if not verbose and not counts:
+        text.append("LAS F1 Score: {:.2f}".format(100 * evaluation["LAS"].f1))
+        text.append("ELAS F1 Score: {:.2f}".format(100 * evaluation["ELAS"].f1))
+        text.append("EULAS F1 Score: {:.2f}".format(100 * evaluation["EULAS"].f1))
+
+        text.append("MLAS Score: {:.2f}".format(100 * evaluation["MLAS"].f1))
+        text.append("BLEX Score: {:.2f}".format(100 * evaluation["BLEX"].f1))
+    else:
+        if counts:
+            text.append("Metric     | Correct   |      Gold | Predicted | Aligned")
+        else:
+            text.append("Metric     | Precision |    Recall |  F1 Score | AligndAcc")
+        text.append("-----------+-----------+-----------+-----------+-----------")
+        for metric in["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "EULAS", "CLAS", "MLAS", "BLEX"]:
+            if counts:
+                text.append("{:11}|{:10} |{:10} |{:10} |{:10}".format(
+                    metric,
+                    evaluation[metric].correct,
+                    evaluation[metric].gold_total,
+                    evaluation[metric].system_total,
+                    evaluation[metric].aligned_total or (evaluation[metric].correct if metric == "Words" else "")
+                ))
+            else:
+                text.append("{:11}|{:10.2f} |{:10.2f} |{:10.2f} |{}".format(
+                    metric,
+                    100 * evaluation[metric].precision,
+                    100 * evaluation[metric].recall,
+                    100 * evaluation[metric].f1,
+                    "{:10.2f}".format(100 * evaluation[metric].aligned_accuracy) if evaluation[metric].aligned_accuracy is not None else ""
+                ))
+
+    return "\n".join(text)
 
 def main():
     # Parse arguments
@@ -690,38 +730,8 @@ def main():
 
     # Evaluate
     evaluation = evaluate_wrapper(args)
-
-    # Print the evaluation
-    if not args.verbose and not args.counts:
-        print("LAS F1 Score: {:.2f}".format(100 * evaluation["LAS"].f1))
-        print("ELAS F1 Score: {:.2f}".format(100 * evaluation["ELAS"].f1))
-        print("EULAS F1 Score: {:.2f}".format(100 * evaluation["EULAS"].f1))
-
-        print("MLAS Score: {:.2f}".format(100 * evaluation["MLAS"].f1))
-        print("BLEX Score: {:.2f}".format(100 * evaluation["BLEX"].f1))
-    else:
-        if args.counts:
-            print("Metric     | Correct   |      Gold | Predicted | Aligned")
-        else:
-            print("Metric     | Precision |    Recall |  F1 Score | AligndAcc")
-        print("-----------+-----------+-----------+-----------+-----------")
-        for metric in["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "EULAS", "CLAS", "MLAS", "BLEX"]:
-            if args.counts:
-                print("{:11}|{:10} |{:10} |{:10} |{:10}".format(
-                    metric,
-                    evaluation[metric].correct,
-                    evaluation[metric].gold_total,
-                    evaluation[metric].system_total,
-                    evaluation[metric].aligned_total or (evaluation[metric].correct if metric == "Words" else "")
-                ))
-            else:
-                print("{:11}|{:10.2f} |{:10.2f} |{:10.2f} |{}".format(
-                    metric,
-                    100 * evaluation[metric].precision,
-                    100 * evaluation[metric].recall,
-                    100 * evaluation[metric].f1,
-                    "{:10.2f}".format(100 * evaluation[metric].aligned_accuracy) if evaluation[metric].aligned_accuracy is not None else ""
-                ))
+    results = build_evaluation_table(evaluation, args.verbose, args.counts)
+    print(results)
 
 if __name__ == "__main__":
     main()
