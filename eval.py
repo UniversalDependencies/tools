@@ -491,7 +491,7 @@ def evaluate(gold_ud, system_ud):
 
         return Score(gold, system, correct, aligned)
 
-    def enhanced_alignment_score(alignment,EULAS):
+    def enhanced_alignment_score(alignment, EULAS):
         # count all matching enhanced deprels in gold, system GB
         # gold and system = sum of gold and predicted deps
         # parents are pointers to word object, make sure to compare system parent with aligned word in gold in cases where
@@ -502,24 +502,20 @@ def evaluate(gold_ud, system_ud):
         system = 0
         for system_word in alignment.system_words :
             system += len(system_word.columns[DEPS])
-        # NB aligned does not play a role in computing f1 score -- GB
-        aligned = len(alignment.matched_words)
         correct = 0
         for words in alignment.matched_words:
-                gold_deps = words.gold_word.columns[DEPS]
-                system_deps = words.system_word.columns[DEPS]
-                for (parent,dep) in gold_deps :
-                    eulas_dep = [d.split(':')[0] for d in dep]
-                    for (sparent,sdep) in system_deps:
-                        eulas_sdep = [d.split(':')[0] for d in sdep]
-                        if dep == sdep or ( eulas_dep == eulas_sdep and EULAS ) :
-                            if parent == alignment.matched_words_map.get(sparent,"NotAligned") :
-                                correct += 1
-                            elif (parent == 0 and sparent == 0) :  # cases where parent is root
-                                correct += 1
-
-        return Score(gold, system, correct, aligned)
-
+            gold_deps = words.gold_word.columns[DEPS]
+            system_deps = words.system_word.columns[DEPS]
+            for (parent, dep) in gold_deps :
+                eulas_dep = [d.split(':')[0] for d in dep]
+                for (sparent, sdep) in system_deps:
+                    eulas_sdep = [d.split(':')[0] for d in sdep]
+                    if dep == sdep or ( eulas_dep == eulas_sdep and EULAS ) :
+                        if parent == alignment.matched_words_map.get(sparent, 'NotAligned') :
+                            correct += 1
+                        elif (parent == 0 and sparent == 0) :  # cases where parent is root
+                            correct += 1
+        return Score(gold, system, correct)
 
     def beyond_end(words, i, multiword_span_end):
         if i >= len(words):
@@ -636,9 +632,8 @@ def evaluate(gold_ud, system_ud):
         "Lemmas": alignment_score(alignment, lambda w, ga: w.columns[LEMMA] if ga(w).columns[LEMMA] != "_" else "_"),
         "UAS": alignment_score(alignment, lambda w, ga: ga(w.parent)),
         "LAS": alignment_score(alignment, lambda w, ga: (ga(w.parent), w.columns[DEPREL])),
-        # include enhanced DEPS score -- GB
-        "ELAS": enhanced_alignment_score(alignment,0),
-        "EULAS": enhanced_alignment_score(alignment,1),
+        "ELAS": enhanced_alignment_score(alignment, 0),
+        "EULAS": enhanced_alignment_score(alignment, 1),
         "CLAS": alignment_score(alignment, lambda w, ga: (ga(w.parent), w.columns[DEPREL]),
                                 filter_fn=lambda w: w.is_content_deprel),
         "MLAS": alignment_score(alignment, lambda w, ga: (ga(w.parent), w.columns[DEPREL], w.columns[UPOS], w.columns[FEATS],
@@ -682,7 +677,6 @@ def build_evaluation_table(evaluation, verbose, counts):
         text.append("LAS F1 Score: {:.2f}".format(100 * evaluation["LAS"].f1))
         text.append("ELAS F1 Score: {:.2f}".format(100 * evaluation["ELAS"].f1))
         text.append("EULAS F1 Score: {:.2f}".format(100 * evaluation["EULAS"].f1))
-
         text.append("MLAS Score: {:.2f}".format(100 * evaluation["MLAS"].f1))
         text.append("BLEX Score: {:.2f}".format(100 * evaluation["BLEX"].f1))
     else:
@@ -691,7 +685,7 @@ def build_evaluation_table(evaluation, verbose, counts):
         else:
             text.append("Metric     | Precision |    Recall |  F1 Score | AligndAcc")
         text.append("-----------+-----------+-----------+-----------+-----------")
-        for metric in["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "EULAS", "CLAS", "MLAS", "BLEX"]:
+        for metric in ["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "EULAS", "CLAS", "MLAS", "BLEX"]:
             if counts:
                 text.append("{:11}|{:10} |{:10} |{:10} |{:10}".format(
                     metric,
