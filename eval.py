@@ -669,23 +669,27 @@ def evaluate_wrapper(args):
     system_ud = load_conllu_file(args.system_file, treebank_type)
     return evaluate(gold_ud, system_ud)
 
-def build_evaluation_table(evaluation, verbose, counts):
+def build_evaluation_table(evaluation, verbose, counts, enhanced):
     text = []
 
     # Print the evaluation
     if not verbose and not counts:
         text.append("LAS F1 Score: {:.2f}".format(100 * evaluation["LAS"].f1))
-        text.append("ELAS F1 Score: {:.2f}".format(100 * evaluation["ELAS"].f1))
-        text.append("EULAS F1 Score: {:.2f}".format(100 * evaluation["EULAS"].f1))
         text.append("MLAS Score: {:.2f}".format(100 * evaluation["MLAS"].f1))
         text.append("BLEX Score: {:.2f}".format(100 * evaluation["BLEX"].f1))
+        if enhanced:
+            text.append("ELAS F1 Score: {:.2f}".format(100 * evaluation["ELAS"].f1))
+            text.append("EULAS F1 Score: {:.2f}".format(100 * evaluation["EULAS"].f1))
     else:
         if counts:
             text.append("Metric     | Correct   |      Gold | Predicted | Aligned")
         else:
             text.append("Metric     | Precision |    Recall |  F1 Score | AligndAcc")
         text.append("-----------+-----------+-----------+-----------+-----------")
-        for metric in ["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "ELAS", "EULAS", "CLAS", "MLAS", "BLEX"]:
+        metrics = ["Tokens", "Sentences", "Words", "UPOS", "XPOS", "UFeats", "AllTags", "Lemmas", "UAS", "LAS", "CLAS", "MLAS", "BLEX"]
+        if enhanced:
+            metrics += ["ELAS", "EULAS"]
+        for metric in metrics:
             if counts:
                 text.append("{:11}|{:10} |{:10} |{:10} |{:10}".format(
                     metric,
@@ -708,23 +712,25 @@ def build_evaluation_table(evaluation, verbose, counts):
 def main():
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("gold_file", type=str,
-                        help="Name of the CoNLL-U file with the gold data.")
-    parser.add_argument("system_file", type=str,
-                        help="Name of the CoNLL-U file with the predicted data.")
-    parser.add_argument("--verbose", "-v", default=False, action="store_true",
-                        help="Print all metrics.")
-    parser.add_argument("--counts", "-c", default=False, action="store_true",
-                        help="Print raw counts of correct/gold/system/aligned words instead of prec/rec/F1 for all metrics.")
-    parser.add_argument("--enhancements", type=str, default='0',
-                        help="Level of enhancements in the gold data (see guidelines) 0=all (default), 1=no gapping, 2=no shared parents, 3=no shared dependents 4=no control, 5=no external arguments, 6=no lemma info, combinations: 12=both 1 and 2 apply, etc.")
-    parser.add_argument("--no-empty-nodes", default=False,
-                        help="Empty nodes have been collapsed (needed to correctly evaluate enhanced/gapping). Raise exception if an empty node is encountered.")
+    parser.add_argument('gold_file', type=str,
+                        help='Name of the CoNLL-U file with the gold data.')
+    parser.add_argument('system_file', type=str,
+                        help='Name of the CoNLL-U file with the predicted data.')
+    parser.add_argument('--verbose', '-v', default=False, action='store_true',
+                        help='Print all metrics.')
+    parser.add_argument('--counts', '-c', default=False, action='store_true',
+                        help='Print raw counts of correct/gold/system/aligned words instead of precision/recall/F1 for all metrics.')
+    parser.add_argument('--no-enhanced', dest='enhanced', action='store_false', default=True,
+                        help='Turn off evaluation of enhanced dependencies.')
+    parser.add_argument('--enhancements', type=str, default='0',
+                        help='Level of enhancements in the gold data (see guidelines) 0=all (default), 1=no gapping, 2=no shared parents, 3=no shared dependents 4=no control, 5=no external arguments, 6=no lemma info, combinations: 12=both 1 and 2 apply, etc.')
+    parser.add_argument('--no-empty-nodes', default=False,
+                        help='Empty nodes have been collapsed (needed to correctly evaluate enhanced/gapping). Raise exception if an empty node is encountered.')
     args = parser.parse_args()
 
     # Evaluate
     evaluation = evaluate_wrapper(args)
-    results = build_evaluation_table(evaluation, args.verbose, args.counts)
+    results = build_evaluation_table(evaluation, args.verbose, args.counts, args.enhanced)
     print(results)
 
 if __name__ == "__main__":
