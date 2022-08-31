@@ -347,10 +347,12 @@ def load_conllu(file, treebank_type):
             if len(ud.words) == sentence_start :
                 raise UDError("There is a sentence with 0 tokens (possibly a double blank line) at line %d" % line_idx)
 
-
             # Check there is a single root node
-            if len([word for word in ud.words[sentence_start:] if word.parent is None]) != 1:
-                raise UDError("There are multiple roots in the sentence that ends at %d" % line_idx)
+            if len([word for word in ud.words[sentence_start:] if word.parent is None]) == 0:
+                raise UDError("There are no roots in the sentence that ends at %d" % line_idx)
+            if not treebank_type.get('multiple_roots_okay', False):
+                if len([word for word in ud.words[sentence_start:] if word.parent is None]) > 1:
+                    raise UDError("There are multiple roots in the sentence that ends at %d" % line_idx)
 
             # End the sentence
             ud.sentences[-1].end = index
@@ -663,6 +665,7 @@ def evaluate_wrapper(args):
     treebank_type['no_external_arguments_of_relative_clauses'] = 1 if '5' in enhancements else 0
     treebank_type['no_case_info'] = 1 if '6' in enhancements else 0
     treebank_type['no_empty_nodes'] = args.no_empty_nodes
+    treebank_type['multiple_roots_okay'] = args.multiple_roots_okay
 
     # Load CoNLL-U files
     gold_ud = load_conllu_file(args.gold_file, treebank_type)
@@ -726,6 +729,8 @@ def main():
                         help='Level of enhancements in the gold data (see guidelines) 0=all (default), 1=no gapping, 2=no shared parents, 3=no shared dependents 4=no control, 5=no external arguments, 6=no lemma info, combinations: 12=both 1 and 2 apply, etc.')
     parser.add_argument('--no-empty-nodes', default=False,
                         help='Empty nodes have been collapsed (needed to correctly evaluate enhanced/gapping). Raise exception if an empty node is encountered.')
+    parser.add_argument('--multiple-roots-okay', default=False, action='store_true',
+                        help='A single sentence can have multiple nodes with HEAD=0.')
     args = parser.parse_args()
 
     # Evaluate
