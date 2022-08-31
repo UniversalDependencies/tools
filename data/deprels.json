@@ -7555,7 +7555,7 @@
 },
 "sl": {
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
