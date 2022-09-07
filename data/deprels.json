@@ -8696,6 +8696,7 @@
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"clf:det": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound-Z": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "compound:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
