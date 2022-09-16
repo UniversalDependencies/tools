@@ -2007,7 +2007,6 @@
 "acl:subj": {"type": "local", "errors": []},
 "acl:tmod": {"type": "local", "errors": []},
 "acl:tonp": {"type": "local", "errors": []},
-"acomp": {"type": "", "errors": ["Relation 'acomp' is not a subtype of any approved main type."]},
 "advcl:objective": {"type": "local", "errors": []},
 "advmod": {"type": "universal", "errors": []},
 "advmod:adj": {"type": "local", "errors": []},
