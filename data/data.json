@@ -1363,6 +1363,7 @@
 },
 "yrl": {
 "ikú": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Kunhã puranga [uikú].", "exampleen": "The woman is beautiful.", "comment": "The copula is used with stage-level predicates. The absence of the copula implies a individual-level predicate."}, {"function": "Aspect=Prog", "rule": "Both auxiliary and main verb are finite.", "deficient": "", "example": "Yandé yapurungitá [yaikú] nheengatú.", "exampleen": "We are speaking Nheengatu.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-19-18-03-40", "lastchanger": "leoalenc"},
+"puderi": {"functions": [{"function": "Mood=Pot", "rule": "Both auxiliary and main verb are finite.", "deficient": "", "example": "Ti [yapuderi] yaú timbiú irusanga.", "exampleen": "We cannot eat cold food.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-19-18-07-56", "lastchanger": "leoalenc"},
 "sú": {"functions": [{"function": "Tense=Fut", "rule": "combination of the finite forms of both auxiliary and main verb", "deficient": "", "example": "Apigawa [usú] upurungitá yané irũ.", "exampleen": "The man will talk to us.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-19-17-49-24", "lastchanger": "leoalenc"}
 },
 "yue": {
