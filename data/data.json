@@ -758,6 +758,7 @@
 },
 "ko": {
 "이": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "지난 6일은 24절기의 세번째인 경칩(惊蛰)[이었다].", "exampleen": "The last 6 days was the third of the 24 seasons, Gyeong-chip.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-28-11-32-58", "lastchanger": "dan-zeman"},
+"있": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "맞물리면서 외국자본의 유입이 급격히 늘고 [있다].", "exampleen": "As a result, the inflow of foreign capital [is] rapidly increasing.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-29-18-27-20", "lastchanger": "dan-zeman"},
 "하": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "감사가 이뤄져야 [한다].", "exampleen": "Audit [should] be done.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-29-17-55-13", "lastchanger": "dan-zeman"}
 },
 "koi": {
