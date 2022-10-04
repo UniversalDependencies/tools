@@ -4503,6 +4503,7 @@
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-03-24-13-32-08", "lastchanger": "Stormur"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-04-20-17-04", "lastchanger": "Stormur"},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nummod:gov": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-03-24-13-33-07", "lastchanger": "Stormur"},
