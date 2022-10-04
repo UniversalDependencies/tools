@@ -3688,6 +3688,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubjpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
