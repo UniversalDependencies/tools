@@ -1482,14 +1482,35 @@ def validate_single_subject(id, tree):
     heads); however, the outer subjects should be attached as [nc]subj:outer.
     See https://universaldependencies.org/changes.html#multiple-subjects.
     See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
+    Strictly speaking, :outer is optional because it is a subtype, and some
+    treebanks may want to avoid it. For example, in Coptic Scriptorium, there
+    is only one occurrence in dev, one in test, and none in train, so it would
+    be impossible to train a parser that gets it right. For that reason, it is
+    possible to replace the :outer subtype with Subject=Outer in MISC. The MISC
+    attribute is just a directive for the validator and no parser is expected
+    to predict it.
     """
-    subjects = sorted([x for x in tree['children'][id] if re.search(r'subj', lspec2ud(tree['nodes'][x][DEPREL])) and not re.match(r'^[nc]subj:outer$', tree['nodes'][x][DEPREL])])
+
+    def is_inner_subject(node):
+        """
+        Takes a node, i.e., tree['nodes'][x]. Tells whether the node's deprel is
+        nsubj or csubj without the :outer subtype. Alternatively, instead of the
+        :outer subtype, the node could have Subject=Outer in MISC.
+        """
+        if not re.search(r'subj', lspec2ud(node[DEPREL])):
+            return False
+        if re.match(r'^[nc]subj:outer$', node[DEPREL]):
+            return False
+        if len([y for y in node[MISC].split('|') if y == 'Subject=Outer']) > 0:
+            return False
+        return True
+
+    subjects = sorted([x for x in tree['children'][id] if is_inner_subject(tree['nodes'][x])])
     if len(subjects) > 1:
-        # We test for more than 2, but in the error message we still say more than 1, so that we do not have to explain the exceptions.
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
-        testmessage = "Node has more than one subject that is not subtyped as ':outer': %s. Outer subjects are allowed if a clause acts as the predicate of another clause." % str(subjects)
+        testmessage = "Node has multiple subjects not subtyped as ':outer': %s. Outer subjects are allowed if a clause acts as the predicate of another clause." % str(subjects)
         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
 
 def validate_orphan(id, tree):
