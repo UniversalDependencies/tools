@@ -4467,6 +4467,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj:expl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"cop:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-04-20-17-21", "lastchanger": "Stormur"},
@@ -4530,8 +4531,8 @@
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
+"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"xcomp:pred": {"type": "local", "doc": "none", "permitted": 0, "errors": []}
 },
 "lad": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
