@@ -4491,7 +4491,7 @@
 "dislocated:nmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "dislocated:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"dislocated:obl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"dislocated:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
