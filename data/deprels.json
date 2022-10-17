@@ -4481,7 +4481,7 @@
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated:acl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"dislocated:advcl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"dislocated:advcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:advmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "dislocated:amod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "dislocated:aux": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
