@@ -99,7 +99,14 @@ cat *.conllu | perl mwtoken-stats.pl > mwtoken-stats.txt
 
 
 ## [enhanced_graph_properties.pl](https://github.com/UniversalDependencies/tools/blob/master/enhanced_graph_properties.pl)
-Reads a CoNLL-U file, collects statistics about the enhanced graphs in the DEPS column and prints them. This script uses the modules Graph.pm and Node.pm that lie in the same folder. On UNIX-like systems it should be able to tell Perl where to find the modules even if the script is invoked from a remote folder. If that does not work, use `perl -I libfolder script` to invoke it. Also note that other third-party modules are needed that are not automatically included in the installation of Perl: Moose, MooseX::SemiAffordanceAccessor, List::MoreUtils. You may need to install these modules using the `cpan` tool (simply go to commandline and type `sudo cpan Moose`).
+
+Reads a CoNLL-U file, collects statistics about the enhanced graphs in the DEPS column and prints
+them. This script uses the modules Graph.pm and Node.pm that lie in the same folder. On UNIX-like
+systems it should be able to tell Perl where to find the modules even if the script is invoked from
+a remote folder. If that does not work, use `perl -I libfolder script` to invoke it. Also note that
+other third-party modules are needed that are not automatically included in the installation of
+Perl: Moose, MooseX::SemiAffordanceAccessor, List::MoreUtils. You may need to install these modules
+using the `cpan` tool (simply go to commandline and type `sudo cpan Moose`).
 ```
 cat *.conllu | perl enhanced_graph_properties.pl > eud-stats.txt
 ```
@@ -107,11 +114,18 @@ cat *.conllu | perl enhanced_graph_properties.pl > eud-stats.txt
 
 
 ## [enhanced_collapse_empty_nodes.pl](https://github.com/UniversalDependencies/tools/blob/master/enhanced_collapse_empty_nodes.pl)
-Reads a CoNLL-U file, removes empty nodes and adjusts the enhanced graphs so
-that a path traversing one or more empty nodes is contracted into a single edge: if there was a "conj" edge from node 27 to node 33.1, and a **nsubj** edge from node 33.1 to node 33, the resulting graph will have an edge from 27 to 33, labeled **conj>nsubj**
 
-This script uses the modules Graph.pm and Node.pm that lie in the same folder.
-On UNIX-like systems it should be able to tell Perl where to find the modules even if the script is invoked from a remote folder. If that does not work, use `perl -I libfolder script` to invoke it. Also note that other third-party modules are needed that are not automatically included in the installation of Perl: Moose, MooseX::SemiAffordanceAccessor, List::MoreUtils. You may need to install these modules using the `cpan` tool (simply go to commandline and type `sudo cpan Moose`).
+Reads a CoNLL-U file, removes empty nodes and adjusts the enhanced graphs so that a path traversing
+one or more empty nodes is contracted into a single edge: if there was a "conj" edge from node 27
+to node 33.1, and a **nsubj** edge from node 33.1 to node 33, the resulting graph will have an edge
+from 27 to 33, labeled **conj>nsubj**
+
+This script uses the modules Graph.pm and Node.pm that lie in the same folder. On UNIX-like systems
+it should be able to tell Perl where to find the modules even if the script is invoked from a
+remote folder. If that does not work, use `perl -I libfolder script` to invoke it. Also note that
+other third-party modules are needed that are not automatically included in the installation of
+Perl: Moose, MooseX::SemiAffordanceAccessor, List::MoreUtils. You may need to install these modules
+using the `cpan` tool (simply go to commandline and type `sudo cpan Moose`).
 ```
 perl enhanced_collapse_empty_nodes.pl enhanced.conllu > collapsed.conllu
 ```
@@ -119,21 +133,34 @@ perl enhanced_collapse_empty_nodes.pl enhanced.conllu > collapsed.conllu
 
 
 ## [overlap.py](https://github.com/UniversalDependencies/tools/blob/master/overlap.py)
-Compares two CoNLL-U files and searches for sentences that occur in both (verbose duplicates of token sequences). Some treebanks, especially those where the original text had been acquired from the web, contained duplicate documents that
-were found at different addresses and downloaded twice. This tool helps to find out whether one of the duplicates fell in the training data and the other in development or test. The output has to be verified manually, as some “duplicates”
-are repetitions that occur naturally in the language (in particular short sentences such as “Thank you.”)
 
-The script can also help to figure out whether training-dev-test data split has been changed between two releases so that a previously training sentence is now in test or vice versa. That is something we want to avoid.
+Compares two CoNLL-U files and searches for sentences that occur in both (verbose duplicates of
+token sequences). Some treebanks, especially those where the original text had been acquired from
+the web, contained duplicate documents that were found at different addresses and downloaded twice.
+This tool helps to find out whether one of the duplicates fell in the training data and the other
+in development or test. The output has to be verified manually, as some “duplicates” are
+repetitions that occur naturally in the language (in particular short sentences such as “Thank you.”)
+
+The script can also help to figure out whether training-dev-test data split has been changed
+between two releases so that a previously training sentence is now in test or vice versa. That is
+something we want to avoid.
 
 
 
 ## [find_duplicate_sentences.pl](https://github.com/UniversalDependencies/tools/blob/master/find_duplicate_sentences.pl) & [remove_duplicate_sentences.pl](https://github.com/UniversalDependencies/tools/blob/master/remove_duplicate_sentences.pl)
-Similar to overlap.py but it works with the sentence-level attribute **text**. It remembers all sentences from STDIN or from input files whose names are given as arguments. The find script prints the duplicate sentences (ordered by length and number of occurrences) to STDOUT. The remove script works as a filter: it prints the CoNLL-U data from the input, except for the second and any subsequent occurrence of the duplicate sentences.
+
+Similar to overlap.py but it works with the sentence-level attribute **text**. It remembers all
+sentences from STDIN or from input files whose names are given as arguments. The find script prints
+the duplicate sentences (ordered by length and number of occurrences) to STDOUT. The remove script
+works as a filter: it prints the CoNLL-U data from the input, except for the second and any
+subsequent occurrence of the duplicate sentences.
 
 
 
 ## [conllu_to_conllx.pl](https://github.com/UniversalDependencies/tools/blob/master/conllu_to_conllx.pl)
-Converts a file in the CoNLL-U format to the old CoNLL-X format. Useful with old tools (e.g. parsers) that require CoNLL-X as their input. Usage:
+
+Converts a file in the CoNLL-U format to the old CoNLL-X format. Useful with old tools (e.g.
+parsers) that require CoNLL-X as their input. Usage:
 ```
 perl conllu_to_conllx.pl < file.conllu > file.conll
 ```
@@ -142,7 +169,9 @@ perl conllu_to_conllx.pl < file.conllu > file.conll
 
 ## [restore_conllu_lines.pl](https://github.com/UniversalDependencies/tools/blob/master/restore_conllu_lines.pl)
 
-Merges a CoNLL-X and a CoNLL-U file, taking only the CoNLL-U-specific lines from CoNLL-U. Can be used to merge the output of an old parser that only works with CoNLL-X with the original annotation that the parser could not read.
+Merges a CoNLL-X and a CoNLL-U file, taking only the CoNLL-U-specific lines from CoNLL-U. Can be
+used to merge the output of an old parser that only works with CoNLL-X with the original annotation
+that the parser could not read.
 ```
 restore_conllu_lines.pl file-parsed.conll file.conllu
 ```
@@ -151,9 +180,15 @@ restore_conllu_lines.pl file-parsed.conll file.conllu
 
 ## [conllu_to_text.pl](https://github.com/UniversalDependencies/tools/blob/master/conllu_to_text.pl)
 
-Converts a file in the CoNLL-U format to plain text, word-wrapped to lines of 80 characters (but the output line will be longer if there is a word that is longer than the limit). The script can use either the sentence-level text attribute, or the word forms plus the SpaceAfter=No MISC attribute to output detokenized text. It also observes the sentence-level newdoc and newpar attributes, and the NewPar=Yes MISC attribute, if they are present, and prints an empty line between paragraphs or documents.
+Converts a file in the CoNLL-U format to plain text, word-wrapped to lines of 80 characters (but
+the output line will be longer if there is a word that is longer than the limit). The script can
+use either the sentence-level text attribute, or the word forms plus the SpaceAfter=No MISC
+attribute to output detokenized text. It also observes the sentence-level newdoc and newpar
+attributes, and the NewPar=Yes MISC attribute, if they are present, and prints an empty line
+between paragraphs or documents.
 
-Optionally, the script takes the language code as a parameter. Codes 'zh' and 'ja' will trigger a different word-wrapping algorithm that is more suitable for Chinese and Japanese.
+Optionally, the script takes the language code as a parameter. Codes 'zh' and 'ja' will trigger
+a different word-wrapping algorithm that is more suitable for Chinese and Japanese.
 
 **Usage**:
 ```
