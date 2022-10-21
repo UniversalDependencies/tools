@@ -468,6 +468,7 @@ sub collect_features_from_conllu_file
     my $file = shift; # relative or full path
     my $hash = shift; # ref to hash where the statistics are collected
     my $key = shift; # identification of the current dataset in the hash (e.g. language code)
+    my $multivalues = shift; # if true, multivalues (e.g. PronType=Int,Rel) will not be split
     open(FILE, $file) or die("Cannot read $file: $!");
     while(<FILE>)
     {
@@ -483,7 +484,15 @@ sub collect_features_from_conllu_file
                 {
                     my ($f, $vv) = split(/=/, $feature);
                     # There may be several values delimited by commas.
-                    my @values = split(/,/, $vv);
+                    my @values;
+                    if($multivalues)
+                    {
+                        $values[0] = $vv;
+                    }
+                    else
+                    {
+                        @values = split(/,/, $vv);
+                    }
                     foreach my $v (@values)
                     {
                         $hash->{$f}{$v}{$key}++;
@@ -506,12 +515,13 @@ sub collect_features_from_ud_folder
     my $udfolder = shift; # relative or full path
     my $hash = shift; # ref to hash where the statistics are collected
     my $key = shift; # identification of the current dataset in the hash (e.g. language code)
+    my $multivalues = shift; # if true, multivalues (e.g. PronType=Int,Rel) will not be split
     opendir(DIR, $udfolder) or die("Cannot read the contents of '$udfolder': $!");
     my @files = sort(grep {-f "$udfolder/$_" && m/.+\.conllu$/} (readdir(DIR)));
     closedir(DIR);
     foreach my $file (@files)
     {
-        collect_features_from_conllu_file("$udfolder/$file", $hash, $key);
+        collect_features_from_conllu_file("$udfolder/$file", $hash, $key, $multivalues);
     }
 }
 
