@@ -472,7 +472,7 @@
 "eme": {
 "Accomp": {"type": "local", "values": ["Yes"], "errors": []},
 "Also": {"type": "local", "values": ["Yes"], "errors": []},
-"Aspect": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Cont\">`Continuative`</a>: Cont'.", "Unrecognized level 3 heading '### <a name=\"Compl\">`Completive`</a>: Compl'.", "Unrecognized level 3 heading '### <a name=\"Iter\">`Iterative`</a>: Iter'.", "No feature values found."]},
+"Aspect": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Continuative\">`Cont`</a>: Cont'.", "Unrecognized level 3 heading '### <a name=\"Completive\">`Compl`</a>: Compl'.", "Unrecognized level 3 heading '### <a name=\"Iterative\">`Iter`</a>: Iter'.", "No feature values found."]},
 "Augm": {"type": "local", "values": ["Yes"], "errors": []},
 "Case": {"type": "universal", "values": ["Ref", "Loc", "Tra", "Dat", "All", "Abl"], "errors": []},
 "Contrast": {"type": "local", "values": ["Yes"], "errors": []},
