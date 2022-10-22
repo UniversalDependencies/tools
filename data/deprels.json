@@ -4538,7 +4538,8 @@
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"xcomp:pred": {"type": "local", "doc": "none", "permitted": 0, "errors": []}
+"xcomp:pred": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
+"xcomp:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "lad": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
