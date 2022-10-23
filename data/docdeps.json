@@ -1940,7 +1940,6 @@
 "iobj": {"type": "universal", "errors": []},
 "list": {"type": "universal", "errors": []},
 "mark": {"type": "universal", "errors": []},
-"neg": {"type": "", "errors": ["Relation 'neg' is not a subtype of any approved main type.", "Documentation does not belong to UD v2 guidelines."]},
 "nmod": {"type": "universal", "errors": []},
 "nmod:cau": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nmod:comp": {"type": "local", "errors": []},
