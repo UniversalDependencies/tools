@@ -7497,7 +7497,7 @@
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-16-35", "lastchanger": "sarves"},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-16-50", "lastchanger": "sarves"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-17-02", "lastchanger": "sarves"},
-"det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"det": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-17-14", "lastchanger": "sarves"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
