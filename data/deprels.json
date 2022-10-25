@@ -7512,6 +7512,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-19-01", "lastchanger": "sarves"},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-19-52", "lastchanger": "sarves"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-20-11", "lastchanger": "sarves"},
+"obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-21-33", "lastchanger": "sarves"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-20-39", "lastchanger": "sarves"},
