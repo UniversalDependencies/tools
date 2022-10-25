@@ -7484,7 +7484,7 @@
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-13-58", "lastchanger": "sarves"},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-13-15", "lastchanger": "sarves"},
 "advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-13-33", "lastchanger": "sarves"},
-"amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-15-21", "lastchanger": "sarves"},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-14-13", "lastchanger": "sarves"},
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-14-47", "lastchanger": "sarves"},
