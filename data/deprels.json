@@ -7510,7 +7510,7 @@
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-18-22", "lastchanger": "sarves"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-18-41", "lastchanger": "sarves"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-19-01", "lastchanger": "sarves"},
-"obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-19-52", "lastchanger": "sarves"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
