@@ -7516,7 +7516,7 @@
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-20-39", "lastchanger": "sarves"},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-20-56", "lastchanger": "sarves"},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
