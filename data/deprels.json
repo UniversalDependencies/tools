@@ -7509,6 +7509,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-18-08", "lastchanger": "sarves"},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-18-22", "lastchanger": "sarves"},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-22-05", "lastchanger": "sarves"},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-22-21", "lastchanger": "sarves"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-18-41", "lastchanger": "sarves"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-19-01", "lastchanger": "sarves"},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-19-52", "lastchanger": "sarves"},
