@@ -7482,6 +7482,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-10-01", "lastchanger": "sarves"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-12-52", "lastchanger": "sarves"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-25-10-13-15", "lastchanger": "sarves"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
