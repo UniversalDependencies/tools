@@ -266,6 +266,9 @@
 "xcomp": {"type": "universal", "errors": []}
 },
 "ldocs": {
+"abq": {
+"DepRepeat": {"type": "", "errors": ["Relation 'DepRepeat' does not have the prescribed form.", "Relation 'DepRepeat' is not a subtype of any approved main type."]}
+},
 "akk": {
 "advmod:neg": {"type": "local", "errors": []}
 },

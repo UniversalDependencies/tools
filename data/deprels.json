@@ -2,6 +2,7 @@
 
 "deprels": {
 "abq": {
+"DepRepeat": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'DepRepeat' does not have the prescribed form.", "Relation 'DepRepeat' is not a subtype of any approved main type."]},
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
