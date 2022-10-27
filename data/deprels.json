@@ -2,7 +2,7 @@
 
 "deprels": {
 "abq": {
-"DepRepeat": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'DepRepeat' does not have the prescribed form.", "Relation 'DepRepeat' is not a subtype of any approved main type."]},
+"DepRepeat": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -18,6 +18,7 @@
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"dep:repeat": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
