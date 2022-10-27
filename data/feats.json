@@ -31,7 +31,7 @@
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Imp", "Past", "Pres"], "lvalues": ["Aor", "Fut2", "Subj", "Subj2"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Pqp"], "byupos": {"AUX": {"Aor": 1, "Fut": 1, "Fut2": 1, "Imp": 1, "Past": 1, "Pres": 1, "Subj": 1, "Subj2": 1}, "VERB": {"Aor": 1, "Fut": 1, "Fut2": 1, "Imp": 1, "Past": 1, "Pres": 1, "Subj": 1, "Subj2": 1}}, "lastchanged": "2022-10-27-20-12-53", "lastchanger": "alexeykosh"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin"], "lvalues": ["NonFin"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Gdv", "Ger", "Inf", "Part", "Sup", "Vnoun"], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "NonFin": 1}, "VERB": {"Conv": 1, "Fin": 1, "NonFin": 1}}, "lastchanged": "2022-10-27-20-13-32", "lastchanger": "alexeykosh"},
-"Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Rcp"], "unused_lvalues": ["Rfl"], "evalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Pass"], "byupos": {"VERB": {"Cau": 4}}}
+"Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Rcp"], "lvalues": ["Rfl"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Pass"], "byupos": {"VERB": {"Rcp": 1, "Rfl": 1}}, "lastchanged": "2022-10-27-20-24-36", "lastchanger": "alexeykosh"}
 },
 "aeb": {
 
