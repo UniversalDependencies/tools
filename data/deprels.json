@@ -4214,6 +4214,7 @@
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux:cnd": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:pot": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
