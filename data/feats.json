@@ -3198,7 +3198,8 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 584, "Inf": 6}, "VERB": {"Fin": 6643, "Inf": 1275}}}
 },
 "xav": {
-"Emph": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}}
+"Emph": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Coll", "Dual", "Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Count", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Plur": 1}, "AUX": {"Plur": 1}, "NOUN": {"Plur": 1}, "PART": {"Coll": 1, "Plur": 1}, "PRON": {"Dual": 1, "Plur": 1, "Sing": 1}, "VERB": {"Plur": 1}}, "lastchanged": "2022-10-27-17-39-20", "lastchanger": "ulyavedenina"}
 },
 "xnr": {
 
