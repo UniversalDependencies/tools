@@ -1127,6 +1127,9 @@
 "суох": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "negative existential copula", "example": "Уҥуоҕа [суох] уонна эмис эт бу баар", "exampleen": "This is boneless and fat meat", "comment": ""}], "status": "documented", "lastchanged": "2022-05-01-10-32-51", "lastchanger": "tatiana-merz"},
 "э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "an event variable e- can only be attached to immediate past or remote past", "example": "кини быраас [этэ]", "exampleen": "he/she/it was a doctor", "comment": ""}], "status": "documented", "lastchanged": "2021-10-27-11-45-38", "lastchanger": "tatiana-merz"}
 },
+"say": {
+"áː": {"functions": [{"function": "Aspect=Perf", "rule": "combination with a verb", "deficient": "", "example": "[àː] yisə́n nán !", "exampleen": "He knows very well.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-13-47-18", "lastchanger": "B-CARON"}
+},
 "si": {
 "තිබ": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ආරක්ෂක ලේකම්වරයා ඊට නිසි පිළිතුරු ලබා දී [තිබේ] .", "exampleen": "The defense secretary has given appropriate answers.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-25-19-47-25", "lastchanger": "sarves"},
 "තිබෙ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ආරක්ෂක ලේකම්වරයා ඊට නිසි පිළිතුරු ලබා දී [තිබේ] .", "exampleen": "The defense secretary has given appropriate answers.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-26-11-31-51", "lastchanger": "sarves"}
