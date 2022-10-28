@@ -6796,6 +6796,7 @@
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-28-21-28-44", "lastchanger": "alvelvis"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
