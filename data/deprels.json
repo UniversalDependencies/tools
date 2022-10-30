@@ -5580,6 +5580,7 @@
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:lmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:own": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
