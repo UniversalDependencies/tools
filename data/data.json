@@ -872,6 +872,9 @@
 "улемс": {"functions": [{"function": "cop.AUX", "rule": "future, past", "deficient": "future, past", "example": "Сёксень вирсь [ульсь] пяк мазы,", "exampleen": "The autumn forest was very beautiful", "comment": "present and some past tense marking in copula complement"}], "status": "documented", "lastchanged": "2021-02-22-19-38-28", "lastchanger": "rueter"},
 "эрявомс": {"functions": [{"function": "Mood=Nec", "rule": "combination of the conjugated auxiliary and main verb with obl agent", "deficient": "", "example": "Аф [эряви] тянь лангс ваномс суронь пачк.", "exampleen": "There is no need to look at that through one's fingers.", "comment": "MKS:2008:16:7:KishnjakovI"}], "status": "documented", "lastchanged": "2021-04-10-22-29-06", "lastchanger": "rueter"}
 },
+"ml": {
+"ആക്": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Normal non-possessive copula", "example": "അവ എൻറെ പുസ്തകങ്ങ[ളാൺ].", "exampleen": "Those are my books.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-12-20-36", "lastchanger": "abishekjs"}
+},
 "mov": {
 "iðu:m": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
