@@ -1361,6 +1361,7 @@
 "wajhuʔu": {"functions": [{"function": "Mood=Pot", "rule": "combines with a finite verb", "deficient": "", "example": "E roʔmadöʔö [wajhuʔu]pese di ?", "exampleen": "Can you see well?", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-18-08-02", "lastchanger": "@LangugaeStructure"}
 },
 "xum": {
+"erom": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "sve rehte kuratu [si]", "exampleen": "if it has been done well", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-10-04-33", "lastchanger": "MathieuDehouck"},
 "fuiom": {"functions": [{"function": "Aspect=Perf", "rule": "auxiliary combinied with a past participle", "deficient": "", "example": "inuk ukar pihaz [fust]", "exampleen": "then the mount will have been purified", "comment": ""}], "status": "documented", "lastchanged": "2022-04-26-10-35-31", "lastchanger": "MathieuDehouck"}
 },
 "yo": {
