@@ -7039,6 +7039,7 @@
 "nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:cop": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-31-14-19-45", "lastchanger": "dan-zeman"},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
