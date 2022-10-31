@@ -1965,7 +1965,8 @@
 },
 "ml": {
 "Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Fem": 1, "Masc": 1}, "NOUN": {"Fem": 1, "Masc": 1}, "PRON": {"Fem": 1, "Masc": 1}, "PROPN": {"Fem": 1, "Masc": 1}}, "lastchanged": "2022-10-31-11-33-37", "lastchanger": "abishekjs"},
-"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Plur": 1, "Sing": 1}}, "lastchanged": "2022-10-31-11-34-43", "lastchanger": "abishekjs"}
+"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Plur": 1, "Sing": 1}}, "lastchanged": "2022-10-31-11-34-43", "lastchanger": "abishekjs"},
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Int", "Prs", "Rel"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Neg", "Rcp", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Int": 1, "Prs": 1, "Rel": 1}}, "lastchanged": "2022-10-31-11-35-47", "lastchanger": "abishekjs"}
 },
 "mn": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
