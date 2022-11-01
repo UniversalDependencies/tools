@@ -8535,6 +8535,7 @@
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubjpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"dep:der": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det:predet": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
