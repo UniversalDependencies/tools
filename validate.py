@@ -486,6 +486,9 @@ def validate_text_meta(comments, tree):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
     global spaceafterno_in_effect
+    # In trees(), sentence_line was already moved to the first token/node line
+    # after the sentence comment lines. While this is useful in most validation
+    # functions, it complicates things here where we also work with the comments.
     global sentence_line
     testlevel = 2
     testclass = 'Metadata'
@@ -531,8 +534,12 @@ def validate_text_meta(comments, tree):
         # Validate the text against the SpaceAfter attribute in MISC.
         skip_words = set()
         mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
-        iline = 0
+        # We will sum sentence_line + iline, and sentence_line already points at
+        # the first token/node line after the sentence comments. Hence iline shall
+        # be 0 once we enter the cycle.
+        iline = -1
         for cols in tree:
+            iline += 1
             if MISC >= len(cols):
                 # This error has been reported elsewhere but we cannot check MISC now.
                 continue
@@ -570,6 +577,8 @@ def validate_text_meta(comments, tree):
                 if not mismatch_reported:
                     testid = 'text-form-mismatch'
                     testmessage = "Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" % (cols[ID], cols[FORM], stext[:len(cols[FORM])+20])
+                    if stext[0].isspace():
+                        testmessage += " (perhaps extra SpaceAfter=No at previous token?)"
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     mismatch_reported=1
             else:
@@ -583,7 +592,6 @@ def validate_text_meta(comments, tree):
                         testmessage = "'SpaceAfter=No' is missing in the MISC field of node #%s because the text is '%s'." % (cols[ID], shorten(cols[FORM]+stext))
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                     stext=stext.lstrip()
-            iline += 1
         if stext:
             testid = 'text-extra-chars'
             testmessage = "Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'" % stext
@@ -2638,8 +2646,8 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
     global tree_counter
     for comments, sentence in trees(inp, tag_sets, args):
         tree_counter += 1
-        #the individual lines have been validated already in trees()
-        #here go tests which are done on the whole tree
+        # The individual lines were validated already in trees().
+        # What follows is tests that need to see the whole tree.
         idseqok = validate_ID_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
