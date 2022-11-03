@@ -1147,7 +1147,7 @@
 "э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "an event variable e- can only be attached to immediate past or remote past", "example": "кини быраас [этэ]", "exampleen": "he/she/it was a doctor", "comment": ""}], "status": "documented", "lastchanged": "2021-10-27-11-45-38", "lastchanger": "tatiana-merz"}
 },
 "say": {
-"nə": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in identity and specifying predication", "example": "mì [nə] mə́n dwaːndə //", "exampleen": "We are poor people.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-03-10-17-52", "lastchanger": "B-CARON"}
+"nə": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in identity and specifying predication", "example": "mì [nə] mə́n dwaːndə", "exampleen": "We are poor people.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-03-10-18-37", "lastchanger": "B-CARON"}
 },
 "si": {
 "තිබ": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ආරක්ෂක ලේකම්වරයා ඊට නිසි පිළිතුරු ලබා දී [තිබේ] .", "exampleen": "The defense secretary has given appropriate answers.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-25-19-47-25", "lastchanger": "sarves"},
