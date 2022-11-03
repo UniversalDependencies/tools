@@ -1148,7 +1148,8 @@
 },
 "say": {
 "kən": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used as a focus marker", "example": "məːrí guɗi yàːʃí [kən] tá tûːr náɣat", "exampleen": "Girls, it's them who cook food", "comment": ""}], "status": "documented", "lastchanged": "2022-11-03-10-23-11", "lastchanger": "B-CARON"},
-"nə": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in identity and specifying predication", "example": "mì [nə] mə́n dwaːndə", "exampleen": "We are poor people.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-03-10-18-37", "lastchanger": "B-CARON"}
+"nə": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in identity and specifying predication", "example": "mì [nə] mə́n dwaːndə", "exampleen": "We are poor people.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-03-10-18-37", "lastchanger": "B-CARON"},
+"á": {"functions": [{"function": "Tense=Pres", "rule": "combination of the auxiliary and the finite form of the verb", "deficient": "", "example": "[á] ndârá !", "exampleen": "It's good !", "comment": "Precise function: Aorist (default) aspect/mood"}], "status": "documented", "lastchanged": "2022-11-03-10-44-52", "lastchanger": "B-CARON"}
 },
 "si": {
 "තිබ": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ආරක්ෂක ලේකම්වරයා ඊට නිසි පිළිතුරු ලබා දී [තිබේ] .", "exampleen": "The defense secretary has given appropriate answers.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-25-19-47-25", "lastchanger": "sarves"},
