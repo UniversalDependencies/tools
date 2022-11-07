@@ -1175,6 +1175,7 @@
 "ʧíta": {"functions": [{"function": "Mood=Irr", "rule": "combination of the auxiliary and the finite form of the verb", "deficient": "", "example": "àmáː bàː ʧík hŋ́ dàː [mîtà] kap tíː áy !", "exampleen": "But if not because of that, I would have married her!", "comment": "Precise function: Remote Past Irrealis"}], "status": "documented", "lastchanged": "2022-11-03-13-52-02", "lastchanger": "B-CARON"}
 },
 "si": {
+"ඇත": {"functions": [{"function": "Aspect=Perf", "rule": "combination of a past participle of the main verb and the auxiliary", "deficient": "", "example": "මෙහි දී අයථා ක්‍රියා ගණනාවක් සිදු වී [ඇත].", "exampleen": "A number of wrongdoings have taken place here.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-07-06-42-10", "lastchanger": "sarves"},
 "තිබ": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ආරක්ෂක ලේකම්වරයා ඊට නිසි පිළිතුරු ලබා දී [තිබේ] .", "exampleen": "The defense secretary has given appropriate answers.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-25-19-47-25", "lastchanger": "sarves"},
 "තිබෙ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ආරක්ෂක ලේකම්වරයා ඊට නිසි පිළිතුරු ලබා දී [තිබේ] .", "exampleen": "The defense secretary has given appropriate answers.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-02-09-57-26", "lastchanger": "sarves"}
 },
