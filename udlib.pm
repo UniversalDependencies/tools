@@ -935,7 +935,8 @@ sub check_metadata
             '2.7'  => ['Akkadian-RIAO', 'Akuntsu-TuDeT', 'Apurina-UFPA', 'Chukchi-HSE', 'Faroese-FarPaHC', 'Finnish-OOD', 'Icelandic-IcePaHC', 'Indonesian-CSUI', 'Khunsari-AHA', 'Manx-Cadhan', 'Munduruku-TuDeT', 'Nayini-AHA', 'Old_Turkish-Tonqq', 'Persian-PerDT', 'Soi-AHA', 'South_Levantine_Arabic-MADAR', 'Tamil-MWTT', 'Tupinamba-TuDeT', 'Turkish-BOUN', 'Turkish_German-SAGT'],
             '2.8'  => ['Beja-NSC', 'Frisian_Dutch-Fame', 'Guajajara-TuDeT', 'Icelandic-Modern', 'Irish-TwittIrish', 'Italian-Valico', 'Kaapor-TuDeT', 'Kangri-KDTB', 'Kiche-IU', 'Latin-UDante', 'Low_Saxon-LSDC', 'Makurap-TuDeT', 'Romanian-ArT', 'Turkish-FrameNet', 'Turkish-Kenet', 'Turkish-Penn', 'Turkish-Tourism', 'Western_Armenian-ArmTDP', 'Yupik-SLI'],
             '2.9'  => ['Armenian-BSUT', 'Bengali-BRU', 'English-Atis', 'French-ParisStories', 'Japanese-BCCWJLUW', 'Japanese-GSDLUW', 'Japanese-PUDLUW', 'Javanese-CSUI', 'Karo-TuDeT', 'Ligurian-GLT', 'Neapolitan-RB', 'Tatar-NMCTT', 'Turkish-Atis', 'Xibe-XDT', 'Yakut-YKTDT'],
-            '2.10' => ['Ancient_Hebrew-PTNK', 'Cebuano-GJA', 'Guarani-OldTuDeT', 'Hebrew-IAHLTwiki', 'Hittite-HitTB', 'Italian-MarkIT', 'Madi-Jarawara', 'Old_East_Slavic-Birchbark', 'Pomak-Philotis', 'Teko-TuDeT', 'Umbrian-IKUVINA']
+            '2.10' => ['Ancient_Hebrew-PTNK', 'Cebuano-GJA', 'Guarani-OldTuDeT', 'Hebrew-IAHLTwiki', 'Hittite-HitTB', 'Italian-MarkIT', 'Madi-Jarawara', 'Old_East_Slavic-Birchbark', 'Pomak-Philotis', 'Teko-TuDeT', 'Umbrian-IKUVINA'],
+            '2.11' => ['Abaza-ATB', 'Chinese-PatentChar', 'Gheg-GPS', 'Icelandic-GC', 'Irish-Cadhan', 'Italian-ParlaMint', 'Malayalam-UFAL', 'Nheengatu-CompLin', 'Old_East_Slavic-Ruthenian', 'Portuguese-CINTIL', 'Portuguese-PetroGold', 'Sinhala-STB', 'Western_Sierra_Puebla_Nahuatl-ITML', 'Xavante-XDT', 'Zaar-Autogramm']
         );
         my %new_treebanks_by_release = @new_treebanks_by_release;
         my $last_release = $new_treebanks_by_release[-2];
