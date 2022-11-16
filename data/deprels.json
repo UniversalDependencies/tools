@@ -7737,7 +7737,7 @@
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
