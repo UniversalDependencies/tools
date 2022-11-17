@@ -1282,10 +1282,8 @@
 },
 "yrl": {
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Prosp", "Prog", "Hab", "Iter", "Frus"], "errors": []},
-"Augm": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for augmentative is 'Degree=Aug'."]},
 "Clitic": {"type": "local", "values": ["Yes"], "errors": []},
 "Compound": {"type": "local", "values": ["Yes"], "errors": []},
-"Dimin": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for diminutive is 'Degree=Dim'."]},
 "Number[grnd]": {"type": "local", "values": ["Sing", "Plur"], "errors": []},
 "PartType": {"type": "local", "values": ["Mod", "Emp", "Inf", "Int", "Neg", "Vbp", "Exs"], "errors": []},
 "Person[grnd]": {"type": "local", "values": ["1", "2", "3"], "errors": []},
