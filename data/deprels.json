@@ -7746,7 +7746,7 @@
 "parataxis:discourse": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:restart": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
