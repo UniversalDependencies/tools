@@ -9329,6 +9329,7 @@
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-11-27-21-43-16", "lastchanger": "dan-zeman"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
