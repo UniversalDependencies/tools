@@ -1128,7 +1128,6 @@ def validate_misc(tree):
     that are described in the UD documentation.
     """
     testlevel = 2
-    testclass = 'Format'
     node_line = sentence_line - 1
     for cols in tree:
         node_line += 1
@@ -1141,11 +1140,47 @@ def validate_misc(tree):
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
         mamap = {}
         for ma in misc:
-            if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
+            if len(ma) == 1 and ma[0] == '':
+                testclass = 'Warning' # warning only
+                testid = 'empty-misc'
+                testmessage = "Empty attribute in MISC; possible misinterpreted vertical bar?"
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            elif ma[0] == '':
+                testclass = 'Warning' # warning only
+                testid = 'empty-misc-key'
+                testmessage = "Empty MISC attribute name in '%s=%s'." % (ma[0], ma[1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            elif re.match(r'^\s', ma[0]):
+                testclass = 'Warning' # warning only
+                testid = 'misc-extra-space'
+                testmessage = "MISC attribute name starts with space in '%s=%s'." % (ma[0], ma[1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            elif re.search(r'\s$', ma[0]):
+                testclass = 'Warning' # warning only
+                testid = 'misc-extra-space'
+                testmessage = "MISC attribute name ends with space in '%s=%s'." % (ma[0], ma[1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            elif len(ma) > 1 and re.match(r'^\s', ma[1]):
+                testclass = 'Warning' # warning only
+                testid = 'misc-extra-space'
+                testmessage = "MISC attribute value starts with space in '%s=%s'." % (ma[0], ma[1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            elif len(ma) > 1 and re.search(r'\s$', ma[1]):
+                testclass = 'Warning' # warning only
+                testid = 'misc-extra-space'
+                testmessage = "MISC attribute value ends with space in '%s=%s'." % (ma[0], ma[1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            if re.match(r'^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$', ma[0]):
                 mamap.setdefault(ma[0], 0)
                 mamap[ma[0]] = mamap[ma[0]] + 1
+            elif re.match(r'^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$', ma[0], re.IGNORECASE):
+                testclass = 'Warning' # warning only
+                testid = 'misc-attr-typo'
+                testmessage = "Possible typo (case or spaces) in MISC attribute '%s=%s'." % (ma[0], ma[1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
         for a in list(mamap):
             if mamap[a] > 1:
+                testclass = 'Format' # this one is real error
                 testid = 'repeated-misc'
                 testmessage = "MISC attribute '%s' not supposed to occur twice" % a
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
