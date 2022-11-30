@@ -416,6 +416,9 @@
 "Valency": {"type": "local", "values": ["1", "2"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Part", "Vnoun"], "errors": []}
 },
+"bor": {
+"if": {"type": "local", "values": [], "errors": ["Feature name 'if' does not have the prescribed form.", "Header title 'IF' does not match the file name 'if'."]}
+},
 "ceb": {
 "Definitizer": {"type": "local", "values": ["Yes"], "errors": []},
 "Neutral": {"type": "local", "values": ["Yes"], "errors": []},
