@@ -396,7 +396,7 @@
 "Poss": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"X": {"Yes": 1}}, "lastchanged": "2022-12-01-12-05-29", "lastchanger": "@Languagestructure"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prs"], "lvalues": [], "unused_uvalues": ["Art", "Dem", "Emp", "Exc", "Ind", "Int", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Prs": 1}}, "lastchanged": "2022-11-30-16-32-50", "lastchanger": "@languagestructure"},
 "Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2022-12-01-09-02-30", "lastchanger": "@Languagestructure"},
-"Rel": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Rel"], "evalues": [], "byupos": {}},
+"Rel": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Rel"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Rel": 1}}, "lastchanged": "2022-12-01-12-16-32", "lastchanger": "@Languagestructure"},
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut"], "lvalues": [], "unused_uvalues": ["Imp", "Past", "Pqp", "Pres"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Fut": 1}, "VERB": {"Fut": 1}, "X": {"Fut": 1}}, "lastchanged": "2022-12-01-11-46-55", "lastchanger": "@Languagestructure"}
 },
 "br": {
