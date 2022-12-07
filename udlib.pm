@@ -1237,71 +1237,63 @@ sub add_statistics
 
 
 
-#==============================================================================
-# Deprecated functions. These will be removed in the future.
-#==============================================================================
-
-
-
 #------------------------------------------------------------------------------
-# Returns reference to hash of known UD treebank codes (key = treebank name,
-# without the UD_ prefix but with underscores instead of spaces; value =
-# language_treebank code). Reads the JSON file in the docs repository.
-# Takes the path to the main UD folder (contains docs as subfolder). Default: .
+# A counterpart of collect_statistics_about_ud_treebank(). Instead of just
+# counting words, this function counts occurrences of individual lemmas, UPOS
+# tags and morphological features. It takes a reference to the hash where
+# examples are collected; the hash may already be partially filled with
+# examples from other treebanks.
 #------------------------------------------------------------------------------
-sub get_ltcode_hash
+sub collect_examples_from_ud_treebank
 {
-    my $path = shift;
-    print STDERR ("WARNING: udlib::get_ltcode_hash() is obsolete because the file lcodes.json in docs is no longer maintained!\n");
-    print STDERR ("WARNING: Use udlib::get_language_hash() instead, which reads docs-automation/codes_and_flags.yaml.\n");
-    $path = '.' if(!defined($path));
-    if (-d "$path/docs")
+    my $treebank_path = shift;
+    my $treebank_code = shift;
+    my $stats = shift;
+    my $prefix = "$treebank_code-ud";
+    # All .conllu files with the given prefix in the given folder are considered disjunct parts of the treebank.
+    # Hence we do not have to bother with Czech exceptions in file naming etc.
+    # But we have to be careful if we look at a future release where the folders may not yet be clean.
+    opendir(DIR, $treebank_path) or confess("Cannot read folder $treebank_path: $!");
+    my @files = grep {m/^$prefix-.+\.conllu$/} (readdir(DIR));
+    closedir(DIR);
+    foreach my $file (@files)
     {
-        $path .= '/docs';
+        collect_examples_from_ud_file("$treebank_path/$file", $stats);
     }
-    my $lcodes;
-    if (-f "$path/gen_index/lcodes.json")
-    {
-        $lcodes = json_file_to_perl("$path/gen_index/lcodes.json");
-        # For example:
-        # $lcodes->{'Finnish-FTB'} eq 'fi_ftb'
-    }
-    die("Cannot find or read $path/docs/gen_index/lcodes.json") if (!defined($lcodes));
-    return $lcodes;
+    return $stats;
 }
 
 
 
 #------------------------------------------------------------------------------
-# Same as get_ltcode_hash() but collects only language names/codes, without the
-# optional treebank identifier.
+# A counterpart of collect_statistics_about_ud_file(). Instead of just counting
+# words, this function counts occurrences of individual lemmas, UPOS tags and
+# morphological features. It takes a reference to the hash where examples are
+# collected; the hash may already be partially filled with examples from other
+# files.
+# Currently everything is in the subhash {ltwf} (meaning lemma-tag-word-feats).
+# This way we are prepared to add other views in the future. Note: By 'tag' we
+# mean UPOS. By 'feats' we mean the full feature-value string, as in CoNLL-U.
+# {ltwf}{$lemma}{$tag}{$word}{$feats} => $count
 #------------------------------------------------------------------------------
-sub get_lcode_hash
+sub collect_examples_from_ud_file
 {
-    my $path = shift;
-    my $ltcodes = get_ltcode_hash($path);
-    my %lcodes;
-    foreach my $key (keys(%{$ltcodes}))
+    my $file_path = shift;
+    my $stats = shift;
+    open(CONLLU, $file_path) or confess("Cannot read file $file_path: $!");
+    while(<CONLLU>)
     {
-        my $lkey = $key;
-        my $lcode = $ltcodes->{$lkey};
-        # Remove treebank name/code if any. Keep only language name/code.
-        $lkey =~ s/-.*//;
-        $lcode =~ s/_.*//;
-        if(!exists($lcodes{$lkey}))
+        # We are only interested in regular nodes. No empty nodes, no multi-
+        # word token lines, no comments, no empty lines after sentences.
+        if(m/^[0-9]+\t/)
         {
-            $lcodes{$lkey} = $lcode;
-        }
-        # Sanity check: all treebanks with one language name should use the same language code.
-        else
-        {
-            if($lcodes{$lkey} ne $lcode)
-            {
-                die("Code conflict for language '$lkey': old code '$lcodes{$lkey}', new code '$lcode'");
-            }
+            s/\r?\n$//;
+            my @f = split(/\t/, $_);
+            $stats->{ltwf}{$f[2]}{$f[3]}{$f[1]}{$f[5]}++;
         }
     }
-    return \%lcodes;
+    close(CONLLU);
+    return $stats;
 }
 
 
