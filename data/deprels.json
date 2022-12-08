@@ -6118,6 +6118,7 @@
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-01-35", "lastchanger": "@StasReichert"},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-01-10", "lastchanger": "@StasReichert"},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-02-39", "lastchanger": "@StasReichert"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-01-21", "lastchanger": "@StasReichert"},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
