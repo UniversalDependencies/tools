@@ -1505,6 +1505,9 @@
 "root": {"type": "universal", "errors": []},
 "xcomp": {"type": "universal", "errors": []}
 },
+"ojp": {
+"nsubj:situation": {"type": "", "errors": ["Relation 'nsubj:situation' is not a subtype of any approved main type."]}
+},
 "olo": {
 "compound:nn": {"type": "local", "errors": []},
 "cop:own": {"type": "local", "errors": []},

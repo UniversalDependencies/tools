@@ -6134,6 +6134,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-21-39", "lastchanger": "@LanguageStructure"},
+"nsubj:situation": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'nsubj:situation' is not a subtype of any approved main type."]},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-06-25", "lastchanger": "@LanguageStructure"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-05-42", "lastchanger": "@LanguageStructure"},
