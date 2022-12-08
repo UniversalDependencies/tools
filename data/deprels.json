@@ -6113,7 +6113,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-14-39-49", "lastchanger": "@Languagestructure"},
+"case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-14-41-01", "lastchanger": "@LanguageStructure"},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
