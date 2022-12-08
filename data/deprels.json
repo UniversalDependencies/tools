@@ -6108,7 +6108,7 @@
 },
 "ojp": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-02-16", "lastchanger": "@StasReichert"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
