@@ -6138,6 +6138,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-02-04", "lastchanger": "@StasReichert"},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-23-42-19", "lastchanger": "@StasReichert"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-21-39", "lastchanger": "@LanguageStructure"},
 "nsubj:contrast": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-04-23", "lastchanger": "@StasReichert"},
