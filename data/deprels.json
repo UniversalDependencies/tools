@@ -6131,7 +6131,7 @@
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-02-04", "lastchanger": "@StasReichert"},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-21-39", "lastchanger": "@LanguageStructure"},
 "nsubj:situation": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-01-51", "lastchanger": "@StasReichert"},
