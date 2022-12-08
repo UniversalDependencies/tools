@@ -1507,6 +1507,7 @@
 },
 "ojp": {
 "discourse:sp": {"type": "local", "errors": []},
+"nsubj:contrast": {"type": "", "errors": ["Relation 'nsubj:contrast' is not a subtype of any approved main type."]},
 "nsubj:situation": {"type": "local", "errors": []}
 },
 "olo": {
