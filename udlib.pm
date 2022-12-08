@@ -9,6 +9,7 @@ use JSON::Parse 'json_file_to_perl';
 use YAML qw(LoadFile);
 use Cwd; # remember path to the current folder getcwd()
 use utf8;
+use open ':utf8';
 
 
 
