@@ -6139,7 +6139,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-02-04", "lastchanger": "@StasReichert"},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-21-39", "lastchanger": "@LanguageStructure"},
-"nsubj:contrast": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'nsubj:contrast' is not a subtype of any approved main type."]},
+"nsubj:contrast": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-04-23", "lastchanger": "@StasReichert"},
 "nsubj:situation": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-01-51", "lastchanger": "@StasReichert"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
