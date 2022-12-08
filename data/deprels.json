@@ -6144,6 +6144,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-06-25", "lastchanger": "@LanguageStructure"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-05-42", "lastchanger": "@LanguageStructure"},
+"obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-21-03-48", "lastchanger": "@StasReichert"},
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-05-21", "lastchanger": "@StasReichert"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-05-42", "lastchanger": "@StasReichert"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
