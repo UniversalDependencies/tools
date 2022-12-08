@@ -6134,7 +6134,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-21-39", "lastchanger": "@LanguageStructure"},
-"nsubj:situation": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:situation": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-15-08-07", "lastchanger": "@LanguageStructure"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-06-25", "lastchanger": "@LanguageStructure"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-05-42", "lastchanger": "@LanguageStructure"},
