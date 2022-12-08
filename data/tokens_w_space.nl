@@ -4,5 +4,6 @@ cum suis
 dat wil zeggen
 onder ander
 onder veel
+ten opzichte van
 ter plaatse
 tot en met
