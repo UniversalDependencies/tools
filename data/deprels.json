@@ -6143,6 +6143,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-06-25", "lastchanger": "@LanguageStructure"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-01-29-14-05-42", "lastchanger": "@LanguageStructure"},
+"obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-12-08-19-05-21", "lastchanger": "@StasReichert"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
