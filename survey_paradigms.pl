@@ -34,6 +34,7 @@ sub usage
     print STDERR ("Options:\n");
     print STDERR ("       --help: Print this help text and exit.\n");
     print STDERR ("       --lemma=X: Print only paradigms with the lemma X.\n");
+    print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
 }
 
@@ -56,6 +57,7 @@ my $help = 0;
 my $udpath = '.';
 my $folder;
 my $lemma;
+my $upos;
 my $minforms = 2;
 GetOptions
 (
@@ -64,6 +66,8 @@ GetOptions
     'treebank=s'  => \$folder,
     'tbk=s'       => \$folder, # alternative shortcut for --treebank
     'lemma=s'     => \$lemma,
+    'upos=s'      => \$upos,
+    'tag=s'       => \$upos,
     'minforms=i'  => \$minforms
 );
 if($help)
@@ -88,6 +92,7 @@ foreach my $l (@lemmas)
     my @tags = sort(keys(%{$stats{ltwf}{$l}}));
     foreach my $t (@tags)
     {
+        next if(defined($upos) && $t ne $upos);
         next if(scalar(keys(%{$stats{ltwf}{$l}{$t}})) < $minforms);
         print("LEMMA $l $t\n");
         # Collect all annotations from all word forms.
