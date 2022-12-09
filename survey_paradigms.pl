@@ -35,6 +35,7 @@ sub usage
     print STDERR ("       --help: Print this help text and exit.\n");
     print STDERR ("       --lemma=X: Print only paradigms with the lemma X.\n");
     print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
+    print STDERR ("       --feats='RE': Print only paradigms containing feature annotation that matches regular expression RE.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
 }
 
@@ -58,6 +59,7 @@ my $udpath = '.';
 my $folder;
 my $lemma;
 my $upos;
+my $featsre;
 my $minforms = 2;
 GetOptions
 (
@@ -68,6 +70,7 @@ GetOptions
     'lemma=s'     => \$lemma,
     'upos=s'      => \$upos,
     'tag=s'       => \$upos,
+    'feats=s'     => \$featsre,
     'minforms=i'  => \$minforms
 );
 if($help)
@@ -94,9 +97,9 @@ foreach my $l (@lemmas)
     {
         next if(defined($upos) && $t ne $upos);
         next if(scalar(keys(%{$stats{ltwf}{$l}{$t}})) < $minforms);
-        print("LEMMA $l $t\n");
         # Collect all annotations from all word forms.
         my %annotations;
+        my $amatch = !defined($featsre);
         foreach my $f (keys(%{$stats{ltwf}{$l}{$t}}))
         {
             foreach my $a (keys(%{$stats{ltwf}{$l}{$t}{$f}}))
@@ -104,8 +107,11 @@ foreach my $l (@lemmas)
                 # Reorder features within the annotation so that we can later sort the annotations.
                 my $sa = join('|', sort_features(split(/\|/, $a)));
                 $annotations{$sa}{$f} = $stats{ltwf}{$l}{$t}{$f}{$a};
+                $amatch = 1 if(!$amatch && ($sa =~ m/$featsre/i || $a =~ m/$featsre/i));
             }
         }
+        next if(!$amatch);
+        print("LEMMA $l $t\n");
         # Sort annotations according to our custom feature priorities and print them.
         my @annotations = sort_annotations(keys(%annotations));
         my @table;
