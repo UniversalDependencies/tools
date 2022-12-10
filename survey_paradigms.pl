@@ -33,7 +33,9 @@ sub usage
     print STDERR ("       The paradigm tables will be printed to STDOUT.\n");
     print STDERR ("Options:\n");
     print STDERR ("       --help: Print this help text and exit.\n");
-    print STDERR ("       --lemma=X: Print only paradigms with the lemma X.\n");
+    print STDERR ("       --lemma=X: Print only paradigms with the lemma X. If there is the LId attribute in MISC, it will\n");
+    print STDERR ("           be used to separate paradigms of different lexemes, but --lemma is still matched against the\n");
+    print STDERR ("           LEMMA column.\n");
     print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
     print STDERR ("       --feats='RE': Print only paradigms containing feature annotation that matches regular expression RE.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
@@ -91,7 +93,12 @@ lowercase_forms($stats{ltwf});
 my @lemmas = sort(keys(%{$stats{ltwf}}));
 foreach my $l (@lemmas)
 {
-    next if(defined($lemma) && $l ne $lemma);
+    my $l0 = $l;
+    if($l =~ m/^(.+) LId=.+$/)
+    {
+        $l0 = $1;
+    }
+    next if(defined($lemma) && $l0 ne $lemma);
     my @tags = sort(keys(%{$stats{ltwf}{$l}}));
     foreach my $t (@tags)
     {

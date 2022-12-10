@@ -1290,7 +1290,17 @@ sub collect_examples_from_ud_file
         {
             s/\r?\n$//;
             my @f = split(/\t/, $_);
-            $stats->{ltwf}{$f[2]}{$f[3]}{$f[1]}{$f[5]}++;
+            my $lemma = $f[2];
+            # If there is LId=X in MISC, we want it to distinguish different
+            # lexemes, but we still want the user to be able to distinguish the
+            # contents of the LEMMA column from LId, so we will hash on both.
+            my @misc = $f[9] eq '_' ? () : split(/\|/, $f[9]);
+            my @lid = grep {m/^LId=.+$/} (@misc);
+            if(scalar(@lid) > 0)
+            {
+                $lemma .= " $lid[0]";
+            }
+            $stats->{ltwf}{$lemma}{$f[3]}{$f[1]}{$f[5]}++;
         }
     }
     close(CONLLU);
