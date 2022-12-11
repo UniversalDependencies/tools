@@ -38,6 +38,8 @@ sub usage
     print STDERR ("           LEMMA column.\n");
     print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
     print STDERR ("       --feats='RE': Print only paradigms containing feature annotation that matches regular expression RE.\n");
+    print STDERR ("           Multiple --feats options can be given. Output paradigms must satisfy all of them, presumably\n");
+    print STDERR ("           each will be satisfied with a different word form.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
 }
 
@@ -61,7 +63,7 @@ my $udpath = '.';
 my $folder;
 my $lemma;
 my $upos;
-my $featsre;
+my @featsre;
 my $minforms = 2;
 GetOptions
 (
@@ -72,7 +74,7 @@ GetOptions
     'lemma=s'     => \$lemma,
     'upos=s'      => \$upos,
     'tag=s'       => \$upos,
-    'feats=s'     => \$featsre,
+    'feats=s'     => \@featsre,
     'minforms=i'  => \$minforms
 );
 if($help)
@@ -106,7 +108,7 @@ foreach my $l (@lemmas)
         next if(scalar(keys(%{$stats{ltwf}{$l}{$t}})) < $minforms);
         # Collect all annotations from all word forms.
         my %annotations;
-        my $amatch = !defined($featsre);
+        my @amatch;
         foreach my $f (keys(%{$stats{ltwf}{$l}{$t}}))
         {
             foreach my $a (keys(%{$stats{ltwf}{$l}{$t}{$f}}))
@@ -114,7 +116,21 @@ foreach my $l (@lemmas)
                 # Reorder features within the annotation so that we can later sort the annotations.
                 my $sa = join('|', sort_features(split(/\|/, $a)));
                 $annotations{$sa}{$f} = $stats{ltwf}{$l}{$t}{$f}{$a};
-                $amatch = 1 if(!$amatch && ($sa =~ m/$featsre/i || $a =~ m/$featsre/i));
+                # If there are @featsre requirements, check which of them are satisfied by the current annotation.
+                for(my $i = 0; $i <= $#featsre; $i++)
+                {
+                    $amatch[$i] = 1 if(!$amatch[$i] && ($sa =~ m/$featsre[$i]/i || $a =~ m/$featsre[$i]/i));
+                }
+            }
+        }
+        # Check that all @featsre requirements are satisfied by the current paradigm.
+        my $amatch = 1;
+        for(my $i = 0; $i <= $#featsre; $i++)
+        {
+            if(!$amatch[$i])
+            {
+                $amatch = 0;
+                last;
             }
         }
         next if(!$amatch);
