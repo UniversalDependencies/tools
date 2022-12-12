@@ -95,7 +95,13 @@ if(!defined($folder))
     die("Missing treebank name");
 }
 
-my %stats;
+my %stats =
+(
+    'config' =>
+    {
+        'translit' => 'replace'
+    }
+);
 udlib::collect_examples_from_ud_treebank("$udpath/$folder", udlib::get_ltcode_from_repo_name($folder, udlib::get_language_hash("$udpath/docs-automation/codes_and_flags.yaml")), \%stats);
 lowercase_forms($stats{ltwf});
 
