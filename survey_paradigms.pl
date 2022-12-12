@@ -35,11 +35,16 @@ sub usage
     print STDERR ("       --help: Print this help text and exit.\n");
     print STDERR ("       --lemma=X: Print only paradigms with the lemma X. If there is the LId attribute in MISC, it will\n");
     print STDERR ("           be used to separate paradigms of different lexemes, but --lemma is still matched against the\n");
-    print STDERR ("           LEMMA column.\n");
+    print STDERR ("           LEMMA column. Perl may have to be invoked with the -CA option to interpret arguments as UTF-8.\n");
     print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
     print STDERR ("       --feats='RE': Print only paradigms containing feature annotation that matches regular expression RE.\n");
     print STDERR ("           Multiple --feats options can be given. Output paradigms must satisfy all of them, presumably\n");
     print STDERR ("           each will be satisfied with a different word form.\n");
+    print STDERR ("       --form=='RE': Print only paradigms containing word form RE. Like in --feats, RE is a regular\n");
+    print STDERR ("           expression, but unlike in --feats it is matched against the entire form. Pad it with '.*' if\n");
+    print STDERR ("           partial match is desired. Matching is case-insensitive. Multiple --form options can be given.\n");
+    print STDERR ("           Output paradigms must satisfy all of them, presumably each will be satisfied with a different\n");
+    print STDERR ("           word form. Perl may have to be invoked with the -CA option to interpret arguments as UTF-8.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
 }
 
@@ -64,6 +69,7 @@ my $folder;
 my $lemma;
 my $upos;
 my @featsre;
+my @formsre;
 my $minforms = 2;
 GetOptions
 (
@@ -75,6 +81,7 @@ GetOptions
     'upos=s'      => \$upos,
     'tag=s'       => \$upos,
     'feats=s'     => \@featsre,
+    'form=s'      => \@formsre,
     'minforms=i'  => \$minforms
 );
 if($help)
@@ -109,6 +116,7 @@ foreach my $l (@lemmas)
         # Collect all annotations from all word forms.
         my %annotations;
         my @amatch;
+        my @fmatch;
         foreach my $f (keys(%{$stats{ltwf}{$l}{$t}}))
         {
             foreach my $a (keys(%{$stats{ltwf}{$l}{$t}{$f}}))
@@ -122,6 +130,11 @@ foreach my $l (@lemmas)
                     $amatch[$i] = 1 if(!$amatch[$i] && ($sa =~ m/$featsre[$i]/i || $a =~ m/$featsre[$i]/i));
                 }
             }
+            # If there are @formsre requirements, check which of them are satisfied by the current annotation.
+            for(my $i = 0; $i <= $#formsre; $i++)
+            {
+                $fmatch[$i] = 1 if(!$fmatch[$i] && $f =~ m/^$formsre[$i]$/i);
+            }
         }
         # Check that all @featsre requirements are satisfied by the current paradigm.
         my $amatch = 1;
@@ -134,6 +147,17 @@ foreach my $l (@lemmas)
             }
         }
         next if(!$amatch);
+        # Check that all @formsre requirements are satisfied by the current paradigm.
+        my $fmatch = 1;
+        for(my $i = 0; $i <= $#formsre; $i++)
+        {
+            if(!$fmatch[$i])
+            {
+                $fmatch = 0;
+                last;
+            }
+        }
+        next if(!$fmatch);
         print("LEMMA $l $t\n");
         # Sort annotations according to our custom feature priorities and print them.
         my @annotations = sort_annotations(keys(%annotations));
