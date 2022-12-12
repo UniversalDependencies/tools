@@ -1295,6 +1295,7 @@
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Prosp", "Prog", "Hab", "Iter", "Frus"], "errors": []},
 "Clitic": {"type": "local", "values": ["Yes"], "errors": []},
 "Compound": {"type": "local", "values": ["Yes"], "errors": []},
+"Foc": {"type": "local", "values": [], "errors": ["Header title 'Focus' does not match the file name 'Foc'."]},
 "Number[grnd]": {"type": "local", "values": ["Sing", "Plur"], "errors": []},
 "PartType": {"type": "local", "values": ["Mod", "Emp", "Inf", "Int", "Neg", "Vbp", "Exs"], "errors": []},
 "Person[grnd]": {"type": "local", "values": ["1", "2", "3"], "errors": []},
