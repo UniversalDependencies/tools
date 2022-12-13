@@ -1008,7 +1008,6 @@
 "èsser": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Aquestes persècs [son] los melhors que ai manjat.", "exampleen": "Those peaches are the best I ever ate.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-06-21-13-09", "lastchanger": "maartenpt"}
 },
 "ojp": {
-"ari": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "motono mizuni [ara]-zu", "exampleen": "It is not the same (in origin) water", "comment": ""}], "status": "documented", "lastchanged": "2021-01-29-15-22-19", "lastchanger": "@LanguageStructure"},
 "さう": {"functions": [{"function": "Polite=Form", "rule": "often follows the gerund (te)", "deficient": "", "example": "tsukimawerasete [sō]", "exampleen": "have arrived", "comment": ""}], "status": "documented", "lastchanged": "2022-12-08-14-56-45", "lastchanger": "@Languagstructure"}
 },
 "olo": {
