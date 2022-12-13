@@ -404,7 +404,7 @@ sub print_table
     {
         for(my $i = 0; $i < $m; $i++)
         {
-            my $l = length($table[$i][$j]);
+            my $l = vlength($table[$i][$j]);
             if($l > $lengths[$j])
             {
                 $lengths[$j] = $l;
@@ -417,11 +417,27 @@ sub print_table
         for(my $j = 0; $j < $n; $j++)
         {
             print(' ') if($j>0);
-            my $l = length($table[$i][$j]);
+            my $l = vlength($table[$i][$j]);
             my $pad = ' ' x ($lengths[$j]-$l);
             my $string = $table[$i][$j] =~ m/^[-+0-9\.,]+$/ ? $pad.$table[$i][$j] : $table[$i][$j].$pad;
             print($string);
         }
         print("\n");
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Estimate visual length of string, i.e., do not count combining diacritics.
+# Note: This works in Putty to a Linux/UTF-8 machine. It does not work in
+# Windows cmd.exe, which wrongly displays the combining character in its own
+# slot.
+#------------------------------------------------------------------------------
+sub vlength
+{
+    my $x = shift;
+    # Get rid of characters from the M category (combining diacritics belong here).
+    $x =~ s/\pM//g;
+    return length($x);
 }
