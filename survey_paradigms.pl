@@ -46,6 +46,7 @@ sub usage
     print STDERR ("           Output paradigms must satisfy all of them, presumably each will be satisfied with a different\n");
     print STDERR ("           word form. Perl may have to be invoked with the -CA option to interpret arguments as UTF-8.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
+    print STDERR ("       --translit=replace|add|none: Use transliteration if available. Default: replace.\n");
 }
 
 # https://stackoverflow.com/questions/2037467/how-can-i-treat-command-line-arguments-as-utf-8-in-perl
@@ -59,7 +60,8 @@ sub usage
 # Note: This does not work in Windows command line even with chcp 65001, so I
 # am introducing this dirty hack for the time being:
 use Cwd;
-if(getcwd() =~ m-^C:/Users/Dan/-)
+my $running_on_dans_laptop = getcwd() =~ m-^C:/Users/Dan/-;
+if($running_on_dans_laptop)
 {
     @ARGV = map {decode('cp1250', $_)} (@ARGV);
 }
@@ -71,6 +73,7 @@ my $upos;
 my @featsre;
 my @formsre;
 my $minforms = 2;
+my $translit = 'replace'; # recognized: replace|add|none
 GetOptions
 (
     'help'        => \$help,
@@ -82,7 +85,8 @@ GetOptions
     'tag=s'       => \$upos,
     'feats=s'     => \@featsre,
     'form=s'      => \@formsre,
-    'minforms=i'  => \$minforms
+    'minforms=i'  => \$minforms,
+    'translit=s'  => \$translit
 );
 if($help)
 {
@@ -99,7 +103,7 @@ my %stats =
 (
     'config' =>
     {
-        'translit' => 'replace'
+        'translit' => $translit
     }
 );
 udlib::collect_examples_from_ud_treebank("$udpath/$folder", udlib::get_ltcode_from_repo_name($folder, udlib::get_language_hash("$udpath/docs-automation/codes_and_flags.yaml")), \%stats);
@@ -438,6 +442,9 @@ sub vlength
 {
     my $x = shift;
     # Get rid of characters from the M category (combining diacritics belong here).
-    $x =~ s/\pM//g;
+    unless($running_on_dans_laptop) # global variable
+    {
+        $x =~ s/\pM//g;
+    }
     return length($x);
 }

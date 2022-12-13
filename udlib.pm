@@ -1309,6 +1309,17 @@ sub collect_examples_from_ud_file
                     $lemma = $ltranslit[0];
                 }
             }
+            elsif($stats->{config}{translit} eq 'add')
+            {
+                if(scalar(@translit) > 0)
+                {
+                    $form .= " / $translit[0]";
+                }
+                if(scalar(@ltranslit) > 0)
+                {
+                    $lemma .= " / $ltranslit[0]";
+                }
+            }
             # If there is LId=X in MISC, we want it to distinguish different
             # lexemes, but we still want the user to be able to distinguish the
             # contents of the LEMMA column from LId, so we will hash on both.
