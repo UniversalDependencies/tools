@@ -1639,6 +1639,7 @@
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"advcl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
