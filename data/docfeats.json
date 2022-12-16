@@ -1283,7 +1283,6 @@
 "FocusType": {"type": "local", "values": ["Subj", "Verb", "Compl"], "errors": []}
 },
 "xav": {
-"Dim": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for diminutive is 'Degree=Dim'."]},
 "Emph": {"type": "local", "values": ["Yes"], "errors": []},
 "Fact": {"type": "local", "values": ["Yes"], "errors": []},
 "Hon": {"type": "local", "values": ["Yes"], "errors": []},
