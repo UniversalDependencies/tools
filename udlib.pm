@@ -63,6 +63,13 @@ sub get_ltcode_from_repo_name
 {
     my $repo = shift;
     my $languages_from_yaml = shift;
+    # If the repo name is '.', get the real name of the folder because we need
+    # to know the language and treebank name and code.
+    if($repo eq '.')
+    {
+        $repo = getcwd();
+        $repo =~ s:^.*[\\/](UD_[-_A-Za-z]+)$:$1: or confess("Cannot infer a valid UD treebank name from the current folder");
+    }
     if(!defined($languages_from_yaml))
     {
         $languages_from_yaml = get_language_hash();

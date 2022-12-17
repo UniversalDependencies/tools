@@ -30,6 +30,9 @@ sub usage
     print STDERR ("Usage: $0 --udpath <path-to-ud> --treebank <UD_Lang-XXX>\n");
     print STDERR ("       <path-to-ud> is the path to the folder where all UD treebanks reside; default: current folder\n");
     print STDERR ("       <UD_Lang-XXX> is the name of the treebank folder to be surveyed\n");
+    print STDERR ("       If none of the above is provided, the default is --udpath .. --treebank . (current folder)\n");
+    print STDERR ("       If only the treebank name is given, the default for --udpath is '.' (current folder)\n");
+    print STDERR ("       If --udpath is different from '..', then the treebank name must not be '.'\n");
     print STDERR ("       The paradigm tables will be printed to STDOUT.\n");
     print STDERR ("Options:\n");
     print STDERR ("       --help: Print this help text and exit.\n");
@@ -66,7 +69,7 @@ if($running_on_dans_laptop)
     @ARGV = map {decode('cp1250', $_)} (@ARGV);
 }
 my $help = 0;
-my $udpath = '.';
+my $udpath;
 my $folder;
 my $lemma;
 my $upos;
@@ -95,9 +98,22 @@ if($help)
 }
 if(!defined($folder))
 {
-    usage();
-    die("Missing treebank name");
+    $folder = '.';
 }
+if(!defined($udpath))
+{
+    $udpath = $folder eq '.' ? '..' : '.';
+}
+if($udpath ne '..' && $folder eq '.')
+{
+    usage();
+    die("Treebank folder is '.', hence UD path must be '..'");
+}
+my $tbkpath = $folder eq '.' ? '.' : "$udpath/$folder";
+my $languages = udlib::get_language_hash("$udpath/docs-automation/codes_and_flags.yaml");
+my $ltcode = udlib::get_ltcode_from_repo_name($folder, $languages);
+# Debugging.
+#print STDERR ("UD path = $udpath, treebank = $folder, treebank path = $tbkpath, ltcode = $ltcode\n");
 
 my %stats =
 (
@@ -106,7 +122,7 @@ my %stats =
         'translit' => $translit
     }
 );
-udlib::collect_examples_from_ud_treebank("$udpath/$folder", udlib::get_ltcode_from_repo_name($folder, udlib::get_language_hash("$udpath/docs-automation/codes_and_flags.yaml")), \%stats);
+udlib::collect_examples_from_ud_treebank($tbkpath, $ltcode, \%stats);
 lowercase_forms($stats{ltwf});
 
 my @lemmas = sort(keys(%{$stats{ltwf}}));
