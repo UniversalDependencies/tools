@@ -1130,10 +1130,11 @@ sub check_documentation
         # Swedish documentation has over 4500 B.
         # Yoruba is probably incomplete but it still has over 3500 B.
         # Let's require 2500 B as a minimum and hope that people don't just put a sequence of whitespace characters there.
-        if(length($doc) < 2500)
+        my $l = length($doc);
+        if($l < 2500)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\n");
+            push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: Language '$lcode' does not have the one-page documentation summary in the docs repository (the file exists but it seems incomplete).\nSee http://universaldependencies.org/contributing_language_specific.html for instructions on how to write documentation.\nLength($indexpath)=$l\n");
             $$n_errors++;
         }
     }
