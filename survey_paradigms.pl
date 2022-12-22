@@ -48,7 +48,7 @@ sub usage
     print STDERR ("           partial match is desired. Matching is case-insensitive. Multiple --form options can be given.\n");
     print STDERR ("           Output paradigms must satisfy all of them, presumably each will be satisfied with a different\n");
     print STDERR ("           word form. Perl may have to be invoked with the -CA option to interpret arguments as UTF-8.\n");
-    print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=2.\n");
+    print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=1.\n");
     print STDERR ("       --translit=replace|add|none: Use transliteration if available. Default: replace.\n");
 }
 
@@ -75,7 +75,7 @@ my $lemma;
 my $upos;
 my @featsre;
 my @formsre;
-my $minforms = 2;
+my $minforms = 1;
 my $translit = 'replace'; # recognized: replace|add|none
 GetOptions
 (
