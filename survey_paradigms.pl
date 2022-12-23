@@ -222,25 +222,28 @@ sub lowercase_forms
             {
                 my $lcf = lc($f);
                 my $capf = uc(substr($f, 0, 1)).lc(substr($f, 1));
-                if($lcf ne $f && exists($ltwf->{$l}{$t}{$lcf}))
+                if($f ne $lcf)
                 {
-                    # Merge $f with $lcf.
-                    my @annotations = keys(%{$ltwf->{$l}{$t}{$f}});
-                    foreach my $a (@annotations)
+                    if(exists($ltwf->{$l}{$t}{$lcf}))
                     {
-                        $ltwf->{$l}{$t}{$lcf}{$a} += $ltwf->{$l}{$t}{$f}{$a};
+                        # Merge $f with $lcf.
+                        my @annotations = keys(%{$ltwf->{$l}{$t}{$f}});
+                        foreach my $a (@annotations)
+                        {
+                            $ltwf->{$l}{$t}{$lcf}{$a} += $ltwf->{$l}{$t}{$f}{$a};
+                        }
+                        delete($ltwf->{$l}{$t}{$f});
                     }
-                    delete($ltwf->{$l}{$t}{$f});
-                }
-                elsif($capf ne $f && exists($ltwf->{$l}{$t}{$capf}))
-                {
-                    # Merge $f with $capf.
-                    my @annotations = keys(%{$ltwf->{$l}{$t}{$f}});
-                    foreach my $a (@annotations)
+                    elsif($f ne $capf && exists($ltwf->{$l}{$t}{$capf}))
                     {
-                        $ltwf->{$l}{$t}{$capf}{$a} += $ltwf->{$l}{$t}{$f}{$a};
+                        # Merge $f with $capf.
+                        my @annotations = keys(%{$ltwf->{$l}{$t}{$f}});
+                        foreach my $a (@annotations)
+                        {
+                            $ltwf->{$l}{$t}{$capf}{$a} += $ltwf->{$l}{$t}{$f}{$a};
+                        }
+                        delete($ltwf->{$l}{$t}{$f});
                     }
-                    delete($ltwf->{$l}{$t}{$f});
                 }
             }
         }
