@@ -36,9 +36,11 @@ sub usage
     print STDERR ("       The paradigm tables will be printed to STDOUT.\n");
     print STDERR ("Options:\n");
     print STDERR ("       --help: Print this help text and exit.\n");
-    print STDERR ("       --lemma=X: Print only paradigms with the lemma X. If there is the LId attribute in MISC, it will\n");
-    print STDERR ("           be used to separate paradigms of different lexemes, but --lemma is still matched against the\n");
-    print STDERR ("           LEMMA column. Perl may have to be invoked with the -CA option to interpret arguments as UTF-8.\n");
+    print STDERR ("       --lemma='RE': Print only paradigms whose lemma matches regular expression RE. The expression\n");
+    print STDERR ("           is matched against the entire lemma. Pad with '.*' if partial match is desired. If there is\n");
+    print STDERR ("           the LId attribute in MISC, it will be used to separate paradigms of different lexemes, but\n");
+    print STDERR ("           --lemma is still matched against the LEMMA column. Perl may have to be invoked with the -CA\n");
+    print STDERR ("           option to interpret arguments as UTF-8.\n");
     print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
     print STDERR ("       --feats='RE': Print only paradigms containing feature annotation that matches regular expression RE.\n");
     print STDERR ("           Multiple --feats options can be given. Output paradigms must satisfy all of them, presumably\n");
@@ -133,7 +135,7 @@ foreach my $l (@lemmas)
     {
         $l0 = $1;
     }
-    next if(defined($lemma) && $l0 ne $lemma);
+    next if(defined($lemma) && $l0 !~ m/^$lemma$/i);
     my @tags = sort(keys(%{$stats{ltwf}{$l}}));
     foreach my $t (@tags)
     {
