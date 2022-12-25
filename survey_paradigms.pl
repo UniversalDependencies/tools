@@ -41,7 +41,8 @@ sub usage
     print STDERR ("           the LId attribute in MISC, it will be used to separate paradigms of different lexemes, but\n");
     print STDERR ("           --lemma is still matched against the LEMMA column. Perl may have to be invoked with the -CA\n");
     print STDERR ("           option to interpret arguments as UTF-8.\n");
-    print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X.\n");
+    print STDERR ("       --upos=X|--tag=X: Print only paradigms with the UPOS tag X. Multiple --upos options can be given.\n");
+    print STDERR ("           Output paradigms may satisfy any of them.\n");
     print STDERR ("       --feats='RE': Print only paradigms containing feature annotation that matches regular expression RE.\n");
     print STDERR ("           Multiple --feats options can be given. Output paradigms must satisfy all of them, presumably\n");
     print STDERR ("           each will be satisfied with a different word form.\n");
@@ -74,7 +75,7 @@ my $help = 0;
 my $udpath;
 my $folder;
 my $lemma;
-my $upos;
+my @upos;
 my @featsre;
 my @formsre;
 my $minforms = 1;
@@ -86,8 +87,8 @@ GetOptions
     'treebank=s'  => \$folder,
     'tbk=s'       => \$folder, # alternative shortcut for --treebank
     'lemma=s'     => \$lemma,
-    'upos=s'      => \$upos,
-    'tag=s'       => \$upos,
+    'upos=s'      => \@upos,
+    'tag=s'       => \@upos,
     'feats=s'     => \@featsre,
     'form=s'      => \@formsre,
     'minforms=i'  => \$minforms,
@@ -139,7 +140,7 @@ foreach my $l (@lemmas)
     my @tags = sort(keys(%{$stats{ltwf}{$l}}));
     foreach my $t (@tags)
     {
-        next if(defined($upos) && $t ne $upos);
+        next if(scalar(@upos) > 0 && !grep {$_ eq $t} (@upos));
         next if(scalar(keys(%{$stats{ltwf}{$l}{$t}})) < $minforms);
         # Collect all annotations from all word forms.
         my %annotations;
