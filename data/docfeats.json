@@ -815,6 +815,7 @@
 "VerbForm": {"type": "universal", "values": ["Fin", "Inf", "Part", "Ger"], "errors": []}
 },
 "jaa": {
+"AC": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Aspect": {"type": "universal", "values": ["Hab", "Bla"], "errors": []},
 "Back": {"type": "local", "values": ["Yes"], "errors": []},
 "Cfm": {"type": "local", "values": ["Morning", "First", "Unexpected", "ShortTime", "Now", "AboutTo", "Soon", "ABit", "NoResp", "Next", "Again", "Also", "Tomorrow", "DuringDay"], "errors": []},
