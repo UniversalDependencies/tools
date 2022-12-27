@@ -1527,7 +1527,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "jaa": {
-"AC": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"AC": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Yes": 1}}, "lastchanged": "2022-12-27-08-55-07", "lastchanger": "Julia170167"},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Hab"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Bla"], "evalues": [], "byupos": {"VERB": {"Hab": 1}}, "lastchanged": "2022-04-30-16-49-59", "lastchanger": "l12maro"},
 "Back": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Yes": 1}}, "lastchanged": "2022-12-17-18-46-42", "lastchanger": "Julia170167"},
 "Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Com"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Acc", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Gen", "Ill", "Ine", "Ins", "Lat", "Loc", "Nom", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {}, "VERB": {"Com": 1}}, "lastchanged": "2022-07-19-14-26-13", "lastchanger": "@languagestructure"},
