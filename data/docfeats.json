@@ -829,6 +829,7 @@
 "Mood": {"type": "universal", "values": ["DeclF", "DeclM"], "errors": []},
 "NCount": {"type": "local", "values": ["Yes"], "errors": []},
 "Nmzr": {"type": "local", "values": ["Yes"], "errors": []},
+"Nom": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "OC": {"type": "local", "values": ["Yes"], "errors": []},
 "Poss": {"type": "universal", "values": ["Yes"], "errors": []},
 "Redup": {"type": "local", "values": ["Yes"], "errors": []},
