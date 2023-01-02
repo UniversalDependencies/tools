@@ -828,6 +828,7 @@
 "Down": {"type": "local", "values": ["Yes"], "errors": []},
 "Evident": {"type": "universal", "values": ["Nfh", "Fh"], "errors": []},
 "Intension": {"type": "local", "values": ["Yes"], "errors": []},
+"Middle": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header.", "No title found in the header.", "Documentation does not belong to UD v2 guidelines.", "No feature values found."]},
 "Mood": {"type": "universal", "values": ["DeclF", "DeclM", "ImpF", "ImmF", "IntF"], "errors": []},
 "NCount": {"type": "local", "values": ["Yes"], "errors": []},
 "Nmzr": {"type": "local", "values": ["Yes"], "errors": []},
