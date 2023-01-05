@@ -5219,6 +5219,7 @@
 },
 "ml": {
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-01-05-15-47-47", "lastchanger": "abishekjs"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-01-04-17-55-54", "lastchanger": "dan-zeman"},
