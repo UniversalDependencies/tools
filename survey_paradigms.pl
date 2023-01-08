@@ -141,7 +141,8 @@ foreach my $l (@lemmas)
     foreach my $t (@tags)
     {
         next if(scalar(@upos) > 0 && !grep {$_ eq $t} (@upos));
-        next if(scalar(keys(%{$stats{ltwf}{$l}{$t}})) < $minforms);
+        my $nforms = scalar(keys(%{$stats{ltwf}{$l}{$t}}));
+        next if($nforms < $minforms);
         # Collect all annotations from all word forms.
         my %annotations;
         my @amatch;
@@ -187,7 +188,7 @@ foreach my $l (@lemmas)
             }
         }
         next if(!$fmatch);
-        print("LEMMA $l $t\n");
+        print("LEMMA $l $t $nforms forms\n");
         # Sort annotations according to our custom feature priorities and print them.
         my @annotations = sort_annotations(keys(%annotations));
         my @table;
