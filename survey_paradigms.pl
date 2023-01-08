@@ -147,6 +147,8 @@ foreach my $l (@lemmas)
         my %annotations;
         my @amatch;
         my @fmatch;
+        my $nocc = 0;
+        my $nslots = 0;
         foreach my $f (keys(%{$stats{ltwf}{$l}{$t}}))
         {
             foreach my $a (keys(%{$stats{ltwf}{$l}{$t}{$f}}))
@@ -154,6 +156,8 @@ foreach my $l (@lemmas)
                 # Reorder features within the annotation so that we can later sort the annotations.
                 my $sa = join('|', sort_features(split(/\|/, $a)));
                 $annotations{$sa}{$f} = $stats{ltwf}{$l}{$t}{$f}{$a};
+                $nocc += $annotations{$sa}{$f};
+                $nslots++;
                 # If there are @featsre requirements, check which of them are satisfied by the current annotation.
                 for(my $i = 0; $i <= $#featsre; $i++)
                 {
@@ -188,7 +192,7 @@ foreach my $l (@lemmas)
             }
         }
         next if(!$fmatch);
-        print("LEMMA $l $t $nforms forms\n");
+        print("LEMMA $l $t $nocc occurrences $nslots slots $nforms forms\n");
         # Sort annotations according to our custom feature priorities and print them.
         my @annotations = sort_annotations(keys(%annotations));
         my @table;
