@@ -128,6 +128,7 @@ my %stats =
 udlib::collect_examples_from_ud_treebank($tbkpath, $ltcode, \%stats);
 lowercase_forms($stats{ltwf});
 
+my @paradigms = ();
 my @lemmas = sort(keys(%{$stats{ltwf}}));
 foreach my $l (@lemmas)
 {
@@ -192,21 +193,29 @@ foreach my $l (@lemmas)
             }
         }
         next if(!$fmatch);
-        print("LEMMA $l $t $nocc occurrences $nslots slots $nforms forms\n");
-        # Sort annotations according to our custom feature priorities and print them.
-        my @annotations = sort_annotations(keys(%annotations));
-        my @table;
-        foreach my $a (@annotations)
-        {
-            my @forms = sort(keys(%{$annotations{$a}}));
-            foreach my $f (@forms)
-            {
-                push(@table, [$f, $a, $annotations{$a}{$f}]);
-            }
-        }
-        print_table(scalar(@table), 3, @table);
-        print("\n");
+        # If the paradigm passed the above filters, save it but do not print it yet.
+        # There may be other constraints, such as to print only the paradigm with
+        # the highest number of forms, so we must wait until we have read it all.
+        push(@paradigms, {'lemma' => $l, 'tag' => $t, 'nocc' => $nocc, 'nslots' => $nslots, 'nforms' => $nforms, 'annotations' => \%annotations});
     }
+}
+# Print the collected paradigms.
+foreach my $p (@paradigms)
+{
+    print("LEMMA $p->{lemma} $p->{tag} $p->{nocc} occurrences $p->{nslots} slots $p->{nforms} forms\n");
+    # Sort annotations according to our custom feature priorities and print them.
+    my @annotations = sort_annotations(keys(%{$p->{annotations}}));
+    my @table;
+    foreach my $a (@annotations)
+    {
+        my @forms = sort(keys(%{$p->{annotations}{$a}}));
+        foreach my $f (@forms)
+        {
+            push(@table, [$f, $a, $p->{annotations}{$a}{$f}]);
+        }
+    }
+    print_table(scalar(@table), 3, @table);
+    print("\n");
 }
 
 
