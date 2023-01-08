@@ -52,6 +52,9 @@ sub usage
     print STDERR ("           Output paradigms must satisfy all of them, presumably each will be satisfied with a different\n");
     print STDERR ("           word form. Perl may have to be invoked with the -CA option to interpret arguments as UTF-8.\n");
     print STDERR ("       --minforms=N: Print only paradigms that contain N or more distinct word forms. Default N=1.\n");
+    print STDERR ("       --sortbysize: Print the paradigms with most forms, slots and occurrences first. Default: sort alphabetically.\n");
+    print STDERR ("       --onlyone: Print only the first matching paradigm. Useful together with --sortbysize.\n");
+    print STDERR ("       --newfeats: Print only paradigms that contain a Feature=Value pair not seen previously.\n");
     print STDERR ("       --translit=replace|add|none: Use transliteration if available. Default: replace.\n");
 }
 
@@ -79,6 +82,9 @@ my @upos;
 my @featsre;
 my @formsre;
 my $minforms = 1;
+my $sort_by_size = 0;
+my $only_one = 0;
+my $require_newfeats = 0;
 my $translit = 'replace'; # recognized: replace|add|none
 GetOptions
 (
@@ -92,6 +98,9 @@ GetOptions
     'feats=s'     => \@featsre,
     'form=s'      => \@formsre,
     'minforms=i'  => \$minforms,
+    'sortbysize'  => \$sort_by_size,
+    'onlyone'     => \$only_one,
+    'newfeats'    => \$require_newfeats,
     'translit=s'  => \$translit
 );
 if($help)
@@ -150,12 +159,17 @@ foreach my $l (@lemmas)
         my @fmatch;
         my $nocc = 0;
         my $nslots = 0;
+        my %fvmap;
         foreach my $f (keys(%{$stats{ltwf}{$l}{$t}}))
         {
             foreach my $a (keys(%{$stats{ltwf}{$l}{$t}{$f}}))
             {
+                # Deserialize $a to individual Feature=Value pairs.
+                my @fv = split(/\|/, $a);
+                # Remember all Feature=Value pairs found in the paradigm.
+                map {$fvmap{$_}++} (@fv);
                 # Reorder features within the annotation so that we can later sort the annotations.
-                my $sa = join('|', sort_features(split(/\|/, $a)));
+                my $sa = join('|', sort_features(@fv));
                 $annotations{$sa}{$f} = $stats{ltwf}{$l}{$t}{$f}{$a};
                 $nocc += $annotations{$sa}{$f};
                 $nslots++;
@@ -196,12 +210,53 @@ foreach my $l (@lemmas)
         # If the paradigm passed the above filters, save it but do not print it yet.
         # There may be other constraints, such as to print only the paradigm with
         # the highest number of forms, so we must wait until we have read it all.
-        push(@paradigms, {'lemma' => $l, 'tag' => $t, 'nocc' => $nocc, 'nslots' => $nslots, 'nforms' => $nforms, 'annotations' => \%annotations});
+        push(@paradigms, {'lemma' => $l, 'tag' => $t, 'nocc' => $nocc, 'nslots' => $nslots, 'nforms' => $nforms, 'annotations' => \%annotations, 'feats' => [keys(%fvmap)]});
     }
 }
+# If only the largest paradigm is requested, sort the paradigms by their size.
+if($sort_by_size)
+{
+    @paradigms = sort
+    {
+        my $r = $b->{nforms} <=> $a->{nforms};
+        unless($r)
+        {
+            $r = $b->{nslots} <=> $a->{nslots};
+            unless($r)
+            {
+                $r = $b->{nocc} <=> $a->{nocc};
+                unless($r)
+                {
+                    $r = $a->{lemma} cmp $b->{lemma};
+                    unless($r)
+                    {
+                        $r = $a->{tag} cmp $b->{tag};
+                    }
+                }
+            }
+        }
+        $r
+    }
+    (@paradigms);
+}
 # Print the collected paradigms.
+my %fvmap; # remember features that have been already shown in a paradigm
 foreach my $p (@paradigms)
 {
+    if($require_newfeats)
+    {
+        # Does this paradigm have a Feature=Value pair that has not been observed previously?
+        my $newfv = 0;
+        foreach my $fv (@{$p->{feats}})
+        {
+            if(!exists($fvmap{$fv}))
+            {
+                $newfv = 1;
+            }
+            $fvmap{$fv}++;
+        }
+        next if(!$newfv);
+    }
     print("LEMMA $p->{lemma} $p->{tag} $p->{nocc} occurrences $p->{nslots} slots $p->{nforms} forms\n");
     # Sort annotations according to our custom feature priorities and print them.
     my @annotations = sort_annotations(keys(%{$p->{annotations}}));
@@ -216,6 +271,7 @@ foreach my $p (@paradigms)
     }
     print_table(scalar(@table), 3, @table);
     print("\n");
+    last if($only_one);
 }
 
 
