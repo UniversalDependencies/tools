@@ -5232,7 +5232,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-01-05-15-52-55", "lastchanger": "abishekjs"},
-"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-01-05-15-53-08", "lastchanger": "abishekjs"},
+"compound:svc": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'compound:svc'."], "lastchanged": "2023-01-05-15-53-08", "lastchanger": "abishekjs"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
