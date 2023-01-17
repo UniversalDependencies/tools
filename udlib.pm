@@ -674,7 +674,7 @@ sub check_files
     # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
     my %train_exceptions =
     (
-        'UD_Czech-PDT'         => {'desc' => 'cs_pdt-ud-train-[clmv].conllu',      'files' => ['train-c', 'train-l', 'train-m', 'train-v']},
+        'UD_Czech-PDT'         => {'desc' => 'cs_pdt-ud-train-[clmv][ta].conllu',  'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va']},
         'UD_German-HDT'        => {'desc' => 'de_hdt-ud-train-[ab]-[12].conllu',   'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
         'UD_Russian-SynTagRus' => {'desc' => 'ru_syntagrus-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']}
     );
