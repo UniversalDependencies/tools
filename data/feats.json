@@ -1293,7 +1293,7 @@
 "hil": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Fem": 1, "Masc": 1}}, "lastchanged": "2023-01-21-22-28-34", "lastchanger": "anntanp"},
+"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc", "Neut"], "lvalues": [], "unused_uvalues": ["Com"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Fem": 1, "Masc": 1}, "NOUN": {"Fem": 1, "Masc": 1, "Neut": 1}, "PRON": {"Fem": 1, "Masc": 1, "Neut": 1}}, "lastchanged": "2023-01-21-22-32-54", "lastchanger": "anntanp"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "hit": {
