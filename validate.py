@@ -2455,6 +2455,8 @@ def validate_misc_entity(comments, sentence):
                         else:
                             # If the closing bracket does not occur where expected, it is currently only a warning.
                             # We have crossing mention spans in CorefUD 1.0 and it has not been decided yet whether all of them should be illegal.
+                            ###!!! Note that this will not catch ill-nested mentions whose only intersection is one node. The bracketing will
+                            ###!!! not be a problem in such cases because one mention will be closed first, then the other will be opened.
                             if beid != open_entity_mentions[-1]['beid']:
                                 testid = 'ill-nested-entities-warning'
                                 testmessage = "Entity mentions are not well nested: closing '%s' while the innermost open entity is '%s' from line %d: %s." % (beid, open_entity_mentions[-1]['beid'], open_entity_mentions[-1]['line'], str(open_entity_mentions))
@@ -2587,6 +2589,10 @@ def validate_misc_entity(comments, sentence):
                             tgteid = match.group(2)
                             relation = match.group(3) # optional
                             bridgekey = srceid+'<'+tgteid
+                            if srceid == tgteid:
+                                testid = 'spurious-bridge-relation'
+                                testmessage = "Bridge must not point from an entity to itself: '%s'." % (b)
+                                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
                             if not tgteid in starting_mentions:
                                 testid = 'misplaced-bridge-statement'
                                 testmessage = "Bridge relation '%s' must be annotated at the beginning of a mention of entity '%s'." % (b, tgteid)
