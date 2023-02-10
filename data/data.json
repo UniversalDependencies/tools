@@ -1373,6 +1373,7 @@
 },
 "vi": {
 "bị": {"functions": [{"function": "Polite=Form", "rule": "Vietnamese auxiliary", "deficient": "", "example": "Lao động tiếp tục [bị] bán tứ tán .", "exampleen": "Labor continues to be scattered.", "comment": "No"}], "status": "documented", "lastchanged": "2022-09-07-10-10-57", "lastchanger": "vietnamesedp"},
+"chưa thể": {"functions": [{"function": "Polite=Form", "rule": "Vietnamese auxiliary", "deficient": "", "example": "Tôi [chưa thể] đi hôm nay.", "exampleen": "I [can't] go today.", "comment": ""}], "status": "documented", "lastchanged": "2023-02-10-04-27-50", "lastchanger": "vietnamesedp"},
 "chắc chắn": {"functions": [{"function": "Polite=Infm", "rule": "Vietnamese auxiliary", "deficient": "", "example": "Tôi [chắc chắn] sẽ tới.", "exampleen": "I will [definitely] come", "comment": ""}], "status": "documented", "lastchanged": "2022-09-19-19-53-05", "lastchanger": "vietnamesedp"},
 "có thể": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "Tôi [có thể] đi hôm nay.", "exampleen": "I [may] go today.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-19-11-23-25", "lastchanger": "dan-zeman"},
 "có vẻ": {"functions": [{"function": "Polite=Infm", "rule": "Vietnamese auxiliary", "deficient": "", "example": "Bạn [có vẻ] hơi buồn.", "exampleen": "you [seem] a bit sad", "comment": ""}], "status": "documented", "lastchanged": "2022-09-19-20-10-03", "lastchanger": "vietnamesedp"},
