@@ -1878,6 +1878,7 @@
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-04-22-13-06-44", "lastchanger": "dan-zeman"},
+"obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-13-18-33-12", "lastchanger": "dan-zeman"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
