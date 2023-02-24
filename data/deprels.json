@@ -2212,6 +2212,7 @@
 "conj:dicto": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-24-21-07-01", "lastchanger": "bguil"},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dep:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
