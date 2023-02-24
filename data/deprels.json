@@ -2238,6 +2238,7 @@
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:caus": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:expl": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-24-21-06-43", "lastchanger": "bguil"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
