@@ -1,4 +1,5 @@
 # mostly abbreviations that have a lemma that is the full form (containing spaces)
+acellulair Kinkhoestvaccin
 au sérieux
 casu quo
 cum suis
