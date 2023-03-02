@@ -8,12 +8,14 @@ casu quo
 christelijk hervormden
 cum suis
 dat wil zeggen
+dit is
 en dergelijke
 in plaats van
 knock down
 knock out
 know how
 met andere woorden
+nota bene
 onder ander
 onder veel
 plus minus
