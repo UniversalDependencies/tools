@@ -7615,7 +7615,6 @@
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-25-10-01-41", "lastchanger": "AdeDoyle"},
 "nmod:pre": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-03-05-21-37-59", "lastchanger": "AdeDoyle"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:infx": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
