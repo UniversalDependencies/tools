@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/env -S perl -CDSA
 # Scans a treebank for combinations of lemmas, UPOS tags, forms and features.
 # Prints observed paradigm tables.
 # Copyright © 2022 Dan Zeman <zeman@ufal.mff.cuni.cz>
