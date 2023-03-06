@@ -7093,6 +7093,7 @@
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:arg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
