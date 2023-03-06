@@ -7095,6 +7095,7 @@
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:arg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
