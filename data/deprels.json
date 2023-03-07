@@ -7067,6 +7067,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:q": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
