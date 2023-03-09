@@ -7085,6 +7085,7 @@
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"doc": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'doc' is not a subtype of any approved main type."]},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
