@@ -1694,6 +1694,7 @@
 "csubj:pass": {"type": "local", "errors": []},
 "iobj": {"type": "universal", "errors": []},
 "nsubj": {"type": "universal", "errors": []},
+"nusbj:pass": {"type": "", "errors": ["Relation 'nusbj:pass' is not a subtype of any approved main type."]},
 "obj": {"type": "universal", "errors": []},
 "obl": {"type": "universal", "errors": []},
 "obl:agent": {"type": "local", "errors": []},
