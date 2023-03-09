@@ -1692,7 +1692,6 @@
 "conj": {"type": "universal", "errors": []},
 "csubj": {"type": "universal", "errors": []},
 "csubj:pass": {"type": "local", "errors": []},
-"doc": {"type": "", "errors": ["Relation 'doc' is not a subtype of any approved main type."]},
 "fixed": {"type": "universal", "errors": []},
 "iobj": {"type": "universal", "errors": []},
 "nmod": {"type": "universal", "errors": []},
