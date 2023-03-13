@@ -397,9 +397,13 @@ sub get_validator_command
     {
         $command = "./validate.sh --lang $lcode --max-err=10 $folder/$file";
     }
-    elsif(which('validate.py'))
+    else
     {
-        $command = "validate.py --lang $lcode --max-err=10 $folder/$file";
+        my $validate = which('validate.py');
+        if($validate)
+        {
+            $command = "$validate --lang $lcode --max-err=10 $folder/$file";
+        }
     }
     return $command;
 }
