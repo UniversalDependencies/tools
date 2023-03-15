@@ -7640,6 +7640,7 @@
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-28-09-49-46", "lastchanger": "AdeDoyle"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"part:nas": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'part:nas' is not a subtype of any approved main type."]},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},

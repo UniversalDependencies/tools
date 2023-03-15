@@ -1814,7 +1814,8 @@
 "compound:prt": {"type": "local", "errors": []},
 "nmod:pre": {"type": "local", "errors": []},
 "obj:infx": {"type": "local", "errors": []},
-"obl:prep": {"type": "local", "errors": []}
+"obl:prep": {"type": "local", "errors": []},
+"part:nas": {"type": "", "errors": ["Relation 'part:nas' is not a subtype of any approved main type."]}
 },
 "sjo": {
 "mark:adv": {"type": "local", "errors": []},
