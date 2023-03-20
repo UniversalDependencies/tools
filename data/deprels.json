@@ -3896,6 +3896,7 @@
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-03-20-14-03-27", "lastchanger": "ialfina"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
