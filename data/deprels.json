@@ -3575,6 +3575,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-03-20-14-05-44", "lastchanger": "ialfina"},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep:prt": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
