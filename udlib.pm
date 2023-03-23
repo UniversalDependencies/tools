@@ -766,6 +766,8 @@ sub check_files
         'UD_(English|Turkish)-Atis'    => {'dev' => 1, 'test' => 1},
         # Exception: UD_English-ESL are just below 10K test, and they do not participate in shared tasks anyway.
         'UD_English-ESL'               => {'test' => 1},
+        # Exception: UD_English-ESLSpok will be growing up to 50K but initially they have only 21K and they want to keep their split consistent with what they published elsewhere.
+        'UD_English-ESLSpok'           => {'test' => 1},
         # Exception: UD_English-GUMReddit has just 1840 words test. It does not participate in shared tasks (and if so, it can be merged with GUM).
         'UD_English-GUMReddit'         => {'test' => 1},
         # Exception: UD_Faroese-FarPaHC has 8644 words test. I think I did not ask them about it but they have already relased it this way.
