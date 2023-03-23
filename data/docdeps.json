@@ -2175,6 +2175,7 @@
 "obl:iobj": {"type": "local", "errors": []},
 "obl:verb": {"type": "local", "errors": []},
 "obl:with": {"type": "local", "errors": []},
+"remnant": {"type": "", "errors": ["Relation 'remnant' is not a subtype of any approved main type."]},
 "xcomp": {"type": "universal", "errors": []},
 "xcomp:adj": {"type": "local", "errors": []},
 "xcomp:dir": {"type": "local", "errors": []},
