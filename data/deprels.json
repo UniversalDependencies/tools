@@ -9068,6 +9068,7 @@
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "xcomp:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"xcomp:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "xcomp:dir": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "xcomp:vcomp": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
