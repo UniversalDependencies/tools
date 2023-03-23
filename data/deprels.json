@@ -8986,6 +8986,7 @@
 "advmod:adj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:dir": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:verb": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos:nmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
