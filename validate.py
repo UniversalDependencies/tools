@@ -549,6 +549,10 @@ def validate_text_meta(comments, tree):
                 testid = 'nospaceafter-yes'
                 testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            if len([x for x in cols[MISC].split('|') if re.match(r'^SpaceAfter=', x) and x != 'SpaceAfter=No']) > 0:
+                testid = 'spaceafter-value'
+                testmessage = "Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
             if '.' in cols[ID]: # empty node
                 if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                     testid = 'spaceafter-empty-node'
