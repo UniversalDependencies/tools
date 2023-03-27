@@ -514,7 +514,6 @@
 "Conces": {"type": "local", "values": ["Yes"], "errors": []},
 "Contrast": {"type": "local", "values": ["Yes"], "errors": []},
 "Corf": {"type": "local", "values": ["Yes"], "errors": []},
-"Dim": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for diminutive is 'Degree=Dim'."]},
 "Emph": {"type": "local", "values": ["Yes"], "errors": []},
 "Excl": {"type": "local", "values": ["Yes"], "errors": []},
 "Foc": {"type": "local", "values": ["Yes"], "errors": []},
