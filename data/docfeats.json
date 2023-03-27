@@ -510,7 +510,6 @@
 "Accomp": {"type": "local", "values": ["Yes"], "errors": []},
 "Also": {"type": "local", "values": ["Yes"], "errors": []},
 "Aspect": {"type": "universal", "values": ["Cont", "Compl", "Iter"], "errors": []},
-"Augm": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for augmentative is 'Degree=Aug'."]},
 "Case": {"type": "universal", "values": ["Ref", "Loc", "Tra", "Dat", "All", "Abl"], "errors": []},
 "Conces": {"type": "local", "values": ["Yes"], "errors": []},
 "Contrast": {"type": "local", "values": ["Yes"], "errors": []},
