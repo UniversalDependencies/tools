@@ -57,6 +57,7 @@ warn_on_missing_files = set() # langspec files which you should warn about in ca
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
 warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
+mwt_typo_span_end = None # if Typo=Yes at multiword token, what is the end of the multiword span?
 spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
 featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
 auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
@@ -217,7 +218,7 @@ def trees(inp, tag_sets, args):
                 lines.append(cols)
                 validate_cols_level1(cols)
                 if args.level > 1:
-                    validate_cols(cols,tag_sets,args)
+                    validate_cols(cols, tag_sets, args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = "Spurious line: '%s'. All non-empty lines should start with a digit or the # character." % (line)
@@ -427,7 +428,7 @@ def validate_token_ranges(tree):
         covered |= set(range(start, end+1))
 
 def validate_newlines(inp):
-    if inp.newlines and inp.newlines!='\n':
+    if inp.newlines and inp.newlines != '\n':
         testlevel = 1
         testclass = 'Format'
         testid = 'non-unix-newline'
@@ -548,6 +549,10 @@ def validate_text_meta(comments, tree):
                 testid = 'nospaceafter-yes'
                 testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
+            if len([x for x in cols[MISC].split('|') if re.match(r'^SpaceAfter=', x) and x != 'SpaceAfter=No']) > 0:
+                testid = 'spaceafter-value'
+                testmessage = "Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
             if '.' in cols[ID]: # empty node
                 if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                     testid = 'spaceafter-empty-node'
@@ -625,9 +630,16 @@ def validate_token_empty_vals(cols):
     This is required by UD guidelines although it is not a problem in general,
     therefore a level 2 test.
     """
+    global mwt_typo_span_end
     assert is_multiword_token(cols), 'internal error'
     for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
-        if cols[col_idx] != '_':
+        # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
+        if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
+            # If a multi-word token has Typo=Yes, its component words must not have it.
+            # We must remember the span of the MWT and check it in validate_features().
+            m = interval_re.match(cols[ID])
+            mwt_typo_span_end = m.group(2)
+        elif cols[col_idx] != '_':
             testlevel = 2
             testclass = 'Format'
             testid = 'mwt-nonempty-field'
@@ -707,6 +719,7 @@ def validate_features(cols, tag_sets, args):
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
     global warn_on_undoc_feats
+    global mwt_typo_span_end
     testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
@@ -723,14 +736,14 @@ def validate_features(cols, tag_sets, args):
         lang = altlang
         featset = get_featdata_for_language(altlang)
     feat_list=feats.split('|')
-    if [f.lower() for f in feat_list]!=sorted(f.lower() for f in feat_list):
+    if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
         testlevel = 2
         testid = 'unsorted-features'
         testmessage = "Morphological features must be sorted: '%s'." % feats
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-    attr_set=set() # I'll gather the set of features here to check later that none is repeated.
+    attr_set = set() # I'll gather the set of features here to check later that none is repeated.
     for f in feat_list:
-        match=attr_val_re.match(f)
+        match = attr_val_re.match(f)
         if match is None:
             testlevel = 2
             testid = 'invalid-feature'
@@ -739,9 +752,9 @@ def validate_features(cols, tag_sets, args):
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             # Check that the values are sorted as well
-            attr=match.group(1)
+            attr = match.group(1)
             attr_set.add(attr)
-            values=match.group(2).split(',')
+            values = match.group(2).split(',')
             if len(values) != len(set(values)):
                 testlevel = 2
                 testid = 'repeated-feature-value'
@@ -763,6 +776,12 @@ def validate_features(cols, tag_sets, args):
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
                 if args.level > 3:
                     testlevel = 4
+                    # The feature Typo=Yes is the only feature allowed on a multi-word token line.
+                    # If it occurs there, it cannot be duplicated on the lines of the component words.
+                    if attr == 'Typo' and mwt_typo_span_end and cols[ID] <= mwt_typo_span_end:
+                        testid = 'mwt-typo-repeated-at-word'
+                        testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
+                        warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                     # In case of code switching, the current token may not be in the default language
                     # and then its features are checked against a different feature set. An exception
                     # is the feature Foreign, which always relates to the default language of the
@@ -788,7 +807,7 @@ def validate_features(cols, tag_sets, args):
                             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                         else:
                             lfrecord = effective_featset[attr]
-                            if lfrecord['permitted']==0:
+                            if lfrecord['permitted'] == 0:
                                 testid = 'feature-not-permitted'
                                 testmessage = "Feature %s is not permitted in language [%s]." % (attr, effective_lang)
                                 if not altlang and len(warn_on_undoc_feats) > 0:
@@ -823,6 +842,8 @@ def validate_features(cols, tag_sets, args):
         testid = 'repeated-feature'
         testmessage = "Repeated features are disallowed: '%s'." % feats
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+    if mwt_typo_span_end and int(mwt_typo_span_end) <= int(cols[ID]):
+        mwt_typo_span_end = None
 
 def features_present():
     """

@@ -757,50 +757,53 @@ sub check_files
     my %split_exceptions =
     (
         # UD_Akkadian-RIAO: I think they told me that the treebank would grow; in the first version, they have only 20K test and no train.
-        'UD_Akkadian-RIAO'             => {'train' => 1},
+        'UD_Akkadian-RIAO'                  => {'train' => 1},
         # Exception: UD_Armenian-ArmTDP decided to have only about 5K test, do not ping them. (I don't remember whether I actually discussed it with Marat.)
-        'UD_Armenian-ArmTDP'           => {'test' => 1},
+        'UD_Armenian-ArmTDP'                => {'test' => 1},
         # UD_Czech-CLTT: The data needs a lot of fixes but ultimately I may want to re-split it, too. No exception at the moment.
         # Exception: UD_English-Atis keeps the train-dev-test split from the original corpus (it is small but it is roughly 80-10-10%).
         # Exception: UD_Turkish-Atis is parallel with UD_English-Atis (see above) and uses the same split.
-        'UD_(English|Turkish)-Atis'    => {'dev' => 1, 'test' => 1},
+        'UD_(English|Turkish)-Atis'         => {'dev' => 1, 'test' => 1},
         # Exception: UD_English-ESL are just below 10K test, and they do not participate in shared tasks anyway.
-        'UD_English-ESL'               => {'test' => 1},
+        'UD_English-ESL'                    => {'test' => 1},
+        # Exception: UD_English-ESLSpok will be growing up to 50K but initially they have only 21K and they want to keep their split consistent with what they published elsewhere.
+        'UD_English-ESLSpok'                => {'test' => 1},
         # Exception: UD_English-GUMReddit has just 1840 words test. It does not participate in shared tasks (and if so, it can be merged with GUM).
-        'UD_English-GUMReddit'         => {'test' => 1},
+        'UD_English-GUMReddit'              => {'test' => 1},
         # Exception: UD_Faroese-FarPaHC has 8644 words test. I think I did not ask them about it but they have already relased it this way.
-        'UD_Faroese-FarPaHC'           => {'test' => 1},
+        'UD_Faroese-FarPaHC'                => {'test' => 1},
         # Exception: UD_French-FQB is a test-only treebank (or use cross-validation, or add it to training data of Sequoia).
-        'UD_French-FQB'                => {'train' => 1},
+        'UD_French-FQB'                     => {'train' => 1},
         # Exception: UD_French-ParisStories is just below 10K test, and the total treebank is slightly below 30K.
-        'UD_French-ParisStories'       => {'test' => 1},
+        'UD_French-ParisStories'            => {'test' => 1},
         # Exception: UD_French-Rhapsodie (formerly Spoken) is just below 10K test, and the total treebank is only slightly over 30K.
-        'UD_French-Rhapsodie'          => {'test' => 1},
-        'UD_French-Spoken'             => {'test' => 1},
+        'UD_French-Rhapsodie'               => {'test' => 1},
+        'UD_French-Spoken'                  => {'test' => 1},
         # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
-        'UD_German-LIT'                => {'train' => 1, 'dev' => 1},
+        'UD_German-LIT'                     => {'train' => 1, 'dev' => 1},
         # Exception: UD_Hindi_English-HIENCS has only 3K test; they do not participate in shared tasks.
-        'UD_Hindi_English-HIENCS'      => {'test' => 1},
+        'UD_Hindi_English-HIENCS'           => {'test' => 1},
         # Exception: UD_Italian-TWITTIRO overlaps with POSTWITA and tries to match its data split.
-        'UD_Italian-TWITTIRO'          => {'test' => 1},
-        # UD_Manx-Cadhan: No exception but wait. 2021-05-06 Kevin writes: I have another 20k words that are mostly correct but need one more editing pass. I decided to stick with the 20k in test for now, with the aim of doing a 3-way split for the next release (if that's ok). My aim is to eventually get to 100k total.
+        'UD_Italian-TWITTIRO'               => {'test' => 1},
+        # Exception: UD_Maghrebi_Arabic_French-Arabizi has already been used for evaluation with a canonical split, so they want to keep it in UD, although the parts are smaller than recommended.
+        'UD_Maghrebi_Arabic_French-Arabizi' => {'test' => 1},
         # UD_Old_East_Slavic-Birchbark: 2022-10-05 Olga writes: This treebank contains all available linguistic material for the period. Birchbark letters are small documents and on average 100-200 words are excavated each year. So the treebank will grow but slowly. I do not want to switch dev and train since (i) train data was already released and (ii) there are some unanalysable fragments in train which we add intentionally as we believe it can still help for training models.
-        'UD_Old_East_Slavic-Birchbark' => {'train' => 1},
+        'UD_Old_East_Slavic-Birchbark'      => {'train' => 1},
         # UD_Old_East_Slavic-RNC: No exception but wait. 2021-05-05 Olga writes: Another 20k portion of the RNC orv data is planned as dev, it has not been released yet. I would keep it as is if possible: the current 20 k test were reported as test in some of our experiments.
         # UD_Pomak-Philotis: Test has only 8804 words. Stella: Well, yes, we followed the 10%-10%-80% rule.
-        'UD_Pomak-Philotis'            => {'test' => 1},
+        'UD_Pomak-Philotis'                 => {'test' => 1},
         # Exception: UD_Sanskrit-Vedic is just below 10K test, and the total treebank is only slightly over 20K.
-        'UD_Sanskrit-Vedic'            => {'test' => 1},
+        'UD_Sanskrit-Vedic'                 => {'test' => 1},
         # Exception: UD_Scottish_Gaelic-ARCOSG is close to 10K test tokens but they could not get there if they did not want to split documents.
-        'UD_Scottish_Gaelic-ARCOSG'    => {'test' => 1},
+        'UD_Scottish_Gaelic-ARCOSG'         => {'test' => 1},
         # Exception: UD_Turkish-FrameNet uses a 80-10-10% split, although the treebank is rather small (also, the sizes are computed in terms of number of frames rather than words).
-        'UD_Turkish-FrameNet'          => {'test' => 1},
+        'UD_Turkish-FrameNet'               => {'test' => 1},
         # Exception: UD_Turkish-Penn keeps the train-dev-test split from the original treebank where there are only 3K words dev and 4K words test.
-        'UD_Turkish-Penn'              => {'dev' => 1, 'test' => 1},
+        'UD_Turkish-Penn'                   => {'dev' => 1, 'test' => 1},
         # Exception: ParTUT has some portions smaller because of other limitations (sync across languages and with UD_Italian-ISDT).
-        'UD_.+-ParTUT'                 => {'train' => 1, 'dev' => 1, 'test' => 1},
+        'UD_.+-ParTUT'                      => {'train' => 1, 'dev' => 1, 'test' => 1},
         # Exception: PUD parallel data (including Japanese-PUDLUW) are currently test only, even if in some languages there is more than 20K words.
-        'UD_.+-PUD(LUW)?'              => {'train' => 1, 'dev' => 1}
+        'UD_.+-PUD(LUW)?'                   => {'train' => 1, 'dev' => 1}
     );
     my $allow_smalltrain_re = '^('.join('|', grep {$split_exceptions{$_}{train}} (keys(%split_exceptions))).')$';
     my $allow_smalldev_re   = '^('.join('|', grep {$split_exceptions{$_}{dev}}   (keys(%split_exceptions))).')$';
