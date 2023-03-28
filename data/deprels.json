@@ -7685,7 +7685,7 @@
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"amod:mutation": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"amod:mutation": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-25-10-00-39", "lastchanger": "AdeDoyle"},
