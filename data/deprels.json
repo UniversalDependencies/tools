@@ -6048,6 +6048,7 @@
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-03-29-11-41-52", "lastchanger": "ingerid"},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "csubjpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
