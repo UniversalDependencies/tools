@@ -2457,6 +2457,7 @@
 "csubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-03-31-13-24-06", "lastchanger": "tlynn747"},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse:emo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
