@@ -340,28 +340,28 @@ def validate_ID_sequence(tree):
         if not is_empty_node(cols):
             next_empty_id = 1    # reset sequence
         if is_word(cols):
-            t_id=int(cols[ID])
+            t_id = int(cols[ID])
             current_word_id = t_id
             words.append(t_id)
             # Not covered by the previous interval?
-            if not (tokens and tokens[-1][0]<=t_id and tokens[-1][1]>=t_id):
-                tokens.append((t_id,t_id)) # nope - let's make a default interval for it
+            if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
+                tokens.append((t_id, t_id)) # nope - let's make a default interval for it
         elif is_multiword_token(cols):
-            match=interval_re.match(cols[ID]) # Check the interval against the regex
+            match = interval_re.match(cols[ID]) # Check the interval against the regex
             if not match: # This should not happen. The function is_multiword_token() would then not return True.
                 testid = 'invalid-word-interval'
                 testmessage = "Spurious word interval definition: '%s'." % cols[ID]
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 ok = False
                 continue
-            beg,end=int(match.group(1)),int(match.group(2))
+            beg, end = int(match.group(1)), int(match.group(2))
             if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
                 testid = 'misplaced-word-interval'
                 testmessage = 'Multiword range not before its first word.'
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 ok = False
                 continue
-            tokens.append((beg,end))
+            tokens.append((beg, end))
         elif is_empty_node(cols):
             word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
             if word_id != current_word_id or empty_id != next_empty_id:
@@ -370,9 +370,19 @@ def validate_ID_sequence(tree):
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid)
                 ok = False
             next_empty_id += 1
-    # Now let's do some basic sanity checks on the sequences
+            # Interaction of multiword tokens and empty nodes if there is an empty
+            # node between the first word of a multiword token and the previous word:
+            # This sequence is correct: 4 4.1 5-6 5 6
+            # This sequence is wrong:   4 5-6 4.1 5 6
+            if word_id == current_word_id and tokens and word_id < tokens[-1][0]:
+                testid = 'misplaced-empty-node'
+                testmessage = "Empty node id %s must occur before multiword token %s-%s." % (cols[ID], tokens[-1][0], tokens[-1][1])
+                warn(testmessage, testclass, testlevel=testlevel, testid=testid)
+                ok = False
+    # Now let's do some basic sanity checks on the sequences.
+    # Expected sequence of word IDs is 1, 2, ...
+    expstrseq = ','.join(str(x) for x in range(1, len(words) + 1))
     wrdstrseq = ','.join(str(x) for x in words)
-    expstrseq = ','.join(str(x) for x in range(1, len(words)+1)) # Words should form a sequence 1,2,...
     if wrdstrseq != expstrseq:
         testid = 'word-id-sequence'
         testmessage = "Words do not form a sequence. Got '%s'. Expected '%s'." % (wrdstrseq, expstrseq)
