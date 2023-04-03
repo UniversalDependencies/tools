@@ -2474,6 +2474,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:prep": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-04-03-13-24-51", "lastchanger": "laurenCassidy"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-04-03-13-20-26", "lastchanger": "laurenCassidy"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
