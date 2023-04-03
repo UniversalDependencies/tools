@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Checks files to be distributed as Universal Dependencies.
-# Copyright © 2015, 2016, 2017, 2018, 2022 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2015, 2016, 2017, 2018, 2022, 2023 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
