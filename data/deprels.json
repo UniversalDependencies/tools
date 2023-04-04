@@ -7183,6 +7183,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-04-04-10-13-20", "lastchanger": "vistamou"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nusbj:pass": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'nusbj:pass' is not a subtype of any approved main type."]},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
