@@ -1187,7 +1187,6 @@
 "tpn": {
 "AdvType": {"type": "local", "values": ["Temp", "Loc", "Mod"], "errors": []},
 "Aspect": {"type": "universal", "values": ["Compl", "Iter", "Suc", "Lus"], "errors": []},
-"Augm": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for augmentative is 'Degree=Aug'."]},
 "Case": {"type": "universal", "values": ["All", "Ref", "Loc", "Tra", "Per", "Voc", "Dat"], "errors": []},
 "ConjType": {"type": "local", "values": ["Disj"], "errors": []},
 "Corf": {"type": "local", "values": ["Yes"], "errors": []},
