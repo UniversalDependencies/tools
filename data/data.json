@@ -1420,6 +1420,7 @@
 },
 "xav": {
 "ma'ãpé": {"functions": [{"function": "Mood=Imp", "rule": "separated with a comma from the rest of the clause", "deficient": "", "example": "[Ma'ãpé] , mrami pa'o hã !", "exampleen": "Then take two bananas!", "comment": ""}], "status": "documented", "lastchanged": "2023-03-28-16-47-51", "lastchanger": "ulyavedenina"},
+"mo": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a preceding infinitive of the main verb", "deficient": "", "example": "Te dza oto asina aahöimana aba [mo]", "exampleen": "From now on you will live by yourselves", "comment": ""}], "status": "documented", "lastchanged": "2023-04-06-16-51-52", "lastchanger": "ulyavedenina"},
 "te": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Duréjhã ĩhöʔa hã aiʔuté te[te] ʔmadöʔö zaʔra", "exampleen": "Back then, the priests took are of the child", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-17-58-31", "lastchanger": "@LangugaeStructure"},
 "wajhuʔu": {"functions": [{"function": "Mood=Pot", "rule": "combines with a finite verb", "deficient": "", "example": "E roʔmadöʔö [wajhuʔu]pese di ?", "exampleen": "Can you see well?", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-18-08-02", "lastchanger": "@LangugaeStructure"}
 },
