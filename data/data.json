@@ -872,7 +872,8 @@
 "ml": {
 "ആക്": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Normal non-possessive copula", "example": "അവ എൻറെ പുസ്തകങ്ങ[ളാൺ].", "exampleen": "Those are my books.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-12-20-36", "lastchanger": "abishekjs"},
 "ഉണ്ട്": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Normal possessive copula", "example": "എനിക്ക് ഒരു കാര് [ഉണ്ട്]", "exampleen": "I have a car", "comment": ""}], "status": "documented", "lastchanged": "2023-01-05-17-02-20", "lastchanger": "abishekjs"},
-"കഴിയുക": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the infinitive verb form", "deficient": "", "example": "നിങ്ങൾക്ക് എപ്പോൾ വരാൻ [കഴിയുമെ]ന്ന് നിങ്ങൾ കരുതുന്നു?", "exampleen": "When do you think you can come?", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-12-25-06", "lastchanger": "abishekjs"}
+"കഴിയുക": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the infinitive verb form", "deficient": "", "example": "നിങ്ങൾക്ക് എപ്പോൾ വരാൻ [കഴിയുമെ]ന്ന് നിങ്ങൾ കരുതുന്നു?", "exampleen": "When do you think you can come?", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-12-25-06", "lastchanger": "abishekjs"},
+"പാട്": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "സീറ്റിങ് രീതി മുൻകൂട്ടി അറിയാൻ [പാടില്ല].", "exampleen": "The seating pattern [should not] be known in advance.", "comment": ""}], "status": "documented", "lastchanged": "2023-04-06-16-09-32", "lastchanger": "dan-zeman"}
 },
 "mov": {
 "iðu:m": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
