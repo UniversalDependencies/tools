@@ -1512,6 +1512,7 @@
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"expl:pv": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-04-11-14-25-03", "lastchanger": "daghaug"},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
