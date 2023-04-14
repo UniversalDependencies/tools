@@ -1606,11 +1606,14 @@ def validate_orphan(id, tree):
         # A similar pattern also occurs with acl, e.g. in Latvian:
         # viņš ēd tos ābolus, ko pirms tam [ēda] tārpi ('he eats the same apples, which where [eaten] by worms before that')
         # Other clausal heads (ccomp, csubj) may be eligible as well, e.g. in Latvian
-        # (see also issue 635 19.9.2019):
+        # (see also issue 635 2019-09-19):
         # atjēdzos, ka bez angļu valodas nekur [netikšu] '[I] realised, that [I will get] nowhere without English'
+        # 2023-04-14: Reclassifying the test as warning only. Due to promotion,
+        # the parent of orphan may receive many other relations. See issue 635
+        # for details and a Latin example.
         if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", pdeprel):
             testlevel = 3
-            testclass = 'Syntax'
+            testclass = 'Warning'
             testid = 'orphan-parent'
             testmessage = "The parent of 'orphan' should normally be 'conj' but it is '%s'." % (pdeprel)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])

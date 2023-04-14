@@ -22,7 +22,7 @@ while(<TGT>)
     $src{$trigram} = 1;
 }
 close(TGT);
-open(SRC, $srcdistfile) ord die("Cannot read $srcdistfile: $!");
+open(SRC, $srcdistfile) or die("Cannot read $srcdistfile: $!");
 while(<SRC>)
 {
     s/\r?\n$//;
