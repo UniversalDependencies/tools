@@ -64,9 +64,9 @@ auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
 depreldata = {} # key: language code (deprel data loaded from deprels.json)
 edepreldata = {} # key: language code (edeprel data loaded from edeprels.json)
 
-def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0):
+def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodelineno=0, nodeid=0, explanation=None):
     """
-    Print the warning.
+    Print the error/warning message.
     If lineno is True, print the number of the line last read from input. Note
     that once we have read a sentence, this is the number of the empty line
     after the sentence, hence we probably do not want to print it.
@@ -74,6 +74,9 @@ def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodeline
     the number of the line where the node appears, we can supply it via
     nodelineno. Nonzero nodelineno means that lineno value is ignored.
     If lineno is False, print the number and starting line of the current tree.
+    If explanation contains a string and this is the first time we are reporting
+    an error of this type, the string will be appended to the main message. It
+    can be used as an extended explanation of the situation.
     """
     global curr_fname, curr_line, sentence_line, sentence_id, error_counter, tree_counter, args
     error_counter[error_type] = error_counter.get(error_type, 0)+1
@@ -83,6 +86,8 @@ def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodeline
         elif args.max_err > 0 and error_counter[error_type] > args.max_err:
             pass # suppressed
         else:
+            if explanation and error_counter[error_type] == 1:
+                msg += ' ' + explanation
             if len(args.input) > 1: # several files, should report which one
                 if curr_fname=='-':
                     fn = '(in STDIN) '
@@ -1585,8 +1590,9 @@ def validate_single_subject(id, tree):
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
-        testmessage = "Node has multiple subjects not subtyped as ':outer': %s. Outer subjects are allowed if a clause acts as the predicate of another clause." % str(subjects)
-        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
+        testmessage = "Multiple subjects %s not subtyped as ':outer'." % str(subjects)
+        explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
+        warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id], explanation=explanation)
 
 def validate_orphan(id, tree):
     """
@@ -1606,11 +1612,14 @@ def validate_orphan(id, tree):
         # A similar pattern also occurs with acl, e.g. in Latvian:
         # viņš ēd tos ābolus, ko pirms tam [ēda] tārpi ('he eats the same apples, which where [eaten] by worms before that')
         # Other clausal heads (ccomp, csubj) may be eligible as well, e.g. in Latvian
-        # (see also issue 635 19.9.2019):
+        # (see also issue 635 2019-09-19):
         # atjēdzos, ka bez angļu valodas nekur [netikšu] '[I] realised, that [I will get] nowhere without English'
+        # 2023-04-14: Reclassifying the test as warning only. Due to promotion,
+        # the parent of orphan may receive many other relations. See issue 635
+        # for details and a Latin example.
         if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", pdeprel):
             testlevel = 3
-            testclass = 'Syntax'
+            testclass = 'Warning'
             testid = 'orphan-parent'
             testmessage = "The parent of 'orphan' should normally be 'conj' but it is '%s'." % (pdeprel)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])

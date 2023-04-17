@@ -3,6 +3,7 @@ acellulair kinkhoest_vaccin
 also known as
 au sérieux
 Bescherming Bevolking
+Burgerlijk Wetboek
 buiten dienst
 bruto register ton
 casu quo
