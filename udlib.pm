@@ -41,7 +41,7 @@ sub decompose_repo_name
     my $language;
     my $treebank;
     # Example: UD_Ancient_Greek-PROIEL
-    if($repo =~ m/^UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
+    if($repo =~ m/^(?:Non)?UD_([A-Za-z_]+)(?:-([A-Za-z]+))?$/)
     {
         $language = $1;
         $treebank = $2;
@@ -68,7 +68,7 @@ sub get_ltcode_from_repo_name
     if($repo eq '.')
     {
         $repo = getcwd();
-        $repo =~ s:^.*[\\/](UD_[-_A-Za-z]+)$:$1: or confess("Cannot infer a valid UD treebank name from the current folder");
+        $repo =~ s;^.*[\\/]((?:Non)?UD_[-_A-Za-z]+)$;$1; or confess("Cannot infer a valid UD treebank name from the current folder");
     }
     if(!defined($languages_from_yaml))
     {
