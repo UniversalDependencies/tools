@@ -424,6 +424,9 @@
 "εἰμί": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Σαῦλος δὲ [ἦν] συνευδοκῶν τῇ ἀναιρέσει αὐτοῦ", "exampleen": "And Saul was consenting unto his death.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-14-47", "lastchanger": "dan-zeman"},
 "ἔχω": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a participle of the main verb", "deficient": "", "example": "νῦν δ̓ ἡνίκ̓ ἄθλων τῶνδ̓ ὑπερτελὴς ἔφυ, ἐνταῦθα δὴ μάλιστα ταρβήσασ̓ [ἔχω].", "exampleen": "Now I am the champion of the most powerful athletes, but I [have] not even eaten.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-08-10-27-18", "lastchanger": "dan-zeman"}
 },
+"gu": {
+"છે": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "મારા પપ્પા તારા (પપ્પા) કરતાં વધારે કૂલ [છે].", "exampleen": "My dad [is] cooler than yours.", "comment": ""}], "status": "documented", "lastchanged": "2023-04-19-17-59-09", "lastchanger": "mayankjobanputra"}
+},
 "gub": {
 "ho": {"functions": [{"function": "Aspect=Prog", "rule": "the auxiliary follows the main verb and both are conjugated", "deficient": "", "example": "Uhem Zuze hemireko [oho] ʔɨpe", "exampleen": "Jose's wife arrives to the water", "comment": ""}], "status": "documented", "lastchanged": "2022-04-29-19-12-56", "lastchanger": "l12maro"},
 "iko": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and the main verb in present tense", "deficient": "", "example": "ur [iko] a'e", "exampleen": "he is coming", "comment": ""}], "status": "documented", "lastchanged": "2020-12-21-17-25-45", "lastchanger": "@l12maro"},
