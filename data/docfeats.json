@@ -1040,7 +1040,7 @@
 "Case": {"type": "universal", "values": ["Nom", "Gen", "Acc", "Voc"], "errors": []},
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup"], "errors": []},
-"DegreeModQpm": {"type": "local", "values": [], "errors": ["Wrong value 'Dim'. The correct UD label for diminutive is 'Degree=Dim'.", "Wrong value 'Mag'. The correct UD label for augmentative is 'Degree=Aug'."]},
+"DegreeModQpm": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Degree=Dim\">`Dim`</a>: diminutive'.", "Wrong value 'Mag'. The correct UD label for augmentative is 'Degree=Aug'."]},
 "Deixis": {"type": "local", "values": ["Prox", "Remt"], "errors": []},
 "DeixisRef": {"type": "local", "values": ["1", "2", "3"], "errors": []},
 "Foreign": {"type": "universal", "values": ["Yes"], "errors": []},
