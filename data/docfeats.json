@@ -320,7 +320,7 @@
 "VerbType": {"type": "local", "values": ["Vido"], "errors": []}
 },
 "aqz": {
-"Augm": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for augmentative is 'Degree=Aug'."]},
+"Augm": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "Deixis": {"type": "local", "values": ["Prox", "Dist"], "errors": []},
 "Determ": {"type": "local", "values": ["Yes"], "errors": []},
 "Foc": {"type": "local", "values": ["Yes"], "errors": []},
