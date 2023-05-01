@@ -4526,7 +4526,7 @@
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"compound:svc": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'compound:svc'."]},
+"compound:svc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
