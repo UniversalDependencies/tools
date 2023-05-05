@@ -6091,6 +6091,7 @@
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "neg": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-05-05-10-58-55", "lastchanger": "ingerid"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-03-29-11-38-22", "lastchanger": "ingerid"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
