@@ -62,3 +62,4 @@ if __name__=="__main__":
             print('-' * 25)
             for s in sorted(o):
                 print('   ', s)
+            print('-' * 25)
