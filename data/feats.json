@@ -2542,6 +2542,9 @@
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
+"ps": {
+
+},
 "pt": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2021-06-06-00-42-52", "lastchanger": "arademaker"},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Acc", "Dat", "Nom"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Acc": 2, "Dat": 2}, "PRON": {"Acc": 1821, "Dat": 235, "Nom": 737}, "PROPN": {"Nom": 1}}},
