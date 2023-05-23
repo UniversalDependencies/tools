@@ -1387,7 +1387,8 @@
 "ʔɪ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the main verb and the auxiliary ", "deficient": "", "example": "ne ihẽke remusak [ʔɪ]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2021-05-01-00-03-30", "lastchanger": "Mentha7"}
 },
 "vep": {
-"olda": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Minun mamoi [om] venälaine", "exampleen": "My mother is Russian.", "comment": ""}], "status": "documented", "lastchanged": "2023-05-23-11-58-48", "lastchanger": "kailimp"}
+"olda": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Minun mamoi [om] venälaine", "exampleen": "My mother is Russian.", "comment": ""}], "status": "documented", "lastchanged": "2023-05-23-11-58-48", "lastchanger": "kailimp"},
+"voida": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxilary and an infinitive form of the verb", "deficient": "", "example": "Naižet [voiba] tehta kaiken.", "exampleen": "Women can do anything.", "comment": ""}], "status": "documented", "lastchanged": "2023-05-23-12-05-00", "lastchanger": "kailimp"}
 },
 "vi": {
 "bị": {"functions": [{"function": "Polite=Form", "rule": "Vietnamese auxiliary", "deficient": "", "example": "Lao động tiếp tục [bị] bán tứ tán .", "exampleen": "Labor continues to be scattered.", "comment": "No"}], "status": "documented", "lastchanged": "2022-09-07-10-10-57", "lastchanger": "vietnamesedp"},
