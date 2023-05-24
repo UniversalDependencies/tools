@@ -28,6 +28,27 @@ sub get_language_hash
 
 
 #------------------------------------------------------------------------------
+# Reads the YAML file with information about languages from the repository
+# docs-automation. In addition, re-hashes the data with language codes as the
+# keys (the YAML file uses language names as keys, which is often impractical).
+#------------------------------------------------------------------------------
+sub get_language_hash_by_lcodes
+{
+    my $path = shift;
+    my $by_names = get_language_hash($path);
+    my %by_codes;
+    my @names = keys(%{$by_names});
+    foreach my $name (@names)
+    {
+        my $record = $by_names->{$name};
+        $by_codes{$record->{lcode}} = $record;
+    }
+    return \%by_codes;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Takes a name of a UD treebank repository, e.g., UD_Ancient_Greek-PROIEL.
 # Decomposes it into language name and treebank name and returns the two
 # strings. If language name contains underscores, they are replaced by spaces
