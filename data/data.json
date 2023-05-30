@@ -1391,6 +1391,7 @@
 },
 "vep": {
 "olda": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Minun mamoi [om] venälaine", "exampleen": "My mother is Russian.", "comment": ""}], "status": "documented", "lastchanged": "2023-05-23-11-58-48", "lastchanger": "kailimp"},
+"pidada": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxilary and an infinitive form of the verb", "deficient": "", "example": "No meile ei [pida] unohtada ičeze jurid", "exampleen": "And we can not forget our roots", "comment": ""}], "status": "documented", "lastchanged": "2023-05-30-11-25-59", "lastchanger": "k2laan"},
 "voida": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxilary and an infinitive form of the verb", "deficient": "", "example": "Naižet [voiba] tehta kaiken.", "exampleen": "Women can do anything.", "comment": ""}], "status": "documented", "lastchanged": "2023-05-23-12-05-00", "lastchanger": "kailimp"}
 },
 "vi": {
