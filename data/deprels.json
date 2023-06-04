@@ -9153,6 +9153,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:cop": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'nsubj:cop'."]},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},

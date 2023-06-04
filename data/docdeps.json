@@ -2155,6 +2155,9 @@
 "punct": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "vocative": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]}
 },
+"vep": {
+"nsubj:cop": {"type": "local", "errors": ["No examples found for relation 'nsubj:cop'."]}
+},
 "vi": {
 "acl:relcl": {"type": "local", "errors": []},
 "acl:subj": {"type": "local", "errors": []},
