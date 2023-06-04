@@ -1333,6 +1333,9 @@
 "VerbForm": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]},
 "Voice": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### Description'.", "No feature values found."]}
 },
+"vep": {
+"Clitic": {"type": "local", "values": [], "errors": ["No feature values found."]}
+},
 "wbp": {
 "Clitic": {"type": "local", "values": ["Yes"], "errors": []}
 },
