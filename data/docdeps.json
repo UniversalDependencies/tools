@@ -2156,6 +2156,7 @@
 "vocative": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]}
 },
 "vep": {
+"csubj:cop": {"type": "local", "errors": ["No examples found for relation 'csubj:cop'."]},
 "nsubj:cop": {"type": "local", "errors": ["No examples found for relation 'nsubj:cop'."]}
 },
 "vi": {
