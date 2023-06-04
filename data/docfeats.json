@@ -1335,7 +1335,7 @@
 },
 "vep": {
 "Clitic": {"type": "local", "values": [], "errors": ["No feature values found."]},
-"Connegative": {"type": "local", "values": [], "errors": ["No feature values found."]}
+"Connegative": {"type": "local", "values": [], "errors": ["No examples found under value 'Yes'."]}
 },
 "wbp": {
 "Clitic": {"type": "local", "values": ["Yes"], "errors": []}
