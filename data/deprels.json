@@ -8521,6 +8521,7 @@
 "compound:nv": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-06-07-19-10-42", "lastchanger": "sarves"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
