@@ -433,6 +433,7 @@
 "Nomzr": {"type": "local", "values": ["Rel", "Clau"], "errors": []},
 "Pred": {"type": "local", "values": ["AtrEq"], "errors": []},
 "PronType": {"type": "universal", "values": ["Bi", "Prs", "Int"], "errors": []},
+"Purp": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Rep\">`Yes`</a>: Yes'.", "Unrecognized level 3 heading '### <a name=\"Rep\">`Trans`</a>: Trans'.", "Header title 'Purposive' does not match the file name 'Purp'.", "No feature values found."]},
 "Speech": {"type": "local", "values": ["Ind"], "errors": []},
 "Subord": {"type": "local", "values": ["Yes"], "errors": []}
 },
