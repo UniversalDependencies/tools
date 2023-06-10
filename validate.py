@@ -111,18 +111,21 @@ def warn(msg, error_type, testlevel=0, testid='some-test', lineno=True, nodeline
                 print("[%sTree number %d on line %d%s%s]: [L%d %s %s] %s" % (fn, tree_counter, sentence_line, sent, node, testlevel, error_type, testid, msg), file=sys.stderr)
 
 ###### Support functions
-
+ws_re = re.compile(r"^\s+$")
 def is_whitespace(line):
-    return re.match(r"^\s+$", line)
+    return ws_re.match(line)
 
+word_re = re.compile(r"^[1-9][0-9]*$")
 def is_word(cols):
-    return re.match(r"^[1-9][0-9]*$", cols[ID])
+    return word_re.match(cols[ID])
 
+mwt_re = re.compile(r"^[1-9][0-9]*-[1-9][0-9]*$")
 def is_multiword_token(cols):
-    return re.match(r"^[1-9][0-9]*-[1-9][0-9]*$", cols[ID])
+    return mwt_re.match(cols[ID])
 
+empty_node_re = re.compile(r"^[0-9]+\.[1-9][0-9]*$")
 def is_empty_node(cols):
-    return re.match(r"^[0-9]+\.[1-9][0-9]*$", cols[ID])
+    return empty_node_re.match(cols[ID])
 
 def parse_empty_node_id(cols):
     m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
@@ -689,6 +692,8 @@ edeprelpart_resrc = '[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*';
 # ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
 edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
 edeprel_re = re.compile(edeprel_resrc, re.U)
+deprel_re = re.compile(r"^[a-z]+(:[a-z]+)?$")
+upos_re = re.compile(r"^[A-Z]+$")
 def validate_character_constraints(cols):
     """
     Checks general constraints on valid characters, e.g. that UPOS
@@ -699,12 +704,12 @@ def validate_character_constraints(cols):
         return
     if UPOS >= len(cols):
         return # this has been already reported in trees()
-    if not (re.match(r"^[A-Z]+$", cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
+    if not (upos_re.match(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
         testclass = 'Morpho'
         testid = 'invalid-upos'
         testmessage = "Invalid UPOS value '%s'." % cols[UPOS]
         warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-    if not (re.match(r"^[a-z]+(:[a-z]+)?$", cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
+    if not (deprel_re.match(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
         testclass = 'Syntax'
         testid = 'invalid-deprel'
         testmessage = "Invalid DEPREL value '%s'." % cols[DEPREL]
@@ -3049,6 +3054,7 @@ def get_auxdata_for_language(lcode):
         coplist = [x for x in lemmalist if len([y for y in auxdata[lcode][x]['functions'] if re.match("^cop\.", y['function'])]) > 0]
     return auxlist, coplist
 
+alt_lang_re = re.compile(r'Lang=(.+)')
 def get_alt_language(misc):
     """
     Takes the value of the MISC column for a token and checks it for the
@@ -3059,9 +3065,8 @@ def get_alt_language(misc):
     of language-specific tests.
     """
     misclist = misc.split('|')
-    p = re.compile(r'Lang=(.+)')
     for attr in misclist:
-        m = p.match(attr)
+        m = alt_lang_re.match(attr)
         if m:
             return m.group(1)
     return None
