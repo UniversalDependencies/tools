@@ -2033,13 +2033,13 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
-            testmessage = "'%s' is not an auxiliary verb in language [%s] (there are no known approved auxiliaries in this language)" % (cols[LEMMA], lang)
+            testmessage = "'%s' is not an auxiliary in language [%s] (there are no known approved auxiliaries in this language)" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
         elif not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
-            testmessage = "'%s' is not an auxiliary verb in language [%s]" % (cols[LEMMA], lang)
+            testmessage = "'%s' is not an auxiliary in language [%s]" % (cols[LEMMA], lang)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=cols[ID], nodelineno=line)
 
 def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
