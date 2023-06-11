@@ -583,7 +583,7 @@ def validate_text_meta(comments, tree):
                     begi,endi = int(beg),int(end)
                 except ValueError as e:
                     # This error has been reported elsewhere.
-                    begi,endi=1,0
+                    begi,endi = 1,0
                 # If we see a multi-word token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
                 for i in range(begi, endi+1):
                     skip_words.add(str(i))
@@ -601,12 +601,12 @@ def validate_text_meta(comments, tree):
                 if not mismatch_reported:
                     testid = 'text-form-mismatch'
                     testmessage = "Mismatch between the text attribute and the FORM field. Form[%s] is '%s' but text is '%s...'" % (cols[ID], cols[FORM], stext[:len(cols[FORM])+20])
-                    if stext[0].isspace():
+                    if len(stext) >= 1 and stext[0].isspace():
                         testmessage += " (perhaps extra SpaceAfter=No at previous token?)"
                     warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    mismatch_reported=1
+                    mismatch_reported = 1
             else:
-                stext=stext[len(cols[FORM]):] # eat the form
+                stext = stext[len(cols[FORM]):] # eat the form
                 if 'SpaceAfter=No' in cols[MISC].split("|"):
                     spaceafterno_in_effect = True
                 else:
@@ -615,7 +615,7 @@ def validate_text_meta(comments, tree):
                         testid = 'missing-spaceafter'
                         testmessage = "'SpaceAfter=No' is missing in the MISC field of node #%s because the text is '%s'." % (cols[ID], shorten(cols[FORM]+stext))
                         warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=sentence_line+iline)
-                    stext=stext.lstrip()
+                    stext = stext.lstrip()
         if stext:
             testid = 'text-extra-chars'
             testmessage = "Extra characters at the end of the text attribute, not accounted for in the FORM fields: '%s'" % stext
