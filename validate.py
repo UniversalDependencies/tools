@@ -1182,17 +1182,22 @@ def validate_misc(tree):
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
         mamap = {}
         for ma in misc:
-            if len(ma) == 1 and ma[0] == '':
-                testclass = 'Warning' # warning only
-                testid = 'empty-misc'
-                testmessage = "Empty attribute in MISC; possible misinterpreted vertical bar?"
-                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
-            elif ma[0] == '':
-                testclass = 'Warning' # warning only
-                testid = 'empty-misc-key'
-                testmessage = "Empty MISC attribute name in '%s=%s'." % (ma[0], ma[1])
-                warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
-            elif re.match(r'^\s', ma[0]):
+            if ma[0] == '':
+                if len(ma) == 1:
+                    testclass = 'Warning' # warning only
+                    testid = 'empty-misc'
+                    testmessage = "Empty attribute in MISC; possible misinterpreted vertical bar?"
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+                else:
+                    testclass = 'Warning' # warning only
+                    testid = 'empty-misc-key'
+                    testmessage = "Empty MISC attribute name in '%s=%s'." % (ma[0], ma[1])
+                    warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
+            # We do not warn about MISC items that do not contain '='.
+            # But the remaining error messages below assume that ma[1] exists.
+            if len(ma) == 1:
+                ma.append('')
+            if re.match(r'^\s', ma[0]):
                 testclass = 'Warning' # warning only
                 testid = 'misc-extra-space'
                 testmessage = "MISC attribute name starts with space in '%s=%s'." % (ma[0], ma[1])
@@ -1202,12 +1207,12 @@ def validate_misc(tree):
                 testid = 'misc-extra-space'
                 testmessage = "MISC attribute name ends with space in '%s=%s'." % (ma[0], ma[1])
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
-            elif len(ma) > 1 and re.match(r'^\s', ma[1]):
+            elif re.match(r'^\s', ma[1]):
                 testclass = 'Warning' # warning only
                 testid = 'misc-extra-space'
                 testmessage = "MISC attribute value starts with space in '%s=%s'." % (ma[0], ma[1])
                 warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodelineno=node_line)
-            elif len(ma) > 1 and re.search(r'\s$', ma[1]):
+            elif re.search(r'\s$', ma[1]):
                 testclass = 'Warning' # warning only
                 testid = 'misc-extra-space'
                 testmessage = "MISC attribute value ends with space in '%s=%s'." % (ma[0], ma[1])
