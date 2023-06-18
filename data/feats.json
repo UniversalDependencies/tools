@@ -2056,6 +2056,7 @@
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Def": 1, "Ind": 1}}, "lastchanged": "2023-06-18-21-29-24", "lastchanger": "dan-zeman"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc", "Neut"], "lvalues": [], "unused_uvalues": ["Com"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Fem": 1, "Masc": 1, "Neut": 1}}, "lastchanged": "2023-06-18-21-32-25", "lastchanger": "dan-zeman"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "ml": {
