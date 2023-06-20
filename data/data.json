@@ -876,6 +876,9 @@
 "улемс": {"functions": [{"function": "cop.AUX", "rule": "future, past", "deficient": "future, past", "example": "Сёксень вирсь [ульсь] пяк мазы,", "exampleen": "The autumn forest was very beautiful", "comment": "present and some past tense marking in copula complement"}], "status": "documented", "lastchanged": "2021-02-22-19-38-28", "lastchanger": "rueter"},
 "эрявомс": {"functions": [{"function": "Mood=Nec", "rule": "combination of the conjugated auxiliary and main verb with obl agent", "deficient": "", "example": "Аф [эряви] тянь лангс ваномс суронь пачк.", "exampleen": "There is no need to look at that through one's fingers.", "comment": "MKS:2008:16:7:KishnjakovI"}], "status": "documented", "lastchanged": "2021-04-10-22-29-06", "lastchanger": "rueter"}
 },
+"mk": {
+"сум": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "basic non-iterative paradigm", "example": "Ова писмо [е] од Петар и беше испорачано вчера.", "exampleen": "This letter [is] from Peter and it was delivered yesterday.", "comment": ""}], "status": "documented", "lastchanged": "2023-06-20-14-01-32", "lastchanger": "dan-zeman"}
+},
 "ml": {
 "ആക്": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Normal non-possessive copula", "example": "അവ എൻറെ പുസ്തകങ്ങ[ളാൺ].", "exampleen": "Those are my books.", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-12-20-36", "lastchanger": "abishekjs"},
 "ഉണ്ട്": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Normal possessive copula", "example": "എനിക്ക് ഒരു കാര് [ഉണ്ട്]", "exampleen": "I have a car", "comment": ""}], "status": "documented", "lastchanged": "2023-01-05-17-02-20", "lastchanger": "abishekjs"},
