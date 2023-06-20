@@ -5297,6 +5297,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-06-20-13-40-23", "lastchanger": "dan-zeman"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
