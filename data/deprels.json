@@ -5305,6 +5305,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-06-20-13-39-41", "lastchanger": "dan-zeman"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
