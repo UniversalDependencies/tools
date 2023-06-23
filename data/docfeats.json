@@ -557,7 +557,7 @@
 },
 "es": {
 "Case": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Nom\">Nom</a>: Nominative'.", "Unrecognized level 3 heading '### <a name=\"Acc\">Acc</a>: Accusative'.", "Unrecognized level 3 heading '### <a name=\"Dat\">Dat</a>: Dative'.", "Unrecognized level 3 heading '### <a name=\"Acc, Nom\">Nom</a>: Accusative, Nominative'.", "No feature values found."]},
-"Definite": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Def\">Def</a>: definite'.", "Unrecognized level 3 heading '### <a name=\"Ind\">Inf</a>: indefinitive'.", "Unrecognized level 3 heading '### Examples:'.", "No feature values found."]},
+"Definite": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### Examples:'.", "No examples found under value 'Ind'.", "Unrecognized examples '### Examples:'."]},
 "Degree": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Cmp\">Cmp</a>: comparative'.", "Unrecognized level 3 heading '### <a name=\"Sup\">Sup</a>: superlative'.", "No feature values found."]},
 "Foreign": {"type": "universal", "values": ["Yes"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem"], "errors": []},
