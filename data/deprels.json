@@ -7322,6 +7322,7 @@
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "doc": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"expl:impers": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'expl:impers'."]},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
