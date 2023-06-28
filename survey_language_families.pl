@@ -27,7 +27,7 @@ GetOptions
     'langyaml=s' => \$langyamlpath
 );
 
-my $languages = udlib::get_language_hash("$udpath/docs-automation/codes_and_flags.yaml");
+my $languages = udlib::get_language_hash($langyamlpath);
 my @folders = udlib::list_ud_folders($udpath);
 my %family_words;
 my $nwords = 0;
