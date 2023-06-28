@@ -1162,6 +1162,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "gu": {
+"Clusivity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["In"], "lvalues": [], "unused_uvalues": ["Ex"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"In": 1}}, "lastchanged": "2023-06-28-16-47-02", "lastchanger": "mayankjobanputra"},
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Sing", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Plur": 1}}, "lastchanged": "2023-06-28-16-32-16", "lastchanger": "mayankjobanputra"}
 },
 "gub": {
