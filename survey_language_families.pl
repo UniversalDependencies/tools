@@ -15,14 +15,16 @@ use udlib;
 
 sub usage
 {
-    print STDERR ("Usage: $0 --udpath /data/udreleases/2.12\n");
+    print STDERR ("Usage: $0 --udpath /data/udreleases/2.12 --langyaml /data/ud/docs-automation/codes_and_flags.yaml\n");
 }
 
 #my $udpath = 'C:/Users/Dan/Documents/Lingvistika/Projekty/universal-dependencies';
 my $udpath = '/net/data/universal-dependencies-2.12';
+my $langyamlpath = '/net/work/people/zeman/unidep/docs-automation/codes_and_flags.yaml';
 GetOptions
 (
-    'udpath=s' => \$udpath
+    'udpath=s' => \$udpath,
+    'langyaml=s' => \$langyamlpath
 );
 
 my $languages = udlib::get_language_hash("$udpath/docs-automation/codes_and_flags.yaml");
