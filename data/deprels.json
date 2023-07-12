@@ -7704,6 +7704,7 @@
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-07-12-11-59-51", "lastchanger": "SvenSellmer"},
+"obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-07-12-12-27-26", "lastchanger": "SvenSellmer"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
