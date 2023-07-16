@@ -309,6 +309,8 @@
 "MaParticle": {"type": "local", "values": ["Yes"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp", "Prec", "Proh"], "errors": []},
 "NounBase": {"type": "local", "values": ["Free", "Bound", "Suffixal", "Terminal"], "errors": []},
+"Number[prep]": {"type": "local", "values": [], "errors": ["No examples found under value 'Sing'.", "No examples found under value 'Plur'."]},
+"Person[prep]": {"type": "local", "values": [], "errors": ["No examples found under value '1'.", "No examples found under value '2'."]},
 "SubSuff": {"type": "local", "values": ["Yes"], "errors": []},
 "Subordinative": {"type": "local", "values": ["Yes"], "errors": []},
 "Ventive": {"type": "local", "values": ["Yes"], "errors": []},
