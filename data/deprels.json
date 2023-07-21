@@ -4660,6 +4660,7 @@
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis:rep": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:reporting": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"parataxis:speaker": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
