@@ -1669,7 +1669,7 @@
 "Subcat": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Indir", "Intr", "Tran"], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut", "Imp", "Past", "Pqp", "Pres"], "lvalues": ["PastPerf"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Fut": 1, "Imp": 1, "Past": 1, "PastPerf": 1, "Pqp": 1, "Pres": 1}}, "lastchanged": "2023-07-23-13-33-23", "lastchanger": "ILobzhanidze"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Part", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Part", "Vnoun"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Part": 1, "Vnoun": 1}}, "lastchanged": "2023-07-23-13-33-55", "lastchanger": "ILobzhanidze"},
 "VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aux"], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Act", "Mid", "Pass"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
