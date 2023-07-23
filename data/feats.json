@@ -1642,7 +1642,7 @@
 },
 "ka": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Abbreviation": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Abbreviation": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2023-07-23-13-24-56", "lastchanger": "ILobzhanidze"},
 "AdpType": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No feature values found.", "Unrecognized level 3 heading '### <a name=\"Post\">`Post`</a> postposition'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cau", "Deg", "Int", "Loc", "Man", "Rel", "Tim"], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Anim", "Inan"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Anim": 1, "Inan": 1}, "PROPN": {"Anim": 1, "Inan": 1}}, "lastchanged": "2023-07-23-10-48-18", "lastchanger": "ILobzhanidze"},
