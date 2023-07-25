@@ -1197,6 +1197,9 @@
 "ʧáːyi": {"functions": [{"function": "Aspect=Imp", "rule": "combination of the auxiliary and the finite form of the verb", "deficient": "", "example": "[myàːyi] ɗu bôːl átâ yin góːla wòpə̌n ǎn ?", "exampleen": "When we played football, didn 't he use to be our goalkeeper?", "comment": "Precise function: Iterative Imperfect"}], "status": "documented", "lastchanged": "2022-11-03-12-19-54", "lastchanger": "B-CARON"},
 "ʧíta": {"functions": [{"function": "Mood=Irr", "rule": "combination of the auxiliary and the finite form of the verb", "deficient": "", "example": "àmáː bàː ʧík hŋ́ dàː [mîtà] kap tíː áy !", "exampleen": "But if not because of that, I would have married her!", "comment": "Precise function: Remote Past Irrealis"}], "status": "documented", "lastchanged": "2022-11-03-13-52-02", "lastchanger": "B-CARON"}
 },
+"sd": {
+"آهي": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "وڏن جو ادب ڪرڻ هڪ سٺو عمل [آهي].", "exampleen": "It [is] a good practice to read the literature of elders.", "comment": ""}], "status": "documented", "lastchanged": "2023-07-25-15-44-16", "lastchanger": "dan-zeman"}
+},
 "sga": {
 "is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[is]deidbir deit áaigthiu", "exampleen": "it is reasonable for thee to fear him", "comment": "Unlike modern Irish, the copula inflects in Old Irish. In this case, the copula, 'is', represents the English 'it is'."}], "status": "documented", "lastchanged": "2023-02-25-11-29-07", "lastchanger": "AdeDoyle"}
 },
