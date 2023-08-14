@@ -749,7 +749,7 @@
 "yaiku": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for Ngoko level language only.", "example": "Kapasitas seri 705 [yaiku] 75 penumpang.", "exampleen": "The capacity of the 705 series is 75 passengers.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-28-14-14-58", "lastchanger": "ialfina"}
 },
 "ka": {
-"არის": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present", "example": "ადამიანი[ა]", "exampleen": "He/she/it is a human", "comment": ""}], "status": "documented", "lastchanged": "2023-08-14-17-19-33", "lastchanger": "ILobzhanidze"},
+"არის": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present, past and future tense", "example": "ადამიანი[ა]; ადამიანი [იქნება]; ადამიანი [იყო]", "exampleen": "He/she/it is a human; He/she/it was a human; He/she/it will be a human", "comment": ""}], "status": "documented", "lastchanged": "2023-08-14-17-24-38", "lastchanger": "ILobzhanidze"},
 "უნდა": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in presence, past and future", "example": "მას [უნდა] გავუფრთხილდე", "exampleen": "I must take care of him", "comment": ""}], "status": "documented", "lastchanged": "2023-08-14-17-18-30", "lastchanger": "ILobzhanidze"}
 },
 "kfm": {
