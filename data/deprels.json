@@ -3998,7 +3998,7 @@
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'csubj:pass'."]},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"det": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'det'."]},
+"det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
