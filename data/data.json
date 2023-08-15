@@ -750,6 +750,7 @@
 },
 "ka": {
 "არის": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present, past and future tense", "example": "ადამიანი[ა]; ადამიანი [იქნება]; ადამიანი [იყო]", "exampleen": "He/she/it is a human; He/she/it was a human; He/she/it will be a human", "comment": ""}], "status": "documented", "lastchanged": "2023-08-14-19-14-10", "lastchanger": "ILobzhanidze"},
+"აქვს": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present, future and past tense", "example": "[აქვს] გადასაწყვეტი; [ჰქონდა] გადასაწყვეტი; [ექნება] გადასაწყვეტი", "exampleen": "He/she/it has decided; He/she/it had decided; He/she/it will have decided", "comment": ""}], "status": "documented", "lastchanged": "2023-08-15-21-58-19", "lastchanger": "ILobzhanidze"},
 "უნდა": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in presence, past and future", "example": "მას [უნდა] გავუფრთხილდე", "exampleen": "I must take care of him", "comment": ""}], "status": "documented", "lastchanged": "2023-08-14-17-18-30", "lastchanger": "ILobzhanidze"}
 },
 "kfm": {
