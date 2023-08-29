@@ -1461,7 +1461,7 @@
 "wajhuʔu": {"functions": [{"function": "Mood=Pot", "rule": "combines with a finite verb", "deficient": "", "example": "E roʔmadöʔö [wajhuʔu]pese di ?", "exampleen": "Can you see well?", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-18-08-02", "lastchanger": "@LangugaeStructure"}
 },
 "xcl": {
-"եմ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Եւ [էին] արդարք երկոքին առաջի Աստուծոյ.", "exampleen": "They were both righteous in the sight of God.", "comment": "Lk. 1:6"}], "status": "documented", "lastchanged": "2023-08-29-18-21-10", "lastchanger": "pkocharov"}
+"եմ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in the imperfective aspect", "example": "Եւ [էին] արդարք երկոքին առաջի Աստուծոյ.", "exampleen": "They were both righteous in the sight of God.", "comment": "Lk. 1:6"}], "status": "documented", "lastchanged": "2023-08-29-18-28-20", "lastchanger": "pkocharov"}
 },
 "xum": {
 "erom": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Past and Present", "example": "sve rehte kuratu [si]", "exampleen": "if it has been done well", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-10-30-35", "lastchanger": "MathieuDehouck"},
