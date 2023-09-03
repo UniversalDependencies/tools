@@ -1868,16 +1868,12 @@ def validate_fixed_span(id, tree):
     """
     Like with goeswith, the fixed relation should not in general skip words that
     are not part of the fixed expression. Unlike goeswith however, there can be
-    an intervening punctuation symbol.
-
-    Update 2019-04-13: The rule that fixed expressions cannot be discontiguous
-    has been challenged with examples from Swedish and Coptic, see
-    https://github.com/UniversalDependencies/docs/issues/623
-    For the moment, I am turning this test off. In the future, we should
-    distinguish fatal errors from warnings and then this test will perhaps be
-    just a warning.
+    an intervening punctuation symbol. Moreover, the rule that fixed expressions
+    cannot be discontiguous has been challenged with examples from Swedish and
+    Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
+    Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
+    as just a warning.
     """
-    return ###!!! temporarily turned off
     fxchildren = sorted([i for i in tree['children'][id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
     if fxchildren:
         fxlist = sorted([id] + fxchildren)
@@ -1887,7 +1883,7 @@ def validate_fixed_span(id, tree):
         fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
         if fxgap:
             testlevel = 3
-            testclass = 'Syntax'
+            testclass = 'Warning'
             testid = 'fixed-gap'
             testmessage = "Gaps in fixed expression %s" % str(fxlist)
             warn(testmessage, testclass, testlevel=testlevel, testid=testid, nodeid=id, nodelineno=tree['linenos'][id])
