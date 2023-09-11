@@ -1620,7 +1620,7 @@ def validate_orphan(id, tree):
         # occur in subordinate clauses: "He buys companies like my mother [does] vegetables."
         # In theory, a similar pattern could also occur with reparandum.
         # A similar pattern also occurs with acl, e.g. in Latvian:
-        # viņš ēd tos ābolus, ko pirms tam [ēda] tārpi ('he eats the same apples, which where [eaten] by worms before that')
+        # viņš ēd tos ābolus, ko pirms tam [ēda] tārpi ('he eats the same apples, which were [eaten] by worms before that')
         # Other clausal heads (ccomp, csubj) may be eligible as well, e.g. in Latvian
         # (see also issue 635 2019-09-19):
         # atjēdzos, ka bez angļu valodas nekur [netikšu] '[I] realised, that [I will get] nowhere without English'
