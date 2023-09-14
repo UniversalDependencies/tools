@@ -3455,6 +3455,7 @@
 "Polite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Elev", "Form", "Infm"], "lvalues": [], "unused_uvalues": ["Humb"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Elev": 1, "Form": 1, "Infm": 1}}, "lastchanged": "2023-09-14-16-41-21", "lastchanger": "hoaaa-do"},
 "Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2023-09-14-16-19-06", "lastchanger": "hoaaa-do"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Aux", "Cop", "Mod"], "unused_uvalues": [], "unused_lvalues": ["Light", "Quasi"], "evalues": [], "byupos": {"VERB": {"Aux": 1, "Cop": 1, "Mod": 1}}, "lastchanged": "2023-09-14-16-45-23", "lastchanger": "hoaaa-do"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Pass": 1}, "VERB": {"Pass": 1}}, "lastchanged": "2023-09-14-16-44-38", "lastchanger": "hoaaa-do"}
 },
 "wbp": {
