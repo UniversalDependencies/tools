@@ -384,6 +384,7 @@
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
 "Degree": {"type": "universal", "values": ["Aug", "Cmp", "Dim", "Equ"], "errors": []},
 "Deixis": {"type": "local", "values": ["Remt", "Prox"], "errors": []},
+"ExtPos": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"SCONJ\">`SCONJ`</a>'.", "Unrecognized level 3 heading '### <a name=\"ADV\">`ADV`</a>'.", "No feature values found."]},
 "Foreign": {"type": "universal", "values": ["Yes"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem"], "errors": []},
 "Mood": {"type": "universal", "values": ["Imp", "Opt"], "errors": []},
