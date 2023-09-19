@@ -9384,6 +9384,7 @@
 "nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-09-19-20-15-32", "lastchanger": "hoaaa-do"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:nn": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-09-19-21-05-06", "lastchanger": "hoaaa-do"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:xsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
