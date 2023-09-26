@@ -170,7 +170,7 @@ def trees(inp, tag_sets, args):
         curr_line = line_counter+1
         if not comment_start_line:
             comment_start_line = curr_line
-        line = line.rstrip(u"\n")
+        line = line.rstrip("\n")
         if is_whitespace(line):
             testid = 'pseudo-empty-line'
             testmessage = 'Spurious line that appears empty but is not; there are whitespace characters.'
@@ -213,7 +213,7 @@ def trees(inp, tag_sets, args):
             validate_unicode_normalization(line)
             if not lines: # new sentence
                 sentence_line=curr_line
-            cols=line.split(u"\t")
+            cols=line.split("\t")
             if len(cols)!=COLCOUNT:
                 testid = 'number-of-columns'
                 testmessage = 'The line has %d columns but %d are expected. The contents of the columns will not be checked.' % (len(cols), COLCOUNT)
@@ -493,7 +493,7 @@ def validate_sent_id(comments, known_ids, lcode):
             testid = 'non-unique-sent-id'
             testmessage = "Non-unique sent_id attribute '%s'." % sid
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
-        if sid.count(u"/")>1 or (sid.count(u"/")==1 and lcode!=u"ud" and lcode!=u"shopen"):
+        if sid.count("/")>1 or (sid.count("/")==1 and lcode!="ud" and lcode!="shopen"):
             testid = 'slash-in-sent-id'
             testmessage = "The forward slash is reserved for special use in parallel treebanks: '%s'" % sid
             warn(testmessage, testclass, testlevel=testlevel, testid=testid)
