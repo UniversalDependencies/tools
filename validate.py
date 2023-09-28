@@ -78,7 +78,7 @@ def warn(msg, testclass, testlevel, testid, lineno=True, nodelineno=0, nodeid=0,
     an error of this type, the string will be appended to the main message. It
     can be used as an extended explanation of the situation.
     """
-    global curr_fname, curr_line, sentence_line, sentence_id, error_counter, tree_counter, args
+    global curr_fname, curr_line, sentence_line, sentence_id, error_counter, args
     error_counter[testclass] = error_counter.get(testclass, 0)+1
     if not args.quiet:
         if args.max_err > 0 and error_counter[testclass] == args.max_err:
@@ -108,7 +108,7 @@ def warn(msg, testclass, testlevel, testid, lineno=True, nodelineno=0, nodeid=0,
             elif lineno:
                 print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, curr_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
             else:
-                print("[%sTree number %d on line %d%s%s]: [L%d %s %s] %s" % (fn, tree_counter, sentence_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
+                print("[%sTree starting on line %d%s%s]: [L%d %s %s] %s" % (fn, sentence_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
 
 ###### Support functions
 ws_re = re.compile(r"^\s+$")
@@ -2731,9 +2731,7 @@ def validate_misc_entity(comments, sentence):
 #==============================================================================
 
 def validate(inp, out, args, tag_sets, known_sent_ids):
-    global tree_counter
     for comments, sentence in trees(inp, tag_sets, args):
-        tree_counter += 1
         # The individual lines were validated already in trees().
         # What follows is tests that need to see the whole tree.
         idseqok = validate_ID_sequence(sentence) # level 1
@@ -3096,7 +3094,6 @@ if __name__=="__main__":
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} # Incremented by warn()  {key: error type value: its count}
-    tree_counter=0
 
     # Level of validation
     if args.level < 1:
