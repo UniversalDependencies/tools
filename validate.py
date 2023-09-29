@@ -64,16 +64,15 @@ auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
 depreldata = {} # key: language code (deprel data loaded from deprels.json)
 edepreldata = {} # key: language code (edeprel data loaded from edeprels.json)
 
-def warn(msg, testclass, testlevel, testid, lineno=True, nodelineno=0, nodeid=0, explanation=None):
+def warn(msg, testclass, testlevel, testid, nodelineno=0, nodeid=0, explanation=None):
     """
     Print the error/warning message.
-    If lineno is True, print the number of the line last read from input. Note
-    that once we have read a sentence, this is the number of the empty line
-    after the sentence, hence we probably do not want to print it.
-    If we still have an error that pertains to an individual node, and we know
-    the number of the line where the node appears, we can supply it via
-    nodelineno. Nonzero nodelineno means that lineno value is ignored.
-    If lineno is False, print the number and starting line of the current tree.
+
+    Desired state:
+    If lineno is 0, print the number of the current line (most recently read from input).
+    If lineno is < 0, print the number of the first line of the current sentence.
+    If lineno is > 0, print lineno (probably pointing somewhere in the current sentence).
+
     If explanation contains a string and this is the first time we are reporting
     an error of this type, the string will be appended to the main message. It
     can be used as an extended explanation of the situation.
@@ -103,12 +102,12 @@ def warn(msg, testclass, testlevel, testid, lineno=True, nodelineno=0, nodeid=0,
                 sent = ' Sent ' + sentence_id
             if nodeid:
                 node = ' Node ' + str(nodeid)
-            if nodelineno:
+            if nodelineno > 0:
                 print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, nodelineno, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
-            elif lineno:
-                print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, curr_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
+            elif nodelineno < 0:
+                print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, sentence_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
             else:
-                print("[%sTree starting on line %d%s%s]: [L%d %s %s] %s" % (fn, sentence_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
+                print("[%sLine %d%s%s]: [L%d %s %s] %s" % (fn, curr_line, sent, node, testlevel, testclass, testid, msg), file=sys.stderr)
 
 ###### Support functions
 ws_re = re.compile(r"^\s+$")
@@ -394,7 +393,7 @@ def validate_ID_sequence(tree):
     if wrdstrseq != expstrseq:
         testid = 'word-id-sequence'
         testmessage = "Words do not form a sequence. Got '%s'. Expected '%s'." % (wrdstrseq, expstrseq)
-        warn(testmessage, testclass, testlevel, testid, lineno=False)
+        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
         ok = False
     # Check elementary sanity of word intervals.
     # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
@@ -1294,7 +1293,7 @@ def build_tree(sentence):
     if len(tree['children'][0]) > 1 and args.single_root:
         testid = 'multiple-roots'
         testmessage = "Multiple root words: %s" % tree['children'][0]
-        warn(testmessage, testclass, testlevel, testid, lineno=False)
+        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
         return None
     # Return None if there are any cycles. Avoid surprises when working with the graph.
     # Presence of cycles is equivalent to presence of unreachable nodes.
@@ -1304,7 +1303,7 @@ def build_tree(sentence):
     if unreachable:
         testid = 'non-tree'
         testmessage = 'Non-tree structure. Words %s are not reachable from the root 0.' % (','.join(str(w) for w in sorted(unreachable)))
-        warn(testmessage, testclass, testlevel, testid, lineno=False)
+        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
         return None
     return tree
 
@@ -1417,7 +1416,7 @@ def build_egraph(sentence):
         sur = sorted(unreachable)
         testid = 'unconnected-egraph'
         testmessage = "Enhanced graph is not connected. Nodes %s are not reachable from any root" % sur
-        warn(testmessage, testclass, testlevel, testid, lineno=False)
+        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
         return None
     return egraph
 
@@ -1461,7 +1460,7 @@ def validate_upos_vs_deprel(id, tree):
     # a verb, as in this Upper Sorbian sentence where infinitives are appositions:
     # [hsb] Z werba danci "rejować" móže substantiw nastać danco "reja", adjektiw danca "rejowanski" a adwerb dance "rejowansce", ale tež z substantiwa martelo "hamor" móže nastać werb marteli "klepać z hamorom", adjektiw martela "hamorowy" a adwerb martele "z hamorom".
     #if re.match(r"^(nsubj|obj|iobj|obl|vocative|expl|dislocated|nmod|appos)", deprel) and re.match(r"^(VERB|AUX|ADV|SCONJ|CCONJ)", cols[UPOS]):
-    #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', lineno=False)
+    #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, cols[UPOS]), 'Syntax', nodelineno=-1)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", cols[UPOS]) and not 'fixed' in childrels:
         testid = 'rel-upos-det'
@@ -2763,7 +2762,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                 testclass = 'Format'
                 testid = 'skipped-corrupt-tree'
                 testmessage = "Skipping annotation tests because of corrupt tree structure."
-                warn(testmessage, testclass, testlevel, testid, lineno=False)
+                warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
             if egraph:
                 if args.level > 2:
                     validate_enhanced_annotation(egraph) # level 3
@@ -2995,7 +2994,7 @@ def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhan
                         testclass = 'Enhanced'
                         testid = 'edeprel-def-regex'
                         testmessage = "Spurious language-specific enhanced relation '%s' - it does not match the regular expression that restricts enhanced relations." % v
-                        warn(testmessage, testclass, testlevel, testid, lineno=False)
+                        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
                         continue
                 elif validate_langspec:
                     # We are reading the list of language-specific dependency relations in the basic representation
@@ -3007,7 +3006,7 @@ def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhan
                         testclass = 'Syntax'
                         testid = 'deprel-def-regex'
                         testmessage = "Spurious language-specific relation '%s' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'." % v
-                        warn(testmessage, testclass, testlevel, testid, lineno=False)
+                        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
                         continue
                 if validate_langspec or validate_enhanced:
                     try:
@@ -3017,14 +3016,14 @@ def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhan
                             testclass = 'Syntax'
                             testid = 'deprel-def-universal-part'
                             testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
-                            warn(testmessage, testclass, testlevel, testid, lineno=False)
+                            warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
                             continue
                     except:
                         testlevel = 4
                         testclass = 'Syntax'
                         testid = 'deprel-def-universal-part'
                         testmessage = "Spurious language-specific relation '%s' - not an extension of any UD relation." % v
-                        warn(testmessage, testclass, testlevel, testid, lineno=False)
+                        warn(testmessage, testclass, testlevel, testid, nodelineno=-1)
                         continue
                 res.add(v)
     return res
