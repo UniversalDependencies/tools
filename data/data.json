@@ -103,7 +103,8 @@
 "ʔe": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "to say or do", "example": "kanãy yét péŋ [ʔe]t", "exampleen": "Then this white man said/did", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-49-48", "lastchanger": "tatiana-merz"}
 },
 "azz": {
-"etok": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "amo nikan [tiyetoskiah]", "exampleen": "We wouldn't be here", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-09-29", "lastchanger": "Lguyogiro"}
+"etok": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "amo nikan [tiyetoskiah]", "exampleen": "We wouldn't be here", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-09-29", "lastchanger": "Lguyogiro"},
+"neki": {"functions": [{"function": "Mood=Des", "rule": "attaches to the right of the future form of the verb", "deficient": "", "example": "[kihtosneki] lugar de huesos", "exampleen": "It wants to say place of bones", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-25-52", "lastchanger": "Lguyogiro"}
 },
 "bav": {
 "lùu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Tíi ŋwāa [lùu] wúu ndâa.", "exampleen": "My father is a blacksmith.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-41-44", "lastchanger": "dan-zeman"}
