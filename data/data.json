@@ -104,6 +104,7 @@
 },
 "azz": {
 "etok": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "amo nikan [tiyetoskiah]", "exampleen": "We wouldn't be here", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-09-29", "lastchanger": "Lguyogiro"},
+"hueli": {"functions": [{"function": "Mood=Pot", "rule": "used with third person subject before a verb", "deficient": "", "example": "amo [ueli] tikitaj", "exampleen": "We cannot see it", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-29-24", "lastchanger": "Lguyogiro"},
 "neki": {"functions": [{"function": "Mood=Des", "rule": "attaches to the right of the future form of the verb", "deficient": "", "example": "[kihtosneki] lugar de huesos", "exampleen": "It wants to say place of bones", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-25-52", "lastchanger": "Lguyogiro"}
 },
 "bav": {
