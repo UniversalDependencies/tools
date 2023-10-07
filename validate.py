@@ -1518,13 +1518,17 @@ def validate_upos_vs_deprel(id, tree):
         testid = 'rel-upos-cc'
         testmessage = "'cc' should not be '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
-    if cols[DEPREL] == 'punct' and cols[UPOS] != 'PUNCT':
+    if deprel == 'punct' and cols[UPOS] != 'PUNCT':
         testid = 'rel-upos-punct'
         testmessage = "'punct' must be 'PUNCT' but it is '%s'" % (cols[UPOS])
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
     if cols[UPOS] == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
         testmessage = "'PUNCT' must be 'punct' but it is '%s'" % (cols[DEPREL])
+        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+    if cols[UPOS] == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
+        testid = 'rel-upos-fixed'
+        testmessage = "'fixed' should not be used for proper nouns."
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
 
 def validate_left_to_right_relations(id, tree):
