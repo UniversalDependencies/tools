@@ -640,6 +640,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part", "Sup"], "lvalues": ["PartRes"], "unused_uvalues": ["Conv"], "unused_lvalues": [], "evalues": ["Gdv", "Ger", "Vnoun"], "byupos": {"AUX": {"Fin": 1, "Inf": 1, "Part": 1, "PartRes": 1, "Sup": 1}, "VERB": {"Fin": 1, "Inf": 1, "Part": 1, "PartRes": 1, "Sup": 1}}, "lastchanged": "2023-04-16-15-02-51", "lastchanger": "daghaug"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 2079, "Pass": 1}, "VERB": {"Act": 12166, "Pass": 467}}}
 },
+"cux": {
+
+},
 "cy": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2020-12-28-22-58-40", "lastchanger": "jheinecke"},
 "Degree": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cmp", "Equ", "Pos", "Sup"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Abs"], "byupos": {"ADJ": {"Cmp": 99, "Equ": 26, "Pos": 1952, "Sup": 145}}},
@@ -1458,6 +1461,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "CCONJ": {"Yes": 1}, "DET": {"Yes": 1}, "INTJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PART": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "PUNCT": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2022-07-12-09-44-22", "lastchanger": "dan-zeman"},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf"], "lvalues": ["PartFut", "PartPast", "PartPres"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"PartFut": 12, "PartPast": 509, "PartPres": 628}, "ADV": {"Conv": 81}, "AUX": {"Fin": 175, "Inf": 2}, "VERB": {"Fin": 3319, "Inf": 340}}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Cau"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 206}, "VERB": {"Act": 3596, "Cau": 63}}}
+},
+"huv": {
+
 },
 "hy": {
 "Abbr": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 25}, "ADV": {"Yes": 1}, "DET": {"Yes": 2}, "NOUN": {"Yes": 114}, "NUM": {"Yes": 38}, "PROPN": {"Yes": 151}, "VERB": {"Yes": 3}, "X": {"Yes": 6}}},
@@ -2920,6 +2926,9 @@
 "Person": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["1", "2", "3"], "lvalues": [], "unused_uvalues": ["0", "4"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"2": 9, "3": 406}, "ADV": {"3": 8}, "AdJ": {"3": 1}, "DET": {"3": 205}, "INTJ": {"3": 2}, "NOUN": {"3": 1251}, "PRON": {"1": 55, "2": 28, "3": 78}, "PROPN": {"3": 289}, "VERB": {"3": 15}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
+"sei": {
+
+},
 "sga": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Yes": 1984}}},
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Post", "Voc"], "evalues": [], "byupos": {"ADP": {"Prep": 2347}, "DET": {"Prep": 1}, "PART": {"Prep": 3}}},
@@ -3440,6 +3449,9 @@
 "Tense": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fut"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Pres"], "byupos": {"VERB": {"Fut": 1, "Pres": 1}}, "lastchanged": "2020-12-12-18-20-46", "lastchanger": "@tatiana-merz"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Caus"], "byupos": {"VERB": {"Cau": 1}}, "lastchanged": "2020-12-20-18-16-19", "lastchanger": "@Mentha7"}
+},
+"usp": {
+
 },
 "uz": {
 
