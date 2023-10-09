@@ -1438,7 +1438,7 @@
 },
 "xcl": {
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []},
-"Voice[caus]": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### Examples'.", "No feature values found."]}
+"Voice[caus]": {"type": "local", "values": [], "errors": ["No feature values found."]}
 },
 "yrl": {
 "AdvType": {"type": "local", "values": ["Man", "Loc", "Tim", "Deg", "Cau", "Mod", "Con"], "errors": []},
