@@ -5394,6 +5394,7 @@
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-06-20-13-40-23", "lastchanger": "dan-zeman"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-12-01-21-01", "lastchanger": "cvetkoski"},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
