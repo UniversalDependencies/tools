@@ -172,6 +172,9 @@
 "পারা": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "তুমি গান গাইতে [পারো] ?", "exampleen": "Can you sing?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-25-21-46-16", "lastchanger": "dan-zeman"},
 "হওয়া": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and an imperfect participle of the main verb", "deficient": "", "example": "তোমাকে আর একটু থাকতে [হবে]।", "exampleen": "You will have to stay a bit longer.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-26-09-19-28", "lastchanger": "dan-zeman"}
 },
+"bor": {
+"rema": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ikure nowu uva kuru [rema]", "exampleen": "My blood is this wine / This wine is my blood", "comment": "Only used for equational predicates"}], "status": "documented", "lastchanged": "2023-10-12-20-26-03", "lastchanger": "@languagetructure"}
+},
 "br": {
 "a": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "bezañ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Bras [eo] an den.", "exampleen": "The man is big.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-53-11", "lastchanger": "dan-zeman"},
