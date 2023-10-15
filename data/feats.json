@@ -2662,7 +2662,7 @@
 
 },
 "pt": {
-"Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2021-06-06-00-42-52", "lastchanger": "arademaker"},
+"Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2023-10-15-18-45-51", "lastchanger": "alvelvis"},
 "Case": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Acc", "Dat", "Nom"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Acc": 2, "Dat": 2}, "PRON": {"Acc": 1821, "Dat": 235, "Nom": 737}, "PROPN": {"Nom": 1}}},
 "Definite": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 49066, "Ind": 3151}, "PRON": {"Def": 37, "Ind": 1}, "SCONJ": {"Ind": 2}}},
 "Degree": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Abs", "Aug", "Dim"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Cmp", "Pos", "Sup"], "byupos": {"ADJ": {"Abs": 1, "Aug": 1, "Dim": 1}, "ADV": {"Abs": 1, "Aug": 1, "Dim": 1}, "NOUN": {"Aug": 1, "Dim": 1}, "PRON": {"Aug": 1, "Dim": 1}, "PROPN": {"Aug": 1, "Dim": 1}, "VERB": {"Aug": 1, "Dim": 1}}, "lastchanged": "2023-01-02-18-44-19", "lastchanger": "arademaker"},
