@@ -3590,7 +3590,7 @@
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past", "Pres"], "lvalues": [], "unused_uvalues": ["Imp", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fut": 1, "Past": 1, "Pres": 1}, "VERB": {"Fut": 1, "Past": 1, "Pres": 1}}, "lastchanged": "2023-06-29-18-41-11", "lastchanger": "pkocharov"},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1, "Vnoun": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1, "Vnoun": 1}}, "lastchanged": "2023-06-29-18-38-18", "lastchanger": "pkocharov"},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "byupos": {"AUX": {"Act": 1, "Pass": 1}, "VERB": {"Act": 1, "Cau": 1, "Pass": 1}}, "lastchanged": "2023-06-29-18-07-26", "lastchanger": "pkocharov"},
-"Voice[caus]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}}
+"Voice[caus]": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Yes": 1}}, "lastchanged": "2023-10-16-17-51-11", "lastchanger": "pkocharov"}
 },
 "xnr": {
 
