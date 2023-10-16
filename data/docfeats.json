@@ -1439,7 +1439,7 @@
 },
 "xcl": {
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []},
-"Voice[caus]": {"type": "local", "values": [], "errors": ["No feature values found."]}
+"Voice[caus]": {"type": "local", "values": [], "errors": ["Feature value 'Non-Cau' does not have the prescribed form.", "No examples found under value 'Non-Cau'."]}
 },
 "yrl": {
 "AdvType": {"type": "local", "values": ["Man", "Loc", "Tim", "Deg", "Cau", "Mod", "Con"], "errors": []},
