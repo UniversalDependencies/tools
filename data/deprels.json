@@ -10043,6 +10043,7 @@
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-11-02-11-38-16", "lastchanger": "bguil"},
+"obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-17-16-53-45", "lastchanger": "kirianguiller"},
 "obl:patient": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
