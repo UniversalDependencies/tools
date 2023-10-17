@@ -10003,6 +10003,7 @@
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "compound:dir": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:ext": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-17-11-28-12", "lastchanger": "kirianguiller"},
 "compound:vo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:vv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
