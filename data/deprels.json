@@ -4720,6 +4720,7 @@
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "flat:gov": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"flat:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
