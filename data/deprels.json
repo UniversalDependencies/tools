@@ -773,6 +773,7 @@
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:aff": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-23-14-26-08", "lastchanger": "bguil"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nummod:det": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
