@@ -1,12 +1,12 @@
 #!/bin/bash
 # Checks that the CoNLL shared task test data match the raw text.
 
-GDIR=/media/test-datasets-truth/universal-dependency-learning/conll17-ud-test-2017-05-07
-IDIR=/media/test-datasets/universal-dependency-learning/conll17-ud-test-2017-05-07
+GDIR=/net/work/people/zeman/UD_Poetry_with_Udapi/manual
+IDIR=/net/work/people/zeman/UD_Poetry_with_Udapi/automatic
 
 for gfile in $GDIR/*.conllu ; do
   echo `basename $gfile`
-  pfile=$IDIR/`basename $gfile .conllu`-udpipe.conllu
+  pfile=$IDIR/`basename $gfile .conllu`.conllu
   tfile=$IDIR/`basename $gfile .conllu`.txt
   text_without_spaces.pl --input conllutext < $gfile > /tmp/a
   text_without_spaces.pl --input conlluform < $gfile > /tmp/b
