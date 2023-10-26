@@ -3496,6 +3496,7 @@
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-26-15-04-15", "lastchanger": "bguil"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
