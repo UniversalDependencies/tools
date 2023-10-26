@@ -339,7 +339,7 @@
 "VerbType": {"type": "local", "values": ["Vido"], "errors": []}
 },
 "aqz": {
-"Augm": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### Example'.", "No feature values found."]},
+"Augm": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "Deixis": {"type": "local", "values": ["Prox", "Dist"], "errors": []},
 "Determ": {"type": "local", "values": ["Yes"], "errors": []},
 "Foc": {"type": "local", "values": ["Yes"], "errors": []},
