@@ -3507,6 +3507,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-26-14-46-36", "lastchanger": "bguil"},
+"obl:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
