@@ -3941,6 +3941,7 @@
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "neg": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
