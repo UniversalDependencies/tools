@@ -3896,6 +3896,7 @@
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advcl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-27-13-34-18", "lastchanger": "ClaudiaCorbe"},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
