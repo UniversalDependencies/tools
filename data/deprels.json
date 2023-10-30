@@ -2429,6 +2429,7 @@
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-30-11-03-17", "lastchanger": "lgrobol"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
