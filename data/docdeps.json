@@ -861,7 +861,8 @@
 "xcomp": {"type": "universal", "errors": []}
 },
 "frm": {
-"case:det": {"type": "local", "errors": []}
+"case:det": {"type": "local", "errors": []},
+"cc:nc": {"type": "", "errors": ["Relation 'cc:nc' is not a subtype of any approved main type."]}
 },
 "fro": {
 "acl": {"type": "universal", "errors": []},
