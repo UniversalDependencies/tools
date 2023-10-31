@@ -384,6 +384,7 @@
 "devoir": {"functions": [{"function": "Mood=Nec", "rule": "With infinitive", "deficient": "", "example": "Père [doit] respondre pour filz.", "exampleen": "Father must answer for son.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-29-16", "lastchanger": "MathieuDehouck"},
 "falloir": {"functions": [{"function": "Mood=Nec", "rule": "With infinitive", "deficient": "", "example": "Il [faillut] que tous fuyssent.", "exampleen": "All must have had fled.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-18-36-59", "lastchanger": "MathieuDehouck"},
 "pouvoir": {"functions": [{"function": "Mood=Pot", "rule": "With infinitive", "deficient": "", "example": "Il ne [povoit] penser.", "exampleen": "He couldn't think.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-30-37", "lastchanger": "MathieuDehouck"},
+"vouloir": {"functions": [{"function": "Mood=Des", "rule": "With infinitive", "deficient": "", "example": "Le roy s'en [vouloit] retourner.", "exampleen": "The king wanted to go back.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-21-26-06", "lastchanger": "MathieuDehouck"},
 "être": {"functions": [{"function": "Voice=Pass", "rule": "Combination with past participle.", "deficient": "", "example": "Elle n'avoit onques [esté] mariée.", "exampleen": "She had neven been married.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-32-29", "lastchanger": "MathieuDehouck"}
 },
 "fro": {
