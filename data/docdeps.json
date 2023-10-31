@@ -860,6 +860,9 @@
 "vocative": {"type": "universal", "errors": []},
 "xcomp": {"type": "universal", "errors": []}
 },
+"frm": {
+"case:det": {"type": "local", "errors": ["No examples found for relation 'case:det'."]}
+},
 "fro": {
 "acl": {"type": "universal", "errors": []},
 "advcl": {"type": "universal", "errors": []},
