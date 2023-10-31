@@ -381,7 +381,8 @@
 },
 "frm": {
 "avoir": {"functions": [{"function": "Aspect=Perf", "rule": "Combination with past participle.", "deficient": "", "example": "J'[aye] cogneu.", "exampleen": "I have known.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-17-54", "lastchanger": "MathieuDehouck"},
-"devoir": {"functions": [{"function": "Mood=Nec", "rule": "With infinitive", "deficient": "", "example": "Père [doit] respondre pour filz.", "exampleen": "Father must answer for son.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-29-16", "lastchanger": "MathieuDehouck"}
+"devoir": {"functions": [{"function": "Mood=Nec", "rule": "With infinitive", "deficient": "", "example": "Père [doit] respondre pour filz.", "exampleen": "Father must answer for son.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-29-16", "lastchanger": "MathieuDehouck"},
+"pouvoir": {"functions": [{"function": "Mood=Pot", "rule": "With infinitive", "deficient": "", "example": "Il ne [povoit] penser.", "exampleen": "He couldn't think.", "comment": ""}], "status": "documented", "lastchanged": "2023-10-31-17-30-37", "lastchanger": "MathieuDehouck"}
 },
 "fro": {
 "avoir": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "En cest païs [avez] estet set anz.", "exampleen": "You have been seven years in this country.", "comment": ""}], "status": "documented", "lastchanged": "2021-02-15-08-55-44", "lastchanger": "dan-zeman"},
