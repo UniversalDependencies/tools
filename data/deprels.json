@@ -785,6 +785,7 @@
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:coord": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"parataxis:insert": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
