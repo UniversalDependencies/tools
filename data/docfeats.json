@@ -1089,7 +1089,6 @@
 },
 "nhi": {
 "Animacy[obj]": {"type": "local", "values": ["Hum", "Nhum"], "errors": []},
-"Dim": {"type": "local", "values": [], "errors": ["Wrong value 'Yes'. The correct UD label for diminutive is 'Degree=Dim'."]},
 "Movement": {"type": "local", "values": ["Ven", "And"], "errors": []},
 "NounType": {"type": "local", "values": ["Relat"], "errors": []},
 "Number[iobj]": {"type": "local", "values": ["Sing", "Plur"], "errors": []},
