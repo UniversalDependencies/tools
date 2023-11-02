@@ -1884,7 +1884,7 @@ def validate_fixed_span(id, tree):
         fxdiff = set(fxrange) - set(fxlist)
         fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
         if fxgap:
-            fxexpr = ' '.join([(tree['nodes'][i][FORM] if i in fxlist else 'X') for i in fxrange])
+            fxexpr = ' '.join([(tree['nodes'][i][FORM] if i in fxlist else '*') for i in fxrange])
             testlevel = 3
             testclass = 'Warning'
             testid = 'fixed-gap'
