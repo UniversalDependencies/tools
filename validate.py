@@ -1884,10 +1884,11 @@ def validate_fixed_span(id, tree):
         fxdiff = set(fxrange) - set(fxlist)
         fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
         if fxgap:
+            fxexpr = ' '.join([(tree['nodes'][i][FORM] if i in fxlist else 'X') for i in fxrange])
             testlevel = 3
             testclass = 'Warning'
             testid = 'fixed-gap'
-            testmessage = "Gaps in fixed expression %s" % str(fxlist)
+            testmessage = "Gaps in fixed expression %s '%s'" % (str(fxlist), fxexpr)
             warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
 
 def validate_projective_punctuation(id, tree):
