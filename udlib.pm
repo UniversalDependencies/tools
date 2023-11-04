@@ -969,7 +969,8 @@ sub check_metadata
             '2.9'  => ['Armenian-BSUT', 'Bengali-BRU', 'English-Atis', 'French-ParisStories', 'Japanese-BCCWJLUW', 'Japanese-GSDLUW', 'Japanese-PUDLUW', 'Javanese-CSUI', 'Karo-TuDeT', 'Ligurian-GLT', 'Neapolitan-RB', 'Tatar-NMCTT', 'Turkish-Atis', 'Xibe-XDT', 'Yakut-YKTDT'],
             '2.10' => ['Ancient_Hebrew-PTNK', 'Cebuano-GJA', 'Guarani-OldTuDeT', 'Hebrew-IAHLTwiki', 'Hittite-HitTB', 'Italian-MarkIT', 'Madi-Jarawara', 'Old_East_Slavic-Birchbark', 'Pomak-Philotis', 'Teko-TuDeT', 'Umbrian-IKUVINA'],
             '2.11' => ['Abaza-ATB', 'Chinese-PatentChar', 'Gheg-GPS', 'Icelandic-GC', 'Irish-Cadhan', 'Italian-ParlaMint', 'Malayalam-UFAL', 'Nheengatu-CompLin', 'Old_East_Slavic-Ruthenian', 'Portuguese-CINTIL', 'Portuguese-PetroGold', 'Sinhala-STB', 'Western_Sierra_Puebla_Nahuatl-ITML', 'Xavante-XDT', 'Zaar-Autogramm'],
-            '2.12' => ['Bororo-BDT', 'English-ESLSpok', 'English-GENTLE', 'Greek-GUD', 'Kyrgyz-KTMU', 'Maghrebi_Arabic_French-Arabizi', 'Old_Irish-DipSGG', 'Old_Irish-DipWBG']
+            '2.12' => ['Bororo-BDT', 'English-ESLSpok', 'English-GENTLE', 'Greek-GUD', 'Kyrgyz-KTMU', 'Maghrebi_Arabic_French-Arabizi', 'Old_Irish-DipSGG', 'Old_Irish-DipWBG'],
+            '2.13' => ['Ancient_Greek-PTNK', 'Chinese-Beginner', 'Classical_Armenian-CAVaL', 'Czech-Poetry', 'Georgian-GLC', 'Haitian_Creole-Autogramm', 'Highland_Puebla_Nahuatl-ITML', 'Italian-Old', 'Macedonian-MTB', 'Middle_French-PROFITEROLE', 'Portuguese-Porttinari', 'Russian-Poetry', 'Veps-VWT']
         );
         my %new_treebanks_by_release = @new_treebanks_by_release;
         my $last_release = $new_treebanks_by_release[-2];
