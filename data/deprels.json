@@ -1835,7 +1835,7 @@
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"compound:redup": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'compound:redup' is not a subtype of any approved main type."]},
+"compound:redup": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Relation 'compound:redup' is not a subtype of any approved main type."]},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
