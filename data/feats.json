@@ -4,6 +4,7 @@
 "ab": {
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hum", "Nhum"], "lvalues": [], "unused_uvalues": ["Anim", "Inan"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Hum": 1, "Nhum": 1}}, "lastchanged": "2023-11-19-16-20-08", "lastchanger": "paulmeurer"},
 "Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Def": 1, "Ind": 1}, "NOUN": {"Def": 1, "Ind": 1}, "VERB": {"Def": 1, "Ind": 1}}, "lastchanged": "2023-11-19-16-18-43", "lastchanger": "paulmeurer"},
+"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Fem": 1, "Masc": 1}, "PROPN": {"Fem": 1, "Masc": 1}}, "lastchanged": "2023-11-19-16-24-59", "lastchanger": "paulmeurer"},
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}}, "lastchanged": "2023-11-19-16-22-56", "lastchanger": "paulmeurer"}
 },
 "abq": {
