@@ -113,7 +113,7 @@ while(my $tgtline = <TGT>)
                         $sentid_found = 1;
                         if(exists($used_sentids{$last_sentid}))
                         {
-                            die("Unexpected duplicite sentence id");
+                            die("Unexpected duplicite sentence id '$last_sentid' in $tgtpath");
                         }
                         else
                         {
