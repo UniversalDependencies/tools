@@ -41,11 +41,13 @@ my $sli = 0; # src line number
 my $tboff = 0;
 my $tbuffer = '';
 my $sbuffer = '';
+my @tgtlines; # token/word lines covering $tbuffer
+my @srclines; # token/word lines covering $sbuffer
 my $lasttgtid = 0; # last regular node (inside or outside MWT) id in tgt, that was actually printed
 while(my $tgtline = <TGT>)
 {
     $tli++;
-    my @tgtlines = ($tgtline);
+    push(@tgtlines, $tgtline);
     my $new_tgt_token_read = 0;
     # Sentence-level comments start with '#'. Pass through tgt comments, ignore src comments.
     # Empty nodes of the enhanced representation start with decimal numbers. Pass through tgt, ignore src.
@@ -86,7 +88,6 @@ while(my $tgtline = <TGT>)
     }
     if($new_tgt_token_read)
     {
-        my @srclines = ();
         while(length($tbuffer) > length($sbuffer))
         {
             my $nr = read_token_to_buffer(*SRC, \$sli, \$sbuffer, \@srclines);
@@ -121,8 +122,18 @@ while(my $tgtline = <TGT>)
                 }
                 $tf[0] = ++$lasttgtid;
                 $tgtlines[0] = join("\t", @tf);
+                @srclines = ();
+            }
+            # Sanity check: Zero source lines would be an internal error. We
+            # should have waited with consuming the previous source lines.
+            elsif(scalar(@srclines) == 0)
+            {
+                my $nt = scalar(@tgtlines);
+                die("Both buffers have the same contents '$sbuffer', there are $nt target lines but no source line covering the buffer (sli=$sli, tli=$tli)");
             }
             # If there are multiple source lines, copy them to the target.
+            # We also get here if there is 1 source line but multiple target lines.
+            # It should not happen that there are no target lines.
             else
             {
                 # Before copying the source line to target, copy annotation
@@ -176,28 +187,29 @@ while(my $tgtline = <TGT>)
                     }
                 }
                 @tgtlines = @srclines;
+                @srclines = ();
             }
             $tboff += length($tbuffer);
             $tbuffer = '';
             $sbuffer = '';
         }
-        # If the tgt buffer is a prefix of the src buffer, eat the prefix and go to the next tgt token.
-        elsif(substr($sbuffer, 0, length($tbuffer)) eq $tbuffer)
-        {
-            my $tbl = length($tbuffer);
-            $tboff += $tbl;
-            $tbuffer = '';
-            $sbuffer = substr($sbuffer, $tbl);
-        }
-        # Otherwise there must be a mismatch in the non-whitespace characters.
-        else
+        # If the buffers are not identical, then the target buffer must be
+        # a prefix of the source buffer. (The opposite is not possible because
+        # we read source lines until the source buffer was at least as long as
+        # the target buffer.) If this is not the case, report an input error.
+        elsif(substr($sbuffer, 0, length($tbuffer)) ne $tbuffer)
         {
             die("Non-whitespace character mismatch. Tgt line no. $tli, offset $tboff, buffer '$tbuffer'. Src line no. $sli, buffer '$sbuffer'.");
         }
     }
-    foreach my $tl (@tgtlines)
+    # Flush remaining target lines if there are no source lines waiting to be matched.
+    if(scalar(@srclines) == 0)
     {
-        print($tl);
+        foreach my $tl (@tgtlines)
+        {
+            print($tl);
+        }
+        @tgtlines = ();
     }
 }
 close(TGT);
