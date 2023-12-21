@@ -14,6 +14,7 @@ de dato
 direct verkozenen
 dit is
 en dergelijke
+plan_Hoog Catharijnen
 in plaats van
 knock down
 knock out
@@ -29,6 +30,7 @@ ten gevolge van
 ten name van
 ten opzichte van
 ter plaatse
+te water laten
 tot en met
 voor Christus
 vorig jaar
