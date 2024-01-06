@@ -286,6 +286,7 @@
 "ldocs": {
 "ab": {
 "Dyn": {"type": "local", "values": ["Yes", "No"], "errors": []},
+"Gender-Subj": {"type": "local", "values": [], "errors": ["Feature name 'Gender-Subj' does not have the prescribed form.", "No title found in the header."]},
 "Gender[io]": {"type": "local", "values": ["Masc", "Fem", "Neut"], "errors": []},
 "Gender[lo]": {"type": "local", "values": ["Masc", "Fem", "Neut"], "errors": []},
 "Number[io]": {"type": "local", "values": ["Sing", "Plur"], "errors": []},
