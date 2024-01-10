@@ -6713,6 +6713,7 @@
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-04-17-18-37-50", "lastchanger": "hanneme"},
 "obl:depict": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:float": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:pronmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-04-00-20-07", "lastchanger": "olesar"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
