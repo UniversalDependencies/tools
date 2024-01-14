@@ -3,6 +3,7 @@
 "deprels": {
 "ab": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:arelcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:conv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
