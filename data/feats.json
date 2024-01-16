@@ -3348,6 +3348,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Bfoc", "Lfoc", "Pass"], "lvalues": ["Ifoc"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Antip", "Cau", "Dir", "Inv", "Mid", "Rcp"], "byupos": {"VERB": {"Act": 1, "Bfoc": 1, "Ifoc": 1, "Lfoc": 1, "Pass": 1}}, "lastchanged": "2021-04-27-13-17-52", "lastchanger": "dan-zeman"}
 },
+"tn": {
+
+},
 "tpn": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Loc", "Mod", "Temp"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Loc": 1, "Mod": 1, "Temp": 1}}, "lastchanged": "2022-02-19-08-08-31", "lastchanger": "LanguageStructure"},
