@@ -95,13 +95,13 @@ sub get_next_token_line
     {
         ${$li}++;
         # Return undef if sentence ends.
-        if($line =~ m/^\s*$/)
-        {
-            return undef;
-        }
+        #if($line =~ m/^\s*$/)
+        #{
+        #    return undef;
+        #}
         # Skip sentence-level comments.
         # Return the next line of a regular node, multi-word token interval or empty node.
-        elsif($line =~ m/^\d/)
+        if($line =~ m/^\d/)
         {
             return $line;
         }
