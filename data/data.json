@@ -1503,6 +1503,9 @@
 "չիք": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for negation only", "example": "[չիք] ինչ ծածուկ. որ ոչ յայտ լիցի", "exampleen": "nothing is concealed that will not become evident", "comment": ""}], "status": "documented", "lastchanged": "2023-09-22-13-10-48", "lastchanger": "pkocharov"},
 "տամ": {"functions": [{"function": "Voice=Cau", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "[ետ] տանել զնա առ Հէրովդէս", "exampleen": "he sent (gave to take) him to Herod", "comment": ""}], "status": "documented", "lastchanged": "2023-12-05-11-54-14", "lastchanger": "pkocharov"}
 },
+"xnr": {
+"है": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "काळुए दा एह पहला पक्का घर [है]।", "exampleen": "This [is] Kalue's first concrete house.", "comment": ""}], "status": "documented", "lastchanged": "2024-01-19-11-45-13", "lastchanger": "dan-zeman"}
+},
 "xum": {
 "erom": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Past and Present", "example": "sve rehte kuratu [si]", "exampleen": "if it has been done well", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-10-30-35", "lastchanger": "MathieuDehouck"},
 "fuiom": {"functions": [{"function": "Aspect=Perf", "rule": "auxiliary combinied with a past participle", "deficient": "", "example": "inuk ukar pihaz [fust]", "exampleen": "then the mount will have been purified", "comment": ""}], "status": "documented", "lastchanged": "2022-04-26-10-35-31", "lastchanger": "MathieuDehouck"}
