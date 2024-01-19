@@ -3673,6 +3673,7 @@
 },
 "xnr": {
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past", "Pres"], "lvalues": [], "unused_uvalues": ["Imp", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fut": 1, "Past": 1, "Pres": 1}, "VERB": {"Fut": 1, "Past": 1, "Pres": 1}}, "lastchanged": "2024-01-19-09-07-31", "lastchanger": "dan-zeman"},
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1}}, "lastchanged": "2024-01-19-09-09-41", "lastchanger": "dan-zeman"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Act": 1, "Pass": 1}}, "lastchanged": "2024-01-19-09-08-32", "lastchanger": "dan-zeman"}
 },
 "xum": {
