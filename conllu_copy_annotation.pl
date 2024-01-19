@@ -19,7 +19,36 @@ use Getopt::Long;
 
 sub usage
 {
-    print STDERR ("Usage: $0 src.conllu tgt.conllu > tgt-merged.conllu\n");
+    print STDERR ("Usage: $0 --columns=lemma,upos,xpos,feats src.conllu tgt.conllu > tgt-merged.conllu\n");
+    print STDERR ("       By default all columns that can be copied will be copied.\n");
+}
+
+my $columns = 'lemma,upos,xpos,feats';
+GetOptions
+(
+    'columns=s' => \$columns
+);
+my @columns = split(',', lc($columns));
+# Initialize the hash with columns that can be copied, so we can verify the command-line options.
+my %copy =
+(
+    'lemma' => 1,
+    'upos'  => 1,
+    'xpos'  => 1,
+    'feats' => 1
+);
+foreach my $column (@columns)
+{
+    if(!exists($copy{$column}))
+    {
+        confess("Cannot copy column '$column'");
+    }
+    $copy{$column}++;
+}
+# Columns that have only the initial 1 were in fact not selected and should now get 0.
+foreach my $column (keys(%copy))
+{
+    $copy{$column}--;
 }
 
 # We assume that the source of the new annotation is the output of UDPipe or
@@ -56,8 +85,10 @@ while(my $tgtline = <TGT>)
             confess("Source form '$sf[1]' at line $sli does not match target form '$tf[1]' at line $tli");
         }
         # Now that we have matching src and tgt lines, copy the annotation that has to be copied from src to tgt.
-        ###!!! AT PRESENT WE COPY LEMMAS ONLY. IN FUTURE, THIS SHOULD BE CUSTOMIZED WITH OPTIONS.
-        $tf[2] = $sf[2];
+        $tf[2] = $sf[2] if($copy{lemma});
+        $tf[3] = $sf[3] if($copy{upos});
+        $tf[4] = $sf[4] if($copy{xpos});
+        $tf[5] = $sf[5] if($copy{feats});
         # Print the modified target line.
         $tgtline = join("\t", @tf);
         print($tgtline);
