@@ -2406,6 +2406,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "nci": {
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2024-01-22-00-44-55", "lastchanger": "ftyers"},
 "Movement": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["And", "Ven"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"And": 1, "Ven": 1}}, "lastchanged": "2024-01-20-20-16-17", "lastchanger": "ftyers"},
 "NounClass": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Loc"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Loc": 1}, "VERB": {}}, "lastchanged": "2024-01-20-20-16-55", "lastchanger": "ftyers"},
 "NounType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Relat"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Relat": 1}}, "lastchanged": "2024-01-20-20-23-49", "lastchanger": "ftyers"},
