@@ -2033,6 +2033,7 @@
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det:predet": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"discourse:filler": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl:impers": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
