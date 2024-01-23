@@ -1612,6 +1612,9 @@
 "obl:own": {"type": "local", "errors": []},
 "xcomp:ds": {"type": "local", "errors": []}
 },
+"nci": {
+"parataxis:speech": {"type": "local", "errors": ["No examples found for relation 'parataxis:speech'."]}
+},
 "nhi": {
 "advmod:neg": {"type": "local", "errors": []}
 },
