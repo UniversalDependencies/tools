@@ -1124,6 +1124,8 @@
 "NounType": {"type": "local", "values": ["Relat"], "errors": []},
 "Number[iobj]": {"type": "local", "values": ["Sing", "Plur"], "errors": []},
 "Person[iobj]": {"type": "local", "values": ["1", "2", "3"], "errors": []},
+"Reflex[iobj]": {"type": "local", "values": [], "errors": ["Header title 'Reflex' does not match the file name 'Reflex[iobj]'."]},
+"Reflex[obj]": {"type": "local", "values": [], "errors": ["Header title 'Reflex' does not match the file name 'Reflex[obj]'."]},
 "State": {"type": "local", "values": ["Abs", "Pos"], "errors": []}
 },
 "nhi": {
