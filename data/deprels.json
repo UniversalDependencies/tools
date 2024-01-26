@@ -7990,6 +7990,7 @@
 "advcl:fin": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:lcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:manner": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-01-26-12-06-15", "lastchanger": "SvenSellmer"},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
