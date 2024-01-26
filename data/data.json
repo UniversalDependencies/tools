@@ -995,6 +995,9 @@
 "avé": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Chĕ [hajĕ] fattŏ?", "exampleen": "What have you done?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-22-11-27-28", "lastchanger": "dan-zeman"},
 "essĕ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ijĕ [songhĕ] napulitanŏ.", "exampleen": "I am Neapolitan.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-22-13-59-05", "lastchanger": "robasile"}
 },
+"nci": {
+"catqui": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "catqui catca cah ", "example": "Ic macuilli amoxtli, oncan motenehua: in tetzahuitl [catca], in quitetzammatia, in yehhuantin mexica.", "exampleen": "Fifth book, here is told, that there [was] an omen, that they, the Mexica, took to be an omen.", "comment": ""}], "status": "documented", "lastchanged": "2024-01-26-02-39-56", "lastchanger": "ftyers"}
+},
 "nds": {
 "doon": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary in past tense and an infinitive of the main verb", "deficient": "", "example": "ik [dea] em dat nich seggen", "exampleen": "I would not tell him", "comment": ""}], "status": "documented", "lastchanged": "2021-04-21-13-52-15", "lastchanger": "jasiewert"},
 "dörven": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "ik [dörv] dat nich doon", "exampleen": "I may not do it, depending on the dialect also 'I do not dare to do it'", "comment": ""}], "status": "documented", "lastchanged": "2021-04-21-11-38-59", "lastchanger": "jasiewert"},
