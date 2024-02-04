@@ -8036,6 +8036,7 @@
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:benef": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:goal": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:grad": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:instr": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-07-12-11-59-51", "lastchanger": "SvenSellmer"},
 "obl:manner": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
