@@ -13,6 +13,7 @@ dat wil zeggen
 de dato
 direct verkozenen
 dit is
+en andere
 en dergelijke
 plan_Hoog Catharijnen
 in plaats van
@@ -20,6 +21,7 @@ knock down
 knock out
 know how
 met andere woorden
+met name 
 na Christus
 nota bene
 onder ander
