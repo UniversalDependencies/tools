@@ -2487,12 +2487,12 @@ def validate_misc_entity(comments, sentence):
                         if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
                             identity = attributes[entity_attribute_index['identity']]
                         # Check the form of the head index now. The value will be checked at the end of the mention, when we know the mention length.
+                        head = 0
                         if 'head' in entity_attribute_index and len(attributes) >= entity_attribute_index['head']+1:
                             if not re.match(r'^[1-9][0-9]*$', attributes[entity_attribute_index['head']]):
                                 testid = 'spurious-mention-head'
                                 testmessage = "Entity head index '%s' must be a non-zero-starting integer." % (attributes[entity_attribute_index['head']])
                                 warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
-                                head = 0
                             else:
                                 head = int(attributes[entity_attribute_index['head']])
                         # If this is the first mention of the entity, remember the values
