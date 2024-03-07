@@ -703,6 +703,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-07-18-09-05", "lastchanger": "verenablaschke"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-07-18-00-35", "lastchanger": "verenablaschke"},
