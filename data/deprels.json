@@ -718,6 +718,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-07-18-09-30", "lastchanger": "verenablaschke"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-07-18-08-22", "lastchanger": "verenablaschke"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
