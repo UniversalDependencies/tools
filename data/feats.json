@@ -3469,6 +3469,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "lvalues": ["NomAg"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Inf": 1, "NomAg": 1, "Part": 1, "Vnoun": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "NomAg": 1, "Part": 1, "Vnoun": 1}}, "lastchanged": "2022-11-01-05-10-52", "lastchanger": "ctaguchi"},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Mid", "Pass", "Rcp"], "lvalues": ["CauPass", "CauPassRcp", "CauRcp", "PassRcp"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Cau": 1, "CauPass": 1, "CauPassRcp": 1, "CauRcp": 1, "Mid": 1, "Pass": 1, "PassRcp": 1, "Rcp": 1}, "VERB": {"Cau": 1, "CauPass": 1, "CauPassRcp": 1, "CauRcp": 1, "Mid": 1, "Pass": 1, "PassRcp": 1, "Rcp": 1}}, "lastchanged": "2022-05-01-00-08-00", "lastchanger": "chipewyan"}
 },
+"tww": {
+
+},
 "ug": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Perf"], "lvalues": [], "unused_uvalues": ["Imp", "Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": ["DurPerf", "DurPerfProg", "DurProg", "ProgRapid", "Rapid"], "byupos": {"AUX": {"Hab": 1, "Perf": 1}, "PART": {"Hab": 1}, "VERB": {"Hab": 1, "Perf": 1}}, "lastchanged": "2021-04-26-00-05-58", "lastchanger": "dan-zeman"},
