@@ -779,6 +779,9 @@
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Mod"], "unused_uvalues": [], "unused_lvalues": ["Aux", "Cop", "Light", "Quasi"], "evalues": [], "byupos": {"AUX": {"Mod": 48361}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Pass": 2971}, "PUNCT": {"Pass": 1}, "VERB": {"Pass": 168}, "X": {"Pass": 7}}}
 },
+"egy": {
+
+},
 "el": {
 "Abbr": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}, "SYM": {"Yes": 1}}, "lastchanged": "2022-09-16-13-04-15", "lastchanger": "SocratesVak"},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Hab", "Iter", "Prog", "Prosp"], "byupos": {"AUX": {"Imp": 1, "Perf": 1}, "VERB": {"Imp": 1, "Perf": 1}}, "lastchanged": "2022-10-25-13-31-37", "lastchanger": "SocratesVak"},
