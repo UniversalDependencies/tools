@@ -1387,6 +1387,9 @@
 "tl": {
 "huwag": {"functions": [{"function": "Mood=Imp", "rule": "the auxiliary precedes the main verb", "deficient": "", "example": "[Huwag] kayong umalis.", "exampleen": "Don't leave.", "comment": "Huwag marks negative imperative/optative."}], "status": "documented", "lastchanged": "2020-11-11-10-02-13", "lastchanger": "dan-zeman"}
 },
+"tn": {
+"ke": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "For all noun classes, indicative mood, present tense, positive", "example": "A Iguazu [ke] naga e kgolo kgotsa ke e nnye?", "exampleen": "Is Iguazu a big or a small country?", "comment": "Identifying copulative verb"}], "status": "documented", "lastchanged": "2024-03-14-10-50-46", "lastchanger": "reiselen"}
+},
 "tr": {
 "bil": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "This normally is a vebal suffix -(a)bil, that in rare cases can be written separately.", "example": "Görüştürülemeye de [bil]iyor muydunuz?", "exampleen": "Did it also sometimes happen that you were not allowed to see each other?", "comment": ""}], "status": "documented", "lastchanged": "2022-11-02-22-47-01", "lastchanger": "dan-zeman"},
 "bulun": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "This is similar to ol-, and in some cases it can replace it, particularly in formal registers.", "example": "Kayıtları bugün saat 17 itibariyle kapatmış [bulun]uyoruz.", "exampleen": "We (officially) finished registration at 5 p.m. today.", "comment": ""}], "status": "documented", "lastchanged": "2022-11-01-20-10-29", "lastchanger": "coltekin"},
