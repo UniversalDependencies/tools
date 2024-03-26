@@ -279,7 +279,8 @@
 "wollen": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Beide [wollten] ihm bei der Suche nach ihr helfen.", "exampleen": "Both wanted to help him find her.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-04-08-45-53", "lastchanger": "dan-zeman"}
 },
 "egy": {
-"i҆w": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the past verb form with the ending n.", "deficient": "", "example": "[i҆w] [rč̣.n] [(⸗i҆)] [tʾ] [n] [ḥḳr]", "exampleen": "(I) have given bread to the hungry", "comment": ""}], "status": "documented", "lastchanged": "2024-03-18-20-42-23", "lastchanger": "UD_Egyptian"}
+"i҆w": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the past verb form with the ending n.", "deficient": "", "example": "[i҆w] [rč̣.n] [(⸗i҆)] [tʾ] [n] [ḥḳr]", "exampleen": "(I) have given bread to the hungry", "comment": ""}], "status": "documented", "lastchanged": "2024-03-18-20-42-23", "lastchanger": "UD_Egyptian"},
+"pw": {"functions": [{"function": "agr", "rule": "pw is used as a copula in the nominal sentence (A pw B)", "deficient": "", "example": "sꜣ (⸗i҆) [pw] Tti҆", "exampleen": "Teti is (my) son", "comment": "Pyramid Texts § 2a T"}], "status": "documented", "lastchanged": "2024-03-26-09-06-36", "lastchanger": "UD-Egyptian"}
 },
 "el": {
 "έχω": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Δεν [έχουμε] συζητήσει ακόμη τη διαδικασία Lamfalussy.", "exampleen": "We have not yet discussed the Lamfalussy process.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-30-58", "lastchanger": "dan-zeman"},
