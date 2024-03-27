@@ -2109,6 +2109,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Ger", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": ["PartPad", "PartPus"], "byupos": {"ADV": {"Conv": 2}, "AUX": {"Conv": 1, "Fin": 705, "Ger": 2, "Inf": 76, "Part": 12}, "VERB": {"Conv": 204, "Fin": 4615, "Ger": 494, "Inf": 2116, "Part": 3435}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": ["Necess"], "byupos": {"AUX": {"Act": 120, "Pass": 1}, "VERB": {"Act": 1627, "Pass": 2312}}}
 },
+"ltg": {
+
+},
 "lus": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
