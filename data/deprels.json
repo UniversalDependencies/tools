@@ -5185,6 +5185,7 @@
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"expl:pv": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-28-13-15-06", "lastchanger": "plumaj"},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
