@@ -967,6 +967,7 @@
 "vicino_a": {"lex": "vicino_a", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Prx", "example": "La regalìa al prete serviva per tenere buoni gli indios locali [vicino a Bahia].", "exampleen": "The gift to the priest was used to keep the local Indians good near Bahia.", "comment": ""}], "lastchanged": "2022-01-12-08-36-14", "lastchanger": "dan-zeman"}
 },
 "ltg": {
+"dat": {"lex": "", "morph": "dat", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Ben", "example": "[Maņ ruodīs], ka leist leits.", "exampleen": "It seems to me that it is raining", "comment": ""}], "lastchanged": "2024-03-28-16-26-00", "lastchanger": "lauma"},
 "gen": {"lex": "", "morph": "gen", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Gen", "example": "Jis izauga [Fraņcejis golvyspiļsātā].", "exampleen": "He grew up in the capital of France", "comment": ""}], "lastchanged": "2024-03-28-16-18-25", "lastchanger": "lauma"},
 "loc": {"lex": "loc", "morph": "", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Loc", "example": "Jis izauga [Parizē].", "exampleen": "He grew up in Paris.", "comment": ""}], "lastchanged": "2024-03-28-16-22-36", "lastchanger": "lauma"}
 },
