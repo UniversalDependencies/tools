@@ -5361,6 +5361,7 @@
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-28-16-35-56", "lastchanger": "lauma"},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-28-16-34-53", "lastchanger": "lauma"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
