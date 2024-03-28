@@ -967,7 +967,8 @@
 "vicino_a": {"lex": "vicino_a", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Prx", "example": "La regalìa al prete serviva per tenere buoni gli indios locali [vicino a Bahia].", "exampleen": "The gift to the priest was used to keep the local Indians good near Bahia.", "comment": ""}], "lastchanged": "2022-01-12-08-36-14", "lastchanger": "dan-zeman"}
 },
 "ltg": {
-"gen": {"lex": "", "morph": "gen", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Gen", "example": "Jis izauga [Fraņcejis golvyspiļsātā].", "exampleen": "He grew up in the capital of France", "comment": ""}], "lastchanged": "2024-03-28-16-18-25", "lastchanger": "lauma"}
+"gen": {"lex": "", "morph": "gen", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Gen", "example": "Jis izauga [Fraņcejis golvyspiļsātā].", "exampleen": "He grew up in the capital of France", "comment": ""}], "lastchanged": "2024-03-28-16-18-25", "lastchanger": "lauma"},
+"loc": {"lex": "loc", "morph": "", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Loc", "example": "Jis izauga [Parizē].", "exampleen": "He grew up in Paris.", "comment": ""}], "lastchanged": "2024-03-28-16-22-36", "lastchanger": "lauma"}
 },
 "lv": {
 "acc": {"lex": "", "morph": "acc", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Tps", "example": "Krūtis koriģēt drīst tikai [5-6 mēnešus] pēc bērna barošanas beigām.", "exampleen": "Breast adjustment is allowed only 5-6 months after the end of breastfeeding.", "comment": ""}], "lastchanged": "2022-01-22-10-03-54", "lastchanger": "dan-zeman"},
