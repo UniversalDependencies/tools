@@ -872,7 +872,8 @@
 "bìnò": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "lb": {
-"hunn": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "D'Meedchen [huet] e Bréif un säi Frënd geschriwwen.", "exampleen": "The girl wrote a letter to her friend", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-19-04", "lastchanger": "plumaj"},
+"ginn": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a past participle of the main verb.", "deficient": "", "example": "Et [gouf] gëschter zougestallt.", "exampleen": "It was delivered yesterday.", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-53-55", "lastchanger": "plumaj"},
+"hunn": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "D'Meedchen [huet] e Bréif un säi Frënd geschriwwen.", "exampleen": "The girl wrote a letter to her friend", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-54-27", "lastchanger": "plumaj"},
 "kënnen": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary and the infinitive of the main verb", "deficient": "", "example": "Ech [konnt] net mathalen.", "exampleen": "I could not keep up.", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-24-46", "lastchanger": "plumaj"},
 "sinn": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Mäi Papp [ass] cool.", "exampleen": "My dad is cool.", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-04-08", "lastchanger": "plumaj"}
 },
@@ -891,6 +892,9 @@
 },
 "lt": {
 "būti": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Klasifikacija visuomet [yra] labai reliatyvus ir ginčytinas dalykas.", "exampleen": "Classification is always a very relative and controversial thing.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-14-22-29", "lastchanger": "dan-zeman"}
+},
+"ltg": {
+"byut": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Voi Igvasu [ir] lela vaļsts?", "exampleen": "Is Igvasu a big country?", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-46-39", "lastchanger": "lauma"}
 },
 "lus": {
 "nii": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ka aar¹ a¹ [nii].", "exampleen": "It is my hen.", "comment": "Chhangte, 1989"}], "status": "documented", "lastchanged": "2020-11-08-12-24-15", "lastchanger": "dan-zeman"}
