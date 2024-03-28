@@ -968,6 +968,7 @@
 },
 "ltg": {
 "dat": {"lex": "", "morph": "dat", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Ben", "example": "[Maņ ruodīs], ka leist leits.", "exampleen": "It seems to me that it is raining", "comment": ""}], "lastchanged": "2024-03-28-16-26-00", "lastchanger": "lauma"},
+"deļ": {"lex": "deļ", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Cau", "example": "Jai vajadzēja apgrīzt motus, bet koč kaida [īmesļa deļ] jei tamā dīnā tuo naizdareja.", "exampleen": "She needed to cut her hair, but for some reason she didn't do it that day", "comment": ""}], "lastchanged": "2024-03-28-16-28-40", "lastchanger": "lauma"},
 "gen": {"lex": "", "morph": "gen", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Gen", "example": "Jis izauga [Fraņcejis golvyspiļsātā].", "exampleen": "He grew up in the capital of France", "comment": ""}], "lastchanged": "2024-03-28-16-18-25", "lastchanger": "lauma"},
 "loc": {"lex": "loc", "morph": "", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Loc", "example": "Jis izauga [Parizē].", "exampleen": "He grew up in Paris.", "comment": ""}], "lastchanged": "2024-03-28-16-22-36", "lastchanger": "lauma"}
 },
