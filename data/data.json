@@ -871,6 +871,9 @@
 "bèdò": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Án [àbédò] dàktàl.", "exampleen": "I was a doctor.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-12-08", "lastchanger": "dan-zeman"},
 "bìnò": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"lb": {
+"sinn": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Mäi Papp [ass] cool.", "exampleen": "My dad is cool.", "comment": ""}], "status": "documented", "lastchanged": "2024-03-28-14-04-08", "lastchanger": "plumaj"}
+},
 "lez": {
 "x̂ana": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Rušaz reǧü [x̂ana] k'an tuširwiläj.", "exampleen": "Because he did not want the girl to be embarrassed.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-21-18-17", "lastchanger": "dan-zeman"}
 },
