@@ -2113,7 +2113,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": ["Necess"], "byupos": {"AUX": {"Act": 120, "Pass": 1}, "VERB": {"Act": 1627, "Pass": 2312}}}
 },
 "ltg": {
-
+"Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}, "SYM": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2024-03-28-15-06-34", "lastchanger": "lauma"}
 },
 "lus": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
