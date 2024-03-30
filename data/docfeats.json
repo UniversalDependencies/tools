@@ -484,7 +484,7 @@
 "VerbForm": {"type": "universal", "values": ["Part", "Vnoun"], "errors": []}
 },
 "bor": {
-"Aspect": {"type": "universal", "values": ["Prog", "IncProg", "Iter", "Inc"], "errors": []},
+"Aspect": {"type": "universal", "values": ["Prog", "Inc", "IncProg", "Iter"], "errors": []},
 "Class": {"type": "local", "values": ["NS", "Food", "DA", "Adorn", "Neckl"], "errors": []},
 "Evident": {"type": "universal", "values": ["Rep"], "errors": []},
 "Foc": {"type": "local", "values": ["Yes"], "errors": []},
