@@ -6184,6 +6184,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:coll": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
+"compound:nn": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
