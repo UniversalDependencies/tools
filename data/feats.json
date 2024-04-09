@@ -2925,6 +2925,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 8, "Fin": 1022, "Inf": 19, "Part": 2}, "VERB": {"Conv": 98, "Fin": 830, "Inf": 441, "Part": 569, "Vnoun": 220}}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass", "Rcp"], "lvalues": ["CauCau", "CauPass", "CauRcp", "PassPass", "Rfl"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Act", "Antip", "Bfoc", "CauCauPass", "CauPassRcp", "Dir", "Inv", "Lfoc", "Mid", "PassRcp", "PassRfl"], "byupos": {"AUX": {"Cau": 1, "CauCau": 1, "CauPass": 1, "CauRcp": 1, "Pass": 1, "PassPass": 1, "Rcp": 1, "Rfl": 1}, "VERB": {"Cau": 1, "CauCau": 1, "CauPass": 1, "CauRcp": 1, "Pass": 1, "PassPass": 1, "Rcp": 1, "Rfl": 1}}, "lastchanged": "2021-04-30-19-59-38", "lastchanger": "coltekin"}
 },
+"qte": {
+
+},
 "quc": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}}, "lastchanged": "2021-01-12-17-33-57", "lastchanger": "ftyers"},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Dir"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Dir": 1}}, "lastchanged": "2021-05-04-05-35-26", "lastchanger": "ftyers"},
