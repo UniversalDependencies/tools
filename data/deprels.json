@@ -901,6 +901,7 @@
 "dislocated:det": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "dislocated:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:nsubj": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
+"dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
