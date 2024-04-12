@@ -6421,6 +6421,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-31-18-22-46", "lastchanger": "jasiewert"},
+"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-12-15-44-36", "lastchanger": "jasiewert"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
