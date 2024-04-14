@@ -7,6 +7,7 @@
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:arelcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:conv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:quote": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:seq": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:q": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
