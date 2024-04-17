@@ -1488,7 +1488,7 @@
 "Ego": {"type": "local", "values": ["Yes"], "errors": []},
 "Emph": {"type": "local", "values": ["Yes"], "errors": []},
 "Fact": {"type": "local", "values": ["Yes"], "errors": []},
-"Gnq": {"type": "local", "values": [], "errors": ["Header title 'Gen' does not match the file name 'Gnq'."]},
+"Gnq": {"type": "local", "values": [], "errors": ["Header title 'Gnc' does not match the file name 'Gnq'."]},
 "Hnfc": {"type": "local", "values": ["Yes"], "errors": []},
 "Htp": {"type": "local", "values": ["Yes"], "errors": []},
 "Int": {"type": "local", "values": ["Yes"], "errors": []},
