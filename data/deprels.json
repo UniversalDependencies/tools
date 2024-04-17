@@ -49,6 +49,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obj:po": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:ro": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
