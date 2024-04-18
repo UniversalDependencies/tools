@@ -1157,7 +1157,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-40", "lastchanger": "@languagestructure"},
-"punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-48", "lastchanger": "@languagestructure"},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-14", "lastchanger": "@languagestructure"},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-23", "lastchanger": "@languagestructure"},
