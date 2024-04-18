@@ -10354,7 +10354,7 @@
 },
 "xav": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-49-01", "lastchanger": "@languagestructure"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
