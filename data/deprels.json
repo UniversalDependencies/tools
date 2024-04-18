@@ -10388,7 +10388,7 @@
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-51-09", "lastchanger": "@languagestructure"},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
 "xcl": {
