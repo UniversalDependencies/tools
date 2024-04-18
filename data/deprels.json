@@ -10381,7 +10381,7 @@
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-51-25", "lastchanger": "@languagestructure"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-51-38", "lastchanger": "@languagestructure"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
