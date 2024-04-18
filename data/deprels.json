@@ -10369,7 +10369,7 @@
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-49-16", "lastchanger": "@languagestructure"},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
