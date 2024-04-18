@@ -1161,7 +1161,7 @@
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-14", "lastchanger": "@languagestructure"},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-23", "lastchanger": "@languagestructure"},
-"xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
+"xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-18-07-52-32", "lastchanger": "@languagestructure"}
 },
 "br": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
