@@ -938,6 +938,7 @@
 "parataxis:coord": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "parataxis:insert": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"parataxis:parenth": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
