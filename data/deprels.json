@@ -5,7 +5,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:arelcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:arelcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2024-04-20-23-58-05", "lastchanger": "paulmeurer"},
 "advcl:cond": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:conv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:quote": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
