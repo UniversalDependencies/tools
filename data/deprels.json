@@ -31,7 +31,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"csubj:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"csubj:relcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2024-04-21-20-44-19", "lastchanger": "paulmeurer"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
