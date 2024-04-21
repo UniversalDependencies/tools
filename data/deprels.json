@@ -18,6 +18,7 @@
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"ccomp:iobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
