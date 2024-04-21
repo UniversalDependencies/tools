@@ -25,7 +25,6 @@
 "ccomp:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:quote": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:ro": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:prt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
