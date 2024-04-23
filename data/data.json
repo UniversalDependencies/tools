@@ -176,7 +176,7 @@
 },
 "bor": {
 "bokware": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "negative existential predicates", "example": "aora [bokware]", "exampleen": "It didn't have a head", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-16-41-25", "lastchanger": "@languagestructure"},
-"rema": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "rema is only used in equational predicates", "example": "Ikure nowu uva kuru [rema]", "exampleen": "My blood is this wine / This wine is my blood", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-16-39-06", "lastchanger": "@languagestructure"}
+"rema": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "rema is only used in equational predicates", "example": "Ikure nowu uva kuru [rema]", "exampleen": "My blood is this wine / This wine is my blood", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-16-42-14", "lastchanger": "@languagestructure"}
 },
 "br": {
 "a": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
