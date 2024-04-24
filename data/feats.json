@@ -1393,6 +1393,7 @@
 },
 "ha": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dat", "Gen", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Acc", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Ill", "Ine", "Ins", "Lat", "Loc", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Gen": 1}, "PRON": {"Dat": 1, "Gen": 1, "Nom": 1}}, "lastchanged": "2024-04-24-15-04-00", "lastchanger": "bguil"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
