@@ -22,7 +22,7 @@
 "ccomp:iobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"ccomp:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"ccomp:pred": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "ccomp:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:quote": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "ccomp:ro": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
