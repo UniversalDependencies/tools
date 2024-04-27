@@ -1603,6 +1603,7 @@
 },
 "cpg": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-28-01-23-44", "lastchanger": "coltekin"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
