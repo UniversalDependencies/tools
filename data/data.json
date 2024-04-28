@@ -2,8 +2,7 @@
 
 "auxiliaries": {
 "ab": {
-"а́кәзаара": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Сара [соуп] иҟазҵо.", "exampleen": "It’s me who has done it.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-24-23-07-20", "lastchanger": "paulmeurer"},
-"а́кәхара": {"functions": [{"function": "Aspect=Perf", "rule": "Dynamic copula", "deficient": "", "example": "Ари збарыз дара [ракәхеит].", "exampleen": "It was them who were to see this.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-21-05-04", "lastchanger": "paulmeurer"}
+"а́кәзаара": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Сара [соуп] иҟазҵо.", "exampleen": "It’s me who has done it.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-24-23-07-20", "lastchanger": "paulmeurer"}
 },
 "abq": {
 "акIвара": {"functions": [{"function": "Tense=Past", "rule": "rule", "deficient": "", "example": "сара [cакIвапI]", "exampleen": "I am", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-20-45-03", "lastchanger": "alexeykosh"},
