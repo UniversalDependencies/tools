@@ -22,6 +22,7 @@ sub get_language_hash
 {
     my $path = shift;
     $path = 'docs-automation/codes_and_flags.yaml' if(!defined($path));
+    confess("File '$path' does not exist") if(!-f $path);
     return LoadFile($path);
 }
 
@@ -44,6 +45,82 @@ sub get_language_hash_by_lcodes
         $by_codes{$record->{lcode}} = $record;
     }
     return \%by_codes;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Retreives the list of known UD releases from releases.json in
+# docs-automation. Extracts the history of each treebank: Which releases it was
+# part of, and under which name.
+#------------------------------------------------------------------------------
+sub get_treebank_history
+{
+    my $path = shift;
+    $path = 'docs-automation/valdan/releases.json' if(!defined($path));
+    confess("File '$path' does not exist") if(!-f $path);
+    my $from_json = json_file_to_perl($path);
+    my $releases = $from_json->{releases};
+    my $renames = $from_json->{renamed_after_release};
+    my @relnums = sort_release_numbers(keys(%{$releases}));
+    my %treebanks;
+    foreach my $r (@relnums)
+    {
+        foreach my $t (@{$releases->{$r}{treebanks}})
+        {
+            if(!exists($treebanks{$t}{firstrel}))
+            {
+                $treebanks{$t}{firstrel} = $r;
+            }
+            # Remember the name under which this treebank appeared in this release.
+            $treebanks{$t}{releases}{$r} = $t;
+        }
+        # Handle treebank name changes after the release, if any.
+        if(exists($renames->{$r}))
+        {
+            foreach my $rnm (@{$renames->{$r}})
+            {
+                my $oldname = $rnm->[0];
+                my $newname = $rnm->[1];
+                # Copy the history from the old name to the new name.
+                $treebanks{$newname} = $treebanks{$oldname};
+            }
+        }
+    }
+    return \%treebanks;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Sort release numbers.
+#------------------------------------------------------------------------------
+sub sort_release_numbers
+{
+    return sort
+    {
+        my $amaj = $a;
+        my $amin = 0;
+        my $bmaj = $b;
+        my $bmin = 0;
+        if($a =~ m/^(\d+)\.(\d+)$/)
+        {
+            $amaj = $1;
+            $amin = $2;
+        }
+        if($b =~ m/^(\d+)\.(\d+)$/)
+        {
+            $bmaj = $1;
+            $bmin = $2;
+        }
+        my $r = $amaj <=> $bmaj;
+        unless($r)
+        {
+            $r = $amin <=> $bmin;
+        }
+        $r
+    }
+    (@_);
 }
 
 
@@ -937,6 +1014,7 @@ sub check_files
 #------------------------------------------------------------------------------
 sub check_metadata
 {
+    my $udpath = shift; # path to the folder with UD treebanks as subfolders
     my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
     my $metadata = shift; # reference to hash returned by udlib::read_readme()
     my $errors = shift; # reference to array of error messages
@@ -949,42 +1027,12 @@ sub check_metadata
         my $claimed = $1;
         # The value 'Data available since' must not change from release to release.
         # It must forever refer to the first release of the treebank in UD.
-        # Therefore, this script will remember the correct value, too, and shout if it changes in the README.
-        my @new_treebanks_by_release =
-        (
-            '1.0'  => ['Czech-PDT', 'English-EWT', 'Finnish-TDT', 'French-GSD', 'German-GSD', 'Hungarian-Szeged', 'Irish-IDT', 'Italian-ISDT', 'Spanish-GSD', 'Swedish-Talbanken'],
-            '1.1'  => ['Basque-BDT', 'Bulgarian-BTB', 'Croatian-SET', 'Danish-DDT', 'Finnish-FTB', 'Greek-GDT', 'Hebrew-HTB', 'Indonesian-GSD', 'Persian-Seraji'],
-            '1.2'  => ['Ancient_Greek-Perseus', 'Ancient_Greek-PROIEL', 'Arabic-PADT', 'Dutch-Alpino', 'Estonian-EDT', 'Gothic-PROIEL', 'Hindi-HDTB', 'Japanese-KTC', 'Latin-ITTB', 'Latin-Perseus', 'Latin-PROIEL', 'Norwegian-Bokmaal', 'Old_Church_Slavonic-PROIEL', 'Polish-PDB', 'Portuguese-Bosque', 'Romanian-RRT', 'Slovenian-SSJ', 'Tamil-TTB'],
-            '1.3'  => ['Catalan-AnCora', 'Czech-CAC', 'Czech-CLTT', 'Dutch-LassySmall', 'English-ESL', 'English-LinES', 'Galician-CTG', 'Chinese-GSD', 'Kazakh-KTB', 'Latvian-LVTB', 'Portuguese-GSD', 'Russian-GSD', 'Russian-SynTagRus', 'Slovenian-SST', 'Spanish-AnCora', 'Swedish-LinES', 'Turkish-IMST'],
-            '1.4'  => ['Coptic-Scriptorium', 'Galician-TreeGal', 'Japanese-GSD', 'Sanskrit-UFAL', 'Slovak-SNK', 'Swedish_Sign_Language-SSLC', 'Ukrainian-IU', 'Uyghur-UDT', 'Vietnamese-VTB'],
-            '2.0'  => ['Arabic-NYUAD', 'Belarusian-HSE', 'English-ParTUT', 'French-FTB', 'French-ParTUT', 'French-Sequoia', 'Italian-ParTUT', 'Korean-GSD', 'Lithuanian-HSE', 'Norwegian-Nynorsk', 'Urdu-UDTB'],
-            '2.1'  => ['Afrikaans-AfriBooms', 'Arabic-PUD', 'Buryat-BDT', 'Cantonese-HK', 'Czech-FicTree', 'Czech-PUD', 'English-PUD', 'Finnish-PUD', 'French-PUD', 'German-PUD', 'Hindi-PUD', 'Chinese-CFL', 'Chinese-HK', 'Chinese-PUD', 'Italian-PoSTWITA', 'Italian-PUD', 'Japanese-PUD', 'Kurmanji-MG', 'Marathi-UFAL', 'North_Sami-Giella', 'Norwegian-NynorskLIA', 'Portuguese-PUD', 'Romanian-Nonstandard', 'Russian-PUD', 'Serbian-SET', 'Spanish-PUD', 'Swedish-PUD', 'Telugu-MTG', 'Turkish-PUD', 'Upper_Sorbian-UFAL'],
-            '2.2'  => ['Amharic-ATT', 'Armenian-ArmTDP', 'Breton-KEB', 'English-GUM', 'Faroese-OFT', 'French-Rhapsodie', 'Indonesian-PUD', 'Japanese-BCCWJ', 'Japanese-Modern', 'Komi_Zyrian-IKDP', 'Komi_Zyrian-Lattice', 'Korean-Kaist', 'Korean-PUD', 'Naija-NSC', 'Old_French-PROFITEROLE', 'Polish-LFG', 'Russian-Taiga', 'Tagalog-TRG', 'Thai-PUD', 'Warlpiri-UFAL', 'Yoruba-YTB'],
-            '2.3'  => ['Akkadian-PISANDUB', 'Bambara-CRB', 'Erzya-JR', 'Hindi_English-HIENCS', 'Maltese-MUDT'],
-            '2.4'  => ['Assyrian-AS', 'Classical_Chinese-Kyoto', 'Estonian-EWT', 'French-FQB', 'German-HDT', 'German-LIT', 'Italian-VIT', 'Karelian-KKPP', 'Lithuanian-ALKSNIS', 'Mbya_Guarani-Dooley', 'Mbya_Guarani-Thomas', 'Old_East_Slavic-RNC', 'Old_East_Slavic-TOROT', 'Polish-PUD', 'Turkish-GB', 'Welsh-CCG', 'Wolof-WTB'],
-            '2.5'  => ['Bhojpuri-BHTB', 'Chinese-GSDSimp', 'English-Pronouns', 'Italian-TWITTIRO', 'Komi_Permyak-UH', 'Livvi-KKPP', 'Moksha-JR', 'Romanian-SiMoNERo', 'Scottish_Gaelic-ARCOSG', 'Skolt_Sami-Giellagas', 'Swiss_German-UZH'],
-            '2.6'  => ['Albanian-TSA', 'English-GUMReddit', 'Icelandic-PUD', 'Latin-LLCT', 'Sanskrit-Vedic', 'Tagalog-Ugnayan'],
-            '2.7'  => ['Akkadian-RIAO', 'Akuntsu-TuDeT', 'Apurina-UFPA', 'Chukchi-HSE', 'Faroese-FarPaHC', 'Finnish-OOD', 'Icelandic-IcePaHC', 'Indonesian-CSUI', 'Khunsari-AHA', 'Manx-Cadhan', 'Munduruku-TuDeT', 'Nayini-AHA', 'Old_Turkish-Clausal', 'Persian-PerDT', 'Soi-AHA', 'South_Levantine_Arabic-MADAR', 'Tamil-MWTT', 'Tupinamba-TuDeT', 'Turkish-BOUN', 'Turkish_German-SAGT'],
-            '2.8'  => ['Beja-NSC', 'Frisian_Dutch-Fame', 'Guajajara-TuDeT', 'Icelandic-Modern', 'Irish-TwittIrish', 'Italian-Valico', 'Kaapor-TuDeT', 'Kangri-KDTB', 'Kiche-IU', 'Latin-UDante', 'Low_Saxon-LSDC', 'Makurap-TuDeT', 'Romanian-ArT', 'Turkish-FrameNet', 'Turkish-Kenet', 'Turkish-Penn', 'Turkish-Tourism', 'Western_Armenian-ArmTDP', 'Yupik-SLI'],
-            '2.9'  => ['Armenian-BSUT', 'Bengali-BRU', 'English-Atis', 'French-ParisStories', 'Japanese-BCCWJLUW', 'Japanese-GSDLUW', 'Japanese-PUDLUW', 'Javanese-CSUI', 'Karo-TuDeT', 'Ligurian-GLT', 'Neapolitan-RB', 'Tatar-NMCTT', 'Turkish-Atis', 'Xibe-XDT', 'Yakut-YKTDT'],
-            '2.10' => ['Ancient_Hebrew-PTNK', 'Cebuano-GJA', 'Guarani-OldTuDeT', 'Hebrew-IAHLTwiki', 'Hittite-HitTB', 'Italian-MarkIT', 'Madi-Jarawara', 'Old_East_Slavic-Birchbark', 'Pomak-Philotis', 'Teko-TuDeT', 'Umbrian-IKUVINA'],
-            '2.11' => ['Abaza-ATB', 'Chinese-PatentChar', 'Gheg-GPS', 'Icelandic-GC', 'Irish-Cadhan', 'Italian-ParlaMint', 'Malayalam-UFAL', 'Nheengatu-CompLin', 'Old_East_Slavic-Ruthenian', 'Portuguese-CINTIL', 'Portuguese-PetroGold', 'Sinhala-STB', 'Western_Sierra_Puebla_Nahuatl-ITML', 'Xavante-XDT', 'Zaar-Autogramm'],
-            '2.12' => ['Bororo-BDT', 'English-ESLSpok', 'English-GENTLE', 'Greek-GUD', 'Kyrgyz-KTMU', 'Maghrebi_Arabic_French-Arabizi', 'Old_Irish-DipSGG', 'Old_Irish-DipWBG'],
-            '2.13' => ['Ancient_Greek-PTNK', 'Chinese-Beginner', 'Classical_Armenian-CAVaL', 'Czech-Poetry', 'Georgian-GLC', 'Haitian_Creole-Autogramm', 'Highland_Puebla_Nahuatl-ITML', 'Italian-Old', 'Macedonian-MTB', 'Middle_French-PROFITEROLE', 'Portuguese-Porttinari', 'Russian-Poetry', 'Veps-VWT']
-        );
-        my %new_treebanks_by_release = @new_treebanks_by_release;
-        my $last_release = $new_treebanks_by_release[-2];
+        # Therefore, this script will use a separately stored release history and shout if the value changes in the README.
+        my $treebank_history = get_treebank_history("$udpath/docs-automation/valdan/releases.json");
         my $correct;
-        foreach my $release (keys(%new_treebanks_by_release))
+        if(exists($treebank_history->{$folder}))
         {
-            foreach my $treebank (@{$new_treebanks_by_release{$release}})
-            {
-                if("UD_$treebank" eq $folder)
-                {
-                    $correct = $release;
-                    last;
-                }
-            }
+            $correct = $treebank_history->{$folder}{firstrel};
         }
         if(defined($correct) && $claimed ne $correct)
         {

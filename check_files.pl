@@ -73,7 +73,7 @@ if(defined($language))
             push(@errors, "[L0 Repo files] $folder: cannot read the README file: $!\n");
             $n_errors++;
         }
-        udlib::check_metadata($folder, $metadata, \@errors, \$n_errors);
+        udlib::check_metadata($udpath, $folder, $metadata, \@errors, \$n_errors);
         # Check that the language-specific documentation has at least the index (summary) page.
         udlib::check_documentation($udpath, $folder, $langcode, \@errors, \$n_errors);
     }
