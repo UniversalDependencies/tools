@@ -506,6 +506,8 @@ def validate_text_meta(comments, tree):
     # In trees(), sentence_line was already moved to the first token/node line
     # after the sentence comment lines. While this is useful in most validation
     # functions, it complicates things here where we also work with the comments.
+    # warn(lineno=-1) will print the sentence_line, i.e., after the comments.
+    # warn() without lineno will refer to the empty line after the sentence.
     global sentence_line
     testlevel = 2
     testclass = 'Metadata'
@@ -525,29 +527,29 @@ def validate_text_meta(comments, tree):
     if len(newdoc_matched) > 1:
         testid = 'multiple-newdoc'
         testmessage = 'Multiple newdoc attributes.'
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
     if len(newpar_matched) > 1:
         testid = 'multiple-newpar'
         testmessage = 'Multiple newpar attributes.'
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
     if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
         testid = 'spaceafter-newdocpar'
         testmessage = 'New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
     if not text_matched:
         testid = 'missing-text'
         testmessage = 'Missing the text attribute.'
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
     elif len(text_matched) > 1:
         testid = 'multiple-text'
         testmessage = 'Multiple text attributes.'
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
     else:
         stext = text_matched[0].group(1)
         if stext[-1].isspace():
             testid = 'text-trailing-whitespace'
             testmessage = 'The text attribute must not end with whitespace.'
-            warn(testmessage, testclass, testlevel, testid)
+            warn(testmessage, testclass, testlevel, testid, lineno=-1)
         # Validate the text against the SpaceAfter attribute in MISC.
         skip_words = set()
         mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
