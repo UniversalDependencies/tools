@@ -72,6 +72,7 @@ sub get_treebank_history
             {
                 $treebanks{$t}{firstrel} = $r;
             }
+            $treebanks{$t}{lastrel} = $r;
             # Remember the name under which this treebank appeared in this release.
             $treebanks{$t}{releases}{$r} = $t;
         }
