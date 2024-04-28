@@ -88,6 +88,11 @@ sub get_treebank_history
             }
         }
     }
+    # Since we already read the data, make the source structures available as well.
+    # Treebank names start with 'UD_', so we can use other hash keys freely.
+    $treebanks{relnums} = \@relnums; # they are sorted, hence we know the last release number instantly
+    $treebanks{releases} = $releases;
+    $treebanks{renames} = $renames;
     return \%treebanks;
 }
 
