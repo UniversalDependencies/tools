@@ -1,5 +1,5 @@
 # Common Perl functions to manipulate UD repositories.
-# Copyright © 2016 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2016-2024 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 package udlib;
