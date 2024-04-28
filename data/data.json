@@ -2,8 +2,7 @@
 
 "auxiliaries": {
 "ab": {
-"а́кәзаара": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Сара [соуп] иҟазҵо.", "exampleen": "It’s me who has done it.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-24-23-07-20", "lastchanger": "paulmeurer"},
-"а́кәхара": {"functions": [{"function": "Aspect=Perf", "rule": "Dynamic copula", "deficient": "", "example": "Ари збарыз дара [ракәхеит].", "exampleen": "It was them who were to see this.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-21-05-04", "lastchanger": "paulmeurer"}
+"а́кәзаара": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Сара [соуп] иҟазҵо.", "exampleen": "It’s me who has done it.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-24-23-07-20", "lastchanger": "paulmeurer"}
 },
 "abq": {
 "акIвара": {"functions": [{"function": "Tense=Past", "rule": "rule", "deficient": "", "example": "сара [cакIвапI]", "exampleen": "I am", "comment": ""}], "status": "documented", "lastchanged": "2022-10-27-20-45-03", "lastchanger": "alexeykosh"},
@@ -109,7 +108,9 @@
 },
 "az": {
 "bil": {"functions": [{"function": "Mood=Irr", "rule": "combines with any non-finite verb.", "deficient": "", "example": "Deniz vəxtikən yatmıya [bil]ir.", "exampleen": "Deniz may not be able to sleep on time.", "comment": "Function should probably be specified better."}], "status": "documented", "lastchanged": "2024-04-28-13-04-07", "lastchanger": "coltekin"},
-"i": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Pəs kitabxanadakılar harda [i]ydi?", "exampleen": "So where were the [ones] on the bookshelf?", "comment": ""}], "status": "documented", "lastchanged": "2024-04-28-12-57-10", "lastchanger": "coltekin"}
+"dəyil": {"functions": [{"function": "agr", "rule": "This is more like a negative copula, it can get many other TAME features as affixes.", "deficient": "", "example": "Nəticələr gəlmiş; belə [dǝyil]?", "exampleen": "The results have been announced, haven’t they?", "comment": ""}], "status": "documented", "lastchanged": "2024-04-28-17-06-27", "lastchanger": "coltekin"},
+"i": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Pəs kitabxanadakılar harda [i]ydi?", "exampleen": "So where were the [ones] on the bookshelf?", "comment": ""}], "status": "documented", "lastchanged": "2024-04-28-12-57-10", "lastchanger": "coltekin"},
+"ol": {"functions": [{"function": "Tense=Fut", "rule": "This is an auxiliary that can take (almost) any of the TAME affixes.", "deficient": "", "example": "Deniz yatmış [ol]acax.", "exampleen": "Deniz will have asleep.", "comment": "Full set of functions are not specified."}], "status": "documented", "lastchanged": "2024-04-28-17-13-28", "lastchanger": "coltekin"}
 },
 "azz": {
 "etok": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "amo nikan [tiyetoskiah]", "exampleen": "We wouldn't be here", "comment": ""}], "status": "documented", "lastchanged": "2023-10-06-00-09-29", "lastchanger": "Lguyogiro"},
