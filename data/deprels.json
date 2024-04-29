@@ -5066,6 +5066,7 @@
 },
 "ky": {
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-29-12-04-19", "lastchanger": "coltekin"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-11-13-37-42", "lastchanger": "ibrahimbenli"},
