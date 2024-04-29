@@ -9800,7 +9800,7 @@
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"advcl:cond": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"advcl:cond": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},

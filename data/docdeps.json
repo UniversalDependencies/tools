@@ -2248,7 +2248,6 @@
 "tr": {
 "acl": {"type": "universal", "errors": []},
 "advcl": {"type": "universal", "errors": []},
-"advcl:cond": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "advmod": {"type": "universal", "errors": []},
 "advmod:emph": {"type": "local", "errors": []},
 "amod": {"type": "universal", "errors": []},
