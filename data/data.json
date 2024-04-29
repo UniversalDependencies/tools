@@ -251,6 +251,7 @@
 "cpg": {
 "α": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "[α]υπάμε", "exampleen": "we will go", "comment": "The use of the particle “α” before the verb characterizes both future tenses: Future Simple and Future Continuous."}], "status": "documented", "lastchanged": "2024-04-29-19-07-52", "lastchanger": "elenvlig"},
 "είμαι": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ατέ το κουμάσι [εν] το μόνα.", "exampleen": "This house of hens is mine", "comment": ""}], "status": "documented", "lastchanged": "2024-04-28-00-53-02", "lastchanger": "coltekin"},
+"πρέπει": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary followed by an auxiliary and the main verb.", "deficient": "", "example": "[πρέφτει] να 'ίνω", "exampleen": "I must become", "comment": ""}], "status": "documented", "lastchanged": "2024-04-29-19-36-45", "lastchanger": "elenvlig"},
 "χα": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "[χα] υπάω", "exampleen": "I will go", "comment": "The use of the particle “χα” before the verb characterizes both future tenses: Future Simple and Future Continuous."}], "status": "documented", "lastchanged": "2024-04-29-19-11-06", "lastchanger": "iiliadou"}
 },
 "cs": {
