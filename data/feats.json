@@ -199,7 +199,7 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass", "Rcp"], "lvalues": ["Trans"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid"], "byupos": {"VERB": {"Cau": 1, "Pass": 1, "Rcp": 1, "Trans": 1}}, "lastchanged": "2020-12-25-01-03-53", "lastchanger": "dan-zeman"}
 },
 "ang": {
-
+"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc", "Neut"], "lvalues": [], "unused_uvalues": ["Com"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Fem": 1, "Masc": 1, "Neut": 1}, "DET": {"Fem": 1, "Masc": 1, "Neut": 1}, "NOUN": {"Fem": 1, "Masc": 1, "Neut": 1}, "PRON": {"Fem": 1, "Masc": 1, "Neut": 1}, "PROPN": {"Fem": 1, "Masc": 1, "Neut": 1}}, "lastchanged": "2024-04-29-09-44-20", "lastchanger": "coltekin"}
 },
 "apu": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
