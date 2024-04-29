@@ -5097,6 +5097,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2022-10-11-13-37-10", "lastchanger": "ibrahimbenli"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-29-13-08-09", "lastchanger": "coltekin"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
