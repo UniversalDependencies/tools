@@ -877,6 +877,7 @@
 "voija": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "ky": {
+"ал": {"functions": [{"function": "agr", "rule": "Combines with non-finete verbs", "deficient": "", "example": "Дениз уктай [ал]бай жатат.", "exampleen": "Deniz cannot sleep.", "comment": "Function definition needs better specification."}], "status": "documented", "lastchanged": "2024-04-29-16-44-24", "lastchanger": "coltekin"},
 "жат": {"functions": [{"function": "Aspect=Imp", "rule": "combination of all non-finete forms", "deficient": "", "example": "Дениз уктай албай [жат]ат.", "exampleen": "Deniz cannot sleep.", "comment": "the definition to be refined."}], "status": "documented", "lastchanged": "2024-04-29-16-26-50", "lastchanger": "coltekin"},
 "окшо": {"functions": [{"function": "Mood=Pot", "rule": "Combines with non-finete verbs", "deficient": "", "example": "Жамгыр жаап жатат [окшо]йт.", "exampleen": "I think that it is raining.", "comment": "Function definition needs better specification."}], "status": "documented", "lastchanged": "2024-04-29-16-29-14", "lastchanger": "coltekin"},
 "э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Дениз үйдѳ [э]ле.", "exampleen": "Deniz was at home.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-29-16-11-26", "lastchanger": "coltekin"}
