@@ -504,10 +504,9 @@
 "she": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[She] dooinney-ooasle va'n ayr echey.", "exampleen": "His father was a gentleman.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-44-33", "lastchanger": "dan-zeman"}
 },
 "ha": {
-"ba": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"ba": {"functions": [{"function": "cop.AUX", "rule": "XXX", "deficient": "XXX", "example": "X[X]X", "exampleen": "XXX", "comment": "This is not an AUX. To be deleted"}], "status": "documented", "lastchanged": "2024-04-29-20-34-59", "lastchanger": "B-CARON"},
 "ce": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with feminine singular subjects only", "example": "Ita yarinya [ce].", "exampleen": "She is a girl.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-06-29", "lastchanger": "dan-zeman"},
-"ne": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with other subjects than feminine singular", "example": "Su malamai [ne].", "exampleen": "They are teachers.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-05-10", "lastchanger": "dan-zeman"},
-"ta": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"ne": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with other subjects than feminine singular", "example": "Su malamai [ne].", "exampleen": "They are teachers.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-05-10", "lastchanger": "dan-zeman"}
 },
 "hbo": {
 "היה": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "הוא [היה] איש", "exampleen": "he was a man", "comment": ""}], "status": "documented", "lastchanged": "2021-12-21-03-25-52", "lastchanger": "mr-martian"}
