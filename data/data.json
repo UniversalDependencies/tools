@@ -249,6 +249,7 @@
 "ⲧⲁⲣⲉ": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
 "cpg": {
+"α": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "[α]υπάμε", "exampleen": "we will go", "comment": "The use of the particle “α” before the verb characterizes both future tenses: Future Simple and Future Continuous."}], "status": "documented", "lastchanged": "2024-04-29-19-07-52", "lastchanger": "elenvlig"},
 "είμαι": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ατέ το κουμάσι [εν] το μόνα.", "exampleen": "This house of hens is mine", "comment": ""}], "status": "documented", "lastchanged": "2024-04-28-00-53-02", "lastchanger": "coltekin"}
 },
 "cs": {
