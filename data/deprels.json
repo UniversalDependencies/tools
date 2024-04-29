@@ -414,6 +414,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-29-10-01-16", "lastchanger": "coltekin"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-29-10-00-54", "lastchanger": "coltekin"},
