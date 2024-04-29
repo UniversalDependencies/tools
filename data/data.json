@@ -876,6 +876,9 @@
 "piteä": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "voija": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"ky": {
+"э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Дениз үйдѳ [э]ле.", "exampleen": "Deniz was at home.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-29-16-11-26", "lastchanger": "coltekin"}
+},
 "la": {
 "eo": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary (only infinitive imperfective passive) and supine of the main verb. the resulting combination expresses also passive", "deficient": "", "example": "has litteras tibi redditum [iri] putabam", "exampleen": "I thought that this letter would be delivered to you", "comment": ""}, {"function": "Voice=Pass", "rule": "combination of the auxiliary (only infinitive imperfective passive) and supine of the main verb. the resulting combination expresses also future", "deficient": "", "example": "has litteras tibi redditum [iri] putabam", "exampleen": "I thought that this letter would be delivered to you", "comment": ""}], "status": "documented", "lastchanged": "2022-09-14-11-36-49", "lastchanger": "fjambe"},
 "habeo": {"functions": [{"function": "Aspect=Perf", "rule": "Combination of the auxiliary and a perfect participle of the main verb, which agrees with the object in the accusative or is in the neuter case", "deficient": "", "example": "sicut inter nos vuadiatum [habemus]", "exampleen": "as we have agreed upon between us", "comment": "Only in Late Latin, transitioning towards Romance languages"}], "status": "documented", "lastchanged": "2021-04-13-12-04-59", "lastchanger": "Stormur"},
