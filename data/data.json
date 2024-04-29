@@ -505,7 +505,7 @@
 },
 "ha": {
 "ba": {"functions": [{"function": "cop.AUX", "rule": "XXX", "deficient": "XXX", "example": "X[X]X", "exampleen": "XXX", "comment": "This is not an AUX. To be deleted"}], "status": "documented", "lastchanged": "2024-04-29-20-34-59", "lastchanger": "B-CARON"},
-"ce": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "is not a proper lemma", "example": "XXX[ce]XXX", "exampleen": "XXX", "comment": "in Standard Hausa, the lemma could be neː /ceː"}], "status": "documented", "lastchanged": "2024-04-29-20-39-20", "lastchanger": "B-CARON"},
+"ce": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "is not a proper lemma", "example": "XXX[ce]XXX", "exampleen": "XXX", "comment": "should be deleted"}], "status": "documented", "lastchanged": "2024-04-29-20-42-28", "lastchanger": "B-CARON"},
 "ne": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with other subjects than feminine singular", "example": "Su malamai [ne].", "exampleen": "They are teachers.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-20-05-10", "lastchanger": "dan-zeman"}
 },
 "hbo": {
