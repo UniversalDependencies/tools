@@ -882,6 +882,9 @@
 "piteä": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "voija": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"kv": {
+"оз": {"functions": [{"function": "neg", "rule": "combination of the auxiliary and a connegative form of the verb", "deficient": "", "example": "[ин] мун!", "exampleen": "Do[n't] go!", "comment": "the auxiliary indicates person, number and mood"}], "status": "documented", "lastchanged": "2024-04-30-13-02-19", "lastchanger": "rueter"}
+},
 "ky": {
 "ал": {"functions": [{"function": "agr", "rule": "Combines with non-finete verbs", "deficient": "", "example": "Дениз уктай [ал]бай жатат.", "exampleen": "Deniz cannot sleep.", "comment": "Function definition needs better specification."}], "status": "documented", "lastchanged": "2024-04-29-16-44-24", "lastchanger": "coltekin"},
 "бол": {"functions": [{"function": "agr", "rule": "Combines with non-finete verbs", "deficient": "", "example": "Дениз уктаган [бол]от.", "exampleen": "Deniz will have slept.", "comment": "Function definition needs better specification."}], "status": "documented", "lastchanged": "2024-04-29-17-03-18", "lastchanger": "coltekin"},
