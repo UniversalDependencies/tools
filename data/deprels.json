@@ -5053,7 +5053,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-30-15-58-00", "lastchanger": "rueter"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
