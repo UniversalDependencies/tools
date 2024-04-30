@@ -5042,7 +5042,7 @@
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"det": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-30-15-57-39", "lastchanger": "rueter"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
