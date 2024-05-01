@@ -1153,7 +1153,8 @@
 "ota": {
 "değil": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in negations", "example": "bu gerçek [değil].", "exampleen": "it is not real.", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-14-56-39", "lastchanger": "sb-b"},
 "i": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in noun verbs", "example": "Bu kitabı okumuş [idi].", "exampleen": "She read that book.", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-14-58-56", "lastchanger": "sb-b"},
-"mi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in questions", "example": "Annem eve gelecek [mi]?", "exampleen": "Will my mom come home?", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-14-57-21", "lastchanger": "sb-b"}
+"mi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in questions", "example": "Annem eve gelecek [mi]?", "exampleen": "Will my mom come home?", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-14-57-21", "lastchanger": "sb-b"},
+"y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "i copula", "example": "Eve gelir [iken]", "exampleen": "As you are coming home", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-15-01-02", "lastchanger": "sb-b"}
 },
 "pcm": {
 "be": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Primarily used to link a subject to noun", "example": "Ah wetin [be] di problem?", "exampleen": "Ah what is the problem?", "comment": ""}], "status": "documented", "lastchanged": "2021-04-20-14-37-14", "lastchanger": "emmettstr"},
