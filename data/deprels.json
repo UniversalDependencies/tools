@@ -7148,6 +7148,7 @@
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-05-01-14-24-51", "lastchanger": "sb-b"},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
