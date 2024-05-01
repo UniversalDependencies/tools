@@ -7152,6 +7152,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-05-01-14-17-24", "lastchanger": "sb-b"},
+"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-05-01-14-20-44", "lastchanger": "sb-b"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
