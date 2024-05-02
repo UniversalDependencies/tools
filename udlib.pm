@@ -58,7 +58,7 @@ sub get_treebank_history
 {
     my $path = shift;
     $path = 'docs-automation/valdan/releases.json' if(!defined($path));
-    confess("File '$path' does not exist; current dir is '`pwd -P`'") if(!-f $path);
+    confess("File '$path' does not exist; current dir is '".getcwd()."'") if(!-f $path);
     my $from_json = json_file_to_perl($path);
     my $releases = $from_json->{releases};
     my $renames = $from_json->{renamed_after_release};
