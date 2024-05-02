@@ -202,7 +202,7 @@ foreach my $folder (@folders)
                 $families_with_data{$family}++;
             }
             # Check that all required metadata items are present in the README file.
-            if(!udlib::check_metadata('.', $folder, $metadata, \@errors, \$n_errors))
+            if(!udlib::check_metadata('..', $folder, $metadata, \@errors, \$n_errors))
             {
                 print(join('', @errors));
                 splice(@errors);
