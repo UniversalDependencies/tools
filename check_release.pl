@@ -51,10 +51,6 @@ my $include_future = 0;
 my $pull = 0;
 # Validate all CoNLL-U files and report invalid ones?
 my $validate = 0;
-# Recompute statistics of all treebanks and push them to Github?
-my $recompute_stats = 0;
-# Tag all repositories with the new release? (The $tag variable is either empty or it contains the tag.)
-my $tag = ''; # example: 'r1.0'
 # Number of the current release as it is found in README files. Repositories targeting a later release will not be included.
 my $current_release;
 # Month and year when the next release is expected. We use it in the announcement.
@@ -74,9 +70,7 @@ GetOptions
     'oldpath=s'       => \$oldpath,
     'future'          => \$include_future,
     'pull'            => \$pull,
-    'validate'        => \$validate,
-    'stats'           => \$recompute_stats,
-    'tag=s'           => \$tag
+    'validate'        => \$validate
 );
 # Options that change with every release have no defaults and must be specified
 # on the command line. Check that we received them.
@@ -240,22 +234,6 @@ foreach my $folder (@folders)
                     $contact =~ s/\s+$//;
                     $contacts{$contact}++;
                 }
-            }
-            # Recompute statistics of the treebank and push it back to Github.
-            if($recompute_stats)
-            {
-                print("Recomputing statistics of $folder...\n");
-                system('cat *.conllu | ../tools/conllu-stats.pl > stats.xml');
-                print("Pushing statistics to Github...\n");
-                system('git add stats.xml');
-                system('git commit -m "Updated statistics."');
-                if($tag ne '')
-                {
-                    print("Tagging $folder $tag\n");
-                    system("git tag $tag");
-                }
-                system('git push');
-                system('git push --tags');
             }
             chdir('..') or die("Cannot return to the upper folder");
         }
