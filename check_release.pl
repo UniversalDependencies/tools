@@ -100,142 +100,40 @@ my %contributors;
 my %contributions; # for each contributor find treebanks they contributed to
 my %contacts;
 my %stats;
-my %nw; # number of words in train|dev|test|all; indexed by folder name
-my @unknown_folders; # cannot parse folder name or unknown language
 my @nongit_folders; # folder is not a git repository
 my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
 my @invalid_folders; # at least one .conllu file does not pass validation
 my @released_folders;
+
+# Get mappings between language names, language codes, folder names, ltcodes,
+# and human-friendly treebank names.
+my @unknown_folders; # cannot parse folder name or unknown language
+my @known_folders; # can parse folder name and known language
+my %folder_codes_names;
 my %tcode_to_treebank_name;
 foreach my $folder (@folders)
 {
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
     # Example: UD_Ancient_Greek-PROIEL
     my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    my $langcode;
     if(defined($language))
     {
         if(exists($languages_from_yaml->{$language}))
         {
-            $langcode = $languages_from_yaml->{$language}{lcode};
-            my $key = udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml);
-            $tcode_to_treebank_name{$key} = join(' ', ($language, $treebank));
-            chdir($folder) or die("Cannot enter folder $folder");
-            # Skip folders that are not Git repositories even if they otherwise look OK.
-            if(!-d '.git')
-            {
-                push(@nongit_folders, $folder);
-                chdir('..') or die("Cannot return to the upper folder");
-                next;
-            }
-            # This is a git repository with data.
-            # Make sure it is up-to-date.
-            if($pull)
-            {
-                print("git pull $folder\n");
-                system('git pull --tags');
-                print(`git status`);
-            }
-            # Skip folders that do not contain any data, i.e. CoNLL-U files.
-            my $n = get_number_of_conllu_files('.');
-            if($n==0)
-            {
-                push(@empty_folders, $folder);
-                chdir('..') or die("Cannot return to the upper folder");
-                next;
-            }
-            if(!$valid{$folder})
-            {
-                push(@invalid_folders, $folder);
-                chdir('..') or die("Cannot return to the upper folder");
-                next;
-            }
-            # Check that the expected files are present and that there are no extra files.
-            my @errors;
-            $nw{$folder} = {};
-            if(!udlib::check_files('..', $folder, $key, \@errors, \$n_errors, $nw{$folder}))
-            {
-                print(join('', @errors));
-                splice(@errors);
-            }
-            ###!!! We may want to consolidate somehow the ways how we collect and
-            ###!!! store various statistics. This hash-in-hash is another by-product
-            ###!!! of checking the files in udlib.
-            $stats{$key} = $nw{$folder}{stats};
-            # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
-            my $metadata = udlib::read_readme('.');
-            if(!defined($metadata))
-            {
-                print("$folder: cannot read the README file: $!\n");
-                $n_errors++;
-            }
-            if(exists($metadata->{firstrelease}) && udlib::cmp_release_numbers($metadata->{firstrelease}, $current_release) <= 0)
-            {
-                $metadata->{release} = 1;
-            }
-            if(!$metadata->{release} && !$include_future)
-            {
-                push(@future_folders, $folder);
-                chdir('..') or die("Cannot return to the upper folder");
-                next;
-            }
-            #------------------------------------------------------------------
-            # End of skipping. If we are here, we have a versioned UD folder
-            # with valid data. We know that the folder is going to be released.
-            # Count it and check it for possible problems.
-            $n_folders_with_data++;
-            push(@released_folders, $folder);
-            $languages_with_data{$language}++;
-            my $family = $languages_from_yaml->{$language}{family};
-            if(defined($family))
-            {
-                $family =~ s/^IE/Indo-European/;
-                # Keep only the family, discard the genus if present.
-                $family =~ s/,.*//;
-                $families_with_data{$family}++;
-            }
-            # Check that all required metadata items are present in the README file.
-            if(!udlib::check_metadata('..', $folder, $metadata, \@errors, \$n_errors))
-            {
-                print(join('', @errors));
-                splice(@errors);
-            }
-            # Summarize metadata.
-            if($metadata->{'License'} ne '')
-            {
-                $licenses{$metadata->{'License'}}++;
-            }
-            if($metadata->{'Genre'} ne '')
-            {
-                my @genres = split(/\s+/, $metadata->{'Genre'});
-                foreach my $genre (@genres)
-                {
-                    $genres{$genre}++;
-                }
-            }
-            if($metadata->{'Contributors'} ne '')
-            {
-                my @contributors = split(/;\s*/, $metadata->{'Contributors'});
-                foreach my $contributor (@contributors)
-                {
-                    $contributor =~ s/^\s+//;
-                    $contributor =~ s/\s+$//;
-                    $contributors{$contributor}++;
-                    $contributions{$contributor}{$folder}++;
-                }
-            }
-            if($metadata->{'Contact'} ne '')
-            {
-                my @contacts = split(/[,;]\s*/, $metadata->{'Contact'});
-                foreach my $contact (@contacts)
-                {
-                    $contact =~ s/^\s+//;
-                    $contact =~ s/\s+$//;
-                    $contacts{$contact}++;
-                }
-            }
-            chdir('..') or die("Cannot return to the upper folder");
+            my %record =
+            (
+                'lname'  => $language,
+                'lcode'  => $languages_from_yaml->{$language}{lcode},
+                'iso3'   => $languages_from_yaml->{$language}{iso3},
+                'family' => $languages_from_yaml->{$language}{family},
+                'tname'  => $treebank,
+                'ltcode' => udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml),
+                'hname'  => join(' ', ($language, $treebank)) # human-friendly language + treebank name (no 'UD' in the beginning, spaces instead of underscores)
+            );
+            $folder_codes_names{$folder} = \%record;
+            $tcode_to_treebank_name{$record{ltcode}} = $record{hname};
+            push(@known_folders, $folder);
         }
         else
         {
@@ -248,6 +146,127 @@ foreach my $folder (@folders)
         print("Cannot parse folder name $folder.\n");
         push(@unknown_folders, $folder);
     }
+}
+
+# Now examine in more detail those folders for which we know the language.
+foreach my $folder (@known_folders)
+{
+    my $language = $folder_codes_names{$folder}{lname};
+    my $ltcode = $folder_codes_names{$folder}{ltcode};
+    my $family = $folder_codes_names{$folder}{family};
+    chdir($folder) or die("Cannot enter folder $folder");
+    # Skip folders that are not Git repositories even if they otherwise look OK.
+    if(!-d '.git')
+    {
+        push(@nongit_folders, $folder);
+        chdir('..') or die("Cannot return to the upper folder");
+        next;
+    }
+    # This is a git repository with data.
+    # Make sure it is up-to-date.
+    if($pull)
+    {
+        print("git pull $folder\n");
+        system('git pull --tags');
+        print(`git status`);
+    }
+    # Skip folders that do not contain any data, i.e. CoNLL-U files.
+    my $n = get_number_of_conllu_files('.');
+    if($n==0)
+    {
+        push(@empty_folders, $folder);
+        chdir('..') or die("Cannot return to the upper folder");
+        next;
+    }
+    if(!$valid{$folder})
+    {
+        push(@invalid_folders, $folder);
+        chdir('..') or die("Cannot return to the upper folder");
+        next;
+    }
+    # Check that the expected files are present and that there are no extra files.
+    my @errors;
+    my %folder_stats;
+    if(!udlib::check_files('..', $folder, $ltcode, \@errors, \$n_errors, \%folder_stats))
+    {
+        print(join('', @errors));
+        splice(@errors);
+    }
+    ###!!! We may want to consolidate somehow the ways how we collect and
+    ###!!! store various statistics.
+    $stats{$ltcode} = \%folder_stats;
+    # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
+    my $metadata = udlib::read_readme('.');
+    if(!defined($metadata))
+    {
+        print("$folder: cannot read the README file: $!\n");
+        $n_errors++;
+    }
+    if(exists($metadata->{firstrelease}) && udlib::cmp_release_numbers($metadata->{firstrelease}, $current_release) <= 0)
+    {
+        $metadata->{release} = 1;
+    }
+    if(!$metadata->{release} && !$include_future)
+    {
+        push(@future_folders, $folder);
+        chdir('..') or die("Cannot return to the upper folder");
+        next;
+    }
+    #------------------------------------------------------------------
+    # End of skipping. If we are here, we have a versioned UD folder
+    # with valid data. We know that the folder is going to be released.
+    # Count it and check it for possible problems.
+    $n_folders_with_data++;
+    push(@released_folders, $folder);
+    $languages_with_data{$language}++;
+    if(defined($family))
+    {
+        $family =~ s/^IE/Indo-European/;
+        # Keep only the family, discard the genus if present.
+        $family =~ s/,.*//;
+        $families_with_data{$family}++;
+    }
+    # Check that all required metadata items are present in the README file.
+    if(!udlib::check_metadata('..', $folder, $metadata, \@errors, \$n_errors))
+    {
+        print(join('', @errors));
+        splice(@errors);
+    }
+    # Summarize metadata.
+    if($metadata->{'License'} ne '')
+    {
+        $licenses{$metadata->{'License'}}++;
+    }
+    if($metadata->{'Genre'} ne '')
+    {
+        my @genres = split(/\s+/, $metadata->{'Genre'});
+        foreach my $genre (@genres)
+        {
+            $genres{$genre}++;
+        }
+    }
+    if($metadata->{'Contributors'} ne '')
+    {
+        my @contributors = split(/;\s*/, $metadata->{'Contributors'});
+        foreach my $contributor (@contributors)
+        {
+            $contributor =~ s/^\s+//;
+            $contributor =~ s/\s+$//;
+            $contributors{$contributor}++;
+            $contributions{$contributor}{$folder}++;
+        }
+    }
+    if($metadata->{'Contact'} ne '')
+    {
+        my @contacts = split(/[,;]\s*/, $metadata->{'Contact'});
+        foreach my $contact (@contacts)
+        {
+            $contact =~ s/^\s+//;
+            $contact =~ s/\s+$//;
+            $contacts{$contact}++;
+        }
+    }
+    chdir('..') or die("Cannot return to the upper folder");
 }
 print("$n_errors errors must be fixed.\n") if($n_errors>0);
 print("\n");
