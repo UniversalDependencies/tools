@@ -195,7 +195,7 @@ foreach my $folder (@known_folders)
     ###!!! We may want to consolidate somehow the ways how we collect and
     ###!!! store various statistics. This hash-in-hash is another by-product
     ###!!! of checking the files in udlib.
-    $stats{$ltcode} = $udlibstats->{stats};
+    $stats{$folder} = $udlibstats->{stats};
     # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
     my $metadata = udlib::read_readme('.');
     if(!defined($metadata))
@@ -298,19 +298,16 @@ my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
-my @ltcodes = sort(keys(%stats));
+my @folders_with_data = sort(keys(%stats));
+my @ltcodes = map {$folder_codes_names{$_}{ltcode}} (@folders_with_data);
 print("Treebank codes: ", join(' ', @ltcodes), "\n\n");
-my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@ltcodes);
-my @langcodes1 = sort(keys(%langcodes1));
-print("Language codes: ", join(' ', @langcodes1), "\n\n");
+my %lcodes; map {$lcodes{$folder_codes_names{$_}{lcode}}++} (@folders_with_data);
+my @lcodes = sort(keys(%lcodes));
+print("Language codes: ", join(' ', @lcodes), "\n\n");
 # Sometimes we need the ISO 639-3 codes (as opposed to the mix of -1 and -3 codes),
 # e.g. when listing the languages in Lindat.
-my %lcode2iso3;
-foreach my $lname (keys(%{$languages_from_yaml}))
-{
-    $lcode2iso3{$languages_from_yaml->{$lname}{lcode}} = $languages_from_yaml->{$lname}{iso3};
-}
-my @iso3codes = sort(grep {defined($_) && $_ ne '' && !m/^q[a-t][a-z]$/} (map {$lcode2iso3{$_}} (@langcodes1)));
+my %iso3codes; map {$iso3codes{$folder_codes_names{$_}{iso3}}++} (@folders_with_data);
+my @iso3codes = sort(grep {defined($_) && $_ ne '' && !m/^q[a-t][a-z]$/} (keys(%iso3codes)));
 print(scalar(@iso3codes), " ISO 639-3 codes: ", join(' ', @iso3codes), "\n\n");
 my @licenses = sort(keys(%licenses));
 print(scalar(@licenses), " different licenses: ", join(', ', @licenses), "\n\n");
@@ -347,7 +344,7 @@ print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n
 my @contacts = sort(keys(%contacts));
 print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
 # Find treebanks whose data size has changed.
-my $changelog = compare_with_previous_release($oldpath, \@ltcodes, \%stats);
+my $changelog = compare_with_previous_release($oldpath, \%stats);
 # Summarize the statistics of the current treebanks. Especially the total
 # number of sentences, tokens and words is needed for the metadata in Lindat.
 print("\nSizes of treebanks in the new release:\n\n");
@@ -358,8 +355,14 @@ foreach my $row (@{$table})
     for(my $i = 0; $i <= $#{$row}; $i++)
     {
         my $npad = $maxl->[$i]-length($row->[$i]);
-        my $pad = ' ' x $npad;
-        my $padded = $i == 0 ? ($row->[$i].$pad) : ($pad.$row->[$i]);
+        if($i == 0)
+        {
+            push(@out, $row->[$i].' '.('.' x $npad));
+        }
+        else
+        {
+            push(@out, (' ' x $npad).$row->[$i]);
+        }
         push(@out, $padded);
     }
     print(join('   ', @out), "\n");
@@ -448,15 +451,13 @@ sub collect_statistics_about_ud_release
         # The name of the folder: 'UD_' + language name + treebank identifier.
         # Example: UD_Ancient_Greek-PROIEL
         my ($language, $treebank) = udlib::decompose_repo_name($folder);
-        my $langcode;
         if(-d "$release_path/$folder" && defined($language))
         {
             if(exists($languages_from_yaml->{$language}))
             {
-                $langcode = $languages_from_yaml->{$language}{lcode};
-                my $key = $langcode;
-                $key .= '_'.lc($treebank) if($treebank ne '');
-                $stats{$key} = udlib::collect_statistics_about_ud_treebank("$release_path/$folder", $key);
+                my $ltcode = $languages_from_yaml->{$language}{lcode};
+                $ltcode .= '_'.lc($treebank) if($treebank ne '');
+                $stats{$folder} = udlib::collect_statistics_about_ud_treebank("$release_path/$folder", $ltcode);
             }
         }
     }
@@ -479,13 +480,14 @@ sub summarize_statistics
     my @table;
     my @maxl;
     add_table_row(\@table, \@maxl, 'TREEBANK', 'SENTENCES', 'TOKENS', 'FUSED', 'WORDS');
-    foreach my $lt (@ltcodes)
+    my @folders = sort(keys(%{$stats}));
+    foreach my $folder (@folders)
     {
-        add_table_row(\@table, \@maxl, $lt, $stats->{$lt}{nsent}, $stats->{$lt}{ntok}, $stats->{$lt}{nfus}, $stats->{$lt}{nword});
-        $nsent += $stats->{$lt}{nsent};
-        $ntok += $stats->{$lt}{ntok};
-        $nfus += $stats->{$lt}{nfus};
-        $nword += $stats->{$lt}{nword};
+        add_table_row(\@table, \@maxl, $folder, $stats->{$folder}{nsent}, $stats->{$folder}{ntok}, $stats->{$folder}{nfus}, $stats->{$folder}{nword});
+        $nsent += $stats->{$folder}{nsent};
+        $ntok += $stats->{$folder}{ntok};
+        $nfus += $stats->{$folder}{nfus};
+        $nword += $stats->{$folder}{nword};
     }
     add_table_row(\@table, \@maxl, 'TOTAL', $nsent, $ntok, $nfus, $nword);
     return ($nsent, $ntok, $nfus, $nword, \@table, \@maxl);
@@ -532,39 +534,42 @@ sub max
 sub compare_with_previous_release
 {
     my $oldpath = shift;
-    my $newltcodes = shift;
     my $newstats = shift;
-    # Find treebanks whose data size has changed.
     print("Collecting statistics of $oldpath...\n");
     my $oldstats = collect_statistics_about_ud_release($oldpath);
-    my @oldltcodes = sort(keys(%{$oldstats}));
-    foreach my $l (@oldltcodes)
+    my @oldtreebanks = sort(keys(%{$oldstats}));
+    my @newtreebanks = sort(keys(%{$newstats}));
+    foreach my $l (@oldtreebanks)
     {
-        if($oldstats->{$l}{ntok}  != $stats{$l}{ntok}  ||
-           $oldstats->{$l}{nword} != $stats{$l}{nword} ||
-           $oldstats->{$l}{nfus}  != $stats{$l}{nfus}  ||
-           $oldstats->{$l}{nsent} != $stats{$l}{nsent})
+        if($oldstats->{$l}{ntok}  != $newstats->{$l}{ntok}  ||
+           $oldstats->{$l}{nword} != $newstats->{$l}{nword} ||
+           $oldstats->{$l}{nfus}  != $newstats->{$l}{nfus}  ||
+           $oldstats->{$l}{nsent} != $newstats->{$l}{nsent})
         {
+            my $pad = ' ' x (length($l)-5);
+            my $diff = $newstats->{$l}{nword}-$oldstats->{$l}{nword};
+            my $sign = $diff > 0 ? '+' : $diff < 0 ? '-' : '';
+            my $pct = $diff ? sprintf(" ==> %s %d%%", $sign, abs($diff)/$oldstats->{$l}{nword}*100+0.5) : '';
             print("$l\tt=$oldstats->{$l}{ntok}\tw=$oldstats->{$l}{nword}\tf=$oldstats->{$l}{nfus}\ts=$oldstats->{$l}{nsent}\n");
-            print(" NOW:\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
+            print(" NOW:$pad\tt=$newstats->{$l}{ntok}\tw=$newstats->{$l}{nword}\tf=$newstats->{$l}{nfus}\ts=$newstats->{$l}{nsent}\t$pct\n");
         }
     }
     print("\n");
     # Treebanks can appear, disappear and reappear. Get the list of all treebanks
     # that are part either of this or of the previous release.
-    my %lastcurrtreebanks;
-    foreach my $t (@{$newltcodes}, @oldlanguages)
+    my %oldnewtreebanks;
+    foreach my $t (@oldtreebanks, @newtreebanks)
     {
-        $lastcurrtreebanks{$t}++;
+        $oldnewtreebanks{$t}++;
     }
-    my @lastcurrtreebanks = sort(keys(%lastcurrtreebanks));
+    my @oldnewtreebanks = sort(keys(%oldnewtreebanks));
     # Find treebanks whose size has changed by more than 10%.
     my @changedsize;
     my $codemaxl = 0;
     my $namemaxl = 0;
     my $oldmaxl = 0;
     my $newmaxl = 0;
-    foreach my $t (@lastcurrtreebanks)
+    foreach my $t (@oldnewtreebanks)
     {
         my $oldsize = exists($oldstats->{$t}) ? $oldstats->{$t}{nword} : 0;
         my $newsize = exists($newstats->{$t}) ? $newstats->{$t}{nword} : 0;
@@ -573,7 +578,7 @@ sub compare_with_previous_release
             my %record =
             (
                 'code' => $t,
-                'name' => $tcode_to_treebank_name{$t}, ########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                'name' => $folder_codes_names{$t}{hname}, #$tcode_to_treebank_name{$t}, ########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 'old'  => $oldsize,
                 'new'  => $newsize
             );
