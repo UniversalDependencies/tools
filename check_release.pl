@@ -186,15 +186,16 @@ foreach my $folder (@known_folders)
     }
     # Check that the expected files are present and that there are no extra files.
     my @errors;
-    my %folder_stats;
-    if(!udlib::check_files('..', $folder, $ltcode, \@errors, \$n_errors, \%folder_stats))
+    my $udlibstats = {};
+    if(!udlib::check_files('..', $folder, $ltcode, \@errors, \$n_errors, $udlibstats))
     {
         print(join('', @errors));
         splice(@errors);
     }
     ###!!! We may want to consolidate somehow the ways how we collect and
-    ###!!! store various statistics.
-    $stats{$ltcode} = \%folder_stats;
+    ###!!! store various statistics. This hash-in-hash is another by-product
+    ###!!! of checking the files in udlib.
+    $stats{$ltcode} = $udlibstats->{stats};
     # Read the README file. We need to know whether this repository is scheduled for the upcoming release.
     my $metadata = udlib::read_readme('.');
     if(!defined($metadata))
