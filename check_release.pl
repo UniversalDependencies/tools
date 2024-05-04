@@ -300,9 +300,9 @@ my @families = sort(keys(%families_with_data));
 print(scalar(@families), " families with data: ", join(', ', @families), "\n\n");
 my @languages = map {s/_/ /g; $_} (sort(keys(%languages_with_data)));
 print(scalar(@languages), " languages with data: ", join(', ', @languages), "\n\n");
-my @langcodes = sort(keys(%stats));
-print("Treebank codes: ", join(' ', @langcodes), "\n\n");
-my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@langcodes);
+my @ltcodes = sort(keys(%stats));
+print("Treebank codes: ", join(' ', @ltcodes), "\n\n");
+my %langcodes1; map {my $x=$_; $x=~s/_.*//; $langcodes1{$x}++} (@ltcodes);
 my @langcodes1 = sort(keys(%langcodes1));
 print("Language codes: ", join(' ', @langcodes1), "\n\n");
 # Sometimes we need the ISO 639-3 codes (as opposed to the mix of -1 and -3 codes),
@@ -349,76 +349,20 @@ print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n
 my @contacts = sort(keys(%contacts));
 print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
 # Find treebanks whose data size has changed.
-print("Collecting statistics of $oldpath...\n");
-my $stats11 = collect_statistics_about_ud_release($oldpath);
-my @languages11 = sort(keys(%{$stats11}));
-foreach my $l (@languages11)
+my $changelog = compare_with_previous_release($oldpath, \@ltcodes, \%stats);
+# Summarize the statistics of the current treebanks. Especially the total
+# number of sentences, tokens and words is needed for the metadata in Lindat.
+my ($nsent, $ntok, $nfus, $nword, $table, $maxl) = summarize_statistics(\%stats);
+foreach my $row (@{$table})
 {
-    if($stats11->{$l}{ntok}  != $stats{$l}{ntok}  ||
-       $stats11->{$l}{nword} != $stats{$l}{nword} ||
-       $stats11->{$l}{nfus}  != $stats{$l}{nfus}  ||
-       $stats11->{$l}{nsent} != $stats{$l}{nsent})
+    my @out;
+    for(my $i = 0; $i <= $#{row}; $i++)
     {
-        print("$l\tt=$stats11->{$l}{ntok}\tw=$stats11->{$l}{nword}\tf=$stats11->{$l}{nfus}\ts=$stats11->{$l}{nsent}\n");
-        print(" NOW:\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
+        my $pad = ' ' x ($maxl->[$i]-length($row->[$i]));
+        push(@out, $i == 0 ? $row->[$i].$pad : $pad.$row->[$i]);
     }
+    print(join('   ', @out), "\n");
 }
-print("\n");
-# Treebanks can appear, disappear and reappear. Get the list of all treebanks
-# that are part either of this or of the previous release.
-my %lastcurrtreebanks;
-foreach my $t (@langcodes, @languages11)
-{
-    $lastcurrtreebanks{$t}++;
-}
-# Find treebanks whose size has changed by more than 10%.
-my @changedsize;
-my $codemaxl = 0;
-my $namemaxl = 0;
-my $oldmaxl = 0;
-my $newmaxl = 0;
-foreach my $t (sort(keys(%lastcurrtreebanks)))
-{
-    my $oldsize = exists($stats11->{$t}) ? $stats11->{$t}{nword} : 0;
-    my $newsize = exists($stats{$t}) ? $stats{$t}{nword} : 0;
-    if($newsize > $oldsize * 1.1 || $newsize < $oldsize * 0.9)
-    {
-        my %record =
-        (
-            'code' => $t,
-            'name' => $tcode_to_treebank_name{$t},
-            'old'  => $oldsize,
-            'new'  => $newsize
-        );
-        push(@changedsize, \%record);
-        $codemaxl = length($t) if(length($t) > $codemaxl);
-        $namemaxl = length($record{name}) if(length($record{name}) > $namemaxl);
-        $oldmaxl = length($oldsize) if(length($oldsize) > $oldmaxl);
-        $newmaxl = length($newsize) if(length($newsize) > $newmaxl);
-    }
-}
-my $nchangedsize = scalar(@changedsize);
-my $changelog = "The size of the following $nchangedsize treebanks changed significantly since the last release:\n";
-foreach my $r (sort {$a->{name} cmp $b->{name}} (@changedsize))
-{
-    my $padding = ' ' x ($namemaxl - length($r->{name}));
-    $changelog .= sprintf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
-}
-# Collect statistics of the current treebanks. Especially the total number of
-# sentences, tokens and words is needed for the metadata in Lindat.
-my $ntok = 0;
-my $nword = 0;
-my $nfus = 0;
-my $nsent = 0;
-foreach my $l (@langcodes)
-{
-    print("$l\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
-    $ntok += $stats{$l}{ntok};
-    $nword += $stats{$l}{nword};
-    $nfus += $stats{$l}{nfus};
-    $nsent += $stats{$l}{nsent};
-}
-print("TOTAL\tt=$ntok\tw=$nword\tf=$nfus\ts=$nsent\n");
 print("--------------------------------------------------------------------------------\n");
 my $announcement = get_announcement
 (
@@ -513,6 +457,136 @@ sub collect_statistics_about_ud_release
         }
     }
     return \%stats;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Summarizes statistics of the current treebanks. Especially the total number
+# of sentences, tokens and words is needed for the metadata in Lindat.
+#------------------------------------------------------------------------------
+sub summarize_statistics
+{
+    my $stats = shift; # hash reference
+    my $nsent = 0;
+    my $ntok = 0;
+    my $nfus = 0;
+    my $nword = 0;
+    my @table;
+    my @maxl;
+    foreach my $lt (@ltcodes)
+    {
+        add_table_row(\@table, \@maxl, $lt, $stats->{$lt}{nsent}, $stats->{$lt}{ntok}, $stats->{$lt}{nfus}, $stats->{$lt}{nword});
+        $nsent += $stats->{$lt}{nsent};
+        $ntok += $stats->{$lt}{ntok};
+        $nfus += $stats->{$lt}{nfus};
+        $nword += $stats->{$lt}{nword};
+    }
+    add_table_row(\@table, \@maxl, 'TOTAL', $nsent, $ntok, $nfus, $nword);
+    return ($nsent, $ntok, $nfus, $nword, \@table, \@maxl);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Adds a table row and updates maximum lengths of cells.
+#------------------------------------------------------------------------------
+sub add_table_row
+{
+    my $table = shift; # array reference
+    my $maxl = shift; # array reference
+    my @tablerow = @_;
+    for(my $i = 0; $i <= $#tablerow; $i++)
+    {
+        $maxl->[$i] = max($maxl->[$i], $tablerow[$i]);
+    }
+    push(@{$table}, \@tablerow);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Returns maximum of two numbers.
+#------------------------------------------------------------------------------
+sub max
+{
+    my $x = shift;
+    my $y = shift;
+    return $y > $x ? $y : $x;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Compares the new release with the previous one in terms of treebank sizes.
+# Significant changes should be reported. Especially if a treebank shrank,
+# it may be a sign of an error. The function prints report to STDOUT along the
+# way but it also returns a preformatted changelog that can be used in the
+# release announcement.
+#------------------------------------------------------------------------------
+sub compare_with_previous_release
+{
+    my $oldpath = shift;
+    my $newltcodes = shift;
+    my $newstats = shift;
+    # Find treebanks whose data size has changed.
+    print("Collecting statistics of $oldpath...\n");
+    my $oldstats = collect_statistics_about_ud_release($oldpath);
+    my @oldltcodes = sort(keys(%{$oldstats}));
+    foreach my $l (@oldltcodes)
+    {
+        if($oldstats->{$l}{ntok}  != $stats{$l}{ntok}  ||
+           $oldstats->{$l}{nword} != $stats{$l}{nword} ||
+           $oldstats->{$l}{nfus}  != $stats{$l}{nfus}  ||
+           $oldstats->{$l}{nsent} != $stats{$l}{nsent})
+        {
+            print("$l\tt=$oldstats->{$l}{ntok}\tw=$oldstats->{$l}{nword}\tf=$oldstats->{$l}{nfus}\ts=$oldstats->{$l}{nsent}\n");
+            print(" NOW:\tt=$stats{$l}{ntok}\tw=$stats{$l}{nword}\tf=$stats{$l}{nfus}\ts=$stats{$l}{nsent}\n");
+        }
+    }
+    print("\n");
+    # Treebanks can appear, disappear and reappear. Get the list of all treebanks
+    # that are part either of this or of the previous release.
+    my %lastcurrtreebanks;
+    foreach my $t (@{$newltcodes}, @oldlanguages)
+    {
+        $lastcurrtreebanks{$t}++;
+    }
+    my @lastcurrtreebanks = sort(keys(%lastcurrtreebanks));
+    # Find treebanks whose size has changed by more than 10%.
+    my @changedsize;
+    my $codemaxl = 0;
+    my $namemaxl = 0;
+    my $oldmaxl = 0;
+    my $newmaxl = 0;
+    foreach my $t (@lastcurrtreebanks)
+    {
+        my $oldsize = exists($oldstats->{$t}) ? $oldstats->{$t}{nword} : 0;
+        my $newsize = exists($newstats->{$t}) ? $newstats->{$t}{nword} : 0;
+        if($newsize > $oldsize * 1.1 || $newsize < $oldsize * 0.9)
+        {
+            my %record =
+            (
+                'code' => $t,
+                'name' => $tcode_to_treebank_name{$t}, ########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                'old'  => $oldsize,
+                'new'  => $newsize
+            );
+            push(@changedsize, \%record);
+            $codemaxl = length($t) if(length($t) > $codemaxl);
+            $namemaxl = length($record{name}) if(length($record{name}) > $namemaxl);
+            $oldmaxl = length($oldsize) if(length($oldsize) > $oldmaxl);
+            $newmaxl = length($newsize) if(length($newsize) > $newmaxl);
+        }
+    }
+    my $nchangedsize = scalar(@changedsize);
+    my $changelog = "The size of the following $nchangedsize treebanks changed significantly since the last release:\n";
+    foreach my $r (sort {$a->{name} cmp $b->{name}} (@changedsize))
+    {
+        my $padding = ' ' x ($namemaxl - length($r->{name}));
+        $changelog .= sprintf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
+    }
+    return $changelog;
 }
 
 
