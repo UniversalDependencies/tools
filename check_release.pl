@@ -352,14 +352,17 @@ print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
 my $changelog = compare_with_previous_release($oldpath, \@ltcodes, \%stats);
 # Summarize the statistics of the current treebanks. Especially the total
 # number of sentences, tokens and words is needed for the metadata in Lindat.
+print("\nSizes of treebanks in the new release:\n\n");
 my ($nsent, $ntok, $nfus, $nword, $table, $maxl) = summarize_statistics(\%stats);
 foreach my $row (@{$table})
 {
     my @out;
-    for(my $i = 0; $i <= $#{row}; $i++)
+    for(my $i = 0; $i <= $#{$row}; $i++)
     {
-        my $pad = ' ' x ($maxl->[$i]-length($row->[$i]));
-        push(@out, $i == 0 ? $row->[$i].$pad : $pad.$row->[$i]);
+        my $npad = $maxl->[$i]-length($row->[$i]);
+        my $pad = ' ' x $npad;
+        my $padded = $i == 0 ? ($row->[$i].$pad) : ($pad.$row->[$i]);
+        push(@out, $padded);
     }
     print(join('   ', @out), "\n");
 }
@@ -374,7 +377,10 @@ my $announcement = get_announcement
     $announcement_max_size,
     $next_release_expected,
     \@contributors_firstlast,
-    $changelog
+    $changelog,
+    $nsent,
+    $ntok,
+    $nword
 );
 print($announcement);
 
@@ -474,6 +480,7 @@ sub summarize_statistics
     my $nword = 0;
     my @table;
     my @maxl;
+    add_table_row(\@table, \@maxl, 'TREEBANK', 'SENTENCES', 'TOKENS', 'FUSED', 'WORDS');
     foreach my $lt (@ltcodes)
     {
         add_table_row(\@table, \@maxl, $lt, $stats->{$lt}{nsent}, $stats->{$lt}{ntok}, $stats->{$lt}{nfus}, $stats->{$lt}{nword});
@@ -498,7 +505,7 @@ sub add_table_row
     my @tablerow = @_;
     for(my $i = 0; $i <= $#tablerow; $i++)
     {
-        $maxl->[$i] = max($maxl->[$i], $tablerow[$i]);
+        $maxl->[$i] = max($maxl->[$i], length($tablerow[$i]));
     }
     push(@{$table}, \@tablerow);
 }
@@ -606,8 +613,11 @@ sub get_announcement
     my $next_release_available_in = shift; # 'March 2017'
     my $contlistref = shift;
     my $changelog = shift;
-    my @release_list   =   ('1.0', '1.1', '1.2', '1.3', '1.4', '2.0', '2.1',  '2.2', '2.3', '2.4', '2.5',   '2.6',  '2.7',     '2.8',     '2.9',    '2.10',   '2.11',     '2.12',    '2.13',    '2.14');
-    my @nth_vocabulary = qw(first  second third  fourth fifth  sixth  seventh eighth ninth  tenth  eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth);
+    my $n_sentences = shift;
+    my $n_tokens = shift;
+    my $n_words = shift;
+    my @release_list   = ('1.0',   '1.1',    '1.2',    '1.3',    '1.4',   '2.0',   '2.1',     '2.2',    '2.3',   '2.4',   '2.5',      '2.6',     '2.7',        '2.8',        '2.9',       '2.10',      '2.11',        '2.12',       '2.13',       '2.14',      '2.15',         '2.16',          '2.17',         '2.18',          '2.19');
+    my @nth_vocabulary = ('first', 'second', 'third',  'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth', 'twentieth', 'twenty-first', 'twenty-second', 'twenty-third', 'twenty-fourth', 'twenty-fifth');
     my $nth;
     for(my $i = 0; $i<=$#release_list; $i++)
     {
@@ -637,6 +647,8 @@ Universal Dependencies is a project that seeks to develop cross-linguistically c
 The $n_treebanks treebanks in v$release are annotated according to version $guidelines_version of the UD guidelines and represent the following $n_languages languages: $languages. The $n_languages languages belong to $n_families families: $families. Depending on the language, the treebanks range in size from $min_size to $max_size. We expect the next release to be available in $next_release_available_in.
 
 $changelog
+In total, the new release contains $n_sentences sentences, $n_tokens surface tokens and $n_words syntactic words.
+
 $contributors
 
 
