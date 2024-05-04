@@ -111,39 +111,17 @@ my @released_folders;
 my @unknown_folders; # cannot parse folder name or unknown language
 my @known_folders; # can parse folder name and known language
 my %folder_codes_names;
-my %tcode_to_treebank_name;
 foreach my $folder (@folders)
 {
-    # The name of the folder: 'UD_' + language name + optional treebank identifier.
-    # Example: UD_Ancient_Greek-PROIEL
-    my ($language, $treebank) = udlib::decompose_repo_name($folder);
-    if(defined($language))
+    my $record = get_folder_codes_and_names($folder, $languages_from_yaml);
+    if(defined($record))
     {
-        if(exists($languages_from_yaml->{$language}))
-        {
-            my %record =
-            (
-                'lname'  => $language,
-                'lcode'  => $languages_from_yaml->{$language}{lcode},
-                'iso3'   => $languages_from_yaml->{$language}{iso3},
-                'family' => $languages_from_yaml->{$language}{family},
-                'tname'  => $treebank,
-                'ltcode' => udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml),
-                'hname'  => join(' ', ($language, $treebank)) # human-friendly language + treebank name (no 'UD' in the beginning, spaces instead of underscores)
-            );
-            $folder_codes_names{$folder} = \%record;
-            $tcode_to_treebank_name{$record{ltcode}} = $record{hname};
-            push(@known_folders, $folder);
-        }
-        else
-        {
-            print("Unknown language $language.\n");
-            push(@unknown_folders, $folder);
-        }
+        $folder_codes_names{$folder} = $record;
+        push(@known_folders, $folder);
     }
     else
     {
-        print("Cannot parse folder name $folder.\n");
+        # One of two possible error messages has been printed in get_folder_codes_and_names().
         push(@unknown_folders, $folder);
     }
 }
@@ -344,7 +322,7 @@ print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n
 my @contacts = sort(keys(%contacts));
 print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
 # Find treebanks whose data size has changed.
-my $changelog = compare_with_previous_release($oldpath, \%stats);
+my $changelog = compare_with_previous_release($oldpath, \%stats, \%folder_codes_names, $languages_from_yaml);
 # Summarize the statistics of the current treebanks. Especially the total
 # number of sentences, tokens and words is needed for the metadata in Lindat.
 print("\nSizes of treebanks in the new release:\n\n");
@@ -384,6 +362,48 @@ my $announcement = get_announcement
     $nword
 );
 print($announcement);
+
+
+
+#------------------------------------------------------------------------------
+# Takes a folder name, collects related language / treebank codes and names,
+# puts them in a hash and returns it as a reference. If the folder name does
+# not have expected form or the language is unknown, returns undef.
+#------------------------------------------------------------------------------
+sub get_folder_codes_and_names
+{
+    my $folder = shift;
+    my $languages_from_yaml = shift;
+    # The name of the folder: 'UD_' + language name + optional treebank identifier.
+    # Example: UD_Ancient_Greek-PROIEL
+    my ($language, $treebank) = udlib::decompose_repo_name($folder);
+    if(defined($language))
+    {
+        if(exists($languages_from_yaml->{$language}))
+        {
+            my %record =
+            (
+                'lname'  => $language,
+                'lcode'  => $languages_from_yaml->{$language}{lcode},
+                'iso3'   => $languages_from_yaml->{$language}{iso3},
+                'family' => $languages_from_yaml->{$language}{family},
+                'tname'  => $treebank,
+                'ltcode' => udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml),
+                'hname'  => join(' ', ($language, $treebank)) # human-friendly language + treebank name (no 'UD' in the beginning, spaces instead of underscores)
+            );
+            return \%record;
+        }
+        else
+        {
+            print("Unknown language $language.\n");
+        }
+    }
+    else
+    {
+        print("Cannot parse folder name $folder.\n");
+    }
+    return undef;
+}
 
 
 
@@ -535,6 +555,8 @@ sub compare_with_previous_release
 {
     my $oldpath = shift;
     my $newstats = shift;
+    my $folder_codes_names = shift;
+    my $languages_from_yaml = shift;
     print("Collecting statistics of $oldpath...\n");
     my $oldstats = collect_statistics_about_ud_release($oldpath);
     my @oldtreebanks = sort(keys(%{$oldstats}));
@@ -575,10 +597,33 @@ sub compare_with_previous_release
         my $newsize = exists($newstats->{$t}) ? $newstats->{$t}{nword} : 0;
         if($newsize > $oldsize * 1.1 || $newsize < $oldsize * 0.9)
         {
+            # For retired or renamed old treebanks we may not have the hname yet.
+            my $hname;
+            if(exists($folder_codes_names->{$t}))
+            {
+                $hname = $folder_codes_names->{$t}{hname};
+            }
+            else
+            {
+                my $record = get_folder_codes_and_names($t, $languages_from_yaml);
+                if(defined($record))
+                {
+                    # We could add the record about the old treebank to the database.
+                    # But it could be dangerous because elsewhere we assume that the
+                    # database contains exactly those treebanks that are going to be
+                    # released now.
+                    #$folder_codes_names{$t} = $record;
+                    $hname = $record->{hname};
+                }
+                else
+                {
+                    $hname = 'UNKNOWN';
+                }
+            }
             my %record =
             (
                 'code' => $t,
-                'name' => $folder_codes_names{$t}{hname}, #$tcode_to_treebank_name{$t}, ########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                'name' => $hname,
                 'old'  => $oldsize,
                 'new'  => $newsize
             );
