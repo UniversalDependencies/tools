@@ -416,7 +416,7 @@ sub get_validation_results
     my %valid;
     # After we used this script to select the treebanks automatically,
     # we typically freeze the list in an external file called
-    # released_treebanks.txt (see http://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
+    # released_treebanks.txt (see https://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
     # Download the current validation report. (We could run the validator ourselves
     # but it would take a lot of time.)
     my @validation_report = split(/\n/, get('https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/validation-report.pl?text_only'));
@@ -688,7 +688,7 @@ sub get_announcement
     my @contributors = @{$contlistref};
     my $contributors = join(', ', @contributors);
     my $text = <<EOF
-We are very happy to announce the $nth release of annotated treebanks in Universal Dependencies, v$release, available at http://universaldependencies.org/.
+We are very happy to announce the $nth release of annotated treebanks in Universal Dependencies, v$release, available at https://universaldependencies.org/.
 
 Universal Dependencies is a project that seeks to develop cross-linguistically consistent treebank annotation for many languages with the goal of facilitating multilingual parser development, cross-lingual learning, and parsing research from a language typology perspective (de Marneffe et al., 2021; Nivre et al., 2020). The annotation scheme is based on (universal) Stanford dependencies (de Marneffe et al., 2006, 2008, 2014), Google universal part-of-speech tags (Petrov et al., 2012), and the Interset interlingua for morphosyntactic tagsets (Zeman, 2008). The general philosophy is to provide a universal inventory of categories and guidelines to facilitate consistent annotation of similar constructions across languages, while allowing language-specific extensions when necessary.
 
