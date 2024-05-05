@@ -601,6 +601,18 @@ sub compare_with_previous_release
                 $oldlanguages{$language} = $folder_codes_names->{$t};
             }
         }
+        else
+        {
+            my $record = get_folder_codes_and_names($t, $languages_from_yaml);
+            if(defined($record))
+            {
+                my $language = $record->{lname};
+                if(!exists($oldlanguages{$language}))
+                {
+                    $oldlanguages{$language} = $record;
+                }
+            }
+        }
     }
     foreach my $t (@newtreebanks)
     {
