@@ -322,7 +322,7 @@ print(scalar(@contributors), " contributors: ", join('; ', @contributors), "\n\n
 my @contacts = sort(keys(%contacts));
 print(scalar(@contacts), " contacts: ", join(', ', @contacts), "\n\n");
 # Find treebanks whose data size has changed.
-my $changelog = compare_with_previous_release($oldpath, \%stats, \%folder_codes_names, $languages_from_yaml);
+my ($changelog, $newlanguages) = compare_with_previous_release($oldpath, \%stats, \%folder_codes_names, $languages_from_yaml);
 # Summarize the statistics of the current treebanks. Especially the total
 # number of sentences, tokens and words is needed for the metadata in Lindat.
 print("\nSizes of treebanks in the new release:\n\n");
@@ -344,6 +344,17 @@ foreach my $row (@{$table})
         push(@out, $padded);
     }
     print(join('   ', @out), "\n");
+}
+print("--------------------------------------------------------------------------------\n");
+my @newlanguages = sort(keys(%{$newlanguages}));
+my $nnl = scalar(@newlanguages);
+if($nnl > 0)
+{
+    print("The following $nnl languages are new in this release:\n");
+    foreach my $l (@newlanguages)
+    {
+        print("$newlanguages->{$l}{lcode}\t$newlanguages->{$l}{iso3}\t$l\n");
+    }
 }
 print("--------------------------------------------------------------------------------\n");
 my $announcement = get_announcement
@@ -561,22 +572,44 @@ sub compare_with_previous_release
     my $oldstats = collect_statistics_about_ud_release($oldpath);
     my @oldtreebanks = sort(keys(%{$oldstats}));
     my @newtreebanks = sort(keys(%{$newstats}));
-    foreach my $l (@oldtreebanks)
+    foreach my $t (@oldtreebanks)
     {
-        if($oldstats->{$l}{ntok}  != $newstats->{$l}{ntok}  ||
-           $oldstats->{$l}{nword} != $newstats->{$l}{nword} ||
-           $oldstats->{$l}{nfus}  != $newstats->{$l}{nfus}  ||
-           $oldstats->{$l}{nsent} != $newstats->{$l}{nsent})
+        if($oldstats->{$t}{ntok}  != $newstats->{$t}{ntok}  ||
+           $oldstats->{$t}{nword} != $newstats->{$t}{nword} ||
+           $oldstats->{$t}{nfus}  != $newstats->{$t}{nfus}  ||
+           $oldstats->{$t}{nsent} != $newstats->{$t}{nsent})
         {
-            my $pad = ' ' x (length($l)-5);
-            my $diff = $newstats->{$l}{nword}-$oldstats->{$l}{nword};
-            my $sign = $diff > 0 ? '+' : $diff < 0 ? '-' : '';
-            my $pct = $diff ? sprintf(" ==> %s %d%%", $sign, abs($diff)/$oldstats->{$l}{nword}*100+0.5) : '';
-            print("$l\tt=$oldstats->{$l}{ntok}\tw=$oldstats->{$l}{nword}\tf=$oldstats->{$l}{nfus}\ts=$oldstats->{$l}{nsent}\n");
-            print(" NOW:$pad\tt=$newstats->{$l}{ntok}\tw=$newstats->{$l}{nword}\tf=$newstats->{$l}{nfus}\ts=$newstats->{$l}{nsent}\t$pct\n");
+            my $pad = ' ' x (length($t)-5);
+            my $diff = $newstats->{$t}{nword}-$oldstats->{$t}{nword};
+            my $sign = $diff > 0 ? '+' : $diff < 0 ? '–' : '';
+            my $pct = $diff ? sprintf(" ==> %s%d%%", $sign, abs($diff)/$oldstats->{$t}{nword}*100+0.5) : '';
+            print("$l\tt=$oldstats->{$t}{ntok}\tw=$oldstats->{$t}{nword}\tf=$oldstats->{$t}{nfus}\ts=$oldstats->{$t}{nsent}\n");
+            print(" NOW:$pad\tt=$newstats->{$t}{ntok}\tw=$newstats->{$t}{nword}\tf=$newstats->{$t}{nfus}\ts=$newstats->{$t}{nsent}\t$pct\n");
         }
     }
     print("\n");
+    # Get the list of languages that are new in this release.
+    my %oldlanguages;
+    my %newlanguages;
+    foreach my $t (@oldtreebanks)
+    {
+        if(exists($folder_codes_names->{$t}))
+        {
+            my $language = $folder_codes_names->{$t}{lname};
+            if(!exists($oldlanguages{$language}))
+            {
+                $oldlanguages{$language} = $folder_codes_names->{$t};
+            }
+        }
+    }
+    foreach my $t (@newtreebanks)
+    {
+        my $language = $folder_codes_names->{$t}{lname};
+        if(!exists($oldlanguages{$language}) && !exists($newlanguages{$language}))
+        {
+            $newlanguages{$language} = $folder_codes_names->{$t};
+        }
+    }
     # Treebanks can appear, disappear and reappear. Get the list of all treebanks
     # that are part either of this or of the previous release.
     my %oldnewtreebanks;
@@ -641,7 +674,7 @@ sub compare_with_previous_release
         my $padding = ' ' x ($namemaxl - length($r->{name}));
         $changelog .= sprintf("    %s: %${oldmaxl}d → %${newmaxl}d\n", $r->{name}.$padding, $r->{old}, $r->{new}); # right arrow is \x{2192}
     }
-    return $changelog;
+    return ($changelog, \%newlanguages);
 }
 
 
