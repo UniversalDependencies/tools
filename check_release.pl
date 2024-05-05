@@ -353,7 +353,7 @@ if($nnl > 0)
     print("The following $nnl languages are new in this release:\n");
     foreach my $l (@newlanguages)
     {
-        print("$newlanguages->{$l}{lcode}\t$newlanguages->{$l}{iso3}\t$l\n");
+        print("$newlanguages->{$l}{lcode}\t$newlanguages->{$l}{iso3}\t$l\t($newlanguages->{$l}{family})\n");
     }
 }
 print("--------------------------------------------------------------------------------\n");
