@@ -200,7 +200,6 @@ foreach my $folder (@known_folders)
     $languages_with_data{$language}++;
     if(defined($family))
     {
-        $family =~ s/^IE/Indo-European/;
         # Keep only the family, discard the genus if present.
         $family =~ s/,.*//;
         $families_with_data{$family}++;
@@ -351,9 +350,18 @@ my $nnl = scalar(@newlanguages);
 if($nnl > 0)
 {
     print("The following $nnl languages are new in this release:\n");
+    my $maxl = 0;
     foreach my $l (@newlanguages)
     {
-        print("$newlanguages->{$l}{lcode}\t$newlanguages->{$l}{iso3}\t$l\t($newlanguages->{$l}{family})\n");
+        if(length($l) > $maxl)
+        {
+            $maxl = length($l);
+        }
+    }
+    foreach my $l (@newlanguages)
+    {
+        my $pad = ' ' x ($maxl-length($l));
+        print("$newlanguages->{$l}{lcode}\t$newlanguages->{$l}{iso3}\t$l$pad\t($newlanguages->{$l}{family})\n");
     }
 }
 print("--------------------------------------------------------------------------------\n");
@@ -402,6 +410,7 @@ sub get_folder_codes_and_names
                 'ltcode' => udlib::get_ltcode_from_repo_name($folder, $languages_from_yaml),
                 'hname'  => join(' ', ($language, $treebank)) # human-friendly language + treebank name (no 'UD' in the beginning, spaces instead of underscores)
             );
+            $record{family} =~ s/^IE/Indo-European/;
             return \%record;
         }
         else
