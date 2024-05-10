@@ -966,6 +966,9 @@
 "vicino": {"lex": "vicino", "morph": "", "extends": ["nmod"], "functions": [{"function": "Prx", "example": "La storia a lieto fine della scomparsa e del ritrovamento di una donna e due bambini, spariti ieri sul Monte Livata [vicino Subiaco] deve essere ancora completamente chiarita.", "exampleen": "The happy ending story of the disappearance and discovery of a woman and two children who disappeared yesterday on Monte Livata near Subiaco has yet to be fully clarified.", "comment": ""}], "lastchanged": "2022-01-13-16-07-10", "lastchanger": "dan-zeman"},
 "vicino_a": {"lex": "vicino_a", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Prx", "example": "La regalìa al prete serviva per tenere buoni gli indios locali [vicino a Bahia].", "exampleen": "The gift to the priest was used to keep the local Indians good near Bahia.", "comment": ""}], "lastchanged": "2022-01-12-08-36-14", "lastchanger": "dan-zeman"}
 },
+"lt": {
+"gen": {"lex": "", "morph": "gen", "extends": ["nmod", "obl"], "functions": [{"function": "Gen", "example": "Kitas ryškus [istorijos] bruožas yra Vilniaus centrizmas.", "exampleen": "Another prominent feature [of history] is the centrism of Vilnius.", "comment": ""}], "lastchanged": "2024-05-10-21-03-57", "lastchanger": "dan-zeman"}
+},
 "ltg": {
 "dat": {"lex": "", "morph": "dat", "extends": ["acl", "nmod", "obl"], "functions": [{"function": "Ben", "example": "[Maņ ruodīs], ka leist leits.", "exampleen": "It seems to me that it is raining", "comment": ""}], "lastchanged": "2024-03-28-16-26-00", "lastchanger": "lauma"},
 "deļ": {"lex": "deļ", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Cau", "example": "Jai vajadzēja apgrīzt motus, bet koč kaida [īmesļa deļ] jei tamā dīnā tuo naizdareja.", "exampleen": "She needed to cut her hair, but for some reason she didn't do it that day", "comment": ""}], "lastchanged": "2024-03-28-16-28-40", "lastchanger": "lauma"},
