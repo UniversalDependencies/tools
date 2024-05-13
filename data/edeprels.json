@@ -2,6 +2,7 @@
 
 "edeprels": {
 "ar": {
+"acc": {"lex": "", "morph": "acc", "extends": ["nmod", "obl"], "functions": [{"function": "Tat", "example": "وتعذر لمتحدثة باسم وزارة الدفاع الالمانية ان تؤكد [اليوم السبت] هذه المعلومات.", "exampleen": "A spokeswoman for the German Ministry of Defense was unable to confirm this information [on Saturday].", "comment": ""}], "lastchanged": "2024-05-13-20-30-34", "lastchanger": "dan-zeman"},
 "gen": {"lex": "", "morph": "gen", "extends": ["nmod", "obl"], "functions": [{"function": "Gen", "example": "برلين ترفض حصول [شركة] اميركية على رخصة تصنيع دبابة ليوبارد الالمانية", "exampleen": "Berlin refuses [an American company] to obtain a license to manufacture the German Leopard tank", "comment": ""}], "lastchanged": "2024-05-13-18-53-27", "lastchanger": "dan-zeman"},
 "فِي:gen": {"lex": "فِي", "morph": "gen", "extends": ["acl", "advcl", "nmod", "obl"], "functions": [{"function": "Ine", "example": "وكانت خسائر المجموعة الاسبانية الرسمية تراكمت [في السنوات] العشر الاخيرة لتبلغ 920 مليون يورو.", "exampleen": "The official Spanish group's losses have accumulated [in the last ten years] to reach 920 million euros.", "comment": ""}], "lastchanged": "2024-05-13-19-33-26", "lastchanger": "dan-zeman"}
 },
