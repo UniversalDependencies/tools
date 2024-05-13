@@ -2,7 +2,8 @@
 
 "edeprels": {
 "ar": {
-"gen": {"lex": "", "morph": "gen", "extends": ["nmod", "obl"], "functions": [{"function": "Gen", "example": "برلين ترفض حصول [شركة] اميركية على رخصة تصنيع دبابة ليوبارد الالمانية", "exampleen": "Berlin refuses [an American company] to obtain a license to manufacture the German Leopard tank", "comment": ""}], "lastchanged": "2024-05-13-18-53-27", "lastchanger": "dan-zeman"}
+"gen": {"lex": "", "morph": "gen", "extends": ["nmod", "obl"], "functions": [{"function": "Gen", "example": "برلين ترفض حصول [شركة] اميركية على رخصة تصنيع دبابة ليوبارد الالمانية", "exampleen": "Berlin refuses [an American company] to obtain a license to manufacture the German Leopard tank", "comment": ""}], "lastchanged": "2024-05-13-18-53-27", "lastchanger": "dan-zeman"},
+"فِي:gen": {"lex": "فِي", "morph": "gen", "extends": ["nmod", "obl"], "functions": [{"function": "Ine", "example": "وكانت خسائر المجموعة الاسبانية الرسمية تراكمت [في السنوات] العشر الاخيرة لتبلغ 920 مليون يورو.", "exampleen": "The official Spanish group's losses have accumulated [in the last ten years] to reach 920 million euros.", "comment": ""}], "lastchanged": "2024-05-13-19-12-17", "lastchanger": "dan-zeman"}
 },
 "be": {
 "acc": {"lex": "", "morph": "acc", "extends": ["nmod", "obl"], "functions": [{"function": "Tdg", "example": "У гады Пелапанескіх войн Аргас [доўгі час] прытрымліваўся нейтралітэту.", "exampleen": "During the Peloponnesian Wars, Argas has [long] been neutral.", "comment": "lit. long time; also used in approximative constructions such as праз два-[тры] дні 'in two-[three] days', in which preposition is not copied to the second name"}], "lastchanged": "2022-03-29-08-54-22", "lastchanger": "olesar"},
