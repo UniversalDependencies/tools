@@ -2047,7 +2047,7 @@
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"aux": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
