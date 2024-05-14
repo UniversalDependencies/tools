@@ -612,7 +612,7 @@
 "advmod": {"type": "universal", "errors": []},
 "amod": {"type": "universal", "errors": []},
 "appos": {"type": "universal", "errors": []},
-"aux": {"type": "universal", "errors": ["No examples found for relation 'aux'.", "Documentation does not belong to UD v2 guidelines."]},
+"aux": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "case": {"type": "universal", "errors": []},
 "cc": {"type": "universal", "errors": []},
 "ccomp": {"type": "universal", "errors": []},
