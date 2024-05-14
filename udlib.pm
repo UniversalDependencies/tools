@@ -550,7 +550,7 @@ sub generate_markdown_treebank_overview
     }
     $md .= "\n";
     $md .= "\#\# Description\n".escape_jekyll($metadata->{sections}{summary});
-    $md .= "\n".$metadata->{sections}{introduction};
+    $md .= "\n".escape_jekyll($metadata->{sections}{introduction});
     $md .= "\#\# Acknowledgments\n".escape_jekyll($metadata->{sections}{acknowledgments});
     return $md;
 }
