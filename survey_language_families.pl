@@ -29,6 +29,8 @@ GetOptions
 
 my $languages = udlib::get_language_hash($langyamlpath);
 my @folders = udlib::list_ud_folders($udpath);
+my %family_languages;
+my %iegenus_languages;
 my %family_words;
 my %iegenus_words;
 my $nwords = 0;
@@ -53,19 +55,48 @@ foreach my $folder (@folders)
     $family =~ s/, (.*)//;
     my $genus = $1;
     $family = 'Indo-European' if($family eq 'IE');
+    $family_languages{$family}{$language}++;
     $family_words{$family} += $stats->{nword};
     if($family eq 'Indo-European')
     {
+        $iegenus_languages{$genus}{$language}++;
         $iegenus_words{$genus} += $stats->{nword};
     }
     $nwords += $stats->{nword};
 }
-# Print the statistics.
+# Recompute the language hashes to only remember the number of languages, not folders per language.
+my $nlanguages = 0;
+foreach my $f (keys(%family_languages))
+{
+    $family_languages{$f} = scalar(keys(%{$family_languages{$f}}));
+    $nlanguages++;
+}
+foreach my $g (keys(%iegenus_languages))
+{
+    $iegenus_languages{$g} = scalar(keys(%{$iegenus_languages{$g}}));
+}
+# Print the language statistics.
+print("Number of languages per family\n");
+my @families = sort {$family_languages{$b} <=> $family_languages{$a}} (keys(%family_languages));
+foreach my $family (@families)
+{
+    printf("%s\t%d\t%d %%\n", $family, $family_languages{$family}, $family_languages{$family}/$nlanguages*100+0.5);
+}
+print("\nNumber of languages per Indo-European genus\n");
+my @genuses = sort {$iegenus_languages{$b} <=> $iegenus_languages{$a}} (keys(%iegenus_languages));
+foreach my $genus (@genuses)
+{
+    printf("%s\t%d\t%d %%\n", $genus, $iegenus_languages{$genus}, $iegenus_languages{$genus}/$family_languages{'Indo-European'}*100+0.5);
+}
+print("\n");
+# Print the word statistics.
+print("Number of words per language family\n");
 my @families = sort {$family_words{$b} <=> $family_words{$a}} (keys(%family_words));
 foreach my $family (@families)
 {
     printf("%s\t%d\t%d %%\n", $family, $family_words{$family}, $family_words{$family}/$nwords*100+0.5);
 }
+print("\nNumber of words per Indo-European genus\n");
 my @genuses = sort {$iegenus_words{$b} <=> $iegenus_words{$a}} (keys(%iegenus_words));
 foreach my $genus (@genuses)
 {
