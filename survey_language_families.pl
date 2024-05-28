@@ -69,7 +69,7 @@ my $nlanguages = 0;
 foreach my $f (keys(%family_languages))
 {
     $family_languages{$f} = scalar(keys(%{$family_languages{$f}}));
-    $nlanguages++;
+    $nlanguages += $family_languages{$f};
 }
 foreach my $g (keys(%iegenus_languages))
 {
