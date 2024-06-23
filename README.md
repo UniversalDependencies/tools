@@ -73,10 +73,8 @@ perl normalize_unicode.pl < input.conllu > normalized_output.conllu
 
 ## [conllu-stats.pl](https://github.com/UniversalDependencies/tools/blob/master/conllu-stats.pl)
 
-Reads a CoNLL-U file, collects various statistics and prints them. This Perl script
-should not be confused with conllu-stats.py, an old Python 2 program that collects
-just a few very basic statistics. The Perl script (conllu-stats.pl) is used to generate
-the stats.xml files in each data repository.
+Reads a CoNLL-U file, collects various statistics and prints them.
+This Perl script (conllu-stats.pl) is used to generate the stats.xml files in each data repository.
 
 The script depends on Perl libraries `YAML` and `JSON::Parse` that may not be installed
 automatically with Perl. If they are not installed on your system, you should be able
