@@ -3735,7 +3735,7 @@
 
 },
 "uz": {
-"Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abl", "Acc", "Dat", "Gen", "Loc", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Multiple definition of value 'Abl'.", "Multiple definition of value 'Acc'.", "Multiple definition of value 'Dat'.", "Multiple definition of value 'Gen'.", "Multiple definition of value 'Loc'.", "Multiple definition of value 'Nom'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Abl", "Acc", "Dat", "Gen", "Loc", "Nom"], "byupos": {}}
 },
 "vep": {
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post", "Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1, "Prep": 1}}, "lastchanged": "2023-05-23-11-35-30", "lastchanger": "kailimp"},
