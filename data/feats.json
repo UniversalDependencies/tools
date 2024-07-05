@@ -3922,6 +3922,9 @@
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Emp", "Ind", "Int", "Prs", "Rel"], "lvalues": [], "unused_uvalues": ["Art", "Exc", "Neg", "Rcp", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Prs": 5}, "ADP": {"Prs": 2}, "ADV": {"Ind": 1}, "AUX": {"Prs": 4}, "CCONJ": {"Ind": 1, "Prs": 1}, "DET": {"Dem": 120}, "NOUN": {"Prs": 2}, "NUM": {"Prs": 1}, "PRON": {"Dem": 15, "Emp": 15, "Ind": 53, "Int": 9, "Prs": 990, "Rel": 237}, "PROPN": {"Prs": 2}, "SCONJ": {"Prs": 1}}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 5}, "ADV": {"Yes": 1}, "AUX": {"Yes": 3}, "CCONJ": {"Yes": 3}, "DET": {"Yes": 1}, "NOUN": {"Yes": 5}, "PART": {"Yes": 2}, "PRON": {"Yes": 5}, "PROPN": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 3}, "X": {"Yes": 1}}}
 },
+"yrk": {
+
+},
 "yrl": {
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post", "Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1, "Prep": 1}}, "lastchanged": "2022-09-19-15-22-52", "lastchanger": "leoalenc"},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Cau", "Con", "Deg", "Loc", "Man", "Mod", "Tim"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Cau": 1, "Con": 1, "Deg": 1, "Loc": 1, "Man": 1, "Mod": 1, "Tim": 1}}, "lastchanged": "2023-07-31-16-05-42", "lastchanger": "leoalenc"},
