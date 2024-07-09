@@ -3744,6 +3744,7 @@
 
 },
 "uz": {
+"Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2024-07-09-22-23-21", "lastchanger": "comp-linguist"},
 "Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abl", "Acc", "Dat", "Gen", "Loc", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Plur": 1, "Sing": 1}, "NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Plur": 1, "Sing": 1}, "PROPN": {"Sing": 1}, "VERB": {"Plur": 1, "Sing": 1}}, "lastchanged": "2024-07-09-22-21-43", "lastchanger": "comp-linguist"}
 },
