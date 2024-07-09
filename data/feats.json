@@ -3745,7 +3745,7 @@
 },
 "uz": {
 "Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abl", "Acc", "Dat", "Gen", "Loc", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}}, "lastchanged": "2024-07-09-16-58-18", "lastchanger": "comp-linguist"}
+"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Plur": 1, "Sing": 1}, "NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Plur": 1, "Sing": 1}, "PROPN": {"Sing": 1}, "VERB": {"Plur": 1, "Sing": 1}}, "lastchanged": "2024-07-09-22-21-43", "lastchanger": "comp-linguist"}
 },
 "vep": {
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post", "Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1, "Prep": 1}}, "lastchanged": "2023-05-23-11-35-30", "lastchanger": "kailimp"},
