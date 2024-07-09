@@ -3744,7 +3744,7 @@
 
 },
 "uz": {
-"Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Multiple definition of value 'Abl'.", "Multiple definition of value 'Acc'.", "Multiple definition of value 'Dat'.", "Multiple definition of value 'Gen'.", "Multiple definition of value 'Loc'.", "Multiple definition of value 'Nom'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Abl", "Acc", "Dat", "Gen", "Loc", "Nom"], "byupos": {}},
+"Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abl", "Acc", "Dat", "Gen", "Loc", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}}, "lastchanged": "2024-07-09-16-58-18", "lastchanger": "comp-linguist"}
 },
 "vep": {
