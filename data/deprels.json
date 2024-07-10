@@ -10391,7 +10391,7 @@
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"ccomp": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'ccomp'."]},
+"ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
