@@ -1499,7 +1499,8 @@
 },
 "uz": {
 "edi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only", "example": "Shamol hamon g‘uvillar [edi].", "exampleen": "The wind was still howling.", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-18-11", "lastchanger": "comp-linguist"},
-"ekan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for non-firsthand evidentiality ", "example": "U kasal [ekan].", "exampleen": "(S)h is sick.", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-20-45", "lastchanger": "comp-linguist"}
+"ekan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for non-firsthand evidentiality ", "example": "U kasal [ekan].", "exampleen": "(S)h is sick.", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-20-45", "lastchanger": "comp-linguist"},
+"emas": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used only for negation", "example": "Men yolg‘on gapirgan [emasman].", "exampleen": "I did not lie.", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-22-23", "lastchanger": "comp-linguist"}
 },
 "vep": {
 "ei": {"functions": [{"function": "neg", "rule": "combination of the auxilary and an infinitive form of the verb", "deficient": "", "example": "Kaskezas [ei] olend školad", "exampleen": "There was no school in Kaskez", "comment": ""}], "status": "documented", "lastchanged": "2023-05-30-14-49-33", "lastchanger": "k2laan"},
