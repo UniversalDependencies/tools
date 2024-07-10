@@ -2358,7 +2358,7 @@
 "uz": {
 "advcl": {"type": "universal", "errors": []},
 "advmod": {"type": "universal", "errors": []},
-"ccomp": {"type": "universal", "errors": ["No examples found for relation 'ccomp'.", "Documentation does not belong to UD v2 guidelines."]},
+"ccomp": {"type": "universal", "errors": ["No examples found for relation 'ccomp'."]},
 "csubj": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "csubj:part": {"type": "local", "errors": ["No examples found for relation 'csubj:part'.", "Documentation does not belong to UD v2 guidelines."]},
 "nmod:part": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
