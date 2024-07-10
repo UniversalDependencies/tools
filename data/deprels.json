@@ -10396,7 +10396,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"csubj": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:part": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'csubj:part'."]},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
