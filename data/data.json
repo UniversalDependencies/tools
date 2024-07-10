@@ -1504,6 +1504,7 @@
 "emish": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in literary language only", "example": "Uning otasi savdogar [emish].", "exampleen": "His father is a merchant.", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-24-14", "lastchanger": "comp-linguist"},
 "kerak": {"functions": [{"function": "Mood=Nec", "rule": "auxiliary for necessity ", "deficient": "", "example": "Kelishing [kerak]", "exampleen": "You should come", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-33-02", "lastchanger": "comp-linguist"},
 "lozim": {"functions": [{"function": "Mood=Nec", "rule": "auxiliary for necessity ", "deficient": "", "example": "Oʻqishim [lozim]", "exampleen": "I need to read", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-34-26", "lastchanger": "comp-linguist"},
+"mumkin": {"functions": [{"function": "Mood=Pot", "rule": "auxiliary for potential action ", "deficient": "", "example": "Kirishingiz [mumkin]", "exampleen": "You may come in", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-36-54", "lastchanger": "comp-linguist"},
 "shart": {"functions": [{"function": "Mood=Nec", "rule": "auxiliary for necessity ", "deficient": "", "example": "Ishlashimiz [shart]", "exampleen": "We must work", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-35-21", "lastchanger": "comp-linguist"}
 },
 "vep": {
