@@ -10384,7 +10384,7 @@
 },
 "uz": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
+"advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
