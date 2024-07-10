@@ -2360,7 +2360,7 @@
 "advmod": {"type": "universal", "errors": []},
 "ccomp": {"type": "universal", "errors": []},
 "csubj": {"type": "universal", "errors": []},
-"csubj:part": {"type": "local", "errors": ["No examples found for relation 'csubj:part'.", "Documentation does not belong to UD v2 guidelines."]},
+"csubj:part": {"type": "local", "errors": ["No examples found for relation 'csubj:part'."]},
 "nmod:part": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "nsubj": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "obj": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]},
