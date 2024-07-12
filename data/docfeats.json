@@ -573,7 +573,8 @@
 },
 "de": {
 "PartType": {"type": "local", "values": ["Inf", "Res", "Vbp"], "errors": []},
-"Variant": {"type": "local", "values": ["Short"], "errors": []}
+"Variant": {"type": "local", "values": ["Short"], "errors": []},
+"extpos": {"type": "local", "values": [], "errors": ["Feature name 'extpos' does not have the prescribed form.", "Feature name 'extpos' differs from globally defined 'ExtPos' in case.", "Header title 'ExtPos' does not match the file name 'extpos'."]}
 },
 "el": {
 "Abbr": {"type": "universal", "values": ["Yes"], "errors": []},
