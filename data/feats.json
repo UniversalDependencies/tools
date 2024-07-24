@@ -2922,7 +2922,7 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "ps": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Imp": 1, "Perf": 1}, "VERB": {"Imp": 1, "Perf": 1}}, "lastchanged": "2024-07-24-22-55-50", "lastchanger": "Jankus1994"}
 },
 "pt": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2023-10-15-18-45-51", "lastchanger": "alvelvis"},
