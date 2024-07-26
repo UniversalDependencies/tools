@@ -3586,6 +3586,7 @@
 "nmod:npmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nmod:unmarked": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-28-16-25-00", "lastchanger": "amir-zeldes"},
