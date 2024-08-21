@@ -3,6 +3,7 @@
 "auxiliaries": {
 "ab": {
 "а́-лшара": {"functions": [{"function": "Mood=Pot", "rule": "combined with a verb in the Conj-I mood", "deficient": "", "example": "иалалар [алшоит]", "exampleen": "it can go into it", "comment": ""}], "status": "documented", "lastchanged": "2024-08-21-20-44-56", "lastchanger": "paulmeurer"},
+"а́-ҟалара": {"functions": [{"function": "Mood=Pot", "rule": "combines with masdar or Cnd", "deficient": "", "example": "сцар [ҟалон]", "exampleen": "it was possible for me to go", "comment": ""}], "status": "documented", "lastchanged": "2024-08-21-21-06-16", "lastchanger": "paulmeurer"},
 "а́кәзаара": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Сара [соуп] иҟазҵо.", "exampleen": "It’s me who has done it.", "comment": ""}], "status": "documented", "lastchanged": "2024-04-24-23-07-20", "lastchanger": "paulmeurer"}
 },
 "abq": {
