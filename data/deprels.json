@@ -68,7 +68,8 @@
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"xcomp:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
+"xcomp:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"xcomp:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": []}
 },
 "abq": {
 "DepRepeat": {"type": "", "doc": "none", "permitted": 0, "errors": []},
