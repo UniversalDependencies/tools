@@ -447,6 +447,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Fin", "Part"], "lvalues": [], "unused_uvalues": ["Conv"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 1486}, "AUX": {"Fin": 4493, "Part": 246}, "VERB": {"Fin": 14164, "Part": 2664}}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 521, "Pass": 965}, "AUX": {"Act": 4600}, "VERB": {"Act": 15495, "Pass": 1085}}}
 },
+"bgs": {
+
+},
 "bho": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Prep", "Voc"], "evalues": [], "byupos": {"ADJ": {"Post": 3}, "ADP": {"Post": 950}, "DET": {"Post": 1}, "NOUN": {"Post": 26}, "PART": {"Post": 3}, "PROPN": {"Post": 3}, "VERB": {"Post": 5}}},
