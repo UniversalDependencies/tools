@@ -819,6 +819,9 @@
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Mod"], "unused_uvalues": [], "unused_lvalues": ["Aux", "Cop", "Light", "Quasi"], "evalues": [], "byupos": {"AUX": {"Mod": 48361}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Pass": 2971}, "PUNCT": {"Pass": 1}, "VERB": {"Pass": 168}, "X": {"Pass": 7}}}
 },
+"drs": {
+
+},
 "egy": {
 "AdvType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Loc", "Man", "Tim"], "unused_uvalues": [], "unused_lvalues": ["Cau", "Deg", "Mod"], "evalues": [], "byupos": {"ADV": {"Loc": 1, "Man": 1, "Tim": 1}, "NOUN": {"Loc": 1, "Man": 1, "Tim": 1}}, "lastchanged": "2024-06-10-09-49-03", "lastchanger": "UD-Egyptian"},
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Anim", "Hum", "Inan"], "lvalues": [], "unused_uvalues": ["Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"SYM": {"Anim": 1, "Hum": 1, "Inan": 1}}, "lastchanged": "2024-06-16-15-22-59", "lastchanger": "UD-Egyptian"},
