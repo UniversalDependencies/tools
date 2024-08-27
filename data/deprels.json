@@ -53,6 +53,7 @@
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:quote": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-08-27-20-47-34", "lastchanger": "paulmeurer"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
