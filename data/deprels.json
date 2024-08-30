@@ -10415,6 +10415,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-08-30-20-31-16", "lastchanger": "shvedova"},
 "nsubj:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:sp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "nsubj:x": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
