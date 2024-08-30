@@ -10,7 +10,7 @@ ji bo
 wêran dik[^ ]+
 lê dix[^ ]+
 ceza dik[^ ]+
-dest pê kir
+dest pê kir[^ ]*
 dest pê (bi|di)[^ ]+
 ava (bi|di)[^ ]+
 dûr (bi|di)[^ ]+
