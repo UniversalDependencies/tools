@@ -10423,6 +10423,7 @@
 "nummod:gov": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-08-30-20-31-42", "lastchanger": "shvedova"},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-08-30-20-01-05", "lastchanger": "shvedova"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
