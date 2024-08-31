@@ -1469,6 +1469,7 @@
 "Case": {"type": "universal", "values": ["Nom", "Gen", "Dat", "Acc", "Ins", "Loc", "Voc"], "errors": []},
 "Degree": {"type": "universal", "values": ["Pos", "Cmp", "Sup", "Abs"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut"], "errors": []},
+"InflClass": {"type": "local", "values": [], "errors": ["MarkDown page does not start with the required header."]},
 "Mood": {"type": "universal", "values": ["Ind", "Imp", "Cnd"], "errors": []},
 "NumType": {"type": "universal", "values": ["Card", "Ord", "Mult", "Frac", "Sets", "Gen"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur", "Ptan", "Coll"], "errors": []},
