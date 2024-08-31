@@ -2,6 +2,7 @@
 Stok moranê
 nas dikim
 [^ ]+ kir[^ ]*
+\bpêk\s+(anî|anîn|bînin|bînim|bîne|tînim|tînî|tînin|tîne)\b
 xuya dik[^ ]+
 vene gerand
 qebûl dik[^ ]+
