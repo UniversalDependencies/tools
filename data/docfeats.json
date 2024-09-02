@@ -1230,6 +1230,9 @@
 "SubGender": {"type": "local", "values": ["Masc1", "Masc2", "Masc3"], "errors": []},
 "Variant": {"type": "local", "values": ["Long", "Short"], "errors": []}
 },
+"ps": {
+"Variant": {"type": "local", "values": [], "errors": ["No examples found under value 'Long'."]}
+},
 "pt": {
 "Case": {"type": "universal", "values": ["Nom", "Acc", "Dat"], "errors": []},
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
