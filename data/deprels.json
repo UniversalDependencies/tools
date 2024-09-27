@@ -1668,6 +1668,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-28-01-23-44", "lastchanger": "coltekin"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-09-27-10-57-46", "lastchanger": "furkanakkurt1335"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
