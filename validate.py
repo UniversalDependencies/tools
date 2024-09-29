@@ -1731,7 +1731,7 @@ def validate_functional_leaves(id, tree):
                 testid = 'leaf-aux-cop'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
-            if re.match(r"^(det|clf)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
+            if re.match(r"^(det|clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-det-clf'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
