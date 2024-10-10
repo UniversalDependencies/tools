@@ -1714,6 +1714,7 @@
 "se": {"lex": "se", "morph": "", "extends": ["advcl"], "functions": [{"function": "Dep", "example": "[Se não gostou da comida], não coma.", "exampleen": "[If you don't like the food], don't eat it.", "comment": ""}], "lastchanged": "2024-10-10-03-17-45", "lastchanger": "MagaliDuran"},
 "senão": {"lex": "senão", "morph": "", "extends": ["conj"], "functions": [{"function": "Disj", "example": "Esse é um trabalho para milhares, [senão milhões], de anos.", "exampleen": "That's a job for thousands, [if not millions], of years.", "comment": ""}], "lastchanged": "2024-10-09-02-36-05", "lastchanger": "MagaliDuran"},
 "via": {"lex": "via", "morph": "", "extends": ["nmod", "obl"], "functions": [{"function": "Per", "example": "Podemos chegar lá [via litoral].", "exampleen": "We can get there [via the coast].", "comment": ""}], "lastchanged": "2024-10-10-03-36-36", "lastchanger": "MagaliDuran"},
+"visto_que": {"lex": "visto_que", "morph": "", "extends": ["advcl"], "functions": [{"function": "Cns", "example": "[Visto que todos chegaram], vamos começar a reunião.", "exampleen": "[Since everyone has arrived], let's start the meeting.", "comment": ""}], "lastchanged": "2024-10-10-03-39-06", "lastchanger": "MagaliDuran"},
 "x": {"lex": "x", "morph": "", "extends": ["nmod"], "functions": [{"function": "Adv", "example": "Vou assistir ao jogo Brasil [X Itália].", "exampleen": "I'm going to watch Brazil [vs. Italy].", "comment": ""}], "lastchanged": "2024-10-10-03-33-19", "lastchanger": "MagaliDuran"}
 },
 "ru": {
