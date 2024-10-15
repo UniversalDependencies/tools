@@ -7865,7 +7865,8 @@ zzj				I	L	Zuojiang Zhuang	"""
 c2to3={} #{ en -> eng }
 c3_to_name={} #{ eng -> English }
 for line in lang_data.split("\n"):
-    c3,_,_,c2,_,_,lname,_=line.split("\t")
+    spline = line.split("\t") # many lines do not have enough entries, so get the variables via index
+    c3, c2, lname = spline[0], spline[3], spline[6]
     if c2:
         assert c2 not in c2to3
         c2to3[c2]=c3
