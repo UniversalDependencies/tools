@@ -1590,6 +1590,9 @@
 "सकणा": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "बल्कि मंत्रिमंडले विच एह हिस्सेदारी 40 प्रतिशत होई [सकदी] है।", "exampleen": "Instead, the share in the cabinet [could] be 40 percent.", "comment": ""}], "status": "documented", "lastchanged": "2024-01-19-12-32-22", "lastchanger": "dan-zeman"},
 "है": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "काळुए दा एह पहला पक्का घर [है]।", "exampleen": "This [is] Kalue's first concrete house.", "comment": ""}], "status": "documented", "lastchanged": "2024-01-19-11-45-13", "lastchanger": "dan-zeman"}
 },
+"xpg": {
+"ituv": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "τιττετικμενος [ειτου]", "exampleen": "let him become accursed", "comment": ""}], "status": "documented", "lastchanged": "2024-10-19-15-37-59", "lastchanger": "OggiPeeters"}
+},
 "xum": {
 "erom": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Past and Present", "example": "sve rehte kuratu [si]", "exampleen": "if it has been done well", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-10-30-35", "lastchanger": "MathieuDehouck"},
 "fuiom": {"functions": [{"function": "Aspect=Perf", "rule": "auxiliary combinied with a past participle", "deficient": "", "example": "inuk ukar pihaz [fust]", "exampleen": "then the mount will have been purified", "comment": ""}], "status": "documented", "lastchanged": "2022-04-26-10-35-31", "lastchanger": "MathieuDehouck"}
