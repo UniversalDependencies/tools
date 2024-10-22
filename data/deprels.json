@@ -5624,6 +5624,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-22-11-51-59", "lastchanger": "Lauma"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
