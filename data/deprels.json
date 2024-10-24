@@ -8078,7 +8078,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"orphan:nsubjobj": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'orphan:nsubjobj'."]},
+"orphan:nsubjobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
