@@ -7583,6 +7583,7 @@
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-23-10-40-50", "lastchanger": "bguil"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-28-21-59-14", "lastchanger": "bguil"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
