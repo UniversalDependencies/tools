@@ -9611,7 +9611,7 @@
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"compound": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'compound'."]},
+"compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2024-08-29-12-21-19", "lastchanger": "JMGarciaMiguel"},
 "compound:svc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2024-08-29-12-21-50", "lastchanger": "JMGarciaMiguel"},
 "compound:vsc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
