@@ -1169,7 +1169,8 @@
 "y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "i copula", "example": "Eve gelir [iken]", "exampleen": "As you are coming home", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-15-01-02", "lastchanger": "sb-b"}
 },
 "pay": {
-"r": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "takaki ma ausiʔ [ri]", "exampleen": "‘My mother was poor.’", "comment": "The copula is an enclitic that attaches to its complement. The root has an [l] variant and a zero allomorph."}], "status": "documented", "lastchanged": "2024-10-30-23-08-27", "lastchanger": "natalia-caceres-arandia"}
+"r": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "takaki ma ausiʔ [ri]", "exampleen": "‘My mother was poor.’", "comment": "The copula is an enclitic that attaches to its complement. The root has an [l] variant and a zero allomorph."}], "status": "documented", "lastchanged": "2024-10-30-23-08-27", "lastchanger": "natalia-caceres-arandia"},
+"tʃa": {"functions": [{"function": "Aspect=Hab", "rule": "combination of the auxiliary and a past or perfective form of the verb", "deficient": "", "example": "ũtasira ãbarwa [tʃabaruri]", "exampleen": "‘We used to eat our food’.", "comment": "The root has a [ʃa] variant."}], "status": "documented", "lastchanged": "2024-10-30-23-14-08", "lastchanger": "natalia-caceres-arandia"}
 },
 "pcm": {
 "be": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Primarily used to link a subject to noun", "example": "Ah wetin [be] di problem?", "exampleen": "Ah what is the problem?", "comment": ""}], "status": "documented", "lastchanged": "2021-04-20-14-37-14", "lastchanger": "emmettstr"},
