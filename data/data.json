@@ -1168,6 +1168,9 @@
 "ol": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "light verb compound", "example": "şad [ol]", "exampleen": "be happy", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-15-02-50", "lastchanger": "sb-b"},
 "y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "i copula", "example": "Eve gelir [iken]", "exampleen": "As you are coming home", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-15-01-02", "lastchanger": "sb-b"}
 },
+"pay": {
+"r": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "takaki ma ausiʔ [ri]", "exampleen": "‘My mother was poor.’", "comment": "The copula is an enclitic that attaches to its complement. The root has an [l] variant and a zero allomorph."}], "status": "documented", "lastchanged": "2024-10-30-23-08-27", "lastchanger": "natalia-caceres-arandia"}
+},
 "pcm": {
 "be": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Primarily used to link a subject to noun", "example": "Ah wetin [be] di problem?", "exampleen": "Ah what is the problem?", "comment": ""}], "status": "documented", "lastchanged": "2021-04-20-14-37-14", "lastchanger": "emmettstr"},
 "bin": {"functions": [{"function": "Tense=Past", "rule": "Past auxiliary", "deficient": "", "example": "so you [bin] stay for boarders sef", "exampleen": "So you stayed in a boarding house.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-14-10-36-44", "lastchanger": "emmettstr"},
