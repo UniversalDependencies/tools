@@ -2573,6 +2573,7 @@
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-30-17-36-02", "lastchanger": "rueter"},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
