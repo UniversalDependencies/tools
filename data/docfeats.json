@@ -1242,7 +1242,7 @@
 },
 "ps": {
 "Aspect": {"type": "universal", "values": ["Imp", "Perf"], "errors": []},
-"Case": {"type": "universal", "values": ["Nom", "Acc", "Abl", "Loc", "Voc"], "errors": []},
+"Case": {"type": "universal", "values": ["Nom", "Acc", "Loc", "Abl", "Voc"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp", "Sub", "Pot"], "errors": []},
 "Number": {"type": "universal", "values": ["Sing", "Plur"], "errors": []},
