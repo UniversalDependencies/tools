@@ -3520,6 +3520,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-30-20-57-00", "lastchanger": "bguil"},
+"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-31-11-09-14", "lastchanger": "bguil"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
