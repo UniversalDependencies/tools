@@ -9568,6 +9568,7 @@
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-31-15-57-28", "lastchanger": "rahonalab"},
+"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-31-15-59-20", "lastchanger": "rahonalab"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
