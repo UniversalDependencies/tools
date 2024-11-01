@@ -1729,7 +1729,13 @@ def validate_functional_leaves(id, tree):
                 testid = 'leaf-aux-cop'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
+            # People have identified various constructions where the restriction
+            # on children of det dependents may have to be relaxed even if not
+            # mentioned directly in the universal guidelines.
+            # English: "such" is a DET that may license an adverbial clause
+            # (Nathan, https://github.com/UniversalDependencies/docs/issues/1059#issue-2574038827):
+            # "such a player that he could get away with that"
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(advmod|obl|advcl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
