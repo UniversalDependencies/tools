@@ -966,6 +966,7 @@
 "dep:aff": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:conj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"dep:flat": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep_comp": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
