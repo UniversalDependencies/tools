@@ -1735,7 +1735,11 @@ def validate_functional_leaves(id, tree):
             # Latvian: There are compound determiners, composed of a PART and a head PRON.
             # They are not fixed, so they need a separate exception for the compound deprel.
             # (Laura, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2413484624)
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|compound|reparandum|conj|cc|punct)$", cdeprel):
+            # Hebrew: Demonstrative pronouns have their own determiners, as in “the men the these” = “these men”.
+            # It is also parallel to how adjectival modification works in Modern Hebrew.
+            # Maybe determiners under demonstratives could be allowed in some languages but not the others?
+            # (Daniel, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2400694043)
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|advmod|obl|goeswith|fixed|compound|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
