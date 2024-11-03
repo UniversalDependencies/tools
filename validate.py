@@ -1676,6 +1676,7 @@ def validate_functional_leaves(id, tree):
     if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
         idparent = id
         pdeprel = deprel
+        pfeats = tree['nodes'][id][FEATS].split('|')
         for idchild in tree['children'][id]:
             cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
             # The guidelines explicitly say that negation can modify any function word
@@ -1733,6 +1734,7 @@ def validate_functional_leaves(id, tree):
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
             # mentioned directly in the universal guidelines.
+            # https://universaldependencies.org/workgroups/newdoc/children_of_determiners.html
             # Latvian: There are compound determiners, composed of a PART and a head PRON.
             # They are not fixed, so they need a separate exception for the compound deprel.
             # (Laura, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2413484624)
@@ -1754,7 +1756,12 @@ def validate_functional_leaves(id, tree):
             # "tādā godīgā iestādē ieperinājušies daži (tikai daži!) zagļi"
             # “a few (only a few!) thieves have nested in such an honest institution”
             # (Laura, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2438448236)
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel):
+            # Several treebanks have problems with possessive determiners, which
+            # are referential and can thus take dependents such as appos, acl:relcl, even nmod.
+            # Joakim thinks that such possessives should be nmod rather than det,
+            # but that's not how many of us understand the UD guidelines. For now,
+            # the test should be thus relaxed if the determiner has Poss=Yes.
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not ('Poss=Yes' in pfeats and re.match(r"^(appos|acl|nmod)$", cdeprel)):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
