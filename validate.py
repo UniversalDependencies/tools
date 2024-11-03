@@ -1745,7 +1745,16 @@ def validate_functional_leaves(id, tree):
             # not allow it for all determiners in all languages because it opens the door for errors
             # (currently there are such errors in Chinese data). ###!!! For now I am allowing it everywhere.
             # (Petr, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2441260051)
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|compound|reparandum|conj|cc|punct)$", cdeprel):
+            # Spoken data:
+            # There is a lot of fillers ("euh"), tagged INTJ and attached as discourse
+            # "to the most relevant nearby unit" (that is the guideline). The most
+            # relevant nearby unit may be a determiner. Similarly, parentheticals
+            # should be attached as parataxis to the most relevant unit, and again
+            # the unit is not necessarily a clause. For example, Latvian:
+            # "tādā godīgā iestādē ieperinājušies daži (tikai daži!) zagļi"
+            # “a few (only a few!) thieves have nested in such an honest institution”
+            # (Laura, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2438448236)
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
