@@ -1729,6 +1729,7 @@ def validate_functional_leaves(id, tree):
                 testid = 'leaf-aux-cop'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+            # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
             # mentioned directly in the universal guidelines.
@@ -1739,7 +1740,12 @@ def validate_functional_leaves(id, tree):
             # It is also parallel to how adjectival modification works in Modern Hebrew.
             # Maybe determiners under demonstratives could be allowed in some languages but not the others?
             # (Daniel, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2400694043)
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|advmod|obl|goeswith|fixed|compound|reparandum|conj|cc|punct)$", cdeprel):
+            # Classical Armenian: Case marker may be repeated both at a noun and at its demonstrative.
+            # We probably should allow demonstratives to have their own case child, but ideally we should
+            # not allow it for all determiners in all languages because it opens the door for errors
+            # (currently there are such errors in Chinese data). ###!!! For now I am allowing it everywhere.
+            # (Petr, https://github.com/UniversalDependencies/docs/issues/1059#issuecomment-2441260051)
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|compound|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
