@@ -1761,7 +1761,10 @@ def validate_functional_leaves(id, tree):
             # Joakim thinks that such possessives should be nmod rather than det,
             # but that's not how many of us understand the UD guidelines. For now,
             # the test should be thus relaxed if the determiner has Poss=Yes.
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not ('Poss=Yes' in pfeats and re.match(r"^(appos|acl|nmod)$", cdeprel)):
+            # Flavio also argued that certain multiword det expressions should be
+            # connected by flat:redup (rather than fixed), which is why flat should
+            # be another exception.
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not ('Poss=Yes' in pfeats and re.match(r"^(appos|acl|nmod)$", cdeprel)):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
                 warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
