@@ -885,6 +885,8 @@ sub check_files
         'UD_French-Spoken'                  => {'test' => 1},
         # Exception: UD_German-LIT is a test-only treebank (intended primarily for linguistic research).
         'UD_German-LIT'                     => {'train' => 1, 'dev' => 1},
+        # Exception: UD_Hebrew-IAHLTknesset has only 6K test. Amir: Test is ~10% of the corpus, this is the only spoken data for Hebrew in UD, avoid reducing training to just 47K.
+        'UD_Hebrew-IAHLTknesset'            => {'test' => 1},
         # Exception: UD_Hindi_English-HIENCS has only 3K test; they do not participate in shared tasks.
         'UD_Hindi_English-HIENCS'           => {'test' => 1},
         # Exception: UD_Italian-TWITTIRO overlaps with POSTWITA and tries to match its data split.
