@@ -10739,6 +10739,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-11-05-22-02-19", "lastchanger": "shvedova"},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-08-30-20-31-16", "lastchanger": "shvedova"},
 "nsubj:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:sp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
