@@ -45,6 +45,19 @@ GetOptions
     'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
     'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
 );
+# We need absolute path because we will be changing the current folder.
+if($datapath =~ m/^\./)
+{
+    my $currentpath = getcwd();
+    if($datapath eq '.')
+    {
+        $datapath = $currentpath;
+    }
+    else
+    {
+        $datapath = "$currentpath/$datapath";
+    }
+}
 my %treebanks;
 if(defined($tbklist))
 {
