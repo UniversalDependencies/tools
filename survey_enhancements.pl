@@ -211,9 +211,14 @@ foreach my $treebank (@treebanks)
     }
 }
 print("\n");
-print("Total $n_treebanks_everything treebanks have all types of enhancements.\n");
+print("Total $n_treebanks_everything treebanks (marked with *) have all types of enhancements.\n");
 print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
 print("Total $n_languages_something languages have at least one type of enhancement in at least one treebank.\n");
+print("\n");
+print("Explanation of the numbers:\n");
+print("EB ... edge basic only; EE ... edge enhanced only\n");
+print("EBE ... same edge in basic and enhanced; EBe ... same parent in basic and enhanced, enhanced edge type extends basic; EBi ... same parent in basic and enhanced, enhanced edge type incompatible\n");
+print("G ... gapping (empty nodes); P ... shared coord parent; S ... shared coord dependent; X ... controlled subject; R ... relative clause; C ... case-enhanced relation type\n");
 
 
 
