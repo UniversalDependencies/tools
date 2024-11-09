@@ -138,37 +138,11 @@ foreach my $folder (@folders)
             my $nhits = 0;
             chdir("$datapath/$folder") or die("Cannot enter folder '$datapath/$folder': $!");
             # Collect enhanced graph properties from all CoNLL-U files in the folder using a dedicated script.
-            my $command = "cat *.conllu | $libpath/enhanced_graph_properties.pl";
-            open(PROPERTIES, "$command |") or die("Cannot run and read output of '$command': $!");
-            while(<PROPERTIES>)
-            {
-                s/\r?\n$//;
-                # We are looking for the following six lines:
-                # * Gapping:             0
-                # * Coord shared parent: 1145
-                # * Coord shared depend: 407
-                # * Controlled subject:  698
-                # * Relative clause:     0
-                # * Deprel with case:    55
-                if(m/^\*\s*(.+):\s*(\d+)$/)
-                {
-                    my $property = $1;
-                    my $count = $2;
-                    $hash{$folder}{$property} = $count;
-                    if($property ne 'Edge basic only' && $count>0)
-                    {
-                        $hash{$folder}{hit}++;
-                        $hitlanguages{$langcode}++;
-                    }
-                }
-            }
-            close(PROPERTIES);
+            $hitlanguages{$langcode} += get_enhanced_graph_properties($hash{$folder});
         }
     }
 }
 my $n_languages_something = scalar(keys(%hitlanguages));
-my $n_treebanks_something = 0;
-my $n_treebanks_everything = 0;
 my @treebanks = sort(keys(%hash));
 my $maxlength;
 foreach my $treebank (@treebanks)
@@ -179,46 +153,100 @@ foreach my $treebank (@treebanks)
         $maxlength = $l;
     }
 }
-foreach my $treebank (@treebanks)
-{
-    if($hash{$treebank}{hit})
-    {
-        $n_treebanks_something++;
-        my $g = $hash{$treebank}{'Gapping'};
-        my $p = $hash{$treebank}{'Coord shared parent'};
-        my $s = $hash{$treebank}{'Coord shared depend'};
-        my $x = $hash{$treebank}{'Controlled subject'};
-        my $r = $hash{$treebank}{'Relative clause'};
-        my $c = $hash{$treebank}{'Deprel with case'};
-        my $all = '';
-        if($g>0 && $p>0 && $s>0 && $x>0 && $r>0 && $c>0)
-        {
-            $all = '*';
-            $n_treebanks_everything++;
-        }
-        print(pad($treebank.$all, $maxlength+1), "\t");
-        print(pad("EB=$hash{$treebank}{'Edge basic only'}", 10), "\t");
-        print(pad("EBE=$hash{$treebank}{'Edge basic & enhanced'}", 11), "\t");
-        print(pad("EBe=$hash{$treebank}{'Edge enhanced type'}", 11), "\t");
-        print(pad("EBi=$hash{$treebank}{'Edge incompatible type'}", 11), "\t");
-        print(pad("EE=$hash{$treebank}{'Edge enhanced only'}", 10), "\t");
-        print(pad("G=$g", 7), "\t");
-        print(pad("P=$p", 7), "\t");
-        print(pad("S=$s", 7), "\t");
-        print(pad("X=$x", 7), "\t");
-        print(pad("R=$r", 7), "\t");
-        print("C=$c\n");
-    }
-}
-print("\n");
-print("Total $n_treebanks_everything treebanks (marked with *) have all types of enhancements.\n");
-print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
+summarize_enhanced_graph_properties(\@treebanks, \%hash, $maxlength);
 print("Total $n_languages_something languages have at least one type of enhancement in at least one treebank.\n");
-print("\n");
-print("Explanation of the numbers:\n");
-print("EB ... edge basic only; EE ... edge enhanced only\n");
-print("EBE ... same edge in basic and enhanced; EBe ... same parent in basic and enhanced, enhanced edge type extends basic; EBi ... same parent in basic and enhanced, enhanced edge type incompatible\n");
-print("G ... gapping (empty nodes); P ... shared coord parent; S ... shared coord dependent; X ... controlled subject; R ... relative clause; C ... case-enhanced relation type\n");
+
+
+
+#------------------------------------------------------------------------------
+# Process CoNLL-U in the current folder by enhanced_graph_properties.pl.
+#------------------------------------------------------------------------------
+sub get_enhanced_graph_properties
+{
+    my $hash = shift; # reference to the output hash for the current folder
+    my $n_hits = 0;
+    # Collect enhanced graph properties from all CoNLL-U files in the folder using a dedicated script.
+    my $command = "cat *.conllu | $libpath/enhanced_graph_properties.pl";
+    open(PROPERTIES, "$command |") or die("Cannot run and read output of '$command': $!");
+    while(<PROPERTIES>)
+    {
+        s/\r?\n$//;
+        # We are looking for the following six lines:
+        # * Gapping:             0
+        # * Coord shared parent: 1145
+        # * Coord shared depend: 407
+        # * Controlled subject:  698
+        # * Relative clause:     0
+        # * Deprel with case:    55
+        if(m/^\*\s*(.+):\s*(\d+)$/)
+        {
+            my $property = $1;
+            my $count = $2;
+            $hash->{$property} = $count;
+            if($property ne 'Edge basic only' && $count>0)
+            {
+                $hash->{hit}++;
+                $n_hits++;
+            }
+        }
+    }
+    close(PROPERTIES);
+    return $n_hits;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Prints statistics collected using enhanced_graph_properties.pl.
+#------------------------------------------------------------------------------
+sub summarize_enhanced_graph_properties
+{
+    my $treebanks = shift;
+    my $hash = shift;
+    my $maxlength = shift;
+    my @treebanks = @{$treebanks};
+    my $n_treebanks_something = 0;
+    my $n_treebanks_everything = 0;
+    foreach my $treebank (@treebanks)
+    {
+        if($hash->{$treebank}{hit})
+        {
+            $n_treebanks_something++;
+            my $g = $hash->{$treebank}{'Gapping'};
+            my $p = $hash->{$treebank}{'Coord shared parent'};
+            my $s = $hash->{$treebank}{'Coord shared depend'};
+            my $x = $hash->{$treebank}{'Controlled subject'};
+            my $r = $hash->{$treebank}{'Relative clause'};
+            my $c = $hash->{$treebank}{'Deprel with case'};
+            my $all = '';
+            if($g>0 && $p>0 && $s>0 && $x>0 && $r>0 && $c>0)
+            {
+                $all = '*';
+                $n_treebanks_everything++;
+            }
+            print(pad($treebank.$all, $maxlength+1), "\t");
+            print(pad("EB=$hash->{$treebank}{'Edge basic only'}", 10), "\t");
+            print(pad("EBE=$hash->{$treebank}{'Edge basic & enhanced'}", 11), "\t");
+            print(pad("EBe=$hash->{$treebank}{'Edge enhanced type'}", 11), "\t");
+            print(pad("EBi=$hash->{$treebank}{'Edge incompatible type'}", 11), "\t");
+            print(pad("EE=$hash->{$treebank}{'Edge enhanced only'}", 10), "\t");
+            print(pad("G=$g", 7), "\t");
+            print(pad("P=$p", 7), "\t");
+            print(pad("S=$s", 7), "\t");
+            print(pad("X=$x", 7), "\t");
+            print(pad("R=$r", 7), "\t");
+            print("C=$c\n");
+        }
+    }
+    print("\n");
+    print("Total $n_treebanks_everything treebanks (marked with *) have all types of enhancements.\n");
+    print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
+    print("\n");
+    print("Explanation of the numbers:\n");
+    print("EB ... edge basic only; EE ... edge enhanced only\n");
+    print("EBE ... same edge in basic and enhanced; EBe ... same parent in basic and enhanced, enhanced edge type extends basic; EBi ... same parent in basic and enhanced, enhanced edge type incompatible\n");
+    print("G ... gapping (empty nodes); P ... shared coord parent; S ... shared coord dependent; X ... controlled subject; R ... relative clause; C ... case-enhanced relation type\n");
+}
 
 
 

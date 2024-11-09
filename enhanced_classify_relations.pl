@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 # Reads a CoNLL-U file, compares the basic tree with the enhanced graph and
-# guesses which relation belongs to which enhancement type.
+# guesses which relation belongs to which enhancement type. Prints the CoNLL-U
+# with edge explanation to STDOUT; prints a summary to STDERR.
 # This script is based on enhanced_graph_properties.pl.
 # Copyright © 2021 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
