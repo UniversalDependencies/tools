@@ -138,7 +138,12 @@ foreach my $folder (@folders)
             my $nhits = 0;
             chdir("$datapath/$folder") or die("Cannot enter folder '$datapath/$folder': $!");
             # Collect enhanced graph properties from all CoNLL-U files in the folder using a dedicated script.
-            $hitlanguages{$langcode} += get_enhanced_graph_properties($hash{$folder});
+            $hash{$folder} = get_enhanced_graph_properties();
+            if($hash{$folder}{hit})
+            {
+                $hitlanguages{$langcode} += $hash{$folder}{hit};
+                print STDERR ("    ===> HIT\n");
+            }
         }
     }
 }
@@ -164,7 +169,7 @@ print("Total $n_languages_something languages have at least one type of enhancem
 sub get_enhanced_graph_properties
 {
     my $hash = shift; # reference to the output hash for the current folder
-    my $n_hits = 0;
+    my %record;
     # Collect enhanced graph properties from all CoNLL-U files in the folder using a dedicated script.
     my $command = "cat *.conllu | $libpath/enhanced_graph_properties.pl";
     open(PROPERTIES, "$command |") or die("Cannot run and read output of '$command': $!");
@@ -182,16 +187,15 @@ sub get_enhanced_graph_properties
         {
             my $property = $1;
             my $count = $2;
-            $hash->{$property} = $count;
+            $record{$property} = $count;
             if($property ne 'Edge basic only' && $count>0)
             {
-                $hash->{hit}++;
-                $n_hits++;
+                $record{hit}++;
             }
         }
     }
     close(PROPERTIES);
-    return $n_hits;
+    return \%record;
 }
 
 
@@ -239,13 +243,13 @@ sub summarize_enhanced_graph_properties
         }
     }
     print("\n");
-    print("Total $n_treebanks_everything treebanks (marked with *) have all types of enhancements.\n");
-    print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
-    print("\n");
     print("Explanation of the numbers:\n");
     print("EB ... edge basic only; EE ... edge enhanced only\n");
     print("EBE ... same edge in basic and enhanced; EBe ... same parent in basic and enhanced, enhanced edge type extends basic; EBi ... same parent in basic and enhanced, enhanced edge type incompatible\n");
     print("G ... gapping (empty nodes); P ... shared coord parent; S ... shared coord dependent; X ... controlled subject; R ... relative clause; C ... case-enhanced relation type\n");
+    print("\n");
+    print("Total $n_treebanks_everything treebanks (marked with *) have all types of enhancements.\n");
+    print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
 }
 
 
