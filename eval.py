@@ -405,6 +405,8 @@ def load_conllu(file, path, treebank_type):
             words_found = 0
             while words_found < words_expected:
                 word_line = _decode(file.readline().rstrip("\r\n"))
+                if not word_line:
+                    raise UDError("The CoNLL-U file ends in an unfinished MWT at line {}".format(line_idx))
                 line_idx += 1
                 word_columns = word_line.split("\t")
                 if len(word_columns) != 10:
