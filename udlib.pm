@@ -1090,6 +1090,12 @@ sub check_metadata
         push(@{$errors}, "[L0 Repo readme] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
+    elsif($metadata->{License} !~ m/^(PD|CC0 1.0|CC BY(-NC)?(-SA)? (2.5|3.0|4.0)|LGPL-LR)$/)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo readme] $folder README: Unsupported license in README: '$metadata->{License}'\n");
+        $$n_errors++;
+    }
     if($metadata->{'Includes text'} !~ m/^(yes|no)$/i)
     {
         $ok = 0;
