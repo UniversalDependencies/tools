@@ -797,7 +797,8 @@ class TestAlignment(unittest.TestCase):
                 for part in parts[1:]:
                     num_words += 1
                     lines.append("{}\t{}\t_\t_\t_\t_\t{}\t_\t_\t_".format(num_words, part, int(num_words>1)))
-        return load_conllu((io.StringIO if sys.version_info >= (3, 0) else io.BytesIO)("\n".join(lines+["\n"])))
+        return load_conllu((io.StringIO if sys.version_info >= (3, 0) else io.BytesIO)("\n".join(lines+["\n"])),
+                           "in memory test file", {})
 
     def _test_exception(self, gold, system):
         self.assertRaises(UDError, evaluate, self._load_words(gold), self._load_words(system))
