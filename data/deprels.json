@@ -3260,6 +3260,7 @@
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-11-18-18-41-53", "lastchanger": "mr-martian"},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
