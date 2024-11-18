@@ -1477,7 +1477,7 @@ def validate_upos_vs_deprel(id, tree):
     #if re.match(r"^(nsubj|obj|iobj|obl|vocative|expl|dislocated|nmod|appos)", deprel) and re.match(r"^(VERB|AUX|ADV|SCONJ|CCONJ)", upos):
     #    warn("Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, upos), 'Syntax', lineno=-1)
     # Determiner can alternate with a pronoun.
-    if deprel == 'det' and not re.match(r"^(DET|PRON)", upos) and not 'fixed' in childrels:
+    if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
         testmessage = "'det' should be 'DET' or 'PRON' but it is '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
