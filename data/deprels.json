@@ -3252,6 +3252,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-07-24-17-51-01", "lastchanger": "mr-martian"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-11-18-19-02-11", "lastchanger": "mr-martian"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
