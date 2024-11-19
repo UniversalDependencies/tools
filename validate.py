@@ -1529,7 +1529,7 @@ def validate_upos_vs_deprel(id, tree):
         testmessage = "'mark' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
     # Cc is a conjunction, possibly an adverb or particle.
-    if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos) and not 'fixed' in childrels:
+    if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
         testmessage = "'cc' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
