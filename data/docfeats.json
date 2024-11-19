@@ -258,7 +258,7 @@
 "DeixisRef": {"type": "global", "values": ["1", "2"], "errors": []},
 "Echo": {"type": "global", "values": ["Rdp", "Ech"], "errors": []},
 "Evident": {"type": "universal", "values": ["Fh", "Nfh"], "errors": []},
-"ExtPos": {"type": "global", "values": ["ADP", "ADJ", "ADV", "CCONJ", "DET", "INTJ", "PRON", "PROPN", "SCONJ"], "errors": []},
+"ExtPos": {"type": "global", "values": ["ADJ", "ADP", "ADV", "CCONJ", "DET", "INTJ", "PRON", "PROPN", "SCONJ"], "errors": []},
 "Foreign": {"type": "universal", "values": ["Yes"], "errors": []},
 "Gender": {"type": "universal", "values": ["Masc", "Fem", "Neut", "Com"], "errors": []},
 "Gender[dat]": {"type": "global", "values": ["Masc", "Fem"], "errors": []},
