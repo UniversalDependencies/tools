@@ -1519,7 +1519,7 @@ def validate_upos_vs_deprel(id, tree):
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
-    if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos) and not 'fixed' in childrels:
+    if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
         testmessage = "'case' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
