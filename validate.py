@@ -1524,7 +1524,7 @@ def validate_upos_vs_deprel(id, tree):
         testmessage = "'case' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
-    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos) and not 'fixed' in childrels:
+    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
         testmessage = "'mark' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
