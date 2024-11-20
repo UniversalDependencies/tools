@@ -1515,16 +1515,18 @@ def validate_upos_vs_deprel(id, tree):
         testmessage = "'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
     # Case is normally an adposition, maybe particle.
-    # Secondary prepositions ([cs] NOUN pomocí, prostřednictvím; [en] VERB including)
-    # may keep their original UPOS tag if they use the ExtPos=ADP feature to signal
-    # that they are acting as preposition.
+    # However, there are also secondary adpositions and they may have the original POS tag:
+    # NOUN: [cs] pomocí, prostřednictvím
+    # VERB: [en] including
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
-    if deprel == 'case' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX)", upos):
+    if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
         testmessage = "'case' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
-    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
+    ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
+    ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
+    if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
         testmessage = "'mark' should not be '%s'" % (upos)
         warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
