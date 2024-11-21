@@ -1460,14 +1460,20 @@ def validate_upos_vs_deprel(id, tree):
             fvlist = fv.split('=')
             if len(fvlist) == 2:
                 feats[fvlist[0]] = fvlist[1]
-    ###!!! As we now start recognizing ExtPos, we could stop skipping checks of
-    ###!!! nodes that have a fixed child. Instead, we could require that they
-    ###!!! use ExtPos.
+    # Nodes with a fixed child may need ExtPos to signal the part of speech of
+    # the whole fixed expression.
     if 'ExtPos' in feats:
         upos = feats['ExtPos']
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
     childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][id]])
+    # It is recommended that the head of a fixed expression always has ExtPos,
+    # even if it does not need it to pass the tests in this function.
+    if 'fixed' in childrels and not 'ExtPos' in feats:
+        fixed_forms = [cols[FORM]] + [tree['nodes'][x][FORM] for x in tree['children'][id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'fixed']
+        testid = 'fixed-without-extpos'
+        testmessage = "Fixed expression '%s' does not have the 'ExtPos' feature" % (' '.join(fixed_forms))
+        warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
