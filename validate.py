@@ -497,7 +497,7 @@ def validate_sent_id(comments, known_ids, lcode):
 newdoc_re = re.compile(r"^#\s*newdoc(\s|$)")
 newpar_re = re.compile(r"^#\s*newpar(\s|$)")
 text_re = re.compile(r"^#\s*text\s*=\s*(.+)$")
-def validate_text_meta(comments, tree):
+def validate_text_meta(comments, tree, args):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
     global spaceafterno_in_effect
@@ -2831,7 +2831,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
         if args.level > 1:
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
             if args.check_tree_text:
-                validate_text_meta(comments, sentence) # level 2
+                validate_text_meta(comments, sentence, args) # level 2
             validate_root(sentence) # level 2
             validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
