@@ -1434,15 +1434,15 @@ def build_egraph(sentence):
         return None
     return egraph
 
-def get_graph_projection(id, graph, projection):
+def get_graph_projection(node_id, graph, projection):
     """
     Like get_projection() above, but works with the enhanced graph data structure.
     Collects node ids in the set called projection.
     """
-    nodes = list((id,))
+    nodes = list((node_id,))
     while nodes:
-        id = nodes.pop()
-        for child in graph[id]['children']:
+        node_id = nodes.pop()
+        for child in graph[node_id]['children']:
             if child in projection:
                 continue; # skip cycles
             projection.add(child)
@@ -1455,7 +1455,7 @@ def get_graph_projection(id, graph, projection):
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
 
-def validate_upos_vs_deprel(id, tree):
+def validate_upos_vs_deprel(node_id, tree):
     """
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
@@ -1463,7 +1463,7 @@ def validate_upos_vs_deprel(id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    cols = tree['nodes'][id]
+    cols = tree['nodes'][node_id]
     # Occasionally a word may be marked by the feature ExtPos as acting as
     # a part of speech different from its usual one (which is given in UPOS).
     # Typical examples are words that head fixed multiword expressions (the
@@ -1482,14 +1482,14 @@ def validate_upos_vs_deprel(id, tree):
         upos = feats['ExtPos']
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
-    childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][id]])
+    childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][node_id]])
     # It is recommended that the head of a fixed expression always has ExtPos,
     # even if it does not need it to pass the tests in this function.
     if 'fixed' in childrels and not 'ExtPos' in feats:
-        fixed_forms = [cols[FORM]] + [tree['nodes'][x][FORM] for x in tree['children'][id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'fixed']
+        fixed_forms = [cols[FORM]] + [tree['nodes'][x][FORM] for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'fixed']
         testid = 'fixed-without-extpos'
         testmessage = "Fixed expression '%s' does not have the 'ExtPos' feature" % (' '.join(fixed_forms))
-        warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, 'Warning', testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -1502,7 +1502,7 @@ def validate_upos_vs_deprel(id, tree):
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
         testmessage = "'det' should be 'DET' or 'PRON' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
     # https://github.com/UniversalDependencies/docs/issues/596,
@@ -1510,7 +1510,7 @@ def validate_upos_vs_deprel(id, tree):
     if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", upos):
         testid = 'rel-upos-nummod'
         testmessage = "'nummod' should be 'NUM' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
@@ -1520,22 +1520,22 @@ def validate_upos_vs_deprel(id, tree):
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
         testmessage = "'advmod' should be 'ADV' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         testid = 'rel-upos-expl'
         testmessage = "'expl' should normally be 'PRON' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         testid = 'rel-upos-aux'
         testmessage = "'aux' should be 'AUX' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         testid = 'rel-upos-cop'
         testmessage = "'cop' should be 'AUX' or 'PRON'/'DET' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
@@ -1544,33 +1544,33 @@ def validate_upos_vs_deprel(id, tree):
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
         testmessage = "'case' should not be '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
         testmessage = "'mark' should not be '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
         testmessage = "'cc' should not be '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if deprel == 'punct' and upos != 'PUNCT':
         testid = 'rel-upos-punct'
         testmessage = "'punct' must be 'PUNCT' but it is '%s'" % (upos)
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
         testmessage = "'PUNCT' must be 'punct' but it is '%s'" % (cols[DEPREL])
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         testid = 'rel-upos-fixed'
         testmessage = "'fixed' should not be used for proper nouns."
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
-def validate_flat_foreign(id, tree):
+def validate_flat_foreign(node_id, tree):
     """
     flat:foreign is an optional subtype of flat. It is used to connect two words
     in a code-switched segment of foreign words if the annotators did not want
@@ -1580,10 +1580,10 @@ def validate_flat_foreign(id, tree):
     """
     testlevel = 3
     testclass = 'Warning' # or Morpho
-    child = tree['nodes'][id]
+    child = tree['nodes'][node_id]
     if MISC >= len(child):
         return # this has been already reported in trees()
-    if id == 0:
+    if node_id == 0:
         return
     if child[DEPREL] != 'flat:foreign':
         return
@@ -1592,13 +1592,13 @@ def validate_flat_foreign(id, tree):
     if child[UPOS] != 'X' or child[FEATS] != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if parent[UPOS] != 'X' or parent[FEATS] != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
         warn(testmessage, testclass, testlevel, testid, nodeid=pid, lineno=tree['linenos'][pid])
 
-def validate_left_to_right_relations(id, tree):
+def validate_left_to_right_relations(node_id, tree):
     """
     Certain UD relations must always go left-to-right.
     Here we currently check the rule for the basic dependencies.
@@ -1606,7 +1606,7 @@ def validate_left_to_right_relations(id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    cols = tree['nodes'][id]
+    cols = tree['nodes'][node_id]
     if is_multiword_token(cols):
         return
     if DEPREL >= len(cols):
@@ -1621,9 +1621,9 @@ def validate_left_to_right_relations(id, tree):
             # For appos and goeswith the requirement was introduced before UD 2.4 and legacy treebanks are allowed to fail it.
             testid = "right-to-left-%s" % lspec2ud(cols[DEPREL])
             testmessage = "Relation '%s' must go left-to-right." % cols[DEPREL]
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
-def validate_single_subject(id, tree):
+def validate_single_subject(node_id, tree):
     """
     No predicate should have more than one subject.
     An xcomp dependent normally has no subject, but in some languages the
@@ -1664,14 +1664,14 @@ def validate_single_subject(id, tree):
             return False
         return True
 
-    subjects = sorted([x for x in tree['children'][id] if is_inner_subject(tree['nodes'][x])])
+    subjects = sorted([x for x in tree['children'][node_id] if is_inner_subject(tree['nodes'][x])])
     if len(subjects) > 1:
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
         testmessage = "Multiple subjects %s not subtyped as ':outer'." % str(subjects)
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
-        warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id], explanation=explanation)
+        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
 
 def validate_orphan(id, tree):
     """
