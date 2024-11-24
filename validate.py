@@ -1331,7 +1331,7 @@ def get_projection(id, tree, projection):
         id = nodes.pop()
         for child in tree['children'][id]:
             if child in projection:
-                continue; # skip cycles
+                continue # skip cycles
             projection.add(child)
             nodes.append(child)
     return projection
