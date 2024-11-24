@@ -687,7 +687,7 @@ def validate_empty_node_empty_vals(cols):
 # Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
 # M .... combining diacritical marks
 # Underscore is allowed between letters but not at beginning, end, or next to another underscore.
-edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*';
+edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
 # There must be always the universal part, consisting only of ASCII letters.
 # There can be up to three additional, colon-separated parts: subtype, preposition and case.
 # One of them, the preposition, may contain Unicode letters. We do not know which one it is
@@ -1444,7 +1444,7 @@ def get_graph_projection(node_id, graph, projection):
         node_id = nodes.pop()
         for child in graph[node_id]['children']:
             if child in projection:
-                continue; # skip cycles
+                continue # skip cycles
             projection.add(child)
             nodes.append(child)
     return projection
