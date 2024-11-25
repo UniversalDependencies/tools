@@ -1321,15 +1321,15 @@ def build_tree(sentence):
         return None
     return tree
 
-def get_projection(id, tree, projection):
+def get_projection(node_id, tree, projection):
     """
     Like proj() above, but works with the tree data structure. Collects node ids
     in the set called projection.
     """
-    nodes = list((id,))
+    nodes = list((node_id,))
     while nodes:
-        id = nodes.pop()
-        for child in tree['children'][id]:
+        node_id = nodes.pop()
+        for child in tree['children'][node_id]:
             if child in projection:
                 continue # skip cycles
             projection.add(child)
@@ -1673,7 +1673,7 @@ def validate_single_subject(node_id, tree):
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
 
-def validate_orphan(id, tree):
+def validate_orphan(node_id, tree):
     """
     The orphan relation is used to attach an unpromoted orphan to the promoted
     orphan in gapping constructions. A common error is that the promoted orphan
@@ -1681,9 +1681,9 @@ def validate_orphan(id, tree):
     via a conj relation, although some other relations are plausible too.
     """
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][id][DEPREL])
+    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
     if deprel == 'orphan':
-        pid = int(tree['nodes'][id][HEAD])
+        pid = int(tree['nodes'][node_id][HEAD])
         pdeprel = lspec2ud(tree['nodes'][pid][DEPREL])
         # We include advcl because gapping (or something very similar) can also
         # occur in subordinate clauses: "He buys companies like my mother [does] vegetables."
@@ -1701,9 +1701,9 @@ def validate_orphan(id, tree):
             testclass = 'Warning'
             testid = 'orphan-parent'
             testmessage = "The parent of 'orphan' should normally be 'conj' but it is '%s'." % (pdeprel)
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
-def validate_functional_leaves(id, tree):
+def validate_functional_leaves(node_id, tree):
     """
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
@@ -1712,12 +1712,12 @@ def validate_functional_leaves(id, tree):
     testlevel = 3
     testclass = 'Syntax'
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][id][DEPREL])
+    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
     if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
-        idparent = id
+        idparent = node_id
         pdeprel = deprel
-        pfeats = tree['nodes'][id][FEATS].split('|')
-        for idchild in tree['children'][id]:
+        pfeats = tree['nodes'][node_id][FEATS].split('|')
+        for idchild in tree['children'][node_id]:
             cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
             # The guidelines explicitly say that negation can modify any function word
             # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
@@ -1765,11 +1765,11 @@ def validate_functional_leaves(id, tree):
             if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-mark-case'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-aux-cop'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
@@ -1807,15 +1807,15 @@ def validate_functional_leaves(id, tree):
             if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not ('Poss=Yes' in pfeats and re.match(r"^(appos|acl|nmod)$", cdeprel)):
                 testid = 'leaf-det'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, 'Warning', testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-clf'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, 'Warning', testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, 'Warning', testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-cc'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             # Fixed expressions should not be nested, i.e., no chains of fixed relations.
             # As they are supposed to represent functional elements, they should not have
             # other dependents either, with the possible exception of conj.
@@ -1827,24 +1827,24 @@ def validate_functional_leaves(id, tree):
             elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-fixed'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             # Goeswith cannot have any children, not even another goeswith.
             elif pdeprel == 'goeswith':
                 testid = 'leaf-goeswith'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
             # Punctuation can exceptionally have other punct children if an exclamation
             # mark is in brackets or quotes. It cannot have other children.
             elif pdeprel == 'punct' and cdeprel != 'punct':
                 testid = 'leaf-punct'
                 testmessage = "'%s' not expected to have children (%s:%s:%s --> %s:%s:%s)" % (pdeprel, idparent, tree['nodes'][idparent][FORM], pdeprel, idchild, tree['nodes'][idchild][FORM], cdeprel)
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
 
-def collect_ancestors(id, tree, ancestors):
+def collect_ancestors(node_id, tree, ancestors):
     """
     Usage: ancestors = collect_ancestors(nodeid, nodes, [])
     """
-    pid = int(tree['nodes'][int(id)][HEAD])
+    pid = int(tree['nodes'][int(node_id)][HEAD])
     if pid == 0:
         ancestors.append(0)
         return ancestors
@@ -1854,7 +1854,7 @@ def collect_ancestors(id, tree, ancestors):
     ancestors.append(pid)
     return collect_ancestors(pid, tree, ancestors)
 
-def get_caused_nonprojectivities(id, tree):
+def get_caused_nonprojectivities(node_id, tree):
     """
     Checks whether a node is in a gap of a nonprojective edge. Report true only
     if the node's parent is not in the same gap. (We use this function to check
@@ -1866,7 +1866,7 @@ def get_caused_nonprojectivities(id, tree):
       children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
       linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
     """
-    iid = int(id) # just to be sure
+    iid = int(node_id) # just to be sure
     # We need to find all nodes that are not ancestors of this node and lie
     # on other side of this node than their parent. First get the set of
     # ancestors.
@@ -1895,8 +1895,8 @@ def get_caused_nonprojectivities(id, tree):
     # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
     return sorted(leftcross + rightcross)
 
-def get_gap(id, tree):
-    iid = int(id) # just to be sure
+def get_gap(node_id, tree):
+    iid = int(node_id) # just to be sure
     pid = int(tree['nodes'][iid][HEAD])
     if iid < pid:
         rangebetween = range(iid + 1, pid)
@@ -1909,7 +1909,7 @@ def get_gap(id, tree):
         gap = set(rangebetween) - projection
     return gap
 
-def validate_goeswith_span(id, tree):
+def validate_goeswith_span(node_id, tree):
     """
     The relation 'goeswith' is used to connect word parts that are separated
     by whitespace and should be one word instead. We assume that the relation
@@ -1920,57 +1920,57 @@ def validate_goeswith_span(id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    gwchildren = sorted([x for x in tree['children'][id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'goeswith'])
+    gwchildren = sorted([x for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'goeswith'])
     if gwchildren:
-        gwlist = sorted([id] + gwchildren)
-        gwrange = list(range(id, int(tree['nodes'][gwchildren[-1]][ID]) + 1))
+        gwlist = sorted([node_id] + gwchildren)
+        gwrange = list(range(node_id, int(tree['nodes'][gwchildren[-1]][ID]) + 1))
         # All nodes between me and my last goeswith child should be goeswith too.
         if gwlist != gwrange:
             testid = 'goeswith-gap'
             testmessage = "Violation of guidelines: gaps in goeswith group %s != %s." % (str(gwlist), str(gwrange))
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
         # Non-last node in a goeswith range must have a space after itself.
         nospaceafter = [x for x in gwlist[:-1] if 'SpaceAfter=No' in tree['nodes'][x][MISC].split('|')]
         if nospaceafter:
             testid = 'goeswith-nospace'
             testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace"
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
         # This is not about the span of the interrupted word, but since we already
         # know that we are at the head of a goeswith word, let's do it here, too.
         # Every goeswith parent should also have Typo=Yes. However, this is not
         # required if the treebank does not have features at all.
         testid = 'goeswith-missing-typo'
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature(tree['nodes'][id][FEATS], 'Typo=Yes', testmessage, testlevel, testid, id, tree['linenos'][id])
+        validate_required_feature(tree['nodes'][node_id][FEATS], 'Typo=Yes', testmessage, testlevel, testid, node_id, tree['linenos'][node_id])
 
-def validate_goeswith_morphology_and_edeps(id, tree):
+def validate_goeswith_morphology_and_edeps(node_id, tree):
     """
     If a node has the 'goeswith' incoming relation, it is a non-first part of
     a mistakenly interrupted word. The lemma, upos tag and morphological features
     of the word should be annotated at the first part, not here.
     """
     testlevel = 3
-    if lspec2ud(tree['nodes'][id][DEPREL]) == 'goeswith':
+    if lspec2ud(tree['nodes'][node_id][DEPREL]) == 'goeswith':
         testclass = 'Morpho'
-        if tree['nodes'][id][LEMMA] != '_':
+        if tree['nodes'][node_id][LEMMA] != '_':
             testid = 'goeswith-lemma'
             testmessage = "The lemma of a 'goeswith'-connected word must be annotated only at the first part."
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
-        if tree['nodes'][id][UPOS] != 'X':
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        if tree['nodes'][node_id][UPOS] != 'X':
             testid = 'goeswith-upos'
             testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
-        if tree['nodes'][id][FEATS] != '_':
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        if tree['nodes'][node_id][FEATS] != '_':
             testid = 'goeswith-feats'
             testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
         testclass = 'Enhanced'
-        if tree['nodes'][id][DEPS] != '_' and tree['nodes'][id][DEPS] != tree['nodes'][id][HEAD]+':'+tree['nodes'][id][DEPREL]:
+        if tree['nodes'][node_id][DEPS] != '_' and tree['nodes'][node_id][DEPS] != tree['nodes'][node_id][HEAD]+':'+tree['nodes'][node_id][DEPREL]:
             testid = 'goeswith-edeps'
             testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
-def validate_fixed_span(id, tree):
+def validate_fixed_span(node_id, tree):
     """
     Like with goeswith, the fixed relation should not in general skip words that
     are not part of the fixed expression. Unlike goeswith however, there can be
@@ -1980,10 +1980,10 @@ def validate_fixed_span(id, tree):
     Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
     as just a warning.
     """
-    fxchildren = sorted([i for i in tree['children'][id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
+    fxchildren = sorted([i for i in tree['children'][node_id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
     if fxchildren:
-        fxlist = sorted([id] + fxchildren)
-        fxrange = list(range(id, int(tree['nodes'][fxchildren[-1]][ID]) + 1))
+        fxlist = sorted([node_id] + fxchildren)
+        fxrange = list(range(node_id, int(tree['nodes'][fxchildren[-1]][ID]) + 1))
         # All nodes between me and my last fixed child should be either fixed or punct.
         fxdiff = set(fxrange) - set(fxlist)
         fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
@@ -1993,9 +1993,9 @@ def validate_fixed_span(id, tree):
             testclass = 'Warning'
             testid = 'fixed-gap'
             testmessage = "Gaps in fixed expression %s '%s'" % (str(fxlist), fxexpr)
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
-def validate_projective_punctuation(id, tree):
+def validate_projective_punctuation(node_id, tree):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
     nonprojectively.
@@ -2003,35 +2003,35 @@ def validate_projective_punctuation(id, tree):
     testlevel = 3
     testclass = 'Syntax'
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][id][DEPREL])
+    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
     if deprel == 'punct':
-        nonprojnodes = get_caused_nonprojectivities(id, tree)
+        nonprojnodes = get_caused_nonprojectivities(node_id, tree)
         if nonprojnodes:
             testid = 'punct-causes-nonproj'
             testmessage = "Punctuation must not cause non-projectivity of nodes %s" % nonprojnodes
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
-        gap = get_gap(id, tree)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        gap = get_gap(node_id, tree)
         if gap:
             testid = 'punct-is-nonproj'
             testmessage = "Punctuation must not be attached non-projectively over nodes %s" % sorted(gap)
-            warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=tree['linenos'][id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
 def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
     for node in tree['nodes']:
-        id = int(node[ID])
-        validate_upos_vs_deprel(id, tree)
-        validate_flat_foreign(id, tree)
-        validate_left_to_right_relations(id, tree)
-        validate_single_subject(id, tree)
-        validate_orphan(id, tree)
-        validate_functional_leaves(id, tree)
-        validate_fixed_span(id, tree)
-        validate_goeswith_span(id, tree)
-        validate_goeswith_morphology_and_edeps(id, tree)
-        validate_projective_punctuation(id, tree)
+        node_id = int(node[ID])
+        validate_upos_vs_deprel(node_id, tree)
+        validate_flat_foreign(node_id, tree)
+        validate_left_to_right_relations(node_id, tree)
+        validate_single_subject(node_id, tree)
+        validate_orphan(node_id, tree)
+        validate_functional_leaves(node_id, tree)
+        validate_fixed_span(node_id, tree)
+        validate_goeswith_span(node_id, tree)
+        validate_goeswith_morphology_and_edeps(node_id, tree)
+        validate_projective_punctuation(node_id, tree)
 
 def validate_enhanced_annotation(graph):
     """
@@ -2049,27 +2049,27 @@ def validate_enhanced_annotation(graph):
     # the first empty node.
     global line_of_first_empty_node
     global line_of_first_enhanced_orphan
-    for id in graph.keys():
-        if is_empty_node(graph[id]['cols']):
+    for node_id in graph.keys():
+        if is_empty_node(graph[node_id]['cols']):
             if not line_of_first_empty_node:
                 ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                line_of_first_empty_node = graph[id]['lineno']
+                line_of_first_empty_node = graph[node_id]['lineno']
                 # Empty node itself is not an error. Report it only for the first time
                 # and only if an orphan occurred before it.
                 if line_of_first_enhanced_orphan:
                     testid = 'empty-node-after-eorphan'
                     testmessage = "Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line %s" % line_of_first_enhanced_orphan
-                    warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=graph[id]['lineno'])
-        udeprels = set([lspec2ud(d) for h, d in graph[id]['deps']])
+                    warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
+        udeprels = set([lspec2ud(d) for h, d in graph[node_id]['deps']])
         if 'orphan' in udeprels:
             if not line_of_first_enhanced_orphan:
                 ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                line_of_first_enhanced_orphan = graph[id]['lineno']
+                line_of_first_enhanced_orphan = graph[node_id]['lineno']
             # If we have seen an empty node, then the orphan is an error.
             if  line_of_first_empty_node:
                 testid = 'eorphan-after-empty-node'
                 testmessage = "'orphan' not allowed in enhanced graph because we saw an empty node on line %s" % line_of_first_empty_node
-                warn(testmessage, testclass, testlevel, testid, nodeid=id, lineno=graph[id]['lineno'])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
 
 
 
