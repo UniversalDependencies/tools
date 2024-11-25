@@ -435,7 +435,7 @@ def validate_token_ranges(tree):
             start, end = int(start), int(end)
         except ValueError:
             assert False, 'internal error' # RE should assure that this works
-        if not start < end: ###!!! This was already tested above in validate_ID_sequence()! Should we remove it from there?
+        if start >= end: ###!!! This was already tested above in validate_ID_sequence()! Should we remove it from there?
             testid = 'reversed-word-interval'
             testmessage = f'Spurious token interval {start}-{end}'
             warn(testmessage, testclass, testlevel, testid)
@@ -1495,7 +1495,7 @@ def validate_upos_vs_deprel(node_id, tree):
     childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][node_id]])
     # It is recommended that the head of a fixed expression always has ExtPos,
     # even if it does not need it to pass the tests in this function.
-    if 'fixed' in childrels and not 'ExtPos' in feats:
+    if 'fixed' in childrels and 'ExtPos' not in feats:
         fixed_forms = [cols[FORM]] + [tree['nodes'][x][FORM] for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'fixed']
         testid = 'fixed-without-extpos'
         str_fixed_forms = ' '.join(fixed_forms)
@@ -2465,7 +2465,7 @@ def validate_misc_entity(comments, sentence):
             else:
                 entity_string = match.group(1)
                 # We cannot check the rest if we cannot identify the 'eid' attribute.
-                if not 'eid' in entity_attribute_index:
+                if 'eid' not in entity_attribute_index:
                     continue
                 # Items of entities are pairs of [012] and a string.
                 # 0 ... opening bracket; 1 ... closing bracket; 2 ... both brackets
