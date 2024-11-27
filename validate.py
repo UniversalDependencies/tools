@@ -7,12 +7,12 @@ import io
 import os.path
 import argparse
 import traceback
+import unicodedata
+import json
 # According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
 # the regex module has the same API as re but it can check Unicode character properties using \p{}
 # as in Perl.
 #import re
-import unicodedata
-import json
 import regex as re
 
 # The folder where this script resides.
