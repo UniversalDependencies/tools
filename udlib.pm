@@ -749,6 +749,26 @@ sub check_files
         push(@{$errors}, "[L0 Repo files] $folder: both README.txt and README.md are present\n");
         $$n_errors++;
     }
+    if(-f 'README.md')
+    {
+        my $cr = check_crlf('README.md');
+        if($cr)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: CR line-break found at line $cr of README.md\n");
+            $$n_errors++;
+        }
+    }
+    if(-f 'README.txt')
+    {
+        my $cr = check_crlf('README.txt');
+        if($cr)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: CR line-break found at line $cr of README.txt\n");
+            $$n_errors++;
+        }
+    }
     # Check the existence of the LICENSE file.
     if(!-f 'LICENSE.txt')
     {
@@ -756,12 +776,32 @@ sub check_files
         push(@{$errors}, "[L0 Repo files] $folder: missing LICENSE.txt\n");
         $$n_errors++;
     }
+    else
+    {
+        my $cr = check_crlf('LICENSE.txt');
+        if($cr)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: CR line-break found at line $cr of LICENSE.txt\n");
+            $$n_errors++;
+        }
+    }
     # Check the existence of the CONTRIBUTING file.
     if(!-f 'CONTRIBUTING.md')
     {
         $ok = 0;
         push(@{$errors}, "[L0 Repo files] $folder: missing CONTRIBUTING.md\n");
         $$n_errors++;
+    }
+    else
+    {
+        my $cr = check_crlf('CONTRIBUTING.md');
+        if($cr)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: CR line-break found at line $cr of CONTRIBUTING.md\n");
+            $$n_errors++;
+        }
     }
     # Check the data files.
     my $prefix = "$key-ud";
@@ -1013,6 +1053,55 @@ sub check_files
     # Change current folder back where we were when entering this function.
     chdir($current_path) or confess("Cannot change current folder back to '$currentpath': $!");
     return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether a text file uses LF line breaks (expected) or CR LF (wrong).
+# Returns the number of the first line that ends CR LF (or just CR). Returns
+# undef if the whole file has only LF line breaks.
+#------------------------------------------------------------------------------
+sub check_crlf
+{
+    my $path = shift; # path to the file
+    local $/ = undef; # the whole file will be read at once (=> it should not be too large)
+    open(my $file, $path) or confess("Cannot read file '$path': $!");
+    binmode($file, ':raw');
+    my $content = <$file>;
+    close($file);
+    my @content = split(//, $content);
+    my $iline = 0;
+    my $firstcrline;
+    my $nlf = 0;
+    my $ncrlf = 0;
+    my $ncr = 0;
+    for(my $i = 0; $i <= $#content; $i++)
+    {
+        if($content[$i] eq "\r")
+        {
+            $iline++;
+            if(!defined($firstcrline))
+            {
+                $firstcrline = $iline;
+            }
+            if($i < $#content && $content[$i+1] eq "\n")
+            {
+                $ncrlf++;
+                $i++;
+            }
+            else
+            {
+                $ncr++;
+            }
+        }
+        elsif($content[$i] eq "\n")
+        {
+            $iline++;
+            $nlf++;
+        }
+    }
+    return $firstcrline;
 }
 
 
