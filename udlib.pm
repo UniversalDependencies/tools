@@ -957,7 +957,7 @@ sub check_files
     # For small and growing treebanks, we expect the files to appear roughly in the following order:
     # 1. test (>=10K tokens if possible);
     # 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample);
-    # 3. dev (if it can be at least 10K tokens and if train is larger than both test and dev).
+    # 3. dev (if we have at least 30K tokens in total, we expect that at least 10K has been taken for test and 10% of the remainder, or 10K tokens for large treebanks, is dev).
     if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
     {
         $ok = 0;
@@ -976,11 +976,16 @@ sub check_files
         push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
         $$n_errors++;
     }
-    if($nwall>30000 && $nwdev<5000 && $folder !~ m/$allow_smalldev_re/)
+    if($nwall>30000)
     {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
-        $$n_errors++;
+        my $mindev = sprintf("%d", ($nwall-$nwtest)/10+0.5);
+        $mindev = 10000 if($mindev>10000);
+        if($nwdev<$mindev && $folder !~ m/$allow_smalldev_re/)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
+            $$n_errors++;
+        }
     }
     # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
     if($stats->{nsent} < 20 || $stats->{nword} < 100)
