@@ -979,7 +979,12 @@ sub check_files
     if($nwall>30000)
     {
         my $mindev = sprintf("%d", ($nwall-$nwtest)/10+0.5);
-        $mindev = 10000 if($mindev>10000);
+        # The recommendation in the guidelines is 10K and here I set the threshold
+        # only to 9K, i.e., the validator will not complain if the recommendation
+        # is missed by only a small number. (In fact, previously the validator
+        # complained only about dev sets under 5K; but we have two datasets,
+        # Hebrew-IAHLTwiki and Japanes-GSDLUW, which are between 9K and 10K.)
+        $mindev = 9000 if($mindev>9000);
         if($nwdev<$mindev && $folder !~ m/$allow_smalldev_re/)
         {
             $ok = 0;
