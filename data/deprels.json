@@ -4686,6 +4686,7 @@
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-06-22-21-02-57", "lastchanger": "ILobzhanidze"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-15-14-06-20", "lastchanger": "paulmeurer"},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
