@@ -4707,6 +4707,7 @@
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-01-02-20-56-50", "lastchanger": "paulmeurer"},
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
