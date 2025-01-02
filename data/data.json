@@ -313,11 +313,9 @@
 },
 "el": {
 "έχω": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Δεν [έχουμε] συζητήσει ακόμη τη διαδικασία Lamfalussy.", "exampleen": "We have not yet discussed the Lamfalussy process.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-30-58", "lastchanger": "dan-zeman"},
-"ας": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
+"ας": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary with main verb present indicative forms", "deficient": "", "example": "[Ας] φύγουμε.", "exampleen": "We might as well go.", "comment": ""}], "status": "documented", "lastchanged": "2025-01-02-11-07-40", "lastchanger": "stellamarks"},
 "είμαι": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Αυτός [είναι] ο αποκλειστικός στόχος της πρότασης αυτής.", "exampleen": "That is the sole purpose of this proposal.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-17-36", "lastchanger": "dan-zeman"},
-"θα": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a present indicative form of the main verb", "deficient": "", "example": "[Θα] ψηφίσουμε ανάλογα.", "exampleen": "We will vote accordingly.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-34-20", "lastchanger": "dan-zeman"},
-"να": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"πρέπει": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"θα": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and a present indicative form of the main verb", "deficient": "", "example": "[Θα] ψηφίσουμε ανάλογα.", "exampleen": "We will vote accordingly.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-21-34-20", "lastchanger": "dan-zeman"}
 },
 "eme": {
 "ate": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with third person marks existence", "example": "teko [ate]", "exampleen": "he is Teko", "comment": ""}], "status": "documented", "lastchanged": "2022-10-24-14-28-04", "lastchanger": "dan-zeman"},
