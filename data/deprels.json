@@ -9164,6 +9164,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-20-09-36-19", "lastchanger": "AngledLuffa"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-01-07-19-27-37", "lastchanger": "AngledLuffa"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
