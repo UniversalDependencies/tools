@@ -7557,6 +7557,7 @@
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-01-08-13-02-12", "lastchanger": "Koras0ff"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
