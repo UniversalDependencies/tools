@@ -4738,7 +4738,7 @@
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-01-20-10-10-13", "lastchanger": "paulmeurer"},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
