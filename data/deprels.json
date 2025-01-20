@@ -4737,6 +4737,7 @@
 "advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-15-14-06-20", "lastchanger": "paulmeurer"},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
