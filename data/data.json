@@ -1524,6 +1524,9 @@
 "ʃo": {"functions": [{"function": "", "rule": "to be in movement", "deficient": "", "example": "jaʃi riki pejupeju [oʃo]", "exampleen": "It is a turtle (that) (is) playing", "comment": "Kakumasu, 1990:130"}], "status": "documented", "lastchanged": "2021-10-28-19-52-03", "lastchanger": "tatiana-merz"},
 "ʔɪ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the main verb and the auxiliary ", "deficient": "", "example": "ne ihẽke remusak [ʔɪ]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2021-05-01-00-03-30", "lastchanger": "Mentha7"}
 },
+"usp": {
+"tijin": {"functions": [{"function": "Aspect=Prog", "rule": "combination of this auxiliary and a verb matching an aspect", "deficient": "", "example": "[Tijin] ti'alkwalanik.", "exampleen": "You are caring for your children", "comment": ""}], "status": "documented", "lastchanged": "2025-01-22-18-53-10", "lastchanger": "Lguyogiro"}
+},
 "uz": {
 "bo'l": {"functions": [{"function": "Tense=Past", "rule": "used to construct past tense", "deficient": "", "example": "U uchayotgan [bo'lgan]", "exampleen": "(S)he was flying", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-41-57", "lastchanger": "comp-linguist"},
 "bor": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Existential to be used for positive", "example": "Bog'da gullar [bor].", "exampleen": "There are flowers in the garden", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-20-28-55", "lastchanger": "comp-linguist"},
