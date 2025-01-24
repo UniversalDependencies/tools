@@ -3751,7 +3751,7 @@
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-12-31-23-15-33", "lastchanger": "mr-martian"},
