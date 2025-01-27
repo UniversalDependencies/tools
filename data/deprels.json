@@ -5891,7 +5891,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-22-11-45-07", "lastchanger": "Lauma"},
+"advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2024-10-22-11-45-07", "lastchanger": "Lauma"},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
