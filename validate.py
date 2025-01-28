@@ -1497,7 +1497,7 @@ def validate_upos_vs_deprel(node_id, tree):
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}'"
+        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
