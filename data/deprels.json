@@ -3730,8 +3730,8 @@
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
 "hbo": {
-"acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-01-22-18-39-23", "lastchanger": "mr-martian"},
+"acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-01-22-18-39-23", "lastchanger": "mr-martian"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
