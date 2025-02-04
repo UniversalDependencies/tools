@@ -3763,7 +3763,7 @@
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-06-29-05-17-57", "lastchanger": "mr-martian"},
-"nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:npmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
