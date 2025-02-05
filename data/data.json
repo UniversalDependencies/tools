@@ -1526,7 +1526,8 @@
 "ʔɪ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the main verb and the auxiliary ", "deficient": "", "example": "ne ihẽke remusak [ʔɪ]", "exampleen": "You got me to see (it)", "comment": ""}], "status": "documented", "lastchanged": "2021-05-01-00-03-30", "lastchanger": "Mentha7"}
 },
 "usp": {
-"tijin": {"functions": [{"function": "Aspect=Prog", "rule": "combination of this auxiliary and a verb matching an aspect", "deficient": "", "example": "[Tijin] ti'alkwalanik.", "exampleen": "You are caring for your children", "comment": ""}], "status": "documented", "lastchanged": "2025-01-22-18-53-10", "lastchanger": "Lguyogiro"}
+"tijin": {"functions": [{"function": "Aspect=Prog", "rule": "combination of this auxiliary and a verb matching an aspect", "deficient": "", "example": "[Tijin] ti'alkwalanik.", "exampleen": "You are caring for your children", "comment": ""}], "status": "documented", "lastchanged": "2025-01-22-18-53-10", "lastchanger": "Lguyogiro"},
+"tijiniʼ": {"functions": [{"function": "Aspect=Prog", "rule": "combination of this auxiliary in a topic position and a verb matching an aspect", "deficient": "", "example": "[Tijiniʼ] jcheqejik ra choo jali ikim.", "exampleen": "The lake is drying out down there", "comment": ""}], "status": "documented", "lastchanged": "2025-02-05-20-58-55", "lastchanger": "Lguyogiro"}
 },
 "uz": {
 "bo'l": {"functions": [{"function": "Tense=Past", "rule": "used to construct past tense", "deficient": "", "example": "U uchayotgan [bo'lgan]", "exampleen": "(S)he was flying", "comment": ""}], "status": "documented", "lastchanged": "2024-07-10-16-41-57", "lastchanger": "comp-linguist"},
