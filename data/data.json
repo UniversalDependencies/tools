@@ -1068,6 +1068,9 @@
 "avé": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Chĕ [hajĕ] fattŏ?", "exampleen": "What have you done?", "comment": ""}], "status": "documented", "lastchanged": "2021-10-22-11-27-28", "lastchanger": "dan-zeman"},
 "essĕ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ijĕ [songhĕ] napulitanŏ.", "exampleen": "I am Neapolitan.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-22-13-59-05", "lastchanger": "robasile"}
 },
+"naq": {
+"a": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Used in present tense only", "example": "Amob ge [a] gaxu", "exampleen": "Amos is tall", "comment": ""}], "status": "documented", "lastchanged": "2025-02-14-16-01-47", "lastchanger": "kiratul"}
+},
 "nci": {
 "catqui": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "catqui catca cah ", "example": "Ic macuilli amoxtli, oncan motenehua: in tetzahuitl [catca], in quitetzammatia, in yehhuantin mexica.", "exampleen": "Fifth book, here is told, that there [was] an omen, that they, the Mexica, took to be an omen.", "comment": ""}], "status": "documented", "lastchanged": "2024-01-26-02-39-56", "lastchanger": "ftyers"},
 "ma": {"functions": [{"function": "Mood=Opt", "rule": "combined with finite verb ", "deficient": "", "example": "[ma] xitlamatpolotiuh", "exampleen": "may you go away from there", "comment": ""}], "status": "documented", "lastchanged": "2024-03-27-20-31-57", "lastchanger": "ftyers"},
