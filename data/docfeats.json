@@ -1113,7 +1113,7 @@
 "Variant": {"type": "local", "values": ["Short"], "errors": []}
 },
 "lv": {
-"ExtPos": {"type": "local", "values": [], "errors": ["Multiple definition of value 'CCONJ'."]}
+"ExtPos": {"type": "local", "values": [], "errors": ["Multiple definition of value 'ADV'.", "Multiple definition of value 'CCONJ'."]}
 },
 "mdf": {
 "AdvType": {"type": "local", "values": ["Deg", "Loc", "Man", "Mod", "Sta", "Tim"], "errors": []},
