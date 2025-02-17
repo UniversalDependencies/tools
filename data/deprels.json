@@ -6829,6 +6829,7 @@
 "expl:impers": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-02-17-07-38-50", "lastchanger": "kiratul"},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:num": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:reparandum": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
