@@ -296,6 +296,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Inf", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Part": 119}, "AUX": {"Fin": 197}, "NOUN": {"Part": 22}, "VERB": {"Fin": 10081}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 134, "Pass": 40}, "ADP": {"Act": 38, "Pass": 2}, "ADV": {"Act": 2}, "AUX": {"Act": 4717, "Pass": 7}, "CCONJ": {"Act": 9}, "DET": {"Act": 5}, "NOUN": {"Act": 147, "Pass": 22}, "NUM": {"Act": 2}, "PRON": {"Act": 19}, "PROPN": {"Act": 673, "Pass": 20}, "PUNCT": {"Act": 7}, "SCONJ": {"Act": 7, "Pass": 1}, "VERB": {"Act": 73078, "Pass": 5107}, "X": {"Act": 202, "Pass": 3}}}
 },
+"arh": {
+
+},
 "arr": {
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Loc", "Mod", "Temp"], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Iter"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Compl", "Suc"], "evalues": [], "byupos": {"VERB": {"Iter": 1}}, "lastchanged": "2021-10-19-12-22-43", "lastchanger": "LanguageStructure"},
@@ -3288,6 +3291,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Gdv", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Conv": 1, "Fin": 1, "Part": 6}, "AUX": {"Fin": 15, "Part": 24}, "NOUN": {"Part": 4}, "VERB": {"Conv": 200, "Fin": 162, "Gdv": 64, "Inf": 42, "Part": 1135}}},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Cau", "Mid", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 1, "Pass": 6}, "AUX": {"Act": 16}, "NOUN": {"Act": 1, "Cau": 1, "Pass": 3}, "VERB": {"Act": 122, "Cau": 14, "Mid": 15, "Pass": 257}}}
+},
+"sab": {
+
 },
 "sah": {
 "Advlz": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Yes": 1}}, "lastchanged": "2022-10-15-15-12-50", "lastchanger": "tatiana-merz"},
