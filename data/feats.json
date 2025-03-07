@@ -2613,7 +2613,8 @@
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Aux"], "unused_uvalues": [], "unused_lvalues": ["Cop", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {"AUX": {"Aux": 77}}}
 },
 "nap": {
-"Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 1, "Ind": 1}}, "lastchanged": "2025-03-07-23-15-13", "lastchanger": "dan-zeman"}
+"Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 1, "Ind": 1}}, "lastchanged": "2025-03-07-23-15-13", "lastchanger": "dan-zeman"},
+"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Fem": 1, "Masc": 1}, "DET": {"Fem": 1, "Masc": 1}, "NOUN": {"Fem": 1, "Masc": 1}, "PROPN": {"Fem": 1, "Masc": 1}}, "lastchanged": "2025-03-07-23-16-31", "lastchanger": "dan-zeman"}
 },
 "naq": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2025-02-14-13-13-43", "lastchanger": "kiratul"},
