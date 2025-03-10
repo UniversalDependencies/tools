@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Evaluates quality of a UD treebank. Should help to determine if there are
 # multiple treebanks in one language, which is the best one to use.
-# Copyright © 2018 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2018, 2025 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -267,7 +267,7 @@ else
 # managed to make it balanced. We look only for the listed, "officially known"
 # genres. (Sometimes there are typos in the READMEs and besides "news", people
 # also use "new" or "newswire"; this is undesirable.)
-my @official_genres = ('academic', 'bible', 'blog', 'email', 'fiction', 'grammar-examples', 'learner-essays', 'legal', 'medical', 'news', 'nonfiction', 'poetry', 'reviews', 'social', 'spoken', 'web', 'wiki');
+my @official_genres = ('academic', 'bible', 'blog', 'email', 'fiction', 'government', 'grammar-examples', 'learner-essays', 'legal', 'medical', 'news', 'nonfiction', 'poetry', 'reviews', 'social', 'spoken', 'web', 'wiki');
 my @genres = grep {my $g = $_; scalar(grep {$_ eq $g} (@official_genres));} (split(/\s+/, $metadata->{Genre}));
 my $ngenres = scalar(@genres);
 $ngenres = 1 if($ngenres<1);
