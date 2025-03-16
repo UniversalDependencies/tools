@@ -3176,6 +3176,9 @@
 "qte": {
 
 },
+"qti": {
+
+},
 "quc": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}}, "lastchanged": "2021-01-12-17-33-57", "lastchanger": "ftyers"},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Dir"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Dir": 1}}, "lastchanged": "2021-05-04-05-35-26", "lastchanger": "ftyers"},
