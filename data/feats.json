@@ -297,7 +297,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 134, "Pass": 40}, "ADP": {"Act": 38, "Pass": 2}, "ADV": {"Act": 2}, "AUX": {"Act": 4717, "Pass": 7}, "CCONJ": {"Act": 9}, "DET": {"Act": 5}, "NOUN": {"Act": 147, "Pass": 22}, "NUM": {"Act": 2}, "PRON": {"Act": 19}, "PROPN": {"Act": 673, "Pass": 20}, "PUNCT": {"Act": 7}, "SCONJ": {"Act": 7, "Pass": 1}, "VERB": {"Act": 73078, "Pass": 5107}, "X": {"Act": 202, "Pass": 3}}}
 },
 "arh": {
-
+"Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Anim", "Inan"], "lvalues": [], "unused_uvalues": ["Hum", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Anim": 1, "Inan": 1}, "DET": {"Anim": 1, "Inan": 1}, "NOUN": {"Anim": 1, "Inan": 1}, "NUM": {"Anim": 1, "Inan": 1}, "PRON": {"Anim": 1, "Inan": 1}, "PROPN": {"Anim": 1, "Inan": 1}}, "lastchanged": "2025-03-25-11-17-20", "lastchanger": "Jana-Baj"}
 },
 "arr": {
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Loc", "Mod", "Temp"], "evalues": [], "byupos": {}},
