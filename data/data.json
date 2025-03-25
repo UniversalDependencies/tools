@@ -104,6 +104,9 @@
 "هَل": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "هُوَ": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"arh": {
+"aw": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with perfective form", "example": "nʉcheychi mʉkʉ nʉkana [uyin].", "exampleen": "My father gave me a shirt.", "comment": ""}], "status": "documented", "lastchanged": "2025-03-25-08-49-38", "lastchanger": "Jana-Baj"}
+},
 "arr": {
 "kap": {"functions": [{"function": "Tense=Fut", "rule": "followed by lexical verb in the gerund", "deficient": "", "example": "aʔwero toba [okay]", "exampleen": "I will listen to him", "comment": ""}], "status": "documented", "lastchanged": "2021-10-24-15-46-18", "lastchanger": "LanguageStructure"},
 "nã": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "appear with predicate nominals", "example": "mãygãra cú aʔ[nã]n", "exampleen": "It is a/the big snake", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-43-08", "lastchanger": "tatiana-merz"},
