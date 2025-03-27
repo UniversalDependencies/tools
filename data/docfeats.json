@@ -592,7 +592,7 @@
 "Variant": {"type": "local", "values": ["Short"], "errors": []}
 },
 "egy": {
-"VerbClass": {"type": "local", "values": [], "errors": ["No examples found under value '3lit'.", "No examples found under value '4lit'.", "No examples found under value '5lit'.", "No examples found under value '2aeinf'.", "No examples found under value '5aeinf'.", "No examples found under value '2aered'.", "No examples found under value '3aered'.", "No examples found under value 'Caus2lit'.", "No examples found under value 'Caus3lit'.", "No examples found under value 'Caus3aeinf'.", "No examples found under value 'Caus2aered'."]}
+"VerbClass": {"type": "local", "values": [], "errors": ["Feature value 'def' does not have the prescribed form.", "Feature value 'anom' does not have the prescribed form."]}
 },
 "el": {
 "Abbr": {"type": "universal", "values": ["Yes"], "errors": []},
