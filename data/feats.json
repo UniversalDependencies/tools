@@ -2767,6 +2767,9 @@
 "Variant": {"type": "lspec", "doc": "none", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Short"], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 11091, "Inf": 1179, "Part": 82}, "VERB": {"Fin": 14373, "Inf": 5799, "Part": 8287}}}
 },
+"nmf": {
+
+},
 "no": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 35}, "ADP": {"Yes": 72}, "ADV": {"Yes": 195}, "CCONJ": {"Yes": 2}, "NOUN": {"Yes": 1189}, "PRON": {"Yes": 4}, "PROPN": {"Yes": 654}, "VERB": {"Yes": 56}}},
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hum"], "lvalues": [], "unused_uvalues": ["Anim", "Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Hum": 3}, "PRON": {"Hum": 19643}}},
