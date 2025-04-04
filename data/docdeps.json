@@ -1818,6 +1818,9 @@
 "root": {"type": "universal", "errors": []},
 "xcomp": {"type": "universal", "errors": []}
 },
+"oc": {
+"discourse:enunc": {"type": "local", "errors": ["No examples found for relation 'discourse:enunc'.", "Documentation does not belong to UD v2 guidelines."]}
+},
 "ojp": {
 "discourse:sp": {"type": "local", "errors": []},
 "nsubj:contrast": {"type": "local", "errors": []},
