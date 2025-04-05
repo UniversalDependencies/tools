@@ -854,6 +854,9 @@
 "dê": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "[Dê] ragihandineke baş pêk neyê.", "exampleen": "There [will] be no good communication.", "comment": ""}], "status": "documented", "lastchanged": "2022-05-26-21-14-43", "lastchanger": "dan-zeman"},
 "hatin": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Yanî sebeba mirina wê bi tu awayî ne [hate] seh kirin.", "exampleen": "That is, the cause of her death has not [been] determined in any way.", "comment": "As a lexical verb, hatin means to come."}], "status": "documented", "lastchanged": "2022-05-26-21-45-12", "lastchanger": "dan-zeman"}
 },
+"kn": {
+"ಬಿಡು": {"functions": [{"function": "Tense=Past", "rule": "Attached to the past verbal participle", "deficient": "", "example": "ಎರಡು ನಿಮಿಷದಲ್ಲಿ ಎಂಟು ಮೈಲಿ ಓಡಿ[ಬಿಟ್ಟ]", "exampleen": "He ran eight miles in two minutes", "comment": "810, Sridhar, S. N. (2007). Modern kannada grammar."}], "status": "documented", "lastchanged": "2025-04-05-19-35-57", "lastchanger": "Abhishek-P"}
+},
 "ko": {
 "싶": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "스페셜올림픽에 나가고 [싶다].", "exampleen": "I [want] to go to the Special Olympics.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-29-20-43-48", "lastchanger": "dan-zeman"},
 "않": {"functions": [{"function": "neg", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "해도 신의칙에 반하지 [않는다].", "exampleen": "However, it [does] not go against the rules of God.", "comment": ""}], "status": "documented", "lastchanged": "2022-09-29-18-46-03", "lastchanger": "dan-zeman"},
