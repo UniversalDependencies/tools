@@ -4812,6 +4812,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:iobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nmod:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-06-23-13-03-03", "lastchanger": "ILobzhanidze"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
