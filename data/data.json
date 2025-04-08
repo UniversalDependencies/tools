@@ -1193,6 +1193,7 @@
 },
 "oc": {
 "aver": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "[Ai] acabat.", "exampleen": "I have finished.", "comment": ""}], "status": "documented", "lastchanged": "2021-10-06-21-15-38", "lastchanger": "maartenpt"},
+"estar": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Used in Gascon", "example": "n'[ei] pas parièr", "exampleen": "It [is] not the same", "comment": ""}], "status": "documented", "lastchanged": "2025-04-08-11-54-27", "lastchanger": "aleksandra-miletic"},
 "èsser": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in Lengadocien", "example": "Aquestes persècs [son] los melhors que ai manjat.", "exampleen": "Those peaches are the best I ever ate.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-08-11-45-28", "lastchanger": "aleksandra-miletic"},
 "èstre": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in Lengadocien and Provencau", "example": "[soi] contenta", "exampleen": "I [am] content", "comment": ""}], "status": "documented", "lastchanged": "2025-04-08-11-50-11", "lastchanger": "aleksandra-miletic"}
 },
