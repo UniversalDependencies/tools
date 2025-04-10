@@ -106,6 +106,7 @@
 },
 "arh": {
 "aw": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with perfective form", "example": "nʉcheychi mʉkʉ nʉkana [uyin].", "exampleen": "My father gave me a shirt.", "comment": ""}, {"function": "Mood=Imp", "rule": "positive imperatives", "deficient": "", "example": "tu basu se' ado [ú]!", "exampleen": "Pour the milk into the glass!", "comment": ""}], "status": "documented", "lastchanged": "2025-03-25-09-03-24", "lastchanger": "Jana-Baj"},
+"kaw": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "COP for some ADJ", "example": "urakʉ bunsi [kawa] ni.", "exampleen": "The house is white.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-10-08-49-10", "lastchanger": "Jana-Baj"},
 "nan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "not used with imperfective", "example": "nʉn profesora [nawin].", "exampleen": "I'm a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2025-03-25-09-08-50", "lastchanger": "Jana-Baj"},
 "nuk": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "combines with imperfective verb forms", "example": "puntenʉn win[nug]in.", "exampleen": "They are swimming.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-10-08-35-26", "lastchanger": "Jana-Baj"}
 },
