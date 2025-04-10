@@ -400,6 +400,7 @@
 "گشت": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a participle of the main verb", "deficient": "", "example": "ساخته [گشت].", "exampleen": "It [was] built.", "comment": "As a lexical verb, گشتن (“gaštan”) means “to turn”."}], "status": "documented", "lastchanged": "2022-07-27-17-58-14", "lastchanger": "dan-zeman"}
 },
 "fi": {
+"ei": {"functions": [{"function": "neg", "rule": "combination of the auxiliary and a connegative form of the verb", "deficient": "", "example": "[en] olisi kertonut", "exampleen": "I wouldn't have told", "comment": "Expresses person but not mood, nor does it distinguish active from passive"}], "status": "documented", "lastchanged": "2025-04-10-21-52-41", "lastchanger": "rueter"},
 "olla": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Toisena lajina [oli] verkkoporttikroketti.", "exampleen": "The second species was network gateway rocket.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-10-21-29-08", "lastchanger": "rueter"}
 },
 "fo": {
