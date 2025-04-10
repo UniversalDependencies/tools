@@ -400,17 +400,7 @@
 "گشت": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a participle of the main verb", "deficient": "", "example": "ساخته [گشت].", "exampleen": "It [was] built.", "comment": "As a lexical verb, گشتن (“gaštan”) means “to turn”."}], "status": "documented", "lastchanged": "2022-07-27-17-58-14", "lastchanger": "dan-zeman"}
 },
 "fi": {
-"aikoa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"ei": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"joutua": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"mahtaa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"olla": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Toisena lajina [oli] verkkoporttikroketti.", "exampleen": "The second species was network gateway rocket.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-09-11-18", "lastchanger": "dan-zeman"},
-"pitää": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"saattaa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"taitaa": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"tarvita": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"täytyä": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"voida": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"olla": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Toisena lajina [oli] verkkoporttikroketti.", "exampleen": "The second species was network gateway rocket.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-10-21-29-08", "lastchanger": "rueter"}
 },
 "fo": {
 "hava": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Seyður [hevur] altíð havt ómetaligan týdning fyri Ísland.", "exampleen": "Seyður has always had an invaluable significance for Iceland.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-05-09-50-04", "lastchanger": "dan-zeman"},
