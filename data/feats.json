@@ -4182,6 +4182,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part", "Sup"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 1, "Inf": 1}, "VERB": {"Fin": 1, "Inf": 1, "Part": 1, "Sup": 1}}, "lastchanged": "2022-10-31-10-08-14", "lastchanger": "MathieuDehouck"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Act": 1, "Pass": 1}}, "lastchanged": "2022-04-25-12-26-02", "lastchanger": "MathieuDehouck"}
 },
+"yi": {
+
+},
 "yo": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Acc", "Gen", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Ill", "Ine", "Ins", "Lat", "Loc", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Acc": 4, "Nom": 1}, "ADP": {"Acc": 2}, "AUX": {"Nom": 4}, "CCONJ": {"Acc": 1}, "NOUN": {"Acc": 1, "Nom": 1}, "NUM": {"Acc": 1}, "PRON": {"Acc": 208, "Gen": 233, "Nom": 549}, "PROPN": {"Acc": 1, "Nom": 1}, "SCONJ": {"Acc": 1}}},
