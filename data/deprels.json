@@ -2376,7 +2376,7 @@
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-11-09-26-40", "lastchanger": "Moya2025"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-01-13-06-37-20", "lastchanger": "Moya2025"},
