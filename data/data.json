@@ -198,6 +198,7 @@
 "bor": {
 "bokware": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "negative existential predicates", "example": "aora [bokware]", "exampleen": "It didn't have a head", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-16-41-25", "lastchanger": "@languagestructure"},
 "rema": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "rema is only used in equational predicates", "example": "Ikure nowu uva kuru [rema]", "exampleen": "My blood is this wine / This wine is my blood", "comment": ""}], "status": "documented", "lastchanged": "2024-04-23-16-42-14", "lastchanger": "@languagestructure"},
+"reno": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "reno and reo", "example": "pobo pemegarewu [reno]", "exampleen": "There is water there", "comment": ""}], "status": "documented", "lastchanged": "2025-04-11-10-20-26", "lastchanger": "LanguageStructure"},
 "reo": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "proximal and distal", "example": "makore jiboe [reo]", "exampleen": "This is what he said", "comment": ""}], "status": "documented", "lastchanged": "2025-04-11-10-19-11", "lastchanger": "LanguageStructure"}
 },
 "br": {
