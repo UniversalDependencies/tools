@@ -74,6 +74,7 @@
 "እየ": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "አልማዝ ልብስ [እያ]ጠበች መሰለኝ ።", "exampleen": "I thought she [was] washing diamonds.", "comment": ""}], "status": "documented", "lastchanged": "2022-05-30-20-37-28", "lastchanger": "dan-zeman"}
 },
 "ang": {
+"nyllan": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "For sume ƿisan [nolde] seo don sƿa.", "exampleen": "For some reason she wouldn't do so.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-14-16-15-07", "lastchanger": "Aatlantise"},
 "ƿillan": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "[Ƿilt] þu gan?", "exampleen": "Will you go?", "comment": ""}], "status": "documented", "lastchanged": "2025-04-14-16-12-08", "lastchanger": "Aatlantise"}
 },
 "apu": {
