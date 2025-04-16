@@ -55,6 +55,8 @@ warn_on_missing_files = set() # langspec files which you should warn about in ca
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
 warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
+warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
+warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
 mwt_typo_span_end = None # if Typo=Yes at multiword token, what is the end of the multiword span?
 spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
 featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
@@ -2118,6 +2120,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
+    global warn_on_undoc_aux
     if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
         altlang = get_alt_language(cols[MISC])
         if altlang:
@@ -2134,17 +2137,18 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
                 lspecauxs = lspecauxs + ilspecauxs
         else:
             lspecauxs = auxdict.get(lang, None)
-        if not lspecauxs:
-            testlevel = 5
-            testclass = 'Morpho'
-            testid = 'aux-lemma'
-            testmessage = f"'{cols[LEMMA]}' is not an auxiliary in language [{lang}] (there are no known approved auxiliaries in this language)"
-            warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
-        elif not cols[LEMMA] in lspecauxs:
+        if not lspecauxs or not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
             testmessage = f"'{cols[LEMMA]}' is not an auxiliary in language [{lang}]"
+            if not altlang and len(warn_on_undoc_aux) > 0:
+                # Tell the user which auxiliaries are documented and where to document
+                # new ones when the first unknown auxiliary is encountered in the data.
+                # Then erase this (long) introductory message and do not repeat it with
+                # other instances of unknown auxiliaries.
+                testmessage += "\n\n" + warn_on_undoc_aux
+                warn_on_undoc_aux = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
 
 def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
@@ -2158,6 +2162,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
+    global warn_on_undoc_cop
     if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
         altlang = get_alt_language(cols[MISC])
         if altlang:
@@ -2198,17 +2203,18 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
                 lspeccops = lspeccops + ilspeccops
         else:
             lspeccops = copdict.get(lang, None)
-        if not lspeccops:
-            testlevel = 5
-            testclass = 'Syntax'
-            testid = 'cop-lemma'
-            testmessage = f"'{cols[LEMMA]}' is not a copula in language [{lang}] (there are no known approved copulas in this language)"
-            warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
-        elif not cols[LEMMA] in lspeccops:
+        if not lspeccops or not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
             testmessage = f"'{cols[LEMMA]}' is not a copula in language [{lang}]"
+            if not altlang and len(warn_on_undoc_cop) > 0:
+                # Tell the user which copulas are documented and where to document
+                # new ones when the first unknown auxiliary is encountered in the data.
+                # Then erase this (long) introductory message and do not repeat it with
+                # other instances of unknown copulas.
+                testmessage += "\n\n" + warn_on_undoc_cop
+                warn_on_undoc_cop = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
 
 def validate_lspec_annotation(tree, lang, tag_sets):
@@ -3295,6 +3301,38 @@ if __name__=="__main__":
             jsondata = json.load(f)
         auxdata = jsondata['auxiliaries']
         tagsets[AUX], tagsets[COP] = get_auxdata_for_language(args.lang)
+        # Prepare a global message about permitted auxiliary lemmas. We will add
+        # it to the first error message about an unknown auxiliary. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if len(tagsets[AUX]) == 0:
+            msg += f"No auxiliaries have been documented at the address below for language [{args.lang}].\n"
+            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+        else:
+            # Identify auxiliaries that are permitted in the current language.
+            msg += f"The following {len(tagsets[AUX])} auxiliaries are currently documented in language [{args.lang}]:\n"
+            msg += ', '.join(tagsets[AUX]) + "\n"
+            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+            # Save the message in a global variable.
+            # We will add it to the first error message about an unknown feature in the data.
+        warn_on_undoc_aux = msg
+        # Prepare a global message about permitted copula lemmas. We will add
+        # it to the first error message about an unknown auxiliary. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if len(tagsets[COP]) == 0:
+            msg += f"No copulas have been documented at the address below for language [{args.lang}].\n"
+            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+        else:
+            # Identify auxiliaries that are permitted in the current language.
+            msg += f"The following {len(tagsets[COP])} copulas are currently documented in language [{args.lang}]:\n"
+            msg += ', '.join(tagsets[COP]) + "\n"
+            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+            # Save the message in a global variable.
+            # We will add it to the first error message about an unknown feature in the data.
+        warn_on_undoc_cop = msg
 
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
