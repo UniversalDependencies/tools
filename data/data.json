@@ -1222,12 +1222,8 @@
 "さう": {"functions": [{"function": "Polite=Form", "rule": "often follows the gerund (te)", "deficient": "", "example": "tsukimawerasete [sō]", "exampleen": "have arrived", "comment": ""}], "status": "documented", "lastchanged": "2022-12-08-14-56-45", "lastchanger": "@Languagstructure"}
 },
 "olo": {
-"ei": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "olla": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Tämä [on] kirjaine Peteras da se tuodih egläi.", "exampleen": "This letter is from Peter and it was delivered yesterday.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-09-27-46", "lastchanger": "dan-zeman"},
-"pidiä": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"rotie": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"suaha": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
-"voija": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"pidiä": {"functions": [{"function": "Mood=Nec", "rule": "Combination of the auxiliary and the infinitive of the main verb.", "deficient": "", "example": "Minul [pidää] lähtie ildastu saamah.", "exampleen": "I [have] to go to bed early.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-18-15-16-44", "lastchanger": "dan-zeman"}
 },
 "orv": {
 "бъ": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "А за лошадьми [б] тебе самому ехать.", "exampleen": "And you would have to go to the horses alone.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-02-16-34-42", "lastchanger": "dan-zeman"},
