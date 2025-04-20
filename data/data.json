@@ -243,6 +243,7 @@
 "cop": {
 "ϣ": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "ⲛⲥⲉⲛⲁ[ϣ]ⲉⲅⲕⲣⲁⲧⲉⲩⲉ ⲁⲛ", "exampleen": "they will not be able to control themselves", "comment": ""}], "status": "documented", "lastchanged": "2025-04-20-14-23-28", "lastchanger": "amir-zeldes"},
 "ϣⲁ": {"functions": [{"function": "Aspect=Hab", "rule": "combination of the auxiliary, a subject and the infinitive of the main verb", "deficient": "", "example": "[ϣⲁ]ϥⲥⲱⲧⲙ", "exampleen": "He hears (in general, he is wont to hear)", "comment": "Used for gnomic statements"}], "status": "documented", "lastchanged": "2025-04-20-23-25-49", "lastchanger": "amir-zeldes"},
+"ϣⲁⲛⲧⲉ": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary, a subject and the infinitive of the main verb", "deficient": "", "example": "[ϣⲁⲛⲧ]ϥⲥⲱⲧⲙ", "exampleen": "Until he hears", "comment": "limitative future"}], "status": "documented", "lastchanged": "2025-04-20-23-29-08", "lastchanger": "amir-zeldes"},
 "ⲡⲉ": {"functions": [{"function": "cop.PRON", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ϩⲱⲃ ⲅⲁⲣ ⲛⲓⲙ ⲉⲧⲟⲩⲟⲛϩ ⲉⲃⲟⲗ ϩⲉⲛⲟⲩⲟⲉⲓⲛ [ⲛⲉ] ·", "exampleen": "For everything which is manifest is light.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-18-55-56", "lastchanger": "dan-zeman"}
 },
 "cpg": {
