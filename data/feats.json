@@ -3745,6 +3745,7 @@
 },
 "th": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Prep"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Post", "Voc"], "evalues": [], "byupos": {"ADP": {"Prep": 1}}, "lastchanged": "2025-04-22-23-55-50", "lastchanger": "PunY19"},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Perf": 1, "Prog": 1}, "VERB": {"Perf": 1, "Prog": 1}}, "lastchanged": "2025-04-15-16-05-47", "lastchanger": "dan-zeman"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Ind", "Int", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Imp": 1}, "VERB": {"Imp": 1}}, "lastchanged": "2025-04-15-16-06-40", "lastchanger": "dan-zeman"},
