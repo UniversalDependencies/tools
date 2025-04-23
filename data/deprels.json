@@ -9305,7 +9305,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-23-11-10-32", "lastchanger": "Marie-Benzerrak"},
+"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-23-11-10-36", "lastchanger": "Marie-Benzerrak"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-03-16-10-11-21", "lastchanger": "bguil"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
