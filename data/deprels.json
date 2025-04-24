@@ -6194,7 +6194,7 @@
 "obl:inst": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:lmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obl:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-51-59", "lastchanger": "rueter"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
