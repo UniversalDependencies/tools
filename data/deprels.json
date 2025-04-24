@@ -6797,7 +6797,7 @@
 "obl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:comp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "obl:inst": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obl:lfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:lfrom": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-30-21", "lastchanger": "rueter"},
 "obl:lmp": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-22-33", "lastchanger": "rueter"},
 "obl:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-15-58", "lastchanger": "rueter"},
 "obl:own": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
