@@ -6176,7 +6176,7 @@
 "nmod:bahuv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:comp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "nmod:gobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"nmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nmod:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-56-58", "lastchanger": "rueter"},
 "nmod:part": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
