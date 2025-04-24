@@ -7924,6 +7924,7 @@
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-23-16-36-04", "lastchanger": "bguil"},
 "obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-24-18-27-44", "lastchanger": "bguil"},
 "obl:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-24-18-28-01", "lastchanger": "bguil"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
