@@ -1499,7 +1499,7 @@ def validate_upos_vs_deprel(node_id, tree):
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' '{cols[FORM]}'"
+        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
@@ -1517,22 +1517,22 @@ def validate_upos_vs_deprel(node_id, tree):
     # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
-        testmessage = f"'advmod' should be 'ADV' but it is '{upos}'"
+        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         testid = 'rel-upos-expl'
-        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}'"
+        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         testid = 'rel-upos-aux'
-        testmessage = f"'aux' should be 'AUX' but it is '{upos}'"
+        testmessage = f"'aux' should be 'AUX' but it is '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         testid = 'rel-upos-cop'
-        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}'"
+        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
@@ -1541,27 +1541,27 @@ def validate_upos_vs_deprel(node_id, tree):
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
-        testmessage = f"'case' should not be '{upos}'"
+        testmessage = f"'case' should not be '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
-        testmessage = f"'mark' should not be '{upos}'"
+        testmessage = f"'mark' should not be '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
-        testmessage = f"'cc' should not be '{upos}'"
+        testmessage = f"'cc' should not be '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if deprel == 'punct' and upos != 'PUNCT':
         testid = 'rel-upos-punct'
-        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}'"
+        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
-        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}'"
+        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' word '{cols[FORM]}'"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         testid = 'rel-upos-fixed'
