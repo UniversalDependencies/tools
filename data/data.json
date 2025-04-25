@@ -1464,7 +1464,7 @@
 "õlggâd": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and main verb", "deficient": "necessitive with obl:agent obligatory no", "example": "Suʹst leäi [õlggâm] leeʹd tõn peeiʹv čååǥǥâʹttmen vuõptees,..", "exampleen": "She should have been having her hair combed the day...", "comment": "FofonoffHilkka_brat_2018:17"}], "status": "documented", "lastchanged": "2020-11-06-15-07-14", "lastchanger": "rueter"}
 },
 "soj": {
-"دار": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
+"دار": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary with present tense of the main verb", "deficient": "", "example": "مِن [دارُن] لباس اَپوشُن.", "exampleen": "I [am] getting dressed.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-25-22-56-58", "lastchanger": "dan-zeman"}
 },
 "sq": {
 "duhet": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary verb plus the particle plus the finite form of the main verb", "deficient": "", "example": "[Duhej] t'ia hiqja Margës nga koka idenë e vdekjes.", "exampleen": "I needed to get the idea of death out of Marges' head.", "comment": ""}], "status": "documented", "lastchanged": "2024-10-31-12-41-25", "lastchanger": "rahonalab"},
