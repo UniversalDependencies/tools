@@ -11815,6 +11815,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-26-11-36-03", "lastchanger": "nikolettmus"},
 "obl:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
