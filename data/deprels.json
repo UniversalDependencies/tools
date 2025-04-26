@@ -618,6 +618,7 @@
 "arh": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-16-12-38-45", "lastchanger": "Jana-Baj"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
