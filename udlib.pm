@@ -51,6 +51,23 @@ sub get_language_hash_by_lcodes
 
 #------------------------------------------------------------------------------
 # Retreives the list of known UD releases from releases.json in
+# docs-automation. Returns the number of the most recent release.
+#------------------------------------------------------------------------------
+sub get_last_release
+{
+    my $path = shift;
+    $path = 'docs-automation/valdan/releases.json' if(!defined($path));
+    confess("File '$path' does not exist; current dir is '".getcwd()."'") if(!-f $path);
+    my $from_json = json_file_to_perl($path);
+    my $releases = $from_json->{releases};
+    my @relnums = sort_release_numbers(keys(%{$releases}));
+    return $relnums[-1];
+}
+
+
+
+#------------------------------------------------------------------------------
+# Retreives the list of known UD releases from releases.json in
 # docs-automation. Extracts the history of each treebank: Which releases it was
 # part of, and under which name.
 #------------------------------------------------------------------------------
@@ -1136,6 +1153,7 @@ sub check_metadata
         # It must forever refer to the first release of the treebank in UD.
         # Therefore, this script will use a separately stored release history and shout if the value changes in the README.
         my $treebank_history = get_treebank_history("$udpath/docs-automation/valdan/releases.json");
+        my $last_release = get_last_release("$udpath/docs-automation/valdan/releases.json");
         my $correct;
         if(exists($treebank_history->{$folder}))
         {
