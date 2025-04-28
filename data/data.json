@@ -1723,6 +1723,7 @@
 },
 "yrk": {
 "тара": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and a converb form of the main verb", "deficient": "", "example": "хэсь [тара]", "exampleen": "(s)he has to go, (s)he needs to go", "comment": "the auxiliary takes agreement and TAME suffixes: хэсь [тарадм] I have to go"}], "status": "documented", "lastchanged": "2025-04-25-13-46-04", "lastchanger": "nikolettmus"},
+"харва": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary with a non-finite form of the lexical verb in the dative case", "deficient": "", "example": "Мань ӈаворман [харвадмʼ].", "exampleen": "I want to eat.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-28-16-34-44", "lastchanger": "nikolettmus"},
 "ӈa": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in future tense and moods with NOUN and ADJ; also in locational predication with ADV", "example": "манʼ лэкарадмʼ [ӈэӈгудмʼ]", "exampleen": "'I will be a doctor'", "comment": ""}], "status": "documented", "lastchanged": "2025-04-28-14-45-49", "lastchanger": "nikolettmus"}
 },
 "yrl": {
