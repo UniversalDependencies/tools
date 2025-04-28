@@ -6742,7 +6742,7 @@
 "advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-24-21-37-23", "lastchanger": "rueter"},
 "advmod:lmp": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-28-56", "lastchanger": "rueter"},
 "advmod:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-16-30", "lastchanger": "rueter"},
-"advmod:mmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:mmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-28-10-57-12", "lastchanger": "rueter"},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
