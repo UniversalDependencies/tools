@@ -6145,7 +6145,7 @@
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux:cnd": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-28-10-07-22", "lastchanger": "rueter"},
-"aux:nec": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:nec": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-28-10-17-09", "lastchanger": "rueter"},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:opt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:q": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-54-39", "lastchanger": "rueter"},
