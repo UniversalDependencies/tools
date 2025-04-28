@@ -6750,7 +6750,7 @@
 "aux:aspect": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:cnd": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-28-09-44-36", "lastchanger": "rueter"},
 "aux:imp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"aux:nec": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:nec": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-28-10-18-58", "lastchanger": "rueter"},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:opt": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:q": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-24-21-13-02", "lastchanger": "rueter"},
