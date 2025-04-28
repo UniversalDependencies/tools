@@ -8408,6 +8408,7 @@
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-30-22-26-22", "lastchanger": "Jankus1994"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan:nsubjobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"orphan:nsubjobl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan:objobl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
