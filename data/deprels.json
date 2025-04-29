@@ -7372,6 +7372,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-29-16-38-16", "lastchanger": "khansadaoudi"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
