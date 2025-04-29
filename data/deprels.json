@@ -5205,7 +5205,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"aux:cnd": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:cnd": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-10-09-37", "lastchanger": "rueter"},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:pot": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
