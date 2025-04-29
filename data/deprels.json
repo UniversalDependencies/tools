@@ -9870,7 +9870,7 @@
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux:nec": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-39-32", "lastchanger": "rueter"},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"aux:tense": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:tense": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-53-32", "lastchanger": "rueter"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
