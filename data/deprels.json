@@ -5263,7 +5263,7 @@
 "advmod:cau": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-11-01", "lastchanger": "rueter"},
 "advmod:deg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:eval": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-18-45", "lastchanger": "rueter"},
 "advmod:foc": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-01-03", "lastchanger": "rueter"},
 "advmod:freq": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-13-54-10", "lastchanger": "rueter"},
 "advmod:lfrom": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-36-13", "lastchanger": "rueter"},
