@@ -9868,7 +9868,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"aux:nec": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:nec": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-39-32", "lastchanger": "rueter"},
 "aux:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:tense": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
