@@ -5256,7 +5256,7 @@
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:lcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advcl:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-10-19-35", "lastchanger": "rueter"},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
