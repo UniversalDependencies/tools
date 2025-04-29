@@ -5313,7 +5313,7 @@
 "nmod:com": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "nmod:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:lfrom": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-45-23", "lastchanger": "rueter"},
-"nmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nmod:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-46-38", "lastchanger": "rueter"},
 "nmod:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:prp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
