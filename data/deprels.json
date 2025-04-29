@@ -5269,7 +5269,7 @@
 "advmod:lfrom": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-09-56", "lastchanger": "rueter"},
 "advmod:lmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod:lto": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-10-20-12", "lastchanger": "rueter"},
 "advmod:mmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-10-28", "lastchanger": "rueter"},
