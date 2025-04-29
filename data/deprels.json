@@ -5260,7 +5260,7 @@
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-35-33", "lastchanger": "rueter"},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:cau": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-11-01", "lastchanger": "rueter"},
 "advmod:deg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
