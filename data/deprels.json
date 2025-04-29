@@ -3705,6 +3705,8 @@
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"discourse:participant": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"discourse:sp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
@@ -3731,7 +3733,7 @@
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
 "ha": {
-"__advcl-cleft": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation '__advcl-cleft' does not have the prescribed form.", "Relation '__advcl-cleft' is not a subtype of any approved main type."]},
+"__advcl-cleft": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-24-16-45-55", "lastchanger": "bguil"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
