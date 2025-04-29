@@ -9859,7 +9859,7 @@
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-54-50", "lastchanger": "rueter"},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:deg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:deg": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-56-22", "lastchanger": "rueter"},
 "advmod:eval": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-27-26", "lastchanger": "rueter"},
 "advmod:foc": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-42-20", "lastchanger": "rueter"},
 "advmod:mmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-36-51", "lastchanger": "rueter"},
