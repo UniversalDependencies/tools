@@ -5324,7 +5324,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obl:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:cau": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-11-45", "lastchanger": "rueter"},
 "obl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:comp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "obl:lfrom": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-45-54", "lastchanger": "rueter"},
