@@ -5270,7 +5270,7 @@
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-11-11-56", "lastchanger": "rueter"},
 "advmod:lmp": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-37-49", "lastchanger": "rueter"},
 "advmod:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-10-20-12", "lastchanger": "rueter"},
-"advmod:mmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:mmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-44-48", "lastchanger": "rueter"},
 "advmod:neg": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2020-12-20-23-10-28", "lastchanger": "rueter"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
