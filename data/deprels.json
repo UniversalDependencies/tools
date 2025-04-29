@@ -11249,6 +11249,7 @@
 "nmod:part": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-07-10-13-10-31", "lastchanger": "comp-linguist"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-29-21-36-12", "lastchanger": "comp-linguist"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:cau": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
