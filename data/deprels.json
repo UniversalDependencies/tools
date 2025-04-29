@@ -5265,7 +5265,7 @@
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:foc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod:freq": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:freq": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-13-54-10", "lastchanger": "rueter"},
 "advmod:lfrom": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-36-13", "lastchanger": "rueter"},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-11-11-56", "lastchanger": "rueter"},
 "advmod:lmp": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-37-49", "lastchanger": "rueter"},
