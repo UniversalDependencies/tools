@@ -5240,7 +5240,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
-"obl:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-09-45-16", "lastchanger": "rueter"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
