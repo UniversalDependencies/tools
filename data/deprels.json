@@ -5254,7 +5254,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:eval": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-19-07", "lastchanger": "rueter"},
 "advcl:lcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-53-59", "lastchanger": "rueter"},
 "advcl:lto": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-10-19-35", "lastchanger": "rueter"},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-12-35-33", "lastchanger": "rueter"},
