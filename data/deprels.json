@@ -9864,7 +9864,7 @@
 "advmod:foc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:mmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-29-14-31-15", "lastchanger": "rueter"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
