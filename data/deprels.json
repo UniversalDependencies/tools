@@ -6732,7 +6732,7 @@
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-22-17-05-41", "lastchanger": "rueter"},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:cau": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-30-07-28-28", "lastchanger": "rueter"},
 "advmod:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:comp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "advmod:deg": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-30-07-24-18", "lastchanger": "rueter"},
