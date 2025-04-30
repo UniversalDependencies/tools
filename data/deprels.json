@@ -10346,7 +10346,7 @@
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-06-07-19-10-42", "lastchanger": "sarves"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-30-04-34-49", "lastchanger": "sarves"},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
