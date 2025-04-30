@@ -1249,6 +1249,7 @@
 },
 "pay": {
 "ak": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past or bare form of the verb.", "deficient": "", "example": "toʔ arwã ma pak [aki] wiʃã akaki ya", "exampleen": "‘The Mother of the Fish had already taken that man’.", "comment": ""}], "status": "documented", "lastchanged": "2024-10-30-23-18-18", "lastchanger": "natalia-caceres-arandia"},
+"ka": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary following the main verb", "deficient": "", "example": "weʃa [kaa]", "exampleen": "I [had] heard.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-30-14-00-13", "lastchanger": "natalia-caceres-arandia"},
 "r": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "takaki ma ausiʔ [ri]", "exampleen": "‘My mother was poor.’", "comment": "The copula is an enclitic that attaches to its complement. The root has an [l] variant and a zero allomorph."}], "status": "documented", "lastchanged": "2024-10-30-23-08-27", "lastchanger": "natalia-caceres-arandia"},
 "tʃa": {"functions": [{"function": "Aspect=Hab", "rule": "combination of the auxiliary and a past or perfective form of the verb", "deficient": "", "example": "ũtasira ãbarwa [tʃabaruri]", "exampleen": "‘We used to eat our food’.", "comment": "The root has a [ʃa] variant."}], "status": "documented", "lastchanged": "2024-10-30-23-14-08", "lastchanger": "natalia-caceres-arandia"}
 },
