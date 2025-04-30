@@ -6126,7 +6126,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:cau": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-30-07-35-17", "lastchanger": "rueter"},
 "advcl:eval": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-22-17-06-26", "lastchanger": "rueter"},
 "advcl:tmod": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
