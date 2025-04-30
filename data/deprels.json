@@ -6795,7 +6795,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
-"obl:cau": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obl:cau": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-04-30-07-28-11", "lastchanger": "rueter"},
 "obl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:comp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "obl:inst": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
