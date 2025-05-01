@@ -616,7 +616,7 @@ def validate_text_meta(comments, tree, args):
                     spaceafterno_in_effect = False
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
-                        testmessage = f"'SpaceAfter=No' is missing in the MISC field of node #%{cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
+                        testmessage = f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
                     stext = stext.lstrip()
         if stext:
