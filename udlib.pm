@@ -740,8 +740,8 @@ sub cmp_release_numbers
 sub check_files
 {
     my $udpath = shift; # path to the folder with UD treebanks as subfolders (default: current folder, i.e., '.')
-    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDT'
-    my $key = shift; # language and treebank code, e.g. 'cs_pdt' ###!!! We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
+    my $key = shift; # language and treebank code, e.g. 'cs_pdtc' ###!!! We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.
     my $errors = shift; # reference to array where we can add error messages
     my $n_errors = shift; # reference to error counter
     my $sizes = shift; # optional hash ref; the caller may be interested in the train-dev-test sizes that we compute here, and we will put them for the caller in this hash if provided
@@ -830,12 +830,12 @@ sub check_files
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
     # There are exceptions for large treebanks that must split their train files because of Github size limits (the splitting is undone in the released UD packages).
-    # Exception 1: Czech PDT has four train files: train-c, train-l, train-m, train-v.
+    # Exception 1: Czech PDTC has twelve train files.
     # Exception 2: German HDT has two train files: train-a, train-b.
     # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
     my %train_exceptions =
     (
-        'UD_Czech-PDT'         => {'desc' => 'cs_pdt-ud-train-[clmvfs][ta].conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st']},
+        'UD_Czech-PDTC'        => {'desc' => 'cs_pdtc-ud-train-[clmvfsw](a|t[012]?).conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st', 'train-wt0', 'train-wt1', 'train-wt2']},
         'UD_German-HDT'        => {'desc' => 'de_hdt-ud-train-[ab]-[12].conllu',   'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
         'UD_Russian-SynTagRus' => {'desc' => 'ru_syntagrus-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']}
     );
@@ -1139,7 +1139,7 @@ sub check_crlf
 sub check_metadata
 {
     my $udpath = shift; # path to the folder with UD treebanks as subfolders
-    my $folder = shift; # folder name, e.g. 'UD_Czech-PDT', not path
+    my $folder = shift; # folder name, e.g. 'UD_Czech-PDTC', not path
     my $metadata = shift; # reference to hash returned by udlib::read_readme()
     my $errors = shift; # reference to array of error messages
     my $n_errors = shift; # reference to error counter
@@ -1307,7 +1307,7 @@ sub check_metadata
 sub check_documentation
 {
     my $udpath = shift; # path to the folder with UD treebanks and docs as subfolders (default: current folder, i.e., '.')
-    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDT' (here we need it only for the error messages)
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC' (here we need it only for the error messages)
     my $lcode = shift; ###!!! We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.
     my $errors = shift; # reference to array of error messages
     my $n_errors = shift; # reference to error counter
