@@ -959,6 +959,8 @@ sub check_files
         'UD_Sanskrit-Vedic'                 => {'test' => 1},
         # Exception: UD_Scottish_Gaelic-ARCOSG is close to 10K test tokens but they could not get there if they did not want to split documents.
         'UD_Scottish_Gaelic-ARCOSG'         => {'test' => 1},
+        # Exception: UD_Thai-TUD uses an 80-10-10% split but it is only 79K words total. It has been used to train a published parser, so it is preferable not to change the split.
+        'UD_Thai-TUD'                       => {'test' => 1},
         # Exception: UD_Turkish-FrameNet uses a 80-10-10% split, although the treebank is rather small (also, the sizes are computed in terms of number of frames rather than words).
         'UD_Turkish-FrameNet'               => {'test' => 1},
         # Exception: UD_Turkish-Penn keeps the train-dev-test split from the original treebank where there are only 3K words dev and 4K words test.
