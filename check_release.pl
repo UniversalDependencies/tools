@@ -446,7 +446,7 @@ sub get_validation_results
     }
     foreach my $line (@validation_report)
     {
-        if($line =~ m/^(UD_.+): (SAPLING|CURRENT|RETIRED) (VALID|ERROR LEGACY)/)
+        if($line =~ m/^(UD_.+): (SAPLING|CURRENT|RETIRED) (VALID|ERROR LEGACY|ERROR NEGLECTED)/)
         {
             $valid{$1}++;
         }
