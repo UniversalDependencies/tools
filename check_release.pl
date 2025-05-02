@@ -592,7 +592,7 @@ sub compare_with_previous_release
             my $diff = $newstats->{$t}{nword}-$oldstats->{$t}{nword};
             my $sign = $diff > 0 ? '+' : $diff < 0 ? '–' : '';
             my $pct = $diff ? sprintf(" ==> %s%d%%", $sign, abs($diff)/$oldstats->{$t}{nword}*100+0.5) : '';
-            print("$l\tt=$oldstats->{$t}{ntok}\tw=$oldstats->{$t}{nword}\tf=$oldstats->{$t}{nfus}\ts=$oldstats->{$t}{nsent}\n");
+            print("$t\tt=$oldstats->{$t}{ntok}\tw=$oldstats->{$t}{nword}\tf=$oldstats->{$t}{nfus}\ts=$oldstats->{$t}{nsent}\n");
             print(" NOW:$pad\tt=$newstats->{$t}{ntok}\tw=$newstats->{$t}{nword}\tf=$newstats->{$t}{nfus}\ts=$newstats->{$t}{nsent}\t$pct\n");
         }
     }
