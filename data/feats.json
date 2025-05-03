@@ -4120,6 +4120,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 584, "Inf": 6}, "VERB": {"Fin": 6643, "Inf": 1275}}}
 },
+"wuu": {
+
+},
 "xav": {
 "AdvType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Loc", "Mod", "Tim"], "unused_uvalues": [], "unused_lvalues": ["Cau", "Deg", "Man"], "evalues": [], "byupos": {"ADV": {"Loc": 1, "Mod": 1, "Tim": 1}}, "lastchanged": "2025-04-18-11-44-25", "lastchanger": "@LanguageStructure"},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Iter", "Perf", "Prog", "Prosp"], "lvalues": [], "unused_uvalues": ["Hab", "Imp"], "unused_lvalues": [], "evalues": [], "byupos": {"PART": {"Iter": 1, "Perf": 1, "Prog": 1, "Prosp": 1}, "X": {"Perf": 1}}, "lastchanged": "2025-04-26-07-29-01", "lastchanger": "@LanguageStructure"},
