@@ -1372,10 +1372,11 @@ sub collect_statistics_about_ud_treebank
     closedir(DIR);
     my $stats =
     {
-        'nsent' => 0,
-        'ntok'  => 0,
-        'nfus'  => 0,
-        'nword' => 0
+        'nsent'  => 0,
+        'ntok'   => 0,
+        'nfus'   => 0,
+        'nword'  => 0,
+        'nabstr' => 0
     };
     foreach my $file (@files)
     {
@@ -1396,6 +1397,7 @@ sub collect_statistics_about_ud_file
     my $ntok = 0;
     my $nfus = 0;
     my $nword = 0;
+    my $nabstr = 0;
     open(CONLLU, $file_path) or confess("Cannot read file $file_path: $!");
     while(<CONLLU>)
     {
@@ -1407,7 +1409,7 @@ sub collect_statistics_about_ud_file
             $nsent++;
         }
         # Lines with fused tokens do not contain features but we want to count the fusions.
-        elsif(m/^(\d+)-(\d+)\t(\S+)/)
+        elsif(m/^([0-9]+)-([0-9]+)\t/)
         {
             my $i0 = $1;
             my $i1 = $2;
@@ -1415,7 +1417,14 @@ sub collect_statistics_about_ud_file
             $ntok -= $size-1;
             $nfus++;
         }
-        else
+        # Lines with decimal ID are not tokens but abstract ("empty") nodes in the enhanced graph.
+        elsif(m/^[0-9]+\.[0-9]+\t/)
+        {
+            $nabstr++;
+        }
+        # All other lines should have an integer ID and represent word-nodes.
+        # But we will test them with a regular expression just in case the file is not valid.
+        elsif(m/^[0-9]+\t/)
         {
             $ntok++;
             $nword++;
@@ -1424,10 +1433,11 @@ sub collect_statistics_about_ud_file
     close(CONLLU);
     my $stats =
     {
-        'nsent' => $nsent,
-        'ntok'  => $ntok,
-        'nfus'  => $nfus,
-        'nword' => $nword
+        'nsent'  => $nsent,
+        'ntok'   => $ntok,
+        'nfus'   => $nfus,
+        'nword'  => $nword,
+        'nabstr' => $nabstr
     };
     return $stats;
 }
@@ -1444,10 +1454,11 @@ sub add_statistics
 {
     my $tgt = shift; # hash ref
     my $src = shift; # hash ref
-    $tgt->{nsent} += $src->{nsent};
-    $tgt->{ntok}  += $src->{ntok};
-    $tgt->{nfus}  += $src->{nfus};
-    $tgt->{nword} += $src->{nword};
+    $tgt->{nsent}  += $src->{nsent};
+    $tgt->{ntok}   += $src->{ntok};
+    $tgt->{nfus}   += $src->{nfus};
+    $tgt->{nword}  += $src->{nword};
+    $tgt->{nabstr} += $src->{nabstr};
     return $tgt;
 }
 

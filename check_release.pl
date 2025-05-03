@@ -583,17 +583,18 @@ sub compare_with_previous_release
     my @newtreebanks = sort(keys(%{$newstats}));
     foreach my $t (@oldtreebanks)
     {
-        if($oldstats->{$t}{ntok}  != $newstats->{$t}{ntok}  ||
-           $oldstats->{$t}{nword} != $newstats->{$t}{nword} ||
-           $oldstats->{$t}{nfus}  != $newstats->{$t}{nfus}  ||
-           $oldstats->{$t}{nsent} != $newstats->{$t}{nsent})
+        if($oldstats->{$t}{ntok}   != $newstats->{$t}{ntok}   ||
+           $oldstats->{$t}{nword}  != $newstats->{$t}{nword}  ||
+           $oldstats->{$t}{nfus}   != $newstats->{$t}{nfus}   ||
+           $oldstats->{$t}{nsent}  != $newstats->{$t}{nsent}  ||
+           $oldstats->{$t}{nabstr} != $newstats->{$t}{nabstr})
         {
             my $pad = ' ' x (length($t)-5);
             my $diff = $newstats->{$t}{nword}-$oldstats->{$t}{nword};
             my $sign = $diff > 0 ? '+' : $diff < 0 ? '–' : '';
             my $pct = $diff ? sprintf(" ==> %s%d%%", $sign, abs($diff)/$oldstats->{$t}{nword}*100+0.5) : '';
-            print("$t\tt=$oldstats->{$t}{ntok}\tw=$oldstats->{$t}{nword}\tf=$oldstats->{$t}{nfus}\ts=$oldstats->{$t}{nsent}\n");
-            print(" NOW:$pad\tt=$newstats->{$t}{ntok}\tw=$newstats->{$t}{nword}\tf=$newstats->{$t}{nfus}\ts=$newstats->{$t}{nsent}\t$pct\n");
+            print(       "$t\tt=$oldstats->{$t}{ntok}\tw=$oldstats->{$t}{nword}\tf=$oldstats->{$t}{nfus}\ta=$oldstats->{$t}{nabstr}\ts=$oldstats->{$t}{nsent}\n");
+            print(" NOW:$pad\tt=$newstats->{$t}{ntok}\tw=$newstats->{$t}{nword}\tf=$newstats->{$t}{nfus}\ta=$newstats->{$t}{nabstr}\ts=$newstats->{$t}{nsent}\t$pct\n");
         }
     }
     print("\n");
