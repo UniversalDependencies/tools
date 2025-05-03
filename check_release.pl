@@ -325,7 +325,7 @@ my ($changelog, $newlanguages) = compare_with_previous_release($oldpath, \%stats
 # Summarize the statistics of the current treebanks. Especially the total
 # number of sentences, tokens and words is needed for the metadata in Lindat.
 print("\nSizes of treebanks in the new release:\n\n");
-my ($nsent, $ntok, $nfus, $nword, $table, $maxl) = summarize_statistics(\%stats);
+my ($nsent, $ntok, $nfus, $nword, $nabstr, $table, $maxl) = summarize_statistics(\%stats);
 foreach my $row (@{$table})
 {
     my @out;
@@ -519,18 +519,19 @@ sub summarize_statistics
     my $nword = 0;
     my @table;
     my @maxl;
-    add_table_row(\@table, \@maxl, 'TREEBANK', 'SENTENCES', 'TOKENS', 'FUSED', 'WORDS');
+    add_table_row(\@table, \@maxl, 'TREEBANK', 'SENTENCES', 'TOKENS', 'FUSED', 'WORDS', 'ABSTRACT');
     my @folders = sort(keys(%{$stats}));
     foreach my $folder (@folders)
     {
-        add_table_row(\@table, \@maxl, $folder, $stats->{$folder}{nsent}, $stats->{$folder}{ntok}, $stats->{$folder}{nfus}, $stats->{$folder}{nword});
+        add_table_row(\@table, \@maxl, $folder, $stats->{$folder}{nsent}, $stats->{$folder}{ntok}, $stats->{$folder}{nfus}, $stats->{$folder}{nword}, $stats->{$folder}{nabstr});
         $nsent += $stats->{$folder}{nsent};
         $ntok += $stats->{$folder}{ntok};
         $nfus += $stats->{$folder}{nfus};
         $nword += $stats->{$folder}{nword};
+        $nabstr += $stats->{$folder}{nabstr};
     }
-    add_table_row(\@table, \@maxl, 'TOTAL', $nsent, $ntok, $nfus, $nword);
-    return ($nsent, $ntok, $nfus, $nword, \@table, \@maxl);
+    add_table_row(\@table, \@maxl, 'TOTAL', $nsent, $ntok, $nfus, $nword, $nabstr);
+    return ($nsent, $ntok, $nfus, $nword, $nabstr, \@table, \@maxl);
 }
 
 
