@@ -833,11 +833,13 @@ sub check_files
     # Exception 1: Czech PDTC has twelve train files.
     # Exception 2: German HDT has two train files: train-a, train-b.
     # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
+    # Exception 4: Russian Taiga has five train files: train-a, train-b, train-c, train-d, train-e.
     my %train_exceptions =
     (
         'UD_Czech-PDTC'        => {'desc' => 'cs_pdtc-ud-train-[clmvfsw](a|t[012]?).conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st', 'train-wt0', 'train-wt1', 'train-wt2']},
         'UD_German-HDT'        => {'desc' => 'de_hdt-ud-train-[ab]-[12].conllu',   'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
-        'UD_Russian-SynTagRus' => {'desc' => 'ru_syntagrus-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']}
+        'UD_Russian-SynTagRus' => {'desc' => 'ru_syntagrus-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']},
+        'UD_Russian-SynTagRus' => {'desc' => 'ru_taiga-ud-train-[abcde].conllu',   'files' => ['train-a', 'train-b', 'train-c', 'train-d', 'train-e']}
     );
     # No other CoNLL-U files are expected.
     # It is also expected that if there is dev, there is also train.
