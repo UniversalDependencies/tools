@@ -435,11 +435,7 @@ def validate_token_ranges(tree):
             start, end = int(start), int(end)
         except ValueError:
             assert False, 'internal error' # RE should assure that this works
-        if start >= end: ###!!! This was already tested above in validate_ID_sequence()! Should we remove it from there?
-            testid = 'reversed-word-interval'
-            testmessage = f'Spurious token interval {start}-{end}'
-            warn(testmessage, testclass, testlevel, testid)
-            continue
+        # Do not test if start >= end: This was already tested above in validate_ID_sequence().
         if covered & set(range(start, end+1)):
             testid = 'overlapping-word-intervals'
             testmessage = f'Range overlaps with others: {cols[ID]}'
