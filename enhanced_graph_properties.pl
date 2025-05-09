@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Reads the graph in the DEPS column of a CoNLL-U file and tests it on various graph properties.
-# Copyright © 2019 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2019, 2025 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;

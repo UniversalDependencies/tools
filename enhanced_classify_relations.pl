@@ -3,7 +3,7 @@
 # guesses which relation belongs to which enhancement type. Prints the CoNLL-U
 # with edge explanation to STDOUT; prints a summary to STDERR.
 # This script is based on enhanced_graph_properties.pl.
-# Copyright © 2021 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2021, 2025 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -17,7 +17,7 @@ use Getopt::Long;
 # If this does not work, you can put the script together with Graph.pm and
 # Node.pm in a folder of you choice, say, /home/joe/scripts, and then
 # invoke Perl explicitly telling it where the modules are:
-# perl -I/home/joe/scripts /home/joe/scripts/enhanced_graph_properties.pl inputfile.conllu
+# perl -I/home/joe/scripts /home/joe/scripts/enhanced_classify_relations.pl inputfile.conllu
 BEGIN
 {
     use Cwd;
@@ -95,6 +95,8 @@ sub process_sentence
     # Only for enhanced UD graphs:
     find_enhancements($graph);
     print_sentence($graph->to_conllu_lines());
+    # Break cyclic references to make sure the memory taken by the graph gets freed up.
+    $graph->remove_all_nodes();
 }
 
 
