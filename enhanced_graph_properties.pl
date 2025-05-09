@@ -152,6 +152,8 @@ sub process_sentence
     find_components($graph);
     # Only for enhanced UD graphs:
     find_enhancements($graph);
+    # Break cyclic references to make sure the memory taken by the graph gets freed up.
+    $graph->remove_all_nodes();
 }
 
 
