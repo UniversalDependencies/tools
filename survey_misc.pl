@@ -202,22 +202,18 @@ foreach my $f (@features)
     if($n > 50)
     {
         splice(@values, 50);
-        push(@values, '...');
     }
     print("\#\# $f\n\n");
     printf("Total $n values: %s\n\n", join(', ', @ffolders_with_counts));
     foreach my $v (@values)
     {
         my @folders = sort(keys(%{$hash{$f}{$v}}));
-        if($v eq '...' && !exists($hash{$f}{$v}))
-        {
-            print("* `...` \n");
-        }
-        else
-        {
-            my @folders_with_counts = map {"$_ ($hash{$f}{$v}{$_})"} (@folders);
-            printf("* `$f=$v`: %s\n", join(', ', @folders_with_counts));
-        }
+        my @folders_with_counts = map {"$_ ($hash{$f}{$v}{$_})"} (@folders);
+        printf("* `$f=$v`: %s\n", join(', ', @folders_with_counts));
+    }
+    if($n > 50)
+    {
+        print("* …\n");
     }
     print("\n");
 }
