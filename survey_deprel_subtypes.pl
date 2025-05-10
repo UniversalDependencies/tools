@@ -234,7 +234,7 @@ EOF
         print("\n\n\n## $udeprel\n");
         foreach my $deprel (@deprels)
         {
-            if($deprel =~ m/^$udeprel:/)
+            if($deprel =~ m/^$udeprel(:|$)/)
             {
                 my @keys = sort(keys(%{$hash->{$deprel}}));
                 #my @keys_with_frequencies = map {"$_&nbsp;($hash->{$deprel}{$_})"} (@keys);
