@@ -184,25 +184,33 @@ EOF
 ;
 foreach my $f (@features)
 {
-    my %ffolders;
     my @values = sort(keys(%{$hash{$f}}));
+    my $n = scalar(@values);
+    # Get the list of folders where this attribute occurs (including folders that
+    # will not appear below if we truncate the list of values shown).
+    my %ffolders;
+    foreach my $v (@values)
+    {
+        foreach my $folder (keys(%{$hash{$f}{$v}}))
+        {
+            $ffolders{$folder} += $hash{$f}{$v}{$folder};
+        }
+    }
+    my @ffolders_with_counts = map {"$_ ($ffolders{$_})"} (sort(keys(%ffolders)));
     # Some MISC attributes (such as Translit) have very large inventories of values.
     # Truncate the list. It would not be helpful to see all the values.
-    if(scalar(@values) > 50)
+    if($n > 50)
     {
         splice(@values, 50);
         push(@values, {'...' => {'' => ''}});
     }
     print("\#\# $f\n\n");
-    print("[$f]()\n\n");
+    printf("Total $n values: %s\n\n", join(', ', @ffolders_with_counts));
     foreach my $v (@values)
     {
         my @folders = sort(keys(%{$hash{$f}{$v}}));
-        foreach my $folder (@folders)
-        {
-            print("* $f=$v\t$folder\t$hash{$f}{$v}{$folder}\n");
-            $ffolders{$folder}++;
-        }
+        my @folders_with_counts = map {"$_ ($hash{$f}{$v}{$_})"} (@folders);
+        printf("* `$f=$v`: %s\n", join(', ', @folders_with_counts));
     }
     print("\n");
 }
