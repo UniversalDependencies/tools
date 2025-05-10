@@ -184,11 +184,8 @@ sub read_conllu_file
             chomp();
             my @fields = split(/\t/, $_);
             my $deprel = $fields[7];
-            if($deprel =~ m/:/)
-            {
-                $hash{$deprel}{$key}++;
-                $nhits++;
-            }
+            $hash{$deprel}{$key}++;
+            $nhits++;
         }
     }
     close(FILE);
