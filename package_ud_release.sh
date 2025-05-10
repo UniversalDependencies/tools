@@ -35,15 +35,18 @@ function copy_data_repo
     # The training data in UD_Czech-PDT, in UD_German-HDT and in UD_Russian-SynTagRus is split to
     # multiple files because it is too large for Github.
     # However, it can be one file in our release, so join the files again in the release copy.
-    if [ "$1" == "UD_Czech-PDT" ] ; then
-        cat $dstdir/$1/cs_pdt-ud-train-*.conllu > $dstdir/$1/cs_pdt-ud-train.conllu
-        rm $dstdir/$1/cs_pdt-ud-train-*.conllu
+    if [ "$1" == "UD_Czech-PDTC" ] ; then
+        cat $dstdir/$1/cs_pdtc-ud-train-*.conllu > $dstdir/$1/cs_pdtc-ud-train.conllu
+        rm $dstdir/$1/cs_pdtc-ud-train-*.conllu
     elif [ "$1" == "UD_German-HDT" ] ; then
         cat $dstdir/$1/de_hdt-ud-train-*.conllu > $dstdir/$1/de_hdt-ud-train.conllu
         rm $dstdir/$1/de_hdt-ud-train-*.conllu
     elif [ "$1" == "UD_Russian-SynTagRus" ] ; then
         cat $dstdir/$1/ru_syntagrus-ud-train-*.conllu > $dstdir/$1/ru_syntagrus-ud-train.conllu
         rm $dstdir/$1/ru_syntagrus-ud-train-*.conllu
+    elif [ "$1" == "UD_Russian-Taiga" ] ; then
+        cat $dstdir/$1/ru_taiga-ud-train-*.conllu > $dstdir/$1/ru_taiga-ud-train.conllu
+        rm $dstdir/$1/ru_taiga-ud-train-*.conllu
     fi
     # If we are creating the special package for the CoNLL 2018 shared task,
     # and if this treebank is considered small, merge its training and development data.
