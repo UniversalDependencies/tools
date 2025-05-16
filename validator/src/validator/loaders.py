@@ -4,14 +4,65 @@ import re
 
 import validator.globals as g
 
-def load_file(filename):
-    res = set()
-    with open(filename, 'r', encoding='utf-8') as f:
-        for line in f:
-            line=line.strip()
-            if not line or line.startswith('#'):
-                continue
-            res.add(line)
+def load_set(f_name_ud, lang, validate_langspec=False, validate_enhanced=False):
+    """
+    Loads a list of values from the two files, and returns their
+    set. If lang doesn't exist, loads nothing and returns
+    None (ie this taglist is not checked for the given language). If lang
+    is None, only loads the UD one. This is probably only useful for CPOS which doesn't
+    allow language-specific extensions. Set validate_langspec=True when loading basic dependencies.
+    That way the language specific deps will be checked to be truly extensions of UD ones.
+    Set validate_enhanced=True when loading enhanced dependencies. They will be checked to be
+    truly extensions of universal relations, too; but a more relaxed regular expression will
+    be checked because enhanced relations may contain stuff that is forbidden in the basic ones.
+    """
+    res = load_file(os.path.join(g.THISDIR, 'data', f_name_ud))
+    # Now res holds UD
+    # Next load and optionally check the langspec extensions
+    if lang is not None and lang != f_name_ud:
+            l_spec = load_file(os.path.join(g.THISDIR,"data","tokens_w_space.json"), lang)
+            for v in l_spec:
+                if validate_enhanced:
+                    # We are reading the list of language-specific dependency relations in the enhanced representation
+                    # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
+                    # restricts enhanced dependencies.
+                    if not g.edeprel_re.match(v):
+                        testlevel = 4
+                        testclass = 'Enhanced'
+                        testid = 'edeprel-def-regex'
+                        testmessage = f"Spurious language-specific enhanced relation '{v}' - it does not match the regular expression that restricts enhanced relations."
+                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+                        continue
+                elif validate_langspec:
+                    # We are reading the list of language-specific dependency relations in the basic representation
+                    # (i.e., the DEPREL column, not DEPS). Make sure that they match the regular expression that
+                    # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
+                    # enhanced dependencies, which should be listed in a separate file.)
+                    if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
+                        testlevel = 4
+                        testclass = 'Syntax'
+                        testid = 'deprel-def-regex'
+                        testmessage = f"Spurious language-specific relation '{v}' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+                        continue
+                if validate_langspec or validate_enhanced:
+                    try:
+                        parts=v.split(':')
+                        if parts[0] not in res and parts[0] != 'ref':
+                            testlevel = 4
+                            testclass = 'Syntax'
+                            testid = 'deprel-def-universal-part'
+                            testmessage = f"Spurious language-specific relation '{v}' - not an extension of any UD relation."
+                            warn(testmessage, testclass, testlevel, testid, lineno=-1)
+                            continue
+                    except:
+                        testlevel = 4
+                        testclass = 'Syntax'
+                        testid = 'deprel-def-universal-part'
+                        testmessage = f"Spurious language-specific relation '{v}' - not an extension of any UD relation."
+                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+                        continue
+                res.add(v)
     return res
 
 def load_json_data(filename, key):

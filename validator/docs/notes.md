@@ -32,11 +32,7 @@ be checked because enhanced relations may contain stuff that is forbidden in the
 
 ### load_file(filename)
 
-> Helper function from some loaders.
->
-> Was used in load_upos_set; removed after converting cpos.ud -> upos.json
->
-> TODO: refactor load_set to use a single json where keys are langcodes and values are regex. After this, the function can be removed
+> Removed (replaced with more general `load_json_data`).
 
 ###  get_auxdata_for_language(lcode)
 Searches the previously loaded database of auxiliary/copula lemmas. Returns
