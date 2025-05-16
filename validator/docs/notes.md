@@ -48,6 +48,230 @@ this function is called only once at the beginning. However, some files
 contain code-switched data and we may temporarily need to validate
 another language.
 
+## Validation functions
+
+TODO:
+- logging instead of `warn()`
+- boolean return type
+
+### validate(inp, out, args, tag_sets, known_sent_ids)
+> Entry point for validation.
+> Parameters:
+> - inp : file obj
+> - out : file obj but not used
+> - args : cli arguments (argparse result)
+> - tag_sets :
+> - known_sent_ids :
+
+
+### validate_unicode_normalization(text)
+Tests that letters composed of multiple Unicode characters (such as a base
+letter plus combining diacritics) conform to NFC normalization (canonical
+decomposition followed by canonical composition).
+
+### validate_cols_level1(cols)
+Tests that can run on a single line and pertain only to the CoNLL-U file
+format, not to predefined sets of UD tags.
+
+validate_ID_references(tree)
+    Validates that HEAD and DEPS reference existing IDs.
+
+validate_ID_sequence(tree)
+    Validates that the ID sequence is correctly formed.
+    Besides issuing a warning if an error is found, it also returns False to
+    the caller so it can avoid building a tree from corrupt ids.
+
+validate_annotation(tree)
+    Checks universally valid consequences of the annotation guidelines.
+
+validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist)
+    Verifies that the UPOS tag AUX is used only with lemmas that are known to
+    act as auxiliary verbs or particles in the given language.
+    Parameters:
+      'cols' ....... columns of the head node
+      'children' ... list of ids
+      'nodes' ...... dictionary where we can translate the node id into its
+                     CoNLL-U columns
+      'line' ....... line number of the node within the file
+
+validate_character_constraints(cols)
+    Checks general constraints on valid characters, e.g. that UPOS
+    only contains [A-Z].
+
+validate_cols(cols, tag_sets, args)
+    All tests that can run on a single line. Done as soon as the line is read,
+    called from trees() if level>1.
+
+
+validate_copula_lemmas(cols, children, nodes, line, lang, coplist)
+    Verifies that the relation cop is used only with lemmas that are known to
+    act as copulas in the given language.
+    Parameters:
+      'cols' ....... columns of the head node
+      'children' ... list of ids
+      'nodes' ...... dictionary where we can translate the node id into its
+                     CoNLL-U columns
+      'line' ....... line number of the node within the file
+
+validate_deprels(cols, tag_sets, args)
+
+validate_deps(tree)
+    Validates that DEPS is correctly formatted and that there are no
+    self-loops in DEPS.
+
+validate_empty_node_empty_vals(cols)
+    Checks that an empty node has _ empty values in HEAD and DEPREL. This is
+    required by UD guidelines but not necessarily by CoNLL-U, therefore
+    a level 2 test.
+
+validate_enhanced_annotation(graph)
+    Checks universally valid consequences of the annotation guidelines in the
+    enhanced representation. Currently tests only phenomena specific to the
+    enhanced dependencies; however, we should also test things that are
+    required in the basic dependencies (such as left-to-right coordination),
+    unless it is obvious that in enhanced dependencies such things are legal.
+
+validate_features(cols, tag_sets, args)
+    Checks general constraints on feature-value format. On level 4 and higher,
+    also checks that a feature-value pair is listed as approved. (Every pair
+    must be allowed on level 2 because it could be defined as language-specific.
+    To disallow non-universal features, test on level 4 with language 'ud'.)
+
+validate_fixed_span(node_id, tree)
+    Like with goeswith, the fixed relation should not in general skip words that
+    are not part of the fixed expression. Unlike goeswith however, there can be
+    an intervening punctuation symbol. Moreover, the rule that fixed expressions
+    cannot be discontiguous has been challenged with examples from Swedish and
+    Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
+    Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
+    as just a warning.
+
+validate_flat_foreign(node_id, tree)
+    flat:foreign is an optional subtype of flat. It is used to connect two words
+    in a code-switched segment of foreign words if the annotators did not want
+    to provide the analysis according to the source language. If flat:foreign
+    is used, both the parent and the child should have the Foreign=Yes feature
+    and their UPOS tag should be X.
+
+validate_functional_leaves(node_id, tree)
+    Most of the time, function-word nodes should be leaves. This function
+    checks for known exceptions and warns in the other cases.
+    (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
+
+validate_goeswith_morphology_and_edeps(node_id, tree)
+    If a node has the 'goeswith' incoming relation, it is a non-first part of
+    a mistakenly interrupted word. The lemma, upos tag and morphological features
+    of the word should be annotated at the first part, not here.
+
+validate_goeswith_span(node_id, tree)
+    The relation 'goeswith' is used to connect word parts that are separated
+    by whitespace and should be one word instead. We assume that the relation
+    goes left-to-right, which is checked elsewhere. Here we check that the
+    nodes really were separated by whitespace. If there is another node in the
+    middle, it must be also attached via 'goeswith'. The parameter id refers to
+    the node whose goeswith children we test.
+
+validate_left_to_right_relations(node_id, tree)
+    Certain UD relations must always go left-to-right.
+    Here we currently check the rule for the basic dependencies.
+    The same should also be tested for the enhanced dependencies!
+
+validate_lspec_annotation(tree, lang, tag_sets)
+    Checks language-specific consequences of the annotation guidelines.
+
+validate_misc(tree)
+    In general, the MISC column can contain almost anything. However, if there
+    is a vertical bar character, it is interpreted as the separator of two
+    MISC attributes, which may or may not have the form of attribute=value pair.
+    In general it is not forbidden that the same attribute appears several times
+    with different values, but this should not happen for selected attributes
+    that are described in the UD documentation.
+
+validate_misc_entity(comments, sentence)
+    Optionally checks the well-formedness of the MISC attributes that pertain
+    to coreference and named entities.
+
+validate_newlines(inp)
+
+validate_orphan(node_id, tree)
+    The orphan relation is used to attach an unpromoted orphan to the promoted
+    orphan in gapping constructions. A common error is that the promoted orphan
+    gets the orphan relation too. The parent of orphan is typically attached
+    via a conj relation, although some other relations are plausible too.
+
+validate_projective_punctuation(node_id, tree)
+    Punctuation is not supposed to cause nonprojectivity or to be attached
+    nonprojectively.
+
+validate_required_feature(
+    feats,
+    fv,
+    testmessage,
+    testlevel,
+    testid,
+    nodeid,
+    lineno
+)
+In general, the annotation of morphological features is optional, although
+highly encouraged. However, if the treebank does have features, then certain
+features become required. This function will check the presence of a feature
+and if it is missing, an error will be reported only if at least one feature
+has been already encountered. Otherwise the error will be remembered and it
+may be reported afterwards if any feature is encountered later.
+
+validate_root(tree)
+    Checks that DEPREL is "root" iff HEAD is 0.
+
+validate_sent_id(comments, known_ids, lcode)
+
+validate_single_subject(node_id, tree)
+    No predicate should have more than one subject.
+    An xcomp dependent normally has no subject, but in some languages the
+    requirement may be weaker: it could have an overt subject if it is
+    correferential with a particular argument of the matrix verb. Hence we do
+    not check zero subjects of xcomp dependents at present.
+    Furthermore, in some situations we must allow multiple subjects. If a clause
+    acts as a nonverbal predicate of another clause, then we must attach two
+    subjects to the predicate of the inner clause: one is the predicate of the
+    inner clause, the other is the predicate of the outer clause. This could in
+    theory be recursive but in practice it isn't. As of UD 2.10, an amendment
+    of the guidelines says that the inner predicate of the predicate clause
+    should govern both subjects even if there is a copula (previously such
+    cases were an exception from the UD approach that copulas should not be
+    heads); however, the outer subjects should be attached as [nc]subj:outer.
+    See https://universaldependencies.org/changes.html#multiple-subjects.
+    See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
+    Strictly speaking, :outer is optional because it is a subtype, and some
+    treebanks may want to avoid it. For example, in Coptic Scriptorium, there
+    is only one occurrence in dev, one in test, and none in train, so it would
+    be impossible to train a parser that gets it right. For that reason, it is
+    possible to replace the :outer subtype with Subject=Outer in MISC. The MISC
+    attribute is just a directive for the validator and no parser is expected
+    to predict it.
+
+validate_text_meta(comments, tree, args)
+
+validate_token_empty_vals(cols)
+    Checks that a multi-word token has _ empty values in all fields except MISC.
+    This is required by UD guidelines although it is not a problem in general,
+    therefore a level 2 test.
+
+validate_token_ranges(tree)
+    Checks that the word ranges for multiword tokens are valid.
+
+validate_upos(cols, tag_sets)
+
+validate_upos_vs_deprel(node_id, tree)
+    For certain relations checks that the dependent word belongs to an expected
+    part-of-speech category. Occasionally we may have to check the children of
+    the node, too.
+
+validate_whitespace(cols, tag_sets)
+    Checks a single line for disallowed whitespace.
+    Here we assume that all language-independent whitespace-related tests have
+    already been done in validate_cols_level1(), so we only check for words
+    with spaces that are explicitly allowed in a given language.
+
 ---
 
 FUNCTIONS
@@ -170,215 +394,6 @@ FUNCTIONS
         the next sentence, that is, it will read the next sentence from the input
         stream. (Technically, the function returns an object, and the object will
         then read the sentences within the caller's loop.)
-
-    validate(inp, out, args, tag_sets, known_sent_ids)
-
-    validate_ID_references(tree)
-        Validates that HEAD and DEPS reference existing IDs.
-
-    validate_ID_sequence(tree)
-        Validates that the ID sequence is correctly formed.
-        Besides issuing a warning if an error is found, it also returns False to
-        the caller so it can avoid building a tree from corrupt ids.
-
-    validate_annotation(tree)
-        Checks universally valid consequences of the annotation guidelines.
-
-    validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist)
-        Verifies that the UPOS tag AUX is used only with lemmas that are known to
-        act as auxiliary verbs or particles in the given language.
-        Parameters:
-          'cols' ....... columns of the head node
-          'children' ... list of ids
-          'nodes' ...... dictionary where we can translate the node id into its
-                         CoNLL-U columns
-          'line' ....... line number of the node within the file
-
-    validate_character_constraints(cols)
-        Checks general constraints on valid characters, e.g. that UPOS
-        only contains [A-Z].
-
-    validate_cols(cols, tag_sets, args)
-        All tests that can run on a single line. Done as soon as the line is read,
-        called from trees() if level>1.
-
-    validate_cols_level1(cols)
-        Tests that can run on a single line and pertain only to the CoNLL-U file
-        format, not to predefined sets of UD tags.
-
-    validate_copula_lemmas(cols, children, nodes, line, lang, coplist)
-        Verifies that the relation cop is used only with lemmas that are known to
-        act as copulas in the given language.
-        Parameters:
-          'cols' ....... columns of the head node
-          'children' ... list of ids
-          'nodes' ...... dictionary where we can translate the node id into its
-                         CoNLL-U columns
-          'line' ....... line number of the node within the file
-
-    validate_deprels(cols, tag_sets, args)
-
-    validate_deps(tree)
-        Validates that DEPS is correctly formatted and that there are no
-        self-loops in DEPS.
-
-    validate_empty_node_empty_vals(cols)
-        Checks that an empty node has _ empty values in HEAD and DEPREL. This is
-        required by UD guidelines but not necessarily by CoNLL-U, therefore
-        a level 2 test.
-
-    validate_enhanced_annotation(graph)
-        Checks universally valid consequences of the annotation guidelines in the
-        enhanced representation. Currently tests only phenomena specific to the
-        enhanced dependencies; however, we should also test things that are
-        required in the basic dependencies (such as left-to-right coordination),
-        unless it is obvious that in enhanced dependencies such things are legal.
-
-    validate_features(cols, tag_sets, args)
-        Checks general constraints on feature-value format. On level 4 and higher,
-        also checks that a feature-value pair is listed as approved. (Every pair
-        must be allowed on level 2 because it could be defined as language-specific.
-        To disallow non-universal features, test on level 4 with language 'ud'.)
-
-    validate_fixed_span(node_id, tree)
-        Like with goeswith, the fixed relation should not in general skip words that
-        are not part of the fixed expression. Unlike goeswith however, there can be
-        an intervening punctuation symbol. Moreover, the rule that fixed expressions
-        cannot be discontiguous has been challenged with examples from Swedish and
-        Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
-        Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
-        as just a warning.
-
-    validate_flat_foreign(node_id, tree)
-        flat:foreign is an optional subtype of flat. It is used to connect two words
-        in a code-switched segment of foreign words if the annotators did not want
-        to provide the analysis according to the source language. If flat:foreign
-        is used, both the parent and the child should have the Foreign=Yes feature
-        and their UPOS tag should be X.
-
-    validate_functional_leaves(node_id, tree)
-        Most of the time, function-word nodes should be leaves. This function
-        checks for known exceptions and warns in the other cases.
-        (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
-
-    validate_goeswith_morphology_and_edeps(node_id, tree)
-        If a node has the 'goeswith' incoming relation, it is a non-first part of
-        a mistakenly interrupted word. The lemma, upos tag and morphological features
-        of the word should be annotated at the first part, not here.
-
-    validate_goeswith_span(node_id, tree)
-        The relation 'goeswith' is used to connect word parts that are separated
-        by whitespace and should be one word instead. We assume that the relation
-        goes left-to-right, which is checked elsewhere. Here we check that the
-        nodes really were separated by whitespace. If there is another node in the
-        middle, it must be also attached via 'goeswith'. The parameter id refers to
-        the node whose goeswith children we test.
-
-    validate_left_to_right_relations(node_id, tree)
-        Certain UD relations must always go left-to-right.
-        Here we currently check the rule for the basic dependencies.
-        The same should also be tested for the enhanced dependencies!
-
-    validate_lspec_annotation(tree, lang, tag_sets)
-        Checks language-specific consequences of the annotation guidelines.
-
-    validate_misc(tree)
-        In general, the MISC column can contain almost anything. However, if there
-        is a vertical bar character, it is interpreted as the separator of two
-        MISC attributes, which may or may not have the form of attribute=value pair.
-        In general it is not forbidden that the same attribute appears several times
-        with different values, but this should not happen for selected attributes
-        that are described in the UD documentation.
-
-    validate_misc_entity(comments, sentence)
-        Optionally checks the well-formedness of the MISC attributes that pertain
-        to coreference and named entities.
-
-    validate_newlines(inp)
-
-    validate_orphan(node_id, tree)
-        The orphan relation is used to attach an unpromoted orphan to the promoted
-        orphan in gapping constructions. A common error is that the promoted orphan
-        gets the orphan relation too. The parent of orphan is typically attached
-        via a conj relation, although some other relations are plausible too.
-
-    validate_projective_punctuation(node_id, tree)
-        Punctuation is not supposed to cause nonprojectivity or to be attached
-        nonprojectively.
-
-    validate_required_feature(
-        feats,
-        fv,
-        testmessage,
-        testlevel,
-        testid,
-        nodeid,
-        lineno
-    )
-        In general, the annotation of morphological features is optional, although
-        highly encouraged. However, if the treebank does have features, then certain
-        features become required. This function will check the presence of a feature
-        and if it is missing, an error will be reported only if at least one feature
-        has been already encountered. Otherwise the error will be remembered and it
-        may be reported afterwards if any feature is encountered later.
-
-    validate_root(tree)
-        Checks that DEPREL is "root" iff HEAD is 0.
-
-    validate_sent_id(comments, known_ids, lcode)
-
-    validate_single_subject(node_id, tree)
-        No predicate should have more than one subject.
-        An xcomp dependent normally has no subject, but in some languages the
-        requirement may be weaker: it could have an overt subject if it is
-        correferential with a particular argument of the matrix verb. Hence we do
-        not check zero subjects of xcomp dependents at present.
-        Furthermore, in some situations we must allow multiple subjects. If a clause
-        acts as a nonverbal predicate of another clause, then we must attach two
-        subjects to the predicate of the inner clause: one is the predicate of the
-        inner clause, the other is the predicate of the outer clause. This could in
-        theory be recursive but in practice it isn't. As of UD 2.10, an amendment
-        of the guidelines says that the inner predicate of the predicate clause
-        should govern both subjects even if there is a copula (previously such
-        cases were an exception from the UD approach that copulas should not be
-        heads); however, the outer subjects should be attached as [nc]subj:outer.
-        See https://universaldependencies.org/changes.html#multiple-subjects.
-        See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
-        Strictly speaking, :outer is optional because it is a subtype, and some
-        treebanks may want to avoid it. For example, in Coptic Scriptorium, there
-        is only one occurrence in dev, one in test, and none in train, so it would
-        be impossible to train a parser that gets it right. For that reason, it is
-        possible to replace the :outer subtype with Subject=Outer in MISC. The MISC
-        attribute is just a directive for the validator and no parser is expected
-        to predict it.
-
-    validate_text_meta(comments, tree, args)
-
-    validate_token_empty_vals(cols)
-        Checks that a multi-word token has _ empty values in all fields except MISC.
-        This is required by UD guidelines although it is not a problem in general,
-        therefore a level 2 test.
-
-    validate_token_ranges(tree)
-        Checks that the word ranges for multiword tokens are valid.
-
-    validate_unicode_normalization(text)
-        Tests that letters composed of multiple Unicode characters (such as a base
-        letter plus combining diacritics) conform to NFC normalization (canonical
-        decomposition followed by canonical composition).
-
-    validate_upos(cols, tag_sets)
-
-    validate_upos_vs_deprel(node_id, tree)
-        For certain relations checks that the dependent word belongs to an expected
-        part-of-speech category. Occasionally we may have to check the children of
-        the node, too.
-
-    validate_whitespace(cols, tag_sets)
-        Checks a single line for disallowed whitespace.
-        Here we assume that all language-independent whitespace-related tests have
-        already been done in validate_cols_level1(), so we only check for words
-        with spaces that are explicitly allowed in a given language.
 
     warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None)
         Print the error/warning message.
