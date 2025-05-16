@@ -3256,8 +3256,8 @@ if __name__=="__main__":
     coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
                                                 "Options for checking coreference and entity annotation.")
     coref_group.add_argument('--coref',
-                             action='store_true', default=False, dest='check_coref',
-                             help='Test coreference and entity-related annotation in MISC.')
+                            action='store_true', default=False, dest='check_coref',
+                            help='Test coreference and entity-related annotation in MISC.')
 
     args = opt_parser.parse_args() #Parsed command-line arguments
     error_counter={} # Incremented by warn()  {key: error type value: its count}
