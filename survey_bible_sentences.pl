@@ -26,11 +26,41 @@ my @bible_books = qw(GEN EXOD LEV NUM DEUT JUDIT JOSH JUDG RUTH 1SAM 2SAM 1KGS 2
 # Some datasets use the full names of the books.
 my %bible_book_names =
 (
-    'Genesis' => 'GEN',
-    'Exodus' => 'EXOD',
-    'Leviticus' => 'LEV',
-    'Ruth' => 'RUTH',
-    'Habakkuk' => 'HAB'
+    'Genesis'        => 'GEN',
+    'Exodus'         => 'EXOD',
+    'EXO'            => 'EXOD',
+    'Leviticus'      => 'LEV',
+    'Ruth'           => 'RUTH',
+    'RUT'            => 'RUTH',
+    'PSALM'          => 'PS',
+    'Habakkuk'       => 'HAB',
+    'MARC'           => 'MARK',
+    'LUCA'           => 'LUKE',
+    'IOAN'           => 'JOHN',
+    'PAVEL_ROM'      => 'ROM',
+    'PAVEL_1.CORINT' => '1COR',
+    'PAVEL_2.CORINT' => '2COR',
+    'PAVEL_GALAT'    => 'GAL',
+    'PAVEL_EFES'     => 'EPH',
+    'PAVEL_FILIP'    => 'PHIL',
+    'PAVEL_COLAS'    => 'COL',
+    'PAVEL_SOLUN.1'  => '1THESS',
+    'PAVEL_SOLUN.2'  => '2THESS',
+    'PAVEL_TIM.1'    => '1TIM',
+    'PAVEL_TIM.2'    => '2TIM',
+    'TIT'            => 'TITUS',
+    'PAVEL_TIT'      => 'TITUS',
+    'PHILEM'         => 'PHLM',
+    'PAVEL_FILIMON'  => 'PHLM',
+    'PAVEL_EVREI'    => 'HEB',
+    'IACOB'          => 'JAS',
+    'PETRU.1'        => '1PET',
+    'PETRU.2'        => '2PET',
+    'IOAN.1'         => '1JOHN',
+    'IOAN.2'         => '2JOHN',
+    'IOAN.3'         => '3JOHN',
+    'IUDA'           => 'JUDE',
+    'IOAN_APOC'      => 'REV'
 );
 my %bible_ord;
 for(my $i = 0; $i <= $#bible_books; $i++)
@@ -169,6 +199,11 @@ foreach my $file (@files)
                 {
                     $ref_book = $1;
                     $ref_index = $2;
+                }
+                if(exists($bible_book_names{$ref_book}))
+                {
+                    $ref_book = $bible_book_names{$ref_book};
+                    $refs[0] = $ref_book.'_'.$ref_index;
                 }
                 unless($ref_index =~ m/^PRED/)
                 {
