@@ -21,6 +21,9 @@ if(scalar(@files) == 0)
     usage();
     die("No file name arguments found");
 }
+###!!! Ideally we want to standardize the Bible book labels across UD. This list is not (yet) necessarily the canonical one. See also:
+# https://github.com/UniversalDependencies/tools/commit/fa9f43cf76ab223775485e45bd466fec2b46ea9c#commitcomment-157312840
+# https://guide.unwsp.edu/c.php?g=1321431&p=9721744
 my @bible_books = qw(GEN EXOD LEV NUM DEUT JUDIT JOSH JUDG RUTH 1SAM 2SAM 1KGS 2KGS 1CHR 2CHR EZRA NEH ESTH JOB PS PROV ECCL SONG ISA JER LAM EZEK DAN HOS JOEL AMOS OBAD JONAH MIC NAH HAB ZEPH HAG ZECH MAL
                      MATT MARK LUKE JOHN ACTS ROM 1COR 2COR GAL EPH PHIL COL 1THESS 2THESS 1TIM 2TIM TITUS PHLM HEB JAS 1PET 2PET 1JOHN 2JOHN 3JOHN JUDE REV);
 # Some datasets use the full names of the books.
@@ -179,44 +182,12 @@ foreach my $file (@files)
                     }
                 }
                 my ($ref_book, $ref_index) = split(/_/, $refs[0]);
-                my ($ref_book, $ref_index);
-                if($refs[0] =~ m/^(PAVEL_(?:ROM|COLAS))\.(.+)$/)
-                {
-                    $ref_book = $1;
-                    $ref_index = $2;
-                }
-                elsif($refs[0] =~ m/^(PAVEL_(?:SOLUN|TIM)\.[12]|IOAN_APOC)_(.+)$/)
-                {
-                    $ref_book = $1;
-                    $ref_index = $2;
-                }
-                elsif($refs[0] =~ m/^(PAVEL_(?:[12]\.)?[A-Z]+|PETRU\.[12]|IOAN\.[123])_(.+)$/)
-                {
-                    $ref_book = $1;
-                    $ref_index = $2;
-                }
-                elsif($refs[0] =~ m/^([0-9]*[A-Z]+)_?(.+)$/)
-                {
-                    $ref_book = $1;
-                    $ref_index = $2;
-                }
-                if(exists($bible_book_names{$ref_book}))
-                {
-                    $ref_book = $bible_book_names{$ref_book};
-                    $refs[0] = $ref_book.'_'.$ref_index;
-                }
+                my ($ref_book, $ref_index) = split_book_ref($refs[0], \%bible_book_names);
+                # The book reference may have been changed to standard; project that back to the full reference string.
+                $refs[0] = $ref_book.'_'.$ref_index;
                 unless($ref_index =~ m/^PRED/)
                 {
-                    my ($ref_chapter, $ref_verse);
-                    if($ref_index =~ m/^([0-9]+)\.([0-9]+)$/)
-                    {
-                        $ref_chapter = $1;
-                        $ref_verse = $2;
-                    }
-                    else
-                    {
-                        $ref_chapter = $ref_index;
-                    }
+                    my ($ref_chapter, $ref_verse) = split_chapter_ref($ref_index);
                     my %sentence =
                     (
                         'refs'        => join(',', @refs),
@@ -266,4 +237,69 @@ foreach my $s (@sentences)
 {
     my $shortsource = substr($s->{source}, 0, 20);
     print("$s->{refs}\t$shortsource\t$s->{file}\t$s->{sent_id}\t$s->{text}\n");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a Bible reference and splits it to book label and the rest (index of
+# the verse inside the book). Attempts to account for various formats in which
+# the references appear in treebanks.
+#------------------------------------------------------------------------------
+sub split_book_ref
+{
+    my $reference = shift;
+    my $bible_book_names = shift; # reference to relabeling hash
+    my $book;
+    my $rest;
+    if($reference =~ m/^(PAVEL_(?:ROM|COLAS))\.(.+)$/)
+    {
+        $book = $1;
+        $rest = $2;
+    }
+    elsif($reference =~ m/^(PAVEL_(?:SOLUN|TIM)\.[12]|IOAN_APOC)_(.+)$/)
+    {
+        $book = $1;
+        $rest = $2;
+    }
+    elsif($reference =~ m/^(PAVEL_(?:[12]\.)?[A-Z]+|PETRU\.[12]|IOAN\.[123])_(.+)$/)
+    {
+        $book = $1;
+        $rest = $2;
+    }
+    elsif($reference =~ m/^([0-9]*[A-Z]+)_?(.+)$/)
+    {
+        $book = $1;
+        $rest = $2;
+    }
+    if(exists($bible_book_names->{$book}))
+    {
+        $book = $bible_book_names->{$book};
+    }
+    return ($book, $rest);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Takes a Bible verse reference (after stripping the book label) and splits it
+# to chapter number and the rest (index of the verse inside the chapter,
+# possibly multiple verses or specification of a part of the verse). Attempts
+# to account for various formats in which the references appear in treebanks.
+#------------------------------------------------------------------------------
+sub split_chapter_ref
+{
+    my $reference = shift;
+    my $chapter;
+    my $rest;
+    if($reference =~ m/^([0-9]+)[:\.](.+)$/)
+    {
+        $chapter = $1*1;
+        $rest = $2;
+    }
+    else
+    {
+        $chapter = $reference;
+    }
+    return ($chapter, $rest);
 }
