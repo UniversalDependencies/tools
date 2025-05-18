@@ -21,12 +21,14 @@ if(scalar(@files) == 0)
     usage();
     die("No file name arguments found");
 }
-###!!! Ideally we want to standardize the Bible book labels across UD. This list is not (yet) necessarily the canonical one. See also:
-# https://github.com/UniversalDependencies/tools/commit/fa9f43cf76ab223775485e45bd466fec2b46ea9c#commitcomment-157312840
-# https://guide.unwsp.edu/c.php?g=1321431&p=9721744
-my @bible_books = qw(GEN EXOD LEV NUM DEUT JUDIT JOSH JUDG RUTH 1SAM 2SAM 1KGS 2KGS 1CHR 2CHR EZRA NEH ESTH JOB PS PROV ECCL SONG ISA JER LAM EZEK DAN HOS JOEL AMOS OBAD JONAH MIC NAH HAB ZEPH HAG ZECH MAL
+# The labels used to refer to Bible books should be ideally standardized across UD.
+# The labels in this list are derived from the standard at https://guide.unwsp.edu/c.php?g=1321431&p=9721744
+# (but they are uppercased and inner spaces are removed). The order of the books also follows the same source.
+# See also https://github.com/UniversalDependencies/tools/commit/fa9f43cf76ab223775485e45bd466fec2b46ea9c#commitcomment-157312840
+my @bible_books = qw(GEN EXOD LEV NUM DEUT JOSH JUDG RUTH 1SAM 2SAM 1KGS 2KGS 1CHR 2CHR EZRA NEH ESTH JOB PS PROV ECCL SONG ISA JER LAM EZEK DAN HOS JOEL AMOS OBAD JONAH MIC NAH HAB ZEPH HAG ZECH MAL
+                     TOB JDT ADDESTH WIS SIR BAR EPJER ADDDAN PRAZAR SGTHREE SUS BEL 1MACC 2MACC 1ESD PRMAN PS151 3MACC 2ESD 4MACC
                      MATT MARK LUKE JOHN ACTS ROM 1COR 2COR GAL EPH PHIL COL 1THESS 2THESS 1TIM 2TIM TITUS PHLM HEB JAS 1PET 2PET 1JOHN 2JOHN 3JOHN JUDE REV);
-# Some datasets use the full names of the books.
+# Some datasets use the full names or alternative abbreviations of the books.
 my %bible_book_names =
 (
     'Genesis'        => 'GEN',
@@ -35,8 +37,17 @@ my %bible_book_names =
     'Leviticus'      => 'LEV',
     'Ruth'           => 'RUTH',
     'RUT'            => 'RUTH',
+    '1KGDMS'         => '1SAM', # Septuagint joins Samuel and Kings into Kingdoms
+    '2KGDMS'         => '2SAM', # Septuagint joins Samuel and Kings into Kingdoms
+    '3KGDMS'         => '1KGS', # Septuagint joins Samuel and Kings into Kingdoms
+    '4KGDMS'         => '2KGS', # Septuagint joins Samuel and Kings into Kingdoms
     'PSALM'          => 'PS',
+    'PSALMS'         => 'PS',
+    'PSS'            => 'PS',
+    'QOH'            => 'ECCL',
+    'CANT'           => 'SONG',
     'Habakkuk'       => 'HAB',
+    'JUDIT'          => 'JDT',
     'MARC'           => 'MARK',
     'LUCA'           => 'LUKE',
     'IOAN'           => 'JOHN',
@@ -70,37 +81,6 @@ for(my $i = 0; $i <= $#bible_books; $i++)
 {
     $bible_ord{$bible_books[$i]} = $i;
 }
-# Alternative labels of some books.
-$bible_ord{EXO} = $bible_ord{EXOD};
-$bible_ord{RUT} = $bible_ord{RUTH};
-$bible_ord{PSALM} = $bible_ord{PS};
-$bible_ord{MARC} = $bible_ord{MARK};
-$bible_ord{LUCA} = $bible_ord{LUKE};
-$bible_ord{IOAN} = $bible_ord{JOHN};
-$bible_ord{PAVEL_ROM} = $bible_ord{ROM};
-$bible_ord{'PAVEL_1.CORINT'} = $bible_ord{'1COR'};
-$bible_ord{'PAVEL_2.CORINT'} = $bible_ord{'2COR'};
-$bible_ord{PAVEL_GALAT} = $bible_ord{GAL};
-$bible_ord{PAVEL_EFES} = $bible_ord{EPH};
-$bible_ord{PAVEL_FILIP} = $bible_ord{PHIL};
-$bible_ord{PAVEL_COLAS} = $bible_ord{COL};
-$bible_ord{'PAVEL_SOLUN.1'} = $bible_ord{'1THESS'};
-$bible_ord{'PAVEL_SOLUN.2'} = $bible_ord{'2THESS'};
-$bible_ord{'PAVEL_TIM.1'} = $bible_ord{'1TIM'};
-$bible_ord{'PAVEL_TIM.2'} = $bible_ord{'2TIM'};
-$bible_ord{TIT} = $bible_ord{TITUS};
-$bible_ord{PAVEL_TIT} = $bible_ord{TITUS};
-$bible_ord{PHILEM} = $bible_ord{PHLM};
-$bible_ord{PAVEL_FILIMON} = $bible_ord{PHLM};
-$bible_ord{PAVEL_EVREI} = $bible_ord{HEB};
-$bible_ord{IACOB} = $bible_ord{JAS};
-$bible_ord{'PETRU.1'} = $bible_ord{'1PET'};
-$bible_ord{'PETRU.2'} = $bible_ord{'2PET'};
-$bible_ord{'IOAN.1'} = $bible_ord{'1JOHN'};
-$bible_ord{'IOAN.2'} = $bible_ord{'2JOHN'};
-$bible_ord{'IOAN.3'} = $bible_ord{'3JOHN'};
-$bible_ord{IUDA} = $bible_ord{JUDE};
-$bible_ord{IOAN_APOC} = $bible_ord{REV};
 my @sentences;
 foreach my $file (@files)
 {
@@ -185,7 +165,7 @@ foreach my $file (@files)
                 my ($ref_book, $ref_index) = split_book_ref($refs[0], \%bible_book_names);
                 # The book reference may have been changed to standard; project that back to the full reference string.
                 $refs[0] = $ref_book.'_'.$ref_index;
-                unless($ref_index =~ m/^PRED/)
+                if($ref_index =~ m/^[0-9]/)
                 {
                     my ($ref_chapter, $ref_verse) = split_chapter_ref($ref_index);
                     my %sentence =
@@ -252,7 +232,7 @@ sub split_book_ref
     my $bible_book_names = shift; # reference to relabeling hash
     my $book;
     my $rest;
-    if($reference =~ m/^(PAVEL_(?:ROM|COLAS))\.(.+)$/)
+    if($reference =~ m/^(PSALM|PAVEL_(?:ROM|COLAS))\.(.+)$/)
     {
         $book = $1;
         $rest = $2;
