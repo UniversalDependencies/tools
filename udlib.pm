@@ -1166,26 +1166,26 @@ sub check_metadata
         if(defined($correct) && $claimed ne $correct)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
+            push(@{$errors}, "[L0 Repo readme-first-release] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
             $$n_errors++;
         }
         elsif(!defined($correct) && cmp_release_numbers($claimed, $last_release) <= 0)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not yet released.\n");
+            push(@{$errors}, "[L0 Repo readme-first-release] $folder README: 'Data available since: $claimed' is not true. This treebank was not yet released.\n");
             $$n_errors++;
         }
     }
     else
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
+        push(@{$errors}, "[L0 Repo readme-first-release] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
         $$n_errors++;
     }
     if($metadata->{Genre} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of genres: '$metadata->{Genre}'\n");
+        push(@{$errors}, "[L0 Repo readme-genre] $folder README: Missing list of genres: '$metadata->{Genre}'\n");
         $$n_errors++;
     }
     else
@@ -1201,26 +1201,26 @@ sub check_metadata
         {
             $ok = 0;
             my $ug = join(' ', sort(@unknown_genres));
-            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown genre '$ug'\n");
+            push(@{$errors}, "[L0 Repo readme-genre] $folder README: Unknown genre '$ug'\n");
             $$n_errors++;
         }
     }
     if($metadata->{License} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
+        push(@{$errors}, "[L0 Repo readme-license] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
     elsif($metadata->{License} !~ m/^(PD|CC0 1.0|CC BY(-NC)?(-SA)? (2.5|3.0|4.0)|LGPL-LR|C-UDA 1.0)$/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Unsupported license in README: '$metadata->{License}'\n");
+        push(@{$errors}, "[L0 Repo readme-license] $folder README: Unsupported license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
     if($metadata->{'Includes text'} !~ m/^(yes|no)$/i)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
+        push(@{$errors}, "[L0 Repo readme-includes-text] $folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
         $$n_errors++;
     }
     foreach my $annotation (qw(Lemmas UPOS XPOS Features Relations))
@@ -1228,77 +1228,78 @@ sub check_metadata
         if($metadata->{$annotation} !~ m/\w/)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: Missing information on availability and source of $annotation\n");
+            push(@{$errors}, "[L0 Repo readme-annot-source] $folder README: Missing information on availability and source of $annotation\n");
             $$n_errors++;
         }
         elsif($metadata->{$annotation} !~ m/^(manual native|converted from manual|converted with corrections|automatic|automatic with corrections|not available)$/)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
+            push(@{$errors}, "[L0 Repo readme-annot-source] $folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
             $$n_errors++;
         }
     }
     if($metadata->{Contributing} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing metadata Contributing (where and how to contribute)\n");
+        push(@{$errors}, "[L0 Repo readme-contributing] $folder README: Missing metadata Contributing (where and how to contribute)\n");
         $$n_errors++;
     }
     elsif($metadata->{Contributing} !~ m/^(here|here source|elsewhere|to be adopted)$/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
+        push(@{$errors}, "[L0 Repo readme-contributing] $folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
         $$n_errors++;
     }
     if($metadata->{Contributors} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
+        push(@{$errors}, "[L0 Repo readme-contributors] $folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
         $$n_errors++;
     }
     if($metadata->{Contact} !~ m/\@/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
+        push(@{$errors}, "[L0 Repo readme-contributors] $folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
         $$n_errors++;
     }
     # Check other sections of the README file.
     if(!defined($metadata->{sections}{summary}))
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary not found.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary not found.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})<40)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too short.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary is too short.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})>500)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too long.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary is too long.\n");
         $$n_errors++;
     }
     elsif($metadata->{sections}{summary} =~ m/see \[release checklist\]/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
         $$n_errors++;
     }
     if(!$metadata->{changelog})
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: README does not contain 'ChangeLog'\n");
+        push(@{$errors}, "[L0 Repo readme-changelog] $folder README: README does not contain 'ChangeLog'\n");
         $$n_errors++;
     }
     # Add a link to the guidelines for README files. Add it to the last error message.
     # Do not make it a separate error message (just in case we get rid of $n_errors and use scalar(@errors) in the future).
     unless($ok)
     {
-        $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#treebank-metadata for guidelines on machine-readable metadata.\n";
-        $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#the-readme-file for general guidelines on README files.\n";
+        $errors->[-1] .= "See https://universaldependencies.org/contributing/repository_files.html#treebank-metadata for guidelines on machine-readable metadata.\n";
+        $errors->[-1] .= "See https://universaldependencies.org/contributing/repository_files.html#the-readme-file for general guidelines on README files.\n";
+        $errors->[-1] .= "See https://universaldependencies.org/contributing/licensing.html for treebank licensing guidelines.\n";
     }
     return $ok;
 }
