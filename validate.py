@@ -1611,10 +1611,12 @@ def validate_left_to_right_relations(node_id, tree):
         iparent = int(cols[HEAD])
         if ichild < iparent:
             # We must recognize the relation type in the test id so we can manage exceptions for legacy treebanks.
-            # For conj, flat, and fixed the requirement was introduced already before UD 2.2, and all treebanks in UD 2.3 passed it.
-            # For appos and goeswith the requirement was introduced before UD 2.4 and legacy treebanks are allowed to fail it.
+            # For conj, flat, and fixed the requirement was introduced already before UD 2.2.
+            # For appos and goeswith the requirement was introduced before UD 2.4.
+            # The designation "right-to-left" is confusing in languages with right-to-left writing systems.
+            # We keep it in the testid but we make the testmessage more neutral.
             testid = f"right-to-left-{lspec2ud(cols[DEPREL])}"
-            testmessage = f"Relation '{cols[DEPREL]}' must go left-to-right."
+            testmessage = f"Parent of relation '{cols[DEPREL]}' must precede the child in the word order."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
 def validate_single_subject(node_id, tree):
