@@ -1660,12 +1660,14 @@ def validate_single_subject(node_id, tree):
             return False
         return True
 
-    subjects = sorted([x for x in tree['children'][node_id] if is_inner_subject(tree['nodes'][x])])
-    if len(subjects) > 1:
+    children_ids = sorted(tree['children'][node_id])
+    subject_ids = [x for x in children_ids if is_inner_subject(tree['nodes'][x])]
+    subject_forms = [tree['nodes'][x][FORM] for x in subject_ids]
+    if len(subject_ids) > 1:
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
-        testmessage = f"Multiple subjects {str(subjects)} not subtyped as ':outer'."
+        testmessage = f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'."
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
 
