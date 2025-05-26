@@ -243,6 +243,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Vnoun"], "lvalues": [], "unused_uvalues": ["Fin", "Gdv", "Ger", "Inf", "Part", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Vnoun": 1}, "VERB": {"Conv": 1, "Vnoun": 1}}, "lastchanged": "2020-12-22-22-25-21", "lastchanger": "rueter"},
 "VerbType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Vido"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Vido": 1}, "ADV": {"Vido": 1}, "NOUN": {"Vido": 1}, "VERB": {"Vido": 1}}, "lastchanged": "2021-10-26-12-02-38", "lastchanger": "rueter"}
 },
+"apy": {
+
+},
 "aqz": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Iter"], "lvalues": [], "unused_uvalues": ["Imp", "Perf", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Hab": 1, "Iter": 1}}, "lastchanged": "2022-04-30-15-31-55", "lastchanger": "carolina"},
