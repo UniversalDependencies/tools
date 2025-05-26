@@ -410,6 +410,9 @@
 "Possessed": {"type": "local", "values": ["No", "Yes"], "errors": []},
 "VerbType": {"type": "local", "values": ["Vido"], "errors": []}
 },
+"apy": {
+"nomzr": {"type": "local", "values": [], "errors": ["Feature name 'nomzr' does not have the prescribed form.", "Unrecognized level 3 heading '### <a name=\"Prog\">`Yes`</a>: Yes'.", "Header title 'Nomzr' does not match the file name 'nomzr'.", "No feature values found."]}
+},
 "aqz": {
 "Deixis": {"type": "local", "values": ["Prox", "Dist"], "errors": []},
 "Determ": {"type": "local", "values": ["Yes"], "errors": []},
