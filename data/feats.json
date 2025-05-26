@@ -244,7 +244,7 @@
 "VerbType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Vido"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Vido": 1}, "ADV": {"Vido": 1}, "NOUN": {"Vido": 1}, "VERB": {"Vido": 1}}, "lastchanged": "2021-10-26-12-02-38", "lastchanger": "rueter"}
 },
 "apy": {
-
+"Deixis": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Prox"], "unused_uvalues": [], "unused_lvalues": ["Abv", "Bel", "Even", "Med", "Nvis", "Remt"], "evalues": [], "byupos": {"DET": {"Prox": 1}}, "lastchanged": "2025-05-26-16-08-58", "lastchanger": "@languagestructure"}
 },
 "aqz": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
