@@ -138,6 +138,28 @@ def shorten(string):
 def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
+def formtl(cols):
+    x = ''
+    l = len(cols)
+    if FORM < l:
+        x = cols[FORM]
+    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
+        misc = [x for x in cols[MISC].split('|') if x.startswith('Translit=')]
+        if len(misc) > 0:
+            x += ' ' + re.sub(r'^Translit=', '', misc[0])
+    return x
+
+def lemmatl(cols):
+    x = ''
+    l = len(cols)
+    if LEMMA < l:
+        x = cols[LEMMA]
+    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
+        misc = [x for x in cols[MISC].split('|') if x.startswith('LTranslit=')]
+        if len(misc) > 0:
+            x += ' ' + re.sub(r'^LTranslit=', '', misc[0])
+    return x
+
 
 
 #==============================================================================
@@ -580,7 +602,7 @@ def validate_text_meta(comments, tree, args):
                 beg,end=cols[ID].split('-')
                 try:
                     begi,endi = int(beg),int(end)
-                except ValueError as e:
+                except ValueError:
                     # This error has been reported elsewhere.
                     begi,endi = 1,0
                 # If we see a multi-word token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
@@ -1495,7 +1517,7 @@ def validate_upos_vs_deprel(node_id, tree):
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
@@ -1513,22 +1535,22 @@ def validate_upos_vs_deprel(node_id, tree):
     # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
-        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         testid = 'rel-upos-expl'
-        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         testid = 'rel-upos-aux'
-        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         testid = 'rel-upos-cop'
-        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
@@ -1537,31 +1559,31 @@ def validate_upos_vs_deprel(node_id, tree):
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
-        testmessage = f"'case' should not be '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'case' should not be '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
-        testmessage = f"'mark' should not be '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'mark' should not be '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
-        testmessage = f"'cc' should not be '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'cc' should not be '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if deprel == 'punct' and upos != 'PUNCT':
         testid = 'rel-upos-punct'
-        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{cols[FORM]}')"
+        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
-        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' ('{cols[FORM]}')"
+        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         testid = 'rel-upos-fixed'
-        testmessage = "'fixed' should not be used for proper nouns ('{cols[FORM]}')."
+        testmessage = "'fixed' should not be used for proper nouns ('{formtl(cols)}')."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
 def validate_flat_foreign(node_id, tree):
@@ -1662,7 +1684,8 @@ def validate_single_subject(node_id, tree):
 
     children_ids = sorted(tree['children'][node_id])
     subject_ids = [x for x in children_ids if is_inner_subject(tree['nodes'][x])]
-    subject_forms = [tree['nodes'][x][FORM] for x in subject_ids]
+    #subject_forms = [tree['nodes'][x][FORM] for x in subject_ids]
+    subject_forms = [formtl(tree['nodes'][x]) for x in subject_ids]
     if len(subject_ids) > 1:
         testlevel = 3
         testclass = 'Syntax'
@@ -2241,13 +2264,13 @@ def validate_lspec_annotation(tree, lang, tag_sets):
             # Do not continue to check annotation if there are elementary flaws.
             return
         try:
-            id_ = int(cols[ID])
+            int(cols[ID])
         except ValueError:
             # This error has been reported on lower levels, do not report it here.
             # Do not continue to check annotation if there are elementary flaws.
             return
         try:
-            head = int(cols[HEAD])
+            int(cols[HEAD])
         except ValueError:
             # This error has been reported on lower levels, do not report it here.
             # Do not continue to check annotation if there are elementary flaws.
