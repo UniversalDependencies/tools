@@ -348,6 +348,9 @@
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
+"axm": {
+
+},
 "az": {
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf", "Prog", "Prosp"], "lvalues": [], "unused_uvalues": ["Iter"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1, "Prosp": 1}, "VERB": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1, "Prosp": 1}}, "lastchanged": "2025-04-30-18-44-50", "lastchanger": "coltekin"},
 "Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Abl", "Acc", "Com", "Dat", "Gen", "Ins", "Loc", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Ill", "Ine", "Lat", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Abl": 1, "Acc": 1, "Com": 1, "Dat": 1, "Gen": 1, "Ins": 1, "Loc": 1, "Nom": 1}, "AUX": {"Abl": 1, "Acc": 1, "Com": 1, "Dat": 1, "Gen": 1, "Ins": 1, "Loc": 1, "Nom": 1}, "NOUN": {"Abl": 1, "Acc": 1, "Com": 1, "Dat": 1, "Gen": 1, "Ins": 1, "Loc": 1, "Nom": 1}, "PRON": {"Abl": 1, "Acc": 1, "Com": 1, "Dat": 1, "Gen": 1, "Ins": 1, "Loc": 1, "Nom": 1}, "PROPN": {"Abl": 1, "Acc": 1, "Com": 1, "Dat": 1, "Gen": 1, "Ins": 1, "Loc": 1, "Nom": 1}, "VERB": {"Abl": 1, "Acc": 1, "Com": 1, "Dat": 1, "Gen": 1, "Ins": 1, "Loc": 1, "Nom": 1}}, "lastchanged": "2025-05-01-08-45-40", "lastchanger": "coltekin"},
