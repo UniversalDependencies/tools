@@ -819,6 +819,32 @@ sub check_files
             push(@{$errors}, "[L0 Repo files] $folder: CR line-break found at line $cr of CONTRIBUTING.md\n");
             $$n_errors++;
         }
+        # The CONTRIBUTING.md file should have the same contents in all treebanks.
+        # The file is created together with the repository and it should not be modified.
+        my $expected_contributing_contents = <<EOF
+\# Contributing
+
+Please do not make pull requests against master, any such pull requests will be
+closed. Pull requests against the dev branch are accepted in some treebanks but
+not in others – check the Contributing line in the README file!
+
+For full details on the branch policy see
+[here](https://universaldependencies.org/contributing/repository_files.html).
+EOF
+        ;
+        my $contents;
+        open(my $fh, 'CONTRIBUTING.md');
+        while(<$fh>)
+        {
+            $contents .= $_;
+        }
+        close($fh);
+        if($contents ne $expected_contributing_contents)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: The prescribed contents of CONTRIBUTING.md has been modified\n");
+            $$n_errors++;
+        }
     }
     # Check the data files.
     my $prefix = "$key-ud";
