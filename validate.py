@@ -276,6 +276,7 @@ def validate_unicode_normalization(text):
         firsti = -1
         firstj = -1
         inpfirst = ''
+        inpsecond = ''
         nfcfirst = ''
         tcols = text.split("\t")
         ncols = normalized_text.split("\t")
@@ -286,6 +287,8 @@ def validate_unicode_normalization(text):
                     firstj = j
                     inpfirst = unicodedata.name(tcols[i][j])
                     nfcfirst = unicodedata.name(ncols[i][j])
+                    if j+1 < len(tcols[i]):
+                        inpsecond = unicodedata.name(tcols[i][j+1])
                     break
             if firsti >= 0:
                 break
@@ -293,7 +296,9 @@ def validate_unicode_normalization(text):
         testclass = 'Unicode'
         testid = 'unicode-normalization'
         testmessage = f"Unicode not normalized: {COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
-        warn(testmessage, testclass, testlevel, testid)
+        explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
+        explanation = f"\n\nThis error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository.\n"
+        warn(testmessage, testclass, testlevel, testid, explanation=explanation)
 
 whitespace_re = re.compile(r".*\s", re.U)
 whitespace2_re = re.compile(r".*\s\s", re.U)
