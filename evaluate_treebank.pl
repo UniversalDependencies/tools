@@ -107,12 +107,24 @@ foreach my $file (@{$record->{files}})
 my %score;
 #------------------------------------------------------------------------------
 # Size. Project size to the interval <0; 1>.
+# Apply a size cap: All treebank reaching or exceeding it will be treated as
+# treebanks of the same, maximal size. (An alternative would be to identify the
+# largest treebank within the language or within all of UD and normalize other
+# sizes with respect to it. But then the scores of all treebanks will change if
+# the maximum changes.)
+my $sizecap = 1000000;
 # Do not modify the real number of words, $n. It will be needed in other metrics, too.
 my $ntrunc = $n;
-$ntrunc = 1000000 if($ntrunc > 1000000);
+$ntrunc = $sizecap if($ntrunc > $sizecap);
 $ntrunc = 1 if($ntrunc <= 0);
+# We will apply a scale that is in principle logarithmic, but it is further
+# skewed and capped so that ridiculously small treebanks are penalized.
+# A treebank of 1000 words or less will get $lognn=0 (while log(1000)=6.9).
+# A treebank of 10000 words gets $lognn=4.6 (while log(10000)=9.2).
+# A treebank of 100,000 words gets $lognn=9.2 (while log(100000)=11.5).
+# And a treebank of 1,000,000 words (the size cap) gets $lognn=log($sizecap)=13.8.
 my $lognn = log(($ntrunc/1000)**2); $lognn = 0 if($lognn < 0);
-$score{size} = $lognn / log(1000000);
+$score{size} = $lognn / log($sizecap);
 if($verbose)
 {
     print STDERR ("Size: counted $ntrunc of $n words (nodes).\n");
