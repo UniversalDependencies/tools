@@ -257,13 +257,12 @@ sub get_ud_files_and_codes
         print STDERR ("WARNING: Unexpected folder name '$folder'\n");
     }
     # There are exceptions for large treebanks that must split their train files because of GitHub size limits (the splitting is undone in the released UD packages).
-    my $train_exception = get_train_file_exception($folder);
     # For example, $train_exception->{desc} = '(cs_pdtc)-ud-train-[clmvfsw](a|t[012]?).conllu'
-    my $train_file_re = defined($train_exception) ? $train_exception->{desc} : '(.+)-ud-train\\.conllu';
+    my $train_exception = get_train_file_exception($folder);
     # Look for training, development or test data.
-    my $section_re = defined($train_exception) ? "(?:$train_exception->{desc}|(.+)-ud-(dev|test))\\.conllu" : '(.+)-ud-(train|dev|test)\\.conllu';
+    my $datafile_re = defined($train_exception) ? "(?:$train_exception->{desc}|(.+)-ud-(dev|test)\\.conllu)" : '(.+)-ud-(train|dev|test)\\.conllu';
     opendir(DIR, "$path/$folder") or die("Cannot read the contents of '$path/$folder': $!");
-    my @files = sort(grep {-f "$path/$folder/$_" && m/^$section_re$/} (readdir(DIR)));
+    my @files = sort(grep {-f "$path/$folder/$_" && m/^$datafile_re$/} (readdir(DIR)));
     closedir(DIR);
     my $n = scalar(@files);
     my $code;
@@ -271,7 +270,7 @@ sub get_ud_files_and_codes
     my $tcode;
     if($n>0)
     {
-        $files[0] =~ m/^$section_re$/;
+        $files[0] =~ m/^(.+)-ud/;
         $lcode = $code = $1;
         if($code =~ m/^([^_]+)_(.+)$/)
         {
@@ -281,15 +280,16 @@ sub get_ud_files_and_codes
     }
     my %record =
     (
-        'folder' => $folder,
-        'name'   => $name,
-        'lname'  => $langname,
-        'tname'  => $tbkext,
-        'code'   => $code,
-        'ltcode' => $code, # for compatibility with some tools, this code is provided both as 'code' and as 'ltcode'
-        'lcode'  => $lcode,
-        'tcode'  => $tcode,
-        'files'  => \@files
+        'folder'  => $folder,
+        'name'    => $name,
+        'lname'   => $langname,
+        'tname'   => $tbkext,
+        'code'    => $code,
+        'ltcode'  => $code, # for compatibility with some tools, this code is provided both as 'code' and as 'ltcode'
+        'lcode'   => $lcode,
+        'tcode'   => $tcode,
+        'files'   => \@files,
+        'file_re' => $datafile_re
     );
     return \%record;
 }
@@ -1142,10 +1142,10 @@ BEGIN
     # expression are needed for extraction of the codes in get_ud_files_and_codes().
     %train_exceptions =
     (
-        'UD_Czech-PDTC'        => {'desc' => '(cs_pdtc)-ud-train-[clmvfsw](a|t[012]?).conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st', 'train-wt0', 'train-wt1', 'train-wt2']},
-        'UD_German-HDT'        => {'desc' => '(de_hdt)-ud-train-[ab]-[12].conllu',   'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
-        'UD_Russian-SynTagRus' => {'desc' => '(ru_syntagrus)-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']},
-        'UD_Russian-Taiga'     => {'desc' => '(ru_taiga)-ud-train-[abcde].conllu',   'files' => ['train-a', 'train-b', 'train-c', 'train-d', 'train-e']}
+        'UD_Czech-PDTC'        => {'desc' => '(cs_pdtc)-ud-train-[clmvfsw](a|t[012]?)\\.conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st', 'train-wt0', 'train-wt1', 'train-wt2']},
+        'UD_German-HDT'        => {'desc' => '(de_hdt)-ud-train-[ab]-[12]\\.conllu',             'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
+        'UD_Russian-SynTagRus' => {'desc' => '(ru_syntagrus)-ud-train-[abc]\\.conllu',           'files' => ['train-a', 'train-b', 'train-c']},
+        'UD_Russian-Taiga'     => {'desc' => '(ru_taiga)-ud-train-[abcde]\\.conllu',             'files' => ['train-a', 'train-b', 'train-c', 'train-d', 'train-e']}
     );
 }
 sub get_train_file_exception

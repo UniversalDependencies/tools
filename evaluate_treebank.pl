@@ -13,6 +13,17 @@ use Getopt::Long;
 use File::Which; # find executable files in $PATH
 use udlib;
 
+sub usage
+{
+    print STDERR ("Usage:   perl -I ./tools ./tools/evaluate_treebank.pl <ud-treebank-name>\n");
+    print STDERR ("Example: perl -I ./tools ./tools/evaluate_treebank.pl UD_Czech-PDTC\n");
+    # We require that the relevant scripts are at specific locations because we
+    # will get their GitHub versions and include them in the evaluation log.
+    print STDERR ("Before running, make sure the current folder is one level above the clones of UD GitHub repositories.\n");
+    print STDERR ("Specifically, the subfolders should include the evaluated treebank(s), as well as the tools folder,\n");
+    print STDERR ("from which this script is invoked and which also holds the validator.\n");
+}
+
 my $verbose = 0;
 my $forcemaster = 0;
 GetOptions
@@ -21,11 +32,19 @@ GetOptions
     'forcemaster!' => \$forcemaster
 );
 
+# Verify that the script is invoked via a relative path from the superordinate folder.
+if($0 !~ m:^\.[\\/]tools[\\/]evaluate_treebank\.pl$:)
+{
+    usage();
+    print STDERR ("\$0 == $0\n");
+    die("The script must be invoked using relative path (starting with a dot) from the superordinate folder");
+}
 # Path to the local copy of the UD repository (e.g., UD_Czech-PDTC).
 my $folder = $ARGV[0];
 if(!defined($folder))
 {
-    die("Usage: $0 path-to-ud-folder");
+    usage();
+    die("Missing UD treebank name");
 }
 $folder =~ s:/$::;
 $folder =~ s:^\./::;
@@ -57,6 +76,10 @@ if($verbose)
 }
 my $record = udlib::get_ud_files_and_codes($folder);
 my $metadata = udlib::read_readme($folder);
+print STDERR ("CoNLL-U data file regular expression = '$record->{file_re}'\n");
+print STDERR ("Language-treebank code (from CoNLL-U file name) = '$record->{ltcode}'\n");
+print STDERR ("Language code (from CoNLL-U file name) = '$record->{lcode}'\n");
+print STDERR ("Found the following data files: ".join(', ', @{$record->{files}})."\n");
 my $n = 0;
 my $ntrain = 0;
 my $ndev = 0;
