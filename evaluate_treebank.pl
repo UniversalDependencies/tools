@@ -21,7 +21,7 @@ GetOptions
     'forcemaster!' => \$forcemaster
 );
 
-# Path to the local copy of the UD repository (e.g., UD_Czech).
+# Path to the local copy of the UD repository (e.g., UD_Czech-PDTC).
 my $folder = $ARGV[0];
 if(!defined($folder))
 {
