@@ -2,6 +2,7 @@
 
 "expressions": {
 "lt": {
+"([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
 "[-A-Za-z0-9 ]+[<=>]+[0-9, ]+": {"example": "p < 0,01", "exampleen": "p < 0.01", "comment": "Equations are kept as one token.", "lastchanged": "2025-06-11-22-57-29", "lastchanger": "dan-zeman"},
 "[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-11-22-44-01", "lastchanger": "dan-zeman"}
 },
