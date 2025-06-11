@@ -3,6 +3,7 @@
 "expressions": {
 "lv": {
 "([+-] *)?[0-9]+( +[0-9]+)*": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-11-22-01-13", "lastchanger": "dan-zeman"},
-"[0-9]?[0-9]\\. [0-9]?[0-9]\\. ([0-9][0-9])?[0-9][0-9]\\.?": {"example": "29. 01. 1999", "exampleen": "January 29, 1999", "comment": "Dates can be written with or without spaces.", "lastchanged": "2025-06-11-22-07-37", "lastchanger": "dan-zeman"}
+"[0-9]?[0-9]\\. [0-9]?[0-9]\\. ([0-9][0-9])?[0-9][0-9]\\.?": {"example": "29. 01. 1999", "exampleen": "January 29, 1999", "comment": "Dates can be written with or without spaces.", "lastchanged": "2025-06-11-22-07-37", "lastchanger": "dan-zeman"},
+"u\\. *tml\\.": {"example": "u. tml.", "exampleen": "etc.", "comment": "", "lastchanged": "2025-06-11-22-20-18", "lastchanger": "dan-zeman"}
 }
 }}
