@@ -58,7 +58,8 @@
 "kmr": {
 "Stok moranê": {"example": "Stok moranê", "exampleen": "Moran stock", "comment": "", "lastchanged": "2025-06-12-14-15-56", "lastchanger": "dan-zeman"},
 "[^ ]+ bû[^ ]*": {"example": "bû bû", "exampleen": "was was", "comment": "", "lastchanged": "2025-06-12-14-14-44", "lastchanger": "dan-zeman"},
-"[^ ]+ kir[^ ]*": {"example": "xuya kir", "exampleen": "appeared", "comment": "", "lastchanged": "2025-06-12-14-17-36", "lastchanger": "dan-zeman"}
+"[^ ]+ kir[^ ]*": {"example": "xuya kir", "exampleen": "appeared", "comment": "", "lastchanged": "2025-06-12-14-17-36", "lastchanger": "dan-zeman"},
+"nas dikim": {"example": "nas dikim", "exampleen": "I know", "comment": "", "lastchanged": "2025-06-12-14-23-21", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
