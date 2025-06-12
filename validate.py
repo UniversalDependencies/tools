@@ -57,12 +57,14 @@ warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unk
 warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
 warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
 warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
+warn_on_undoc_tospaces = '' # filled after reading tospace.json; printed when an unknown token with space is encountered in the data
 mwt_typo_span_end = None # if Typo=Yes at multiword token, what is the end of the multiword span?
 spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
 featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
 auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
 depreldata = {} # key: language code (deprel data loaded from deprels.json)
 edepreldata = {} # key: language code (edeprel data loaded from edeprels.json)
+tospacedata = {} # key: language code (expressions loaded from tospace.json)
 
 def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None):
     """
@@ -666,7 +668,7 @@ def validate_cols(cols, tag_sets, args):
     elif is_empty_node(cols):
         validate_empty_node_empty_vals(cols) # level 2
     if args.level > 3:
-        validate_whitespace(cols, tag_sets) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
+        validate_whitespace(cols, tag_sets, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
 def validate_token_empty_vals(cols):
     """
@@ -2104,7 +2106,7 @@ def validate_enhanced_annotation(graph):
 # words spaces are permitted, and which Feature=Value pairs are defined.
 #==============================================================================
 
-def validate_whitespace(cols, tag_sets):
+def validate_whitespace(cols, tag_sets, args):
     """
     Checks a single line for disallowed whitespace.
     Here we assume that all language-independent whitespace-related tests have
@@ -2116,22 +2118,20 @@ def validate_whitespace(cols, tag_sets):
     # We already verified that a multiword token does not contain a space (see validate_cols_level1()).
     if is_multiword_token(cols):
         return
+    (re_pattern, re_compiled) = get_tospacedata_for_language(args.lang)
     for col_idx in (FORM, LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         if whitespace_re.match(cols[col_idx]) is not None:
             # Whitespace found.
-            # Does the FORM/LEMMA pass one of the regular expressions that define permitted words with spaces in this language?
+            # Does the FORM/LEMMA pass the regular expression that defines permitted words with spaces in this language?
             # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
             string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
-            for regex in tag_sets[TOKENSWSPACE]:
-                if regex.fullmatch(string_to_test):
-                    break
-            else:
+            if not re_compiled.fullmatch(string_to_test):
                 warn_on_missing_files.add('tokens_w_space')
                 testid = 'invalid-word-with-space'
-                testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."
-                warn(testmessage, testclass, testlevel, testid)
+                testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
+                warn(testmessage, testclass, testlevel, testid, explanation="\n"+warn_on_undoc_tospaces)
 
 
 
@@ -2936,6 +2936,53 @@ def load_file(filename):
             res.add(line)
     return res
 
+def load_tospace_set(filename_langspec, lcode):
+    """
+    Loads regular expressions describing permitted tokens with spaces, compiles
+    them and returns them as a set.
+    """
+    global tospacedata
+    global warn_on_undoc_tospaces
+    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+        all_tospaces_0 = json.load(f)
+    # There is one or more regular expressions for each language in the file.
+    # If there are multiple expressions, combine them in one and compile it.
+    tospacedata = {}
+    for l in all_tospaces_0['expressions']:
+        combination = '('+'|'.join(sorted(list(all_tospaces_0['expressions'][l])))+')'
+        compilation = re.compile(combination)
+        tospacedata[l] = (combination, compilation)
+    # Prepare a global message about permitted features and values. We will add
+    # it to the first error message about an unknown token with space. Note that
+    # this global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    msg = ''
+    if not lcode in tospacedata:
+        msg += f"No tokens with spaces have been permitted for language [{lcode}].\n"
+        msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
+    else:
+        msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
+        msg += tospacedata[l][0]
+        msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
+    warn_on_undoc_tospaces = msg
+
+def get_tospacedata_for_language(lcode):
+    """
+    Searches the previously loaded database of regular expressions describing
+    permitted tokens with spaces.
+    Returns the expressions for a given language code. For most CoNLL-U files,
+    this function is called only once at the beginning. However, some files
+    contain code-switched data and we may temporarily need to validate
+    another language.
+    """
+    global tospacedata
+    # Do not crash if the user asks for an unknown language.
+    if not lcode in tospacedata:
+        return None
+    return tospacedata[lcode]
+
 def load_upos_set(filename):
     """
     Loads the list of permitted UPOS tags and returns it as a set.
@@ -3125,71 +3172,6 @@ def get_edepreldata_for_language(lcode, basic_deprels):
                         edeprelset.add(bdeprel+':'+c)
     return edeprelset
 
-def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhanced=False):
-    """
-    Loads a list of values from the two files, and returns their
-    set. If f_name_langspec doesn't exist, loads nothing and returns
-    None (ie this taglist is not checked for the given language). If f_name_langspec
-    is None, only loads the UD one. This is probably only useful for CPOS which doesn't
-    allow language-specific extensions. Set validate_langspec=True when loading basic dependencies.
-    That way the language specific deps will be checked to be truly extensions of UD ones.
-    Set validate_enhanced=True when loading enhanced dependencies. They will be checked to be
-    truly extensions of universal relations, too; but a more relaxed regular expression will
-    be checked because enhanced relations may contain stuff that is forbidden in the basic ones.
-    """
-    res = load_file(os.path.join(THISDIR, 'data', f_name_ud))
-    # Now res holds UD
-    # Next load and optionally check the langspec extensions
-    if f_name_langspec is not None and f_name_langspec != f_name_ud:
-        path_langspec = os.path.join(THISDIR,"data",f_name_langspec)
-        if os.path.exists(path_langspec):
-            global curr_fname
-            curr_fname = path_langspec # so warn() does not fail on undefined curr_fname
-            l_spec = load_file(path_langspec)
-            for v in l_spec:
-                if validate_enhanced:
-                    # We are reading the list of language-specific dependency relations in the enhanced representation
-                    # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
-                    # restricts enhanced dependencies.
-                    if not edeprel_re.match(v):
-                        testlevel = 4
-                        testclass = 'Enhanced'
-                        testid = 'edeprel-def-regex'
-                        testmessage = f"Spurious language-specific enhanced relation '{v}' - it does not match the regular expression that restricts enhanced relations."
-                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                        continue
-                elif validate_langspec:
-                    # We are reading the list of language-specific dependency relations in the basic representation
-                    # (i.e., the DEPREL column, not DEPS). Make sure that they match the regular expression that
-                    # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
-                    # enhanced dependencies, which should be listed in a separate file.)
-                    if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
-                        testlevel = 4
-                        testclass = 'Syntax'
-                        testid = 'deprel-def-regex'
-                        testmessage = f"Spurious language-specific relation '{v}' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                        continue
-                if validate_langspec or validate_enhanced:
-                    try:
-                        parts=v.split(':')
-                        if parts[0] not in res and parts[0] != 'ref':
-                            testlevel = 4
-                            testclass = 'Syntax'
-                            testid = 'deprel-def-universal-part'
-                            testmessage = f"Spurious language-specific relation '{v}' - not an extension of any UD relation."
-                            warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                            continue
-                    except:
-                        testlevel = 4
-                        testclass = 'Syntax'
-                        testid = 'deprel-def-universal-part'
-                        testmessage = f"Spurious language-specific relation '{v}' - not an extension of any UD relation."
-                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                        continue
-                res.add(v)
-    return res
-
 def get_auxdata_for_language(lcode):
     """
     Searches the previously loaded database of auxiliary/copula lemmas. Returns
@@ -3318,11 +3300,9 @@ if __name__=="__main__":
         # All relations available in DEPREL are also allowed in DEPS.
         # In addition, there might be relations that are only allowed in DEPS.
         # One of them, "ref", is universal and we currently mention it directly
-        # in the code, although there is also a file "edeprel.ud".
-        #tagsets[DEPS] = tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
+        # in the code.
         tagsets[DEPS] = load_edeprel_set('edeprels.json', args.lang, tagsets[DEPREL])
-        tagsets[TOKENSWSPACE] = load_set('tokens_w_space.ud', 'tokens_w_space.'+args.lang)
-        tagsets[TOKENSWSPACE] = [re.compile(regex) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
+        tagsets[TOKENSWSPACE] = load_tospace_set('tospace.json', args.lang)
         # Read the list of auxiliaries from the JSON file.
         # This file must not be edited directly!
         # Use the web interface at
