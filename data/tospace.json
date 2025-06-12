@@ -3,6 +3,7 @@
 "expressions": {
 "akk": {
 "([0-9 ]+[^ ]*)+": {"example": "1 mē", "exampleen": "1 mē", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-08-23-21", "lastchanger": "dan-zeman"},
+"(ereb|ṣīt) Šamši": {"example": "ereb Šamši", "exampleen": "ereb Šamši", "comment": "", "lastchanged": "2025-06-12-11-23-05", "lastchanger": "dan-zeman"},
 "Til ša-Abtani": {"example": "Til ša-Abtani", "exampleen": "Til ša-Abtani", "comment": "", "lastchanged": "2025-06-12-11-20-14", "lastchanger": "dan-zeman"},
 "Zaba šapliti": {"example": "Zaba šapliti", "exampleen": "Zaba šapliti", "comment": "", "lastchanged": "2025-06-12-11-21-14", "lastchanger": "dan-zeman"},
 "[^ ]* ?mē ?[^ ]*": {"example": "1 mē 50", "exampleen": "1 mē 50", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-09-10-18", "lastchanger": "dan-zeman"},
