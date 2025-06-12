@@ -19,7 +19,40 @@
 },
 "br": {
 "[0-9]+ %": {"example": "15 %", "exampleen": "15%", "comment": "", "lastchanged": "2025-06-12-12-16-04", "lastchanger": "dan-zeman"},
-"[0-9]+ [0-9]+": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-12-12-36", "lastchanger": "dan-zeman"}
+"[0-9]+ [0-9]+": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-12-12-36", "lastchanger": "dan-zeman"},
+"[Aa]m eus": {"example": "am eus", "exampleen": "I have", "comment": "", "lastchanged": "2025-06-12-12-25-37", "lastchanger": "dan-zeman"},
+"[Aa]r (pezh|pezh a|re all)": {"example": "ar pezh", "exampleen": "which", "comment": "", "lastchanged": "2025-06-12-12-26-36", "lastchanger": "dan-zeman"},
+"[Bb]anelloù hent": {"example": "banelloù hent", "exampleen": "road signs", "comment": "", "lastchanged": "2025-06-12-12-28-02", "lastchanger": "dan-zeman"},
+"[Bb]ro [lL]eon": {"example": "Bro Leon", "exampleen": "Bro Leon", "comment": "", "lastchanged": "2025-06-12-12-30-39", "lastchanger": "dan-zeman"},
+"[Ee]m (boa|eus)": {"example": "em eus", "exampleen": "I have", "comment": "", "lastchanged": "2025-06-12-12-31-47", "lastchanger": "dan-zeman"},
+"[Ee]n (deus|doa|un|ur)": {"example": "en deus", "exampleen": "he has", "comment": "", "lastchanged": "2025-06-12-12-33-10", "lastchanger": "dan-zeman"},
+"[Ee]r maez": {"example": "er maez", "exampleen": "out", "comment": "", "lastchanged": "2025-06-12-12-34-10", "lastchanger": "dan-zeman"},
+"[Ee]z eus": {"example": "ez eus", "exampleen": "there are", "comment": "", "lastchanged": "2025-06-12-12-35-09", "lastchanger": "dan-zeman"},
+"[Hh]e (deus|devoa|do)": {"example": "he deus", "exampleen": "she has", "comment": "", "lastchanged": "2025-06-12-12-36-05", "lastchanger": "dan-zeman"},
+"[Hh]o (pet|peus|pez|po|poa)": {"example": "ho pet", "exampleen": "you have", "comment": "", "lastchanged": "2025-06-12-12-43-56", "lastchanger": "dan-zeman"},
+"[Hh]oc['’]h eus": {"example": "hoc’h eus", "exampleen": "you have", "comment": "", "lastchanged": "2025-06-12-12-41-23", "lastchanger": "dan-zeman"},
+"[Hh]on eus": {"example": "hon eus", "exampleen": "have", "comment": "", "lastchanged": "2025-06-12-12-42-42", "lastchanger": "dan-zeman"},
+"[Kk]entelioù noz": {"example": "kentelioù noz", "exampleen": "evening classes", "comment": "", "lastchanged": "2025-06-12-12-45-03", "lastchanger": "dan-zeman"},
+"[Oo] (deus|do|doa)": {"example": "o deus", "exampleen": "they have", "comment": "", "lastchanged": "2025-06-12-12-46-09", "lastchanger": "dan-zeman"}
+},
+"fi": {
+": (\\)|D)": {"example": ": )", "exampleen": ":)", "comment": "Emoticons written with space.", "lastchanged": "2025-06-12-12-55-27", "lastchanger": "dan-zeman"},
+"[0-9 ]+:([a-z]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Includes inflected numbers.", "lastchanged": "2025-06-12-12-53-21", "lastchanger": "dan-zeman"}
+},
+"fr": {
+"[0-9 ,]+": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-12-57-03", "lastchanger": "dan-zeman"}
+},
+"ja": {
+"[A-Za-z0-9\\./\\-&]+[\\u3001-\\u9FFF]+( ?[A-Za-z0-9\\./\\-&]+)+": {"example": "SQL文SELECT C 1 FROM T", "exampleen": "The SQL statement SELECT C 1 FROM T", "comment": "", "lastchanged": "2025-06-12-13-33-37", "lastchanger": "dan-zeman"},
+"[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)*( ?[\\u3001-\\u9FFF]+)?": {"example": "You Tube", "exampleen": "YouTube", "comment": "Expressions in Latin script may be considered one word in Japanese even if they contain spaces.", "lastchanged": "2025-06-12-13-24-26", "lastchanger": "dan-zeman"},
+"[\\u3001-\\u9FFF]+( ?[A-Za-z0-9\\.’/\\-&]+)*": {"example": "西アフリカ諸国経済共同体Economic Communitiy of West African States", "exampleen": "Economic Community of West African States", "comment": "", "lastchanged": "2025-06-12-13-31-13", "lastchanger": "dan-zeman"},
+"[\\u3001-\\u9FFF]+[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)* ?[\\u3001-\\u9FFF]+": {"example": "『BlackBerry Bold9700』用大容量バッテリー", "exampleen": "High-capacity battery for the BlackBerry Bold 9700", "comment": "", "lastchanged": "2025-06-12-13-28-18", "lastchanger": "dan-zeman"}
+},
+"kk": {
+"[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+ екен[өәұүіа-яң]*": {"example": "сыйламайды екенсің", "exampleen": "You don't respect me.", "comment": "", "lastchanged": "2025-06-12-14-05-22", "lastchanger": "dan-zeman"},
+"[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н емес[өәұүіа-яң]*": {"example": "көрген емеспін", "exampleen": "I haven't seen it.", "comment": "", "lastchanged": "2025-06-12-13-56-01", "lastchanger": "dan-zeman"},
+"[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н жоқ( екен)?": {"example": "ұшырасқан жоқ", "exampleen": "not affected", "comment": "", "lastchanged": "2025-06-12-13-50-49", "lastchanger": "dan-zeman"},
+"еш нәрсені": {"example": "еш нәрсені", "exampleen": "nothing", "comment": "", "lastchanged": "2025-06-12-14-07-18", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
