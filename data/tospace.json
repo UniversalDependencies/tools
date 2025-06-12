@@ -46,7 +46,8 @@
 },
 "fi": {
 ": (\\)|D)": {"example": ": )", "exampleen": ":)", "comment": "Emoticons written with space.", "lastchanged": "2025-06-12-12-55-27", "lastchanger": "dan-zeman"},
-"[0-9 ]+:([a-z]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Includes inflected numbers.", "lastchanged": "2025-06-12-12-53-21", "lastchanger": "dan-zeman"}
+"[0-9 ]+:([a-z]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Includes inflected numbers.", "lastchanged": "2025-06-12-12-53-21", "lastchanger": "dan-zeman"},
+"[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-22-34-24", "lastchanger": "dan-zeman"}
 },
 "fr": {
 "[0-9 ,]+": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-12-57-03", "lastchanger": "dan-zeman"}
