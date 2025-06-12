@@ -98,6 +98,7 @@
 "[.·]?[mṁnṅ][.·]? [\\wáéíóúÁÉÍÓÚӕǽӔǼḟṁṅṡſẛḞṀṄṠ]*": {"example": "ṅ dǽ", "exampleen": "ṅ dǽ", "comment": "", "lastchanged": "2025-06-12-15-20-33", "lastchanger": "dan-zeman"}
 },
 "sv": {
+"([Bb]l a|[Dd] v s|[Ee] d|[Ff] n|[Ff]r o m|[Mm] fl|[Mm] m|[Oo] s v|[Ss] k|[Tt] ex|[Tt] o m|[Tt] v)": {"example": "t ex", "exampleen": "e.g.", "comment": "Abbreviation of \"till exempel\".", "lastchanged": "2025-06-12-16-24-08", "lastchanger": "dan-zeman"},
 "[0-9]+ [0-9]+([-–][0-9]+ [0-9]+)": {"example": "3 000–5 000", "exampleen": "3,000–5,000", "comment": "Long numbers and ranges.", "lastchanged": "2025-06-12-16-19-30", "lastchanger": "dan-zeman"}
 }
 }}
