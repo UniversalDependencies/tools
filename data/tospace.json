@@ -88,6 +88,7 @@
 },
 "nl": {
 "(acellulair kinkhoest vaccin|also known as|au sérieux|Bescherming Bevolking|Burgerlijk Wetboek|buiten dienst|bruto register ton|casu quo|christelijk hervormden|cum suis|dat wil zeggen|de dato|direct verkozenen|dit is|en andere|en dergelijke|plan Hoog Catharijnen|in plaats van|knock down|knock out|know how|met andere woorden|met name|na Christus|nota bene|onder ander|onder veel|plus minus)": {"example": "onder ander", "exampleen": "among other things", "comment": "Lemma of abbreviation \"o.a.\"", "lastchanged": "2025-06-12-14-50-36", "lastchanger": "dan-zeman"},
+"(ter plaatse|te water laten|tot en met|voor Christus|vorig jaar|zijn inzien)": {"example": "voor Christus", "exampleen": "B.C.", "comment": "Lemma of abbreviation \"v.Chr.\"", "lastchanged": "2025-06-12-14-57-15", "lastchanger": "dan-zeman"},
 "ten (aanzien|gevolge|name|opzichte) van": {"example": "ten opzichte van", "exampleen": "towards", "comment": "Lemma of abbreviation \"t.o.v.\"", "lastchanged": "2025-06-12-14-54-30", "lastchanger": "dan-zeman"}
 }
 }}
