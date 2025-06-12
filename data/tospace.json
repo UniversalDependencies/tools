@@ -49,7 +49,8 @@
 "[\\u3001-\\u9FFF]+[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)* ?[\\u3001-\\u9FFF]+": {"example": "『BlackBerry Bold9700』用大容量バッテリー", "exampleen": "High-capacity battery for the BlackBerry Bold 9700", "comment": "", "lastchanged": "2025-06-12-13-28-18", "lastchanger": "dan-zeman"}
 },
 "kk": {
-"[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н жоқ": {"example": "ұшырасқан жоқ", "exampleen": "not affected", "comment": "", "lastchanged": "2025-06-12-13-50-49", "lastchanger": "dan-zeman"}
+"[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н емес[өәұүіа-яң]*": {"example": "көрген емеспін", "exampleen": "I haven't seen it.", "comment": "", "lastchanged": "2025-06-12-13-56-01", "lastchanger": "dan-zeman"},
+"[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н жоқ( екен)?": {"example": "ұшырасқан жоқ", "exampleen": "not affected", "comment": "", "lastchanged": "2025-06-12-13-50-49", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
