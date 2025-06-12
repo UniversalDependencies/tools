@@ -93,5 +93,8 @@
 },
 "pl": {
 "[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "11 313,2", "exampleen": "11,313.2", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-15-13-01", "lastchanger": "dan-zeman"}
+},
+"sga": {
+"[.·]?[mṁnṅ][.·]? [\\wáéíóúÁÉÍÓÚӕǽӔǼḟṁṅṡſẛḞṀṄṠ]*": {"example": "ṅ dǽ", "exampleen": "ṅ dǽ", "comment": "", "lastchanged": "2025-06-12-15-20-33", "lastchanger": "dan-zeman"}
 }
 }}
