@@ -35,6 +35,9 @@
 "[Kk]entelioù noz": {"example": "kentelioù noz", "exampleen": "evening classes", "comment": "", "lastchanged": "2025-06-12-12-45-03", "lastchanger": "dan-zeman"},
 "[Oo] (deus|do|doa)": {"example": "o deus", "exampleen": "they have", "comment": "", "lastchanged": "2025-06-12-12-46-09", "lastchanger": "dan-zeman"}
 },
+"fi": {
+"[0-9 ]+:([a-z]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Includes inflected numbers.", "lastchanged": "2025-06-12-12-53-21", "lastchanger": "dan-zeman"}
+},
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
 "1993 / 13 / EEB": {"example": "1993 / 13 / EEB", "exampleen": "1993 / 13 / EEB", "comment": "", "lastchanged": "2025-06-11-23-27-42", "lastchanger": "dan-zeman"},
