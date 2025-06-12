@@ -36,6 +36,7 @@
 "[Oo] (deus|do|doa)": {"example": "o deus", "exampleen": "they have", "comment": "", "lastchanged": "2025-06-12-12-46-09", "lastchanger": "dan-zeman"}
 },
 "fi": {
+": (\\)|D)": {"example": ": )", "exampleen": ":)", "comment": "Emoticons written with space.", "lastchanged": "2025-06-12-12-55-27", "lastchanger": "dan-zeman"},
 "[0-9 ]+:([a-z]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Includes inflected numbers.", "lastchanged": "2025-06-12-12-53-21", "lastchanger": "dan-zeman"}
 },
 "lt": {
