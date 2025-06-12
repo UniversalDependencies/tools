@@ -1,20 +1,14 @@
 [^ ]+ bû[^ ]*
+[^ ]+ kir[^ ]*
 Stok moranê
 nas dikim
-[^ ]+ kir[^ ]*
 \bpêk\s+(anî|anîn|bînin|bînim|bîne|tînim|tînî|tînin|tîne)\b
-xuya dik[^ ]+
+(xuya|qebûl|wêran|ceza) dik[^ ]+
 vene gerand
-qebûl dik[^ ]+
 ji bo
 şîrove bik[^ ]+
-wêran dik[^ ]+
 lê dix[^ ]+
-ceza dik[^ ]+
 dest pê kir[^ ]*
-dest pê (bi|di)[^ ]+
-ava (bi|di)[^ ]+
-dûr (bi|di)[^ ]+
+(dest pê|ava|dûr|bicih) (bi|di)[^ ]+
 çê (bi|di)b[^ ]+
 em dê
-bicih (bi|di)[^ ]+
