@@ -3,7 +3,8 @@
 "expressions": {
 "akk": {
 "([0-9 ]+[^ ]*)+": {"example": "1 mē", "exampleen": "1 mē", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-08-23-21", "lastchanger": "dan-zeman"},
-"[^ ]* ?mē ?[^ ]*": {"example": "1 mē 50", "exampleen": "1 mē 50", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-09-10-18", "lastchanger": "dan-zeman"}
+"[^ ]* ?mē ?[^ ]*": {"example": "1 mē 50", "exampleen": "1 mē 50", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-09-10-18", "lastchanger": "dan-zeman"},
+"lā [^ ]+": {"example": "lā pādâ", "exampleen": "lā pādâ", "comment": "", "lastchanged": "2025-06-12-09-26-28", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
