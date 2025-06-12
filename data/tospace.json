@@ -44,6 +44,7 @@
 },
 "ja": {
 "[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)*( ?[\\u3001-\\u9FFF]+)?": {"example": "You Tube", "exampleen": "YouTube", "comment": "Expressions in Latin script may be considered one word in Japanese even if they contain spaces.", "lastchanged": "2025-06-12-13-24-26", "lastchanger": "dan-zeman"},
+"[\\u3001-\\u9FFF]+( ?[A-Za-z0-9\\.’/\\-&]+)*": {"example": "西アフリカ諸国経済共同体Economic Communitiy of West African States", "exampleen": "Economic Community of West African States", "comment": "", "lastchanged": "2025-06-12-13-31-13", "lastchanger": "dan-zeman"},
 "[\\u3001-\\u9FFF]+[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)* ?[\\u3001-\\u9FFF]+": {"example": "『BlackBerry Bold9700』用大容量バッテリー", "exampleen": "High-capacity battery for the BlackBerry Bold 9700", "comment": "", "lastchanged": "2025-06-12-13-28-18", "lastchanger": "dan-zeman"}
 },
 "lt": {
