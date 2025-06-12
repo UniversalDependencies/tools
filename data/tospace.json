@@ -27,7 +27,8 @@
 "[Ee]m (boa|eus)": {"example": "em eus", "exampleen": "I have", "comment": "", "lastchanged": "2025-06-12-12-31-47", "lastchanger": "dan-zeman"},
 "[Ee]n (deus|doa|un|ur)": {"example": "en deus", "exampleen": "he has", "comment": "", "lastchanged": "2025-06-12-12-33-10", "lastchanger": "dan-zeman"},
 "[Ee]r maez": {"example": "er maez", "exampleen": "out", "comment": "", "lastchanged": "2025-06-12-12-34-10", "lastchanger": "dan-zeman"},
-"[Ee]z eus": {"example": "ez eus", "exampleen": "there are", "comment": "", "lastchanged": "2025-06-12-12-35-09", "lastchanger": "dan-zeman"}
+"[Ee]z eus": {"example": "ez eus", "exampleen": "there are", "comment": "", "lastchanged": "2025-06-12-12-35-09", "lastchanger": "dan-zeman"},
+"[Hh]e (deus|devoa|do)": {"example": "he deus", "exampleen": "she has", "comment": "", "lastchanged": "2025-06-12-12-36-05", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
