@@ -2118,16 +2118,22 @@ def validate_whitespace(cols, tag_sets, args):
     # We already verified that a multiword token does not contain a space (see validate_cols_level1()).
     if is_multiword_token(cols):
         return
-    (re_pattern, re_compiled) = get_tospacedata_for_language(args.lang)
+    tospacedata = get_tospacedata_for_language(args.lang)
     for col_idx in (FORM, LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         if whitespace_re.match(cols[col_idx]) is not None:
             # Whitespace found.
             # Does the FORM/LEMMA pass the regular expression that defines permitted words with spaces in this language?
-            # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
-            string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
-            if not re_compiled.fullmatch(string_to_test):
+            if tospacedata:
+                # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
+                string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
+                if not tospacedata[1].fullmatch(string_to_test):
+                    warn_on_missing_files.add('tokens_w_space')
+                    testid = 'invalid-word-with-space'
+                    testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
+                    warn(testmessage, testclass, testlevel, testid, explanation="\n"+warn_on_undoc_tospaces)
+            else:
                 warn_on_missing_files.add('tokens_w_space')
                 testid = 'invalid-word-with-space'
                 testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
