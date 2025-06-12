@@ -66,6 +66,7 @@
 "nas dikim": {"example": "nas dikim", "exampleen": "I know", "comment": "", "lastchanged": "2025-06-12-14-23-21", "lastchanger": "dan-zeman"},
 "pêk +(anî|anîn|bînin|bînim|bîne|tînim|tînî|tînin|tîne)": {"example": "pêk anîn", "exampleen": "to form", "comment": "", "lastchanged": "2025-06-12-14-24-59", "lastchanger": "dan-zeman"},
 "vene gerand": {"example": "vene gerand", "exampleen": "open the browser", "comment": "", "lastchanged": "2025-06-12-14-28-08", "lastchanger": "dan-zeman"},
+"çê (bi|di)b[^ ]+": {"example": "çê dibin", "exampleen": "What are they doing?", "comment": "", "lastchanged": "2025-06-12-14-35-22", "lastchanger": "dan-zeman"},
 "şîrove bik[^ ]+": {"example": "şîrove bikin", "exampleen": "comment", "comment": "", "lastchanged": "2025-06-12-14-29-37", "lastchanger": "dan-zeman"}
 },
 "lt": {
