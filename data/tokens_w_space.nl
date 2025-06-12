@@ -21,16 +21,13 @@ knock down
 knock out
 know how
 met andere woorden
-met name 
+met name
 na Christus
 nota bene
 onder ander
 onder veel
 plus minus
-ten aanzien van
-ten gevolge van
-ten name van
-ten opzichte van
+ten (aanzien|gevolge|name|opzichte) van
 ter plaatse
 te water laten
 tot en met
