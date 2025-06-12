@@ -2122,8 +2122,10 @@ def validate_whitespace(cols, tag_sets):
         if whitespace_re.match(cols[col_idx]) is not None:
             # Whitespace found.
             # Does the FORM/LEMMA pass one of the regular expressions that define permitted words with spaces in this language?
+            # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
+            string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
             for regex in tag_sets[TOKENSWSPACE]:
-                if regex.fullmatch(cols[col_idx]):
+                if regex.fullmatch(string_to_test):
                     break
             else:
                 warn_on_missing_files.add('tokens_w_space')
