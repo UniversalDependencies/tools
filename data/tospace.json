@@ -22,7 +22,8 @@
 "[0-9]+ [0-9]+": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-12-12-36", "lastchanger": "dan-zeman"},
 "[Aa]m eus": {"example": "am eus", "exampleen": "I have", "comment": "", "lastchanged": "2025-06-12-12-25-37", "lastchanger": "dan-zeman"},
 "[Aa]r (pezh|pezh a|re all)": {"example": "ar pezh", "exampleen": "which", "comment": "", "lastchanged": "2025-06-12-12-26-36", "lastchanger": "dan-zeman"},
-"[Bb]anelloù hent": {"example": "banelloù hent", "exampleen": "road signs", "comment": "", "lastchanged": "2025-06-12-12-28-02", "lastchanger": "dan-zeman"}
+"[Bb]anelloù hent": {"example": "banelloù hent", "exampleen": "road signs", "comment": "", "lastchanged": "2025-06-12-12-28-02", "lastchanger": "dan-zeman"},
+"[Bb]ro [lL]eon": {"example": "Bro Leon", "exampleen": "Bro Leon", "comment": "", "lastchanged": "2025-06-12-12-30-39", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
