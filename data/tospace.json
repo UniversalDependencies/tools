@@ -96,5 +96,8 @@
 },
 "sga": {
 "[.·]?[mṁnṅ][.·]? [\\wáéíóúÁÉÍÓÚӕǽӔǼḟṁṅṡſẛḞṀṄṠ]*": {"example": "ṅ dǽ", "exampleen": "ṅ dǽ", "comment": "", "lastchanged": "2025-06-12-15-20-33", "lastchanger": "dan-zeman"}
+},
+"sv": {
+"[0-9]+ [0-9]+([-–][0-9]+ [0-9]+)": {"example": "3 000–5 000", "exampleen": "3,000–5,000", "comment": "Long numbers and ranges.", "lastchanged": "2025-06-12-16-19-30", "lastchanger": "dan-zeman"}
 }
 }}
