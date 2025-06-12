@@ -6,7 +6,8 @@
 "[^ ]* ?mē ?[^ ]*": {"example": "1 mē 50", "exampleen": "1 mē 50", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-09-10-18", "lastchanger": "dan-zeman"},
 "[^ ]+ x": {"example": "Šara-x x", "exampleen": "Šara-x x", "comment": "", "lastchanged": "2025-06-12-11-10-57", "lastchanger": "dan-zeman"},
 "arbaʾu (mē [0-9]+ )?šūši": {"example": "arbaʾu mē 1 šūši", "exampleen": "arbaʾu mē 1 šūši", "comment": "", "lastchanged": "2025-06-12-11-09-18", "lastchanger": "dan-zeman"},
-"lā [^ ]+": {"example": "lā pādâ", "exampleen": "lā pādâ", "comment": "", "lastchanged": "2025-06-12-09-26-28", "lastchanger": "dan-zeman"}
+"lā [^ ]+": {"example": "lā pādâ", "exampleen": "lā pādâ", "comment": "", "lastchanged": "2025-06-12-09-26-28", "lastchanger": "dan-zeman"},
+"x [^ ]+": {"example": "x mē", "exampleen": "x mē", "comment": "", "lastchanged": "2025-06-12-11-12-23", "lastchanger": "dan-zeman"}
 },
 "lt": {
 "([0-9]+ *)?[-\\.] *[0-9]+": {"example": "70 - 2630", "exampleen": "70 - 2630", "comment": "", "lastchanged": "2025-06-11-23-08-35", "lastchanger": "dan-zeman"},
