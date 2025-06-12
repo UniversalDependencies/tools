@@ -52,6 +52,7 @@
 "[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+ екен[өәұүіа-яң]*": {"example": "сыйламайды екенсің", "exampleen": "You don't respect me.", "comment": "", "lastchanged": "2025-06-12-14-05-22", "lastchanger": "dan-zeman"},
 "[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н емес[өәұүіа-яң]*": {"example": "көрген емеспін", "exampleen": "I haven't seen it.", "comment": "", "lastchanged": "2025-06-12-13-56-01", "lastchanger": "dan-zeman"},
 "[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+[гқкғ][ае]н жоқ( екен)?": {"example": "ұшырасқан жоқ", "exampleen": "not affected", "comment": "", "lastchanged": "2025-06-12-13-50-49", "lastchanger": "dan-zeman"},
+"алып кел": {"example": "алып кел", "exampleen": "bring it", "comment": "", "lastchanged": "2025-06-12-14-11-22", "lastchanger": "dan-zeman"},
 "еш нәрсені": {"example": "еш нәрсені", "exampleen": "nothing", "comment": "", "lastchanged": "2025-06-12-14-07-18", "lastchanger": "dan-zeman"}
 },
 "lt": {
