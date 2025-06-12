@@ -56,6 +56,7 @@
 "еш нәрсені": {"example": "еш нәрсені", "exampleen": "nothing", "comment": "", "lastchanged": "2025-06-12-14-07-18", "lastchanger": "dan-zeman"}
 },
 "kmr": {
+"(xuya|qebûl|wêran|ceza) dik[^ ]+": {"example": "xuya dikir", "exampleen": "it seemed", "comment": "", "lastchanged": "2025-06-12-14-26-35", "lastchanger": "dan-zeman"},
 "Stok moranê": {"example": "Stok moranê", "exampleen": "Moran stock", "comment": "", "lastchanged": "2025-06-12-14-15-56", "lastchanger": "dan-zeman"},
 "[^ ]+ bû[^ ]*": {"example": "bû bû", "exampleen": "was was", "comment": "", "lastchanged": "2025-06-12-14-14-44", "lastchanger": "dan-zeman"},
 "[^ ]+ kir[^ ]*": {"example": "xuya kir", "exampleen": "appeared", "comment": "", "lastchanged": "2025-06-12-14-17-36", "lastchanger": "dan-zeman"},
