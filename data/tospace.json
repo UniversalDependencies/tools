@@ -58,9 +58,9 @@
 "ja": {
 "[A-Za-z\\u00C0-\\u036F\\.0-9/\\-&〜]+[\\u3001-\\u9FFF]+( ?[A-Za-z\\u00C0-\\u036F\\.0-9/\\-&〜]+)+": {"example": "SQL文SELECT C 1 FROM T", "exampleen": "The SQL statement SELECT C 1 FROM T", "comment": "", "lastchanged": "2025-06-13-11-43-45", "lastchanger": "dan-zeman"},
 "[A-Za-z\\u00C0-\\u036F\\.0-9’/\\-〜&]+( [A-Za-z\\u00C0-\\u036F\\.0-9’/\\-〜&]+)*( ?[\\u3001-\\u9FFF]+)?": {"example": "You Tube", "exampleen": "YouTube", "comment": "Expressions in Latin script may be considered one word in Japanese even if they contain spaces.", "lastchanged": "2025-06-13-13-00-49", "lastchanger": "dan-zeman"},
+"[A-Za-z\\u00C0-\\u036F\\u3001-\\u9FFF\\.0-9’/\\-&]+( [A-Za-z\\u00C0-\\u036F\\u3001-\\u9FFF\\.0-9’/\\-&]+)+": {"example": "『BlackBerry Bold9700』用大容量バッテリー", "exampleen": "High-capacity battery for the BlackBerry Bold 9700", "comment": "", "lastchanged": "2025-06-13-13-58-39", "lastchanger": "dan-zeman"},
 "[A-Za-z\\u00C0-\\u036F]+( [A-Za-z\\u00C0-\\u036F]+)+": {"example": "Noël Gallon", "exampleen": "Noël Gallon", "comment": "Names in Latin-based alphabets are kept as one token including internal spaces.", "lastchanged": "2025-06-13-10-47-29", "lastchanger": "dan-zeman"},
-"[\\u3001-\\u9FFF]+( ?[A-Za-z\\u00C0-\\u036F\\.0-9’/\\-&]+)+": {"example": "西アフリカ諸国経済共同体Economic Communitiy of West African States", "exampleen": "Economic Community of West African States", "comment": "", "lastchanged": "2025-06-13-12-36-36", "lastchanger": "dan-zeman"},
-"[\\u3001-\\u9FFF]+[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)* ?[\\u3001-\\u9FFF]+": {"example": "『BlackBerry Bold9700』用大容量バッテリー", "exampleen": "High-capacity battery for the BlackBerry Bold 9700", "comment": "", "lastchanged": "2025-06-12-13-28-18", "lastchanger": "dan-zeman"}
+"[\\u3001-\\u9FFF]+( ?[A-Za-z\\u00C0-\\u036F\\.0-9’/\\-&]+)+": {"example": "西アフリカ諸国経済共同体Economic Communitiy of West African States", "exampleen": "Economic Community of West African States", "comment": "", "lastchanged": "2025-06-13-12-36-36", "lastchanger": "dan-zeman"}
 },
 "kk": {
 "[АӘБВГҒДЕЁЖЗИІЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЬЫЪЭЮЯаәбвгғдеёжзиійкқлмнңоөпрстуұүфхһцчшщьыъэюя]+ екен[өәұүіа-яң]*": {"example": "сыйламайды екенсің", "exampleen": "You don't respect me.", "comment": "", "lastchanged": "2025-06-12-14-05-22", "lastchanger": "dan-zeman"},
