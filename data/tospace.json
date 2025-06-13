@@ -41,6 +41,9 @@
 "cs": {
 "[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-13-15-04-02", "lastchanger": "dan-zeman"}
 },
+"es": {
+"[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-13-17-10-49", "lastchanger": "dan-zeman"}
+},
 "et": {
 "[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-22-32-46", "lastchanger": "dan-zeman"}
 },
