@@ -2969,7 +2969,7 @@ def load_tospace_set(filename_langspec, lcode):
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
     else:
         msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
-        msg += tospacedata[l][0]
+        msg += tospacedata[lcode][0]
         msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
     warn_on_undoc_tospaces = msg
