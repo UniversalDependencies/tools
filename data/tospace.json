@@ -112,6 +112,9 @@
 "pt": {
 "[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-13-15-02-48", "lastchanger": "dan-zeman"}
 },
+"ru": {
+"[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-13-17-09-26", "lastchanger": "dan-zeman"}
+},
 "sga": {
 "[.·]?[mṁnṅ][.·]? [\\wáéíóúÁÉÍÓÚӕǽӔǼḟṁṅṡſẛḞṀṄṠ]*": {"example": "ṅ dǽ", "exampleen": "ṅ dǽ", "comment": "", "lastchanged": "2025-06-12-15-20-33", "lastchanger": "dan-zeman"}
 },
