@@ -123,7 +123,8 @@
 },
 "sv": {
 "([Bb]l a|[Dd] v s|[Ee] d|[Ff] n|[Ff]r o m|[Mm] fl|[Mm] m|[Oo] s v|[Ss] k|[Tt] ex|[Tt] o m|[Tt] v)": {"example": "t ex", "exampleen": "e.g.", "comment": "Abbreviation of \"till exempel\".", "lastchanged": "2025-06-12-16-24-08", "lastchanger": "dan-zeman"},
-"[0-9]+ [0-9]+([-–][0-9]+ [0-9]+)": {"example": "3 000–5 000", "exampleen": "3,000–5,000", "comment": "Long numbers and ranges.", "lastchanged": "2025-06-12-16-19-30", "lastchanger": "dan-zeman"}
+"[0-9]+ [0-9]+([-–][0-9]+ [0-9]+)": {"example": "3 000–5 000", "exampleen": "3,000–5,000", "comment": "Long numbers and ranges.", "lastchanged": "2025-06-12-16-19-30", "lastchanger": "dan-zeman"},
+"[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-13-17-13-09", "lastchanger": "dan-zeman"}
 },
 "vi": {
 ".+ .+": {"example": "chúng tôi", "exampleen": "we", "comment": "Space in Vietnamese delimits monosyllabic morphs, not words. Bisyllabic words with a space are relatively common.", "lastchanged": "2025-06-12-16-30-37", "lastchanger": "dan-zeman"}
