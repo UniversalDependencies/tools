@@ -56,8 +56,8 @@
 "[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-22-35-57", "lastchanger": "dan-zeman"}
 },
 "ja": {
-"[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)*( ?[\\u3001-\\u9FFF]+)?": {"example": "You Tube", "exampleen": "YouTube", "comment": "Expressions in Latin script may be considered one word in Japanese even if they contain spaces.", "lastchanged": "2025-06-12-13-24-26", "lastchanger": "dan-zeman"},
 "[A-Za-z\\u00C0-\\u036F\\.0-9/\\-&〜]+[\\u3001-\\u9FFF]+( ?[A-Za-z\\u00C0-\\u036F\\.0-9/\\-&〜]+)+": {"example": "SQL文SELECT C 1 FROM T", "exampleen": "The SQL statement SELECT C 1 FROM T", "comment": "", "lastchanged": "2025-06-13-11-43-45", "lastchanger": "dan-zeman"},
+"[A-Za-z\\u00C0-\\u036F\\.0-9’/\\-&]+( [A-Za-z\\u00C0-\\u036F\\.0-9’/\\-&]+)*( ?[\\u3001-\\u9FFF]+)?": {"example": "You Tube", "exampleen": "YouTube", "comment": "Expressions in Latin script may be considered one word in Japanese even if they contain spaces.", "lastchanged": "2025-06-13-12-11-41", "lastchanger": "dan-zeman"},
 "[A-Za-z\\u00C0-\\u036F]+( [A-Za-z\\u00C0-\\u036F]+)+": {"example": "Noël Gallon", "exampleen": "Noël Gallon", "comment": "Names in Latin-based alphabets are kept as one token including internal spaces.", "lastchanged": "2025-06-13-10-47-29", "lastchanger": "dan-zeman"},
 "[\\u3001-\\u9FFF]+( ?[A-Za-z0-9\\.’/\\-&]+)*": {"example": "西アフリカ諸国経済共同体Economic Communitiy of West African States", "exampleen": "Economic Community of West African States", "comment": "", "lastchanged": "2025-06-12-13-31-13", "lastchanger": "dan-zeman"},
 "[\\u3001-\\u9FFF]+[A-Za-z0-9\\.’/\\-&]+( [A-Za-z0-9\\.’/\\-&]+)* ?[\\u3001-\\u9FFF]+": {"example": "『BlackBerry Bold9700』用大容量バッテリー", "exampleen": "High-capacity battery for the BlackBerry Bold 9700", "comment": "", "lastchanged": "2025-06-12-13-28-18", "lastchanger": "dan-zeman"}
