@@ -15,6 +15,8 @@ import regex as re
 import unicodedata
 import json
 
+
+
 # The folder where this script resides.
 THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
@@ -25,6 +27,8 @@ COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 TOKENSWSPACE=MISC+1 # one extra constant
 AUX=MISC+2 # another extra constant
 COP=MISC+3 # another extra constant
+
+
 
 class State:
     """
@@ -116,20 +120,140 @@ class State:
         # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
         self.entity_mention_spans = {}
 
+
+
+class Data:
+    """
+    The Data class holds various dictionaries of tags, auxiliaries, regular
+    expressions etc. needed for detailed testing, especially for language-
+    specific constraints.
+    """
+    def __init__(self):
+        # Morphological features in the FEATS column.
+        # Key: language code; value: feature-value-UPOS data from feats.json.
+        self.feats = {}
+        # Dependency relation types in the DEPREL column.
+        # Key: language code; value: deprel data from deprels.json.
+        self.deprel = {}
+        # Enhanced dependency relation types in the DEPS column.
+        # Key: language code; value: edeprel data from edeprels.json.
+        self.edeprel = {}
+        # Auxiliary (and copula) lemmas in the LEMMA column.
+        # Key: language code; value: auxiliary/copula data from data.json.
+        self.auxcop = {}
+        # Tokens with spaces in the FORM and LEMMA columns.
+        # Key: language code; value: data from tospace.json.
+        self.tospace = {}
+        # Explanations to be added to the first occurrence of an error that
+        # complains about undocumented features, deprels etc. These are filled
+        # after reading the respective JSON files and emptied once the first
+        # error is encountered and the explanation is printed.
+        ###!!! Tentatively moving these variables here, although we may want to
+        ###!!! overhaul the whole mechanism in the future.
+        self.warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
+        self.warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
+        self.warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
+        self.warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
+        self.warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
+        self.warn_on_undoc_tospaces = '' # filled after reading tospace.json; printed when an unknown token with space is encountered in the data
+
+    def get_feats_for_language(self, lcode):
+        """
+        Searches the previously loaded database of feature-value-UPOS combinations.
+        Returns the data for a given language code, organized in dictionaries.
+        Returns an empty dict if there are no data for the given language code.
+        """
+        ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
+        ###!!! regardless of language-specific documentation.
+        # Do not crash if the user asks for an unknown language.
+        if not lcode in self.feats:
+            return {}
+        return self.feats[lcode]
+    
+    def get_deprel_for_language(self, lcode):
+        """
+        Searches the previously loaded database of dependency relation labels.
+        Returns the set of permitted deprels for a given language code.
+        """
+        deprelset = set()
+        # If lcode is 'ud', we should permit all universal dependency relations,
+        # regardless of language-specific documentation.
+        ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
+        if lcode == 'ud':
+            deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative',
+                             'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop',
+                             'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case',
+                             'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan',
+                             'goeswith', 'reparandum', 'punct', 'root', 'dep'])
+        elif lcode in self.deprel:
+            for r in self.deprel[lcode]:
+                if self.deprel[lcode][r]['permitted'] > 0:
+                    deprelset.add(r)
+        return deprelset
+
+    def get_edeprel_for_language(self, lcode, basic_deprels):
+        """
+        Searches the previously loaded database of enhanced case markers.
+        Returns the set of permitted edeprels for a given language code.
+        """
+        ###!!! Why do we need to take the set of basic deprels as parameter?
+        edeprelset = basic_deprels|{'ref'}
+        for bdeprel in basic_deprels:
+            if re.match(r"^[nc]subj(:|$)", bdeprel):
+                edeprelset.add(bdeprel+':xsubj')
+        if lcode in self.edeprel:
+            for c in self.edeprel[lcode]:
+                for deprel in self.edeprel[lcode][c]['extends']:
+                    for bdeprel in basic_deprels:
+                        if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
+                            edeprelset.add(bdeprel+':'+c)
+        return edeprelset
+
+    def get_auxcop_for_language(self, lcode):
+        """
+        Searches the previously loaded database of auxiliary/copula lemmas.
+        Returns the AUX and COP lists for a given language code.
+        """
+        # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
+        # If any of the functions of the lemma is cop.*, it counts as a copula.
+        auxlist = []
+        coplist = []
+        if lcode == 'shopen':
+            for lcode1 in self.auxcop.keys():
+                lemmalist = self.auxcop[lcode1].keys()
+                auxlist = auxlist + [x for x in lemmalist
+                                     if len([y for y in self.auxcop[lcode1][x]['functions']
+                                        if y['function'] != 'cop.PRON']) > 0]
+                coplist = coplist + [x for x in lemmalist
+                                     if len([y for y in self.auxcop[lcode1][x]['functions']
+                                        if re.match(r"^cop\.", y['function'])]) > 0]
+        else:
+            lemmalist = self.auxcop.get(lcode, {}).keys()
+            auxlist = [x for x in lemmalist
+                       if len([y for y in self.auxcop[lcode][x]['functions']
+                        if y['function'] != 'cop.PRON']) > 0]
+            coplist = [x for x in lemmalist
+                       if len([y for y in self.auxcop[lcode][x]['functions']
+                        if re.match(r"^cop\.", y['function'])]) > 0]
+        return auxlist, coplist
+
+    def get_tospace_for_language(self, lcode):
+        """
+        Searches the previously loaded database of regular expressions describing
+        permitted tokens with spaces. Returns the expressions for a given language code.
+        """
+        # Do not crash if the user asks for an unknown language.
+        if not lcode in self.tospace:
+            return None
+        return self.tospace[lcode]
+
+
+
 # Global variables:
 state = State()
-warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
-warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
-warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
-warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
-warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
-warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
-warn_on_undoc_tospaces = '' # filled after reading tospace.json; printed when an unknown token with space is encountered in the data
-featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
-auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
-depreldata = {} # key: language code (deprel data loaded from deprels.json)
-edepreldata = {} # key: language code (edeprel data loaded from edeprels.json)
-tospacedata = {} # key: language code (expressions loaded from tospace.json)
+data = Data()
+
+
 
 def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None):
     """
@@ -174,6 +298,8 @@ def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None
         else:
             print(f"[{fn}Line {state.current_line}{sent}{node}]: [L{testlevel} {testclass} {testid}] {msg}",
                   file=sys.stderr)
+
+
 
 ###### Support functions
 ws_re = re.compile(r"^\s+$")
@@ -230,6 +356,8 @@ def lemmatl(cols):
 #==============================================================================
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
+
+
 
 sentid_re=re.compile(r"^# sent_id\s*=\s*(\S+)$")
 def trees(inp, tag_sets, args):
@@ -327,7 +455,11 @@ def trees(inp, tag_sets, args):
             if not corrupted:
                 yield comments, lines
 
+
+
 ###### Tests applicable to a single row indpendently of the others
+
+
 
 def validate_unicode_normalization(text):
     """
@@ -364,6 +496,8 @@ def validate_unicode_normalization(text):
         explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
         explanation = f"\n\nThis error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository.\n"
         warn(testmessage, testclass, testlevel, testid, explanation=explanation)
+
+
 
 whitespace_re = re.compile(r".*\s", re.U)
 whitespace2_re = re.compile(r".*\s\s", re.U)
@@ -422,7 +556,11 @@ def validate_cols_level1(cols):
         testmessage = f"Unexpected ID format '{cols[ID]}'."
         warn(testmessage, testclass, testlevel, testid)
 
+
+
 ##### Tests applicable to the whole tree
+
+
 
 interval_re = re.compile(r"^([0-9]+)-([0-9]+)$", re.U)
 def validate_ID_sequence(tree):
@@ -506,6 +644,8 @@ def validate_ID_sequence(tree):
             continue
     return ok
 
+
+
 def validate_token_ranges(tree):
     """
     Checks that the word ranges for multiword tokens are valid.
@@ -534,6 +674,8 @@ def validate_token_ranges(tree):
             warn(testmessage, testclass, testlevel, testid)
         covered |= set(range(start, end+1))
 
+
+
 def validate_newlines(inp):
     if inp.newlines and inp.newlines != '\n':
         testlevel = 1
@@ -551,7 +693,11 @@ def validate_newlines(inp):
 # specific guidelines may permit it).
 #==============================================================================
 
+
+
 ###### Metadata tests #########
+
+
 
 def validate_sent_id(comments, known_ids, lcode):
     testlevel = 2
@@ -587,6 +733,8 @@ def validate_sent_id(comments, known_ids, lcode):
             testmessage = f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
             warn(testmessage, testclass, testlevel, testid)
         known_ids.add(sid)
+
+
 
 newdoc_re = re.compile(r"^#\s*newdoc(\s|$)")
 newpar_re = re.compile(r"^#\s*newpar(\s|$)")
@@ -712,7 +860,11 @@ def validate_text_meta(comments, tree, args):
             testmessage = f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
             warn(testmessage, testclass, testlevel, testid)
 
+
+
 ##### Tests applicable to a single row indpendently of the others
+
+
 
 def validate_cols(cols, tag_sets, args):
     """
@@ -732,6 +884,8 @@ def validate_cols(cols, tag_sets, args):
         validate_empty_node_empty_vals(cols) # level 2
     if args.level > 3:
         validate_whitespace(cols, tag_sets, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
+
+
 
 def validate_token_empty_vals(cols):
     """
@@ -755,6 +909,8 @@ def validate_token_empty_vals(cols):
             testmessage = f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
             warn(testmessage, testclass, testlevel, testid)
 
+
+
 def validate_empty_node_empty_vals(cols):
     """
     Checks that an empty node has _ empty values in HEAD and DEPREL. This is
@@ -769,6 +925,8 @@ def validate_empty_node_empty_vals(cols):
             testid = 'mwt-nonempty-field'
             testmessage = f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
             warn(testmessage, testclass, testlevel, testid)
+
+
 
 # Ll ... lowercase Unicode letters
 # Lm ... modifier Unicode letters (e.g., superscript h)
@@ -820,6 +978,8 @@ def validate_character_constraints(cols):
             testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
             warn(testmessage, testclass, testlevel, testid)
 
+
+
 attr_val_re=re.compile(r"^([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$")
 val_re=re.compile(r"^[A-Z0-9][A-Za-z0-9]*")
 def validate_features(cols, tag_sets, args):
@@ -829,8 +989,8 @@ def validate_features(cols, tag_sets, args):
     must be allowed on level 2 because it could be defined as language-specific.
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
-    global warn_on_undoc_feats
     global state
+    global data
     testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
@@ -845,7 +1005,7 @@ def validate_features(cols, tag_sets, args):
     altlang = get_alt_language(cols[MISC])
     if altlang:
         lang = altlang
-        featset = get_featdata_for_language(altlang)
+        featset = data.get_feats_for_language(altlang)
     feat_list=feats.split('|')
     if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
         testlevel = 2
@@ -908,45 +1068,45 @@ def validate_features(cols, tag_sets, args):
                         if attr not in effective_featset:
                             testid = 'feature-unknown'
                             testmessage = f"Feature {attr} is not documented for language [{effective_lang}]."
-                            if not altlang and len(warn_on_undoc_feats) > 0:
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
                                 # If some features were excluded because they are not documented,
                                 # tell the user when the first unknown feature is encountered in the data.
                                 # Then erase this (long) introductory message and do not repeat it with
                                 # other instances of unknown features.
-                                testmessage += "\n\n" + warn_on_undoc_feats
-                                warn_on_undoc_feats = ''
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
                             warn(testmessage, testclass, testlevel, testid)
                         else:
                             lfrecord = effective_featset[attr]
                             if lfrecord['permitted'] == 0:
                                 testid = 'feature-not-permitted'
                                 testmessage = f"Feature {attr} is not permitted in language [{effective_lang}]."
-                                if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n\n" + warn_on_undoc_feats
-                                    warn_on_undoc_feats = ''
+                                if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                    testmessage += "\n\n" + data.warn_on_undoc_feats
+                                    data.warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel, testid)
                             else:
                                 values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                                 if not v in values:
                                     testid = 'feature-value-unknown'
                                     testmessage = f"Value {v} is not documented for feature {attr} in language [{effective_lang}]."
-                                    if not altlang and len(warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + warn_on_undoc_feats
-                                        warn_on_undoc_feats = ''
+                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                                        data.warn_on_undoc_feats = ''
                                     warn(testmessage, testclass, testlevel, testid)
                                 elif not cols[UPOS] in lfrecord['byupos']:
                                     testid = 'feature-upos-not-permitted'
                                     testmessage = f"Feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + warn_on_undoc_feats
-                                        warn_on_undoc_feats = ''
+                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                                        data.warn_on_undoc_feats = ''
                                     warn(testmessage, testclass, testlevel, testid)
                                 elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
                                     testid = 'feature-value-upos-not-permitted'
                                     testmessage = f"Value {v} of feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + warn_on_undoc_feats
-                                        warn_on_undoc_feats = ''
+                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                                        data.warn_on_undoc_feats = ''
                                     warn(testmessage, testclass, testlevel, testid)
     if len(attr_set) != len(feat_list):
         testlevel = 2
@@ -955,6 +1115,8 @@ def validate_features(cols, tag_sets, args):
         warn(testmessage, testclass, testlevel, testid)
     if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(cols[ID]):
         state.mwt_typo_span_end = None
+
+
 
 def features_present():
     """
@@ -975,6 +1137,8 @@ def features_present():
                      state.delayed_feature_errors[testid]['level'],
                      testid, nodeid=occurrence['nodeid'],
                      lineno=occurrence['lineno'])
+
+
 
 def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid, lineno):
     """
@@ -1000,6 +1164,8 @@ def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid,
             state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
                                                                   'lineno': lineno})
 
+
+
 def validate_upos(cols, tag_sets):
     if UPOS >= len(cols):
         return # this has been already reported in trees()
@@ -1012,9 +1178,10 @@ def validate_upos(cols, tag_sets):
         testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
         warn(testmessage, testclass, testlevel, testid)
 
+
+
 def validate_deprels(cols, tag_sets, args):
-    global warn_on_undoc_deps
-    global warn_on_undoc_edeps
+    global data
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
     # List of permited relations is language-specific.
@@ -1046,9 +1213,9 @@ def validate_deprels(cols, tag_sets, args):
         # Then erase this (long) introductory message and do not repeat it with
         # other instances of unknown relations.
         testmessage = f"Unknown DEPREL label: '{cols[DEPREL]}'"
-        if not altlang and len(warn_on_undoc_deps) > 0:
-            testmessage += "\n\n" + warn_on_undoc_deps
-            warn_on_undoc_deps = ''
+        if not altlang and len(data.warn_on_undoc_deps) > 0:
+            testmessage += "\n\n" + data.warn_on_undoc_deps
+            data.warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel, testid)
     if DEPS >= len(cols):
         return # this has been already reported in trees()
@@ -1068,18 +1235,24 @@ def validate_deprels(cols, tag_sets, args):
                 testclass = 'Enhanced'
                 testid = 'unknown-edeprel'
                 testmessage = f"Unknown enhanced relation type '{deprel}' in '{head_deprel}'"
-                if not altlang and len(warn_on_undoc_edeps) > 0:
-                    testmessage += "\n\n" + warn_on_undoc_edeps
-                    warn_on_undoc_edeps = ''
+                if not altlang and len(data.warn_on_undoc_edeps) > 0:
+                    testmessage += "\n\n" + data.warn_on_undoc_edeps
+                    data.warn_on_undoc_edeps = ''
                 warn(testmessage, testclass, testlevel, testid)
 
+
+
 ##### Tests applicable to the whole sentence
+
+
 
 def subset_to_words_and_empty_nodes(tree):
     """
     Only picks word and empty node lines, skips multiword token lines.
     """
     return [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
+
+
 
 def deps_list(cols):
     if DEPS >= len(cols):
@@ -1091,6 +1264,8 @@ def deps_list(cols):
     if any(hd for hd in deps if len(hd) != 2):
         raise ValueError(f'malformed DEPS: {cols[DEPS]}')
     return deps
+
+
 
 basic_head_re = re.compile(r"^(0|[1-9][0-9]*)$")
 enhanced_head_re = re.compile(r"^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$")
@@ -1142,6 +1317,8 @@ def validate_ID_references(tree):
                 testmessage = f"Undefined enhanced head reference (no such ID): '{head}'."
                 warn(testmessage, testclass, testlevel, testid)
 
+
+
 def validate_root(tree):
     """
     Checks that DEPREL is "root" iff HEAD is 0.
@@ -1184,6 +1361,8 @@ def validate_root(tree):
                     testid = 'enhanced-root-is-not-0'
                     testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
                     warn(testmessage, testclass, testlevel, testid)
+
+
 
 def validate_deps(tree):
     """
@@ -1253,6 +1432,8 @@ def validate_deps(tree):
             testid = 'deps-self-loop'
             testmessage = f"Self-loop in DEPS for '{cols[ID]}'"
             warn(testmessage, testclass, testlevel, testid, lineno=node_line)
+
+
 
 def validate_misc(tree):
     """
@@ -1325,6 +1506,8 @@ def validate_misc(tree):
                 testid = 'repeated-misc'
                 testmessage = f"MISC attribute '{a}' not supposed to occur twice"
                 warn(testmessage, testclass, testlevel, testid, lineno=node_line)
+
+
 
 def build_tree(sentence):
     """
@@ -1403,6 +1586,8 @@ def build_tree(sentence):
         return None
     return tree
 
+
+
 def get_projection(node_id, tree, projection):
     """
     Like proj() above, but works with the tree data structure. Collects node ids
@@ -1417,6 +1602,8 @@ def get_projection(node_id, tree, projection):
             projection.add(child)
             nodes.append(child)
     return projection
+
+
 
 def build_egraph(sentence):
     """
@@ -1514,6 +1701,8 @@ def build_egraph(sentence):
         return None
     return egraph
 
+
+
 def get_graph_projection(node_id, graph, projection):
     """
     Like get_projection() above, but works with the enhanced graph data structure.
@@ -1534,6 +1723,8 @@ def get_graph_projection(node_id, graph, projection):
 #==============================================================================
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
+
+
 
 def validate_upos_vs_deprel(node_id, tree):
     """
@@ -1651,6 +1842,8 @@ def validate_upos_vs_deprel(node_id, tree):
         testmessage = "'fixed' should not be used for proper nouns ('{formtl(cols)}')."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_flat_foreign(node_id, tree):
     """
     flat:foreign is an optional subtype of flat. It is used to connect two words
@@ -1679,6 +1872,8 @@ def validate_flat_foreign(node_id, tree):
         testmessage = "The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
         warn(testmessage, testclass, testlevel, testid, nodeid=pid, lineno=tree['linenos'][pid])
 
+
+
 def validate_left_to_right_relations(node_id, tree):
     """
     Certain UD relations must always go left-to-right.
@@ -1705,6 +1900,8 @@ def validate_left_to_right_relations(node_id, tree):
             testid = f"right-to-left-{lspec2ud(cols[DEPREL])}"
             testmessage = f"Parent of relation '{cols[DEPREL]}' must precede the child in the word order."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+
+
 
 def validate_single_subject(node_id, tree):
     """
@@ -1759,6 +1956,8 @@ def validate_single_subject(node_id, tree):
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
 
+
+
 def validate_orphan(node_id, tree):
     """
     The orphan relation is used to attach an unpromoted orphan to the promoted
@@ -1788,6 +1987,8 @@ def validate_orphan(node_id, tree):
             testid = 'orphan-parent'
             testmessage = f"The parent of 'orphan' should normally be 'conj' but it is '{pdeprel}'."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+
+
 
 def validate_functional_leaves(node_id, tree):
     """
@@ -1926,6 +2127,8 @@ def validate_functional_leaves(node_id, tree):
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
                 warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
 
+
+
 def collect_ancestors(node_id, tree, ancestors):
     """
     Usage: ancestors = collect_ancestors(nodeid, nodes, [])
@@ -1939,6 +2142,8 @@ def collect_ancestors(node_id, tree, ancestors):
         return ancestors
     ancestors.append(pid)
     return collect_ancestors(pid, tree, ancestors)
+
+
 
 def get_caused_nonprojectivities(node_id, tree):
     """
@@ -1981,6 +2186,8 @@ def get_caused_nonprojectivities(node_id, tree):
     # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
     return sorted(leftcross + rightcross)
 
+
+
 def get_gap(node_id, tree):
     iid = int(node_id) # just to be sure
     pid = int(tree['nodes'][iid][HEAD])
@@ -1994,6 +2201,8 @@ def get_gap(node_id, tree):
         get_projection(pid, tree, projection)
         gap = set(rangebetween) - projection
     return gap
+
+
 
 def validate_goeswith_span(node_id, tree):
     """
@@ -2029,6 +2238,8 @@ def validate_goeswith_span(node_id, tree):
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
         validate_required_feature(tree['nodes'][node_id][FEATS], 'Typo=Yes', testmessage, testlevel, testid, node_id, tree['linenos'][node_id])
 
+
+
 def validate_goeswith_morphology_and_edeps(node_id, tree):
     """
     If a node has the 'goeswith' incoming relation, it is a non-first part of
@@ -2056,6 +2267,8 @@ def validate_goeswith_morphology_and_edeps(node_id, tree):
             testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_fixed_span(node_id, tree):
     """
     Like with goeswith, the fixed relation should not in general skip words that
@@ -2081,6 +2294,8 @@ def validate_fixed_span(node_id, tree):
             testmessage = f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_projective_punctuation(node_id, tree):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
@@ -2102,6 +2317,8 @@ def validate_projective_punctuation(node_id, tree):
             testmessage = f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
@@ -2118,6 +2335,8 @@ def validate_annotation(tree):
         validate_goeswith_span(node_id, tree)
         validate_goeswith_morphology_and_edeps(node_id, tree)
         validate_projective_punctuation(node_id, tree)
+
+
 
 def validate_enhanced_annotation(graph):
     """
@@ -2163,6 +2382,8 @@ def validate_enhanced_annotation(graph):
 # words spaces are permitted, and which Feature=Value pairs are defined.
 #==============================================================================
 
+
+
 def validate_whitespace(cols, tag_sets, args):
     """
     Checks a single line for disallowed whitespace.
@@ -2170,12 +2391,13 @@ def validate_whitespace(cols, tag_sets, args):
     already been done in validate_cols_level1(), so we only check for words
     with spaces that are explicitly allowed in a given language.
     """
+    global data
     testlevel = 4
     testclass = 'Format'
     # We already verified that a multiword token does not contain a space (see validate_cols_level1()).
     if is_multiword_token(cols):
         return
-    tospacedata = get_tospacedata_for_language(args.lang)
+    tospacedata = data.get_tospace_for_language(args.lang)
     for col_idx in (FORM, LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
@@ -2186,21 +2408,21 @@ def validate_whitespace(cols, tag_sets, args):
                 # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
                 string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
                 if not tospacedata[1].fullmatch(string_to_test):
-                    warn_on_missing_files.add('tokens_w_space')
                     testid = 'invalid-word-with-space'
                     testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
-                    warn(testmessage, testclass, testlevel, testid, explanation="\n"+warn_on_undoc_tospaces)
+                    warn(testmessage, testclass, testlevel, testid, explanation="\n"+data.warn_on_undoc_tospaces)
             else:
-                warn_on_missing_files.add('tokens_w_space')
                 testid = 'invalid-word-with-space'
                 testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
-                warn(testmessage, testclass, testlevel, testid, explanation="\n"+warn_on_undoc_tospaces)
+                warn(testmessage, testclass, testlevel, testid, explanation="\n"+data.warn_on_undoc_tospaces)
 
 
 
 #==============================================================================
 # Level 5 tests. Annotation content vs. the guidelines, language-specific.
 #==============================================================================
+
+
 
 def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
     """
@@ -2213,12 +2435,12 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
-    global warn_on_undoc_aux
+    global data
     if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
         altlang = get_alt_language(cols[MISC])
         if altlang:
             lang = altlang
-            auxlist, coplist = get_auxdata_for_language(altlang)
+            auxlist, coplist = data.get_auxcop_for_language(altlang)
         auxdict = {}
         if auxlist != []:
             auxdict = {lang: auxlist}
@@ -2235,14 +2457,16 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
             testclass = 'Morpho'
             testid = 'aux-lemma'
             testmessage = f"'{cols[LEMMA]}' is not an auxiliary in language [{lang}]"
-            if not altlang and len(warn_on_undoc_aux) > 0:
+            if not altlang and len(data.warn_on_undoc_aux) > 0:
                 # Tell the user which auxiliaries are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
                 # Then erase this (long) introductory message and do not repeat it with
                 # other instances of unknown auxiliaries.
-                testmessage += "\n\n" + warn_on_undoc_aux
-                warn_on_undoc_aux = ''
+                testmessage += "\n\n" + data.warn_on_undoc_aux
+                data.warn_on_undoc_aux = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
+
+
 
 def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
     """
@@ -2255,12 +2479,12 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
-    global warn_on_undoc_cop
+    global data
     if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
         altlang = get_alt_language(cols[MISC])
         if altlang:
             lang = altlang
-            auxlist, coplist = get_auxdata_for_language(altlang)
+            auxlist, coplist = data.get_auxcop_for_language(altlang)
         copdict = {}
         if coplist != []:
             copdict = {lang: coplist}
@@ -2301,14 +2525,16 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
             testclass = 'Syntax'
             testid = 'cop-lemma'
             testmessage = f"'{cols[LEMMA]}' is not a copula in language [{lang}]"
-            if not altlang and len(warn_on_undoc_cop) > 0:
+            if not altlang and len(data.warn_on_undoc_cop) > 0:
                 # Tell the user which copulas are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
                 # Then erase this (long) introductory message and do not repeat it with
                 # other instances of unknown copulas.
-                testmessage += "\n\n" + warn_on_undoc_cop
-                warn_on_undoc_cop = ''
+                testmessage += "\n\n" + data.warn_on_undoc_cop
+                data.warn_on_undoc_cop = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
+
+
 
 def validate_lspec_annotation(tree, lang, tag_sets):
     """
@@ -2364,6 +2590,8 @@ def validate_lspec_annotation(tree, lang, tag_sets):
 # tested on demand only, as the requirements are not compulsory for UD
 # releases.
 #==============================================================================
+
+
 
 global_entity_re = re.compile(r"^#\s*global\.Entity\s*=\s*(.+)$")
 def validate_misc_entity(comments, sentence):
@@ -2937,6 +3165,8 @@ def validate_misc_entity(comments, sentence):
 # Main part.
 #==============================================================================
 
+
+
 def validate(inp, out, args, tag_sets, known_sent_ids):
     for comments, sentence in trees(inp, tag_sets, args):
         # The individual lines were validated already in trees().
@@ -2976,6 +3206,8 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                     validate_enhanced_annotation(egraph) # level 3
     validate_newlines(inp) # level 1
 
+
+
 def load_file(filename):
     res = set()
     with io.open(filename, 'r', encoding='utf-8') as f:
@@ -2986,52 +3218,40 @@ def load_file(filename):
             res.add(line)
     return res
 
+
+
 def load_tospace_set(filename_langspec, lcode):
     """
     Loads regular expressions describing permitted tokens with spaces, compiles
     them and returns them as a set.
     """
-    global tospacedata
-    global warn_on_undoc_tospaces
+    global data
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_tospaces_0 = json.load(f)
     # There is one or more regular expressions for each language in the file.
     # If there are multiple expressions, combine them in one and compile it.
-    tospacedata = {}
+    data.tospace = {}
     for l in all_tospaces_0['expressions']:
         combination = '('+'|'.join(sorted(list(all_tospaces_0['expressions'][l])))+')'
         compilation = re.compile(combination)
-        tospacedata[l] = (combination, compilation)
+        data.tospace[l] = (combination, compilation)
     # Prepare a global message about permitted features and values. We will add
     # it to the first error message about an unknown token with space. Note that
     # this global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
     msg = ''
-    if not lcode in tospacedata:
+    if not lcode in data.tospace:
         msg += f"No tokens with spaces have been permitted for language [{lcode}].\n"
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
     else:
         msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
-        msg += tospacedata[lcode][0]
+        msg += data.tospace[lcode][0]
         msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
-    warn_on_undoc_tospaces = msg
+    data.warn_on_undoc_tospaces = msg
 
-def get_tospacedata_for_language(lcode):
-    """
-    Searches the previously loaded database of regular expressions describing
-    permitted tokens with spaces.
-    Returns the expressions for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
-    """
-    global tospacedata
-    # Do not crash if the user asks for an unknown language.
-    if not lcode in tospacedata:
-        return None
-    return tospacedata[lcode]
+
 
 def load_upos_set(filename):
     """
@@ -3040,26 +3260,27 @@ def load_upos_set(filename):
     res = load_file(os.path.join(THISDIR, 'data', filename))
     return res
 
+
+
 def load_feat_set(filename_langspec, lcode):
     """
     Loads the list of permitted feature-value pairs and returns it as a set.
     """
-    global featdata
-    global warn_on_undoc_feats
+    global data
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_features_0 = json.load(f)
-    featdata = all_features_0['features']
-    featset = get_featdata_for_language(lcode)
+    data.feats = all_features_0['features']
+    featset = data.get_feats_for_language(lcode)
     # Prepare a global message about permitted features and values. We will add
     # it to the first error message about an unknown feature. Note that this
     # global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
     msg = ''
-    if not lcode in featdata:
+    if not lcode in data.feats:
         msg += f"No feature-value pairs have been permitted for language [{lcode}].\n"
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
-        warn_on_undoc_feats = msg
+        data.warn_on_undoc_feats = msg
     else:
         # Identify feature values that are permitted in the current language.
         for f in featset:
@@ -3080,35 +3301,20 @@ def load_feat_set(filename_langspec, lcode):
         msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
         msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
         msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
-        warn_on_undoc_feats = msg
+        data.warn_on_undoc_feats = msg
     return featset
 
-def get_featdata_for_language(lcode):
-    """
-    Searches the previously loaded database of feature-value combinations.
-    Returns the lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
-    """
-    global featdata
-    ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
-    ###!!! regardless of language-specific documentation.
-    # Do not crash if the user asks for an unknown language.
-    if not lcode in featdata:
-        return {} ###!!! or None?
-    return featdata[lcode]
+
 
 def load_deprel_set(filename_langspec, lcode):
     """
     Loads the list of permitted relation types and returns it as a set.
     """
-    global depreldata
-    global warn_on_undoc_deps
+    global data
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_deprels_0 = json.load(f)
-    depreldata = all_deprels_0['deprels']
-    deprelset = get_depreldata_for_language(lcode)
+    data.deprel = all_deprels_0['deprels']
+    deprelset = data.get_deprel_for_language(lcode)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
@@ -3121,14 +3327,14 @@ def load_deprel_set(filename_langspec, lcode):
     else:
         # Identify dependency relations that are permitted in the current language.
         # If there are errors in documentation, identify the erroneous doc file.
-        # Note that depreldata[lcode] may not exist even though we have a non-empty
+        # Note that data.deprel[lcode] may not exist even though we have a non-empty
         # set of relations, if lcode is 'ud'.
-        if lcode in depreldata:
-            for r in depreldata[lcode]:
+        if lcode in data.deprel:
+            for r in data.deprel[lcode]:
                 file = re.sub(r':', r'-', r)
                 if file == 'aux':
                     file = 'aux_'
-                for e in depreldata[lcode][r]['errors']:
+                for e in data.deprel[lcode][r]['errors']:
                     msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
         sorted_documented_relations = sorted(deprelset)
         msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
@@ -3140,44 +3346,20 @@ def load_deprel_set(filename_langspec, lcode):
         msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
         # Save the message in a global variable.
         # We will add it to the first error message about an unknown feature in the data.
-    warn_on_undoc_deps = msg
+    data.warn_on_undoc_deps = msg
     return deprelset
 
-def get_depreldata_for_language(lcode):
-    """
-    Searches the previously loaded database of dependency relation labels.
-    Returns the lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
-    """
-    global depreldata
-    deprelset = set()
-    # If lcode is 'ud', we should permit all universal dependency relations,
-    # regardless of language-specific documentation.
-    ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
-    if lcode == 'ud':
-        deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative',
-                         'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop',
-                         'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case',
-                         'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan',
-                         'goeswith', 'reparandum', 'punct', 'root', 'dep'])
-    elif lcode in depreldata:
-        for r in depreldata[lcode]:
-            if depreldata[lcode][r]['permitted'] > 0:
-                deprelset.add(r)
-    return deprelset
+
 
 def load_edeprel_set(filename_langspec, lcode, basic_deprels):
     """
     Loads the list of permitted enhanced relation types (case markers) and returns it as a set.
     """
-    global edepreldata
-    global warn_on_undoc_edeps
+    global data
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_edeprels_0 = json.load(f)
-    edepreldata = all_edeprels_0['edeprels']
-    edeprelset = get_edepreldata_for_language(lcode, basic_deprels)
+    data.edeprel = all_edeprels_0['edeprels']
+    edeprelset = data.get_edeprel_for_language(lcode, basic_deprels)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
@@ -3190,7 +3372,7 @@ def load_edeprel_set(filename_langspec, lcode, basic_deprels):
     else:
         # Identify dependency relations that are permitted in the current language.
         # If there are errors in documentation, identify the erroneous doc file.
-        # Note that depreldata[lcode] may not exist even though we have a non-empty
+        # Note that data.deprel[lcode] may not exist even though we have a non-empty
         # set of relations, if lcode is 'ud'.
         sorted_case_markers = sorted(edeprelset)
         msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
@@ -3198,61 +3380,59 @@ def load_edeprel_set(filename_langspec, lcode, basic_deprels):
         msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
         # Save the message in a global variable.
         # We will add it to the first error message about an unknown feature in the data.
-    warn_on_undoc_edeps = msg
+    data.warn_on_undoc_edeps = msg
     return edeprelset
 
-def get_edepreldata_for_language(lcode, basic_deprels):
-    """
-    Searches the previously loaded database of enhanced case markers.
-    Returns the lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
-    """
-    global edepreldata
-    edeprelset = basic_deprels|{'ref'}
-    for bdeprel in basic_deprels:
-        if re.match(r"^[nc]subj(:|$)", bdeprel):
-            edeprelset.add(bdeprel+':xsubj')
-    if lcode in edepreldata:
-        for c in edepreldata[lcode]:
-            for deprel in edepreldata[lcode][c]['extends']:
-                for bdeprel in basic_deprels:
-                    if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
-                        edeprelset.add(bdeprel+':'+c)
-    return edeprelset
 
-def get_auxdata_for_language(lcode):
+
+def load_auxcop_set(filename, lcode):
     """
-    Searches the previously loaded database of auxiliary/copula lemmas. Returns
-    the AUX and COP lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
+    Loads the lists of auxiliaries and copulas.
     """
-    global auxdata
-    # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
-    # If any of the functions of the lemma is cop.*, it counts as a copula.
-    auxlist = []
-    coplist = []
-    if lcode == 'shopen':
-        for lcode1 in auxdata.keys():
-            lemmalist = auxdata[lcode1].keys()
-            auxlist = auxlist + [x for x in lemmalist
-                                 if len([y for y in auxdata[lcode1][x]['functions']
-                                    if y['function'] != 'cop.PRON']) > 0]
-            coplist = coplist + [x for x in lemmalist
-                                 if len([y for y in auxdata[lcode1][x]['functions']
-                                    if re.match(r"^cop\.", y['function'])]) > 0]
+    global data
+    # Read the list of auxiliaries from the JSON file.
+    # This file must not be edited directly!
+    # Use the web interface at
+    # https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
+    with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
+        jsondata = json.load(f)
+    data.auxcop = jsondata['auxiliaries']
+    auxdata, copdata = data.get_auxcop_for_language(args.lang)
+    # Prepare a global message about permitted auxiliary lemmas. We will add
+    # it to the first error message about an unknown auxiliary. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    msg = ''
+    if len(auxdata) == 0:
+        msg += f"No auxiliaries have been documented at the address below for language [{args.lang}].\n"
+        msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
     else:
-        lemmalist = auxdata.get(lcode, {}).keys()
-        auxlist = [x for x in lemmalist
-                   if len([y for y in auxdata[lcode][x]['functions']
-                    if y['function'] != 'cop.PRON']) > 0]
-        coplist = [x for x in lemmalist
-                   if len([y for y in auxdata[lcode][x]['functions']
-                    if re.match(r"^cop\.", y['function'])]) > 0]
-    return auxlist, coplist
+        # Identify auxiliaries that are permitted in the current language.
+        msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{args.lang}]:\n"
+        msg += ', '.join(auxdata) + "\n"
+        msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+        # Save the message in a global variable.
+        # We will add it to the first error message about an unknown feature in the data.
+    data.warn_on_undoc_aux = msg
+    # Prepare a global message about permitted copula lemmas. We will add
+    # it to the first error message about an unknown auxiliary. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    msg = ''
+    if len(copdata) == 0:
+        msg += f"No copulas have been documented at the address below for language [{args.lang}].\n"
+        msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+    else:
+        # Identify auxiliaries that are permitted in the current language.
+        msg += f"The following {len(copdata)} copulas are currently documented in language [{args.lang}]:\n"
+        msg += ', '.join(copdata) + "\n"
+        msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+        # Save the message in a global variable.
+        # We will add it to the first error message about an unknown feature in the data.
+    data.warn_on_undoc_cop = msg
+    return auxdata, copdata
+
+
 
 alt_lang_re = re.compile(r"Lang=(.+)")
 def get_alt_language(misc):
@@ -3270,6 +3450,8 @@ def get_alt_language(misc):
         if m:
             return m.group(1)
     return None
+
+
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
@@ -3352,46 +3534,7 @@ if __name__=="__main__":
         # in the code.
         tagsets[DEPS] = load_edeprel_set('edeprels.json', args.lang, tagsets[DEPREL])
         tagsets[TOKENSWSPACE] = load_tospace_set('tospace.json', args.lang)
-        # Read the list of auxiliaries from the JSON file.
-        # This file must not be edited directly!
-        # Use the web interface at
-        # https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
-        with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
-            jsondata = json.load(f)
-        auxdata = jsondata['auxiliaries']
-        tagsets[AUX], tagsets[COP] = get_auxdata_for_language(args.lang)
-        # Prepare a global message about permitted auxiliary lemmas. We will add
-        # it to the first error message about an unknown auxiliary. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(tagsets[AUX]) == 0:
-            msg += f"No auxiliaries have been documented at the address below for language [{args.lang}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(tagsets[AUX])} auxiliaries are currently documented in language [{args.lang}]:\n"
-            msg += ', '.join(tagsets[AUX]) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
-        warn_on_undoc_aux = msg
-        # Prepare a global message about permitted copula lemmas. We will add
-        # it to the first error message about an unknown auxiliary. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(tagsets[COP]) == 0:
-            msg += f"No copulas have been documented at the address below for language [{args.lang}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(tagsets[COP])} copulas are currently documented in language [{args.lang}]:\n"
-            msg += ', '.join(tagsets[COP]) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
-        warn_on_undoc_cop = msg
+        tagsets[AUX], tagsets[COP] = load_auxcop_set('data.json', args.lang)
 
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
@@ -3446,8 +3589,4 @@ if __name__=="__main__":
     else:
         if not args.quiet:
             print(f'*** FAILED *** with {nerror} errors', file=sys.stderr)
-        for f_name in sorted(warn_on_missing_files):
-            filepath = os.path.join(THISDIR, 'data', f_name+'.'+args.lang)
-            if not os.path.exists(filepath):
-                print(f'The language-specific file {filepath} does not exist.', file=sys.stderr)
         sys.exit(1)
