@@ -47,29 +47,77 @@ class State:
         self.sentence_line = 0
         # The most recently read sentence id.
         self.sentence_id = None
+        # Needed to check that no space after last word of sentence does not
+        # co-occur with new paragraph or document.
+        self.spaceafterno_in_effect = False
+        # Error counter by error type. Key: error type; value: error count.
+        # Incremented in warn().
+        self.error_counter = {}
+        # Some feature-related errors can only be reported if the corpus
+        # contains feature annotation because features are optional in general.
+        # Once we see the first feature, we can flush all accummulated
+        # complaints about missing features.
+        # Key: testid; value: dict with parameters of the error and the list of
+        # its occurrences.
+        self.delayed_feature_errors = {}
+        #----------------------------------------------------------------------
+        # Various things that we may have seen earlier in the corpus. The value
+        # is None if we have not seen it, otherwise it is the line number of
+        # the first occurrence.
+        #----------------------------------------------------------------------
+        self.seen_morpho_feature = None
+        self.seen_enhanced_graph = None
+        self.seen_tree_without_enhanced_graph = None
+        # Any difference between non-empty DEPS and HEAD:DEPREL.
+        # (Because we can see many enhanced graphs but no real enhancements.)
+        self.seen_enhancement = None
+        self.seen_empty_node = None
+        self.seen_enhanced_orphan = None
+        # global.entity comment line is needed for Entity annotations in MISC.
+        self.seen_global_entity = None
+        # If a multi-word token has Typo=Yes, its component words must not have
+        # it. When we see Typo=Yes on a MWT line, we will remember the span of
+        # the MWT here and will not allow Typo=Yes within that span (which is
+        # checked in another function).
+        self.mwt_typo_span_end = None
+        #----------------------------------------------------------------------
+        # Additional observations related to Entity annotation in MISC
+        # (only needed when validating entities and coreference).
+        #----------------------------------------------------------------------
+        # Remember the global.entity attribute string to be able to check that
+        # repeated declarations are identical.
+        self.global_entity_attribute_string = None
+        # The number of entity attributes will be derived from the attribute
+        # string and will be used to check that an entity does not have extra
+        # attributes.
+        self.entity_attribute_number = 0
+        # Key: entity attribute name; value: the index of the attribute in the
+        # entity attribute list.
+        self.entity_attribute_index = {}
+        # Key: entity (cluster) id; value: tuple: (type of the entity, identity
+        # (Wikipedia etc.), line of the first mention)).
+        self.entity_types = {}
+        # Indices of known entity ids in this and other documents.
+        # (Otherwise, if we only needed to know that an entity is known, we
+        # could use self.entity_types above.)
+        self.entity_ids_this_document = {}
+        self.entity_ids_other_documents = {}
+        # List of currently open entity mentions. Items are dictionaries with
+        # entity mention information.
+        self.open_entity_mentions = []
+        # For each entity that has currently open discontinuous mention,
+        # describe the last part of the mention. Key: entity id; value is dict,
+        # its keys: last_ipart, npart, line.
+        self.open_discontinuous_mentions = {}
+        # Key: srceid<tgteid pair; value: type of the entity (may be empty).
+        self.entity_bridge_relations = {}
+        # Key: tgteid; value: sorted list of srceids, serialized to string.
+        self.entity_split_antecedents = {}
+        # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
+        self.entity_mention_spans = {}
 
 # Global variables:
 state = State()
-line_of_first_morpho_feature = None # features are optional, but if the treebank has features, then some become required
-delayed_feature_errors = {}
-line_of_first_enhanced_graph = None
-line_of_first_tree_without_enhanced_graph = None
-line_of_first_enhancement = None # any difference between non-empty DEPS and HEAD:DEPREL
-line_of_first_empty_node = None
-line_of_first_enhanced_orphan = None
-line_of_global_entity = None
-global_entity_attribute_string = None # to be able to check that repeated declarations are identical
-entity_attribute_number = 0 # to be able to check that an entity does not have extra attributes
-entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
-entity_types = {} # key: entity (cluster) id; value: tuple: (type of the entity, identity (Wikipedia etc.), line of the first mention)
-open_entity_mentions = [] # items are dictionaries with entity mention information
-open_discontinuous_mentions = {} # key: entity id; describes last part of a discontinuous mention of that entity; item is dict, its keys: last_ipart, npart, line
-entity_ids_this_document = {}
-entity_ids_other_documents = {}
-entity_bridge_relations = {} # key: srceid<tgteid pair; value: type of the entity (may be empty)
-entity_split_antecedents = {} # key: tgteid; value: sorted list of srceids, serialized to string
-entity_mention_spans = {} # key: [eid][sentid][str(mention_span)]; value: set of node ids
-error_counter = {} # key: error type value: error count
 warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
 warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
 warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
@@ -77,8 +125,6 @@ warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an u
 warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
 warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
 warn_on_undoc_tospaces = '' # filled after reading tospace.json; printed when an unknown token with space is encountered in the data
-mwt_typo_span_end = None # if Typo=Yes at multiword token, what is the end of the multiword span?
-spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
 featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
 auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
 depreldata = {} # key: language code (deprel data loaded from deprels.json)
@@ -97,14 +143,14 @@ def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None
     an error of this type, the string will be appended to the main message. It
     can be used as an extended explanation of the situation.
     """
-    global state, error_counter, args
-    error_counter[testclass] = error_counter.get(testclass, 0)+1
-    if args.max_err > 0 and error_counter[testclass] > args.max_err:
-        if error_counter[testclass] == args.max_err + 1:
+    global state, args
+    state.error_counter[testclass] = state.error_counter.get(testclass, 0)+1
+    if args.max_err > 0 and state.error_counter[testclass] > args.max_err:
+        if state.error_counter[testclass] == args.max_err + 1:
             print(('...suppressing further errors regarding ' + testclass), file=sys.stderr)
         pass # supressed
     elif not args.quiet:
-        if explanation and error_counter[testclass] == 1:
+        if explanation and state.error_counter[testclass] == 1:
             msg += ' ' + explanation
         if len(args.input) > 1: # several files, should report which one
             if state.current_file_name == '-':
@@ -548,7 +594,7 @@ text_re = re.compile(r"^#\s*text\s*=\s*(.+)$")
 def validate_text_meta(comments, tree, args):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
-    global spaceafterno_in_effect
+    global state
     # In trees(), state.sentence_line was already moved to the first token/node line
     # after the sentence comment lines. While this is useful in most validation
     # functions, it complicates things here where we also work with the comments.
@@ -578,7 +624,7 @@ def validate_text_meta(comments, tree, args):
         testid = 'multiple-newpar'
         testmessage = 'Multiple newpar attributes.'
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
-    if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
+    if (newdoc_matched or newpar_matched) and state.spaceafterno_in_effect:
         testid = 'spaceafter-newdocpar'
         testmessage = 'New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
@@ -653,9 +699,9 @@ def validate_text_meta(comments, tree, args):
             else:
                 stext = stext[len(cols[FORM]):] # eat the form
                 if 'SpaceAfter=No' in cols[MISC].split("|"):
-                    spaceafterno_in_effect = True
+                    state.spaceafterno_in_effect = True
                 else:
-                    spaceafterno_in_effect = False
+                    state.spaceafterno_in_effect = False
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
                         testmessage = f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
@@ -693,7 +739,7 @@ def validate_token_empty_vals(cols):
     This is required by UD guidelines although it is not a problem in general,
     therefore a level 2 test.
     """
-    global mwt_typo_span_end
+    global state
     assert is_multiword_token(cols), 'internal error'
     for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
         # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
@@ -701,7 +747,7 @@ def validate_token_empty_vals(cols):
             # If a multi-word token has Typo=Yes, its component words must not have it.
             # We must remember the span of the MWT and check it in validate_features().
             m = interval_re.match(cols[ID])
-            mwt_typo_span_end = m.group(2)
+            state.mwt_typo_span_end = m.group(2)
         elif cols[col_idx] != '_':
             testlevel = 2
             testclass = 'Format'
@@ -784,7 +830,7 @@ def validate_features(cols, tag_sets, args):
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
     global warn_on_undoc_feats
-    global mwt_typo_span_end
+    global state
     testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
@@ -843,7 +889,7 @@ def validate_features(cols, tag_sets, args):
                     testlevel = 4
                     # The feature Typo=Yes is the only feature allowed on a multi-word token line.
                     # If it occurs there, it cannot be duplicated on the lines of the component words.
-                    if attr == 'Typo' and mwt_typo_span_end and cols[ID] <= mwt_typo_span_end:
+                    if attr == 'Typo' and state.mwt_typo_span_end and cols[ID] <= state.mwt_typo_span_end:
                         testid = 'mwt-typo-repeated-at-word'
                         testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
                         warn(testmessage, testclass, testlevel, testid)
@@ -907,8 +953,8 @@ def validate_features(cols, tag_sets, args):
         testid = 'repeated-feature'
         testmessage = f"Repeated features are disallowed: '{feats}'."
         warn(testmessage, testclass, testlevel, testid)
-    if mwt_typo_span_end and int(mwt_typo_span_end) <= int(cols[ID]):
-        mwt_typo_span_end = None
+    if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(cols[ID]):
+        state.mwt_typo_span_end = None
 
 def features_present():
     """
@@ -920,15 +966,13 @@ def features_present():
     encountered, they will be reported now.
     """
     global state
-    global line_of_first_morpho_feature
-    global delayed_feature_errors
-    if not line_of_first_morpho_feature:
-        line_of_first_morpho_feature = state.current_line
-        for testid in delayed_feature_errors:
-            for occurrence in delayed_feature_errors[testid]['occurrences']:
-                warn(delayed_feature_errors[testid]['message'],
-                     delayed_feature_errors[testid]['class'],
-                     delayed_feature_errors[testid]['level'],
+    if not state.seen_morpho_feature:
+        state.seen_morpho_feature = state.current_line
+        for testid in state.delayed_feature_errors:
+            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
+                warn(state.delayed_feature_errors[testid]['message'],
+                     state.delayed_feature_errors[testid]['class'],
+                     state.delayed_feature_errors[testid]['level'],
                      testid, nodeid=occurrence['nodeid'],
                      lineno=occurrence['lineno'])
 
@@ -941,20 +985,19 @@ def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid,
     has been already encountered. Otherwise the error will be remembered and it
     may be reported afterwards if any feature is encountered later.
     """
-    global line_of_first_morpho_feature
-    global delayed_feature_errors
+    global state
     testclass = 'Morpho'
     ###!!! We may want to check that any value of a given feature is present,
     ###!!! or even that a particular value is present. Currently we only test
     ###!!! Typo=Yes, i.e., the latter case.
     if not fv in feats.split('|'):
-        if line_of_first_morpho_feature:
+        if state.seen_morpho_feature:
             warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
         else:
-            if not testid in delayed_feature_errors:
-                delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel,
+            if not testid in state.delayed_feature_errors:
+                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel,
                                                   'message': testmessage, 'occurrences': []}
-            delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
+            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
                                                                   'lineno': lineno})
 
 def validate_upos(cols, tag_sets):
@@ -1147,7 +1190,7 @@ def validate_deps(tree):
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS.
     """
-    global line_of_first_enhancement
+    global state
     testlevel = 2
     node_line = state.sentence_line - 1
     for cols in tree:
@@ -1159,7 +1202,7 @@ def validate_deps(tree):
         # Remember whether there is at least one difference between the basic
         # tree and the enhanced graph in the entire dataset.
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
-            line_of_first_enhancement = node_line
+            state.seen_enhancement = node_line
         try:
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
@@ -1393,8 +1436,6 @@ def build_egraph(sentence):
               lineno ... line number in the file (needed in error messages)
     """
     global state
-    global line_of_first_enhanced_graph
-    global line_of_first_tree_without_enhanced_graph
     node_line = state.sentence_line - 1
     egraph_exists = False # enhanced deps are optional
     rootnode = {
@@ -1446,18 +1487,18 @@ def build_egraph(sentence):
     testlevel = 2
     testclass = 'Enhanced'
     if egraph_exists:
-        if not line_of_first_enhanced_graph:
-            line_of_first_enhanced_graph = state.sentence_line
-            if line_of_first_tree_without_enhanced_graph:
+        if not state.seen_enhanced_graph:
+            state.seen_enhanced_graph = state.sentence_line
+            if state.seen_tree_without_enhanced_graph:
                 testid = 'edeps-only-sometimes'
-                testmessage = f"Enhanced graph must be empty because we saw empty DEPS on line {line_of_first_tree_without_enhanced_graph}"
+                testmessage = f"Enhanced graph must be empty because we saw empty DEPS on line {state.seen_tree_without_enhanced_graph}"
                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
     else:
-        if not line_of_first_tree_without_enhanced_graph:
-            line_of_first_tree_without_enhanced_graph = state.sentence_line
-            if line_of_first_enhanced_graph:
+        if not state.seen_tree_without_enhanced_graph:
+            state.seen_tree_without_enhanced_graph = state.sentence_line
+            if state.seen_enhanced_graph:
                 testid = 'edeps-only-sometimes'
-                testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {line_of_first_enhanced_graph}"
+                testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
         return None
     # Check that the graph is connected. The UD v2 guidelines do not license unconnected graphs.
@@ -2092,28 +2133,27 @@ def validate_enhanced_annotation(graph):
     # However, all types of enhancements are optional and orphans are excluded
     # only if this treebank addresses gapping. We do not know it until we see
     # the first empty node.
-    global line_of_first_empty_node
-    global line_of_first_enhanced_orphan
+    global state
     for node_id in graph.keys():
         if is_empty_node(graph[node_id]['cols']):
-            if not line_of_first_empty_node:
+            if not state.seen_empty_node:
                 ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                line_of_first_empty_node = graph[node_id]['lineno']
+                state.seen_empty_node = graph[node_id]['lineno']
                 # Empty node itself is not an error. Report it only for the first time
                 # and only if an orphan occurred before it.
-                if line_of_first_enhanced_orphan:
+                if state.seen_enhanced_orphan:
                     testid = 'empty-node-after-eorphan'
-                    testmessage = f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {line_of_first_enhanced_orphan}"
+                    testmessage = f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
                     warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
         udeprels = set([lspec2ud(d) for h, d in graph[node_id]['deps']])
         if 'orphan' in udeprels:
-            if not line_of_first_enhanced_orphan:
+            if not state.seen_enhanced_orphan:
                 ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                line_of_first_enhanced_orphan = graph[node_id]['lineno']
+                state.seen_enhanced_orphan = graph[node_id]['lineno']
             # If we have seen an empty node, then the orphan is an error.
-            if  line_of_first_empty_node:
+            if  state.seen_empty_node:
                 testid = 'eorphan-after-empty-node'
-                testmessage = f"'orphan' not allowed in enhanced graph because we saw an empty node on line {line_of_first_empty_node}"
+                testmessage = f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
                 warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
 
 
@@ -2332,18 +2372,6 @@ def validate_misc_entity(comments, sentence):
     to coreference and named entities.
     """
     global state
-    global line_of_global_entity
-    global global_entity_attribute_string
-    global entity_attribute_number
-    global entity_attribute_index
-    global entity_types
-    global open_entity_mentions
-    global open_discontinuous_mentions
-    global entity_ids_this_document
-    global entity_ids_other_documents
-    global entity_bridge_relations # key: srceid<tgteid pair; value: type of the entity (may be empty)
-    global entity_split_antecedents # key: tgteid; value: sorted list of srceids, serialized to string
-    global entity_mention_spans # key: [eid][sentid][str(mention_span)]; value: set of node ids
     testlevel = 6
     testclass = 'Coref'
     iline = 0
@@ -2357,63 +2385,63 @@ def validate_misc_entity(comments, sentence):
             # However, we may be processing multiple files or people may have created
             # the file by concatening smaller files, so we will allow repeated
             # declarations iff they are identical to the first one.
-            if line_of_global_entity:
-                if global_entity_match.group(1) != global_entity_attribute_string:
+            if state.seen_global_entity:
+                if global_entity_match.group(1) != state.global_entity_attribute_string:
                     testid = 'global-entity-mismatch'
-                    testmessage = f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{global_entity_attribute_string}' on line {line_of_global_entity}."
+                    testmessage = f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{state.global_entity_attribute_string}' on line {state.seen_global_entity}."
                     warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
             else:
-                line_of_global_entity = state.comment_start_line + iline
-                global_entity_attribute_string = global_entity_match.group(1)
-                if not re.match(r"^[a-z]+(-[a-z]+)*$", global_entity_attribute_string):
+                state.seen_global_entity = state.comment_start_line + iline
+                state.global_entity_attribute_string = global_entity_match.group(1)
+                if not re.match(r"^[a-z]+(-[a-z]+)*$", state.global_entity_attribute_string):
                     testid = 'spurious-global-entity'
-                    testmessage = f"Cannot parse global.Entity attribute declaration '{global_entity_attribute_string}'."
+                    testmessage = f"Cannot parse global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                     warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                 else:
-                    global_entity_attributes = global_entity_attribute_string.split('-')
+                    global_entity_attributes = state.global_entity_attribute_string.split('-')
                     if not 'eid' in global_entity_attributes:
                         testid = 'spurious-global-entity'
-                        testmessage = f"Global.Entity attribute declaration '{global_entity_attribute_string}' does not include 'eid'."
+                        testmessage = f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'eid'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     elif global_entity_attributes[0] != 'eid':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'eid' must come first in global.Entity attribute declaration '{global_entity_attribute_string}'."
+                        testmessage = f"Attribute 'eid' must come first in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     if not 'etype' in global_entity_attributes:
                         testid = 'spurious-global-entity'
-                        testmessage = f"Global.Entity attribute declaration '{global_entity_attribute_string}' does not include 'etype'."
+                        testmessage = f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'etype'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     elif global_entity_attributes[1] != 'etype':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'etype' must come second in global.Entity attribute declaration '{global_entity_attribute_string}'."
+                        testmessage = f"Attribute 'etype' must come second in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     if not 'head' in global_entity_attributes:
                         testid = 'spurious-global-entity'
-                        testmessage = f"Global.Entity attribute declaration '{global_entity_attribute_string}' does not include 'head'."
+                        testmessage = f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'head'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     elif global_entity_attributes[2] != 'head':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'head' must come third in global.Entity attribute declaration '{global_entity_attribute_string}'."
+                        testmessage = f"Attribute 'head' must come third in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     if 'other' in global_entity_attributes and global_entity_attributes[3] != 'other':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{global_entity_attribute_string}'."
+                        testmessage = f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     # Fill the global dictionary that maps attribute names to list indices.
                     i = 0
                     for a in global_entity_attributes:
-                        if a in entity_attribute_index:
+                        if a in state.entity_attribute_index:
                             testid = 'spurious-global-entity'
-                            testmessage = f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{global_entity_attribute_string}'."
+                            testmessage = f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                             warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                         else:
-                            entity_attribute_index[a] = i
+                            state.entity_attribute_index[a] = i
                         i += 1
-                    entity_attribute_number = len(global_entity_attributes)
+                    state.entity_attribute_number = len(global_entity_attributes)
         elif newdoc_match:
-            for eid in entity_ids_this_document:
-                entity_ids_other_documents[eid] = entity_ids_this_document[eid]
-            entity_ids_this_document = {}
+            for eid in state.entity_ids_this_document:
+                state.entity_ids_other_documents[eid] = state.entity_ids_this_document[eid]
+            state.entity_ids_this_document = {}
         elif sentid_match:
             sentid = sentid_match.group(1)
         iline += 1
@@ -2425,7 +2453,7 @@ def validate_misc_entity(comments, sentence):
         # Add the current word to all currently open mentions. We will use it in error messages.
         # Do this for regular and empty nodes but not for multi-word-token lines.
         if not '-' in cols[ID]:
-            for m in open_entity_mentions:
+            for m in state.open_entity_mentions:
                 m['span'].append(cols[ID])
                 m['text'] += ' '+cols[FORM]
                 m['length'] += 1
@@ -2465,7 +2493,7 @@ def validate_misc_entity(comments, sentence):
             continue
         # There is at most one Entity (and only if it is there, there may be also one Bridge and/or one SplitAnte).
         if len(entity)>0:
-            if not line_of_global_entity:
+            if not state.seen_global_entity:
                 testid = 'entity-without-global-entity'
                 testmessage = "No global.Entity comment was found before the first 'Entity' in MISC."
                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
@@ -2478,7 +2506,7 @@ def validate_misc_entity(comments, sentence):
             else:
                 entity_string = match.group(1)
                 # We cannot check the rest if we cannot identify the 'eid' attribute.
-                if 'eid' not in entity_attribute_index:
+                if 'eid' not in state.entity_attribute_index:
                     continue
                 # Items of entities are pairs of [012] and a string.
                 # 0 ... opening bracket; 1 ... closing bracket; 2 ... both brackets
@@ -2516,15 +2544,15 @@ def validate_misc_entity(comments, sentence):
                     if b==0 or b==2:
                         # Fewer attributes are allowed because trailing empty values can be omitted.
                         # More attributes are not allowed.
-                        if len(attributes) > entity_attribute_number:
+                        if len(attributes) > state.entity_attribute_number:
                             testid = 'too-many-entity-attributes'
-                            testmessage = f"Entity '{e}' has {len(attributes)} attributes while only {entity_attribute_number} attributes are globally declared."
+                            testmessage = f"Entity '{e}' has {len(attributes)} attributes while only {state.entity_attribute_number} attributes are globally declared."
                             warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         # The raw eid (bracket eid) may include an identification of a part of a discontinuous mention,
                         # as in 'e155[1/2]'. This is fine for matching opening and closing brackets
                         # because the closing bracket must contain it too. However, to identify the
                         # cluster, we need to take the real id.
-                        beid = attributes[entity_attribute_index['eid']]
+                        beid = attributes[state.entity_attribute_index['eid']]
                     else:
                         # No attributes other than eid are expected at the closing bracket.
                         if len(attributes) > 1:
@@ -2566,7 +2594,7 @@ def validate_misc_entity(comments, sentence):
                         # At the beginning of each part, we will check that its attribute string is identical to the first part.
                         if npart > 1:
                             # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
-                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
+                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != state.entity_attribute_index['eid']]
                             # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
                             attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
                             if ipart == 1:
@@ -2578,13 +2606,13 @@ def validate_misc_entity(comments, sentence):
                                                         'last_part_line': state.sentence_line+iline,
                                                         'attributes': attrstring_to_match,
                                                         'length': 0, 'span': []}
-                                if eidnpart in open_discontinuous_mentions:
-                                    open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
+                                if eidnpart in state.open_discontinuous_mentions:
+                                    state.open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
                                 else:
-                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                    state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             else:
-                                if eidnpart in open_discontinuous_mentions:
-                                    discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                                if eidnpart in state.open_discontinuous_mentions:
+                                    discontinuous_mention = state.open_discontinuous_mentions[eidnpart][-1]
                                     if ipart != discontinuous_mention['last_ipart']+1:
                                         testid = 'misplaced-mention-part'
                                         testmessage = f"Unexpected part of discontinuous mention '{beid}': last part was '{discontinuous_mention['last_ipart']}/{discontinuous_mention['npart']}' on line {discontinuous_mention['last_part_line']}."
@@ -2604,57 +2632,57 @@ def validate_misc_entity(comments, sentence):
                                                             'last_part_line': state.sentence_line+iline,
                                                             'attributes': attrstring_to_match,
                                                             'length': 0, 'span': []}
-                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                    state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                         # Check all attributes of the entity, except those that must be examined at the closing bracket.
-                        if eid in entity_ids_other_documents:
+                        if eid in state.entity_ids_other_documents:
                             testid = 'entity-across-newdoc'
-                            testmessage = f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {entity_ids_other_documents[eid]}, before the last newdoc."
+                            testmessage = f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {state.entity_ids_other_documents[eid]}, before the last newdoc."
                             warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
-                        elif not eid in entity_ids_this_document:
-                            entity_ids_this_document[eid] = state.sentence_line+iline
+                        elif not eid in state.entity_ids_this_document:
+                            state.entity_ids_this_document[eid] = state.sentence_line+iline
                         etype = ''
                         identity = ''
-                        if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
-                            etype = attributes[entity_attribute_index['etype']]
+                        if 'etype' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['etype']+1:
+                            etype = attributes[state.entity_attribute_index['etype']]
                             # For etype values tentatively approved for CorefUD 1.0, see
                             # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
                             if not re.match(r"^(person|place|organization|animal|plant|object|substance|time|number|abstract|event|other)?$", etype):
                                 testid = 'spurious-entity-type'
                                 testmessage = f"Spurious entity type '{etype}'."
                                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
-                        if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
-                            identity = attributes[entity_attribute_index['identity']]
+                        if 'identity' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['identity']+1:
+                            identity = attributes[state.entity_attribute_index['identity']]
                         # Check the form of the head index now.
                         # The value will be checked at the end of the mention,
                         # when we know the mention length.
                         head = 0
-                        if 'head' in entity_attribute_index and len(attributes) >= entity_attribute_index['head']+1:
-                            if not re.match(r"^[1-9][0-9]*$", attributes[entity_attribute_index['head']]):
+                        if 'head' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['head']+1:
+                            if not re.match(r"^[1-9][0-9]*$", attributes[state.entity_attribute_index['head']]):
                                 testid = 'spurious-mention-head'
-                                testmessage = f"Entity head index '{attributes[entity_attribute_index['head']]}' must be a non-zero-starting integer."
+                                testmessage = f"Entity head index '{attributes[state.entity_attribute_index['head']]}' must be a non-zero-starting integer."
                                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
-                                head = int(attributes[entity_attribute_index['head']])
+                                head = int(attributes[state.entity_attribute_index['head']])
                         # If this is the first mention of the entity, remember the values
                         # of the attributes that should be identical at all mentions.
-                        if not eid in entity_types:
-                            entity_types[eid] = (etype, identity, state.sentence_line+iline)
+                        if not eid in state.entity_types:
+                            state.entity_types[eid] = (etype, identity, state.sentence_line+iline)
                         else:
                             # All mentions of one entity (cluster) must have the same entity type.
-                            if etype != entity_types[eid][0]:
+                            if etype != state.entity_types[eid][0]:
                                 testid = 'entity-type-mismatch'
-                                testmessage = f"Entity '{eid}' cannot have type '{etype}' that does not match '{entity_types[eid][0]}' from the first mention on line {entity_types[eid][2]}."
+                                testmessage = f"Entity '{eid}' cannot have type '{etype}' that does not match '{state.entity_types[eid][0]}' from the first mention on line {state.entity_types[eid][2]}."
                                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
-                            if identity != entity_types[eid][1]:
+                            if identity != state.entity_types[eid][1]:
                                 testid = 'entity-identity-mismatch'
-                                testmessage = f"Entity '{eid}' cannot have identity '{identity}' that does not match '{entity_types[eid][1]}' from the first mention on line {entity_types[eid][2]}."
+                                testmessage = f"Entity '{eid}' cannot have identity '{identity}' that does not match '{state.entity_types[eid][1]}' from the first mention on line {state.entity_types[eid][2]}."
                                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         # Remember the line where (the current part of) the entity mention starts.
                         mention = {'beid': beid, 'line': state.sentence_line+iline,
                                    'span': [cols[ID]], 'text': cols[FORM],
                                    'length': 1, 'head': head, 'attrstring': attrstring_to_match}
-                        open_entity_mentions.append(mention)
+                        state.open_entity_mentions.append(mention)
                         # The set of mentions starting at the current line will be needed later when checking Bridge and SplitAnte statements.
                         if ipart == 1:
                             starting_mentions[eid] = True
@@ -2667,7 +2695,7 @@ def validate_misc_entity(comments, sentence):
                         mention_span = []
                         head = 0
                         opening_line = 0
-                        if len(open_entity_mentions)==0:
+                        if len(state.open_entity_mentions)==0:
                             testid = 'ill-nested-entities'
                             testmessage = f"Cannot close entity '{beid}' because there are no open entities."
                             warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
@@ -2677,23 +2705,23 @@ def validate_misc_entity(comments, sentence):
                             # We have crossing mention spans in CorefUD 1.0 and it has not been decided yet whether all of them should be illegal.
                             ###!!! Note that this will not catch ill-nested mentions whose only intersection is one node. The bracketing will
                             ###!!! not be a problem in such cases because one mention will be closed first, then the other will be opened.
-                            if beid != open_entity_mentions[-1]['beid']:
+                            if beid != state.open_entity_mentions[-1]['beid']:
                                 testid = 'ill-nested-entities-warning'
-                                testmessage = f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{open_entity_mentions[-1]['beid']}' from line {open_entity_mentions[-1]['line']}: {str(open_entity_mentions)}."
+                                testmessage = f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
                                 warn(testmessage, 'Warning', testlevel, testid, lineno=state.sentence_line+iline)
                             # Try to find and close the entity whether or not it was well-nested.
-                            for i in reversed(range(len(open_entity_mentions))):
-                                if open_entity_mentions[i]['beid'] == beid:
-                                    mention_length = open_entity_mentions[i]['length']
-                                    mention_span = open_entity_mentions[i]['span']
-                                    head = open_entity_mentions[i]['head']
-                                    opening_line = open_entity_mentions[i]['line']
-                                    open_entity_mentions.pop(i)
+                            for i in reversed(range(len(state.open_entity_mentions))):
+                                if state.open_entity_mentions[i]['beid'] == beid:
+                                    mention_length = state.open_entity_mentions[i]['length']
+                                    mention_span = state.open_entity_mentions[i]['span']
+                                    head = state.open_entity_mentions[i]['head']
+                                    opening_line = state.open_entity_mentions[i]['line']
+                                    state.open_entity_mentions.pop(i)
                                     break
                             else:
                                 # If we did not find the entity to close, then the warning above was not enough and we have to make it a validation error.
                                 testid = 'ill-nested-entities'
-                                testmessage = f"Cannot close entity '{beid}' because it was not found among open entities: {str(open_entity_mentions)}"
+                                testmessage = f"Cannot close entity '{beid}' because it was not found among open entities: {str(state.open_entity_mentions)}"
                                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                 return
                         # If this is a part of a discontinuous mention, update the information about the whole mention.
@@ -2701,8 +2729,8 @@ def validate_misc_entity(comments, sentence):
                         # discontinuous mentions of the same entity are possible.
                         if npart > 1:
                             # Update the attributes that have to be updated after each part.
-                            if eidnpart in open_discontinuous_mentions:
-                                discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                            if eidnpart in state.open_discontinuous_mentions:
+                                discontinuous_mention = state.open_discontinuous_mentions[eidnpart][-1]
                                 discontinuous_mention['last_ipart'] = ipart
                                 discontinuous_mention['last_part_line'] = opening_line
                                 discontinuous_mention['length'] += mention_length
@@ -2710,17 +2738,17 @@ def validate_misc_entity(comments, sentence):
                             else:
                                 # This should have been taken care of at the opening bracket.
                                 testid = 'internal-error'
-                                testmessage = "INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in open_discontinuous_mentions."
+                                testmessage = "INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in state.open_discontinuous_mentions."
                                 warn(testmessage, 'Internal', 0, testid, lineno=state.sentence_line+iline)
                                 discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
                                                         'first_part_line': opening_line,
                                                         'last_part_line': opening_line,
                                                         'attributes': '', 'length': mention_length,
                                                         'span': mention_span}
-                                open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             # Update mention_length and mention_span to reflect the whole span up to this point rather than just the last part.
-                            mention_length = open_discontinuous_mentions[eidnpart][-1]['length']
-                            mention_span = open_discontinuous_mentions[eidnpart][-1]['span']
+                            mention_length = state.open_discontinuous_mentions[eidnpart][-1]['length']
+                            mention_span = state.open_discontinuous_mentions[eidnpart][-1]['span']
                         # We need to know the length (number of nodes) of the mention to check whether the head attribute is within limits.
                         # We need to know the span (list of nodes) of the mention to check that no two mentions have the same span.
                         # We only check these requirements after the last part of the discontinuous span (or after the single part of a continuous one).
@@ -2742,27 +2770,27 @@ def validate_misc_entity(comments, sentence):
                             # sentences but we do not expect cross-sentence mentions to be frequent.
                             myset = set(mention_span)
                             # Check whether any other mention of the same entity has span that crosses the current one.
-                            if eid in entity_mention_spans:
-                                if sentid in entity_mention_spans[eid]:
-                                    for m in entity_mention_spans[eid][sentid]:
-                                        ms = entity_mention_spans[eid][sentid][m]
+                            if eid in state.entity_mention_spans:
+                                if sentid in state.entity_mention_spans[eid]:
+                                    for m in state.entity_mention_spans[eid][sentid]:
+                                        ms = state.entity_mention_spans[eid][sentid][m]
                                         if ms.intersection(myset) and not ms.issubset(myset) and not myset.issubset(ms):
                                             testid = 'crossing-mentions-same-entity'
                                             testmessage = f"Mentions of entity '{eid}' have crossing spans: {m} vs. {str(mention_span)}."
                                             warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                 else:
-                                    entity_mention_spans[eid][sentid] = {}
+                                    state.entity_mention_spans[eid][sentid] = {}
                             else:
-                                entity_mention_spans[eid] = {}
-                                entity_mention_spans[eid][sentid] = {}
-                            entity_mention_spans[eid][sentid][str(mention_span)] = myset
+                                state.entity_mention_spans[eid] = {}
+                                state.entity_mention_spans[eid][sentid] = {}
+                            state.entity_mention_spans[eid][sentid][str(mention_span)] = myset
                         # At the end of the last part of a discontinuous mention, remove the information about the mention.
                         if npart > 1 and ipart == npart:
-                            if eidnpart in open_discontinuous_mentions:
-                                if len(open_discontinuous_mentions[eidnpart]) > 1:
-                                    open_discontinuous_mentions[eidnpart].pop()
+                            if eidnpart in state.open_discontinuous_mentions:
+                                if len(state.open_discontinuous_mentions[eidnpart]) > 1:
+                                    state.open_discontinuous_mentions[eidnpart].pop()
                                 else:
-                                    open_discontinuous_mentions.pop(eidnpart)
+                                    state.open_discontinuous_mentions.pop(eidnpart)
                     #--------------------------------------------------------------------------------------------------------------------------------
 
                     # Now we know the beid, eid, as well as all other attributes.
@@ -2828,13 +2856,13 @@ def validate_misc_entity(comments, sentence):
                             else:
                                 srctgt[bridgekey] = True
                             # Check in the global dictionary whether this relation has been specified at another mention.
-                            if bridgekey in entity_bridge_relations:
-                                if relation != entity_bridge_relations[bridgekey]['relation']:
+                            if bridgekey in state.entity_bridge_relations:
+                                if relation != state.entity_bridge_relations[bridgekey]['relation']:
                                     testid = 'bridge-relation-mismatch'
-                                    testmessage = f"Bridge relation '{b}' type does not match '{entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {entity_bridge_relations[bridgekey]['line']}."
+                                    testmessage = f"Bridge relation '{b}' type does not match '{state.entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {state.entity_bridge_relations[bridgekey]['line']}."
                                     warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
-                                entity_bridge_relations[bridgekey] = {'relation': relation, 'line': state.sentence_line+iline}
+                                state.entity_bridge_relations[bridgekey] = {'relation': relation, 'line': state.sentence_line+iline}
             if len(splitante) > 0:
                 match = re.match(r"^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$", splitante[0])
                 if not match:
@@ -2878,30 +2906,30 @@ def validate_misc_entity(comments, sentence):
                             warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         # Check in the global dictionary whether this relation has been specified at another mention.
                         tgtante[tgteid].sort()
-                        if tgteid in entity_split_antecedents:
-                            if tgtante[tgteid] != entity_split_antecedents[tgteid]['antecedents']:
+                        if tgteid in state.entity_split_antecedents:
+                            if tgtante[tgteid] != state.entity_split_antecedents[tgteid]['antecedents']:
                                 testid = 'split-antecedent-mismatch'
-                                testmessage = f"Split antecedent of entity '{tgteid}' does not match '{entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {entity_split_antecedents[tgteid]['line']}."
+                                testmessage = f"Split antecedent of entity '{tgteid}' does not match '{state.entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {state.entity_split_antecedents[tgteid]['line']}."
                                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         else:
-                            entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
+                            state.entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
         iline += 1
-    if len(open_entity_mentions)>0:
+    if len(state.open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
-        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(open_entity_mentions)}."
+        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_entity_mentions)}."
         warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
         # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
-        open_entity_mentions = []
-    if len(open_discontinuous_mentions)>0:
+        state.open_entity_mentions = []
+    if len(state.open_discontinuous_mentions)>0:
         testid = 'cross-sentence-mention'
-        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(open_discontinuous_mentions)}."
+        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_discontinuous_mentions)}."
         warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
         # Close the mentions forcibly. Otherwise one omission would cause the error messages to to explode because the words would be collected from the remainder of the file.
-        open_discontinuous_mentions = {}
+        state.open_discontinuous_mentions = {}
     # Since we only test mentions within one sentence at present, we do not have to carry all mention spans until the end of the corpus.
-    for eid in entity_mention_spans:
-        if sentid in entity_mention_spans[eid]:
-            entity_mention_spans[eid].pop(sentid)
+    for eid in state.entity_mention_spans:
+        if sentid in state.entity_mention_spans[eid]:
+            state.entity_mention_spans[eid].pop(sentid)
 
 
 
@@ -3298,7 +3326,6 @@ if __name__=="__main__":
                              help='Test coreference and entity-related annotation in MISC.')
 
     args = opt_parser.parse_args() #Parsed command-line arguments
-    error_counter={} # Incremented by warn()  {key: error type value: its count}
 
     # Level of validation
     if args.level < 1:
@@ -3386,7 +3413,7 @@ if __name__=="__main__":
             validate(inp, out, args, tagsets, known_sent_ids)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
-        if args.level>2 and line_of_first_enhanced_graph and not line_of_first_enhancement:
+        if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
             testlevel = 3
             testclass = 'Enhanced'
             testid = 'edeps-identical-to-basic-trees'
@@ -3401,8 +3428,8 @@ if __name__=="__main__":
     # Summarize the warnings and errors.
     passed = True
     nerror = 0
-    if error_counter:
-        for k, v in sorted(error_counter.items()):
+    if state.error_counter:
+        for k, v in sorted(state.error_counter.items()):
             if k == 'Warning':
                 errors = 'Warnings'
             else:
