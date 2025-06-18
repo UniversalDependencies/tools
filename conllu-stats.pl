@@ -277,17 +277,31 @@ EOF
         push(@tbkhubs, $cells);
     }
     my $table = create_table(@tbkhubs);
+    # Ensure that the header with the name of the treebank stays visible even
+    # when scrolling down.
+    print("<style>thead th {position: sticky; top: 0; background-color: white;}</style>\n");
     print("<table>\n");
+    my $is_head = 1;
     foreach my $row (@{$table})
     {
+        if($is_head)
+        {
+            print("  <thead>\n");
+        }
         print("  <tr>\n");
         foreach my $cell (@{$row})
         {
-            print("    <td width=\"$width_percent\%\" valign=\"top\">\n");
+            my $thd = $is_head ? 'h' : 'd';
+            print("    <t$thd width=\"$width_percent\%\" valign=\"top\">\n");
             print(indent($cell, 6));
-            print("    </td>\n");
+            print("    </t$thd>\n");
         }
         print("  </tr>\n");
+        if($is_head)
+        {
+            print("  </thead>\n");
+            $is_head = 0;
+        }
     }
     print("</table>\n");
 }

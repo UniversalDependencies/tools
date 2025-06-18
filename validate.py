@@ -15,6 +15,8 @@ import regex as re
 import unicodedata
 import json
 
+
+
 # The folder where this script resides.
 THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
@@ -22,47 +24,445 @@ THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 COLCOUNT=10
 ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
-TOKENSWSPACE=MISC+1 # one extra constant
-AUX=MISC+2 # another extra constant
-COP=MISC+3 # another extra constant
+
+
+
+class State:
+    """
+    The State class holds various global data about where we are in the file
+    and what we have seen so far. Typically there will be just one instance of
+    this class.
+    """
+    def __init__(self):
+        # Name of the current input file.
+        self.current_file_name = None
+        # Current line in the input file, or, more precisely, the last line
+        # read so far. Once we start looking at tree integrity, we may find
+        # errors on previous lines as well.
+        self.current_line = 0;
+        # The line in the input file on which the current sentence starts,
+        # including sentence-level comments.
+        self.comment_start_line = 0
+        # The line in the input file on which the current sentence starts
+        # (the first node/token line, skipping comments).
+        self.sentence_line = 0
+        # The most recently read sentence id.
+        self.sentence_id = None
+        # Needed to check that no space after last word of sentence does not
+        # co-occur with new paragraph or document.
+        self.spaceafterno_in_effect = False
+        # Error counter by error type. Key: error type; value: error count.
+        # Incremented in warn().
+        self.error_counter = {}
+        # Some feature-related errors can only be reported if the corpus
+        # contains feature annotation because features are optional in general.
+        # Once we see the first feature, we can flush all accummulated
+        # complaints about missing features.
+        # Key: testid; value: dict with parameters of the error and the list of
+        # its occurrences.
+        self.delayed_feature_errors = {}
+        #----------------------------------------------------------------------
+        # Various things that we may have seen earlier in the corpus. The value
+        # is None if we have not seen it, otherwise it is the line number of
+        # the first occurrence.
+        #----------------------------------------------------------------------
+        self.seen_morpho_feature = None
+        self.seen_enhanced_graph = None
+        self.seen_tree_without_enhanced_graph = None
+        # Any difference between non-empty DEPS and HEAD:DEPREL.
+        # (Because we can see many enhanced graphs but no real enhancements.)
+        self.seen_enhancement = None
+        self.seen_empty_node = None
+        self.seen_enhanced_orphan = None
+        # global.entity comment line is needed for Entity annotations in MISC.
+        self.seen_global_entity = None
+        # If a multi-word token has Typo=Yes, its component words must not have
+        # it. When we see Typo=Yes on a MWT line, we will remember the span of
+        # the MWT here and will not allow Typo=Yes within that span (which is
+        # checked in another function).
+        self.mwt_typo_span_end = None
+        #----------------------------------------------------------------------
+        # Additional observations related to Entity annotation in MISC
+        # (only needed when validating entities and coreference).
+        #----------------------------------------------------------------------
+        # Remember the global.entity attribute string to be able to check that
+        # repeated declarations are identical.
+        self.global_entity_attribute_string = None
+        # The number of entity attributes will be derived from the attribute
+        # string and will be used to check that an entity does not have extra
+        # attributes.
+        self.entity_attribute_number = 0
+        # Key: entity attribute name; value: the index of the attribute in the
+        # entity attribute list.
+        self.entity_attribute_index = {}
+        # Key: entity (cluster) id; value: tuple: (type of the entity, identity
+        # (Wikipedia etc.), line of the first mention)).
+        self.entity_types = {}
+        # Indices of known entity ids in this and other documents.
+        # (Otherwise, if we only needed to know that an entity is known, we
+        # could use self.entity_types above.)
+        self.entity_ids_this_document = {}
+        self.entity_ids_other_documents = {}
+        # List of currently open entity mentions. Items are dictionaries with
+        # entity mention information.
+        self.open_entity_mentions = []
+        # For each entity that has currently open discontinuous mention,
+        # describe the last part of the mention. Key: entity id; value is dict,
+        # its keys: last_ipart, npart, line.
+        self.open_discontinuous_mentions = {}
+        # Key: srceid<tgteid pair; value: type of the entity (may be empty).
+        self.entity_bridge_relations = {}
+        # Key: tgteid; value: sorted list of srceids, serialized to string.
+        self.entity_split_antecedents = {}
+        # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
+        self.entity_mention_spans = {}
+
+
+
+class Data:
+    """
+    The Data class holds various dictionaries of tags, auxiliaries, regular
+    expressions etc. needed for detailed testing, especially for language-
+    specific constraints.
+    """
+    def __init__(self):
+        # Universal part of speech tags in the UPOS column. Just a set.
+        # For consistency, they are also read from a file. But these tags do
+        # not change, so they could be even hard-coded here.
+        self.upos = set()
+        # Morphological features in the FEATS column.
+        # Key: language code; value: feature-value-UPOS data from feats.json.
+        self.feats = {}
+        # Dependency relation types in the DEPREL column.
+        # Key: language code; value: deprel data from deprels.json.
+        # Cached processed version: key: language code; value: set of deprels.
+        self.deprel = {}
+        self.cached_deprel_for_language = {}
+        # Enhanced dependency relation types in the DEPS column.
+        # Key: language code; value: edeprel data from edeprels.json.
+        # Cached processed version: key: language code; value: set of edeprels.
+        self.edeprel = {}
+        self.cached_edeprel_for_language = {}
+        # Auxiliary (and copula) lemmas in the LEMMA column.
+        # Key: language code; value: auxiliary/copula data from data.json.
+        # Cached processed versions: key: language code; value: list of lemmas.
+        self.auxcop = {}
+        self.cached_aux_for_language = {}
+        self.cached_cop_for_language = {}
+        # Tokens with spaces in the FORM and LEMMA columns.
+        # Key: language code; value: data from tospace.json.
+        self.tospace = {}
+        # Explanations to be added to the first occurrence of an error that
+        # complains about undocumented features, deprels etc. These are filled
+        # after reading the respective JSON files and emptied once the first
+        # error is encountered and the explanation is printed.
+        ###!!! Tentatively moving these variables here, although we may want to
+        ###!!! overhaul the whole mechanism in the future.
+        self.warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
+        self.warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
+        self.warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
+        self.warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
+        self.warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
+        self.warn_on_undoc_tospaces = '' # filled after reading tospace.json; printed when an unknown token with space is encountered in the data
+
+    def get_feats_for_language(self, lcode):
+        """
+        Searches the previously loaded database of feature-value-UPOS combinations.
+        Returns the data for a given language code, organized in dictionaries.
+        Returns an empty dict if there are no data for the given language code.
+        """
+        ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
+        ###!!! regardless of language-specific documentation.
+        # Do not crash if the user asks for an unknown language.
+        if not lcode in self.feats:
+            return {}
+        return self.feats[lcode]
+    
+    def get_deprel_for_language(self, lcode):
+        """
+        Searches the previously loaded database of dependency relation labels.
+        Returns the set of permitted deprels for a given language code. Also
+        saves the result in self so that next time it can be fetched quickly
+        (once we loaded the data, we do not expect them to change).
+        """
+        if lcode in self.cached_deprel_for_language:
+            return self.cached_deprel_for_language[lcode]
+        deprelset = set()
+        # If lcode is 'ud', we should permit all universal dependency relations,
+        # regardless of language-specific documentation.
+        ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
+        if lcode == 'ud':
+            deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative',
+                             'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop',
+                             'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case',
+                             'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan',
+                             'goeswith', 'reparandum', 'punct', 'root', 'dep'])
+        elif lcode in self.deprel:
+            for r in self.deprel[lcode]:
+                if self.deprel[lcode][r]['permitted'] > 0:
+                    deprelset.add(r)
+        self.cached_deprel_for_language[lcode] = deprelset
+        return deprelset
+
+    def get_edeprel_for_language(self, lcode):
+        """
+        Searches the previously loaded database of enhanced case markers.
+        Returns the set of permitted edeprels for a given language code. Also
+        saves the result in self so that next time it can be fetched quickly
+        (once we loaded the data, we do not expect them to change).
+        """
+        if lcode in self.cached_edeprel_for_language:
+            return self.cached_edeprel_for_language[lcode]
+        basic_deprels = self.get_deprel_for_language(lcode)
+        edeprelset = basic_deprels | {'ref'}
+        for bdeprel in basic_deprels:
+            if re.match(r"^[nc]subj(:|$)", bdeprel):
+                edeprelset.add(bdeprel+':xsubj')
+        if lcode in self.edeprel:
+            for c in self.edeprel[lcode]:
+                for deprel in self.edeprel[lcode][c]['extends']:
+                    for bdeprel in basic_deprels:
+                        if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
+                            edeprelset.add(bdeprel+':'+c)
+        self.cached_edeprel_for_language[lcode] = edeprelset
+        return edeprelset
+
+    def get_auxcop_for_language(self, lcode):
+        """
+        Searches the previously loaded database of auxiliary/copula lemmas.
+        Returns the AUX and COP lists for a given language code. Also saves
+        the result in self so that next time it can be fetched quickly (once
+        we loaded the data, we do not expect them to change).
+        """
+        if lcode in self.cached_aux_for_language and lcode in self.cached_cop_for_language:
+            return self.cached_aux_for_language[lcode], self.cached_cop_for_language[lcode]
+        # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
+        # If any of the functions of the lemma is cop.*, it counts as a copula.
+        auxlist = []
+        coplist = []
+        if lcode == 'shopen':
+            for lcode1 in self.auxcop.keys():
+                lemmalist = self.auxcop[lcode1].keys()
+                auxlist = auxlist + [x for x in lemmalist
+                                     if len([y for y in self.auxcop[lcode1][x]['functions']
+                                        if y['function'] != 'cop.PRON']) > 0]
+                coplist = coplist + [x for x in lemmalist
+                                     if len([y for y in self.auxcop[lcode1][x]['functions']
+                                        if re.match(r"^cop\.", y['function'])]) > 0]
+        else:
+            lemmalist = self.auxcop.get(lcode, {}).keys()
+            auxlist = [x for x in lemmalist
+                       if len([y for y in self.auxcop[lcode][x]['functions']
+                        if y['function'] != 'cop.PRON']) > 0]
+            coplist = [x for x in lemmalist
+                       if len([y for y in self.auxcop[lcode][x]['functions']
+                        if re.match(r"^cop\.", y['function'])]) > 0]
+        self.cached_aux_for_language[lcode] = auxlist
+        self.cached_cop_for_language[lcode] = coplist
+        return auxlist, coplist
+
+    def get_aux_for_language(self, lcode):
+        """
+        An entry point for get_auxcop_for_language() that returns only the aux
+        list. It either takes the cached list (if available), or calls
+        get_auxcop_for_language().
+        """
+        if lcode in self.cached_aux_for_language:
+            return self.cached_aux_for_language[lcode]
+        auxlist, coplist = self.get_auxcop_for_language(lcode)
+        return auxlist
+
+    def get_cop_for_language(self, lcode):
+        """
+        An entry point for get_auxcop_for_language() that returns only the cop
+        list. It either takes the cached list (if available), or calls
+        get_auxcop_for_language().
+        """
+        if lcode in self.cached_cop_for_language:
+            return self.cached_cop_for_language[lcode]
+        auxlist, coplist = self.get_auxcop_for_language(lcode)
+        return coplist
+
+    def get_tospace_for_language(self, lcode):
+        """
+        Searches the previously loaded database of regular expressions describing
+        permitted tokens with spaces. Returns the expressions for a given language code.
+        """
+        # Do not crash if the user asks for an unknown language.
+        if not lcode in self.tospace:
+            return None
+        return self.tospace[lcode]
+
+    def explain_feats(self, lcode):
+        """
+        Returns explanation message for features of a particular language.
+        To be called after language-specific features have been loaded.
+        """
+        featset = self.get_feats_for_language(lcode)
+        # Prepare a global message about permitted features and values. We will add
+        # it to the first error message about an unknown feature. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if not lcode in data.feats:
+            msg += f"No feature-value pairs have been permitted for language [{lcode}].\n"
+            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
+        else:
+            # Identify feature values that are permitted in the current language.
+            for f in featset:
+                for e in featset[f]['errors']:
+                    msg += f"ERROR in _{lcode}/feat/{f}.md: {e}\n"
+            res = set()
+            for f in featset:
+                if featset[f]['permitted'] > 0:
+                    for v in featset[f]['uvalues']:
+                        res.add(f+'='+v)
+                    for v in featset[f]['lvalues']:
+                        res.add(f+'='+v)
+            sorted_documented_features = sorted(res)
+            msg += f"The following {len(sorted_documented_features)} feature values are currently permitted in language [{lcode}]:\n"
+            msg += ', '.join(sorted_documented_features) + "\n"
+            msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
+            msg += "have a language-specific documentation page in a prescribed format.\n"
+            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+            msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
+            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
+        return msg
+
+    def explain_deprel(self, lcode):
+        """
+        Returns explanation message for deprels of a particular language.
+        To be called after language-specific deprels have been loaded.
+        """
+        deprelset = self.get_deprel_for_language(lcode)
+        # Prepare a global message about permitted relation labels. We will add
+        # it to the first error message about an unknown relation. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if len(deprelset) == 0:
+            msg += f"No dependency relation types have been permitted for language [{lcode}].\n"
+            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n"
+        else:
+            # Identify dependency relations that are permitted in the current language.
+            # If there are errors in documentation, identify the erroneous doc file.
+            # Note that data.deprel[lcode] may not exist even though we have a non-empty
+            # set of relations, if lcode is 'ud'.
+            if lcode in data.deprel:
+                for r in data.deprel[lcode]:
+                    file = re.sub(r':', r'-', r)
+                    if file == 'aux':
+                        file = 'aux_'
+                    for e in data.deprel[lcode][r]['errors']:
+                        msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
+            sorted_documented_relations = sorted(deprelset)
+            msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
+            msg += ', '.join(sorted_documented_relations) + "\n"
+            msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
+            msg += "must have a language-specific documentation page in a prescribed format.\n"
+            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+            msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
+            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
+        return msg
+
+    def explain_edeprel(self, lcode):
+        """
+        Returns explanation message for edeprels of a particular language.
+        To be called after language-specific edeprels have been loaded.
+        """
+        edeprelset = self.get_edeprel_for_language(lcode)
+        # Prepare a global message about permitted relation labels. We will add
+        # it to the first error message about an unknown relation. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if len(edeprelset) == 0:
+            msg += f"No enhanced dependency relation types (case markers) have been permitted for language [{lcode}].\n"
+            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n"
+        else:
+            # Identify dependency relations that are permitted in the current language.
+            # If there are errors in documentation, identify the erroneous doc file.
+            # Note that data.deprel[lcode] may not exist even though we have a non-empty
+            # set of relations, if lcode is 'ud'.
+            sorted_case_markers = sorted(edeprelset)
+            msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
+            msg += ', '.join(sorted_case_markers) + "\n"
+            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
+        return msg
+
+    def explain_aux(self, lcode):
+        """
+        Returns explanation message for auxiliaries of a particular language.
+        To be called after language-specific auxiliaries have been loaded.
+        """
+        auxdata = self.get_aux_for_language(lcode)
+        # Prepare a global message about permitted auxiliary lemmas. We will add
+        # it to the first error message about an unknown auxiliary. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if len(auxdata) == 0:
+            msg += f"No auxiliaries have been documented at the address below for language [{args.lang}].\n"
+            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+        else:
+            # Identify auxiliaries that are permitted in the current language.
+            msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{args.lang}]:\n"
+            msg += ', '.join(auxdata) + "\n"
+            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+        return msg
+    
+    def explain_cop(self, lcode):
+        """
+        Returns explanation message for copulas of a particular language.
+        To be called after language-specific copulas have been loaded.
+        """
+        copdata = self.get_cop_for_language(lcode)
+        # Prepare a global message about permitted copula lemmas. We will add
+        # it to the first error message about an unknown copula. Note that this
+        # global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if len(copdata) == 0:
+            msg += f"No copulas have been documented at the address below for language [{args.lang}].\n"
+            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+        else:
+            # Identify auxiliaries that are permitted in the current language.
+            msg += f"The following {len(copdata)} copulas are currently documented in language [{args.lang}]:\n"
+            msg += ', '.join(copdata) + "\n"
+            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+        return msg
+    
+    def explain_tospace(self, lcode):
+        """
+        Returns explanation message for tokens with spaces of a particular language.
+        To be called after language-specific tokens with spaces have been loaded.
+        """
+        # Prepare a global message about permitted features and values. We will add
+        # it to the first error message about an unknown token with space. Note that
+        # this global information pertains to the default validation language and it
+        # should not be used with code-switched segments in alternative languages.
+        msg = ''
+        if not lcode in self.tospace:
+            msg += f"No tokens with spaces have been permitted for language [{lcode}].\n"
+            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
+        else:
+            msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
+            msg += self.tospace[lcode][0]
+            msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
+        return msg
+
+
 
 # Global variables:
-curr_line = 0 # Current line in the input file
-comment_start_line = 0 # The line in the input file on which the current sentence starts, including sentence-level comments.
-sentence_line = 0 # The line in the input file on which the current sentence starts (the first node/token line, skipping comments)
-sentence_id = None # The most recently read sentence id
-line_of_first_morpho_feature = None # features are optional, but if the treebank has features, then some become required
-delayed_feature_errors = {}
-line_of_first_enhanced_graph = None
-line_of_first_tree_without_enhanced_graph = None
-line_of_first_enhancement = None # any difference between non-empty DEPS and HEAD:DEPREL
-line_of_first_empty_node = None
-line_of_first_enhanced_orphan = None
-line_of_global_entity = None
-global_entity_attribute_string = None # to be able to check that repeated declarations are identical
-entity_attribute_number = 0 # to be able to check that an entity does not have extra attributes
-entity_attribute_index = {} # key: entity attribute name; value: the index of the attribute in the entity attribute list
-entity_types = {} # key: entity (cluster) id; value: tuple: (type of the entity, identity (Wikipedia etc.), line of the first mention)
-open_entity_mentions = [] # items are dictionaries with entity mention information
-open_discontinuous_mentions = {} # key: entity id; describes last part of a discontinuous mention of that entity; item is dict, its keys: last_ipart, npart, line
-entity_ids_this_document = {}
-entity_ids_other_documents = {}
-entity_bridge_relations = {} # key: srceid<tgteid pair; value: type of the entity (may be empty)
-entity_split_antecedents = {} # key: tgteid; value: sorted list of srceids, serialized to string
-entity_mention_spans = {} # key: [eid][sentid][str(mention_span)]; value: set of node ids
-error_counter = {} # key: error type value: error count
-warn_on_missing_files = set() # langspec files which you should warn about in case they are missing (can be deprel, edeprel, feat_val, tokens_w_space)
-warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
-warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
-warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
-warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
-warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
-mwt_typo_span_end = None # if Typo=Yes at multiword token, what is the end of the multiword span?
-spaceafterno_in_effect = False # needed to check that no space after last word of sentence does not co-occur with new paragraph or document
-featdata = {} # key: language code (feature-value-UPOS data loaded from feats.json)
-auxdata = {} # key: language code (auxiliary/copula data loaded from data.json)
-depreldata = {} # key: language code (deprel data loaded from deprels.json)
-edepreldata = {} # key: language code (edeprel data loaded from edeprels.json)
+state = State()
+data = Data()
+
+
 
 def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None):
     """
@@ -76,39 +476,39 @@ def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None
     an error of this type, the string will be appended to the main message. It
     can be used as an extended explanation of the situation.
     """
-    global curr_fname, curr_line, sentence_line, sentence_id, error_counter, args
-    error_counter[testclass] = error_counter.get(testclass, 0)+1
-    if args.max_err > 0 and error_counter[testclass] > args.max_err:
-        if error_counter[testclass] == args.max_err + 1:
+    global state, args
+    state.error_counter[testclass] = state.error_counter.get(testclass, 0)+1
+    if args.max_err > 0 and state.error_counter[testclass] > args.max_err:
+        if state.error_counter[testclass] == args.max_err + 1:
             print(('...suppressing further errors regarding ' + testclass), file=sys.stderr)
         pass # supressed
     elif not args.quiet:
-        if explanation and error_counter[testclass] == 1:
+        if explanation and state.error_counter[testclass] == 1:
             msg += ' ' + explanation
         if len(args.input) > 1: # several files, should report which one
-            if curr_fname=='-':
+            if state.current_file_name == '-':
                 fn = '(in STDIN) '
             else:
-                fn = '(in '+os.path.basename(curr_fname)+') '
+                fn = '(in ' + os.path.basename(state.current_file_name) + ') '
         else:
             fn = ''
         sent = ''
         node = ''
-        # Global variable (last read sentence id): sentence_id
-        # Originally we used a parameter sid but we probably do not need to override the global value.
-        if sentence_id:
-            sent = ' Sent ' + sentence_id
+        if state.sentence_id:
+            sent = ' Sent ' + state.sentence_id
         if nodeid:
             node = ' Node ' + str(nodeid)
         if lineno > 0:
             print(f"[{fn}Line {lineno}{sent}{node}]: [L{testlevel} {testclass} {testid}] {msg}",
                   file=sys.stderr)
         elif lineno < 0:
-            print(f"[{fn}Line {sentence_line}{sent}{node}]: [L{testlevel} {testclass} {testid}] {msg}",
+            print(f"[{fn}Line {state.sentence_line}{sent}{node}]: [L{testlevel} {testclass} {testid}] {msg}",
                   file=sys.stderr)
         else:
-            print(f"[{fn}Line {curr_line}{sent}{node}]: [L{testlevel} {testclass} {testid}] {msg}",
+            print(f"[{fn}Line {state.current_line}{sent}{node}]: [L{testlevel} {testclass} {testid}] {msg}",
                   file=sys.stderr)
+
+
 
 ###### Support functions
 ws_re = re.compile(r"^\s+$")
@@ -138,17 +538,41 @@ def shorten(string):
 def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
+def formtl(cols):
+    x = ''
+    l = len(cols)
+    if FORM < l:
+        x = cols[FORM]
+    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
+        misc = [x for x in cols[MISC].split('|') if x.startswith('Translit=')]
+        if len(misc) > 0:
+            x += ' ' + re.sub(r'^Translit=', '', misc[0])
+    return x
+
+def lemmatl(cols):
+    x = ''
+    l = len(cols)
+    if LEMMA < l:
+        x = cols[LEMMA]
+    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
+        misc = [x for x in cols[MISC].split('|') if x.startswith('LTranslit=')]
+        if len(misc) > 0:
+            x += ' ' + re.sub(r'^LTranslit=', '', misc[0])
+    return x
+
 
 
 #==============================================================================
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
 
+
+
 sentid_re=re.compile(r"^# sent_id\s*=\s*(\S+)$")
-def trees(inp, tag_sets, args):
+def trees(inp, args):
     """
     `inp` a file-like object yielding lines as unicode
-    `tag_sets` and `args` are needed for choosing the tests
+    `args` are needed for choosing the tests
 
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
@@ -159,17 +583,17 @@ def trees(inp, tag_sets, args):
     stream. (Technically, the function returns an object, and the object will
     then read the sentences within the caller's loop.)
     """
-    global curr_line, comment_start_line, sentence_line, sentence_id
+    global state
     comments = [] # List of comment lines to go with the current sentence
     lines = [] # List of token/word lines of the current sentence
     corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
-    comment_start_line = None
+    state.comment_start_line = None
     testlevel = 1
     testclass = 'Format'
     for line_counter, line in enumerate(inp):
-        curr_line = line_counter+1
-        if not comment_start_line:
-            comment_start_line = curr_line
+        state.current_line = line_counter+1
+        if not state.comment_start_line:
+            state.comment_start_line = state.current_line
         line = line.rstrip("\n")
         if is_whitespace(line):
             testid = 'pseudo-empty-line'
@@ -183,7 +607,7 @@ def trees(inp, tag_sets, args):
                 comments = []
                 lines = []
                 corrupted = False
-                comment_start_line = None
+                state.comment_start_line = None
         elif not line: # empty line
             if lines: # sentence done
                 if not corrupted:
@@ -191,7 +615,7 @@ def trees(inp, tag_sets, args):
                 comments=[]
                 lines=[]
                 corrupted = False
-                comment_start_line = None
+                state.comment_start_line = None
             else:
                 testid = 'extra-empty-line'
                 testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
@@ -203,7 +627,7 @@ def trees(inp, tag_sets, args):
             # files from a pipe.
             match = sentid_re.match(line)
             if match:
-                sentence_id = match.group(1)
+                state.sentence_id = match.group(1)
             if not lines: # before sentence
                 comments.append(line)
             else:
@@ -213,7 +637,7 @@ def trees(inp, tag_sets, args):
         elif line[0].isdigit():
             validate_unicode_normalization(line)
             if not lines: # new sentence
-                sentence_line=curr_line
+                state.sentence_line = state.current_line
             cols=line.split("\t")
             if len(cols)!=COLCOUNT:
                 testid = 'number-of-columns'
@@ -227,7 +651,7 @@ def trees(inp, tag_sets, args):
                 lines.append(cols)
                 validate_cols_level1(cols)
                 if args.level > 1:
-                    validate_cols(cols, tag_sets, args)
+                    validate_cols(cols, args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
@@ -240,7 +664,11 @@ def trees(inp, tag_sets, args):
             if not corrupted:
                 yield comments, lines
 
+
+
 ###### Tests applicable to a single row indpendently of the others
+
+
 
 def validate_unicode_normalization(text):
     """
@@ -254,6 +682,7 @@ def validate_unicode_normalization(text):
         firsti = -1
         firstj = -1
         inpfirst = ''
+        inpsecond = ''
         nfcfirst = ''
         tcols = text.split("\t")
         ncols = normalized_text.split("\t")
@@ -264,6 +693,8 @@ def validate_unicode_normalization(text):
                     firstj = j
                     inpfirst = unicodedata.name(tcols[i][j])
                     nfcfirst = unicodedata.name(ncols[i][j])
+                    if j+1 < len(tcols[i]):
+                        inpsecond = unicodedata.name(tcols[i][j+1])
                     break
             if firsti >= 0:
                 break
@@ -271,7 +702,11 @@ def validate_unicode_normalization(text):
         testclass = 'Unicode'
         testid = 'unicode-normalization'
         testmessage = f"Unicode not normalized: {COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
-        warn(testmessage, testclass, testlevel, testid)
+        explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
+        explanation = f"\n\nThis error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository.\n"
+        warn(testmessage, testclass, testlevel, testid, explanation=explanation)
+
+
 
 whitespace_re = re.compile(r".*\s", re.U)
 whitespace2_re = re.compile(r".*\s\s", re.U)
@@ -330,7 +765,11 @@ def validate_cols_level1(cols):
         testmessage = f"Unexpected ID format '{cols[ID]}'."
         warn(testmessage, testclass, testlevel, testid)
 
+
+
 ##### Tests applicable to the whole tree
+
+
 
 interval_re = re.compile(r"^([0-9]+)-([0-9]+)$", re.U)
 def validate_ID_sequence(tree):
@@ -414,6 +853,8 @@ def validate_ID_sequence(tree):
             continue
     return ok
 
+
+
 def validate_token_ranges(tree):
     """
     Checks that the word ranges for multiword tokens are valid.
@@ -442,6 +883,8 @@ def validate_token_ranges(tree):
             warn(testmessage, testclass, testlevel, testid)
         covered |= set(range(start, end+1))
 
+
+
 def validate_newlines(inp):
     if inp.newlines and inp.newlines != '\n':
         testlevel = 1
@@ -459,7 +902,11 @@ def validate_newlines(inp):
 # specific guidelines may permit it).
 #==============================================================================
 
+
+
 ###### Metadata tests #########
+
+
 
 def validate_sent_id(comments, known_ids, lcode):
     testlevel = 2
@@ -496,19 +943,21 @@ def validate_sent_id(comments, known_ids, lcode):
             warn(testmessage, testclass, testlevel, testid)
         known_ids.add(sid)
 
+
+
 newdoc_re = re.compile(r"^#\s*newdoc(\s|$)")
 newpar_re = re.compile(r"^#\s*newpar(\s|$)")
 text_re = re.compile(r"^#\s*text\s*=\s*(.+)$")
 def validate_text_meta(comments, tree, args):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
-    global spaceafterno_in_effect
-    # In trees(), sentence_line was already moved to the first token/node line
+    global state
+    # In trees(), state.sentence_line was already moved to the first token/node line
     # after the sentence comment lines. While this is useful in most validation
     # functions, it complicates things here where we also work with the comments.
-    # warn(lineno=-1) will print the sentence_line, i.e., after the comments.
+    # warn(lineno=-1) will print the state.sentence_line, i.e., after the comments.
     # warn() without lineno will refer to the empty line after the sentence.
-    global sentence_line
+    global state
     testlevel = 2
     testclass = 'Metadata'
     newdoc_matched = []
@@ -532,7 +981,7 @@ def validate_text_meta(comments, tree, args):
         testid = 'multiple-newpar'
         testmessage = 'Multiple newpar attributes.'
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
-    if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
+    if (newdoc_matched or newpar_matched) and state.spaceafterno_in_effect:
         testid = 'spaceafter-newdocpar'
         testmessage = 'New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
@@ -553,7 +1002,7 @@ def validate_text_meta(comments, tree, args):
         # Validate the text against the SpaceAfter attribute in MISC.
         skip_words = set()
         mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
-        # We will sum sentence_line + iline, and sentence_line already points at
+        # We will sum state.sentence_line + iline, and state.sentence_line already points at
         # the first token/node line after the sentence comments. Hence iline shall
         # be 0 once we enter the cycle.
         iline = -1
@@ -565,22 +1014,22 @@ def validate_text_meta(comments, tree, args):
             if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
                 testid = 'nospaceafter-yes'
                 testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             if len([x for x in cols[MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
                 testid = 'spaceafter-value'
                 testmessage = "Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
-                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             if '.' in cols[ID]: # empty node
                 if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                     testid = 'spaceafter-empty-node'
                     testmessage = "'SpaceAfter=No' cannot occur with empty nodes."
-                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                 continue
             elif '-' in cols[ID]: # multi-word token
                 beg,end=cols[ID].split('-')
                 try:
                     begi,endi = int(beg),int(end)
-                except ValueError as e:
+                except ValueError:
                     # This error has been reported elsewhere.
                     begi,endi = 1,0
                 # If we see a multi-word token, add its words to an ignore-set - these will be skipped, and also checked for absence of SpaceAfter=No
@@ -590,7 +1039,7 @@ def validate_text_meta(comments, tree, args):
                 if 'SpaceAfter=No' in cols[MISC]:
                     testid = 'spaceafter-mwt-node'
                     testmessage = "'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                 continue
             else:
                 # Err, I guess we have nothing to do here. :)
@@ -602,81 +1051,50 @@ def validate_text_meta(comments, tree, args):
                     testmessage = f"Mismatch between the text attribute and the FORM field. Form[{cols[ID]}] is '{cols[FORM]}' but text is '{stext[:len(cols[FORM])+20]}...'"
                     if len(stext) >= 1 and stext[0].isspace():
                         testmessage += " (perhaps extra SpaceAfter=No at previous token?)"
-                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                     mismatch_reported = 1
             else:
                 stext = stext[len(cols[FORM]):] # eat the form
                 if 'SpaceAfter=No' in cols[MISC].split("|"):
-                    spaceafterno_in_effect = True
+                    state.spaceafterno_in_effect = True
                 else:
-                    spaceafterno_in_effect = False
+                    state.spaceafterno_in_effect = False
                     if args.check_space_after and (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
                         testmessage = f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                     stext = stext.lstrip()
         if stext:
             testid = 'text-extra-chars'
             testmessage = f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
             warn(testmessage, testclass, testlevel, testid)
 
+
+
 ##### Tests applicable to a single row indpendently of the others
 
-def validate_cols(cols, tag_sets, args):
+
+
+def validate_cols(cols, args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
     called from trees() if level>1.
     """
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
-        validate_upos(cols, tag_sets) # level 2
-        validate_features(cols, tag_sets, args) # level 2 and up (relevant code checks whether higher level is required)
+        validate_upos(cols) # level 2
+        validate_features(cols, args) # level 2 and up (relevant code checks whether higher level is required)
     elif is_multiword_token(cols):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
     if is_word(cols):
-        validate_deprels(cols, tag_sets, args) # level 2 and up
+        validate_deprels(cols, args) # level 2 and up
     elif is_empty_node(cols):
         validate_empty_node_empty_vals(cols) # level 2
     if args.level > 3:
-        validate_whitespace(cols, tag_sets) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
+        validate_whitespace(cols, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
-def validate_token_empty_vals(cols):
-    """
-    Checks that a multi-word token has _ empty values in all fields except MISC.
-    This is required by UD guidelines although it is not a problem in general,
-    therefore a level 2 test.
-    """
-    global mwt_typo_span_end
-    assert is_multiword_token(cols), 'internal error'
-    for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
-        # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
-        if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
-            # If a multi-word token has Typo=Yes, its component words must not have it.
-            # We must remember the span of the MWT and check it in validate_features().
-            m = interval_re.match(cols[ID])
-            mwt_typo_span_end = m.group(2)
-        elif cols[col_idx] != '_':
-            testlevel = 2
-            testclass = 'Format'
-            testid = 'mwt-nonempty-field'
-            testmessage = f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid)
 
-def validate_empty_node_empty_vals(cols):
-    """
-    Checks that an empty node has _ empty values in HEAD and DEPREL. This is
-    required by UD guidelines but not necessarily by CoNLL-U, therefore
-    a level 2 test.
-    """
-    assert is_empty_node(cols), 'internal error'
-    for col_idx in (HEAD, DEPREL):
-        if cols[col_idx]!= '_':
-            testlevel = 2
-            testclass = 'Format'
-            testid = 'mwt-nonempty-field'
-            testmessage = f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid)
 
 # Ll ... lowercase Unicode letters
 # Lm ... modifier Unicode letters (e.g., superscript h)
@@ -728,17 +1146,34 @@ def validate_character_constraints(cols):
             testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
             warn(testmessage, testclass, testlevel, testid)
 
+
+
+def validate_upos(cols):
+    global data
+    if UPOS >= len(cols):
+        return # this has been already reported in trees()
+    if is_empty_node(cols) and cols[UPOS] == '_':
+        return
+    if cols[UPOS] not in data.upos:
+        testlevel = 2
+        testclass = 'Morpho'
+        testid = 'unknown-upos'
+        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+
+
+
 attr_val_re=re.compile(r"^([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$")
 val_re=re.compile(r"^[A-Z0-9][A-Za-z0-9]*")
-def validate_features(cols, tag_sets, args):
+def validate_features(cols, args):
     """
     Checks general constraints on feature-value format. On level 4 and higher,
     also checks that a feature-value pair is listed as approved. (Every pair
     must be allowed on level 2 because it could be defined as language-specific.
     To disallow non-universal features, test on level 4 with language 'ud'.)
     """
-    global warn_on_undoc_feats
-    global mwt_typo_span_end
+    global state
+    global data
     testclass = 'Morpho'
     if FEATS >= len(cols):
         return # this has been already reported in trees()
@@ -749,11 +1184,11 @@ def validate_features(cols, tag_sets, args):
     # List of permited features is language-specific.
     # The current token may be in a different language due to code switching.
     lang = args.lang
-    featset = tag_sets[FEATS]
+    default_featset = featset = data.get_feats_for_language(lang)
     altlang = get_alt_language(cols[MISC])
     if altlang:
         lang = altlang
-        featset = get_featdata_for_language(altlang)
+        featset = data.get_feats_for_language(altlang)
     feat_list=feats.split('|')
     if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
         testlevel = 2
@@ -797,7 +1232,7 @@ def validate_features(cols, tag_sets, args):
                     testlevel = 4
                     # The feature Typo=Yes is the only feature allowed on a multi-word token line.
                     # If it occurs there, it cannot be duplicated on the lines of the component words.
-                    if attr == 'Typo' and mwt_typo_span_end and cols[ID] <= mwt_typo_span_end:
+                    if attr == 'Typo' and state.mwt_typo_span_end and cols[ID] <= state.mwt_typo_span_end:
                         testid = 'mwt-typo-repeated-at-word'
                         testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
                         warn(testmessage, testclass, testlevel, testid)
@@ -810,59 +1245,61 @@ def validate_features(cols, tag_sets, args):
                     effective_lang = lang
                     if attr == 'Foreign':
                         # Revert to the default.
-                        effective_featset = tag_sets[FEATS]
+                        effective_featset = default_featset
                         effective_lang = args.lang
                     if effective_featset is not None:
                         if attr not in effective_featset:
                             testid = 'feature-unknown'
                             testmessage = f"Feature {attr} is not documented for language [{effective_lang}]."
-                            if not altlang and len(warn_on_undoc_feats) > 0:
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
                                 # If some features were excluded because they are not documented,
                                 # tell the user when the first unknown feature is encountered in the data.
                                 # Then erase this (long) introductory message and do not repeat it with
                                 # other instances of unknown features.
-                                testmessage += "\n\n" + warn_on_undoc_feats
-                                warn_on_undoc_feats = ''
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
                             warn(testmessage, testclass, testlevel, testid)
                         else:
                             lfrecord = effective_featset[attr]
                             if lfrecord['permitted'] == 0:
                                 testid = 'feature-not-permitted'
                                 testmessage = f"Feature {attr} is not permitted in language [{effective_lang}]."
-                                if not altlang and len(warn_on_undoc_feats) > 0:
-                                    testmessage += "\n\n" + warn_on_undoc_feats
-                                    warn_on_undoc_feats = ''
+                                if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                    testmessage += "\n\n" + data.warn_on_undoc_feats
+                                    data.warn_on_undoc_feats = ''
                                 warn(testmessage, testclass, testlevel, testid)
                             else:
                                 values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                                 if not v in values:
                                     testid = 'feature-value-unknown'
                                     testmessage = f"Value {v} is not documented for feature {attr} in language [{effective_lang}]."
-                                    if not altlang and len(warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + warn_on_undoc_feats
-                                        warn_on_undoc_feats = ''
+                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                                        data.warn_on_undoc_feats = ''
                                     warn(testmessage, testclass, testlevel, testid)
                                 elif not cols[UPOS] in lfrecord['byupos']:
                                     testid = 'feature-upos-not-permitted'
                                     testmessage = f"Feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + warn_on_undoc_feats
-                                        warn_on_undoc_feats = ''
+                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                                        data.warn_on_undoc_feats = ''
                                     warn(testmessage, testclass, testlevel, testid)
                                 elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
                                     testid = 'feature-value-upos-not-permitted'
                                     testmessage = f"Value {v} of feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + warn_on_undoc_feats
-                                        warn_on_undoc_feats = ''
+                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                                        data.warn_on_undoc_feats = ''
                                     warn(testmessage, testclass, testlevel, testid)
     if len(attr_set) != len(feat_list):
         testlevel = 2
         testid = 'repeated-feature'
         testmessage = f"Repeated features are disallowed: '{feats}'."
         warn(testmessage, testclass, testlevel, testid)
-    if mwt_typo_span_end and int(mwt_typo_span_end) <= int(cols[ID]):
-        mwt_typo_span_end = None
+    if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(cols[ID]):
+        state.mwt_typo_span_end = None
+
+
 
 def features_present():
     """
@@ -873,18 +1310,18 @@ def features_present():
     be reported as errors. In addition, if any such errors have already been
     encountered, they will be reported now.
     """
-    global curr_line
-    global line_of_first_morpho_feature
-    global delayed_feature_errors
-    if not line_of_first_morpho_feature:
-        line_of_first_morpho_feature = curr_line
-        for testid in delayed_feature_errors:
-            for occurrence in delayed_feature_errors[testid]['occurrences']:
-                warn(delayed_feature_errors[testid]['message'],
-                     delayed_feature_errors[testid]['class'],
-                     delayed_feature_errors[testid]['level'],
+    global state
+    if not state.seen_morpho_feature:
+        state.seen_morpho_feature = state.current_line
+        for testid in state.delayed_feature_errors:
+            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
+                warn(state.delayed_feature_errors[testid]['message'],
+                     state.delayed_feature_errors[testid]['class'],
+                     state.delayed_feature_errors[testid]['level'],
                      testid, nodeid=occurrence['nodeid'],
                      lineno=occurrence['lineno'])
+
+
 
 def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid, lineno):
     """
@@ -895,42 +1332,71 @@ def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid,
     has been already encountered. Otherwise the error will be remembered and it
     may be reported afterwards if any feature is encountered later.
     """
-    global line_of_first_morpho_feature
-    global delayed_feature_errors
+    global state
     testclass = 'Morpho'
     ###!!! We may want to check that any value of a given feature is present,
     ###!!! or even that a particular value is present. Currently we only test
     ###!!! Typo=Yes, i.e., the latter case.
     if not fv in feats.split('|'):
-        if line_of_first_morpho_feature:
+        if state.seen_morpho_feature:
             warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
         else:
-            if not testid in delayed_feature_errors:
-                delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel,
+            if not testid in state.delayed_feature_errors:
+                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel,
                                                   'message': testmessage, 'occurrences': []}
-            delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
+            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
                                                                   'lineno': lineno})
 
-def validate_upos(cols, tag_sets):
-    if UPOS >= len(cols):
-        return # this has been already reported in trees()
-    if is_empty_node(cols) and cols[UPOS] == '_':
-        return
-    if tag_sets[UPOS] is not None and cols[UPOS] not in tag_sets[UPOS]:
-        testlevel = 2
-        testclass = 'Morpho'
-        testid = 'unknown-upos'
-        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
 
-def validate_deprels(cols, tag_sets, args):
-    global warn_on_undoc_deps
-    global warn_on_undoc_edeps
+
+def validate_token_empty_vals(cols):
+    """
+    Checks that a multi-word token has _ empty values in all fields except MISC.
+    This is required by UD guidelines although it is not a problem in general,
+    therefore a level 2 test.
+    """
+    global state
+    assert is_multiword_token(cols), 'internal error'
+    for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
+        # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
+        if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
+            # If a multi-word token has Typo=Yes, its component words must not have it.
+            # We must remember the span of the MWT and check it in validate_features().
+            m = interval_re.match(cols[ID])
+            state.mwt_typo_span_end = m.group(2)
+        elif cols[col_idx] != '_':
+            testlevel = 2
+            testclass = 'Format'
+            testid = 'mwt-nonempty-field'
+            testmessage = f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
+            warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_empty_node_empty_vals(cols):
+    """
+    Checks that an empty node has _ empty values in HEAD and DEPREL. This is
+    required by UD guidelines but not necessarily by CoNLL-U, therefore
+    a level 2 test.
+    """
+    assert is_empty_node(cols), 'internal error'
+    for col_idx in (HEAD, DEPREL):
+        if cols[col_idx]!= '_':
+            testlevel = 2
+            testclass = 'Format'
+            testid = 'mwt-nonempty-field'
+            testmessage = f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
+            warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_deprels(cols, args):
+    global data
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
     # List of permited relations is language-specific.
     # The current token may be in a different language due to code switching.
-    deprelset = tag_sets[DEPREL]
+    deprelset = data.get_deprel_for_language(args.lang)
     ###!!! Unlike with features and auxiliaries, with deprels it is less clear
     ###!!! whether we actually want to switch the set of labels when the token
     ###!!! belongs to another language. If the set is changed at all, then it
@@ -957,13 +1423,14 @@ def validate_deprels(cols, tag_sets, args):
         # Then erase this (long) introductory message and do not repeat it with
         # other instances of unknown relations.
         testmessage = f"Unknown DEPREL label: '{cols[DEPREL]}'"
-        if not altlang and len(warn_on_undoc_deps) > 0:
-            testmessage += "\n\n" + warn_on_undoc_deps
-            warn_on_undoc_deps = ''
+        if not altlang and len(data.warn_on_undoc_deps) > 0:
+            testmessage += "\n\n" + data.warn_on_undoc_deps
+            data.warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel, testid)
     if DEPS >= len(cols):
         return # this has been already reported in trees()
-    if tag_sets[DEPS] is not None and cols[DEPS] != '_':
+    edeprelset = data.get_edeprel_for_language(args.lang)
+    if edeprelset is not None and cols[DEPS] != '_':
         for head_deprel in cols[DEPS].split('|'):
             try:
                 head,deprel=head_deprel.split(':', 1)
@@ -975,22 +1442,28 @@ def validate_deprels(cols, tag_sets, args):
                 continue
             if args.level < 4:
                 deprel = lspec2ud(deprel)
-            if deprel not in tag_sets[DEPS]:
+            if deprel not in edeprelset:
                 testclass = 'Enhanced'
                 testid = 'unknown-edeprel'
                 testmessage = f"Unknown enhanced relation type '{deprel}' in '{head_deprel}'"
-                if not altlang and len(warn_on_undoc_edeps) > 0:
-                    testmessage += "\n\n" + warn_on_undoc_edeps
-                    warn_on_undoc_edeps = ''
+                if not altlang and len(data.warn_on_undoc_edeps) > 0:
+                    testmessage += "\n\n" + data.warn_on_undoc_edeps
+                    data.warn_on_undoc_edeps = ''
                 warn(testmessage, testclass, testlevel, testid)
 
+
+
 ##### Tests applicable to the whole sentence
+
+
 
 def subset_to_words_and_empty_nodes(tree):
     """
     Only picks word and empty node lines, skips multiword token lines.
     """
     return [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
+
+
 
 def deps_list(cols):
     if DEPS >= len(cols):
@@ -1002,6 +1475,8 @@ def deps_list(cols):
     if any(hd for hd in deps if len(hd) != 2):
         raise ValueError(f'malformed DEPS: {cols[DEPS]}')
     return deps
+
+
 
 basic_head_re = re.compile(r"^(0|[1-9][0-9]*)$")
 enhanced_head_re = re.compile(r"^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$")
@@ -1053,6 +1528,8 @@ def validate_ID_references(tree):
                 testmessage = f"Undefined enhanced head reference (no such ID): '{head}'."
                 warn(testmessage, testclass, testlevel, testid)
 
+
+
 def validate_root(tree):
     """
     Checks that DEPREL is "root" iff HEAD is 0.
@@ -1096,14 +1573,16 @@ def validate_root(tree):
                     testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
                     warn(testmessage, testclass, testlevel, testid)
 
+
+
 def validate_deps(tree):
     """
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS.
     """
-    global line_of_first_enhancement
+    global state
     testlevel = 2
-    node_line = sentence_line - 1
+    node_line = state.sentence_line - 1
     for cols in tree:
         node_line += 1
         if not (is_word(cols) or is_empty_node(cols)):
@@ -1113,7 +1592,7 @@ def validate_deps(tree):
         # Remember whether there is at least one difference between the basic
         # tree and the enhanced graph in the entire dataset.
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
-            line_of_first_enhancement = node_line
+            state.seen_enhancement = node_line
         try:
             deps = deps_list(cols)
             heads = [float(h) for h, d in deps]
@@ -1165,6 +1644,8 @@ def validate_deps(tree):
             testmessage = f"Self-loop in DEPS for '{cols[ID]}'"
             warn(testmessage, testclass, testlevel, testid, lineno=node_line)
 
+
+
 def validate_misc(tree):
     """
     In general, the MISC column can contain almost anything. However, if there
@@ -1175,7 +1656,7 @@ def validate_misc(tree):
     that are described in the UD documentation.
     """
     testlevel = 2
-    node_line = sentence_line - 1
+    node_line = state.sentence_line - 1
     for cols in tree:
         node_line += 1
         if not (is_word(cols) or is_empty_node(cols)):
@@ -1237,6 +1718,8 @@ def validate_misc(tree):
                 testmessage = f"MISC attribute '{a}' not supposed to occur twice"
                 warn(testmessage, testclass, testlevel, testid, lineno=node_line)
 
+
+
 def build_tree(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
@@ -1254,13 +1737,13 @@ def build_tree(sentence):
     """
     testlevel = 2
     testclass = 'Syntax'
-    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
-    node_line = sentence_line - 1
+    global state
+    node_line = state.sentence_line - 1
     children = {} # node -> set of children
     tree = {
         'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
         'children': [],
-        'linenos':  [sentence_line] # for node 0
+        'linenos':  [state.sentence_line] # for node 0
     }
     for cols in sentence:
         node_line += 1
@@ -1314,6 +1797,8 @@ def build_tree(sentence):
         return None
     return tree
 
+
+
 def get_projection(node_id, tree, projection):
     """
     Like proj() above, but works with the tree data structure. Collects node ids
@@ -1328,6 +1813,8 @@ def get_projection(node_id, tree, projection):
             projection.add(child)
             nodes.append(child)
     return projection
+
+
 
 def build_egraph(sentence):
     """
@@ -1346,17 +1833,15 @@ def build_egraph(sentence):
               children ... set of children ids (strings)
               lineno ... line number in the file (needed in error messages)
     """
-    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
-    global line_of_first_enhanced_graph
-    global line_of_first_tree_without_enhanced_graph
-    node_line = sentence_line - 1
+    global state
+    node_line = state.sentence_line - 1
     egraph_exists = False # enhanced deps are optional
     rootnode = {
         'cols': ['0', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
         'deps': [],
         'parents': set(),
         'children': set(),
-        'lineno': sentence_line
+        'lineno': state.sentence_line
     }
     egraph = {
         '0': rootnode
@@ -1400,19 +1885,19 @@ def build_egraph(sentence):
     testlevel = 2
     testclass = 'Enhanced'
     if egraph_exists:
-        if not line_of_first_enhanced_graph:
-            line_of_first_enhanced_graph = sentence_line
-            if line_of_first_tree_without_enhanced_graph:
+        if not state.seen_enhanced_graph:
+            state.seen_enhanced_graph = state.sentence_line
+            if state.seen_tree_without_enhanced_graph:
                 testid = 'edeps-only-sometimes'
-                testmessage = f"Enhanced graph must be empty because we saw empty DEPS on line {line_of_first_tree_without_enhanced_graph}"
-                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line)
+                testmessage = f"Enhanced graph must be empty because we saw empty DEPS on line {state.seen_tree_without_enhanced_graph}"
+                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
     else:
-        if not line_of_first_tree_without_enhanced_graph:
-            line_of_first_tree_without_enhanced_graph = sentence_line
-            if line_of_first_enhanced_graph:
+        if not state.seen_tree_without_enhanced_graph:
+            state.seen_tree_without_enhanced_graph = state.sentence_line
+            if state.seen_enhanced_graph:
                 testid = 'edeps-only-sometimes'
-                testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {line_of_first_enhanced_graph}"
-                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line)
+                testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
+                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
         return None
     # Check that the graph is connected. The UD v2 guidelines do not license unconnected graphs.
     # Compute projection of every node. Beware of cycles.
@@ -1426,6 +1911,8 @@ def build_egraph(sentence):
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
         return None
     return egraph
+
+
 
 def get_graph_projection(node_id, graph, projection):
     """
@@ -1447,6 +1934,8 @@ def get_graph_projection(node_id, graph, projection):
 #==============================================================================
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
+
+
 
 def validate_upos_vs_deprel(node_id, tree):
     """
@@ -1495,7 +1984,7 @@ def validate_upos_vs_deprel(node_id, tree):
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
@@ -1513,22 +2002,22 @@ def validate_upos_vs_deprel(node_id, tree):
     # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
-        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         testid = 'rel-upos-expl'
-        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         testid = 'rel-upos-aux'
-        testmessage = f"'aux' should be 'AUX' but it is '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         testid = 'rel-upos-cop'
-        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
@@ -1537,32 +2026,34 @@ def validate_upos_vs_deprel(node_id, tree):
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
-        testmessage = f"'case' should not be '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'case' should not be '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
-        testmessage = f"'mark' should not be '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'mark' should not be '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
-        testmessage = f"'cc' should not be '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'cc' should not be '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if deprel == 'punct' and upos != 'PUNCT':
         testid = 'rel-upos-punct'
-        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' word '{cols[FORM]}'"
+        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
-        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' word '{cols[FORM]}'"
+        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' ('{formtl(cols)}')"
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         testid = 'rel-upos-fixed'
-        testmessage = "'fixed' should not be used for proper nouns."
+        testmessage = "'fixed' should not be used for proper nouns ('{formtl(cols)}')."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+
+
 
 def validate_flat_foreign(node_id, tree):
     """
@@ -1592,6 +2083,8 @@ def validate_flat_foreign(node_id, tree):
         testmessage = "The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
         warn(testmessage, testclass, testlevel, testid, nodeid=pid, lineno=tree['linenos'][pid])
 
+
+
 def validate_left_to_right_relations(node_id, tree):
     """
     Certain UD relations must always go left-to-right.
@@ -1611,11 +2104,15 @@ def validate_left_to_right_relations(node_id, tree):
         iparent = int(cols[HEAD])
         if ichild < iparent:
             # We must recognize the relation type in the test id so we can manage exceptions for legacy treebanks.
-            # For conj, flat, and fixed the requirement was introduced already before UD 2.2, and all treebanks in UD 2.3 passed it.
-            # For appos and goeswith the requirement was introduced before UD 2.4 and legacy treebanks are allowed to fail it.
+            # For conj, flat, and fixed the requirement was introduced already before UD 2.2.
+            # For appos and goeswith the requirement was introduced before UD 2.4.
+            # The designation "right-to-left" is confusing in languages with right-to-left writing systems.
+            # We keep it in the testid but we make the testmessage more neutral.
             testid = f"right-to-left-{lspec2ud(cols[DEPREL])}"
-            testmessage = f"Relation '{cols[DEPREL]}' must go left-to-right."
+            testmessage = f"Parent of relation '{cols[DEPREL]}' must precede the child in the word order."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+
+
 
 def validate_single_subject(node_id, tree):
     """
@@ -1658,14 +2155,19 @@ def validate_single_subject(node_id, tree):
             return False
         return True
 
-    subjects = sorted([x for x in tree['children'][node_id] if is_inner_subject(tree['nodes'][x])])
-    if len(subjects) > 1:
+    children_ids = sorted(tree['children'][node_id])
+    subject_ids = [x for x in children_ids if is_inner_subject(tree['nodes'][x])]
+    #subject_forms = [tree['nodes'][x][FORM] for x in subject_ids]
+    subject_forms = [formtl(tree['nodes'][x]) for x in subject_ids]
+    if len(subject_ids) > 1:
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
-        testmessage = f"Multiple subjects {str(subjects)} not subtyped as ':outer'."
+        testmessage = f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'."
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
         warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
+
+
 
 def validate_orphan(node_id, tree):
     """
@@ -1696,6 +2198,8 @@ def validate_orphan(node_id, tree):
             testid = 'orphan-parent'
             testmessage = f"The parent of 'orphan' should normally be 'conj' but it is '{pdeprel}'."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+
+
 
 def validate_functional_leaves(node_id, tree):
     """
@@ -1834,6 +2338,8 @@ def validate_functional_leaves(node_id, tree):
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
                 warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
 
+
+
 def collect_ancestors(node_id, tree, ancestors):
     """
     Usage: ancestors = collect_ancestors(nodeid, nodes, [])
@@ -1847,6 +2353,8 @@ def collect_ancestors(node_id, tree, ancestors):
         return ancestors
     ancestors.append(pid)
     return collect_ancestors(pid, tree, ancestors)
+
+
 
 def get_caused_nonprojectivities(node_id, tree):
     """
@@ -1889,6 +2397,8 @@ def get_caused_nonprojectivities(node_id, tree):
     # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
     return sorted(leftcross + rightcross)
 
+
+
 def get_gap(node_id, tree):
     iid = int(node_id) # just to be sure
     pid = int(tree['nodes'][iid][HEAD])
@@ -1902,6 +2412,8 @@ def get_gap(node_id, tree):
         get_projection(pid, tree, projection)
         gap = set(rangebetween) - projection
     return gap
+
+
 
 def validate_goeswith_span(node_id, tree):
     """
@@ -1937,6 +2449,8 @@ def validate_goeswith_span(node_id, tree):
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
         validate_required_feature(tree['nodes'][node_id][FEATS], 'Typo=Yes', testmessage, testlevel, testid, node_id, tree['linenos'][node_id])
 
+
+
 def validate_goeswith_morphology_and_edeps(node_id, tree):
     """
     If a node has the 'goeswith' incoming relation, it is a non-first part of
@@ -1964,6 +2478,8 @@ def validate_goeswith_morphology_and_edeps(node_id, tree):
             testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_fixed_span(node_id, tree):
     """
     Like with goeswith, the fixed relation should not in general skip words that
@@ -1989,6 +2505,8 @@ def validate_fixed_span(node_id, tree):
             testmessage = f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_projective_punctuation(node_id, tree):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
@@ -2010,6 +2528,8 @@ def validate_projective_punctuation(node_id, tree):
             testmessage = f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
             warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
 
+
+
 def validate_annotation(tree):
     """
     Checks universally valid consequences of the annotation guidelines.
@@ -2027,6 +2547,8 @@ def validate_annotation(tree):
         validate_goeswith_morphology_and_edeps(node_id, tree)
         validate_projective_punctuation(node_id, tree)
 
+
+
 def validate_enhanced_annotation(graph):
     """
     Checks universally valid consequences of the annotation guidelines in the
@@ -2041,28 +2563,27 @@ def validate_enhanced_annotation(graph):
     # However, all types of enhancements are optional and orphans are excluded
     # only if this treebank addresses gapping. We do not know it until we see
     # the first empty node.
-    global line_of_first_empty_node
-    global line_of_first_enhanced_orphan
+    global state
     for node_id in graph.keys():
         if is_empty_node(graph[node_id]['cols']):
-            if not line_of_first_empty_node:
+            if not state.seen_empty_node:
                 ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                line_of_first_empty_node = graph[node_id]['lineno']
+                state.seen_empty_node = graph[node_id]['lineno']
                 # Empty node itself is not an error. Report it only for the first time
                 # and only if an orphan occurred before it.
-                if line_of_first_enhanced_orphan:
+                if state.seen_enhanced_orphan:
                     testid = 'empty-node-after-eorphan'
-                    testmessage = f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {line_of_first_enhanced_orphan}"
+                    testmessage = f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
                     warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
         udeprels = set([lspec2ud(d) for h, d in graph[node_id]['deps']])
         if 'orphan' in udeprels:
-            if not line_of_first_enhanced_orphan:
+            if not state.seen_enhanced_orphan:
                 ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                line_of_first_enhanced_orphan = graph[node_id]['lineno']
+                state.seen_enhanced_orphan = graph[node_id]['lineno']
             # If we have seen an empty node, then the orphan is an error.
-            if  line_of_first_empty_node:
+            if  state.seen_empty_node:
                 testid = 'eorphan-after-empty-node'
-                testmessage = f"'orphan' not allowed in enhanced graph because we saw an empty node on line {line_of_first_empty_node}"
+                testmessage = f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
                 warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
 
 
@@ -2072,32 +2593,39 @@ def validate_enhanced_annotation(graph):
 # words spaces are permitted, and which Feature=Value pairs are defined.
 #==============================================================================
 
-def validate_whitespace(cols, tag_sets):
+
+
+def validate_whitespace(cols, args):
     """
     Checks a single line for disallowed whitespace.
     Here we assume that all language-independent whitespace-related tests have
     already been done in validate_cols_level1(), so we only check for words
     with spaces that are explicitly allowed in a given language.
     """
+    global data
     testlevel = 4
     testclass = 'Format'
     # We already verified that a multiword token does not contain a space (see validate_cols_level1()).
     if is_multiword_token(cols):
         return
+    tospacedata = data.get_tospace_for_language(args.lang)
     for col_idx in (FORM, LEMMA):
         if col_idx >= len(cols):
             break # this has been already reported in trees()
         if whitespace_re.match(cols[col_idx]) is not None:
             # Whitespace found.
-            # Does the FORM/LEMMA pass one of the regular expressions that define permitted words with spaces in this language?
-            for regex in tag_sets[TOKENSWSPACE]:
-                if regex.fullmatch(cols[col_idx]):
-                    break
+            # Does the FORM/LEMMA pass the regular expression that defines permitted words with spaces in this language?
+            if tospacedata:
+                # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
+                string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
+                if not tospacedata[1].fullmatch(string_to_test):
+                    testid = 'invalid-word-with-space'
+                    testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
+                    warn(testmessage, testclass, testlevel, testid, explanation="\n"+data.warn_on_undoc_tospaces)
             else:
-                warn_on_missing_files.add('tokens_w_space')
                 testid = 'invalid-word-with-space'
-                testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace (data/tokens_w_space.LANG files)."
-                warn(testmessage, testclass, testlevel, testid)
+                testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
+                warn(testmessage, testclass, testlevel, testid, explanation="\n"+data.warn_on_undoc_tospaces)
 
 
 
@@ -2105,7 +2633,9 @@ def validate_whitespace(cols, tag_sets):
 # Level 5 tests. Annotation content vs. the guidelines, language-specific.
 #==============================================================================
 
-def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
+
+
+def validate_auxiliary_verbs(cols, children, nodes, line, lang):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
@@ -2116,12 +2646,12 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
-    global warn_on_undoc_aux
+    global data
     if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
         altlang = get_alt_language(cols[MISC])
         if altlang:
             lang = altlang
-            auxlist, coplist = get_auxdata_for_language(altlang)
+        auxlist = data.get_aux_for_language(lang)
         auxdict = {}
         if auxlist != []:
             auxdict = {lang: auxlist}
@@ -2138,16 +2668,18 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
             testclass = 'Morpho'
             testid = 'aux-lemma'
             testmessage = f"'{cols[LEMMA]}' is not an auxiliary in language [{lang}]"
-            if not altlang and len(warn_on_undoc_aux) > 0:
+            if not altlang and len(data.warn_on_undoc_aux) > 0:
                 # Tell the user which auxiliaries are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
                 # Then erase this (long) introductory message and do not repeat it with
                 # other instances of unknown auxiliaries.
-                testmessage += "\n\n" + warn_on_undoc_aux
-                warn_on_undoc_aux = ''
+                testmessage += "\n\n" + data.warn_on_undoc_aux
+                data.warn_on_undoc_aux = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
 
-def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
+
+
+def validate_copula_lemmas(cols, children, nodes, line, lang):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
@@ -2158,39 +2690,15 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
                      CoNLL-U columns
       'line' ....... line number of the node within the file
     """
-    global warn_on_undoc_cop
+    global data
     if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
         altlang = get_alt_language(cols[MISC])
         if altlang:
             lang = altlang
-            auxlist, coplist = get_auxdata_for_language(altlang)
+        coplist = data.get_cop_for_language(lang)
         copdict = {}
         if coplist != []:
             copdict = {lang: coplist}
-            # In Slavic languages, the iteratives are still variants of "to be", although they have a different lemma (derived from the main one).
-            # In addition, Polish and Russian also have pronominal copulas ("to" = "this/that").
-            # 'orv': ['быти', 'не быти'] See above (AUX verbs) for the comment on affirmative vs. negative lemma.
-            # Lauma says that all four should be copulas despite the fact that
-            # kļūt and tapt correspond to English "to become", which is not
-            # copula in UD. See also the discussion in
-            # https://github.com/UniversalDependencies/docs/issues/622
-            # 'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
-            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
-            # Jack: [sms] iʹlla = to not be
-            # Jack says about Erzya:
-            # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
-            # and the dependent morphology -оль (both preterit and non-past).
-            # The neg арась occurs in locative/existential negation, and its
-            # positive counterpart is realized in the three copulas above.
-            # The neg аш in [mdf] is locative/existential negation.
-            # Niko says about Komi:
-            # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
-            # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            # Komi Permyak: овлыны = to be (habitual) [Jack Rueter]
-            # Sino-Tibetan languages.
-            # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
-            # 是(shi4) and 为/為(wei2) should be interchangeable.
-            # Sam: In Cantonese, 為 is used only in the high-standard variety, not in colloquial speech.
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
             lspeccops = ['desu']
@@ -2204,23 +2712,25 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
             testclass = 'Syntax'
             testid = 'cop-lemma'
             testmessage = f"'{cols[LEMMA]}' is not a copula in language [{lang}]"
-            if not altlang and len(warn_on_undoc_cop) > 0:
+            if not altlang and len(data.warn_on_undoc_cop) > 0:
                 # Tell the user which copulas are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
                 # Then erase this (long) introductory message and do not repeat it with
                 # other instances of unknown copulas.
-                testmessage += "\n\n" + warn_on_undoc_cop
-                warn_on_undoc_cop = ''
+                testmessage += "\n\n" + data.warn_on_undoc_cop
+                data.warn_on_undoc_cop = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
 
-def validate_lspec_annotation(tree, lang, tag_sets):
+
+
+def validate_lspec_annotation(tree, lang):
     """
     Checks language-specific consequences of the annotation guidelines.
     """
     ###!!! Building the information about the tree is repeated and has been done in the other functions before.
     ###!!! We should remember the information and not build it several times!
-    global sentence_line # the line of the first token/word of the current tree (skipping comments!)
-    node_line = sentence_line - 1
+    global state
+    node_line = state.sentence_line - 1
     lines = {} # node id -> line number of that node (for error messages)
     nodes = {} # node id -> columns of that node
     children = {} # node -> set of children
@@ -2237,13 +2747,13 @@ def validate_lspec_annotation(tree, lang, tag_sets):
             # Do not continue to check annotation if there are elementary flaws.
             return
         try:
-            id_ = int(cols[ID])
+            int(cols[ID])
         except ValueError:
             # This error has been reported on lower levels, do not report it here.
             # Do not continue to check annotation if there are elementary flaws.
             return
         try:
-            head = int(cols[HEAD])
+            int(cols[HEAD])
         except ValueError:
             # This error has been reported on lower levels, do not report it here.
             # Do not continue to check annotation if there are elementary flaws.
@@ -2255,10 +2765,10 @@ def validate_lspec_annotation(tree, lang, tag_sets):
     for cols in tree:
         if not is_word(cols):
             continue
-        myline = lines.get(cols[ID], sentence_line)
+        myline = lines.get(cols[ID], state.sentence_line)
         mychildren = children.get(cols[ID], [])
-        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang, tag_sets[AUX])
-        validate_copula_lemmas(cols, mychildren, nodes, myline, lang, tag_sets[COP])
+        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
+        validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
 
 
 
@@ -2268,26 +2778,15 @@ def validate_lspec_annotation(tree, lang, tag_sets):
 # releases.
 #==============================================================================
 
+
+
 global_entity_re = re.compile(r"^#\s*global\.Entity\s*=\s*(.+)$")
 def validate_misc_entity(comments, sentence):
     """
     Optionally checks the well-formedness of the MISC attributes that pertain
     to coreference and named entities.
     """
-    global comment_start_line
-    global sentence_line
-    global line_of_global_entity
-    global global_entity_attribute_string
-    global entity_attribute_number
-    global entity_attribute_index
-    global entity_types
-    global open_entity_mentions
-    global open_discontinuous_mentions
-    global entity_ids_this_document
-    global entity_ids_other_documents
-    global entity_bridge_relations # key: srceid<tgteid pair; value: type of the entity (may be empty)
-    global entity_split_antecedents # key: tgteid; value: sorted list of srceids, serialized to string
-    global entity_mention_spans # key: [eid][sentid][str(mention_span)]; value: set of node ids
+    global state
     testlevel = 6
     testclass = 'Coref'
     iline = 0
@@ -2301,63 +2800,63 @@ def validate_misc_entity(comments, sentence):
             # However, we may be processing multiple files or people may have created
             # the file by concatening smaller files, so we will allow repeated
             # declarations iff they are identical to the first one.
-            if line_of_global_entity:
-                if global_entity_match.group(1) != global_entity_attribute_string:
+            if state.seen_global_entity:
+                if global_entity_match.group(1) != state.global_entity_attribute_string:
                     testid = 'global-entity-mismatch'
-                    testmessage = f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{global_entity_attribute_string}' on line {line_of_global_entity}."
-                    warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                    testmessage = f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{state.global_entity_attribute_string}' on line {state.seen_global_entity}."
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
             else:
-                line_of_global_entity = comment_start_line + iline
-                global_entity_attribute_string = global_entity_match.group(1)
-                if not re.match(r"^[a-z]+(-[a-z]+)*$", global_entity_attribute_string):
+                state.seen_global_entity = state.comment_start_line + iline
+                state.global_entity_attribute_string = global_entity_match.group(1)
+                if not re.match(r"^[a-z]+(-[a-z]+)*$", state.global_entity_attribute_string):
                     testid = 'spurious-global-entity'
-                    testmessage = f"Cannot parse global.Entity attribute declaration '{global_entity_attribute_string}'."
-                    warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                    testmessage = f"Cannot parse global.Entity attribute declaration '{state.global_entity_attribute_string}'."
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                 else:
-                    global_entity_attributes = global_entity_attribute_string.split('-')
+                    global_entity_attributes = state.global_entity_attribute_string.split('-')
                     if not 'eid' in global_entity_attributes:
                         testid = 'spurious-global-entity'
-                        testmessage = f"Global.Entity attribute declaration '{global_entity_attribute_string}' does not include 'eid'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'eid'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     elif global_entity_attributes[0] != 'eid':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'eid' must come first in global.Entity attribute declaration '{global_entity_attribute_string}'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Attribute 'eid' must come first in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     if not 'etype' in global_entity_attributes:
                         testid = 'spurious-global-entity'
-                        testmessage = f"Global.Entity attribute declaration '{global_entity_attribute_string}' does not include 'etype'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'etype'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     elif global_entity_attributes[1] != 'etype':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'etype' must come second in global.Entity attribute declaration '{global_entity_attribute_string}'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Attribute 'etype' must come second in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     if not 'head' in global_entity_attributes:
                         testid = 'spurious-global-entity'
-                        testmessage = f"Global.Entity attribute declaration '{global_entity_attribute_string}' does not include 'head'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'head'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     elif global_entity_attributes[2] != 'head':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'head' must come third in global.Entity attribute declaration '{global_entity_attribute_string}'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Attribute 'head' must come third in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     if 'other' in global_entity_attributes and global_entity_attributes[3] != 'other':
                         testid = 'spurious-global-entity'
-                        testmessage = f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{global_entity_attribute_string}'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                        testmessage = f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
+                        warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                     # Fill the global dictionary that maps attribute names to list indices.
                     i = 0
                     for a in global_entity_attributes:
-                        if a in entity_attribute_index:
+                        if a in state.entity_attribute_index:
                             testid = 'spurious-global-entity'
-                            testmessage = f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{global_entity_attribute_string}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=comment_start_line+iline)
+                            testmessage = f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.comment_start_line+iline)
                         else:
-                            entity_attribute_index[a] = i
+                            state.entity_attribute_index[a] = i
                         i += 1
-                    entity_attribute_number = len(global_entity_attributes)
+                    state.entity_attribute_number = len(global_entity_attributes)
         elif newdoc_match:
-            for eid in entity_ids_this_document:
-                entity_ids_other_documents[eid] = entity_ids_this_document[eid]
-            entity_ids_this_document = {}
+            for eid in state.entity_ids_this_document:
+                state.entity_ids_other_documents[eid] = state.entity_ids_this_document[eid]
+            state.entity_ids_this_document = {}
         elif sentid_match:
             sentid = sentid_match.group(1)
         iline += 1
@@ -2369,7 +2868,7 @@ def validate_misc_entity(comments, sentence):
         # Add the current word to all currently open mentions. We will use it in error messages.
         # Do this for regular and empty nodes but not for multi-word-token lines.
         if not '-' in cols[ID]:
-            for m in open_entity_mentions:
+            for m in state.open_entity_mentions:
                 m['span'].append(cols[ID])
                 m['text'] += ' '+cols[FORM]
                 m['length'] += 1
@@ -2380,49 +2879,49 @@ def validate_misc_entity(comments, sentence):
         if '-' in cols[ID] and (len(entity)>0 or len(bridge)>0 or len(splitante)>0):
             testid = 'entity-mwt'
             testmessage = "Entity or coreference annotation must not occur at a multiword-token line."
-            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             continue
         if len(entity)>1:
             testid = 'multiple-entity-statements'
             testmessage = f"There can be at most one 'Entity=' statement in MISC but we have {str(misc)}."
-            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             continue
         if len(bridge)>1:
             testid = 'multiple-bridge-statements'
             testmessage = f"There can be at most one 'Bridge=' statement in MISC but we have {str(misc)}."
-            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             continue
         if len(splitante)>1:
             testid = 'multiple-splitante-statements'
             testmessage = f"There can be at most one 'SplitAnte=' statement in MISC but we have {str(misc)}."
-            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             continue
         if len(bridge)>0 and len(entity)==0:
             testid = 'bridge-without-entity'
             testmessage = f"The 'Bridge=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
-            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             continue
         if len(splitante)>0 and len(entity)==0:
             testid = 'splitante-without-entity'
             testmessage = f"The 'SplitAnte=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
-            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             continue
         # There is at most one Entity (and only if it is there, there may be also one Bridge and/or one SplitAnte).
         if len(entity)>0:
-            if not line_of_global_entity:
+            if not state.seen_global_entity:
                 testid = 'entity-without-global-entity'
                 testmessage = "No global.Entity comment was found before the first 'Entity' in MISC."
-                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                 continue
             match = re.match(r"^Entity=((?:\([^( )]+(?:-[^( )]+)*\)?|[^( )]+\))+)$", entity[0])
             if not match:
                 testid = 'spurious-entity-statement'
                 testmessage = f"Cannot parse the Entity statement '{entity[0]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
             else:
                 entity_string = match.group(1)
                 # We cannot check the rest if we cannot identify the 'eid' attribute.
-                if 'eid' not in entity_attribute_index:
+                if 'eid' not in state.entity_attribute_index:
                     continue
                 # Items of entities are pairs of [012] and a string.
                 # 0 ... opening bracket; 1 ... closing bracket; 2 ... both brackets
@@ -2460,21 +2959,21 @@ def validate_misc_entity(comments, sentence):
                     if b==0 or b==2:
                         # Fewer attributes are allowed because trailing empty values can be omitted.
                         # More attributes are not allowed.
-                        if len(attributes) > entity_attribute_number:
+                        if len(attributes) > state.entity_attribute_number:
                             testid = 'too-many-entity-attributes'
-                            testmessage = f"Entity '{e}' has {len(attributes)} attributes while only {entity_attribute_number} attributes are globally declared."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            testmessage = f"Entity '{e}' has {len(attributes)} attributes while only {state.entity_attribute_number} attributes are globally declared."
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         # The raw eid (bracket eid) may include an identification of a part of a discontinuous mention,
                         # as in 'e155[1/2]'. This is fine for matching opening and closing brackets
                         # because the closing bracket must contain it too. However, to identify the
                         # cluster, we need to take the real id.
-                        beid = attributes[entity_attribute_index['eid']]
+                        beid = attributes[state.entity_attribute_index['eid']]
                     else:
                         # No attributes other than eid are expected at the closing bracket.
                         if len(attributes) > 1:
                             testid = 'too-many-entity-attributes'
                             testmessage = f"Entity '{e}' has {len(attributes)} attributes while only eid is expected at the closing bracket."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         beid = attributes[0]
                     eid = beid
                     ipart = 1
@@ -2490,16 +2989,16 @@ def validate_misc_entity(comments, sentence):
                         if ipart == 1 and npart == 1:
                             testid = 'spurious-entity-id'
                             testmessage = f"Discontinuous mention must have at least two parts but it has one in '{beid}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         if ipart > npart:
                             testid = 'spurious-entity-id'
                             testmessage = f"Entity id '{beid}' of discontinuous mention says the current part is higher than total number of parts."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                     else:
                         if re.match(r"[\[\]]", beid):
                             testid = 'spurious-entity-id'
                             testmessage = f"Entity id '{beid}' contains square brackets but does not have the form used in discontinuous mentions."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
 
                     #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
@@ -2510,7 +3009,7 @@ def validate_misc_entity(comments, sentence):
                         # At the beginning of each part, we will check that its attribute string is identical to the first part.
                         if npart > 1:
                             # We want to check that values of all attributes are same in all parts (except the eid which differs in the brackets).
-                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != entity_attribute_index['eid']]
+                            attributes_without_eid = [attributes[i] for i in range(len(attributes)) if i != state.entity_attribute_index['eid']]
                             # For better readability of the error messages, reintroduce eid anyway, but without the brackets.
                             attrstring_to_match = eid+'-'+('-'.join(attributes_without_eid))
                             if ipart == 1:
@@ -2518,87 +3017,87 @@ def validate_misc_entity(comments, sentence):
                                 # We actually keep a stack of open mentions with the same eidnpart because they may be nested.
                                 # The length and the span of the mention will be updated when we encounter the closing bracket of the current part.
                                 discontinuous_mention = {'last_ipart': 1, 'npart': npart,
-                                                        'first_part_line': sentence_line+iline,
-                                                        'last_part_line': sentence_line+iline,
+                                                        'first_part_line': state.sentence_line+iline,
+                                                        'last_part_line': state.sentence_line+iline,
                                                         'attributes': attrstring_to_match,
                                                         'length': 0, 'span': []}
-                                if eidnpart in open_discontinuous_mentions:
-                                    open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
+                                if eidnpart in state.open_discontinuous_mentions:
+                                    state.open_discontinuous_mentions[eidnpart].append(discontinuous_mention)
                                 else:
-                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                    state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             else:
-                                if eidnpart in open_discontinuous_mentions:
-                                    discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                                if eidnpart in state.open_discontinuous_mentions:
+                                    discontinuous_mention = state.open_discontinuous_mentions[eidnpart][-1]
                                     if ipart != discontinuous_mention['last_ipart']+1:
                                         testid = 'misplaced-mention-part'
                                         testmessage = f"Unexpected part of discontinuous mention '{beid}': last part was '{discontinuous_mention['last_ipart']}/{discontinuous_mention['npart']}' on line {discontinuous_mention['last_part_line']}."
-                                        warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                        warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                         # We will update last_ipart at closing bracket, i.e., after the current part has been entirely processed.
                                         # Otherwise nested discontinuous mentions might wrongly assess where they belong.
                                     elif attrstring_to_match != discontinuous_mention['attributes']:
                                         testid = 'mention-attribute-mismatch'
                                         testmessage = f"Attribute mismatch of discontinuous mention: current part has '{attrstring_to_match}', first part '{discontinuous_mention['attributes']}' was at line {discontinuous_mention['first_part_line']}."
-                                        warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                        warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                 else:
                                     testid = 'misplaced-mention-part'
                                     testmessage = f"Unexpected part of discontinuous mention '{beid}': this is part {ipart} but we do not have information about the previous parts."
-                                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                     discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
-                                                            'first_part_line': sentence_line+iline,
-                                                            'last_part_line': sentence_line+iline,
+                                                            'first_part_line': state.sentence_line+iline,
+                                                            'last_part_line': state.sentence_line+iline,
                                                             'attributes': attrstring_to_match,
                                                             'length': 0, 'span': []}
-                                    open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                    state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                         # Check all attributes of the entity, except those that must be examined at the closing bracket.
-                        if eid in entity_ids_other_documents:
+                        if eid in state.entity_ids_other_documents:
                             testid = 'entity-across-newdoc'
-                            testmessage = f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {entity_ids_other_documents[eid]}, before the last newdoc."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
-                        elif not eid in entity_ids_this_document:
-                            entity_ids_this_document[eid] = sentence_line+iline
+                            testmessage = f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {state.entity_ids_other_documents[eid]}, before the last newdoc."
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
+                        elif not eid in state.entity_ids_this_document:
+                            state.entity_ids_this_document[eid] = state.sentence_line+iline
                         etype = ''
                         identity = ''
-                        if 'etype' in entity_attribute_index and len(attributes) >= entity_attribute_index['etype']+1:
-                            etype = attributes[entity_attribute_index['etype']]
+                        if 'etype' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['etype']+1:
+                            etype = attributes[state.entity_attribute_index['etype']]
                             # For etype values tentatively approved for CorefUD 1.0, see
                             # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
                             if not re.match(r"^(person|place|organization|animal|plant|object|substance|time|number|abstract|event|other)?$", etype):
                                 testid = 'spurious-entity-type'
                                 testmessage = f"Spurious entity type '{etype}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
-                        if 'identity' in entity_attribute_index and len(attributes) >= entity_attribute_index['identity']+1:
-                            identity = attributes[entity_attribute_index['identity']]
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
+                        if 'identity' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['identity']+1:
+                            identity = attributes[state.entity_attribute_index['identity']]
                         # Check the form of the head index now.
                         # The value will be checked at the end of the mention,
                         # when we know the mention length.
                         head = 0
-                        if 'head' in entity_attribute_index and len(attributes) >= entity_attribute_index['head']+1:
-                            if not re.match(r"^[1-9][0-9]*$", attributes[entity_attribute_index['head']]):
+                        if 'head' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['head']+1:
+                            if not re.match(r"^[1-9][0-9]*$", attributes[state.entity_attribute_index['head']]):
                                 testid = 'spurious-mention-head'
-                                testmessage = f"Entity head index '{attributes[entity_attribute_index['head']]}' must be a non-zero-starting integer."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                testmessage = f"Entity head index '{attributes[state.entity_attribute_index['head']]}' must be a non-zero-starting integer."
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
-                                head = int(attributes[entity_attribute_index['head']])
+                                head = int(attributes[state.entity_attribute_index['head']])
                         # If this is the first mention of the entity, remember the values
                         # of the attributes that should be identical at all mentions.
-                        if not eid in entity_types:
-                            entity_types[eid] = (etype, identity, sentence_line+iline)
+                        if not eid in state.entity_types:
+                            state.entity_types[eid] = (etype, identity, state.sentence_line+iline)
                         else:
                             # All mentions of one entity (cluster) must have the same entity type.
-                            if etype != entity_types[eid][0]:
+                            if etype != state.entity_types[eid][0]:
                                 testid = 'entity-type-mismatch'
-                                testmessage = f"Entity '{eid}' cannot have type '{etype}' that does not match '{entity_types[eid][0]}' from the first mention on line {entity_types[eid][2]}."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                testmessage = f"Entity '{eid}' cannot have type '{etype}' that does not match '{state.entity_types[eid][0]}' from the first mention on line {state.entity_types[eid][2]}."
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
-                            if identity != entity_types[eid][1]:
+                            if identity != state.entity_types[eid][1]:
                                 testid = 'entity-identity-mismatch'
-                                testmessage = f"Entity '{eid}' cannot have identity '{identity}' that does not match '{entity_types[eid][1]}' from the first mention on line {entity_types[eid][2]}."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                testmessage = f"Entity '{eid}' cannot have identity '{identity}' that does not match '{state.entity_types[eid][1]}' from the first mention on line {state.entity_types[eid][2]}."
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         # Remember the line where (the current part of) the entity mention starts.
-                        mention = {'beid': beid, 'line': sentence_line+iline,
+                        mention = {'beid': beid, 'line': state.sentence_line+iline,
                                    'span': [cols[ID]], 'text': cols[FORM],
                                    'length': 1, 'head': head, 'attrstring': attrstring_to_match}
-                        open_entity_mentions.append(mention)
+                        state.open_entity_mentions.append(mention)
                         # The set of mentions starting at the current line will be needed later when checking Bridge and SplitAnte statements.
                         if ipart == 1:
                             starting_mentions[eid] = True
@@ -2611,42 +3110,42 @@ def validate_misc_entity(comments, sentence):
                         mention_span = []
                         head = 0
                         opening_line = 0
-                        if len(open_entity_mentions)==0:
+                        if len(state.open_entity_mentions)==0:
                             testid = 'ill-nested-entities'
                             testmessage = f"Cannot close entity '{beid}' because there are no open entities."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             return
                         else:
                             # If the closing bracket does not occur where expected, it is currently only a warning.
                             # We have crossing mention spans in CorefUD 1.0 and it has not been decided yet whether all of them should be illegal.
                             ###!!! Note that this will not catch ill-nested mentions whose only intersection is one node. The bracketing will
                             ###!!! not be a problem in such cases because one mention will be closed first, then the other will be opened.
-                            if beid != open_entity_mentions[-1]['beid']:
+                            if beid != state.open_entity_mentions[-1]['beid']:
                                 testid = 'ill-nested-entities-warning'
-                                testmessage = f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{open_entity_mentions[-1]['beid']}' from line {open_entity_mentions[-1]['line']}: {str(open_entity_mentions)}."
-                                warn(testmessage, 'Warning', testlevel, testid, lineno=sentence_line+iline)
+                                testmessage = f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
+                                warn(testmessage, 'Warning', testlevel, testid, lineno=state.sentence_line+iline)
                             # Try to find and close the entity whether or not it was well-nested.
-                            for i in reversed(range(len(open_entity_mentions))):
-                                if open_entity_mentions[i]['beid'] == beid:
-                                    mention_length = open_entity_mentions[i]['length']
-                                    mention_span = open_entity_mentions[i]['span']
-                                    head = open_entity_mentions[i]['head']
-                                    opening_line = open_entity_mentions[i]['line']
-                                    open_entity_mentions.pop(i)
+                            for i in reversed(range(len(state.open_entity_mentions))):
+                                if state.open_entity_mentions[i]['beid'] == beid:
+                                    mention_length = state.open_entity_mentions[i]['length']
+                                    mention_span = state.open_entity_mentions[i]['span']
+                                    head = state.open_entity_mentions[i]['head']
+                                    opening_line = state.open_entity_mentions[i]['line']
+                                    state.open_entity_mentions.pop(i)
                                     break
                             else:
                                 # If we did not find the entity to close, then the warning above was not enough and we have to make it a validation error.
                                 testid = 'ill-nested-entities'
-                                testmessage = f"Cannot close entity '{beid}' because it was not found among open entities: {str(open_entity_mentions)}"
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                testmessage = f"Cannot close entity '{beid}' because it was not found among open entities: {str(state.open_entity_mentions)}"
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                 return
                         # If this is a part of a discontinuous mention, update the information about the whole mention.
                         # We do this after reading the new part (and not when we see its opening bracket) so that nested
                         # discontinuous mentions of the same entity are possible.
                         if npart > 1:
                             # Update the attributes that have to be updated after each part.
-                            if eidnpart in open_discontinuous_mentions:
-                                discontinuous_mention = open_discontinuous_mentions[eidnpart][-1]
+                            if eidnpart in state.open_discontinuous_mentions:
+                                discontinuous_mention = state.open_discontinuous_mentions[eidnpart][-1]
                                 discontinuous_mention['last_ipart'] = ipart
                                 discontinuous_mention['last_part_line'] = opening_line
                                 discontinuous_mention['length'] += mention_length
@@ -2654,17 +3153,17 @@ def validate_misc_entity(comments, sentence):
                             else:
                                 # This should have been taken care of at the opening bracket.
                                 testid = 'internal-error'
-                                testmessage = "INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in open_discontinuous_mentions."
-                                warn(testmessage, 'Internal', 0, testid, lineno=sentence_line+iline)
+                                testmessage = "INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in state.open_discontinuous_mentions."
+                                warn(testmessage, 'Internal', 0, testid, lineno=state.sentence_line+iline)
                                 discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
                                                         'first_part_line': opening_line,
                                                         'last_part_line': opening_line,
                                                         'attributes': '', 'length': mention_length,
                                                         'span': mention_span}
-                                open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
+                                state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             # Update mention_length and mention_span to reflect the whole span up to this point rather than just the last part.
-                            mention_length = open_discontinuous_mentions[eidnpart][-1]['length']
-                            mention_span = open_discontinuous_mentions[eidnpart][-1]['span']
+                            mention_length = state.open_discontinuous_mentions[eidnpart][-1]['length']
+                            mention_span = state.open_discontinuous_mentions[eidnpart][-1]['span']
                         # We need to know the length (number of nodes) of the mention to check whether the head attribute is within limits.
                         # We need to know the span (list of nodes) of the mention to check that no two mentions have the same span.
                         # We only check these requirements after the last part of the discontinuous span (or after the single part of a continuous one).
@@ -2672,13 +3171,13 @@ def validate_misc_entity(comments, sentence):
                             if mention_length < head:
                                 testid = 'mention-head-out-of-range'
                                 testmessage = f"Entity mention head was specified as {head} on line {opening_line} but the mention has only {mention_length} nodes."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             # Check that no two mentions have identical spans (only if this is the last part of a mention).
                             ending_mention_key = str(opening_line)+str(mention_span)
                             if ending_mention_key in ending_mentions:
                                 testid = 'same-span-entity-mentions'
                                 testmessage = f"Entity mentions '{ending_mentions[ending_mention_key]}' and '{beid}' from line {opening_line} have the same span {str(mention_span)}."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
                                 ending_mentions[ending_mention_key] = beid
                             # Remember the span of the current mention so that we can later check whether it crosses the span of another mention.
@@ -2686,27 +3185,27 @@ def validate_misc_entity(comments, sentence):
                             # sentences but we do not expect cross-sentence mentions to be frequent.
                             myset = set(mention_span)
                             # Check whether any other mention of the same entity has span that crosses the current one.
-                            if eid in entity_mention_spans:
-                                if sentid in entity_mention_spans[eid]:
-                                    for m in entity_mention_spans[eid][sentid]:
-                                        ms = entity_mention_spans[eid][sentid][m]
+                            if eid in state.entity_mention_spans:
+                                if sentid in state.entity_mention_spans[eid]:
+                                    for m in state.entity_mention_spans[eid][sentid]:
+                                        ms = state.entity_mention_spans[eid][sentid][m]
                                         if ms.intersection(myset) and not ms.issubset(myset) and not myset.issubset(ms):
                                             testid = 'crossing-mentions-same-entity'
                                             testmessage = f"Mentions of entity '{eid}' have crossing spans: {m} vs. {str(mention_span)}."
-                                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                                 else:
-                                    entity_mention_spans[eid][sentid] = {}
+                                    state.entity_mention_spans[eid][sentid] = {}
                             else:
-                                entity_mention_spans[eid] = {}
-                                entity_mention_spans[eid][sentid] = {}
-                            entity_mention_spans[eid][sentid][str(mention_span)] = myset
+                                state.entity_mention_spans[eid] = {}
+                                state.entity_mention_spans[eid][sentid] = {}
+                            state.entity_mention_spans[eid][sentid][str(mention_span)] = myset
                         # At the end of the last part of a discontinuous mention, remove the information about the mention.
                         if npart > 1 and ipart == npart:
-                            if eidnpart in open_discontinuous_mentions:
-                                if len(open_discontinuous_mentions[eidnpart]) > 1:
-                                    open_discontinuous_mentions[eidnpart].pop()
+                            if eidnpart in state.open_discontinuous_mentions:
+                                if len(state.open_discontinuous_mentions[eidnpart]) > 1:
+                                    state.open_discontinuous_mentions[eidnpart].pop()
                                 else:
-                                    open_discontinuous_mentions.pop(eidnpart)
+                                    state.open_discontinuous_mentions.pop(eidnpart)
                     #--------------------------------------------------------------------------------------------------------------------------------
 
                     # Now we know the beid, eid, as well as all other attributes.
@@ -2715,11 +3214,11 @@ def validate_misc_entity(comments, sentence):
                         if seen2 and not seen1:
                             testid = 'spurious-entity-statement'
                             testmessage = f"If there are no closing entity brackets, single-node entity must follow all opening entity brackets in '{entity[0]}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         if seen0 and seen2:
                             testid = 'spurious-entity-statement'
                             testmessage = f"Single-node entity must either precede all closing entity brackets or follow all opening entity brackets in '{entity[0]}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         seen0 = True
                         seen2 = False
                         opening_bracket()
@@ -2727,7 +3226,7 @@ def validate_misc_entity(comments, sentence):
                         if seen1 and not seen0:
                             testid = 'spurious-entity-statement'
                             testmessage = f"If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '{entity[0]}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         seen2 = True
                         opening_bracket()
                         closing_bracket()
@@ -2735,7 +3234,7 @@ def validate_misc_entity(comments, sentence):
                         if seen0:
                             testid = 'spurious-entity-statement'
                             testmessage = f"All closing entity brackets must precede all opening entity brackets in '{entity[0]}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         seen1 = True
                         closing_bracket()
             # Now we are done with checking the 'Entity=' statement.
@@ -2745,7 +3244,7 @@ def validate_misc_entity(comments, sentence):
                 if not match:
                     testid = 'spurious-bridge-statement'
                     testmessage = f"Cannot parse the Bridge statement '{bridge[0]}'."
-                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                 else:
                     bridges = match.group(1).split(',')
                     # Hash src<tgt pairs and make sure they are not repeated.
@@ -2760,31 +3259,31 @@ def validate_misc_entity(comments, sentence):
                             if srceid == tgteid:
                                 testid = 'spurious-bridge-relation'
                                 testmessage = f"Bridge must not point from an entity to itself: '{b}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             if not tgteid in starting_mentions:
                                 testid = 'misplaced-bridge-statement'
                                 testmessage = f"Bridge relation '{b}' must be annotated at the beginning of a mention of entity '{tgteid}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             if bridgekey in srctgt:
                                 testid = 'repeated-bridge-relation'
                                 testmessage = f"Bridge relation '{bridgekey}' must not be repeated in '{b}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
                                 srctgt[bridgekey] = True
                             # Check in the global dictionary whether this relation has been specified at another mention.
-                            if bridgekey in entity_bridge_relations:
-                                if relation != entity_bridge_relations[bridgekey]['relation']:
+                            if bridgekey in state.entity_bridge_relations:
+                                if relation != state.entity_bridge_relations[bridgekey]['relation']:
                                     testid = 'bridge-relation-mismatch'
-                                    testmessage = f"Bridge relation '{b}' type does not match '{entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {entity_bridge_relations[bridgekey]['line']}."
-                                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                    testmessage = f"Bridge relation '{b}' type does not match '{state.entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {state.entity_bridge_relations[bridgekey]['line']}."
+                                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
-                                entity_bridge_relations[bridgekey] = {'relation': relation, 'line': sentence_line+iline}
+                                state.entity_bridge_relations[bridgekey] = {'relation': relation, 'line': state.sentence_line+iline}
             if len(splitante) > 0:
                 match = re.match(r"^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$", splitante[0])
                 if not match:
                     testid = 'spurious-splitante-statement'
                     testmessage = f"Cannot parse the SplitAnte statement '{splitante[0]}'."
-                    warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                    warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                 else:
                     antecedents = match.group(1).split(',')
                     # Hash src<tgt pairs and make sure they are not repeated. Also remember the number of antecedents for each target.
@@ -2798,16 +3297,16 @@ def validate_misc_entity(comments, sentence):
                             if srceid == tgteid:
                                 testid = 'spurious-splitante-relation'
                                 testmessage = f"SplitAnte must not point from an entity to itself: '{srceid}<{tgteid}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             elif not tgteid in starting_mentions:
                                 testid = 'misplaced-splitante-statement'
                                 testmessage = f"SplitAnte relation '{a}' must be annotated at the beginning of a mention of entity '{tgteid}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             if srceid+'<'+tgteid in srctgt:
                                 testid = 'repeated-splitante-relation'
                                 str_antecedents = ','.join(antecedents)
                                 testmessage = f"SplitAnte relation '{srceid}<{tgteid}' must not be repeated in '{str_antecedents}'."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                             else:
                                 srctgt[srceid+'<'+tgteid] = True
                             if tgteid in tgtante:
@@ -2819,33 +3318,33 @@ def validate_misc_entity(comments, sentence):
                             testid = 'only-one-split-antecedent'
                             str_antecedents = ','.join(antecedents)
                             testmessage = f"SplitAnte statement '{str_antecedents}' must specify at least two antecedents for entity '{tgteid}'."
-                            warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                            warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         # Check in the global dictionary whether this relation has been specified at another mention.
                         tgtante[tgteid].sort()
-                        if tgteid in entity_split_antecedents:
-                            if tgtante[tgteid] != entity_split_antecedents[tgteid]['antecedents']:
+                        if tgteid in state.entity_split_antecedents:
+                            if tgtante[tgteid] != state.entity_split_antecedents[tgteid]['antecedents']:
                                 testid = 'split-antecedent-mismatch'
-                                testmessage = f"Split antecedent of entity '{tgteid}' does not match '{entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {entity_split_antecedents[tgteid]['line']}."
-                                warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+                                testmessage = f"Split antecedent of entity '{tgteid}' does not match '{state.entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {state.entity_split_antecedents[tgteid]['line']}."
+                                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
                         else:
-                            entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': sentence_line+iline}
+                            state.entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
         iline += 1
-    if len(open_entity_mentions)>0:
+    if len(state.open_entity_mentions)>0:
         testid = 'cross-sentence-mention'
-        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(open_entity_mentions)}."
-        warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_entity_mentions)}."
+        warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
         # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
-        open_entity_mentions = []
-    if len(open_discontinuous_mentions)>0:
+        state.open_entity_mentions = []
+    if len(state.open_discontinuous_mentions)>0:
         testid = 'cross-sentence-mention'
-        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(open_discontinuous_mentions)}."
-        warn(testmessage, testclass, testlevel, testid, lineno=sentence_line+iline)
+        testmessage = f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_discontinuous_mentions)}."
+        warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
         # Close the mentions forcibly. Otherwise one omission would cause the error messages to to explode because the words would be collected from the remainder of the file.
-        open_discontinuous_mentions = {}
+        state.open_discontinuous_mentions = {}
     # Since we only test mentions within one sentence at present, we do not have to carry all mention spans until the end of the corpus.
-    for eid in entity_mention_spans:
-        if sentid in entity_mention_spans[eid]:
-            entity_mention_spans[eid].pop(sentid)
+    for eid in state.entity_mention_spans:
+        if sentid in state.entity_mention_spans[eid]:
+            state.entity_mention_spans[eid].pop(sentid)
 
 
 
@@ -2853,8 +3352,10 @@ def validate_misc_entity(comments, sentence):
 # Main part.
 #==============================================================================
 
-def validate(inp, out, args, tag_sets, known_sent_ids):
-    for comments, sentence in trees(inp, tag_sets, args):
+
+
+def validate(inp, out, args, known_sent_ids):
+    for comments, sentence in trees(inp, args):
         # The individual lines were validated already in trees().
         # What follows is tests that need to see the whole tree.
         idseqok = validate_ID_sequence(sentence) # level 1
@@ -2880,7 +3381,7 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                 if args.level > 2:
                     validate_annotation(tree) # level 3
                     if args.level > 4:
-                        validate_lspec_annotation(sentence, args.lang, tag_sets) # level 5
+                        validate_lspec_annotation(sentence, args.lang) # level 5
             else:
                 testlevel = 2
                 testclass = 'Format'
@@ -2892,241 +3393,128 @@ def validate(inp, out, args, tag_sets, known_sent_ids):
                     validate_enhanced_annotation(egraph) # level 3
     validate_newlines(inp) # level 1
 
-def get_featdata_for_language(lcode):
+
+
+def load_upos_set(filename):
     """
-    Searches the previously loaded database of feature-value combinations.
-    Returns the lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
+    Loads the list of permitted UPOS tags, converts it to a set, saves the set
+    in the global data, and returns it, too.
     """
-    global featdata
-    ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
-    ###!!! regardless of language-specific documentation.
-    # Do not crash if the user asks for an unknown language.
-    if not lcode in featdata:
-        return {} ###!!! or None?
-    return featdata[lcode]
+    global data
+    data.upos = set()
+    with io.open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            data.upos.add(line)
+    return data.upos
+
+
+
+def load_feat_set(filename_langspec, lcode):
+    """
+    Loads the list of permitted feature-value pairs and returns it as a set.
+    """
+    global data
+    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+        all_features_0 = json.load(f)
+    data.feats = all_features_0['features']
+    featset = data.get_feats_for_language(lcode)
+    # Prepare a global message about permitted features and values. We will add
+    # it to the first error message about an unknown feature. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    data.warn_on_undoc_feats = data.explain_feats(lcode)
+    return featset
+
+
 
 def load_deprel_set(filename_langspec, lcode):
     """
     Loads the list of permitted relation types and returns it as a set.
     """
-    global depreldata
-    global warn_on_undoc_deps
+    global data
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_deprels_0 = json.load(f)
-    depreldata = all_deprels_0['deprels']
-    deprelset = get_depreldata_for_language(lcode)
+    data.deprel = all_deprels_0['deprels']
+    deprelset = data.get_deprel_for_language(lcode)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
-    msg = ''
-    if len(deprelset) == 0:
-        msg += f"No dependency relation types have been permitted for language [{lcode}].\n"
-        msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n"
-    else:
-        # Identify dependency relations that are permitted in the current language.
-        # If there are errors in documentation, identify the erroneous doc file.
-        # Note that depreldata[lcode] may not exist even though we have a non-empty
-        # set of relations, if lcode is 'ud'.
-        if lcode in depreldata:
-            for r in depreldata[lcode]:
-                file = re.sub(r':', r'-', r)
-                if file == 'aux':
-                    file = 'aux_'
-                for e in depreldata[lcode][r]['errors']:
-                    msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
-        sorted_documented_relations = sorted(deprelset)
-        msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
-        msg += ', '.join(sorted_documented_relations) + "\n"
-        msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
-        msg += "must have a language-specific documentation page in a prescribed format.\n"
-        msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-        msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
-        msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
-        # Save the message in a global variable.
-        # We will add it to the first error message about an unknown feature in the data.
-    warn_on_undoc_deps = msg
+    data.warn_on_undoc_deps = data.explain_deprel(lcode)
     return deprelset
 
-def get_depreldata_for_language(lcode):
-    """
-    Searches the previously loaded database of dependency relation labels.
-    Returns the lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
-    """
-    global depreldata
-    deprelset = set()
-    # If lcode is 'ud', we should permit all universal dependency relations,
-    # regardless of language-specific documentation.
-    ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
-    if lcode == 'ud':
-        deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative',
-                         'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop',
-                         'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case',
-                         'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan',
-                         'goeswith', 'reparandum', 'punct', 'root', 'dep'])
-    elif lcode in depreldata:
-        for r in depreldata[lcode]:
-            if depreldata[lcode][r]['permitted'] > 0:
-                deprelset.add(r)
-    return deprelset
 
-def load_edeprel_set(filename_langspec, lcode, basic_deprels):
+
+def load_edeprel_set(filename_langspec, lcode):
     """
     Loads the list of permitted enhanced relation types (case markers) and returns it as a set.
     """
-    global edepreldata
-    global warn_on_undoc_edeps
+    global data
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_edeprels_0 = json.load(f)
-    edepreldata = all_edeprels_0['edeprels']
-    edeprelset = get_edepreldata_for_language(lcode, basic_deprels)
+    data.edeprel = all_edeprels_0['edeprels']
+    edeprelset = data.get_edeprel_for_language(lcode)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
-    msg = ''
-    if len(edeprelset) == 0:
-        msg += f"No enhanced dependency relation types (case markers) have been permitted for language [{lcode}].\n"
-        msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-        msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n"
-    else:
-        # Identify dependency relations that are permitted in the current language.
-        # If there are errors in documentation, identify the erroneous doc file.
-        # Note that depreldata[lcode] may not exist even though we have a non-empty
-        # set of relations, if lcode is 'ud'.
-        sorted_case_markers = sorted(edeprelset)
-        msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
-        msg += ', '.join(sorted_case_markers) + "\n"
-        msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
-        # Save the message in a global variable.
-        # We will add it to the first error message about an unknown feature in the data.
-    warn_on_undoc_edeps = msg
+    data.warn_on_undoc_edeps = data.explain_edeprel(lcode)
     return edeprelset
 
-def get_edepreldata_for_language(lcode, basic_deprels):
-    """
-    Searches the previously loaded database of enhanced case markers.
-    Returns the lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
-    """
-    global edepreldata
-    edeprelset = basic_deprels|{'ref'}
-    for bdeprel in basic_deprels:
-        if re.match(r"^[nc]subj(:|$)", bdeprel):
-            edeprelset.add(bdeprel+':xsubj')
-    if lcode in edepreldata:
-        for c in edepreldata[lcode]:
-            for deprel in edepreldata[lcode][c]['extends']:
-                for bdeprel in basic_deprels:
-                    if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
-                        edeprelset.add(bdeprel+':'+c)
-    return edeprelset
 
-def load_set(f_name_ud, f_name_langspec, validate_langspec=False, validate_enhanced=False):
-    """
-    Loads a list of values from the two files, and returns their
-    set. If f_name_langspec doesn't exist, loads nothing and returns
-    None (ie this taglist is not checked for the given language). If f_name_langspec
-    is None, only loads the UD one. This is probably only useful for CPOS which doesn't
-    allow language-specific extensions. Set validate_langspec=True when loading basic dependencies.
-    That way the language specific deps will be checked to be truly extensions of UD ones.
-    Set validate_enhanced=True when loading enhanced dependencies. They will be checked to be
-    truly extensions of universal relations, too; but a more relaxed regular expression will
-    be checked because enhanced relations may contain stuff that is forbidden in the basic ones.
-    """
-    res = load_file(os.path.join(THISDIR, 'data', f_name_ud))
-    # Now res holds UD
-    # Next load and optionally check the langspec extensions
-    if f_name_langspec is not None and f_name_langspec != f_name_ud:
-        path_langspec = os.path.join(THISDIR,"data",f_name_langspec)
-        if os.path.exists(path_langspec):
-            global curr_fname
-            curr_fname = path_langspec # so warn() does not fail on undefined curr_fname
-            l_spec = load_file(path_langspec)
-            for v in l_spec:
-                if validate_enhanced:
-                    # We are reading the list of language-specific dependency relations in the enhanced representation
-                    # (i.e., the DEPS column, not DEPREL). Make sure that they match the regular expression that
-                    # restricts enhanced dependencies.
-                    if not edeprel_re.match(v):
-                        testlevel = 4
-                        testclass = 'Enhanced'
-                        testid = 'edeprel-def-regex'
-                        testmessage = f"Spurious language-specific enhanced relation '{v}' - it does not match the regular expression that restricts enhanced relations."
-                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                        continue
-                elif validate_langspec:
-                    # We are reading the list of language-specific dependency relations in the basic representation
-                    # (i.e., the DEPREL column, not DEPS). Make sure that they match the regular expression that
-                    # restricts basic dependencies. (In particular, that they do not contain extensions allowed in
-                    # enhanced dependencies, which should be listed in a separate file.)
-                    if not re.match(r"^[a-z]+(:[a-z]+)?$", v):
-                        testlevel = 4
-                        testclass = 'Syntax'
-                        testid = 'deprel-def-regex'
-                        testmessage = f"Spurious language-specific relation '{v}' - in basic UD, it must match '^[a-z]+(:[a-z]+)?'."
-                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                        continue
-                if validate_langspec or validate_enhanced:
-                    try:
-                        parts=v.split(':')
-                        if parts[0] not in res and parts[0] != 'ref':
-                            testlevel = 4
-                            testclass = 'Syntax'
-                            testid = 'deprel-def-universal-part'
-                            testmessage = f"Spurious language-specific relation '{v}' - not an extension of any UD relation."
-                            warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                            continue
-                    except:
-                        testlevel = 4
-                        testclass = 'Syntax'
-                        testid = 'deprel-def-universal-part'
-                        testmessage = f"Spurious language-specific relation '{v}' - not an extension of any UD relation."
-                        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-                        continue
-                res.add(v)
-    return res
 
-def get_auxdata_for_language(lcode):
+def load_auxcop_set(filename, lcode):
     """
-    Searches the previously loaded database of auxiliary/copula lemmas. Returns
-    the AUX and COP lists for a given language code. For most CoNLL-U files,
-    this function is called only once at the beginning. However, some files
-    contain code-switched data and we may temporarily need to validate
-    another language.
+    Loads the lists of auxiliaries and copulas.
     """
-    global auxdata
-    # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
-    # If any of the functions of the lemma is cop.*, it counts as a copula.
-    auxlist = []
-    coplist = []
-    if lcode == 'shopen':
-        for lcode1 in auxdata.keys():
-            lemmalist = auxdata[lcode1].keys()
-            auxlist = auxlist + [x for x in lemmalist
-                                 if len([y for y in auxdata[lcode1][x]['functions']
-                                    if y['function'] != 'cop.PRON']) > 0]
-            coplist = coplist + [x for x in lemmalist
-                                 if len([y for y in auxdata[lcode1][x]['functions']
-                                    if re.match(r"^cop\.", y['function'])]) > 0]
-    else:
-        lemmalist = auxdata.get(lcode, {}).keys()
-        auxlist = [x for x in lemmalist
-                   if len([y for y in auxdata[lcode][x]['functions']
-                    if y['function'] != 'cop.PRON']) > 0]
-        coplist = [x for x in lemmalist
-                   if len([y for y in auxdata[lcode][x]['functions']
-                    if re.match(r"^cop\.", y['function'])]) > 0]
-    return auxlist, coplist
+    global data
+    # Read the list of auxiliaries from the JSON file.
+    # This file must not be edited directly!
+    # Use the web interface at
+    # https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
+    with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
+        jsondata = json.load(f)
+    data.auxcop = jsondata['auxiliaries']
+    auxdata, copdata = data.get_auxcop_for_language(args.lang)
+    # Prepare a global message about permitted auxiliary lemmas. We will add
+    # it to the first error message about an unknown auxiliary. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    data.warn_on_undoc_aux = data.explain_aux(lcode)
+    # Prepare a global message about permitted copula lemmas. We will add
+    # it to the first error message about an unknown auxiliary. Note that this
+    # global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    data.warn_on_undoc_cop = data.explain_cop(lcode)
+    return auxdata, copdata
+
+    
+
+def load_tospace_set(filename_langspec, lcode):
+    """
+    Loads regular expressions describing permitted tokens with spaces, compiles
+    them and returns them as a set.
+    """
+    global data
+    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+        all_tospaces_0 = json.load(f)
+    # There is one or more regular expressions for each language in the file.
+    # If there are multiple expressions, combine them in one and compile it.
+    data.tospace = {}
+    for l in all_tospaces_0['expressions']:
+        combination = '('+'|'.join(sorted(list(all_tospaces_0['expressions'][l])))+')'
+        compilation = re.compile(combination)
+        data.tospace[l] = (combination, compilation)
+    # Prepare a global message about permitted features and values. We will add
+    # it to the first error message about an unknown token with space. Note that
+    # this global information pertains to the default validation language and it
+    # should not be used with code-switched segments in alternative languages.
+    data.warn_on_undoc_tospaces = data.explain_tospace(lcode)
+
+
 
 alt_lang_re = re.compile(r"Lang=(.+)")
 def get_alt_language(misc):
@@ -3144,6 +3532,8 @@ def get_alt_language(misc):
         if m:
             return m.group(1)
     return None
+
+
 
 if __name__=="__main__":
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
@@ -3196,11 +3586,10 @@ if __name__=="__main__":
     coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
                                                 "Options for checking coreference and entity annotation.")
     coref_group.add_argument('--coref',
-                            action='store_true', default=False, dest='check_coref',
-                            help='Test coreference and entity-related annotation in MISC.')
+                             action='store_true', default=False, dest='check_coref',
+                             help='Test coreference and entity-related annotation in MISC.')
 
     args = opt_parser.parse_args() #Parsed command-line arguments
-    error_counter={} # Incremented by warn()  {key: error type value: its count}
 
     # Level of validation
     if args.level < 1:
@@ -3214,69 +3603,22 @@ if __name__=="__main__":
     if args.level < 4:
         args.lang = 'ud'
 
-    # Sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
-    tagsets = {XPOS:None, UPOS:None, FEATS:None, DEPREL:None, DEPS:None, TOKENSWSPACE:None, AUX:None}
-
-    if args.lang:
-        tagsets[UPOS] = load_json_data('upos.json','upos')
-        tagsets[FEATS] = load_feat_set('feats.json', args.lang)
-        tagsets[DEPREL] = load_deprel_set('deprels.json', args.lang)
-        # All relations available in DEPREL are also allowed in DEPS.
-        # In addition, there might be relations that are only allowed in DEPS.
-        # One of them, "ref", is universal and we currently mention it directly
-        # in the code, although there is also a file "edeprel.ud".
-        #tagsets[DEPS] = tagsets[DEPREL]|{"ref"}|load_set("deprel.ud","edeprel."+args.lang,validate_enhanced=True)
-        tagsets[DEPS] = load_edeprel_set('edeprels.json', args.lang, tagsets[DEPREL])
-        tagsets[TOKENSWSPACE] = load_set('tokens_w_space.ud', 'tokens_w_space.'+args.lang)
-        tagsets[TOKENSWSPACE] = [re.compile(regex) for regex in tagsets[TOKENSWSPACE]] #...turn into compiled regular expressions
-        # Read the list of auxiliaries from the JSON file.
-        # This file must not be edited directly!
-        # Use the web interface at
-        # https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
-        auxdata = load_json_data('data.json','auxiliaries')
-        tagsets[AUX], tagsets[COP] = get_auxdata_for_language(args.lang)
-        # Prepare a global message about permitted auxiliary lemmas. We will add
-        # it to the first error message about an unknown auxiliary. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(tagsets[AUX]) == 0:
-            msg += f"No auxiliaries have been documented at the address below for language [{args.lang}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(tagsets[AUX])} auxiliaries are currently documented in language [{args.lang}]:\n"
-            msg += ', '.join(tagsets[AUX]) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
-        warn_on_undoc_aux = msg
-        # Prepare a global message about permitted copula lemmas. We will add
-        # it to the first error message about an unknown auxiliary. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(tagsets[COP]) == 0:
-            msg += f"No copulas have been documented at the address below for language [{args.lang}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(tagsets[COP])} copulas are currently documented in language [{args.lang}]:\n"
-            msg += ', '.join(tagsets[COP]) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
-        warn_on_undoc_cop = msg
+    load_upos_set('cpos.ud')
+    load_feat_set('feats.json', args.lang)
+    load_deprel_set('deprels.json', args.lang)
+    load_edeprel_set('edeprels.json', args.lang)
+    load_tospace_set('tospace.json', args.lang)
+    load_auxcop_set('data.json', args.lang)
 
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
     try:
-        known_sent_ids=set()
-        open_files=[]
-        if args.input==[]:
+        known_sent_ids = set()
+        open_files = []
+        if args.input == []:
             args.input.append('-')
         for fname in args.input:
-            if fname=='-':
+            if fname == '-':
                 # Set PYTHONIOENCODING=utf-8 before starting Python.
                 # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
                 # Otherwise ANSI will be read in Windows and
@@ -3284,11 +3626,11 @@ if __name__=="__main__":
                 open_files.append(sys.stdin)
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
-        for curr_fname, inp in zip(args.input, open_files):
-            validate(inp, out, args, tagsets, known_sent_ids)
+        for state.current_file_name, inp in zip(args.input, open_files):
+            validate(inp, out, args, known_sent_ids)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
-        if args.level>2 and line_of_first_enhanced_graph and not line_of_first_enhancement:
+        if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
             testlevel = 3
             testclass = 'Enhanced'
             testid = 'edeps-identical-to-basic-trees'
@@ -3303,8 +3645,8 @@ if __name__=="__main__":
     # Summarize the warnings and errors.
     passed = True
     nerror = 0
-    if error_counter:
-        for k, v in sorted(error_counter.items()):
+    if state.error_counter:
+        for k, v in sorted(state.error_counter.items()):
             if k == 'Warning':
                 errors = 'Warnings'
             else:
@@ -3321,8 +3663,4 @@ if __name__=="__main__":
     else:
         if not args.quiet:
             print(f'*** FAILED *** with {nerror} errors', file=sys.stderr)
-        for f_name in sorted(warn_on_missing_files):
-            filepath = os.path.join(THISDIR, 'data', f_name+'.'+args.lang)
-            if not os.path.exists(filepath):
-                print(f'The language-specific file {filepath} does not exist.', file=sys.stderr)
         sys.exit(1)

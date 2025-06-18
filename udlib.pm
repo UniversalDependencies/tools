@@ -235,17 +235,17 @@ sub list_ud_folders
 
 #------------------------------------------------------------------------------
 # Scans a UD folder for CoNLL-U files. Uses the file names to guess the
-# language code.
+# language and treebank codes.
 #------------------------------------------------------------------------------
 sub get_ud_files_and_codes
 {
-    my $udfolder = shift; # e.g. "UD_Czech"; not the full path
+    my $folder = shift; # e.g. "UD_Czech-PDTC"; not the full path
     my $path = shift; # path to the superordinate folder; default: the current folder
     $path = '.' if(!defined($path));
     my $name;
     my $langname;
     my $tbkext;
-    if($udfolder =~ m/^UD_(([^-]+)(?:-(.+))?)$/)
+    if($folder =~ m/^UD_(([^-]+)(?:-(.+))?)$/)
     {
         $name = $1;
         $langname = $2;
@@ -254,20 +254,15 @@ sub get_ud_files_and_codes
     }
     else
     {
-        print STDERR ("WARNING: Unexpected folder name '$udfolder'\n");
+        print STDERR ("WARNING: Unexpected folder name '$folder'\n");
     }
+    # There are exceptions for large treebanks that must split their train files because of GitHub size limits (the splitting is undone in the released UD packages).
+    # For example, $train_exception->{desc} = '(cs_pdtc)-ud-train-[clmvfsw](a|t[012]?).conllu'
+    my $train_exception = get_train_file_exception($folder);
     # Look for training, development or test data.
-    my $section = 'any'; # training|development|test|any
-    my %section_re =
-    (
-        # Training data in big treebanks is split into multiple files.
-        'training'    => 'train(-[a-z])?(-[0-9])?',
-        'development' => 'dev',
-        'test'        => 'test',
-        'any'         => '(train(-[a-z])?(-[0-9])?|dev|test)'
-    );
-    opendir(DIR, "$path/$udfolder") or die("Cannot read the contents of '$path/$udfolder': $!");
-    my @files = sort(grep {-f "$path/$udfolder/$_" && m/.+-ud-$section_re{$section}\.conllu$/} (readdir(DIR)));
+    my $datafile_re = defined($train_exception) ? "(?:$train_exception->{desc}|(.+)-ud-(dev|test)\\.conllu)" : '(.+)-ud-(train|dev|test)\\.conllu';
+    opendir(DIR, "$path/$folder") or die("Cannot read the contents of '$path/$folder': $!");
+    my @files = sort(grep {-f "$path/$folder/$_" && m/^$datafile_re$/} (readdir(DIR)));
     closedir(DIR);
     my $n = scalar(@files);
     my $code;
@@ -275,11 +270,7 @@ sub get_ud_files_and_codes
     my $tcode;
     if($n>0)
     {
-        if($n>1 && $section ne 'any')
-        {
-            print STDERR ("WARNING: Folder '$path/$udfolder' contains multiple ($n) files that look like $section data.\n");
-        }
-        $files[0] =~ m/^(.+)-ud-$section_re{$section}\.conllu$/;
+        $files[0] =~ m/^(.+)-ud/;
         $lcode = $code = $1;
         if($code =~ m/^([^_]+)_(.+)$/)
         {
@@ -289,18 +280,17 @@ sub get_ud_files_and_codes
     }
     my %record =
     (
-        'folder' => $udfolder,
-        'name'   => $name,
-        'lname'  => $langname,
-        'tname'  => $tbkext,
-        'code'   => $code,
-        'ltcode' => $code, # for compatibility with some tools, this code is provided both as 'code' and as 'ltcode'
-        'lcode'  => $lcode,
-        'tcode'  => $tcode,
-        'files'  => \@files,
-        $section => $files[0]
+        'folder'  => $folder,
+        'name'    => $name,
+        'lname'   => $langname,
+        'tname'   => $tbkext,
+        'code'    => $code,
+        'ltcode'  => $code, # for compatibility with some tools, this code is provided both as 'code' and as 'ltcode'
+        'lcode'   => $lcode,
+        'tcode'   => $tcode,
+        'files'   => \@files,
+        'file_re' => $datafile_re
     );
-    #print STDERR ("$udfolder\tlname $langname\ttname $tbkext\tcode $code\tlcode $lcode\ttcode $tcode\t$section $files[0]\n");
     return \%record;
 }
 
@@ -741,7 +731,7 @@ sub check_files
 {
     my $udpath = shift; # path to the folder with UD treebanks as subfolders (default: current folder, i.e., '.')
     my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
-    my $key = shift; # language and treebank code, e.g. 'cs_pdtc' ###!!! We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.
+    my $key = shift; # language and treebank code, e.g. 'cs_pdtc' (We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.)
     my $errors = shift; # reference to array where we can add error messages
     my $n_errors = shift; # reference to error counter
     my $sizes = shift; # optional hash ref; the caller may be interested in the train-dev-test sizes that we compute here, and we will put them for the caller in this hash if provided
@@ -753,6 +743,36 @@ sub check_files
     $udpath = '.' if(!defined($udpath));
     my $treebank_path = "$udpath/$folder";
     chdir($treebank_path) or confess("Cannot change current folder to '$treebank_path': $!");
+    # There are exceptions for large treebanks that must split their train files because of GitHub size limits (the splitting is undone in the released UD packages).
+    my $train_exception = get_train_file_exception($folder);
+    # Check the existence of the README file.
+    $ok = check_files_readme($folder, $errors, $n_errors) && $ok;
+    # Check the existence of the LICENSE file.
+    $ok = check_files_license($folder, $errors, $n_errors) && $ok;
+    # Check the existence of the CONTRIBUTING file.
+    $ok = check_files_contributing($folder, $errors, $n_errors) && $ok;
+    # Check the data files.
+    $ok = check_files_data($folder, $key, $train_exception, $errors, $n_errors, $sizes) && $ok;
+    # Check all files and folders in the treebank folder to see if there are any unpermitted extra files.
+    $ok = check_files_extra($folder, $key, $treebank_path, $train_exception, $errors, $n_errors) && $ok;
+    # Change current folder back where we were when entering this function.
+    chdir($current_path) or confess("Cannot change current folder back to '$currentpath': $!");
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether a UD repository contains the README file. Assumes that the
+# repository folder is the current folder (the caller, check_files(), should
+# have taken care of this).
+#------------------------------------------------------------------------------
+sub check_files_readme
+{
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
+    my $errors = shift; # reference to array where we can add error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
     # Check the existence of the README file.
     if(!-f 'README.txt' && !-f 'README.md')
     {
@@ -786,6 +806,22 @@ sub check_files
             $$n_errors++;
         }
     }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether a UD repository contains the LICENSE file. Assumes that the
+# repository folder is the current folder (the caller, check_files(), should
+# have taken care of this).
+#------------------------------------------------------------------------------
+sub check_files_license
+{
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
+    my $errors = shift; # reference to array where we can add error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
     # Check the existence of the LICENSE file.
     if(!-f 'LICENSE.txt')
     {
@@ -803,6 +839,22 @@ sub check_files
             $$n_errors++;
         }
     }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks whether a UD repository contains the CONTRIBUTING file. Assumes that
+# the repository folder is the current folder (the caller, check_files(),
+# should have taken care of this).
+#------------------------------------------------------------------------------
+sub check_files_contributing
+{
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
+    my $errors = shift; # reference to array where we can add error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
     # Check the existence of the CONTRIBUTING file.
     if(!-f 'CONTRIBUTING.md')
     {
@@ -819,7 +871,53 @@ sub check_files
             push(@{$errors}, "[L0 Repo files] $folder: CR line-break found at line $cr of CONTRIBUTING.md\n");
             $$n_errors++;
         }
+        # The CONTRIBUTING.md file should have the same contents in all treebanks.
+        # The file is created together with the repository and it should not be modified.
+        my $expected_contributing_contents = <<EOF
+\# Contributing
+
+Please do not make pull requests against master, any such pull requests will be
+closed. Pull requests against the dev branch are accepted in some treebanks but
+not in others – check the Contributing line in the README file!
+
+For full details on the branch policy see
+[here](https://universaldependencies.org/contributing/repository_files.html).
+EOF
+        ;
+        my $contents;
+        open(my $fh, 'CONTRIBUTING.md');
+        while(<$fh>)
+        {
+            $contents .= $_;
+        }
+        close($fh);
+        if($contents ne $expected_contributing_contents)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo files] $folder: The prescribed contents of CONTRIBUTING.md has been modified\n");
+            $$n_errors++;
+        }
     }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks the presence, naming, and sizes of the CoNLL-U data files. Assumes
+# that the repository folder is the current folder (the caller, check_files(),
+# should have taken care of this).
+#------------------------------------------------------------------------------
+sub check_files_data
+{
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
+    my $key = shift; # language and treebank code, e.g. 'cs_pdtc' (We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.)
+    my $train_exception = shift; # undef or hashref describing the exceptional split of training file
+    my $errors = shift; # reference to array where we can add error messages
+    my $n_errors = shift; # reference to error counter
+    my $sizes = shift; # optional hash ref; the caller may be interested in the train-dev-test sizes that we compute here, and we will put them for the caller in this hash if provided
+    $sizes = {} if(!defined($sizes));
+    my $ok = 1;
     # Check the data files.
     my $prefix = "$key-ud";
     my $train_found = 0;
@@ -829,24 +927,12 @@ sub check_files
     my $stats = {};
     # In general, every treebank should have at least the test data.
     # If there are more data files, zero or one of each of the following is expected: train, dev.
-    # There are exceptions for large treebanks that must split their train files because of Github size limits (the splitting is undone in the released UD packages).
-    # Exception 1: Czech PDTC has twelve train files.
-    # Exception 2: German HDT has two train files: train-a, train-b.
-    # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
-    # Exception 4: Russian Taiga has five train files: train-a, train-b, train-c, train-d, train-e.
-    my %train_exceptions =
-    (
-        'UD_Czech-PDTC'        => {'desc' => 'cs_pdtc-ud-train-[clmvfsw](a|t[012]?).conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st', 'train-wt0', 'train-wt1', 'train-wt2']},
-        'UD_German-HDT'        => {'desc' => 'de_hdt-ud-train-[ab]-[12].conllu',   'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
-        'UD_Russian-SynTagRus' => {'desc' => 'ru_syntagrus-ud-train-[abc].conllu', 'files' => ['train-a', 'train-b', 'train-c']},
-        'UD_Russian-Taiga'     => {'desc' => 'ru_taiga-ud-train-[abcde].conllu',   'files' => ['train-a', 'train-b', 'train-c', 'train-d', 'train-e']}
-    );
     # No other CoNLL-U files are expected.
     # It is also expected that if there is dev, there is also train.
-    if(exists($train_exceptions{$folder}))
+    if(defined($train_exception))
     {
         $train_found = 1;
-        foreach my $trainpart (@{$train_exceptions{$folder}{files}})
+        foreach my $trainpart (@{$train_exception->{files}})
         {
             my $trainpartfile = "$prefix-$trainpart.conllu";
             if(-f $trainpartfile)
@@ -859,7 +945,7 @@ sub check_files
             {
                 $train_found = 0;
                 $ok = 0;
-                push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $train_exceptions{$folder}{desc}");
+                push(@{$errors}, "[L0 Repo files] $folder: missing at least one file of $train_exception->{desc}");
                 $$n_errors++;
                 last;
             }
@@ -913,11 +999,178 @@ sub check_files
     # Check the proportion of the sizes of train, dev, and test. The minimum sizes
     # are only a recommendation, as individual treebanks may have good reasons why
     # they need a different split. Hence we have a number of exceptions here.
-    # Note that the keys of the following hash can be regular expressions.
     # This section is about sizes, not about existence. So an exception for the
     # test file means that it can be smaller than 10K words, but it still must
     # exist, which is checked above.
-    my %split_exceptions =
+    my ($allow_smalltrain_re, $allow_smalldev_re, $allow_smalltest_re) = get_data_split_exception_res();
+    # For small and growing treebanks, we expect the files to appear roughly in the following order:
+    # 1. test (>=10K tokens if possible);
+    # 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample);
+    # 3. dev (if we have at least 30K tokens in total, we expect that at least 10K has been taken for test and 10% of the remainder, or 10K tokens for large treebanks, is dev).
+    if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo train-dev-test] $folder: train or dev exists but there is no test\n");
+        $$n_errors++;
+    }
+    if($nwall>10000 && $nwtest<10000 && $folder !~ m/$allow_smalltest_re/)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
+        $$n_errors++;
+    }
+    if($nwall>20000 && $nwtrain<10000 && $folder !~ m/$allow_smalltrain_re/)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
+        $$n_errors++;
+    }
+    if($nwall>30000)
+    {
+        my $mindev = sprintf("%d", ($nwall-$nwtest)/10+0.5);
+        # The recommendation in the guidelines is 10K and here I set the threshold
+        # only to 9K, i.e., the validator will not complain if the recommendation
+        # is missed by only a small number. (In fact, previously the validator
+        # complained only about dev sets under 5K; but we have two datasets,
+        # Hebrew-IAHLTwiki and Japanes-GSDLUW, which are between 9K and 10K.)
+        $mindev = 9000 if($mindev>9000);
+        if($nwdev<$mindev && $folder !~ m/$allow_smalldev_re/)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
+            $$n_errors++;
+        }
+    }
+    # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
+    if($stats->{nsent} < 20 || $stats->{nword} < 100)
+    {
+        $ok = 0;
+        my $ss = $stats->{nsent} > 1 ? 's' : '';
+        my $ws = $stats->{nword} > 1 ? 's' : '';
+        push(@{$errors}, "[L0 Repo treebank-size] $folder: treebank is too small: found only $stats->{nsent} sentence$ss and $stats->{nword} word$ws\n");
+        $$n_errors++;
+    }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Checks all files and folders in the treebank folder to see if there are any
+# unpermitted extra files. Assumes that the repository folder is the current
+# folder (the caller, check_files(), should have taken care of this).
+#------------------------------------------------------------------------------
+sub check_files_extra
+{
+    my $folder = shift; # treebank folder name, e.g. 'UD_Czech-PDTC'
+    my $key = shift; # language and treebank code, e.g. 'cs_pdtc' (We could compute it automatically from the folder name but we would need the language YAML file as a parameter instead.)
+    my $treebank_path = shift; # path to the current folder, needed only for diagnostic purposes
+    my $train_exception = shift; # undef or hashref describing the exceptional split of training file
+    my $errors = shift; # reference to array where we can add error messages
+    my $n_errors = shift; # reference to error counter
+    my $ok = 1;
+    my $prefix = "$key-ud";
+    # Check all files and folders in the treebank folder to see if there are any unpermitted extra files.
+    opendir(DIR, '.') or confess("Cannot read the contents of the folder '$treebank_path': $!");
+    my @files = readdir(DIR);
+    closedir(DIR);
+    # Some extra files are tolerated in the Github repository although we do not include them in the release package; these are not reported.
+    my @tolerated =
+    (
+        # tolerated but not released
+        '\.\.?',
+        '\.git(ignore|attributes)?',
+        '\.travis\.yml',
+        'not-to-release',
+        # expected and released
+        'README\.(txt|md)',
+        'LICENSE\.txt',
+        'CONTRIBUTING\.md',
+        'stats\.xml'
+    );
+    if(defined($train_exception))
+    {
+        push(@tolerated, '('.$train_exception->{desc}.'|'.$prefix.'-(dev|test)\.conllu)');
+    }
+    else
+    {
+        push(@tolerated, $prefix.'-(train|dev|test)\.conllu');
+    }
+    my $tolerated_re = join('|', @tolerated);
+    my @extrafiles = map
+    {
+        $_ .= '/' if(-d $_);
+        $_
+    }
+    grep
+    {
+        !m/^($tolerated_re)$/
+    }
+    (@files);
+    # Some treebanks have exceptional extra files that have been approved and released previously.
+    my $extra_exception = get_extra_file_exception($folder);
+    if(defined($extra_exception))
+    {
+        @extrafiles = grep {!m/$extra_exception/} (@extrafiles);
+    }
+    if(scalar(@extrafiles) > 0)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@extrafiles))."\n");
+        $$n_errors += scalar(@extrafiles);
+    }
+    return $ok;
+}
+
+
+
+#------------------------------------------------------------------------------
+# In general, a treebank has just one file with training data, named
+# xx_yyy-ud-train.conllu (xx is the language code and yyy is the treebank id).
+# There are exceptions for large treebanks that must split their train files
+# because of GitHub size limits (the splitting is undone in the released UD
+# packages). Such exceptions must be hard-coded here and functions dealing with
+# training data must obtain the exceptions from here.
+#------------------------------------------------------------------------------
+BEGIN
+{
+    # Exception 1: Czech PDTC has twelve train files.
+    # Exception 2: German HDT has two train files: train-a, train-b.
+    # Exception 3: Russian SynTagRus has three train files: train-a, train-b, train-c.
+    # Exception 4: Russian Taiga has five train files: train-a, train-b, train-c, train-d, train-e.
+    # Note: The brackets around the language-treebank code in the 'desc' regular
+    # expression are needed for extraction of the codes in get_ud_files_and_codes().
+    %train_exceptions =
+    (
+        'UD_Czech-PDTC'        => {'desc' => '(cs_pdtc)-ud-train-[clmvfsw](a|t[012]?)\\.conllu', 'files' => ['train-ct', 'train-ca', 'train-lt', 'train-la', 'train-mt', 'train-ma', 'train-va', 'train-ft', 'train-st', 'train-wt0', 'train-wt1', 'train-wt2']},
+        'UD_German-HDT'        => {'desc' => '(de_hdt)-ud-train-[ab]-[12]\\.conllu',             'files' => ['train-a-1', 'train-a-2', 'train-b-1', 'train-b-2']},
+        'UD_Russian-SynTagRus' => {'desc' => '(ru_syntagrus)-ud-train-[abc]\\.conllu',           'files' => ['train-a', 'train-b', 'train-c']},
+        'UD_Russian-Taiga'     => {'desc' => '(ru_taiga)-ud-train-[abcde]\\.conllu',             'files' => ['train-a', 'train-b', 'train-c', 'train-d', 'train-e']}
+    );
+}
+sub get_train_file_exception
+{
+    my $folder = shift;
+    my $exception = undef;
+    my $exceptions = \%udlib::train_exceptions;
+    if(exists($exceptions->{$folder}))
+    {
+        $exception = $exceptions->{$folder};
+    }
+    return $exception;
+}
+
+
+
+#------------------------------------------------------------------------------
+# The minimum sizes of train, dev, and test are only a recommendation, as
+# individual treebanks may have good reasons why they need a different split.
+# Hence we have a number of exceptions here. Note that the keys of the
+# following hash can be regular expressions.
+#------------------------------------------------------------------------------
+BEGIN
+{
+    %split_exceptions =
     (
         # UD_Akkadian-RIAO: I think they told me that the treebank would grow; in the first version, they have only 20K test and no train.
         'UD_Akkadian-RIAO'                  => {'train' => 1},
@@ -972,96 +1225,25 @@ sub check_files
         # Exception: PUD parallel data (including Japanese-PUDLUW) are currently test only, even if in some languages there is more than 20K words.
         'UD_.+-PUD(LUW)?'                   => {'train' => 1, 'dev' => 1}
     );
-    my $allow_smalltrain_re = '^('.join('|', grep {$split_exceptions{$_}{train}} (keys(%split_exceptions))).')$';
-    my $allow_smalldev_re   = '^('.join('|', grep {$split_exceptions{$_}{dev}}   (keys(%split_exceptions))).')$';
-    my $allow_smalltest_re  = '^('.join('|', grep {$split_exceptions{$_}{test}}  (keys(%split_exceptions))).')$';
-    # For small and growing treebanks, we expect the files to appear roughly in the following order:
-    # 1. test (>=10K tokens if possible);
-    # 2. train (if it can be larger than test or if this is the only treebank of the language and train is a small sample);
-    # 3. dev (if we have at least 30K tokens in total, we expect that at least 10K has been taken for test and 10% of the remainder, or 10K tokens for large treebanks, is dev).
-    if($nwtest==0 && ($nwtrain>0 || $nwdev>0))
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo train-dev-test] $folder: train or dev exists but there is no test\n");
-        $$n_errors++;
-    }
-    if($nwall>10000 && $nwtest<10000 && $folder !~ m/$allow_smalltest_re/)
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 10K words (precisely: $nwall) available but test has only $nwtest words\n");
-        $$n_errors++;
-    }
-    if($nwall>20000 && $nwtrain<10000 && $folder !~ m/$allow_smalltrain_re/)
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 20K words (precisely: $nwall) available but train has only $nwtrain words\n");
-        $$n_errors++;
-    }
-    if($nwall>30000)
-    {
-        my $mindev = sprintf("%d", ($nwall-$nwtest)/10+0.5);
-        # The recommendation in the guidelines is 10K and here I set the threshold
-        # only to 9K, i.e., the validator will not complain if the recommendation
-        # is missed by only a small number. (In fact, previously the validator
-        # complained only about dev sets under 5K; but we have two datasets,
-        # Hebrew-IAHLTwiki and Japanes-GSDLUW, which are between 9K and 10K.)
-        $mindev = 9000 if($mindev>9000);
-        if($nwdev<$mindev && $folder !~ m/$allow_smalldev_re/)
-        {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo train-dev-test] $folder: more than 30K words (precisely: $nwall) available but dev has only $nwdev words\n");
-            $$n_errors++;
-        }
-    }
-    # Check that the treebank is not ridiculously small. Minimum size required since release 2.10.
-    if($stats->{nsent} < 20 || $stats->{nword} < 100)
-    {
-        $ok = 0;
-        my $ss = $stats->{nsent} > 1 ? 's' : '';
-        my $ws = $stats->{nword} > 1 ? 's' : '';
-        push(@{$errors}, "[L0 Repo treebank-size] $folder: treebank is too small: found only $stats->{nsent} sentence$ss and $stats->{nword} word$ws\n");
-        $$n_errors++;
-    }
-    # Check all files and folders in the treebank folder to see if there are any unpermitted extra files.
-    opendir(DIR, '.') or confess("Cannot read the contents of the folder '$treebank_path': $!");
-    my @files = readdir(DIR);
-    closedir(DIR);
-    # Some extra files are tolerated in the Github repository although we do not include them in the release package; these are not reported.
-    my @tolerated =
-    (
-        # tolerated but not released
-        '\.\.?',
-        '\.git(ignore|attributes)?',
-        '\.travis\.yml',
-        'not-to-release',
-        # expected and released
-        'README\.(txt|md)',
-        'LICENSE\.txt',
-        'CONTRIBUTING\.md',
-        'stats\.xml'
-    );
-    if(exists($train_exceptions{$folder}))
-    {
-        push(@tolerated, '('.$train_exceptions{$folder}{desc}.'|'.$prefix.'-(dev|test)\.conllu)');
-    }
-    else
-    {
-        push(@tolerated, $prefix.'-(train|dev|test)\.conllu');
-    }
-    my $tolerated_re = join('|', @tolerated);
-    my @extrafiles = map
-    {
-        $_ .= '/' if(-d $_);
-        $_
-    }
-    grep
-    {
-        !m/^($tolerated_re)$/
-    }
-    (@files);
-    # Some treebanks have exceptional extra files that have been approved and released previously.
-    # The treebanks without underlying text need a program that merges the CoNLL-U files with the separately distributed text.
-    my %extra_exceptions =
+    $allow_smalltrain_re = '^('.join('|', grep {$split_exceptions{$_}{train}} (keys(%split_exceptions))).')$';
+    $allow_smalldev_re   = '^('.join('|', grep {$split_exceptions{$_}{dev}}   (keys(%split_exceptions))).')$';
+    $allow_smalltest_re  = '^('.join('|', grep {$split_exceptions{$_}{test}}  (keys(%split_exceptions))).')$';
+}
+sub get_data_split_exception_res
+{
+    return ($udlib::allow_smalltrain_re, $udlib::allow_smalldev_re, $udlib::allow_smalltest_re);
+}
+
+
+
+#------------------------------------------------------------------------------
+# Some treebanks have exceptional extra files that have been approved and
+# released previously. The treebanks without underlying text need a program
+# that merges the CoNLL-U files with the separately distributed text.
+#------------------------------------------------------------------------------
+BEGIN
+{
+    %extra_exceptions =
     (
         'UD_Arabic-NYUAD'         => '^merge\.jar$',
         'UD_English-ESL'          => '^merge\.py$',
@@ -1071,19 +1253,17 @@ sub check_files
         'UD_Japanese-BCCWJ'       => '^merge',
         'UD_Japanese-BCCWJLUW'    => '^merge'
     );
-    if(exists($extra_exceptions{$folder}))
+}
+sub get_extra_file_exception
+{
+    my $folder = shift;
+    my $exception = undef;
+    my $exceptions = \%udlib::extra_exceptions;
+    if(exists($exceptions->{$folder}))
     {
-        @extrafiles = grep {!m/$extra_exceptions{$folder}/} (@extrafiles);
+        $exception = $exceptions->{$folder};
     }
-    if(scalar(@extrafiles) > 0)
-    {
-        $ok = 0;
-        push(@{$errors}, "[L0 Repo files] $folder extra files: ".join(', ', sort(@extrafiles))."\n");
-        $$n_errors += scalar(@extrafiles);
-    }
-    # Change current folder back where we were when entering this function.
-    chdir($current_path) or confess("Cannot change current folder back to '$currentpath': $!");
-    return $ok;
+    return $exception;
 }
 
 
@@ -1166,26 +1346,26 @@ sub check_metadata
         if(defined($correct) && $claimed ne $correct)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
+            push(@{$errors}, "[L0 Repo readme-first-release] $folder README: 'Data available since: $claimed' is not true. This treebank was first released in UD v$correct.\n");
             $$n_errors++;
         }
         elsif(!defined($correct) && cmp_release_numbers($claimed, $last_release) <= 0)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: 'Data available since: $claimed' is not true. This treebank was not yet released.\n");
+            push(@{$errors}, "[L0 Repo readme-first-release] $folder README: 'Data available since: $claimed' is not true. This treebank was not yet released.\n");
             $$n_errors++;
         }
     }
     else
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
+        push(@{$errors}, "[L0 Repo readme-first-release] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
         $$n_errors++;
     }
     if($metadata->{Genre} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of genres: '$metadata->{Genre}'\n");
+        push(@{$errors}, "[L0 Repo readme-genre] $folder README: Missing list of genres: '$metadata->{Genre}'\n");
         $$n_errors++;
     }
     else
@@ -1201,26 +1381,26 @@ sub check_metadata
         {
             $ok = 0;
             my $ug = join(' ', sort(@unknown_genres));
-            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown genre '$ug'\n");
+            push(@{$errors}, "[L0 Repo readme-genre] $folder README: Unknown genre '$ug'\n");
             $$n_errors++;
         }
     }
     if($metadata->{License} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
+        push(@{$errors}, "[L0 Repo readme-license] $folder README: Missing identification of license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
     elsif($metadata->{License} !~ m/^(PD|CC0 1.0|CC BY(-NC)?(-SA)? (2.5|3.0|4.0)|LGPL-LR|C-UDA 1.0)$/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Unsupported license in README: '$metadata->{License}'\n");
+        push(@{$errors}, "[L0 Repo readme-license] $folder README: Unsupported license in README: '$metadata->{License}'\n");
         $$n_errors++;
     }
     if($metadata->{'Includes text'} !~ m/^(yes|no)$/i)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
+        push(@{$errors}, "[L0 Repo readme-includes-text] $folder README: Metadata 'Includes text' must be 'yes' or 'no' but the current value is: '$metadata->{'Includes text'}'\n");
         $$n_errors++;
     }
     foreach my $annotation (qw(Lemmas UPOS XPOS Features Relations))
@@ -1228,77 +1408,78 @@ sub check_metadata
         if($metadata->{$annotation} !~ m/\w/)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: Missing information on availability and source of $annotation\n");
+            push(@{$errors}, "[L0 Repo readme-annot-source] $folder README: Missing information on availability and source of $annotation\n");
             $$n_errors++;
         }
         elsif($metadata->{$annotation} !~ m/^(manual native|converted from manual|converted with corrections|automatic|automatic with corrections|not available)$/)
         {
             $ok = 0;
-            push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
+            push(@{$errors}, "[L0 Repo readme-annot-source] $folder README: Unknown value of metadata $annotation: '$metadata->{$annotation}'\n");
             $$n_errors++;
         }
     }
     if($metadata->{Contributing} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing metadata Contributing (where and how to contribute)\n");
+        push(@{$errors}, "[L0 Repo readme-contributing] $folder README: Missing metadata Contributing (where and how to contribute)\n");
         $$n_errors++;
     }
     elsif($metadata->{Contributing} !~ m/^(here|here source|elsewhere|to be adopted)$/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
+        push(@{$errors}, "[L0 Repo readme-contributing] $folder README: Unknown value of metadata Contributing: '$metadata->{Contributing}'\n");
         $$n_errors++;
     }
     if($metadata->{Contributors} !~ m/\w/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
+        push(@{$errors}, "[L0 Repo readme-contributors] $folder README: Missing list of contributors: '$metadata->{Contributors}'\n");
         $$n_errors++;
     }
     if($metadata->{Contact} !~ m/\@/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
+        push(@{$errors}, "[L0 Repo readme-contributors] $folder README: Missing contact e-mail: '$metadata->{Contact}'\n");
         $$n_errors++;
     }
     # Check other sections of the README file.
     if(!defined($metadata->{sections}{summary}))
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary not found.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary not found.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})<40)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too short.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary is too short.\n");
         $$n_errors++;
     }
     elsif(length($metadata->{sections}{summary})>500)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary is too long.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary is too long.\n");
         $$n_errors++;
     }
     elsif($metadata->{sections}{summary} =~ m/see \[release checklist\]/)
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
+        push(@{$errors}, "[L0 Repo readme-summary] $folder README: Section Summary still contains the templatic text. Please put a real summary there.\n");
         $$n_errors++;
     }
     if(!$metadata->{changelog})
     {
         $ok = 0;
-        push(@{$errors}, "[L0 Repo readme] $folder README: README does not contain 'ChangeLog'\n");
+        push(@{$errors}, "[L0 Repo readme-changelog] $folder README: README does not contain 'ChangeLog'\n");
         $$n_errors++;
     }
     # Add a link to the guidelines for README files. Add it to the last error message.
     # Do not make it a separate error message (just in case we get rid of $n_errors and use scalar(@errors) in the future).
     unless($ok)
     {
-        $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#treebank-metadata for guidelines on machine-readable metadata.\n";
-        $errors->[-1] .= "See http://universaldependencies.org/release_checklist.html#the-readme-file for general guidelines on README files.\n";
+        $errors->[-1] .= "See https://universaldependencies.org/contributing/repository_files.html#treebank-metadata for guidelines on machine-readable metadata.\n";
+        $errors->[-1] .= "See https://universaldependencies.org/contributing/repository_files.html#the-readme-file for general guidelines on README files.\n";
+        $errors->[-1] .= "See https://universaldependencies.org/contributing/licensing.html for treebank licensing guidelines.\n";
     }
     return $ok;
 }

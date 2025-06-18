@@ -13,6 +13,17 @@ use Getopt::Long;
 use File::Which; # find executable files in $PATH
 use udlib;
 
+sub usage
+{
+    print STDERR ("Usage:   perl -I ./tools ./tools/evaluate_treebank.pl <ud-treebank-name>\n");
+    print STDERR ("Example: perl -I ./tools ./tools/evaluate_treebank.pl UD_Czech-PDTC\n");
+    # We require that the relevant scripts are at specific locations because we
+    # will get their GitHub versions and include them in the evaluation log.
+    print STDERR ("Before running, make sure the current folder is one level above the clones of UD GitHub repositories.\n");
+    print STDERR ("Specifically, the subfolders should include the evaluated treebank(s), as well as the tools folder,\n");
+    print STDERR ("from which this script is invoked and which also holds the validator.\n");
+}
+
 my $verbose = 0;
 my $forcemaster = 0;
 GetOptions
@@ -21,11 +32,19 @@ GetOptions
     'forcemaster!' => \$forcemaster
 );
 
-# Path to the local copy of the UD repository (e.g., UD_Czech).
+# Verify that the script is invoked via a relative path from the superordinate folder.
+if($0 !~ m:^\.[\\/]tools[\\/]evaluate_treebank\.pl$:)
+{
+    usage();
+    print STDERR ("\$0 == $0\n");
+    die("The script must be invoked using relative path (starting with a dot) from the superordinate folder");
+}
+# Path to the local copy of the UD repository (e.g., UD_Czech-PDTC).
 my $folder = $ARGV[0];
 if(!defined($folder))
 {
-    die("Usage: $0 path-to-ud-folder");
+    usage();
+    die("Missing UD treebank name");
 }
 $folder =~ s:/$::;
 $folder =~ s:^\./::;
@@ -57,6 +76,10 @@ if($verbose)
 }
 my $record = udlib::get_ud_files_and_codes($folder);
 my $metadata = udlib::read_readme($folder);
+print STDERR ("CoNLL-U data file regular expression = '$record->{file_re}'\n");
+print STDERR ("Language-treebank code (from CoNLL-U file name) = '$record->{ltcode}'\n");
+print STDERR ("Language code (from CoNLL-U file name) = '$record->{lcode}'\n");
+print STDERR ("Found the following data files: ".join(', ', @{$record->{files}})."\n");
 my $n = 0;
 my $ntrain = 0;
 my $ndev = 0;
@@ -107,12 +130,24 @@ foreach my $file (@{$record->{files}})
 my %score;
 #------------------------------------------------------------------------------
 # Size. Project size to the interval <0; 1>.
+# Apply a size cap: All treebank reaching or exceeding it will be treated as
+# treebanks of the same, maximal size. (An alternative would be to identify the
+# largest treebank within the language or within all of UD and normalize other
+# sizes with respect to it. But then the scores of all treebanks will change if
+# the maximum changes.)
+my $sizecap = 1000000;
 # Do not modify the real number of words, $n. It will be needed in other metrics, too.
 my $ntrunc = $n;
-$ntrunc = 1000000 if($ntrunc > 1000000);
+$ntrunc = $sizecap if($ntrunc > $sizecap);
 $ntrunc = 1 if($ntrunc <= 0);
+# We will apply a scale that is in principle logarithmic, but it is further
+# skewed and capped so that ridiculously small treebanks are penalized.
+# A treebank of 1000 words or less will get $lognn=0 (while log(1000)=6.9).
+# A treebank of 10000 words gets $lognn=4.6 (while log(10000)=9.2).
+# A treebank of 100,000 words gets $lognn=9.2 (while log(100000)=11.5).
+# And a treebank of 1,000,000 words (the size cap) gets $lognn=log($sizecap)=13.8.
 my $lognn = log(($ntrunc/1000)**2); $lognn = 0 if($lognn < 0);
-$score{size} = $lognn / log(1000000);
+$score{size} = $lognn / log($sizecap);
 if($verbose)
 {
     print STDERR ("Size: counted $ntrunc of $n words (nodes).\n");
