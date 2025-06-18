@@ -3397,109 +3397,80 @@ def validate(inp, out, args, known_sent_ids):
 
 def load_upos_set(filename):
     """
-    Loads the list of permitted UPOS tags, converts it to a set, saves the set
-    in the global data, and returns it, too.
+    Loads the list of permitted UPOS tags, converts it to a set and saves the
+    set in the global data.
     """
     global data
-    data.upos = set()
     with io.open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            data.upos.add(line)
-    return data.upos
+        contents = json.load(f)
+    upos_list = contents['upos']
+    data.upos = set(upos_list)
 
 
 
-def load_feat_set(filename_langspec, lcode):
+def load_feat_set(filename):
     """
-    Loads the list of permitted feature-value pairs and returns it as a set.
+    Loads the list of permitted feature-value pairs and saves it in the global
+    data.
     """
     global data
-    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+    with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
         all_features_0 = json.load(f)
     data.feats = all_features_0['features']
-    featset = data.get_feats_for_language(lcode)
-    # Prepare a global message about permitted features and values. We will add
-    # it to the first error message about an unknown feature. Note that this
-    # global information pertains to the default validation language and it
-    # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_feats = data.explain_feats(lcode)
-    return featset
+    ###!!! This should be redesigned.
+    data.warn_on_undoc_feats = data.explain_feats(args.lang)
 
 
 
-def load_deprel_set(filename_langspec, lcode):
+def load_deprel_set(filename):
     """
-    Loads the list of permitted relation types and returns it as a set.
+    Loads the list of permitted relation types and saves it in the global data.
     """
     global data
-    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+    with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
         all_deprels_0 = json.load(f)
     data.deprel = all_deprels_0['deprels']
-    deprelset = data.get_deprel_for_language(lcode)
-    # Prepare a global message about permitted relation labels. We will add
-    # it to the first error message about an unknown relation. Note that this
-    # global information pertains to the default validation language and it
-    # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_deps = data.explain_deprel(lcode)
-    return deprelset
+    ###!!! This should be redesigned.
+    data.warn_on_undoc_deps = data.explain_deprel(args.lang)
 
 
 
-def load_edeprel_set(filename_langspec, lcode):
+def load_edeprel_set(filename):
     """
-    Loads the list of permitted enhanced relation types (case markers) and returns it as a set.
+    Loads the list of permitted enhanced relation types (case markers) and
+    saves it in the global data.
     """
     global data
-    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+    with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
         all_edeprels_0 = json.load(f)
     data.edeprel = all_edeprels_0['edeprels']
-    edeprelset = data.get_edeprel_for_language(lcode)
-    # Prepare a global message about permitted relation labels. We will add
-    # it to the first error message about an unknown relation. Note that this
-    # global information pertains to the default validation language and it
-    # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_edeps = data.explain_edeprel(lcode)
-    return edeprelset
+    ###!!! This should be redesigned.
+    data.warn_on_undoc_edeps = data.explain_edeprel(args.lang)
 
 
 
-def load_auxcop_set(filename, lcode):
+def load_auxcop_set(filename):
     """
-    Loads the lists of auxiliaries and copulas.
+    Loads the lists of auxiliaries and copulas and saves them in the global
+    data.
     """
     global data
-    # Read the list of auxiliaries from the JSON file.
-    # This file must not be edited directly!
-    # Use the web interface at
-    # https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl instead!
     with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
         jsondata = json.load(f)
     data.auxcop = jsondata['auxiliaries']
-    auxdata, copdata = data.get_auxcop_for_language(args.lang)
-    # Prepare a global message about permitted auxiliary lemmas. We will add
-    # it to the first error message about an unknown auxiliary. Note that this
-    # global information pertains to the default validation language and it
-    # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_aux = data.explain_aux(lcode)
-    # Prepare a global message about permitted copula lemmas. We will add
-    # it to the first error message about an unknown auxiliary. Note that this
-    # global information pertains to the default validation language and it
-    # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_cop = data.explain_cop(lcode)
-    return auxdata, copdata
+    ###!!! This should be redesigned.
+    data.warn_on_undoc_aux = data.explain_aux(args.lang)
+    data.warn_on_undoc_cop = data.explain_cop(args.lang)
 
     
 
-def load_tospace_set(filename_langspec, lcode):
+def load_tospace_set(filename):
     """
     Loads regular expressions describing permitted tokens with spaces, compiles
-    them and returns them as a set.
+    them and saves them in the global data.
     """
     global data
-    with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
+    with open(os.path.join(THISDIR, 'data', filename), 'r', encoding='utf-8') as f:
         all_tospaces_0 = json.load(f)
     # There is one or more regular expressions for each language in the file.
     # If there are multiple expressions, combine them in one and compile it.
@@ -3508,11 +3479,8 @@ def load_tospace_set(filename_langspec, lcode):
         combination = '('+'|'.join(sorted(list(all_tospaces_0['expressions'][l])))+')'
         compilation = re.compile(combination)
         data.tospace[l] = (combination, compilation)
-    # Prepare a global message about permitted features and values. We will add
-    # it to the first error message about an unknown token with space. Note that
-    # this global information pertains to the default validation language and it
-    # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_tospaces = data.explain_tospace(lcode)
+    ###!!! This should be redesigned.
+    data.warn_on_undoc_tospaces = data.explain_tospace(args.lang)
 
 
 
@@ -3603,12 +3571,12 @@ if __name__=="__main__":
     if args.level < 4:
         args.lang = 'ud'
 
-    load_upos_set('cpos.ud')
-    load_feat_set('feats.json', args.lang)
-    load_deprel_set('deprels.json', args.lang)
-    load_edeprel_set('edeprels.json', args.lang)
-    load_tospace_set('tospace.json', args.lang)
-    load_auxcop_set('data.json', args.lang)
+    load_upos_set('upos.json')
+    load_feat_set('feats.json')
+    load_deprel_set('deprels.json')
+    load_edeprel_set('edeprels.json')
+    load_tospace_set('tospace.json')
+    load_auxcop_set('data.json')
 
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
