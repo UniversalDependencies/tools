@@ -24,9 +24,6 @@ THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 COLCOUNT=10
 ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
-TOKENSWSPACE=MISC+1 # one extra constant
-AUX=MISC+2 # another extra constant
-COP=MISC+3 # another extra constant
 
 
 
@@ -138,13 +135,20 @@ class Data:
         self.feats = {}
         # Dependency relation types in the DEPREL column.
         # Key: language code; value: deprel data from deprels.json.
+        # Cached processed version: key: language code; value: set of deprels.
         self.deprel = {}
+        self.cached_deprel_for_language = {}
         # Enhanced dependency relation types in the DEPS column.
         # Key: language code; value: edeprel data from edeprels.json.
+        # Cached processed version: key: language code; value: set of edeprels.
         self.edeprel = {}
+        self.cached_edeprel_for_language = {}
         # Auxiliary (and copula) lemmas in the LEMMA column.
         # Key: language code; value: auxiliary/copula data from data.json.
+        # Cached processed versions: key: language code; value: list of lemmas.
         self.auxcop = {}
+        self.cached_aux_for_language = {}
+        self.cached_cop_for_language = {}
         # Tokens with spaces in the FORM and LEMMA columns.
         # Key: language code; value: data from tospace.json.
         self.tospace = {}
@@ -177,8 +181,12 @@ class Data:
     def get_deprel_for_language(self, lcode):
         """
         Searches the previously loaded database of dependency relation labels.
-        Returns the set of permitted deprels for a given language code.
+        Returns the set of permitted deprels for a given language code. Also
+        saves the result in self so that next time it can be fetched quickly
+        (once we loaded the data, we do not expect them to change).
         """
+        if lcode in self.cached_deprel_for_language:
+            return self.cached_deprel_for_language[lcode]
         deprelset = set()
         # If lcode is 'ud', we should permit all universal dependency relations,
         # regardless of language-specific documentation.
@@ -193,15 +201,20 @@ class Data:
             for r in self.deprel[lcode]:
                 if self.deprel[lcode][r]['permitted'] > 0:
                     deprelset.add(r)
+        self.cached_deprel_for_language[lcode] = deprelset
         return deprelset
 
-    def get_edeprel_for_language(self, lcode, basic_deprels):
+    def get_edeprel_for_language(self, lcode):
         """
         Searches the previously loaded database of enhanced case markers.
-        Returns the set of permitted edeprels for a given language code.
+        Returns the set of permitted edeprels for a given language code. Also
+        saves the result in self so that next time it can be fetched quickly
+        (once we loaded the data, we do not expect them to change).
         """
-        ###!!! Why do we need to take the set of basic deprels as parameter?
-        edeprelset = basic_deprels|{'ref'}
+        if lcode in self.cached_edeprel_for_language:
+            return self.cached_edeprel_for_language[lcode]
+        basic_deprels = self.get_deprel_for_language(lcode)
+        edeprelset = basic_deprels | {'ref'}
         for bdeprel in basic_deprels:
             if re.match(r"^[nc]subj(:|$)", bdeprel):
                 edeprelset.add(bdeprel+':xsubj')
@@ -211,13 +224,18 @@ class Data:
                     for bdeprel in basic_deprels:
                         if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
                             edeprelset.add(bdeprel+':'+c)
+        self.cached_edeprel_for_language[lcode] = edeprelset
         return edeprelset
 
     def get_auxcop_for_language(self, lcode):
         """
         Searches the previously loaded database of auxiliary/copula lemmas.
-        Returns the AUX and COP lists for a given language code.
+        Returns the AUX and COP lists for a given language code. Also saves
+        the result in self so that next time it can be fetched quickly (once
+        we loaded the data, we do not expect them to change).
         """
+        if lcode in self.cached_aux_for_language and lcode in self.cached_cop_for_language:
+            return self.cached_aux_for_language[lcode], self.cached_cop_for_language[lcode]
         # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
         # If any of the functions of the lemma is cop.*, it counts as a copula.
         auxlist = []
@@ -239,7 +257,31 @@ class Data:
             coplist = [x for x in lemmalist
                        if len([y for y in self.auxcop[lcode][x]['functions']
                         if re.match(r"^cop\.", y['function'])]) > 0]
+        self.cached_aux_for_language[lcode] = auxlist
+        self.cached_cop_for_language[lcode] = coplist
         return auxlist, coplist
+
+    def get_aux_for_language(self, lcode):
+        """
+        An entry point for get_auxcop_for_language() that returns only the aux
+        list. It either takes the cached list (if available), or calls
+        get_auxcop_for_language().
+        """
+        if lcode in self.cached_aux_for_language:
+            return self.cached_aux_for_language[lcode]
+        auxlist, coplist = self.get_auxcop_for_language(lcode)
+        return auxlist
+
+    def get_cop_for_language(self, lcode):
+        """
+        An entry point for get_auxcop_for_language() that returns only the cop
+        list. It either takes the cached list (if available), or calls
+        get_auxcop_for_language().
+        """
+        if lcode in self.cached_cop_for_language:
+            return self.cached_cop_for_language[lcode]
+        auxlist, coplist = self.get_auxcop_for_language(lcode)
+        return coplist
 
     def get_tospace_for_language(self, lcode):
         """
@@ -323,16 +365,14 @@ class Data:
             msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
             msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
         return msg
 
-    def explain_edeprel(self, lcode, basic_deprels):
+    def explain_edeprel(self, lcode):
         """
         Returns explanation message for edeprels of a particular language.
         To be called after language-specific edeprels have been loaded.
         """
-        edeprelset = self.get_edeprel_for_language(lcode, basic_deprels)
+        edeprelset = self.get_edeprel_for_language(lcode)
         # Prepare a global message about permitted relation labels. We will add
         # it to the first error message about an unknown relation. Note that this
         # global information pertains to the default validation language and it
@@ -351,8 +391,6 @@ class Data:
             msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
             msg += ', '.join(sorted_case_markers) + "\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
         return msg
 
     def explain_aux(self, lcode):
@@ -360,7 +398,7 @@ class Data:
         Returns explanation message for auxiliaries of a particular language.
         To be called after language-specific auxiliaries have been loaded.
         """
-        auxdata, copdata = self.get_auxcop_for_language(lcode)
+        auxdata = self.get_aux_for_language(lcode)
         # Prepare a global message about permitted auxiliary lemmas. We will add
         # it to the first error message about an unknown auxiliary. Note that this
         # global information pertains to the default validation language and it
@@ -374,8 +412,6 @@ class Data:
             msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{args.lang}]:\n"
             msg += ', '.join(auxdata) + "\n"
             msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
         return msg
     
     def explain_cop(self, lcode):
@@ -383,7 +419,7 @@ class Data:
         Returns explanation message for copulas of a particular language.
         To be called after language-specific copulas have been loaded.
         """
-        auxdata, copdata = self.get_auxcop_for_language(lcode)
+        copdata = self.get_cop_for_language(lcode)
         # Prepare a global message about permitted copula lemmas. We will add
         # it to the first error message about an unknown copula. Note that this
         # global information pertains to the default validation language and it
@@ -397,8 +433,6 @@ class Data:
             msg += f"The following {len(copdata)} copulas are currently documented in language [{args.lang}]:\n"
             msg += ', '.join(copdata) + "\n"
             msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
-            # Save the message in a global variable.
-            # We will add it to the first error message about an unknown feature in the data.
         return msg
     
     def explain_tospace(self, lcode):
@@ -535,10 +569,10 @@ def lemmatl(cols):
 
 
 sentid_re=re.compile(r"^# sent_id\s*=\s*(\S+)$")
-def trees(inp, tagsets, args):
+def trees(inp, args):
     """
     `inp` a file-like object yielding lines as unicode
-    `tagsets` and `args` are needed for choosing the tests
+    `args` are needed for choosing the tests
 
     This function does elementary checking of the input and yields one
     sentence at a time from the input stream.
@@ -617,7 +651,7 @@ def trees(inp, tagsets, args):
                 lines.append(cols)
                 validate_cols_level1(cols)
                 if args.level > 1:
-                    validate_cols(cols, tagsets, args)
+                    validate_cols(cols, args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
@@ -1041,7 +1075,7 @@ def validate_text_meta(comments, tree, args):
 
 
 
-def validate_cols(cols, tagsets, args):
+def validate_cols(cols, args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
     called from trees() if level>1.
@@ -1054,7 +1088,7 @@ def validate_cols(cols, tagsets, args):
         validate_token_empty_vals(cols)
     # else do nothing; we have already reported wrong ID format at level 1
     if is_word(cols):
-        validate_deprels(cols, tagsets, args) # level 2 and up
+        validate_deprels(cols, args) # level 2 and up
     elif is_empty_node(cols):
         validate_empty_node_empty_vals(cols) # level 2
     if args.level > 3:
@@ -1356,7 +1390,7 @@ def validate_empty_node_empty_vals(cols):
 
 
 
-def validate_deprels(cols, tagsets, args):
+def validate_deprels(cols, args):
     global data
     if DEPREL >= len(cols):
         return # this has been already reported in trees()
@@ -1395,7 +1429,8 @@ def validate_deprels(cols, tagsets, args):
         warn(testmessage, testclass, testlevel, testid)
     if DEPS >= len(cols):
         return # this has been already reported in trees()
-    if tagsets[DEPS] is not None and cols[DEPS] != '_':
+    edeprelset = data.get_edeprel_for_language(args.lang)
+    if edeprelset is not None and cols[DEPS] != '_':
         for head_deprel in cols[DEPS].split('|'):
             try:
                 head,deprel=head_deprel.split(':', 1)
@@ -1407,7 +1442,7 @@ def validate_deprels(cols, tagsets, args):
                 continue
             if args.level < 4:
                 deprel = lspec2ud(deprel)
-            if deprel not in tagsets[DEPS]:
+            if deprel not in edeprelset:
                 testclass = 'Enhanced'
                 testid = 'unknown-edeprel'
                 testmessage = f"Unknown enhanced relation type '{deprel}' in '{head_deprel}'"
@@ -2600,7 +2635,7 @@ def validate_whitespace(cols, args):
 
 
 
-def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
+def validate_auxiliary_verbs(cols, children, nodes, line, lang):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
@@ -2616,7 +2651,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
         altlang = get_alt_language(cols[MISC])
         if altlang:
             lang = altlang
-            auxlist, coplist = data.get_auxcop_for_language(altlang)
+        auxlist = data.get_aux_for_language(lang)
         auxdict = {}
         if auxlist != []:
             auxdict = {lang: auxlist}
@@ -2644,7 +2679,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang, auxlist):
 
 
 
-def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
+def validate_copula_lemmas(cols, children, nodes, line, lang):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
@@ -2660,34 +2695,10 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
         altlang = get_alt_language(cols[MISC])
         if altlang:
             lang = altlang
-            auxlist, coplist = data.get_auxcop_for_language(altlang)
+        coplist = data.get_cop_for_language(lang)
         copdict = {}
         if coplist != []:
             copdict = {lang: coplist}
-            # In Slavic languages, the iteratives are still variants of "to be", although they have a different lemma (derived from the main one).
-            # In addition, Polish and Russian also have pronominal copulas ("to" = "this/that").
-            # 'orv': ['быти', 'не быти'] See above (AUX verbs) for the comment on affirmative vs. negative lemma.
-            # Lauma says that all four should be copulas despite the fact that
-            # kļūt and tapt correspond to English "to become", which is not
-            # copula in UD. See also the discussion in
-            # https://github.com/UniversalDependencies/docs/issues/622
-            # 'lv':  ['būt', 'kļūt', 'tikt', 'tapt'],
-            # Two writing systems are used in Sanskrit treebanks (Devanagari and Latin) and we must list both spellings.
-            # Jack: [sms] iʹlla = to not be
-            # Jack says about Erzya:
-            # The copula is represented by the independent copulas ульнемс (preterit) and улемс (non-past),
-            # and the dependent morphology -оль (both preterit and non-past).
-            # The neg арась occurs in locative/existential negation, and its
-            # positive counterpart is realized in the three copulas above.
-            # The neg аш in [mdf] is locative/existential negation.
-            # Niko says about Komi:
-            # Past tense copula is вӧвны, and in the future it is лоны, and both have a few frequentative forms.
-            # 'быть' is Russian copula and it is occasionally used in spoken Komi due to code switching.
-            # Komi Permyak: овлыны = to be (habitual) [Jack Rueter]
-            # Sino-Tibetan languages.
-            # See https://github.com/UniversalDependencies/docs/issues/653 for a discussion about Chinese copulas.
-            # 是(shi4) and 为/為(wei2) should be interchangeable.
-            # Sam: In Cantonese, 為 is used only in the high-standard variety, not in colloquial speech.
         if lang == 'shopen':
             # 'desu' is romanized Japanese.
             lspeccops = ['desu']
@@ -2712,7 +2723,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang, coplist):
 
 
 
-def validate_lspec_annotation(tree, lang, tagsets):
+def validate_lspec_annotation(tree, lang):
     """
     Checks language-specific consequences of the annotation guidelines.
     """
@@ -2756,8 +2767,8 @@ def validate_lspec_annotation(tree, lang, tagsets):
             continue
         myline = lines.get(cols[ID], state.sentence_line)
         mychildren = children.get(cols[ID], [])
-        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang, tagsets[AUX])
-        validate_copula_lemmas(cols, mychildren, nodes, myline, lang, tagsets[COP])
+        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
+        validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
 
 
 
@@ -3343,8 +3354,8 @@ def validate_misc_entity(comments, sentence):
 
 
 
-def validate(inp, out, args, tagsets, known_sent_ids):
-    for comments, sentence in trees(inp, tagsets, args):
+def validate(inp, out, args, known_sent_ids):
+    for comments, sentence in trees(inp, args):
         # The individual lines were validated already in trees().
         # What follows is tests that need to see the whole tree.
         idseqok = validate_ID_sequence(sentence) # level 1
@@ -3370,7 +3381,7 @@ def validate(inp, out, args, tagsets, known_sent_ids):
                 if args.level > 2:
                     validate_annotation(tree) # level 3
                     if args.level > 4:
-                        validate_lspec_annotation(sentence, args.lang, tagsets) # level 5
+                        validate_lspec_annotation(sentence, args.lang) # level 5
             else:
                 testlevel = 2
                 testclass = 'Format'
@@ -3437,7 +3448,7 @@ def load_deprel_set(filename_langspec, lcode):
 
 
 
-def load_edeprel_set(filename_langspec, lcode, basic_deprels):
+def load_edeprel_set(filename_langspec, lcode):
     """
     Loads the list of permitted enhanced relation types (case markers) and returns it as a set.
     """
@@ -3445,12 +3456,12 @@ def load_edeprel_set(filename_langspec, lcode, basic_deprels):
     with open(os.path.join(THISDIR, 'data', filename_langspec), 'r', encoding='utf-8') as f:
         all_edeprels_0 = json.load(f)
     data.edeprel = all_edeprels_0['edeprels']
-    edeprelset = data.get_edeprel_for_language(lcode, basic_deprels)
+    edeprelset = data.get_edeprel_for_language(lcode)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
-    data.warn_on_undoc_edeps = data.explain_edeprel(lcode, basic_deprels)
+    data.warn_on_undoc_edeps = data.explain_edeprel(lcode)
     return edeprelset
 
 
@@ -3592,33 +3603,22 @@ if __name__=="__main__":
     if args.level < 4:
         args.lang = 'ud'
 
-    # Sets of tags for every column that needs to be checked, plus (in v2) other sets, like the allowed tokens with space
-    tagsets = {XPOS:None, UPOS:None, FEATS:None, DEPREL:None, DEPS:None, TOKENSWSPACE:None, AUX:None}
-
     load_upos_set('cpos.ud')
     load_feat_set('feats.json', args.lang)
-    ###!!! Before removing tagsets[DEPREL] from the following line, two things
-    ###!!! must be rewritten:
-        ###!!! 1. Later loading of edeprels must not depend on tagsets[DEPREL] as a parameter.
-        ###!!! 2. Both sets must be cached in Data because get_deprel_for_language() is non-trivial and is going to be called a zillion times.
-    tagsets[DEPREL] = load_deprel_set('deprels.json', args.lang)
-    # All relations available in DEPREL are also allowed in DEPS.
-    # In addition, there might be relations that are only allowed in DEPS.
-    # One of them, "ref", is universal and we currently mention it directly
-    # in the code.
-    tagsets[DEPS] = load_edeprel_set('edeprels.json', args.lang, tagsets[DEPREL])
-    tagsets[TOKENSWSPACE] = load_tospace_set('tospace.json', args.lang)
-    tagsets[AUX], tagsets[COP] = load_auxcop_set('data.json', args.lang)
+    load_deprel_set('deprels.json', args.lang)
+    load_edeprel_set('edeprels.json', args.lang)
+    load_tospace_set('tospace.json', args.lang)
+    load_auxcop_set('data.json', args.lang)
 
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
     try:
-        known_sent_ids=set()
-        open_files=[]
-        if args.input==[]:
+        known_sent_ids = set()
+        open_files = []
+        if args.input == []:
             args.input.append('-')
         for fname in args.input:
-            if fname=='-':
+            if fname == '-':
                 # Set PYTHONIOENCODING=utf-8 before starting Python.
                 # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
                 # Otherwise ANSI will be read in Windows and
@@ -3627,7 +3627,7 @@ if __name__=="__main__":
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for state.current_file_name, inp in zip(args.input, open_files):
-            validate(inp, out, args, tagsets, known_sent_ids)
+            validate(inp, out, args, known_sent_ids)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
         if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
