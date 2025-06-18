@@ -242,23 +242,13 @@ class Data:
         # If any of the functions of the lemma is cop.*, it counts as a copula.
         auxlist = []
         coplist = []
-        if lcode == 'shopen':
-            for lcode1 in self.auxcop.keys():
-                lemmalist = self.auxcop[lcode1].keys()
-                auxlist = auxlist + [x for x in lemmalist
-                                     if len([y for y in self.auxcop[lcode1][x]['functions']
-                                        if y['function'] != 'cop.PRON']) > 0]
-                coplist = coplist + [x for x in lemmalist
-                                     if len([y for y in self.auxcop[lcode1][x]['functions']
-                                        if re.match(r"^cop\.", y['function'])]) > 0]
-        else:
-            lemmalist = self.auxcop.get(lcode, {}).keys()
-            auxlist = [x for x in lemmalist
-                       if len([y for y in self.auxcop[lcode][x]['functions']
-                        if y['function'] != 'cop.PRON']) > 0]
-            coplist = [x for x in lemmalist
-                       if len([y for y in self.auxcop[lcode][x]['functions']
-                        if re.match(r"^cop\.", y['function'])]) > 0]
+        lemmalist = self.auxcop.get(lcode, {}).keys()
+        auxlist = [x for x in lemmalist
+                   if len([y for y in self.auxcop[lcode][x]['functions']
+                    if y['function'] != 'cop.PRON']) > 0]
+        coplist = [x for x in lemmalist
+                   if len([y for y in self.auxcop[lcode][x]['functions']
+                    if re.match(r"^cop\.", y['function'])]) > 0]
         self.cached_aux_for_language[lcode] = auxlist
         self.cached_cop_for_language[lcode] = coplist
         return auxlist, coplist
@@ -987,7 +977,7 @@ def validate_sent_id(comments, known_ids, lcode):
             testid = 'non-unique-sent-id'
             testmessage = f"Non-unique sent_id attribute '{sid}'."
             warn(testmessage, testclass, testlevel, testid)
-        if sid.count("/")>1 or (sid.count("/")==1 and lcode!="ud" and lcode!="shopen"):
+        if sid.count("/")>1 or (sid.count("/")==1 and lcode!="ud"):
             testid = 'slash-in-sent-id'
             testmessage = f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
             warn(testmessage, testclass, testlevel, testid)
@@ -2705,14 +2695,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         auxdict = {}
         if auxlist != []:
             auxdict = {lang: auxlist}
-        if lang == 'shopen':
-            # 'desu', 'kudasai', 'yo' and 'sa' are romanized Japanese.
-            lspecauxs = ['desu', 'kudasai', 'yo', 'sa']
-            for ilang in auxdict:
-                ilspecauxs = auxdict[ilang]
-                lspecauxs = lspecauxs + ilspecauxs
-        else:
-            lspecauxs = auxdict.get(lang, None)
+        lspecauxs = auxdict.get(lang, None)
         if not lspecauxs or not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
@@ -2749,14 +2732,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
         copdict = {}
         if coplist != []:
             copdict = {lang: coplist}
-        if lang == 'shopen':
-            # 'desu' is romanized Japanese.
-            lspeccops = ['desu']
-            for ilang in copdict:
-                ilspeccops = copdict[ilang]
-                lspeccops = lspeccops + ilspeccops
-        else:
-            lspeccops = copdict.get(lang, None)
+        lspeccops = copdict.get(lang, None)
         if not lspeccops or not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
