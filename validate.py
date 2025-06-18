@@ -133,6 +133,10 @@ class Data:
         # Morphological features in the FEATS column.
         # Key: language code; value: feature-value-UPOS data from feats.json.
         self.feats = {}
+        # Universal dependency relation types (without subtypes) in the DEPREL
+        # column. For consistency, they are also read from a file. but these
+        # labels do not change, so they could be even hard-coded here.
+        self.udeprel = set()
         # Dependency relation types in the DEPREL column.
         # Key: language code; value: deprel data from deprels.json.
         # Cached processed version: key: language code; value: set of deprels.
@@ -192,13 +196,8 @@ class Data:
         deprelset = set()
         # If lcode is 'ud', we should permit all universal dependency relations,
         # regardless of language-specific documentation.
-        ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
         if lcode == 'ud':
-            deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative',
-                             'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop',
-                             'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case',
-                             'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan',
-                             'goeswith', 'reparandum', 'punct', 'root', 'dep'])
+            deprelset = self.udeprel
         elif lcode in self.deprel:
             for r in self.deprel[lcode]:
                 if self.deprel[lcode][r]['permitted'] > 0:
@@ -477,6 +476,10 @@ class Data:
         with open(os.path.join(THISDIR, 'data', 'feats.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.feats = contents['features']
+        with open(os.path.join(THISDIR, 'data', 'udeprels.json'), 'r', encoding='utf-8') as f:
+            contents = json.load(f)
+        udeprel_list = contents['udeprels']
+        self.udeprel = set(udeprel_list)
         with open(os.path.join(THISDIR, 'data', 'deprels.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.deprel = contents['deprels']
