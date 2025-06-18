@@ -1763,6 +1763,20 @@ def validate_misc(tree):
 
 
 
+###!!! Just testing now: Can we switch to Udapi when building and searching the tree?
+
+import udapi.block.read.conllu
+#import read_tree_from_lines
+
+def build_tree_udapi(lines):
+    conllu_reader = udapi.block.read.conllu.Conllu()
+    root = conllu_reader.read_tree_from_lines(lines)
+    descendants = root.descendants
+    text = root.compute_text()
+    print(f"The tree has {len(descendants)} nodes: {text}")
+
+
+
 def build_tree(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
@@ -1778,6 +1792,7 @@ def build_tree(sentence):
       linenos ... array of line numbers in the file, corresponding to nodes
           (needed in error messages)
     """
+    #build_tree_udapi(["\t".join(x) for x in sentence]) ###!!! TESTING ONLY
     testlevel = 2
     testclass = 'Syntax'
     global state
