@@ -585,15 +585,10 @@ def shorten(string):
 def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
-def formtl(cols):
-    x = ''
-    l = len(cols)
-    if FORM < l:
-        x = cols[FORM]
-    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
-        misc = [x for x in cols[MISC].split('|') if x.startswith('Translit=')]
-        if len(misc) > 0:
-            x += ' ' + re.sub(r'^Translit=', '', misc[0])
+def formtl(node):
+    x = node.form
+    if node.misc['Translit'] != '':
+        x += ' ' + node.misc['Translit']
     return x
 
 def lemmatl(cols):
@@ -1991,8 +1986,7 @@ def get_graph_projection(node_id, graph, projection):
 
 
 
-###!!! Temporarily working with both trees (ad-hoc and Udapi). To converge to Udapi.
-def validate_upos_vs_deprel(node_id, tree, node_udapi):
+def validate_upos_vs_deprel(node, lineno):
     """
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
@@ -2000,34 +1994,27 @@ def validate_upos_vs_deprel(node_id, tree, node_udapi):
     """
     testlevel = 3
     testclass = 'Syntax'
-    cols = tree['nodes'][node_id]
     # Occasionally a word may be marked by the feature ExtPos as acting as
     # a part of speech different from its usual one (which is given in UPOS).
     # Typical examples are words that head fixed multiword expressions (the
     # whole expression acts like a word of that alien part of speech), but
     # ExtPos may be used also on single words whose external POS is altered.
-    upos = cols[UPOS]
-    feats = {}
-    if cols[FEATS] != '_':
-        for fv in cols[FEATS].split('|'):
-            fvlist = fv.split('=')
-            if len(fvlist) == 2:
-                feats[fvlist[0]] = fvlist[1]
+    upos = node.upos
     # Nodes with a fixed child may need ExtPos to signal the part of speech of
     # the whole fixed expression.
-    if node_udapi.feats['ExtPos']:
-        upos = node_udapi.feats['ExtPos']
+    if node.feats['ExtPos']:
+        upos = node.feats['ExtPos']
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(cols[DEPREL])
-    childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][node_id]])
+    deprel = node.udeprel
+    childrels = set([x.udeprel for x in node.children])
     # It is recommended that the head of a fixed expression always has ExtPos,
     # even if it does not need it to pass the tests in this function.
-    if 'fixed' in childrels and 'ExtPos' not in feats:
-        fixed_forms = [cols[FORM]] + [tree['nodes'][x][FORM] for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'fixed']
+    if 'fixed' in childrels and not node.feats['ExtPos']:
+        fixed_forms = node.form + [x.form for x in node.children if x.udeprel == 'fixed']
         testid = 'fixed-without-extpos'
         str_fixed_forms = ' '.join(fixed_forms)
         testmessage = f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
-        warn(testmessage, 'Warning', testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        warn(testmessage, 'Warning', testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -2039,16 +2026,16 @@ def validate_upos_vs_deprel(node_id, tree, node_udapi):
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
     # https://github.com/UniversalDependencies/docs/issues/596,
     # we concluded that the validator will tolerate them.
     if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", upos):
         testid = 'rel-upos-nummod'
-        testmessage = f"'nummod' should be 'NUM' but it is '{upos}'"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'nummod' should be 'NUM' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
@@ -2057,23 +2044,23 @@ def validate_upos_vs_deprel(node_id, tree, node_udapi):
     # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
-        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         testid = 'rel-upos-expl'
-        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         testid = 'rel-upos-aux'
-        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         testid = 'rel-upos-cop'
-        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
@@ -2081,32 +2068,32 @@ def validate_upos_vs_deprel(node_id, tree, node_udapi):
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
-        testmessage = f"'case' should not be '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'case' should not be '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
-        testmessage = f"'mark' should not be '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'mark' should not be '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
-        testmessage = f"'cc' should not be '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'cc' should not be '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     if deprel == 'punct' and upos != 'PUNCT':
         testid = 'rel-upos-punct'
-        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
-        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         testid = 'rel-upos-fixed'
-        testmessage = "'fixed' should not be used for proper nouns ('{formtl(cols)}')."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = "'fixed' should not be used for proper nouns ('{formtl(node)}')."
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
@@ -2169,7 +2156,7 @@ def validate_left_to_right_relations(node_id, tree):
 
 
 
-def validate_single_subject(node_id, tree):
+def validate_single_subject(node, lineno):
     """
     No predicate should have more than one subject.
     An xcomp dependent normally has no subject, but in some languages the
@@ -2198,29 +2185,28 @@ def validate_single_subject(node_id, tree):
 
     def is_inner_subject(node):
         """
-        Takes a node, i.e., tree['nodes'][x]. Tells whether the node's deprel is
+        Takes a node (udapi.core.node.Node). Tells whether the node's deprel is
         nsubj or csubj without the :outer subtype. Alternatively, instead of the
         :outer subtype, the node could have Subject=Outer in MISC.
         """
-        if not re.search(r"subj", lspec2ud(node[DEPREL])):
+        if not re.search(r'subj', node.udeprel):
             return False
-        if re.match(r'^[nc]subj:outer$', node[DEPREL]):
+        if re.match(r'^[nc]subj:outer$', node.deprel):
             return False
-        if len([y for y in node[MISC].split('|') if y == 'Subject=Outer']) > 0:
+        if node.misc['Subject'] == 'Outer':
             return False
         return True
 
-    children_ids = sorted(tree['children'][node_id])
-    subject_ids = [x for x in children_ids if is_inner_subject(tree['nodes'][x])]
-    #subject_forms = [tree['nodes'][x][FORM] for x in subject_ids]
-    subject_forms = [formtl(tree['nodes'][x]) for x in subject_ids]
-    if len(subject_ids) > 1:
+    subjects = [x for x in node.children if is_inner_subject(x)]
+    subject_ids = [x.ord for x in subjects]
+    subject_forms = [formtl(x) for x in subjects]
+    if len(subjects) > 1:
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
         testmessage = f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'."
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno, explanation=explanation)
 
 
 
@@ -2591,13 +2577,14 @@ def validate_annotation(tree, tree_udapi):
     Checks universally valid consequences of the annotation guidelines.
     """
     udapi_nodes = tree_udapi.descendants
-    for node in tree['nodes']:
-        node_id = int(node[ID])
-        node_udapi = udapi_nodes[node_id-1]
-        validate_upos_vs_deprel(node_id, tree, node_udapi)
+    for node_old in tree['nodes']:
+        node_id = int(node_old[ID])
+        lineno = tree['linenos'][node_id]
+        node = udapi_nodes[node_id-1]
+        validate_upos_vs_deprel(node, lineno)
         validate_flat_foreign(node_id, tree)
         validate_left_to_right_relations(node_id, tree)
-        validate_single_subject(node_id, tree)
+        validate_single_subject(node, lineno)
         validate_orphan(node_id, tree)
         validate_functional_leaves(node_id, tree)
         validate_fixed_span(node_id, tree)
