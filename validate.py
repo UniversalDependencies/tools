@@ -1766,14 +1766,14 @@ def validate_misc(tree):
 ###!!! Just testing now: Can we switch to Udapi when building and searching the tree?
 
 # =============================================================================
-# import udapi.block.read.conllu
+import udapi.block.read.conllu
 # 
-# def build_tree_udapi(lines):
-#     conllu_reader = udapi.block.read.conllu.Conllu()
-#     root = conllu_reader.read_tree_from_lines(lines)
-#     descendants = root.descendants
-#     text = root.compute_text()
-#     print(f"The tree has {len(descendants)} nodes: {text}")
+def build_tree_udapi(lines):
+    conllu_reader = udapi.block.read.conllu.Conllu()
+    root = conllu_reader.read_tree_from_lines(lines)
+    descendants = root.descendants
+    text = root.compute_text()
+    print(f"The tree has {len(descendants)} nodes: {text}")
 # 
 # =============================================================================
 
