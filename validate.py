@@ -2010,7 +2010,7 @@ def validate_upos_vs_deprel(node, lineno):
     # It is recommended that the head of a fixed expression always has ExtPos,
     # even if it does not need it to pass the tests in this function.
     if 'fixed' in childrels and not node.feats['ExtPos']:
-        fixed_forms = node.form + [x.form for x in node.children if x.udeprel == 'fixed']
+        fixed_forms = [node.form] + [x.form for x in node.children if x.udeprel == 'fixed']
         testid = 'fixed-without-extpos'
         str_fixed_forms = ' '.join(fixed_forms)
         testmessage = f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
