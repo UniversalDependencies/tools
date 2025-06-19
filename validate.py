@@ -14,6 +14,9 @@ import traceback
 import regex as re
 import unicodedata
 import json
+# Once we know that the low-level CoNLL-U format is OK, we will be able to use
+# the Udapi library to access the data and perform the tests at higher levels.
+import udapi.block.read.conllu
 
 
 
@@ -504,6 +507,7 @@ class Data:
 # Global variables:
 state = State()
 data = Data()
+conllu_reader = udapi.block.read.conllu.Conllu()
 
 
 
@@ -1764,18 +1768,10 @@ def validate_misc(tree):
 
 
 ###!!! Just testing now: Can we switch to Udapi when building and searching the tree?
-
-# =============================================================================
-import udapi.block.read.conllu
-# 
 def build_tree_udapi(lines):
-    conllu_reader = udapi.block.read.conllu.Conllu()
     root = conllu_reader.read_tree_from_lines(lines)
-    descendants = root.descendants
-    text = root.compute_text()
-    print(f"The tree has {len(descendants)} nodes: {text}")
-# 
-# =============================================================================
+    return root
+
 
 
 def build_tree(sentence):
@@ -1793,7 +1789,6 @@ def build_tree(sentence):
       linenos ... array of line numbers in the file, corresponding to nodes
           (needed in error messages)
     """
-    #build_tree_udapi(["\t".join(x) for x in sentence]) ###!!! TESTING ONLY
     testlevel = 2
     testclass = 'Syntax'
     global state
@@ -1996,7 +1991,8 @@ def get_graph_projection(node_id, graph, projection):
 
 
 
-def validate_upos_vs_deprel(node_id, tree):
+###!!! Temporarily working with both trees (ad-hoc and Udapi). To converge to Udapi.
+def validate_upos_vs_deprel(node_id, tree, node_udapi):
     """
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
@@ -2019,8 +2015,8 @@ def validate_upos_vs_deprel(node_id, tree):
                 feats[fvlist[0]] = fvlist[1]
     # Nodes with a fixed child may need ExtPos to signal the part of speech of
     # the whole fixed expression.
-    if 'ExtPos' in feats:
-        upos = feats['ExtPos']
+    if node_udapi.feats['ExtPos']:
+        upos = node_udapi.feats['ExtPos']
     # This is a level 3 test, we will check only the universal part of the relation.
     deprel = lspec2ud(cols[DEPREL])
     childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][node_id]])
@@ -2589,13 +2585,16 @@ def validate_projective_punctuation(node_id, tree):
 
 
 
-def validate_annotation(tree):
+###!!! Temporarily working with both trees (ad-hoc and Udapi). To converge to Udapi.
+def validate_annotation(tree, tree_udapi):
     """
     Checks universally valid consequences of the annotation guidelines.
     """
+    udapi_nodes = tree_udapi.descendants
     for node in tree['nodes']:
         node_id = int(node[ID])
-        validate_upos_vs_deprel(node_id, tree)
+        node_udapi = udapi_nodes[node_id-1]
+        validate_upos_vs_deprel(node_id, tree, node_udapi)
         validate_flat_foreign(node_id, tree)
         validate_left_to_right_relations(node_id, tree)
         validate_single_subject(node_id, tree)
@@ -3419,12 +3418,14 @@ def validate(inp, out, args, known_sent_ids):
             if idseqok:
                 tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
                 egraph = build_egraph(sentence) # level 2 test: egraph is connected
+                tree_udapi = build_tree_udapi(["\t".join(x) for x in sentence])
             else:
                 tree = None
                 egraph = None
+                tree_udapi = None
             if tree:
                 if args.level > 2:
-                    validate_annotation(tree) # level 3
+                    validate_annotation(tree, tree_udapi) # level 3
                     if args.level > 4:
                         validate_lspec_annotation(sentence, args.lang) # level 5
             else:
