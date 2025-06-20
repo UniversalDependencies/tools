@@ -14,6 +14,9 @@ import traceback
 import regex as re
 import unicodedata
 import json
+# Once we know that the low-level CoNLL-U format is OK, we will be able to use
+# the Udapi library to access the data and perform the tests at higher levels.
+import udapi.block.read.conllu
 
 
 
@@ -133,6 +136,10 @@ class Data:
         # Morphological features in the FEATS column.
         # Key: language code; value: feature-value-UPOS data from feats.json.
         self.feats = {}
+        # Universal dependency relation types (without subtypes) in the DEPREL
+        # column. For consistency, they are also read from a file. but these
+        # labels do not change, so they could be even hard-coded here.
+        self.udeprel = set()
         # Dependency relation types in the DEPREL column.
         # Key: language code; value: deprel data from deprels.json.
         # Cached processed version: key: language code; value: set of deprels.
@@ -192,13 +199,8 @@ class Data:
         deprelset = set()
         # If lcode is 'ud', we should permit all universal dependency relations,
         # regardless of language-specific documentation.
-        ###!!! We should be able to take them from the documentation JSON files instead of listing them here.
         if lcode == 'ud':
-            deprelset = set(['nsubj', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative',
-                             'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop',
-                             'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case',
-                             'conj', 'cc', 'fixed', 'flat', 'compound', 'list', 'parataxis', 'orphan',
-                             'goeswith', 'reparandum', 'punct', 'root', 'dep'])
+            deprelset = self.udeprel
         elif lcode in self.deprel:
             for r in self.deprel[lcode]:
                 if self.deprel[lcode][r]['permitted'] > 0:
@@ -242,23 +244,13 @@ class Data:
         # If any of the functions of the lemma is cop.*, it counts as a copula.
         auxlist = []
         coplist = []
-        if lcode == 'shopen':
-            for lcode1 in self.auxcop.keys():
-                lemmalist = self.auxcop[lcode1].keys()
-                auxlist = auxlist + [x for x in lemmalist
-                                     if len([y for y in self.auxcop[lcode1][x]['functions']
-                                        if y['function'] != 'cop.PRON']) > 0]
-                coplist = coplist + [x for x in lemmalist
-                                     if len([y for y in self.auxcop[lcode1][x]['functions']
-                                        if re.match(r"^cop\.", y['function'])]) > 0]
-        else:
-            lemmalist = self.auxcop.get(lcode, {}).keys()
-            auxlist = [x for x in lemmalist
-                       if len([y for y in self.auxcop[lcode][x]['functions']
-                        if y['function'] != 'cop.PRON']) > 0]
-            coplist = [x for x in lemmalist
-                       if len([y for y in self.auxcop[lcode][x]['functions']
-                        if re.match(r"^cop\.", y['function'])]) > 0]
+        lemmalist = self.auxcop.get(lcode, {}).keys()
+        auxlist = [x for x in lemmalist
+                   if len([y for y in self.auxcop[lcode][x]['functions']
+                    if y['function'] != 'cop.PRON']) > 0]
+        coplist = [x for x in lemmalist
+                   if len([y for y in self.auxcop[lcode][x]['functions']
+                    if re.match(r"^cop\.", y['function'])]) > 0]
         self.cached_aux_for_language[lcode] = auxlist
         self.cached_cop_for_language[lcode] = coplist
         return auxlist, coplist
@@ -487,6 +479,10 @@ class Data:
         with open(os.path.join(THISDIR, 'data', 'feats.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.feats = contents['features']
+        with open(os.path.join(THISDIR, 'data', 'udeprels.json'), 'r', encoding='utf-8') as f:
+            contents = json.load(f)
+        udeprel_list = contents['udeprels']
+        self.udeprel = set(udeprel_list)
         with open(os.path.join(THISDIR, 'data', 'deprels.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.deprel = contents['deprels']
@@ -511,6 +507,7 @@ class Data:
 # Global variables:
 state = State()
 data = Data()
+conllu_reader = udapi.block.read.conllu.Conllu()
 
 
 
@@ -588,26 +585,16 @@ def shorten(string):
 def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
-def formtl(cols):
-    x = ''
-    l = len(cols)
-    if FORM < l:
-        x = cols[FORM]
-    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
-        misc = [x for x in cols[MISC].split('|') if x.startswith('Translit=')]
-        if len(misc) > 0:
-            x += ' ' + re.sub(r'^Translit=', '', misc[0])
+def formtl(node):
+    x = node.form
+    if node.misc['Translit'] != '':
+        x += ' ' + node.misc['Translit']
     return x
 
-def lemmatl(cols):
-    x = ''
-    l = len(cols)
-    if LEMMA < l:
-        x = cols[LEMMA]
-    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
-        misc = [x for x in cols[MISC].split('|') if x.startswith('LTranslit=')]
-        if len(misc) > 0:
-            x += ' ' + re.sub(r'^LTranslit=', '', misc[0])
+def lemmatl(node):
+    x = node.lemma
+    if node.misc['LTranslit'] != '':
+        x += ' ' + node.misc['LTranslit']
     return x
 
 
@@ -634,8 +621,9 @@ def trees(inp, args):
     then read the sentences within the caller's loop.)
     """
     global state
-    comments = [] # List of comment lines to go with the current sentence
-    lines = [] # List of token/word lines of the current sentence
+    all_lines = [] # List of lines in the sentence (comments and tokens), minus final empty line, minus newline characters (and minus spurious lines that are neither comment lines nor token lines)
+    comment_lines = [] # List of comment lines to go with the current sentence; initial part of all_lines
+    token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields
     corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
     state.comment_start_line = None
     testlevel = 1
@@ -651,26 +639,28 @@ def trees(inp, args):
             warn(testmessage, testclass, testlevel, testid)
             # We will pretend that the line terminates a sentence in order to
             # avoid subsequent misleading error messages.
-            if lines:
+            if token_lines_fields:
                 if not corrupted:
-                    yield comments, lines
-                comments = []
-                lines = []
+                    yield all_lines, comment_lines, token_lines_fields
+                all_lines = []
+                comment_lines = []
+                token_lines_fields = []
                 corrupted = False
                 state.comment_start_line = None
         elif not line: # empty line
-            if lines: # sentence done
+            if token_lines_fields: # sentence done
                 if not corrupted:
-                    yield comments, lines
-                comments=[]
-                lines=[]
+                    yield all_lines, comment_lines, token_lines_fields
+                all_lines = []
+                comment_lines = []
+                token_lines_fields = []
                 corrupted = False
                 state.comment_start_line = None
             else:
                 testid = 'extra-empty-line'
                 testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
                 warn(testmessage, testclass, testlevel, testid)
-        elif line[0]=='#':
+        elif line[0] == '#':
             # We will really validate sentence ids later. But now we want to remember
             # everything that looks like a sentence id and use it in the error messages.
             # Line numbers themselves may not be sufficient if we are reading multiple
@@ -678,18 +668,19 @@ def trees(inp, args):
             match = sentid_re.match(line)
             if match:
                 state.sentence_id = match.group(1)
-            if not lines: # before sentence
-                comments.append(line)
+            if not token_lines_fields: # before sentence
+                all_lines.append(line)
+                comment_lines.append(line)
             else:
                 testid = 'misplaced-comment'
                 testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
                 warn(testmessage, testclass, testlevel, testid)
         elif line[0].isdigit():
             validate_unicode_normalization(line)
-            if not lines: # new sentence
+            if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
-            cols=line.split("\t")
-            if len(cols)!=COLCOUNT:
+            cols = line.split("\t")
+            if len(cols) != COLCOUNT:
                 testid = 'number-of-columns'
                 testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The contents of the columns will not be checked.'
                 warn(testmessage, testclass, testlevel, testid)
@@ -698,7 +689,8 @@ def trees(inp, args):
             # Maybe the contents belongs to a different column. And we could see
             # an exception if a column value is missing.
             else:
-                lines.append(cols)
+                all_lines.append(line)
+                token_lines_fields.append(cols)
                 validate_cols_level1(cols)
                 if args.level > 1:
                     validate_cols(cols, args)
@@ -707,12 +699,12 @@ def trees(inp, args):
             testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
             warn(testmessage, testclass, testlevel, testid)
     else: # end of file
-        if comments or lines: # These should have been yielded on an empty line!
+        if comment_lines or token_lines_fields: # These should have been yielded on an empty line!
             testid = 'missing-empty-line'
             testmessage = 'Missing empty line after the last sentence.'
             warn(testmessage, testclass, testlevel, testid)
             if not corrupted:
-                yield comments, lines
+                yield all_lines, comment_lines, token_lines_fields
 
 
 
@@ -822,7 +814,7 @@ def validate_cols_level1(cols):
 
 
 interval_re = re.compile(r"^([0-9]+)-([0-9]+)$", re.U)
-def validate_ID_sequence(tree):
+def validate_id_sequence(tree):
     """
     Validates that the ID sequence is correctly formed.
     Besides issuing a warning if an error is found, it also returns False to
@@ -926,7 +918,7 @@ def validate_token_ranges(tree):
             start, end = int(start), int(end)
         except ValueError:
             assert False, 'internal error' # RE should assure that this works
-        # Do not test if start >= end: This was already tested above in validate_ID_sequence().
+        # Do not test if start >= end: This was already tested above in validate_id_sequence().
         if covered & set(range(start, end+1)):
             testid = 'overlapping-word-intervals'
             testmessage = f'Range overlaps with others: {cols[ID]}'
@@ -987,7 +979,7 @@ def validate_sent_id(comments, known_ids, lcode):
             testid = 'non-unique-sent-id'
             testmessage = f"Non-unique sent_id attribute '{sid}'."
             warn(testmessage, testclass, testlevel, testid)
-        if sid.count("/")>1 or (sid.count("/")==1 and lcode!="ud" and lcode!="shopen"):
+        if sid.count("/")>1 or (sid.count("/")==1 and lcode!="ud"):
             testid = 'slash-in-sent-id'
             testmessage = f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
             warn(testmessage, testclass, testlevel, testid)
@@ -1399,6 +1391,34 @@ def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid,
 
 
 
+def validate_required_feature_udapi(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function will check the presence of a feature
+    and if it is missing, an error will be reported only if at least one feature
+    has been already encountered. Otherwise the error will be remembered and it
+    may be reported afterwards if any feature is encountered later.
+    
+    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
+    required_feature ... the feature name (string)
+    required_value ... the feature value (string; multivalues are not supported)
+    """
+    global state
+    testclass = 'Morpho'
+    ###!!! We may want to check that any value of a given feature is present,
+    ###!!! or even that a particular value is present. Currently we only test
+    ###!!! Typo=Yes, i.e., the latter case.
+    if feats[required_feature] != required_value:
+        if state.seen_morpho_feature:
+            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
+        else:
+            if not testid in state.delayed_feature_errors:
+                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
+            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
+
+
+
 def validate_token_empty_vals(cols):
     """
     Checks that a multi-word token has _ empty values in all fields except MISC.
@@ -1530,10 +1550,11 @@ def deps_list(cols):
 
 basic_head_re = re.compile(r"^(0|[1-9][0-9]*)$")
 enhanced_head_re = re.compile(r"^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$")
-def validate_ID_references(tree):
+def validate_id_references(tree):
     """
     Validates that HEAD and DEPS reference existing IDs.
     """
+    ok = True
     testlevel = 2
     word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
@@ -1549,13 +1570,15 @@ def validate_ID_references(tree):
                 testid = 'invalid-head'
                 testmessage = f"Invalid HEAD: '{cols[HEAD]}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
             if not (cols[HEAD] in ids or cols[HEAD] == '0'):
                 testclass = 'Syntax'
                 testid = 'unknown-head'
                 testmessage = f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
         if DEPS >= len(cols):
-            return # this has been already reported in trees()
+            return False # this has been already reported in trees()
         try:
             deps = deps_list(cols)
         except ValueError:
@@ -1564,6 +1587,7 @@ def validate_ID_references(tree):
             testid = 'invalid-deps'
             testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
             warn(testmessage, testclass, testlevel, testid)
+            ok = False
             continue
         for head, deprel in deps:
             match = enhanced_head_re.match(head)
@@ -1572,11 +1596,115 @@ def validate_ID_references(tree):
                 testid = 'invalid-ehead'
                 testmessage = f"Invalid enhanced head reference: '{head}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
             if not (head in ids or head == '0'):
                 testclass = 'Enhanced'
                 testid = 'unknown-ehead'
                 testmessage = f"Undefined enhanced head reference (no such ID): '{head}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
+    return ok
+
+
+
+def validate_tree(sentence):
+    """
+    Takes the list of non-comment lines (line = list of columns) describing
+    a sentence. Returns an array with line number corresponding to each tree
+    node. In case of fatal problems (missing HEAD etc.) returns None
+    (and reports the error, unless it is something that should have been
+    reported earlier).
+    
+    This function originally served to build a data structure that would
+    describe the tree and make it accessible during subsequent tests. Now we
+    use the Udapi data structures instead but we still have to call this
+    function first, for two reasons:
+        
+        1. It will survive and report ill-formed input. In such a case, the
+           Udapi data structure will not be built and Udapi-based tests will
+           be skipped.
+        2. It will provide line number for each node. We will need it when
+           reporting subsequent errors on that node, and it is currently not
+           available in Udapi.
+
+    tree ... dictionary:
+      nodes ... array of word lines, i.e., lists of columns;
+          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings);
+          indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes
+          (needed in error messages). Only this array is now returned from the
+          function!
+    """
+    testlevel = 2
+    testclass = 'Syntax'
+    global state
+    node_line = state.sentence_line - 1
+    children = {} # node -> set of children
+    tree = {
+        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
+        'children': [],
+        'linenos':  [state.sentence_line] # for node 0
+    }
+    for cols in sentence:
+        node_line += 1
+        if not is_word(cols):
+            continue
+        # Even MISC may be needed when checking the annotation guidelines
+        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
+        if MISC >= len(cols):
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        if head == id_:
+            testid = 'head-self-loop'
+            testmessage = f'HEAD == ID for {cols[ID]}'
+            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
+            return None
+        tree['nodes'].append(cols)
+        tree['linenos'].append(node_line)
+        # Incrementally build the set of children of every node.
+        children.setdefault(cols[HEAD], set()).add(id_)
+    for cols in tree['nodes']:
+        tree['children'].append(sorted(children.get(cols[ID], [])))
+    # Check that there is just one node with the root relation.
+    if len(tree['children'][0]) > 1 and args.single_root:
+        testid = 'multiple-roots'
+        testmessage = f"Multiple root words: {tree['children'][0]}"
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        return None
+    # Return None if there are any cycles. Avoid surprises when working with the graph.
+    # Presence of cycles is equivalent to presence of unreachable nodes.
+    projection = set()
+    node_id = 0
+    nodes = list((node_id,))
+    while nodes:
+        node_id = nodes.pop()
+        for child in tree['children'][node_id]:
+            if child in projection:
+                continue # skip cycles
+            projection.add(child)
+            nodes.append(child)
+    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
+    if unreachable:
+        testid = 'non-tree'
+        str_unreachable = ','.join(str(w) for w in sorted(unreachable))
+        testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        return None
+    return tree['linenos']
 
 
 
@@ -1770,99 +1898,10 @@ def validate_misc(tree):
 
 
 
-def build_tree(sentence):
-    """
-    Takes the list of non-comment lines (line = list of columns) describing
-    a sentence. Returns a dictionary with items providing easier access to the
-    tree structure. In case of fatal problems (missing HEAD etc.) returns None
-    but does not report the error (presumably it has already been reported).
-
-    tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns;
-          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings);
-          indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes
-          (needed in error messages)
-    """
-    testlevel = 2
-    testclass = 'Syntax'
-    global state
-    node_line = state.sentence_line - 1
-    children = {} # node -> set of children
-    tree = {
-        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
-        'children': [],
-        'linenos':  [state.sentence_line] # for node 0
-    }
-    for cols in sentence:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        # Even MISC may be needed when checking the annotation guidelines
-        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
-        if MISC >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            id_ = int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            head = int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        if head == id_:
-            testid = 'head-self-loop'
-            testmessage = f'HEAD == ID for {cols[ID]}'
-            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            return None
-        tree['nodes'].append(cols)
-        tree['linenos'].append(node_line)
-        # Incrementally build the set of children of every node.
-        children.setdefault(cols[HEAD], set()).add(id_)
-    for cols in tree['nodes']:
-        tree['children'].append(sorted(children.get(cols[ID], [])))
-    # Check that there is just one node with the root relation.
-    if len(tree['children'][0]) > 1 and args.single_root:
-        testid = 'multiple-roots'
-        testmessage = f"Multiple root words: {tree['children'][0]}"
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
-    # Return None if there are any cycles. Avoid surprises when working with the graph.
-    # Presence of cycles is equivalent to presence of unreachable nodes.
-    projection = set()
-    get_projection(0, tree, projection)
-    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
-    if unreachable:
-        testid = 'non-tree'
-        str_unreachable = ','.join(str(w) for w in sorted(unreachable))
-        testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
-    return tree
-
-
-
-def get_projection(node_id, tree, projection):
-    """
-    Like proj() above, but works with the tree data structure. Collects node ids
-    in the set called projection.
-    """
-    nodes = list((node_id,))
-    while nodes:
-        node_id = nodes.pop()
-        for child in tree['children'][node_id]:
-            if child in projection:
-                continue # skip cycles
-            projection.add(child)
-            nodes.append(child)
-    return projection
+###!!! Just testing now: Can we switch to Udapi when building and searching the tree?
+def build_tree_udapi(lines):
+    root = conllu_reader.read_tree_from_lines(lines)
+    return root
 
 
 
@@ -1987,7 +2026,7 @@ def get_graph_projection(node_id, graph, projection):
 
 
 
-def validate_upos_vs_deprel(node_id, tree):
+def validate_upos_vs_deprel(node, lineno):
     """
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
@@ -1995,34 +2034,27 @@ def validate_upos_vs_deprel(node_id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    cols = tree['nodes'][node_id]
     # Occasionally a word may be marked by the feature ExtPos as acting as
     # a part of speech different from its usual one (which is given in UPOS).
     # Typical examples are words that head fixed multiword expressions (the
     # whole expression acts like a word of that alien part of speech), but
     # ExtPos may be used also on single words whose external POS is altered.
-    upos = cols[UPOS]
-    feats = {}
-    if cols[FEATS] != '_':
-        for fv in cols[FEATS].split('|'):
-            fvlist = fv.split('=')
-            if len(fvlist) == 2:
-                feats[fvlist[0]] = fvlist[1]
+    upos = node.upos
     # Nodes with a fixed child may need ExtPos to signal the part of speech of
     # the whole fixed expression.
-    if 'ExtPos' in feats:
-        upos = feats['ExtPos']
+    if node.feats['ExtPos']:
+        upos = node.feats['ExtPos']
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(cols[DEPREL])
-    childrels = set([lspec2ud(tree['nodes'][x][DEPREL]) for x in tree['children'][node_id]])
+    deprel = node.udeprel
+    childrels = set([x.udeprel for x in node.children])
     # It is recommended that the head of a fixed expression always has ExtPos,
     # even if it does not need it to pass the tests in this function.
-    if 'fixed' in childrels and 'ExtPos' not in feats:
-        fixed_forms = [cols[FORM]] + [tree['nodes'][x][FORM] for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'fixed']
+    if 'fixed' in childrels and not node.feats['ExtPos']:
+        fixed_forms = [node.form] + [x.form for x in node.children if x.udeprel == 'fixed']
         testid = 'fixed-without-extpos'
         str_fixed_forms = ' '.join(fixed_forms)
         testmessage = f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
-        warn(testmessage, 'Warning', testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        warn(testmessage, 'Warning', testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -2034,16 +2066,16 @@ def validate_upos_vs_deprel(node_id, tree):
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
         testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
     # https://github.com/UniversalDependencies/docs/issues/596,
     # we concluded that the validator will tolerate them.
     if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", upos):
         testid = 'rel-upos-nummod'
-        testmessage = f"'nummod' should be 'NUM' but it is '{upos}'"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'nummod' should be 'NUM' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
@@ -2052,23 +2084,23 @@ def validate_upos_vs_deprel(node_id, tree):
     # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
         testid = 'rel-upos-advmod'
-        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         testid = 'rel-upos-expl'
-        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         testid = 'rel-upos-aux'
-        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         testid = 'rel-upos-cop'
-        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
@@ -2076,36 +2108,36 @@ def validate_upos_vs_deprel(node_id, tree):
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
         testid = 'rel-upos-case'
-        testmessage = f"'case' should not be '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'case' should not be '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
         testid = 'rel-upos-mark'
-        testmessage = f"'mark' should not be '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'mark' should not be '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         testid = 'rel-upos-cc'
-        testmessage = f"'cc' should not be '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'cc' should not be '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     if deprel == 'punct' and upos != 'PUNCT':
         testid = 'rel-upos-punct'
-        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         testid = 'upos-rel-punct'
-        testmessage = f"'PUNCT' must be 'punct' but it is '{cols[DEPREL]}' ('{formtl(cols)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{formtl(node)}')"
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         testid = 'rel-upos-fixed'
-        testmessage = "'fixed' should not be used for proper nouns ('{formtl(cols)}')."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+        testmessage = "'fixed' should not be used for proper nouns ('{formtl(node)}')."
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def validate_flat_foreign(node_id, tree):
+def validate_flat_foreign(child, lineno, linenos):
     """
     flat:foreign is an optional subtype of flat. It is used to connect two words
     in a code-switched segment of foreign words if the annotators did not want
@@ -2115,27 +2147,21 @@ def validate_flat_foreign(node_id, tree):
     """
     testlevel = 3
     testclass = 'Warning' # or Morpho
-    child = tree['nodes'][node_id]
-    if MISC >= len(child):
-        return # this has been already reported in trees()
-    if node_id == 0:
+    if child.deprel != 'flat:foreign':
         return
-    if child[DEPREL] != 'flat:foreign':
-        return
-    pid = int(child[HEAD])
-    parent = tree['nodes'][pid]
-    if child[UPOS] != 'X' or child[FEATS] != 'Foreign=Yes':
+    parent = child.parent
+    if child.upos != 'X' or child.feats != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-    if parent[UPOS] != 'X' or parent[FEATS] != 'Foreign=Yes':
+        warn(testmessage, testclass, testlevel, testid, nodeid=child.ord, lineno=lineno)
+    if parent.upos != 'X' or parent.feats != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        warn(testmessage, testclass, testlevel, testid, nodeid=pid, lineno=tree['linenos'][pid])
+        warn(testmessage, testclass, testlevel, testid, nodeid=parent.ord, lineno=linenos[parent.ord])
 
 
 
-def validate_left_to_right_relations(node_id, tree):
+def validate_left_to_right_relations(node, lineno):
     """
     Certain UD relations must always go left-to-right.
     Here we currently check the rule for the basic dependencies.
@@ -2143,28 +2169,23 @@ def validate_left_to_right_relations(node_id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    cols = tree['nodes'][node_id]
-    if is_multiword_token(cols):
-        return
-    if DEPREL >= len(cols):
-        return # this has been already reported in trees()
     # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
-    if re.match(r"^(conj|fixed|flat|goeswith|appos)", cols[DEPREL]):
-        ichild = int(cols[ID])
-        iparent = int(cols[HEAD])
+    if re.match(r"^(conj|fixed|flat|goeswith|appos)", node.deprel):
+        ichild = node.ord
+        iparent = node.parent.ord
         if ichild < iparent:
             # We must recognize the relation type in the test id so we can manage exceptions for legacy treebanks.
             # For conj, flat, and fixed the requirement was introduced already before UD 2.2.
             # For appos and goeswith the requirement was introduced before UD 2.4.
             # The designation "right-to-left" is confusing in languages with right-to-left writing systems.
             # We keep it in the testid but we make the testmessage more neutral.
-            testid = f"right-to-left-{lspec2ud(cols[DEPREL])}"
-            testmessage = f"Parent of relation '{cols[DEPREL]}' must precede the child in the word order."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            testid = f"right-to-left-{node.udeprel}"
+            testmessage = f"Parent of relation '{node.deprel}' must precede the child in the word order."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def validate_single_subject(node_id, tree):
+def validate_single_subject(node, lineno):
     """
     No predicate should have more than one subject.
     An xcomp dependent normally has no subject, but in some languages the
@@ -2193,33 +2214,32 @@ def validate_single_subject(node_id, tree):
 
     def is_inner_subject(node):
         """
-        Takes a node, i.e., tree['nodes'][x]. Tells whether the node's deprel is
+        Takes a node (udapi.core.node.Node). Tells whether the node's deprel is
         nsubj or csubj without the :outer subtype. Alternatively, instead of the
         :outer subtype, the node could have Subject=Outer in MISC.
         """
-        if not re.search(r"subj", lspec2ud(node[DEPREL])):
+        if not re.search(r'subj', node.udeprel):
             return False
-        if re.match(r'^[nc]subj:outer$', node[DEPREL]):
+        if re.match(r'^[nc]subj:outer$', node.deprel):
             return False
-        if len([y for y in node[MISC].split('|') if y == 'Subject=Outer']) > 0:
+        if node.misc['Subject'] == 'Outer':
             return False
         return True
 
-    children_ids = sorted(tree['children'][node_id])
-    subject_ids = [x for x in children_ids if is_inner_subject(tree['nodes'][x])]
-    #subject_forms = [tree['nodes'][x][FORM] for x in subject_ids]
-    subject_forms = [formtl(tree['nodes'][x]) for x in subject_ids]
-    if len(subject_ids) > 1:
+    subjects = [x for x in node.children if is_inner_subject(x)]
+    subject_ids = [x.ord for x in subjects]
+    subject_forms = [formtl(x) for x in subjects]
+    if len(subjects) > 1:
         testlevel = 3
         testclass = 'Syntax'
         testid = 'too-many-subjects'
         testmessage = f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'."
         explanation = "Outer subjects are allowed if a clause acts as the predicate of another clause."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id], explanation=explanation)
+        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno, explanation=explanation)
 
 
 
-def validate_orphan(node_id, tree):
+def validate_orphan(node, lineno):
     """
     The orphan relation is used to attach an unpromoted orphan to the promoted
     orphan in gapping constructions. A common error is that the promoted orphan
@@ -2227,10 +2247,7 @@ def validate_orphan(node_id, tree):
     via a conj relation, although some other relations are plausible too.
     """
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
-    if deprel == 'orphan':
-        pid = int(tree['nodes'][node_id][HEAD])
-        pdeprel = lspec2ud(tree['nodes'][pid][DEPREL])
+    if node.udeprel == 'orphan':
         # We include advcl because gapping (or something very similar) can also
         # occur in subordinate clauses: "He buys companies like my mother [does] vegetables."
         # In theory, a similar pattern could also occur with reparandum.
@@ -2242,16 +2259,16 @@ def validate_orphan(node_id, tree):
         # 2023-04-14: Reclassifying the test as warning only. Due to promotion,
         # the parent of orphan may receive many other relations. See issue 635
         # for details and a Latin example.
-        if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", pdeprel):
+        if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", node.parent.udeprel):
             testlevel = 3
             testclass = 'Warning'
             testid = 'orphan-parent'
-            testmessage = f"The parent of 'orphan' should normally be 'conj' but it is '{pdeprel}'."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            testmessage = f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def validate_functional_leaves(node_id, tree):
+def validate_functional_leaves(node, lineno, linenos):
     """
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
@@ -2260,20 +2277,21 @@ def validate_functional_leaves(node_id, tree):
     testlevel = 3
     testclass = 'Syntax'
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
+    deprel = node.udeprel
     if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
-        idparent = node_id
+        idparent = node.ord
         pdeprel = deprel
-        pfeats = tree['nodes'][node_id][FEATS].split('|')
-        for idchild in tree['children'][node_id]:
-            cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
+        pfeats = node.feats
+        for child in node.children:
+            idchild = child.ord
+            cdeprel = child.udeprel
             # The guidelines explicitly say that negation can modify any function word
             # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
             # We cannot recognize negation simply by deprel; we have to look at the
             # part-of-speech tag and the Polarity feature as well.
-            cupos = tree['nodes'][idchild][UPOS]
-            cfeats = tree['nodes'][idchild][FEATS].split('|')
-            if pdeprel != 'punct' and cdeprel == 'advmod' and re.match(r"^(PART|ADV)$", cupos) and 'Polarity=Neg' in cfeats:
+            cupos = child.upos
+            cfeats = child.feats
+            if pdeprel != 'punct' and cdeprel == 'advmod' and re.match(r"^(PART|ADV)$", cupos) and cfeats['Polarity'] == 'Neg':
                 continue
             # Punctuation should not depend on function words if it can be projectively
             # attached to a content word. But sometimes it cannot. Czech example:
@@ -2284,8 +2302,7 @@ def validate_functional_leaves(node_id, tree):
             # be non-projective. Here we assume that if the parent of a punctuation node
             # is attached nonprojectively, punctuation can be attached to it to avoid its
             # own nonprojectivity.
-            gap = get_gap(idparent, tree)
-            if gap and cdeprel == 'punct':
+            if node.is_nonprojective() and cdeprel == 'punct':
                 continue
             # Auxiliaries, conjunctions and case markers will tollerate a few special
             # types of modifiers.
@@ -2312,12 +2329,12 @@ def validate_functional_leaves(node_id, tree):
             # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
             if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-mark-case'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-aux-cop'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
@@ -2352,120 +2369,71 @@ def validate_functional_leaves(node_id, tree):
             # Flavio also argued that certain multiword det expressions should be
             # connected by flat:redup (rather than fixed), which is why flat should
             # be another exception.
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not ('Poss=Yes' in pfeats and re.match(r"^(appos|acl|nmod)$", cdeprel)):
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not (pfeats['Poss'] == 'Yes' and re.match(r"^(appos|acl|nmod)$", cdeprel)):
                 testid = 'leaf-det'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-clf'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-cc'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Fixed expressions should not be nested, i.e., no chains of fixed relations.
             # As they are supposed to represent functional elements, they should not have
             # other dependents either, with the possible exception of conj.
-            ###!!! We also allow a punct child, at least temporarily, because of fixed
-            ###!!! expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
-            ###!!! It would be better to keep these expressions as one token. But sometimes
-            ###!!! the tokenizer is out of control of the UD data providers and it is not
-            ###!!! practical to retokenize.
+            # We also allow a punct child, at least temporarily, because of fixed
+            # expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
+            # It would be better to keep these expressions as one token. But sometimes
+            # the tokenizer is out of control of the UD data providers and it is not
+            # practical to retokenize.
             elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-fixed'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Goeswith cannot have any children, not even another goeswith.
             elif pdeprel == 'goeswith':
                 testid = 'leaf-goeswith'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Punctuation can exceptionally have other punct children if an exclamation
             # mark is in brackets or quotes. It cannot have other children.
             elif pdeprel == 'punct' and cdeprel != 'punct':
                 testid = 'leaf-punct'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
 
 
 
-def collect_ancestors(node_id, tree, ancestors):
+def validate_fixed_span(node, lineno):
     """
-    Usage: ancestors = collect_ancestors(nodeid, nodes, [])
+    Like with goeswith, the fixed relation should not in general skip words that
+    are not part of the fixed expression. Unlike goeswith however, there can be
+    an intervening punctuation symbol. Moreover, the rule that fixed expressions
+    cannot be discontiguous has been challenged with examples from Swedish and
+    Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
+    Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
+    as just a warning.
     """
-    pid = int(tree['nodes'][int(node_id)][HEAD])
-    if pid == 0:
-        ancestors.append(0)
-        return ancestors
-    if pid in ancestors:
-        # Cycle has been reported on level 2. But we must jump out of it now.
-        return ancestors
-    ancestors.append(pid)
-    return collect_ancestors(pid, tree, ancestors)
+    fxchildren = [c for c in node.children if c.udeprel == 'fixed']
+    if fxchildren:
+        fxlist = sorted([node] + fxchildren)
+        fxrange = [n for n in node.root.descendants if n.ord >= node.ord and n.ord <= fxchildren[-1].ord]
+        # All nodes between me and my last fixed child should be either fixed or punct.
+        fxgap = [n for n in fxrange if n.udeprel != 'punct' and n not in fxlist]
+        if fxgap:
+            fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
+            testlevel = 3
+            testclass = 'Warning'
+            testid = 'fixed-gap'
+            testmessage = f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def get_caused_nonprojectivities(node_id, tree):
-    """
-    Checks whether a node is in a gap of a nonprojective edge. Report true only
-    if the node's parent is not in the same gap. (We use this function to check
-    that a punctuation node does not cause nonprojectivity. But if it has been
-    dragged to the gap with a larger subtree, then we do not blame it.)
-
-    tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
-    """
-    iid = int(node_id) # just to be sure
-    # We need to find all nodes that are not ancestors of this node and lie
-    # on other side of this node than their parent. First get the set of
-    # ancestors.
-    ancestors = collect_ancestors(iid, tree, [])
-    maxid = len(tree['nodes']) - 1
-    # Get the lists of nodes to either side of id.
-    # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
-    pid = int(tree['nodes'][iid][HEAD])
-    if pid < iid:
-        left = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
-        right = range(iid + 1, maxid + 1)
-    else:
-        left = range(1, iid)
-        right = range(iid + 1, pid)
-    # Exclude nodes whose parents are ancestors of id.
-    sancestors = set(ancestors)
-    leftna = [x for x in left if int(tree['nodes'][x][HEAD]) not in sancestors]
-    rightna = [x for x in right if int(tree['nodes'][x][HEAD]) not in sancestors]
-    leftcross = [x for x in leftna if int(tree['nodes'][x][HEAD]) > iid]
-    rightcross = [x for x in rightna if int(tree['nodes'][x][HEAD]) < iid]
-    # Once again, exclude nonprojectivities that are caused by ancestors of id.
-    if pid < iid:
-        rightcross = [x for x in rightcross if int(tree['nodes'][x][HEAD]) > pid]
-    else:
-        leftcross = [x for x in leftcross if int(tree['nodes'][x][HEAD]) < pid]
-    # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
-    return sorted(leftcross + rightcross)
-
-
-
-def get_gap(node_id, tree):
-    iid = int(node_id) # just to be sure
-    pid = int(tree['nodes'][iid][HEAD])
-    if iid < pid:
-        rangebetween = range(iid + 1, pid)
-    else:
-        rangebetween = range(pid + 1, iid)
-    gap = set()
-    if rangebetween:
-        projection = set()
-        get_projection(pid, tree, projection)
-        gap = set(rangebetween) - projection
-    return gap
-
-
-
-def validate_goeswith_span(node_id, tree):
+def validate_goeswith_span(node, lineno):
     """
     The relation 'goeswith' is used to connect word parts that are separated
     by whitespace and should be one word instead. We assume that the relation
@@ -2476,126 +2444,180 @@ def validate_goeswith_span(node_id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    gwchildren = sorted([x for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'goeswith'])
+    gwchildren = [c for c in node.children if c.udeprel == 'goeswith']
     if gwchildren:
-        gwlist = sorted([node_id] + gwchildren)
-        gwrange = list(range(node_id, int(tree['nodes'][gwchildren[-1]][ID]) + 1))
+        gwlist = sorted([node] + gwchildren)
+        gwrange = [n for n in node.root.descendants if n.ord >= node.ord and n.ord <= gwchildren[-1].ord]
         # All nodes between me and my last goeswith child should be goeswith too.
         if gwlist != gwrange:
             testid = 'goeswith-gap'
-            testmessage = f"Violation of guidelines: gaps in goeswith group {str(gwlist)} != {str(gwrange)}."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            testmessage = f"Gaps in goeswith group {str(gwlist)} != {str(gwrange)}."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
         # Non-last node in a goeswith range must have a space after itself.
-        nospaceafter = [x for x in gwlist[:-1] if 'SpaceAfter=No' in tree['nodes'][x][MISC].split('|')]
+        nospaceafter = [x for x in gwlist[:-1] if x.misc['SpaceAfter'] == 'No']
         if nospaceafter:
             testid = 'goeswith-nospace'
-            testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
         # This is not about the span of the interrupted word, but since we already
         # know that we are at the head of a goeswith word, let's do it here, too.
         # Every goeswith parent should also have Typo=Yes. However, this is not
         # required if the treebank does not have features at all.
         testid = 'goeswith-missing-typo'
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature(tree['nodes'][node_id][FEATS], 'Typo=Yes', testmessage, testlevel, testid, node_id, tree['linenos'][node_id])
+        validate_required_feature_udapi(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
 
 
 
-def validate_goeswith_morphology_and_edeps(node_id, tree):
+def validate_goeswith_morphology_and_edeps(node, lineno):
     """
     If a node has the 'goeswith' incoming relation, it is a non-first part of
     a mistakenly interrupted word. The lemma, upos tag and morphological features
     of the word should be annotated at the first part, not here.
     """
     testlevel = 3
-    if lspec2ud(tree['nodes'][node_id][DEPREL]) == 'goeswith':
+    if node.udeprel == 'goeswith':
         testclass = 'Morpho'
-        if tree['nodes'][node_id][LEMMA] != '_':
+        if node.lemma != '_':
             testid = 'goeswith-lemma'
             testmessage = "The lemma of a 'goeswith'-connected word must be annotated only at the first part."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        if tree['nodes'][node_id][UPOS] != 'X':
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        if node.upos != 'X':
             testid = 'goeswith-upos'
             testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        if tree['nodes'][node_id][FEATS] != '_':
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        if str(node.feats) != '_':
             testid = 'goeswith-feats'
             testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
         testclass = 'Enhanced'
-        if tree['nodes'][node_id][DEPS] != '_' and tree['nodes'][node_id][DEPS] != tree['nodes'][node_id][HEAD]+':'+tree['nodes'][node_id][DEPREL]:
+        if str(node.raw_deps) != '_' and str(node.raw_deps) != str(node.parent.ord)+':'+node.deprel:
             testid = 'goeswith-edeps'
             testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def validate_fixed_span(node_id, tree):
+def collect_ancestors(node):
     """
-    Like with goeswith, the fixed relation should not in general skip words that
-    are not part of the fixed expression. Unlike goeswith however, there can be
-    an intervening punctuation symbol. Moreover, the rule that fixed expressions
-    cannot be discontiguous has been challenged with examples from Swedish and
-    Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
-    Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
-    as just a warning.
+    Usage: ancestors = collect_ancestors(node)
+    Returns the list of all ancestors of the current node, including the
+    technical root.
     """
-    fxchildren = sorted([i for i in tree['children'][node_id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
-    if fxchildren:
-        fxlist = sorted([node_id] + fxchildren)
-        fxrange = list(range(node_id, int(tree['nodes'][fxchildren[-1]][ID]) + 1))
-        # All nodes between me and my last fixed child should be either fixed or punct.
-        fxdiff = set(fxrange) - set(fxlist)
-        fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
-        if fxgap:
-            fxexpr = ' '.join([(tree['nodes'][i][FORM] if i in fxlist else '*') for i in fxrange])
-            testlevel = 3
-            testclass = 'Warning'
-            testid = 'fixed-gap'
-            testmessage = f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+    ancestors = []
+    while not node.is_root():
+        node = node.parent
+        ancestors.append(node)
+    # Udapi returns all lists of nodes sorted by ord, let's do the same here.
+    ancestors.sort()
+    return ancestors
 
 
 
-def validate_projective_punctuation(node_id, tree):
+###!!! Is there a Udapi function that could replace this?
+def get_caused_nonprojectivities(node):
+    """
+    Checks whether a node is in a gap of a nonprojective edge. Report true only
+    if the node's parent is not in the same gap. (We use this function to check
+    that a punctuation node does not cause nonprojectivity. But if it has been
+    dragged to the gap with a larger subtree, then we do not blame it.)
+
+    node ... Udapi Node object
+    """
+    nodes = node.root.descendants
+    iid = node.ord
+    # We need to find all nodes that are not ancestors of this node and lie
+    # on other side of this node than their parent. First get the set of
+    # ancestors.
+    ancestors = collect_ancestors(node)
+    maxid = nodes[-1].ord
+    # Get the lists of nodes to either side of id.
+    # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
+    pid = node.parent.ord
+    if pid < iid:
+        leftidrange = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
+        rightidrange = range(iid + 1, maxid + 1)
+    else:
+        leftidrange = range(1, iid)
+        rightidrange = range(iid + 1, pid)
+    left = [n for n in nodes if n.ord in leftidrange]
+    right = [n for n in nodes if n.ord in rightidrange]
+    # Exclude nodes whose parents are ancestors of id.
+    leftna = [x for x in left if x.parent not in ancestors]
+    rightna = [x for x in right if x.parent not in ancestors]
+    leftcross = [x for x in leftna if x.parent.ord > iid]
+    rightcross = [x for x in rightna if x.parent.ord < iid]
+    # Once again, exclude nonprojectivities that are caused by ancestors of id.
+    if pid < iid:
+        rightcross = [x for x in rightcross if x.parent.ord > pid]
+    else:
+        leftcross = [x for x in leftcross if x.parent.ord < pid]
+    # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
+    return sorted(leftcross + rightcross)
+
+
+
+def get_gap(node):
+    """
+    Returns the list of nodes between node and its parent that are not dominated
+    by the parent. If the list is not empty, the node is attached nonprojectively.
+    """
+    iid = node.ord
+    pid = node.parent.ord
+    if iid < pid:
+        rangebetween = range(iid + 1, pid)
+    else:
+        rangebetween = range(pid + 1, iid)
+    gap = []
+    if rangebetween:
+        gap = [n for n in node.root.descendants if n.ord in rangebetween and not n in node.parent.descendants]
+    return gap
+
+
+
+def validate_projective_punctuation(node, lineno):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
     nonprojectively.
     """
     testlevel = 3
     testclass = 'Syntax'
-    # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
-    if deprel == 'punct':
-        nonprojnodes = get_caused_nonprojectivities(node_id, tree)
+    if node.udeprel == 'punct':
+        nonprojnodes = get_caused_nonprojectivities(node)
         if nonprojnodes:
             testid = 'punct-causes-nonproj'
             testmessage = f"Punctuation must not cause non-projectivity of nodes {nonprojnodes}"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        gap = get_gap(node_id, tree)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        gap = get_gap(node)
         if gap:
             testid = 'punct-is-nonproj'
             testmessage = f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def validate_annotation(tree):
+def validate_annotation(tree, linenos):
     """
     Checks universally valid consequences of the annotation guidelines.
+    
+    tree ... udapi.core.root.Root object
+    linenos ... Array with line number for each node (indexed by node
+             ord (ID)). This is the only thing we still need from the old
+             build_tree() function.
     """
-    for node in tree['nodes']:
-        node_id = int(node[ID])
-        validate_upos_vs_deprel(node_id, tree)
-        validate_flat_foreign(node_id, tree)
-        validate_left_to_right_relations(node_id, tree)
-        validate_single_subject(node_id, tree)
-        validate_orphan(node_id, tree)
-        validate_functional_leaves(node_id, tree)
-        validate_fixed_span(node_id, tree)
-        validate_goeswith_span(node_id, tree)
-        validate_goeswith_morphology_and_edeps(node_id, tree)
-        validate_projective_punctuation(node_id, tree)
+    nodes = tree.descendants
+    for node in nodes:
+        lineno = linenos[node.ord]
+        validate_upos_vs_deprel(node, lineno)
+        validate_flat_foreign(node, lineno, linenos)
+        validate_left_to_right_relations(node, lineno)
+        validate_single_subject(node, lineno)
+        validate_orphan(node, lineno)
+        validate_functional_leaves(node, lineno, linenos)
+        validate_fixed_span(node, lineno)
+        validate_goeswith_span(node, lineno)
+        validate_goeswith_morphology_and_edeps(node, lineno)
+        validate_projective_punctuation(node, lineno)
 
 
 
@@ -2705,14 +2727,7 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
         auxdict = {}
         if auxlist != []:
             auxdict = {lang: auxlist}
-        if lang == 'shopen':
-            # 'desu', 'kudasai', 'yo' and 'sa' are romanized Japanese.
-            lspecauxs = ['desu', 'kudasai', 'yo', 'sa']
-            for ilang in auxdict:
-                ilspecauxs = auxdict[ilang]
-                lspecauxs = lspecauxs + ilspecauxs
-        else:
-            lspecauxs = auxdict.get(lang, None)
+        lspecauxs = auxdict.get(lang, None)
         if not lspecauxs or not cols[LEMMA] in lspecauxs:
             testlevel = 5
             testclass = 'Morpho'
@@ -2749,14 +2764,7 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
         copdict = {}
         if coplist != []:
             copdict = {lang: coplist}
-        if lang == 'shopen':
-            # 'desu' is romanized Japanese.
-            lspeccops = ['desu']
-            for ilang in copdict:
-                ilspeccops = copdict[ilang]
-                lspeccops = lspeccops + ilspeccops
-        else:
-            lspeccops = copdict.get(lang, None)
+        lspeccops = copdict.get(lang, None)
         if not lspeccops or not cols[LEMMA] in lspeccops:
             testlevel = 5
             testclass = 'Syntax'
@@ -3405,39 +3413,37 @@ def validate_misc_entity(comments, sentence):
 
 
 def validate(inp, out, args, known_sent_ids):
-    for comments, sentence in trees(inp, args):
+    for all_lines, comments, sentence in trees(inp, args):
         # The individual lines were validated already in trees().
         # What follows is tests that need to see the whole tree.
-        idseqok = validate_ID_sequence(sentence) # level 1
+        idseqok = validate_id_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
+            idrefok = idseqok and validate_id_references(sentence) # level 2
+            if not idrefok:
+                continue
+            linenos = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+            if not linenos:
+                continue
+            # If we successfully passed all the tests above, it is probably
+            # safe to give the lines to Udapi and ask it to build the tree data
+            # structure for us.
+            ###!!! There is still work to be done so that the Udapi data
+            ###!!! structures are used in all subsequent tests.
+            tree = build_tree_udapi(all_lines)
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
             if args.check_tree_text:
                 validate_text_meta(comments, sentence, args) # level 2
             validate_root(sentence) # level 2
-            validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
             if args.check_coref:
                 validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
-            # Avoid building tree structure if the sequence of node ids is corrupted.
-            if idseqok:
-                tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-                egraph = build_egraph(sentence) # level 2 test: egraph is connected
-            else:
-                tree = None
-                egraph = None
-            if tree:
-                if args.level > 2:
-                    validate_annotation(tree) # level 3
-                    if args.level > 4:
-                        validate_lspec_annotation(sentence, args.lang) # level 5
-            else:
-                testlevel = 2
-                testclass = 'Format'
-                testid = 'skipped-corrupt-tree'
-                testmessage = "Skipping annotation tests because of corrupt tree structure."
-                warn(testmessage, testclass, testlevel, testid, lineno=-1)
+            if args.level > 2:
+                validate_annotation(tree, linenos) # level 3
+                if args.level > 4:
+                    validate_lspec_annotation(sentence, args.lang) # level 5
+            egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if egraph:
                 if args.level > 2:
                     validate_enhanced_annotation(egraph) # level 3
