@@ -1400,7 +1400,7 @@ def validate_required_feature_udapi(feats, required_feature, required_value, tes
     has been already encountered. Otherwise the error will be remembered and it
     may be reported afterwards if any feature is encountered later.
     
-    feats ... a Udapi Feats object
+    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
     required_feature ... the feature name (string)
     required_value ... the feature value (string; multivalues are not supported)
     """
@@ -2412,8 +2412,7 @@ def validate_fixed_span(node, lineno):
         fxlist = sorted([node] + fxchildren)
         fxrange = [n for n in node.root.descendants if n.ord >= node.ord and n.ord <= fxchildren[-1].ord]
         # All nodes between me and my last fixed child should be either fixed or punct.
-        fxdiff = set(fxrange) - set(fxlist)
-        fxgap = [n for n in fxdiff if n.udeprel != 'punct']
+        fxgap = [n for n in fxrange if n.udeprel != 'punct' and n not in fxlist]
         if fxgap:
             fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
             testlevel = 3
@@ -2477,12 +2476,12 @@ def validate_goeswith_morphology_and_edeps(node, lineno):
             testid = 'goeswith-upos'
             testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
             warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
-        if node.feats != '_':
+        if str(node.feats) != '_':
             testid = 'goeswith-feats'
             testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
             warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
         testclass = 'Enhanced'
-        if node.deps != '_' and node.deps != str(node.parent.ord)+':'+node.deprel:
+        if str(node.raw_deps) != '_' and str(node.raw_deps) != str(node.parent.ord)+':'+node.deprel:
             testid = 'goeswith-edeps'
             testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
             warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
