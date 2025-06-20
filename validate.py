@@ -591,15 +591,10 @@ def formtl(node):
         x += ' ' + node.misc['Translit']
     return x
 
-def lemmatl(cols):
-    x = ''
-    l = len(cols)
-    if LEMMA < l:
-        x = cols[LEMMA]
-    if MISC < l and cols[MISC] != '' and cols[MISC] != '_':
-        misc = [x for x in cols[MISC].split('|') if x.startswith('LTranslit=')]
-        if len(misc) > 0:
-            x += ' ' + re.sub(r'^LTranslit=', '', misc[0])
+def lemmatl(node):
+    x = node.lemma
+    if node.misc['LTranslit'] != '':
+        x += ' ' + node.misc['LTranslit']
     return x
 
 
@@ -626,8 +621,9 @@ def trees(inp, args):
     then read the sentences within the caller's loop.)
     """
     global state
-    comments = [] # List of comment lines to go with the current sentence
-    lines = [] # List of token/word lines of the current sentence
+    all_lines = [] # List of lines in the sentence (comments and tokens), minus final empty line, minus newline characters (and minus spurious lines that are neither comment lines nor token lines)
+    comment_lines = [] # List of comment lines to go with the current sentence; initial part of all_lines
+    token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields
     corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
     state.comment_start_line = None
     testlevel = 1
@@ -643,26 +639,28 @@ def trees(inp, args):
             warn(testmessage, testclass, testlevel, testid)
             # We will pretend that the line terminates a sentence in order to
             # avoid subsequent misleading error messages.
-            if lines:
+            if token_lines_fields:
                 if not corrupted:
-                    yield comments, lines
-                comments = []
-                lines = []
+                    yield all_lines, comment_lines, token_lines_fields
+                all_lines = []
+                comment_lines = []
+                token_lines_fields = []
                 corrupted = False
                 state.comment_start_line = None
         elif not line: # empty line
-            if lines: # sentence done
+            if token_lines_fields: # sentence done
                 if not corrupted:
-                    yield comments, lines
-                comments=[]
-                lines=[]
+                    yield all_lines, comment_lines, token_lines_fields
+                all_lines = []
+                comment_lines = []
+                token_lines_fields = []
                 corrupted = False
                 state.comment_start_line = None
             else:
                 testid = 'extra-empty-line'
                 testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
                 warn(testmessage, testclass, testlevel, testid)
-        elif line[0]=='#':
+        elif line[0] == '#':
             # We will really validate sentence ids later. But now we want to remember
             # everything that looks like a sentence id and use it in the error messages.
             # Line numbers themselves may not be sufficient if we are reading multiple
@@ -670,18 +668,19 @@ def trees(inp, args):
             match = sentid_re.match(line)
             if match:
                 state.sentence_id = match.group(1)
-            if not lines: # before sentence
-                comments.append(line)
+            if not token_lines_fields: # before sentence
+                all_lines.append(line)
+                comment_lines.append(line)
             else:
                 testid = 'misplaced-comment'
                 testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
                 warn(testmessage, testclass, testlevel, testid)
         elif line[0].isdigit():
             validate_unicode_normalization(line)
-            if not lines: # new sentence
+            if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
-            cols=line.split("\t")
-            if len(cols)!=COLCOUNT:
+            cols = line.split("\t")
+            if len(cols) != COLCOUNT:
                 testid = 'number-of-columns'
                 testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The contents of the columns will not be checked.'
                 warn(testmessage, testclass, testlevel, testid)
@@ -690,7 +689,8 @@ def trees(inp, args):
             # Maybe the contents belongs to a different column. And we could see
             # an exception if a column value is missing.
             else:
-                lines.append(cols)
+                all_lines.append(line)
+                token_lines_fields.append(cols)
                 validate_cols_level1(cols)
                 if args.level > 1:
                     validate_cols(cols, args)
@@ -699,12 +699,12 @@ def trees(inp, args):
             testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
             warn(testmessage, testclass, testlevel, testid)
     else: # end of file
-        if comments or lines: # These should have been yielded on an empty line!
+        if comment_lines or token_lines_fields: # These should have been yielded on an empty line!
             testid = 'missing-empty-line'
             testmessage = 'Missing empty line after the last sentence.'
             warn(testmessage, testclass, testlevel, testid)
             if not corrupted:
-                yield comments, lines
+                yield all_lines, comment_lines, token_lines_fields
 
 
 
@@ -814,7 +814,7 @@ def validate_cols_level1(cols):
 
 
 interval_re = re.compile(r"^([0-9]+)-([0-9]+)$", re.U)
-def validate_ID_sequence(tree):
+def validate_id_sequence(tree):
     """
     Validates that the ID sequence is correctly formed.
     Besides issuing a warning if an error is found, it also returns False to
@@ -918,7 +918,7 @@ def validate_token_ranges(tree):
             start, end = int(start), int(end)
         except ValueError:
             assert False, 'internal error' # RE should assure that this works
-        # Do not test if start >= end: This was already tested above in validate_ID_sequence().
+        # Do not test if start >= end: This was already tested above in validate_id_sequence().
         if covered & set(range(start, end+1)):
             testid = 'overlapping-word-intervals'
             testmessage = f'Range overlaps with others: {cols[ID]}'
@@ -1550,10 +1550,11 @@ def deps_list(cols):
 
 basic_head_re = re.compile(r"^(0|[1-9][0-9]*)$")
 enhanced_head_re = re.compile(r"^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$")
-def validate_ID_references(tree):
+def validate_id_references(tree):
     """
     Validates that HEAD and DEPS reference existing IDs.
     """
+    ok = True
     testlevel = 2
     word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
@@ -1569,13 +1570,15 @@ def validate_ID_references(tree):
                 testid = 'invalid-head'
                 testmessage = f"Invalid HEAD: '{cols[HEAD]}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
             if not (cols[HEAD] in ids or cols[HEAD] == '0'):
                 testclass = 'Syntax'
                 testid = 'unknown-head'
                 testmessage = f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
         if DEPS >= len(cols):
-            return # this has been already reported in trees()
+            return False # this has been already reported in trees()
         try:
             deps = deps_list(cols)
         except ValueError:
@@ -1584,6 +1587,7 @@ def validate_ID_references(tree):
             testid = 'invalid-deps'
             testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
             warn(testmessage, testclass, testlevel, testid)
+            ok = False
             continue
         for head, deprel in deps:
             match = enhanced_head_re.match(head)
@@ -1592,11 +1596,115 @@ def validate_ID_references(tree):
                 testid = 'invalid-ehead'
                 testmessage = f"Invalid enhanced head reference: '{head}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
             if not (head in ids or head == '0'):
                 testclass = 'Enhanced'
                 testid = 'unknown-ehead'
                 testmessage = f"Undefined enhanced head reference (no such ID): '{head}'."
                 warn(testmessage, testclass, testlevel, testid)
+                ok = False
+    return ok
+
+
+
+def validate_tree(sentence):
+    """
+    Takes the list of non-comment lines (line = list of columns) describing
+    a sentence. Returns an array with line number corresponding to each tree
+    node. In case of fatal problems (missing HEAD etc.) returns None
+    (and reports the error, unless it is something that should have been
+    reported earlier).
+    
+    This function originally served to build a data structure that would
+    describe the tree and make it accessible during subsequent tests. Now we
+    use the Udapi data structures instead but we still have to call this
+    function first, for two reasons:
+        
+        1. It will survive and report ill-formed input. In such a case, the
+           Udapi data structure will not be built and Udapi-based tests will
+           be skipped.
+        2. It will provide line number for each node. We will need it when
+           reporting subsequent errors on that node, and it is currently not
+           available in Udapi.
+
+    tree ... dictionary:
+      nodes ... array of word lines, i.e., lists of columns;
+          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
+      children ... array of sets of children indices (numbers, not strings);
+          indices to this array equal to ids (children[0] are the children of the root)
+      linenos ... array of line numbers in the file, corresponding to nodes
+          (needed in error messages). Only this array is now returned from the
+          function!
+    """
+    testlevel = 2
+    testclass = 'Syntax'
+    global state
+    node_line = state.sentence_line - 1
+    children = {} # node -> set of children
+    tree = {
+        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
+        'children': [],
+        'linenos':  [state.sentence_line] # for node 0
+    }
+    for cols in sentence:
+        node_line += 1
+        if not is_word(cols):
+            continue
+        # Even MISC may be needed when checking the annotation guidelines
+        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
+        if MISC >= len(cols):
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            id_ = int(cols[ID])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        try:
+            head = int(cols[HEAD])
+        except ValueError:
+            # This error has been reported on lower levels, do not report it here.
+            # Do not continue to check annotation if there are elementary flaws.
+            return None
+        if head == id_:
+            testid = 'head-self-loop'
+            testmessage = f'HEAD == ID for {cols[ID]}'
+            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
+            return None
+        tree['nodes'].append(cols)
+        tree['linenos'].append(node_line)
+        # Incrementally build the set of children of every node.
+        children.setdefault(cols[HEAD], set()).add(id_)
+    for cols in tree['nodes']:
+        tree['children'].append(sorted(children.get(cols[ID], [])))
+    # Check that there is just one node with the root relation.
+    if len(tree['children'][0]) > 1 and args.single_root:
+        testid = 'multiple-roots'
+        testmessage = f"Multiple root words: {tree['children'][0]}"
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        return None
+    # Return None if there are any cycles. Avoid surprises when working with the graph.
+    # Presence of cycles is equivalent to presence of unreachable nodes.
+    projection = set()
+    node_id = 0
+    nodes = list((node_id,))
+    while nodes:
+        node_id = nodes.pop()
+        for child in tree['children'][node_id]:
+            if child in projection:
+                continue # skip cycles
+            projection.add(child)
+            nodes.append(child)
+    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
+    if unreachable:
+        testid = 'non-tree'
+        str_unreachable = ','.join(str(w) for w in sorted(unreachable))
+        testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
+        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        return None
+    return tree['linenos']
 
 
 
@@ -1794,104 +1902,6 @@ def validate_misc(tree):
 def build_tree_udapi(lines):
     root = conllu_reader.read_tree_from_lines(lines)
     return root
-
-
-
-def build_tree(sentence):
-    """
-    Takes the list of non-comment lines (line = list of columns) describing
-    a sentence. Returns a dictionary with items providing easier access to the
-    tree structure. In case of fatal problems (missing HEAD etc.) returns None
-    but does not report the error (presumably it has already been reported).
-
-    tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns;
-          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings);
-          indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes
-          (needed in error messages)
-    """
-    testlevel = 2
-    testclass = 'Syntax'
-    global state
-    node_line = state.sentence_line - 1
-    children = {} # node -> set of children
-    tree = {
-        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
-        'children': [],
-        'linenos':  [state.sentence_line] # for node 0
-    }
-    for cols in sentence:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        # Even MISC may be needed when checking the annotation guidelines
-        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
-        if MISC >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            id_ = int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            head = int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        if head == id_:
-            testid = 'head-self-loop'
-            testmessage = f'HEAD == ID for {cols[ID]}'
-            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            return None
-        tree['nodes'].append(cols)
-        tree['linenos'].append(node_line)
-        # Incrementally build the set of children of every node.
-        children.setdefault(cols[HEAD], set()).add(id_)
-    for cols in tree['nodes']:
-        tree['children'].append(sorted(children.get(cols[ID], [])))
-    # Check that there is just one node with the root relation.
-    if len(tree['children'][0]) > 1 and args.single_root:
-        testid = 'multiple-roots'
-        testmessage = f"Multiple root words: {tree['children'][0]}"
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
-    # Return None if there are any cycles. Avoid surprises when working with the graph.
-    # Presence of cycles is equivalent to presence of unreachable nodes.
-    projection = set()
-    get_projection(0, tree, projection)
-    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
-    if unreachable:
-        testid = 'non-tree'
-        str_unreachable = ','.join(str(w) for w in sorted(unreachable))
-        testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
-    return tree
-
-
-
-def get_projection(node_id, tree, projection):
-    """
-    Collects ids of nodes dominated by the current node in the set called
-    projection. The current node itself is not added to the set but it may have
-    been in the set (together with other nodes) when this function was called.
-    The set is also the return value.
-    """
-    nodes = list((node_id,))
-    while nodes:
-        node_id = nodes.pop()
-        for child in tree['children'][node_id]:
-            if child in projection:
-                continue # skip cycles
-            projection.add(child)
-            nodes.append(child)
-    return projection
 
 
 
@@ -2586,22 +2596,24 @@ def validate_projective_punctuation(node, lineno):
 
 
 
-###!!! Temporarily working with both trees (ad-hoc and Udapi). To converge to Udapi in the future.
-def validate_annotation(tree, tree_udapi):
+def validate_annotation(tree, linenos):
     """
     Checks universally valid consequences of the annotation guidelines.
+    
+    tree ... udapi.core.root.Root object
+    linenos ... Array with line number for each node (indexed by node
+             ord (ID)). This is the only thing we still need from the old
+             build_tree() function.
     """
-    udapi_nodes = tree_udapi.descendants
-    for node_old in tree['nodes']:
-        node_id = int(node_old[ID])
-        lineno = tree['linenos'][node_id]
-        node = udapi_nodes[node_id-1]
+    nodes = tree.descendants
+    for node in nodes:
+        lineno = linenos[node.ord]
         validate_upos_vs_deprel(node, lineno)
-        validate_flat_foreign(node, lineno, tree['linenos'])
+        validate_flat_foreign(node, lineno, linenos)
         validate_left_to_right_relations(node, lineno)
         validate_single_subject(node, lineno)
         validate_orphan(node, lineno)
-        validate_functional_leaves(node, lineno, tree['linenos'])
+        validate_functional_leaves(node, lineno, linenos)
         validate_fixed_span(node, lineno)
         validate_goeswith_span(node, lineno)
         validate_goeswith_morphology_and_edeps(node, lineno)
@@ -3401,41 +3413,37 @@ def validate_misc_entity(comments, sentence):
 
 
 def validate(inp, out, args, known_sent_ids):
-    for comments, sentence in trees(inp, args):
+    for all_lines, comments, sentence in trees(inp, args):
         # The individual lines were validated already in trees().
         # What follows is tests that need to see the whole tree.
-        idseqok = validate_ID_sequence(sentence) # level 1
+        idseqok = validate_id_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
+            idrefok = idseqok and validate_id_references(sentence) # level 2
+            if not idrefok:
+                continue
+            linenos = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+            if not linenos:
+                continue
+            # If we successfully passed all the tests above, it is probably
+            # safe to give the lines to Udapi and ask it to build the tree data
+            # structure for us.
+            ###!!! There is still work to be done so that the Udapi data
+            ###!!! structures are used in all subsequent tests.
+            tree = build_tree_udapi(all_lines)
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
             if args.check_tree_text:
                 validate_text_meta(comments, sentence, args) # level 2
             validate_root(sentence) # level 2
-            validate_ID_references(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
             if args.check_coref:
                 validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
-            # Avoid building tree structure if the sequence of node ids is corrupted.
-            if idseqok:
-                tree = build_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-                egraph = build_egraph(sentence) # level 2 test: egraph is connected
-                tree_udapi = build_tree_udapi(["\t".join(x) for x in sentence])
-            else:
-                tree = None
-                egraph = None
-                tree_udapi = None
-            if tree:
-                if args.level > 2:
-                    validate_annotation(tree, tree_udapi) # level 3
-                    if args.level > 4:
-                        validate_lspec_annotation(sentence, args.lang) # level 5
-            else:
-                testlevel = 2
-                testclass = 'Format'
-                testid = 'skipped-corrupt-tree'
-                testmessage = "Skipping annotation tests because of corrupt tree structure."
-                warn(testmessage, testclass, testlevel, testid, lineno=-1)
+            if args.level > 2:
+                validate_annotation(tree, linenos) # level 3
+                if args.level > 4:
+                    validate_lspec_annotation(sentence, args.lang) # level 5
+            egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if egraph:
                 if args.level > 2:
                     validate_enhanced_annotation(egraph) # level 3
