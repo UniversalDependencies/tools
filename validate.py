@@ -1850,13 +1850,34 @@ def build_tree(sentence):
 
 def get_projection(node_id, tree, projection):
     """
-    Like proj() above, but works with the tree data structure. Collects node ids
-    in the set called projection.
+    Collects ids of nodes dominated by the current node in the set called
+    projection. The current node itself is not added to the set but it may have
+    been in the set (together with other nodes) when this function was called.
+    The set is also the return value.
     """
     nodes = list((node_id,))
     while nodes:
         node_id = nodes.pop()
         for child in tree['children'][node_id]:
+            if child in projection:
+                continue # skip cycles
+            projection.add(child)
+            nodes.append(child)
+    return projection
+
+
+
+def get_projection_udapi(node, projection):
+    """
+    Collects nodes dominated by the current node in the set called projection.
+    The current node itself is not added to the set but it may have been in the
+    set (together with other nodes) when this function was called.
+    The set is also the return value.
+    """
+    nodes = list((node,))
+    while nodes:
+        current_node = nodes.pop()
+        for child in current_node.children:
             if child in projection:
                 continue # skip cycles
             projection.add(child)
@@ -2097,7 +2118,7 @@ def validate_upos_vs_deprel(node, lineno):
 
 
 
-def validate_flat_foreign(node_id, tree):
+def validate_flat_foreign(child, lineno, linenos):
     """
     flat:foreign is an optional subtype of flat. It is used to connect two words
     in a code-switched segment of foreign words if the annotators did not want
@@ -2107,27 +2128,21 @@ def validate_flat_foreign(node_id, tree):
     """
     testlevel = 3
     testclass = 'Warning' # or Morpho
-    child = tree['nodes'][node_id]
-    if MISC >= len(child):
-        return # this has been already reported in trees()
-    if node_id == 0:
+    if child.deprel != 'flat:foreign':
         return
-    if child[DEPREL] != 'flat:foreign':
-        return
-    pid = int(child[HEAD])
-    parent = tree['nodes'][pid]
-    if child[UPOS] != 'X' or child[FEATS] != 'Foreign=Yes':
+    parent = child.parent
+    if child.upos != 'X' or child.feats != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-    if parent[UPOS] != 'X' or parent[FEATS] != 'Foreign=Yes':
+        warn(testmessage, testclass, testlevel, testid, nodeid=child.ord, lineno=lineno)
+    if parent.upos != 'X' or parent.feats != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        warn(testmessage, testclass, testlevel, testid, nodeid=pid, lineno=tree['linenos'][pid])
+        warn(testmessage, testclass, testlevel, testid, nodeid=parent.ord, lineno=linenos[parent.ord])
 
 
 
-def validate_left_to_right_relations(node_id, tree):
+def validate_left_to_right_relations(node, lineno):
     """
     Certain UD relations must always go left-to-right.
     Here we currently check the rule for the basic dependencies.
@@ -2135,24 +2150,19 @@ def validate_left_to_right_relations(node_id, tree):
     """
     testlevel = 3
     testclass = 'Syntax'
-    cols = tree['nodes'][node_id]
-    if is_multiword_token(cols):
-        return
-    if DEPREL >= len(cols):
-        return # this has been already reported in trees()
     # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
-    if re.match(r"^(conj|fixed|flat|goeswith|appos)", cols[DEPREL]):
-        ichild = int(cols[ID])
-        iparent = int(cols[HEAD])
+    if re.match(r"^(conj|fixed|flat|goeswith|appos)", node.deprel):
+        ichild = node.ord
+        iparent = node.parent.ord
         if ichild < iparent:
             # We must recognize the relation type in the test id so we can manage exceptions for legacy treebanks.
             # For conj, flat, and fixed the requirement was introduced already before UD 2.2.
             # For appos and goeswith the requirement was introduced before UD 2.4.
             # The designation "right-to-left" is confusing in languages with right-to-left writing systems.
             # We keep it in the testid but we make the testmessage more neutral.
-            testid = f"right-to-left-{lspec2ud(cols[DEPREL])}"
-            testmessage = f"Parent of relation '{cols[DEPREL]}' must precede the child in the word order."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            testid = f"right-to-left-{node.udeprel}"
+            testmessage = f"Parent of relation '{node.deprel}' must precede the child in the word order."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
@@ -2210,7 +2220,7 @@ def validate_single_subject(node, lineno):
 
 
 
-def validate_orphan(node_id, tree):
+def validate_orphan(node, lineno):
     """
     The orphan relation is used to attach an unpromoted orphan to the promoted
     orphan in gapping constructions. A common error is that the promoted orphan
@@ -2218,10 +2228,7 @@ def validate_orphan(node_id, tree):
     via a conj relation, although some other relations are plausible too.
     """
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
-    if deprel == 'orphan':
-        pid = int(tree['nodes'][node_id][HEAD])
-        pdeprel = lspec2ud(tree['nodes'][pid][DEPREL])
+    if node.udeprel == 'orphan':
         # We include advcl because gapping (or something very similar) can also
         # occur in subordinate clauses: "He buys companies like my mother [does] vegetables."
         # In theory, a similar pattern could also occur with reparandum.
@@ -2233,16 +2240,16 @@ def validate_orphan(node_id, tree):
         # 2023-04-14: Reclassifying the test as warning only. Due to promotion,
         # the parent of orphan may receive many other relations. See issue 635
         # for details and a Latin example.
-        if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", pdeprel):
+        if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", node.parent.udeprel):
             testlevel = 3
             testclass = 'Warning'
             testid = 'orphan-parent'
-            testmessage = f"The parent of 'orphan' should normally be 'conj' but it is '{pdeprel}'."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            testmessage = f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def validate_functional_leaves(node_id, tree):
+def validate_functional_leaves(node, lineno, linenos):
     """
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
@@ -2251,20 +2258,21 @@ def validate_functional_leaves(node_id, tree):
     testlevel = 3
     testclass = 'Syntax'
     # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
+    deprel = node.udeprel
     if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
-        idparent = node_id
+        idparent = node.ord
         pdeprel = deprel
-        pfeats = tree['nodes'][node_id][FEATS].split('|')
-        for idchild in tree['children'][node_id]:
-            cdeprel = lspec2ud(tree['nodes'][idchild][DEPREL])
+        pfeats = node.feats
+        for child in node.children:
+            idchild = child.ord
+            cdeprel = child.udeprel
             # The guidelines explicitly say that negation can modify any function word
             # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
             # We cannot recognize negation simply by deprel; we have to look at the
             # part-of-speech tag and the Polarity feature as well.
-            cupos = tree['nodes'][idchild][UPOS]
-            cfeats = tree['nodes'][idchild][FEATS].split('|')
-            if pdeprel != 'punct' and cdeprel == 'advmod' and re.match(r"^(PART|ADV)$", cupos) and 'Polarity=Neg' in cfeats:
+            cupos = child.upos
+            cfeats = child.feats
+            if pdeprel != 'punct' and cdeprel == 'advmod' and re.match(r"^(PART|ADV)$", cupos) and cfeats['Polarity'] == 'Neg':
                 continue
             # Punctuation should not depend on function words if it can be projectively
             # attached to a content word. But sometimes it cannot. Czech example:
@@ -2275,7 +2283,7 @@ def validate_functional_leaves(node_id, tree):
             # be non-projective. Here we assume that if the parent of a punctuation node
             # is attached nonprojectively, punctuation can be attached to it to avoid its
             # own nonprojectivity.
-            gap = get_gap(idparent, tree)
+            gap = get_gap_udapi(node)
             if gap and cdeprel == 'punct':
                 continue
             # Auxiliaries, conjunctions and case markers will tollerate a few special
@@ -2303,12 +2311,12 @@ def validate_functional_leaves(node_id, tree):
             # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
             if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-mark-case'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-aux-cop'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
@@ -2343,41 +2351,133 @@ def validate_functional_leaves(node_id, tree):
             # Flavio also argued that certain multiword det expressions should be
             # connected by flat:redup (rather than fixed), which is why flat should
             # be another exception.
-            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not ('Poss=Yes' in pfeats and re.match(r"^(appos|acl|nmod)$", cdeprel)):
+            if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not (pfeats['Poss'] == 'Yes' and re.match(r"^(appos|acl|nmod)$", cdeprel)):
                 testid = 'leaf-det'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-clf'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-cc'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Fixed expressions should not be nested, i.e., no chains of fixed relations.
             # As they are supposed to represent functional elements, they should not have
             # other dependents either, with the possible exception of conj.
-            ###!!! We also allow a punct child, at least temporarily, because of fixed
-            ###!!! expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
-            ###!!! It would be better to keep these expressions as one token. But sometimes
-            ###!!! the tokenizer is out of control of the UD data providers and it is not
-            ###!!! practical to retokenize.
+            # We also allow a punct child, at least temporarily, because of fixed
+            # expressions that have a hyphen in the middle (e.g. Russian "вперед-назад").
+            # It would be better to keep these expressions as one token. But sometimes
+            # the tokenizer is out of control of the UD data providers and it is not
+            # practical to retokenize.
             elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-fixed'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Goeswith cannot have any children, not even another goeswith.
             elif pdeprel == 'goeswith':
                 testid = 'leaf-goeswith'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
             # Punctuation can exceptionally have other punct children if an exclamation
             # mark is in brackets or quotes. It cannot have other children.
             elif pdeprel == 'punct' and cdeprel != 'punct':
                 testid = 'leaf-punct'
-                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{tree['nodes'][idparent][FORM]}:{pdeprel} --> {idchild}:{tree['nodes'][idchild][FORM]}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][idchild])
+                testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+
+
+
+def validate_fixed_span(node, lineno):
+    """
+    Like with goeswith, the fixed relation should not in general skip words that
+    are not part of the fixed expression. Unlike goeswith however, there can be
+    an intervening punctuation symbol. Moreover, the rule that fixed expressions
+    cannot be discontiguous has been challenged with examples from Swedish and
+    Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
+    Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
+    as just a warning.
+    """
+    fxchildren = [c for c in node.children if c.udeprel == 'fixed']
+    if fxchildren:
+        fxlist = sorted([node] + fxchildren)
+        fxrange = [n for n in node.root.descendants if n.ord >= node.ord and n.ord <= fxchildren[-1].ord]
+        # All nodes between me and my last fixed child should be either fixed or punct.
+        fxdiff = set(fxrange) - set(fxlist)
+        fxgap = [n for n in fxdiff if n.udeprel != 'punct']
+        if fxgap:
+            fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
+            testlevel = 3
+            testclass = 'Warning'
+            testid = 'fixed-gap'
+            testmessage = f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+
+
+
+def validate_goeswith_span(node, lineno):
+    """
+    The relation 'goeswith' is used to connect word parts that are separated
+    by whitespace and should be one word instead. We assume that the relation
+    goes left-to-right, which is checked elsewhere. Here we check that the
+    nodes really were separated by whitespace. If there is another node in the
+    middle, it must be also attached via 'goeswith'. The parameter id refers to
+    the node whose goeswith children we test.
+    """
+    testlevel = 3
+    testclass = 'Syntax'
+    gwchildren = [c for c in node.children if c.udeprel == 'goeswith']
+    if gwchildren:
+        gwlist = sorted([node] + gwchildren)
+        gwrange = [n for n in node.root.descendants if n.ord >= node.ord and n.ord <= gwchildren[-1].ord]
+        # All nodes between me and my last goeswith child should be goeswith too.
+        if gwlist != gwrange:
+            testid = 'goeswith-gap'
+            testmessage = f"Gaps in goeswith group {str(gwlist)} != {str(gwrange)}."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        # Non-last node in a goeswith range must have a space after itself.
+        nospaceafter = [x for x in gwlist[:-1] if x.misc['SpaceAfter'] == 'No']
+        if nospaceafter:
+            testid = 'goeswith-nospace'
+            testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        # This is not about the span of the interrupted word, but since we already
+        # know that we are at the head of a goeswith word, let's do it here, too.
+        # Every goeswith parent should also have Typo=Yes. However, this is not
+        # required if the treebank does not have features at all.
+        testid = 'goeswith-missing-typo'
+        testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
+        validate_required_feature(node.feats, 'Typo=Yes', testmessage, testlevel, testid, node.ord, lineno)
+
+
+
+def validate_goeswith_morphology_and_edeps(node, lineno):
+    """
+    If a node has the 'goeswith' incoming relation, it is a non-first part of
+    a mistakenly interrupted word. The lemma, upos tag and morphological features
+    of the word should be annotated at the first part, not here.
+    """
+    testlevel = 3
+    if node.udeprel == 'goeswith':
+        testclass = 'Morpho'
+        if node.lemma != '_':
+            testid = 'goeswith-lemma'
+            testmessage = "The lemma of a 'goeswith'-connected word must be annotated only at the first part."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        if node.upos != 'X':
+            testid = 'goeswith-upos'
+            testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        if node.feats != '_':
+            testid = 'goeswith-feats'
+            testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        testclass = 'Enhanced'
+        if node.deps != '_' and node.deps != node.parent.ord+':'+node.deprel:
+            testid = 'goeswith-edeps'
+            testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
@@ -2456,95 +2556,23 @@ def get_gap(node_id, tree):
 
 
 
-def validate_goeswith_span(node_id, tree):
+def get_gap_udapi(node):
     """
-    The relation 'goeswith' is used to connect word parts that are separated
-    by whitespace and should be one word instead. We assume that the relation
-    goes left-to-right, which is checked elsewhere. Here we check that the
-    nodes really were separated by whitespace. If there is another node in the
-    middle, it must be also attached via 'goeswith'. The parameter id refers to
-    the node whose goeswith children we test.
+    Returns the set of nodes between node and its parent that are not dominated
+    by the parent. If the set is not empty, the node is attached nonprojectively.
     """
-    testlevel = 3
-    testclass = 'Syntax'
-    gwchildren = sorted([x for x in tree['children'][node_id] if lspec2ud(tree['nodes'][x][DEPREL]) == 'goeswith'])
-    if gwchildren:
-        gwlist = sorted([node_id] + gwchildren)
-        gwrange = list(range(node_id, int(tree['nodes'][gwchildren[-1]][ID]) + 1))
-        # All nodes between me and my last goeswith child should be goeswith too.
-        if gwlist != gwrange:
-            testid = 'goeswith-gap'
-            testmessage = f"Violation of guidelines: gaps in goeswith group {str(gwlist)} != {str(gwrange)}."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        # Non-last node in a goeswith range must have a space after itself.
-        nospaceafter = [x for x in gwlist[:-1] if 'SpaceAfter=No' in tree['nodes'][x][MISC].split('|')]
-        if nospaceafter:
-            testid = 'goeswith-nospace'
-            testmessage = "'goeswith' cannot connect nodes that are not separated by whitespace"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        # This is not about the span of the interrupted word, but since we already
-        # know that we are at the head of a goeswith word, let's do it here, too.
-        # Every goeswith parent should also have Typo=Yes. However, this is not
-        # required if the treebank does not have features at all.
-        testid = 'goeswith-missing-typo'
-        testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature(tree['nodes'][node_id][FEATS], 'Typo=Yes', testmessage, testlevel, testid, node_id, tree['linenos'][node_id])
-
-
-
-def validate_goeswith_morphology_and_edeps(node_id, tree):
-    """
-    If a node has the 'goeswith' incoming relation, it is a non-first part of
-    a mistakenly interrupted word. The lemma, upos tag and morphological features
-    of the word should be annotated at the first part, not here.
-    """
-    testlevel = 3
-    if lspec2ud(tree['nodes'][node_id][DEPREL]) == 'goeswith':
-        testclass = 'Morpho'
-        if tree['nodes'][node_id][LEMMA] != '_':
-            testid = 'goeswith-lemma'
-            testmessage = "The lemma of a 'goeswith'-connected word must be annotated only at the first part."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        if tree['nodes'][node_id][UPOS] != 'X':
-            testid = 'goeswith-upos'
-            testmessage = "The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        if tree['nodes'][node_id][FEATS] != '_':
-            testid = 'goeswith-feats'
-            testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        testclass = 'Enhanced'
-        if tree['nodes'][node_id][DEPS] != '_' and tree['nodes'][node_id][DEPS] != tree['nodes'][node_id][HEAD]+':'+tree['nodes'][node_id][DEPREL]:
-            testid = 'goeswith-edeps'
-            testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-
-
-
-def validate_fixed_span(node_id, tree):
-    """
-    Like with goeswith, the fixed relation should not in general skip words that
-    are not part of the fixed expression. Unlike goeswith however, there can be
-    an intervening punctuation symbol. Moreover, the rule that fixed expressions
-    cannot be discontiguous has been challenged with examples from Swedish and
-    Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
-    Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
-    as just a warning.
-    """
-    fxchildren = sorted([i for i in tree['children'][node_id] if lspec2ud(tree['nodes'][i][DEPREL]) == 'fixed'])
-    if fxchildren:
-        fxlist = sorted([node_id] + fxchildren)
-        fxrange = list(range(node_id, int(tree['nodes'][fxchildren[-1]][ID]) + 1))
-        # All nodes between me and my last fixed child should be either fixed or punct.
-        fxdiff = set(fxrange) - set(fxlist)
-        fxgap = [i for i in fxdiff if lspec2ud(tree['nodes'][i][DEPREL]) != 'punct']
-        if fxgap:
-            fxexpr = ' '.join([(tree['nodes'][i][FORM] if i in fxlist else '*') for i in fxrange])
-            testlevel = 3
-            testclass = 'Warning'
-            testid = 'fixed-gap'
-            testmessage = f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+    iid = node.ord
+    pid = node.parent.ord
+    if iid < pid:
+        rangebetween = range(iid + 1, pid)
+    else:
+        rangebetween = range(pid + 1, iid)
+    gap = set()
+    if rangebetween:
+        projection = set()
+        get_projection_udapi(node.parent, projection)
+        gap = set(rangebetween) - projection
+    return gap
 
 
 
@@ -2571,7 +2599,7 @@ def validate_projective_punctuation(node_id, tree):
 
 
 
-###!!! Temporarily working with both trees (ad-hoc and Udapi). To converge to Udapi.
+###!!! Temporarily working with both trees (ad-hoc and Udapi). To converge to Udapi in the future.
 def validate_annotation(tree, tree_udapi):
     """
     Checks universally valid consequences of the annotation guidelines.
@@ -2582,14 +2610,14 @@ def validate_annotation(tree, tree_udapi):
         lineno = tree['linenos'][node_id]
         node = udapi_nodes[node_id-1]
         validate_upos_vs_deprel(node, lineno)
-        validate_flat_foreign(node_id, tree)
-        validate_left_to_right_relations(node_id, tree)
+        validate_flat_foreign(node, lineno, tree['linenos'])
+        validate_left_to_right_relations(node, lineno)
         validate_single_subject(node, lineno)
-        validate_orphan(node_id, tree)
-        validate_functional_leaves(node_id, tree)
-        validate_fixed_span(node_id, tree)
-        validate_goeswith_span(node_id, tree)
-        validate_goeswith_morphology_and_edeps(node_id, tree)
+        validate_orphan(node, lineno)
+        validate_functional_leaves(node, lineno, tree['linenos'])
+        validate_fixed_span(node, lineno)
+        validate_goeswith_span(node, lineno)
+        validate_goeswith_morphology_and_edeps(node, lineno)
         validate_projective_punctuation(node_id, tree)
 
 
