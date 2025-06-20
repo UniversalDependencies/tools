@@ -2707,32 +2707,25 @@ def validate_whitespace(cols, args):
 
 
 
-def validate_auxiliary_verbs(cols, children, nodes, line, lang):
+def validate_auxiliary_verbs(node, line, lang):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
     Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
+      'node' ....... udapi.core.node.Node object
       'line' ....... line number of the node within the file
     """
     global data
-    if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
-        altlang = get_alt_language(cols[MISC])
+    if node.upos == 'AUX' and node.lemma != '_':
+        altlang = get_alt_language_udapi(node)
         if altlang:
             lang = altlang
         auxlist = data.get_aux_for_language(lang)
-        auxdict = {}
-        if auxlist != []:
-            auxdict = {lang: auxlist}
-        lspecauxs = auxdict.get(lang, None)
-        if not lspecauxs or not cols[LEMMA] in lspecauxs:
+        if not auxlist or not node.lemma in auxlist:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
-            testmessage = f"'{cols[LEMMA]}' is not an auxiliary in language [{lang}]"
+            testmessage = f"'{node.lemma}' is not an auxiliary in language [{lang}]"
             if not altlang and len(data.warn_on_undoc_aux) > 0:
                 # Tell the user which auxiliaries are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
@@ -2740,36 +2733,29 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 # other instances of unknown auxiliaries.
                 testmessage += "\n\n" + data.warn_on_undoc_aux
                 data.warn_on_undoc_aux = ''
-            warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
 
 
 
-def validate_copula_lemmas(cols, children, nodes, line, lang):
+def validate_copula_lemmas(node, line, lang):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
     Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
+      'node' ....... udapi.core.node.Node object
       'line' ....... line number of the node within the file
     """
     global data
-    if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
-        altlang = get_alt_language(cols[MISC])
+    if node.udeprel == 'cop' and node.lemma != '_':
+        altlang = get_alt_language_udapi(node)
         if altlang:
             lang = altlang
         coplist = data.get_cop_for_language(lang)
-        copdict = {}
-        if coplist != []:
-            copdict = {lang: coplist}
-        lspeccops = copdict.get(lang, None)
-        if not lspeccops or not cols[LEMMA] in lspeccops:
+        if not coplist or not node.lemma in coplist:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
-            testmessage = f"'{cols[LEMMA]}' is not a copula in language [{lang}]"
+            testmessage = f"'{node.lemma}' is not a copula in language [{lang}]"
             if not altlang and len(data.warn_on_undoc_cop) > 0:
                 # Tell the user which copulas are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
@@ -2777,56 +2763,23 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
                 # other instances of unknown copulas.
                 testmessage += "\n\n" + data.warn_on_undoc_cop
                 data.warn_on_undoc_cop = ''
-            warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
 
 
 
-def validate_lspec_annotation(tree, lang):
+def validate_lspec_annotation(tree, linenos, lang):
     """
     Checks language-specific consequences of the annotation guidelines.
+    
+    tree ... udapi.core.root.Root object
+    linenos ... array of line numbers, indexed by node ords (IDs)
     """
-    ###!!! Building the information about the tree is repeated and has been done in the other functions before.
-    ###!!! We should remember the information and not build it several times!
     global state
-    node_line = state.sentence_line - 1
-    lines = {} # node id -> line number of that node (for error messages)
-    nodes = {} # node id -> columns of that node
-    children = {} # node -> set of children
-    for cols in tree:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        if HEAD >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        if cols[HEAD]=='_':
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        try:
-            int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        try:
-            int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        # Incrementally build the set of children of every node.
-        lines.setdefault(cols[ID], node_line)
-        nodes.setdefault(cols[ID], cols)
-        children.setdefault(cols[HEAD], set()).add(cols[ID])
-    for cols in tree:
-        if not is_word(cols):
-            continue
-        myline = lines.get(cols[ID], state.sentence_line)
-        mychildren = children.get(cols[ID], [])
-        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
-        validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
+    nodes = tree.descendants
+    for node in nodes:
+        myline = linenos[node.ord]
+        validate_auxiliary_verbs(node, myline, lang)
+        validate_copula_lemmas(node, myline, lang)
 
 
 
@@ -3412,10 +3365,14 @@ def validate_misc_entity(comments, sentence):
 
 
 
-def validate(inp, out, args, known_sent_ids):
+def validate(inp, args, known_sent_ids):
     for all_lines, comments, sentence in trees(inp, args):
         # The individual lines were validated already in trees().
         # What follows is tests that need to see the whole tree.
+        # Note that low-level errors such as wrong number of columns would be
+        # reported in trees() but then the lines would be thrown away and no
+        # tree lines would be yielded—meaning that we will not encounter such
+        # a mess here.
         idseqok = validate_id_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
@@ -3442,7 +3399,7 @@ def validate(inp, out, args, known_sent_ids):
             if args.level > 2:
                 validate_annotation(tree, linenos) # level 3
                 if args.level > 4:
-                    validate_lspec_annotation(sentence, args.lang) # level 5
+                    validate_lspec_annotation(tree, linenos, args.lang) # level 5
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if egraph:
                 if args.level > 2:
@@ -3466,6 +3423,13 @@ def get_alt_language(misc):
         m = alt_lang_re.match(attr)
         if m:
             return m.group(1)
+    return None
+
+
+
+def get_alt_language_udapi(node):
+    if node.misc['Lang'] != '':
+        return node.misc['Lang']
     return None
 
 
@@ -3558,7 +3522,7 @@ if __name__=="__main__":
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for state.current_file_name, inp in zip(args.input, open_files):
-            validate(inp, out, args, known_sent_ids)
+            validate(inp, args, known_sent_ids)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
         if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
