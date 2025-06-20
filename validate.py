@@ -1391,6 +1391,34 @@ def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid,
 
 
 
+def validate_required_feature_udapi(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function will check the presence of a feature
+    and if it is missing, an error will be reported only if at least one feature
+    has been already encountered. Otherwise the error will be remembered and it
+    may be reported afterwards if any feature is encountered later.
+    
+    feats ... a Udapi Feats object
+    required_feature ... the feature name (string)
+    required_value ... the feature value (string; multivalues are not supported)
+    """
+    global state
+    testclass = 'Morpho'
+    ###!!! We may want to check that any value of a given feature is present,
+    ###!!! or even that a particular value is present. Currently we only test
+    ###!!! Typo=Yes, i.e., the latter case.
+    if feats[required_feature] != required_value:
+        if state.seen_morpho_feature:
+            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
+        else:
+            if not testid in state.delayed_feature_errors:
+                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
+            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
+
+
+
 def validate_token_empty_vals(cols):
     """
     Checks that a multi-word token has _ empty values in all fields except MISC.
@@ -1867,25 +1895,6 @@ def get_projection(node_id, tree, projection):
 
 
 
-def get_projection_udapi(node, projection):
-    """
-    Collects nodes dominated by the current node in the set called projection.
-    The current node itself is not added to the set but it may have been in the
-    set (together with other nodes) when this function was called.
-    The set is also the return value.
-    """
-    nodes = list((node,))
-    while nodes:
-        current_node = nodes.pop()
-        for child in current_node.children:
-            if child in projection:
-                continue # skip cycles
-            projection.add(child)
-            nodes.append(child)
-    return projection
-
-
-
 def build_egraph(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
@@ -2283,8 +2292,7 @@ def validate_functional_leaves(node, lineno, linenos):
             # be non-projective. Here we assume that if the parent of a punctuation node
             # is attached nonprojectively, punctuation can be attached to it to avoid its
             # own nonprojectivity.
-            gap = get_gap_udapi(node)
-            if gap and cdeprel == 'punct':
+            if node.is_nonprojective() and cdeprel == 'punct':
                 continue
             # Auxiliaries, conjunctions and case markers will tollerate a few special
             # types of modifiers.
@@ -2448,7 +2456,7 @@ def validate_goeswith_span(node, lineno):
         # required if the treebank does not have features at all.
         testid = 'goeswith-missing-typo'
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature(node.feats, 'Typo=Yes', testmessage, testlevel, testid, node.ord, lineno)
+        validate_required_feature_udapi(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
 
 
 
@@ -2474,92 +2482,76 @@ def validate_goeswith_morphology_and_edeps(node, lineno):
             testmessage = "The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
             warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
         testclass = 'Enhanced'
-        if node.deps != '_' and node.deps != node.parent.ord+':'+node.deprel:
+        if node.deps != '_' and node.deps != str(node.parent.ord)+':'+node.deprel:
             testid = 'goeswith-edeps'
             testmessage = "A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
             warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
-def collect_ancestors(node_id, tree, ancestors):
+def collect_ancestors(node):
     """
-    Usage: ancestors = collect_ancestors(nodeid, nodes, [])
+    Usage: ancestors = collect_ancestors(node)
+    Returns the list of all ancestors of the current node, including the
+    technical root.
     """
-    pid = int(tree['nodes'][int(node_id)][HEAD])
-    if pid == 0:
-        ancestors.append(0)
-        return ancestors
-    if pid in ancestors:
-        # Cycle has been reported on level 2. But we must jump out of it now.
-        return ancestors
-    ancestors.append(pid)
-    return collect_ancestors(pid, tree, ancestors)
+    ancestors = []
+    while not node.is_root():
+        node = node.parent
+        ancestors.append(node)
+    # Udapi returns all lists of nodes sorted by ord, let's do the same here.
+    ancestors.sort()
+    return ancestors
 
 
 
-def get_caused_nonprojectivities(node_id, tree):
+###!!! Is there a Udapi function that could replace this?
+def get_caused_nonprojectivities(node):
     """
     Checks whether a node is in a gap of a nonprojective edge. Report true only
     if the node's parent is not in the same gap. (We use this function to check
     that a punctuation node does not cause nonprojectivity. But if it has been
     dragged to the gap with a larger subtree, then we do not blame it.)
 
-    tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns; mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings); indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes (needed in error messages)
+    node ... Udapi Node object
     """
-    iid = int(node_id) # just to be sure
+    nodes = node.root.descendants
+    iid = node.ord
     # We need to find all nodes that are not ancestors of this node and lie
     # on other side of this node than their parent. First get the set of
     # ancestors.
-    ancestors = collect_ancestors(iid, tree, [])
-    maxid = len(tree['nodes']) - 1
+    ancestors = collect_ancestors(node)
+    maxid = nodes[-1].ord
     # Get the lists of nodes to either side of id.
     # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
-    pid = int(tree['nodes'][iid][HEAD])
+    pid = node.parent.ord
     if pid < iid:
-        left = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
-        right = range(iid + 1, maxid + 1)
+        leftidrange = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
+        rightidrange = range(iid + 1, maxid + 1)
     else:
-        left = range(1, iid)
-        right = range(iid + 1, pid)
+        leftidrange = range(1, iid)
+        rightidrange = range(iid + 1, pid)
+    left = [n for n in nodes if n.ord in leftidrange]
+    right = [n for n in nodes if n.ord in rightidrange]
     # Exclude nodes whose parents are ancestors of id.
-    sancestors = set(ancestors)
-    leftna = [x for x in left if int(tree['nodes'][x][HEAD]) not in sancestors]
-    rightna = [x for x in right if int(tree['nodes'][x][HEAD]) not in sancestors]
-    leftcross = [x for x in leftna if int(tree['nodes'][x][HEAD]) > iid]
-    rightcross = [x for x in rightna if int(tree['nodes'][x][HEAD]) < iid]
+    leftna = [x for x in left if x.parent not in ancestors]
+    rightna = [x for x in right if x.parent not in ancestors]
+    leftcross = [x for x in leftna if x.parent.ord > iid]
+    rightcross = [x for x in rightna if x.parent.ord < iid]
     # Once again, exclude nonprojectivities that are caused by ancestors of id.
     if pid < iid:
-        rightcross = [x for x in rightcross if int(tree['nodes'][x][HEAD]) > pid]
+        rightcross = [x for x in rightcross if x.parent.ord > pid]
     else:
-        leftcross = [x for x in leftcross if int(tree['nodes'][x][HEAD]) < pid]
+        leftcross = [x for x in leftcross if x.parent.ord < pid]
     # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
     return sorted(leftcross + rightcross)
 
 
 
-def get_gap(node_id, tree):
-    iid = int(node_id) # just to be sure
-    pid = int(tree['nodes'][iid][HEAD])
-    if iid < pid:
-        rangebetween = range(iid + 1, pid)
-    else:
-        rangebetween = range(pid + 1, iid)
-    gap = set()
-    if rangebetween:
-        projection = set()
-        get_projection(pid, tree, projection)
-        gap = set(rangebetween) - projection
-    return gap
-
-
-
-def get_gap_udapi(node):
+def get_gap(node):
     """
-    Returns the set of nodes between node and its parent that are not dominated
-    by the parent. If the set is not empty, the node is attached nonprojectively.
+    Returns the list of nodes between node and its parent that are not dominated
+    by the parent. If the list is not empty, the node is attached nonprojectively.
     """
     iid = node.ord
     pid = node.parent.ord
@@ -2567,35 +2559,31 @@ def get_gap_udapi(node):
         rangebetween = range(iid + 1, pid)
     else:
         rangebetween = range(pid + 1, iid)
-    gap = set()
+    gap = []
     if rangebetween:
-        projection = set()
-        get_projection_udapi(node.parent, projection)
-        gap = set(rangebetween) - projection
+        gap = [n for n in node.root.descendants if n.ord in rangebetween and not n in node.parent.descendants]
     return gap
 
 
 
-def validate_projective_punctuation(node_id, tree):
+def validate_projective_punctuation(node, lineno):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
     nonprojectively.
     """
     testlevel = 3
     testclass = 'Syntax'
-    # This is a level 3 test, we will check only the universal part of the relation.
-    deprel = lspec2ud(tree['nodes'][node_id][DEPREL])
-    if deprel == 'punct':
-        nonprojnodes = get_caused_nonprojectivities(node_id, tree)
+    if node.udeprel == 'punct':
+        nonprojnodes = get_caused_nonprojectivities(node)
         if nonprojnodes:
             testid = 'punct-causes-nonproj'
             testmessage = f"Punctuation must not cause non-projectivity of nodes {nonprojnodes}"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
-        gap = get_gap(node_id, tree)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        gap = get_gap(node)
         if gap:
             testid = 'punct-is-nonproj'
             testmessage = f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
-            warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=tree['linenos'][node_id])
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
 
 
 
@@ -2618,7 +2606,7 @@ def validate_annotation(tree, tree_udapi):
         validate_fixed_span(node, lineno)
         validate_goeswith_span(node, lineno)
         validate_goeswith_morphology_and_edeps(node, lineno)
-        validate_projective_punctuation(node_id, tree)
+        validate_projective_punctuation(node, lineno)
 
 
 
