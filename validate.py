@@ -504,9 +504,31 @@ class Data:
 
 
 
+class CompiledRegexes:
+    """
+    The CompiledRegexes class holds various regular expressions needed to
+    recognize individual elements of the CoNLL-U format, precompiled to speed
+    up parsing. Individual expressions are typically not enclosed in ^...$
+    because one can use re.fullmatch() if it is desired that the whole string
+    matches the expression.
+    """
+    def __init__(self):
+        # Whitespace.
+        self.ws = re.compile(r"\s+")
+        # Regular word/node id: integer number.
+        self.wordid = re.compile(r"[1-9][0-9]*")
+        # Multiword token id: range of integers.
+        self.mwtid = re.compile(r"[1-9][0-9]*-[1-9][0-9]*")
+        # Empty node id: "decimal" number (but 1.10 != 1.1).
+        # The two parts are bracketed so they can be captured and processed separately.
+        self.enodeid = re.compile(r"([0-9]+)\.([1-9][0-9]*)")
+
+
+
 # Global variables:
 state = State()
 data = Data()
+crex = CompiledRegexes()
 conllu_reader = udapi.block.read.conllu.Conllu()
 
 
@@ -557,25 +579,22 @@ def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None
 
 
 
-###### Support functions
-ws_re = re.compile(r"^\s+$")
+# Support functions.
+
 def is_whitespace(line):
-    return ws_re.match(line)
+    return crex.ws.fullmatch(line)
 
-word_re = re.compile(r"^[1-9][0-9]*$")
 def is_word(cols):
-    return word_re.match(cols[ID])
+    return crex.wordid.fullmatch(cols[ID])
 
-mwt_re = re.compile(r"^[1-9][0-9]*-[1-9][0-9]*$")
 def is_multiword_token(cols):
-    return mwt_re.match(cols[ID])
+    return crex.mwtid.fullmatch(cols[ID])
 
-empty_node_re = re.compile(r"^[0-9]+\.[1-9][0-9]*$")
 def is_empty_node(cols):
-    return empty_node_re.match(cols[ID])
+    return crex.enodeid.fullmatch(cols[ID])
 
 def parse_empty_node_id(cols):
-    m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
+    m = crex.enodeid.fullmatch(cols[ID])
     assert m, 'parse_empty_node_id with non-empty node'
     return m.groups()
 
@@ -1101,7 +1120,7 @@ def validate_text_meta(comments, tree, args):
                     state.spaceafterno_in_effect = True
                 else:
                     state.spaceafterno_in_effect = False
-                    if args.check_space_after and (stext) and not stext[0].isspace():
+                    if (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
                         testmessage = f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
@@ -1362,32 +1381,6 @@ def features_present():
                      state.delayed_feature_errors[testid]['level'],
                      testid, nodeid=occurrence['nodeid'],
                      lineno=occurrence['lineno'])
-
-
-
-def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid, lineno):
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function will check the presence of a feature
-    and if it is missing, an error will be reported only if at least one feature
-    has been already encountered. Otherwise the error will be remembered and it
-    may be reported afterwards if any feature is encountered later.
-    """
-    global state
-    testclass = 'Morpho'
-    ###!!! We may want to check that any value of a given feature is present,
-    ###!!! or even that a particular value is present. Currently we only test
-    ###!!! Typo=Yes, i.e., the latter case.
-    if not fv in feats.split('|'):
-        if state.seen_morpho_feature:
-            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
-        else:
-            if not testid in state.delayed_feature_errors:
-                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel,
-                                                  'message': testmessage, 'occurrences': []}
-            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
-                                                                  'lineno': lineno})
 
 
 
@@ -3385,12 +3378,9 @@ def validate(inp, args, known_sent_ids):
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us.
-            ###!!! There is still work to be done so that the Udapi data
-            ###!!! structures are used in all subsequent tests.
             tree = build_tree_udapi(all_lines)
             validate_sent_id(comments, known_sent_ids, args.lang) # level 2
-            if args.check_tree_text:
-                validate_text_meta(comments, sentence, args) # level 2
+            validate_text_meta(comments, sentence, args) # level 2
             validate_root(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
@@ -3471,16 +3461,6 @@ if __name__=="__main__":
                             action="store_false", default=True, dest="single_root",
                             help="""Allow trees with several root words
                             (single root required by default).""")
-
-    meta_group = opt_parser.add_argument_group("Metadata constraints",
-                                               "Options for checking the validity of tree metadata.")
-    meta_group.add_argument("--no-tree-text",
-                            action="store_false", default=True, dest="check_tree_text",
-                            help="""Do not test tree text.
-                            For internal use only, this test is required and on by default.""")
-    meta_group.add_argument("--no-space-after",
-                            action="store_false", default=True, dest="check_space_after",
-                            help="Do not test presence of SpaceAfter=No.")
 
     coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
                                                 "Options for checking coreference and entity annotation.")
