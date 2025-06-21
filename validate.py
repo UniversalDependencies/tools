@@ -64,6 +64,9 @@ class State:
         # Key: testid; value: dict with parameters of the error and the list of
         # its occurrences.
         self.delayed_feature_errors = {}
+        # Remember all sentence ids seen in all input files (presumably one
+        # corpus). We need it to check that each id is unique.
+        self.known_sent_ids = set()
         #----------------------------------------------------------------------
         # Various things that we may have seen earlier in the corpus. The value
         # is None if we have not seen it, otherwise it is the line number of
@@ -533,6 +536,36 @@ class CompiledRegexes:
         self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
         # Sentence text comment line. The actual text is bracketed.
         self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
+        # Global entity comment is a declaration of entity attributes in MISC.
+        # It occurs once per document and it is optional (only CorefUD data).
+        # The actual attribute declaration is bracketed so it can be captured in the match.
+        self.global_entity = re.compile(r"#\s*global\.Entity\s*=\s*(.+)")
+        # UPOS tag.
+        self.upos = re.compile(r"[A-Z]+")
+        # Feature=value pair.
+        # Feature name and feature value are bracketed so that each can be captured separately in the match.
+        self.featval = re.compile(r"([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)")
+        self.val = re.compile(r"[A-Z0-9][A-Za-z0-9]*")
+        # Basic parent reference (HEAD).
+        self.head = re.compile(r"(0|[1-9][0-9]*)")
+        # Enhanced parent reference (head).
+        self.ehead = re.compile(r"(0|[1-9][0-9]*)(\.[1-9][0-9]*)?")
+        # Basic dependency relation (including optional subtype).
+        self.deprel = re.compile(r"[a-z]+(:[a-z]+)?")
+        # Enhanced dependency relation (possibly with Unicode subtypes).
+        # Ll ... lowercase Unicode letters
+        # Lm ... modifier Unicode letters (e.g., superscript h)
+        # Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+        # M .... combining diacritical marks
+        # Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+        edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
+        # There must be always the universal part, consisting only of ASCII letters.
+        # There can be up to three additional, colon-separated parts: subtype, preposition and case.
+        # One of them, the preposition, may contain Unicode letters. We do not know which one it is
+        # (only if there are all four parts, we know it is the third one).
+        # ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
+        edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
+        self.edeprel = re.compile(edeprel_resrc)
 
 
 
@@ -1002,7 +1035,11 @@ def validate_newlines(inp):
 
 
 
-def validate_sent_id(comments, known_ids, lcode):
+def validate_sent_id(comments, lcode):
+    """
+    Checks that sentence id exists, is well-formed and unique.
+    """
+    global state
     testlevel = 2
     testclass = 'Metadata'
     matched = []
@@ -1026,8 +1063,8 @@ def validate_sent_id(comments, known_ids, lcode):
     else:
         # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
         # For that to happen, all three files should be tested at once.
-        sid=matched[0].group(1)
-        if sid in known_ids:
+        sid = matched[0].group(1)
+        if sid in state.known_sent_ids:
             testid = 'non-unique-sent-id'
             testmessage = f"Non-unique sent_id attribute '{sid}'."
             warn(testmessage, testclass, testlevel, testid)
@@ -1035,20 +1072,22 @@ def validate_sent_id(comments, known_ids, lcode):
             testid = 'slash-in-sent-id'
             testmessage = f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
             warn(testmessage, testclass, testlevel, testid)
-        known_ids.add(sid)
+        state.known_sent_ids.add(sid)
 
 
 
 def validate_text_meta(comments, tree, args):
-    # Remember if SpaceAfter=No applies to the last word of the sentence.
-    # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+    """
+    Checks metadata other than sentence id, that is, document breaks, paragraph
+    breaks and sentence text (which is also compared to the sequence of the
+    forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+    """
     global state
     # In next_sentence(), state.sentence_line was already moved to the first token/node line
     # after the sentence comment lines. While this is useful in most validation
     # functions, it complicates things here where we also work with the comments.
     # warn(lineno=-1) will print the state.sentence_line, i.e., after the comments.
     # warn() without lineno will refer to the empty line after the sentence.
-    global state
     testlevel = 2
     testclass = 'Metadata'
     newdoc_matched = []
@@ -1099,9 +1138,6 @@ def validate_text_meta(comments, tree, args):
         iline = -1
         for cols in tree:
             iline += 1
-            if MISC >= len(cols):
-                # This error has been reported elsewhere but we cannot check MISC now.
-                continue
             if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
                 testid = 'nospaceafter-yes'
                 testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
@@ -1146,6 +1182,8 @@ def validate_text_meta(comments, tree, args):
                     mismatch_reported = 1
             else:
                 stext = stext[len(cols[FORM]):] # eat the form
+                # Remember if SpaceAfter=No applies to the last word of the sentence.
+                # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
                 if 'SpaceAfter=No' in cols[MISC].split("|"):
                     state.spaceafterno_in_effect = True
                 else:
@@ -1173,278 +1211,21 @@ def validate_cols(cols, args):
     All tests that can run on a single line. Done as soon as the line is read,
     called from next_sentence() if level>1.
     """
+    # Multiword tokens and empty nodes can or must have certain fields empty.
+    if is_multiword_token(cols):
+        validate_mwt_empty_vals(cols)
+    if is_empty_node(cols):
+        validate_empty_node_empty_vals(cols) # level 2
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
         validate_upos(cols) # level 2
         validate_features(cols, args) # level 2 and up (relevant code checks whether higher level is required)
-    elif is_multiword_token(cols):
-        validate_token_empty_vals(cols)
-    # else do nothing; we have already reported wrong ID format at level 1
     if is_word(cols):
         validate_deprels(cols, args) # level 2 and up
-    elif is_empty_node(cols):
-        validate_empty_node_empty_vals(cols) # level 2
-    if args.level > 3:
-        validate_whitespace(cols, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
 
 
-# Ll ... lowercase Unicode letters
-# Lm ... modifier Unicode letters (e.g., superscript h)
-# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
-# M .... combining diacritical marks
-# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
-edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
-# There must be always the universal part, consisting only of ASCII letters.
-# There can be up to three additional, colon-separated parts: subtype, preposition and case.
-# One of them, the preposition, may contain Unicode letters. We do not know which one it is
-# (only if there are all four parts, we know it is the third one).
-# ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
-edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
-edeprel_re = re.compile(edeprel_resrc)
-deprel_re = re.compile(r"^[a-z]+(:[a-z]+)?$")
-upos_re = re.compile(r"^[A-Z]+$")
-def validate_character_constraints(cols):
-    """
-    Checks general constraints on valid characters, e.g. that UPOS
-    only contains [A-Z].
-    """
-    testlevel = 2
-    if is_multiword_token(cols):
-        return
-    if UPOS >= len(cols):
-        return # this has been already reported in next_sentence()
-    if not (upos_re.match(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
-        testclass = 'Morpho'
-        testid = 'invalid-upos'
-        testmessage = f"Invalid UPOS value '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
-    if not (deprel_re.match(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
-        testclass = 'Syntax'
-        testid = 'invalid-deprel'
-        testmessage = f"Invalid DEPREL value '{cols[DEPREL]}'."
-        warn(testmessage, testclass, testlevel, testid)
-    try:
-        deps_list(cols)
-    except ValueError:
-        testclass = 'Enhanced'
-        testid = 'invalid-deps'
-        testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-        warn(testmessage, testclass, testlevel, testid)
-        return
-    if any(deprel for head, deprel in deps_list(cols)
-        if not edeprel_re.match(deprel)):
-            testclass = 'Enhanced'
-            testid = 'invalid-edeprel'
-            testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
-            warn(testmessage, testclass, testlevel, testid)
-
-
-
-def validate_upos(cols):
-    global data
-    if UPOS >= len(cols):
-        return # this has been already reported in next_sentence()
-    if is_empty_node(cols) and cols[UPOS] == '_':
-        return
-    if cols[UPOS] not in data.upos:
-        testlevel = 2
-        testclass = 'Morpho'
-        testid = 'unknown-upos'
-        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
-
-
-
-attr_val_re=re.compile(r"^([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$")
-val_re=re.compile(r"^[A-Z0-9][A-Za-z0-9]*")
-def validate_features(cols, args):
-    """
-    Checks general constraints on feature-value format. On level 4 and higher,
-    also checks that a feature-value pair is listed as approved. (Every pair
-    must be allowed on level 2 because it could be defined as language-specific.
-    To disallow non-universal features, test on level 4 with language 'ud'.)
-    """
-    global state
-    global data
-    testclass = 'Morpho'
-    if FEATS >= len(cols):
-        return # this has been already reported in next_sentence()
-    feats = cols[FEATS]
-    if feats == '_':
-        return True
-    features_present()
-    # List of permited features is language-specific.
-    # The current token may be in a different language due to code switching.
-    lang = args.lang
-    default_featset = featset = data.get_feats_for_language(lang)
-    altlang = get_alt_language(cols[MISC])
-    if altlang:
-        lang = altlang
-        featset = data.get_feats_for_language(altlang)
-    feat_list=feats.split('|')
-    if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
-        testlevel = 2
-        testid = 'unsorted-features'
-        testmessage = f"Morphological features must be sorted: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid)
-    attr_set = set() # I'll gather the set of features here to check later that none is repeated.
-    for f in feat_list:
-        match = attr_val_re.match(f)
-        if match is None:
-            testlevel = 2
-            testid = 'invalid-feature'
-            testmessage = f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
-            warn(testmessage, testclass, testlevel, testid)
-            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
-        else:
-            # Check that the values are sorted as well
-            attr = match.group(1)
-            attr_set.add(attr)
-            values = match.group(2).split(',')
-            if len(values) != len(set(values)):
-                testlevel = 2
-                testid = 'repeated-feature-value'
-                testmessage = f"Repeated feature values are disallowed: '{feats}'"
-                warn(testmessage, testclass, testlevel, testid)
-            if [v.lower() for v in values] != sorted(v.lower() for v in values):
-                testlevel = 2
-                testid = 'unsorted-feature-values'
-                testmessage = f"If a feature has multiple values, these must be sorted: '{f}'"
-                warn(testmessage, testclass, testlevel, testid)
-            for v in values:
-                if not val_re.match(v):
-                    testlevel = 2
-                    testid = 'invalid-feature-value'
-                    testmessage = f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
-                    warn(testmessage, testclass, testlevel, testid)
-                # Level 2 tests character properties and canonical order but not that the f-v pair is known.
-                # Level 4 also checks whether the feature value is on the list.
-                # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
-                if args.level > 3:
-                    testlevel = 4
-                    # The feature Typo=Yes is the only feature allowed on a multi-word token line.
-                    # If it occurs there, it cannot be duplicated on the lines of the component words.
-                    if attr == 'Typo' and state.mwt_typo_span_end and cols[ID] <= state.mwt_typo_span_end:
-                        testid = 'mwt-typo-repeated-at-word'
-                        testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
-                        warn(testmessage, testclass, testlevel, testid)
-                    # In case of code switching, the current token may not be in the default language
-                    # and then its features are checked against a different feature set. An exception
-                    # is the feature Foreign, which always relates to the default language of the
-                    # corpus (but Foreign=Yes should probably be allowed for all UPOS categories in
-                    # all languages).
-                    effective_featset = featset
-                    effective_lang = lang
-                    if attr == 'Foreign':
-                        # Revert to the default.
-                        effective_featset = default_featset
-                        effective_lang = args.lang
-                    if effective_featset is not None:
-                        if attr not in effective_featset:
-                            testid = 'feature-unknown'
-                            testmessage = f"Feature {attr} is not documented for language [{effective_lang}]."
-                            if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                # If some features were excluded because they are not documented,
-                                # tell the user when the first unknown feature is encountered in the data.
-                                # Then erase this (long) introductory message and do not repeat it with
-                                # other instances of unknown features.
-                                testmessage += "\n\n" + data.warn_on_undoc_feats
-                                data.warn_on_undoc_feats = ''
-                            warn(testmessage, testclass, testlevel, testid)
-                        else:
-                            lfrecord = effective_featset[attr]
-                            if lfrecord['permitted'] == 0:
-                                testid = 'feature-not-permitted'
-                                testmessage = f"Feature {attr} is not permitted in language [{effective_lang}]."
-                                if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                    testmessage += "\n\n" + data.warn_on_undoc_feats
-                                    data.warn_on_undoc_feats = ''
-                                warn(testmessage, testclass, testlevel, testid)
-                            else:
-                                values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
-                                if not v in values:
-                                    testid = 'feature-value-unknown'
-                                    testmessage = f"Value {v} is not documented for feature {attr} in language [{effective_lang}]."
-                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                                        data.warn_on_undoc_feats = ''
-                                    warn(testmessage, testclass, testlevel, testid)
-                                elif not cols[UPOS] in lfrecord['byupos']:
-                                    testid = 'feature-upos-not-permitted'
-                                    testmessage = f"Feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                                        data.warn_on_undoc_feats = ''
-                                    warn(testmessage, testclass, testlevel, testid)
-                                elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
-                                    testid = 'feature-value-upos-not-permitted'
-                                    testmessage = f"Value {v} of feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                                        data.warn_on_undoc_feats = ''
-                                    warn(testmessage, testclass, testlevel, testid)
-    if len(attr_set) != len(feat_list):
-        testlevel = 2
-        testid = 'repeated-feature'
-        testmessage = f"Repeated features are disallowed: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid)
-    if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(cols[ID]):
-        state.mwt_typo_span_end = None
-
-
-
-def features_present():
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function is called when the first morphological
-    feature is encountered. It remembers that from now on, missing features can
-    be reported as errors. In addition, if any such errors have already been
-    encountered, they will be reported now.
-    """
-    global state
-    if not state.seen_morpho_feature:
-        state.seen_morpho_feature = state.current_line
-        for testid in state.delayed_feature_errors:
-            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                warn(state.delayed_feature_errors[testid]['message'],
-                     state.delayed_feature_errors[testid]['class'],
-                     state.delayed_feature_errors[testid]['level'],
-                     testid, nodeid=occurrence['nodeid'],
-                     lineno=occurrence['lineno'])
-
-
-
-def validate_required_feature_udapi(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function will check the presence of a feature
-    and if it is missing, an error will be reported only if at least one feature
-    has been already encountered. Otherwise the error will be remembered and it
-    may be reported afterwards if any feature is encountered later.
-    
-    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
-    required_feature ... the feature name (string)
-    required_value ... the feature value (string; multivalues are not supported)
-    """
-    global state
-    testclass = 'Morpho'
-    ###!!! We may want to check that any value of a given feature is present,
-    ###!!! or even that a particular value is present. Currently we only test
-    ###!!! Typo=Yes, i.e., the latter case.
-    if feats[required_feature] != required_value:
-        if state.seen_morpho_feature:
-            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
-        else:
-            if not testid in state.delayed_feature_errors:
-                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
-            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
-
-
-
-def validate_token_empty_vals(cols):
+def validate_mwt_empty_vals(cols):
     """
     Checks that a multi-word token has _ empty values in all fields except MISC.
     This is required by UD guidelines although it is not a problem in general,
@@ -1482,6 +1263,130 @@ def validate_empty_node_empty_vals(cols):
             testid = 'mwt-nonempty-field'
             testmessage = f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
             warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_character_constraints(cols):
+    """
+    Checks general constraints on valid characters, e.g. that UPOS
+    only contains [A-Z].
+    """
+    testlevel = 2
+    if is_multiword_token(cols):
+        return
+    if not (crex.upos.fullmatch(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
+        testclass = 'Morpho'
+        testid = 'invalid-upos'
+        testmessage = f"Invalid UPOS value '{cols[UPOS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+    if not (crex.deprel.fullmatch(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
+        testclass = 'Syntax'
+        testid = 'invalid-deprel'
+        testmessage = f"Invalid DEPREL value '{cols[DEPREL]}'."
+        warn(testmessage, testclass, testlevel, testid)
+    try:
+        deps_list(cols)
+    except ValueError:
+        testclass = 'Enhanced'
+        testid = 'invalid-deps'
+        testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+        return
+    if any(deprel for head, deprel in deps_list(cols)
+        if not crex.edeprel.fullmatch(deprel)):
+            testclass = 'Enhanced'
+            testid = 'invalid-edeprel'
+            testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
+            warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_upos(cols):
+    """
+    Checks that the UPOS field contains one of the 17 known tags.
+    """
+    global data
+    if is_empty_node(cols) and cols[UPOS] == '_':
+        return
+    if cols[UPOS] not in data.upos:
+        testlevel = 2
+        testclass = 'Morpho'
+        testid = 'unknown-upos'
+        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_features(cols, args):
+    """
+    Checks general constraints on feature-value format: Permitted characters in
+    feature name and value, features must be sorted alphabetically, features
+    cannot be repeated etc.
+    """
+    testclass = 'Morpho'
+    testlevel = 2
+    feats = cols[FEATS]
+    if feats == '_':
+        return True
+    features_present()
+    feat_list = feats.split('|')
+    if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
+        testid = 'unsorted-features'
+        testmessage = f"Morphological features must be sorted: '{feats}'."
+        warn(testmessage, testclass, testlevel, testid)
+    attr_set = set() # I'll gather the set of features here to check later that none is repeated.
+    for f in feat_list:
+        match = crex.featval.fullmatch(f)
+        if match is None:
+            testid = 'invalid-feature'
+            testmessage = f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
+            warn(testmessage, testclass, testlevel, testid)
+            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
+        else:
+            # Check that the values are sorted as well
+            attr = match.group(1)
+            attr_set.add(attr)
+            values = match.group(2).split(',')
+            if len(values) != len(set(values)):
+                testid = 'repeated-feature-value'
+                testmessage = f"Repeated feature values are disallowed: '{feats}'"
+                warn(testmessage, testclass, testlevel, testid)
+            if [v.lower() for v in values] != sorted(v.lower() for v in values):
+                testid = 'unsorted-feature-values'
+                testmessage = f"If a feature has multiple values, these must be sorted: '{f}'"
+                warn(testmessage, testclass, testlevel, testid)
+            for v in values:
+                if not crex.val.fullmatch(v):
+                    testid = 'invalid-feature-value'
+                    testmessage = f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
+                    warn(testmessage, testclass, testlevel, testid)
+                # Level 2 tests character properties and canonical order but not that the f-v pair is known.
+    if len(attr_set) != len(feat_list):
+        testid = 'repeated-feature'
+        testmessage = f"Repeated features are disallowed: '{feats}'."
+        warn(testmessage, testclass, testlevel, testid)
+
+
+
+def features_present():
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function is called when the first morphological
+    feature is encountered. It remembers that from now on, missing features can
+    be reported as errors. In addition, if any such errors have already been
+    encountered, they will be reported now.
+    """
+    global state
+    if not state.seen_morpho_feature:
+        state.seen_morpho_feature = state.current_line
+        for testid in state.delayed_feature_errors:
+            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
+                warn(state.delayed_feature_errors[testid]['message'],
+                     state.delayed_feature_errors[testid]['class'],
+                     state.delayed_feature_errors[testid]['level'],
+                     testid, nodeid=occurrence['nodeid'],
+                     lineno=occurrence['lineno'])
 
 
 
@@ -1575,8 +1480,6 @@ def deps_list(cols):
 
 
 
-basic_head_re = re.compile(r"^(0|[1-9][0-9]*)$")
-enhanced_head_re = re.compile(r"^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$")
 def validate_id_references(tree):
     """
     Validates that HEAD and DEPS reference existing IDs.
@@ -1591,7 +1494,7 @@ def validate_id_references(tree):
         # Test the basic HEAD only for non-empty nodes.
         # We have checked elsewhere that it is empty for empty nodes.
         if not is_empty_node(cols):
-            match = basic_head_re.match(cols[HEAD])
+            match = crex.head.fullmatch(cols[HEAD])
             if match is None:
                 testclass = 'Format'
                 testid = 'invalid-head'
@@ -1617,7 +1520,7 @@ def validate_id_references(tree):
             ok = False
             continue
         for head, deprel in deps:
-            match = enhanced_head_re.match(head)
+            match = crex.ehead.fullmatch(head)
             if match is None:
                 testclass = 'Format'
                 testid = 'invalid-ehead'
@@ -2049,6 +1952,34 @@ def get_graph_projection(node_id, graph, projection):
 #==============================================================================
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
+
+
+
+def validate_required_feature(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function will check the presence of a feature
+    and if it is missing, an error will be reported only if at least one feature
+    has been already encountered. Otherwise the error will be remembered and it
+    may be reported afterwards if any feature is encountered later.
+    
+    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
+    required_feature ... the feature name (string)
+    required_value ... the feature value (string; multivalues are not supported)
+    """
+    global state
+    testclass = 'Morpho'
+    ###!!! We may want to check that any value of a given feature is present,
+    ###!!! or even that a particular value is present. Currently we only test
+    ###!!! Typo=Yes, i.e., the latter case.
+    if feats[required_feature] != required_value:
+        if state.seen_morpho_feature:
+            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
+        else:
+            if not testid in state.delayed_feature_errors:
+                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
+            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
 
 
 
@@ -2491,7 +2422,7 @@ def validate_goeswith_span(node, lineno):
         # required if the treebank does not have features at all.
         testid = 'goeswith-missing-typo'
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature_udapi(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
+        validate_required_feature(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
 
 
 
@@ -2727,6 +2658,107 @@ def validate_whitespace(cols, args):
 
 
 
+def validate_features_level4(cols, args):
+    """
+    Checks general constraints on feature-value format. On level 4 and higher,
+    also checks that a feature-value pair is listed as approved. (Every pair
+    must be allowed on level 2 because it could be defined as language-specific.
+    To disallow non-universal features, test on level 4 with language 'ud'.)
+    """
+    global state
+    global data
+    testclass = 'Morpho'
+    testlevel = 4
+    feats = cols[FEATS]
+    if feats == '_':
+        return True
+    # List of permited features is language-specific.
+    # The current token may be in a different language due to code switching.
+    lang = args.lang
+    default_featset = featset = data.get_feats_for_language(lang)
+    altlang = get_alt_language(cols[MISC])
+    if altlang:
+        lang = altlang
+        featset = data.get_feats_for_language(altlang)
+    feat_list = feats.split('|')
+    for f in feat_list:
+        match = crex.featval.fullmatch(f)
+        if match is None:
+            # This error has been reported at level 2.
+            continue
+        # Check that the values are sorted as well
+        attr = match.group(1)
+        values = match.group(2).split(',')
+        for v in values:
+            # Level 2 tested character properties and canonical order but not that the f-v pair is known.
+            # Level 4 also checks whether the feature value is on the list.
+            # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
+            # The feature Typo=Yes is the only feature allowed on a multi-word token line.
+            # If it occurs there, it cannot be duplicated on the lines of the component words.
+            if attr == 'Typo' and state.mwt_typo_span_end and cols[ID] <= state.mwt_typo_span_end:
+                testid = 'mwt-typo-repeated-at-word'
+                testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
+                warn(testmessage, testclass, testlevel, testid)
+            # In case of code switching, the current token may not be in the default language
+            # and then its features are checked against a different feature set. An exception
+            # is the feature Foreign, which always relates to the default language of the
+            # corpus (but Foreign=Yes should probably be allowed for all UPOS categories in
+            # all languages).
+            effective_featset = featset
+            effective_lang = lang
+            if attr == 'Foreign':
+                # Revert to the default.
+                effective_featset = default_featset
+                effective_lang = args.lang
+            if effective_featset is not None:
+                if attr not in effective_featset:
+                    testid = 'feature-unknown'
+                    testmessage = f"Feature {attr} is not documented for language [{effective_lang}]."
+                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                        # If some features were excluded because they are not documented,
+                        # tell the user when the first unknown feature is encountered in the data.
+                        # Then erase this (long) introductory message and do not repeat it with
+                        # other instances of unknown features.
+                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                        data.warn_on_undoc_feats = ''
+                    warn(testmessage, testclass, testlevel, testid)
+                else:
+                    lfrecord = effective_featset[attr]
+                    if lfrecord['permitted'] == 0:
+                        testid = 'feature-not-permitted'
+                        testmessage = f"Feature {attr} is not permitted in language [{effective_lang}]."
+                        if not altlang and len(data.warn_on_undoc_feats) > 0:
+                            testmessage += "\n\n" + data.warn_on_undoc_feats
+                            data.warn_on_undoc_feats = ''
+                        warn(testmessage, testclass, testlevel, testid)
+                    else:
+                        values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
+                        if not v in values:
+                            testid = 'feature-value-unknown'
+                            testmessage = f"Value {v} is not documented for feature {attr} in language [{effective_lang}]."
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel, testid)
+                        elif not cols[UPOS] in lfrecord['byupos']:
+                            testid = 'feature-upos-not-permitted'
+                            testmessage = f"Feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel, testid)
+                        elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
+                            testid = 'feature-value-upos-not-permitted'
+                            testmessage = f"Value {v} of feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel, testid)
+    if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(cols[ID]):
+        state.mwt_typo_span_end = None
+
+
+
 #==============================================================================
 # Level 5 tests. Annotation content vs. the guidelines, language-specific.
 #==============================================================================
@@ -2817,7 +2849,6 @@ def validate_lspec_annotation(tree, linenos, lang):
 
 
 
-global_entity_re = re.compile(r"^#\s*global\.Entity\s*=\s*(.+)$")
 def validate_misc_entity(comments, sentence):
     """
     Optionally checks the well-formedness of the MISC attributes that pertain
@@ -2829,7 +2860,7 @@ def validate_misc_entity(comments, sentence):
     iline = 0
     sentid = ''
     for c in comments:
-        global_entity_match = global_entity_re.match(c)
+        global_entity_match = crex.global_entity.fullmatch(c)
         newdoc_match = crex.newdoc.fullmatch(c)
         sentid_match = crex.sentid.fullmatch(c)
         if global_entity_match:
@@ -3391,11 +3422,14 @@ def validate_misc_entity(comments, sentence):
 
 
 
-def validate(inp, args, known_sent_ids):
+def validate(inp, args):
     for all_lines, comments, sentence in next_sentence(inp, args):
         if args.level > 1:
             for cols in sentence:
                 validate_cols(cols, args)
+                if args.level > 3:
+                    validate_whitespace(cols, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
+                    validate_features_level4(cols, args)
         # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
         # Note that low-level errors such as wrong number of columns would be
@@ -3415,7 +3449,7 @@ def validate(inp, args, known_sent_ids):
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us.
             tree = build_tree_udapi(all_lines)
-            validate_sent_id(comments, known_sent_ids, args.lang) # level 2
+            validate_sent_id(comments, args.lang) # level 2
             validate_text_meta(comments, sentence, args) # level 2
             validate_root(sentence) # level 2
             validate_deps(sentence) # level 2 and up
@@ -3524,7 +3558,6 @@ if __name__=="__main__":
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
     try:
-        known_sent_ids = set()
         open_files = []
         if args.input == []:
             args.input.append('-')
@@ -3538,7 +3571,7 @@ if __name__=="__main__":
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for state.current_file_name, inp in zip(args.input, open_files):
-            validate(inp, args, known_sent_ids)
+            validate(inp, args)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
         if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
