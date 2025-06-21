@@ -515,13 +515,24 @@ class CompiledRegexes:
     def __init__(self):
         # Whitespace.
         self.ws = re.compile(r"\s+")
+        # Two consecutive whitespaces.
+        self.ws2 = re.compile(r"\s\s")
         # Regular word/node id: integer number.
         self.wordid = re.compile(r"[1-9][0-9]*")
         # Multiword token id: range of integers.
-        self.mwtid = re.compile(r"[1-9][0-9]*-[1-9][0-9]*")
+        # The two parts are bracketed so they can be captured and processed separately.
+        self.mwtid = re.compile(r"([1-9][0-9]*)-([1-9][0-9]*)")
         # Empty node id: "decimal" number (but 1.10 != 1.1).
         # The two parts are bracketed so they can be captured and processed separately.
         self.enodeid = re.compile(r"([0-9]+)\.([1-9][0-9]*)")
+        # New document comment line. Document id, if present, is bracketed.
+        self.newdoc = re.compile(r"#\s*newdoc(?:\s+(\S+))?")
+        # New paragraph comment line. Paragraph id, if present, is bracketed.
+        self.newpar = re.compile(r"#\s*newpar(?:\s+(\S+))?")
+        # Sentence id comment line. The actual id is bracketed.
+        self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
+        # Sentence text comment line. The actual text is bracketed.
+        self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
 
 
 
@@ -624,14 +635,21 @@ def lemmatl(node):
 
 
 
-sentid_re=re.compile(r"^# sent_id\s*=\s*(\S+)$")
-def trees(inp, args):
+def next_sentence(inp, args):
     """
     `inp` a file-like object yielding lines as unicode
     `args` are needed for choosing the tests
 
     This function does elementary checking of the input and yields one
-    sentence at a time from the input stream.
+    sentence at a time from the input stream. The function guarantees
+    elementary integrity of its yields. Some lines may be skipped (e.g.,
+    extra empty lines or misplaced comments), and a whole sentence will be
+    skipped if one of its token lines has unexpected number of columns.
+    
+    However, some low-level errors currently do not lead to excluding the
+    sentence from being yielded and put to subsequent tests. Specifically,
+    character constraints on individual fields are tested here but errors
+    are not considered fatal.
 
     This function is a generator. The caller can call it in a 'for x in ...'
     loop. In each iteration of the caller's loop, the generator will generate
@@ -684,7 +702,7 @@ def trees(inp, args):
             # everything that looks like a sentence id and use it in the error messages.
             # Line numbers themselves may not be sufficient if we are reading multiple
             # files from a pipe.
-            match = sentid_re.match(line)
+            match = crex.sentid.fullmatch(line)
             if match:
                 state.sentence_id = match.group(1)
             if not token_lines_fields: # before sentence
@@ -695,24 +713,27 @@ def trees(inp, args):
                 testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
                 warn(testmessage, testclass, testlevel, testid)
         elif line[0].isdigit():
+            ###!!! We do not test unicode normalization on comment lines although
+            ###!!! perhaps we should. But first we would have to modify the implementation,
+            ###!!! which currently assumes it can tell the user in which field the error
+            ###!!! occurred.
             validate_unicode_normalization(line)
             if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
             cols = line.split("\t")
-            if len(cols) != COLCOUNT:
+            # If there is an unexpected number of columns, do not test their contents.
+            # Maybe the contents belongs to a different column. And we could see
+            # an exception if a column value is missing.
+            if len(cols) == COLCOUNT:
+                all_lines.append(line)
+                token_lines_fields.append(cols)
+                # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
+                validate_cols_level1(cols)
+            else:
                 testid = 'number-of-columns'
                 testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The contents of the columns will not be checked.'
                 warn(testmessage, testclass, testlevel, testid)
                 corrupted = True
-            # If there is an unexpected number of columns, do not test their contents.
-            # Maybe the contents belongs to a different column. And we could see
-            # an exception if a column value is missing.
-            else:
-                all_lines.append(line)
-                token_lines_fields.append(cols)
-                validate_cols_level1(cols)
-                if args.level > 1:
-                    validate_cols(cols, args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
@@ -727,7 +748,9 @@ def trees(inp, args):
 
 
 
-###### Tests applicable to a single row indpendently of the others
+#------------------------------------------------------------------------------
+# Level 1 tests applicable to a single line independently of the others.
+#------------------------------------------------------------------------------
 
 
 
@@ -769,8 +792,6 @@ def validate_unicode_normalization(text):
 
 
 
-whitespace_re = re.compile(r".*\s", re.U)
-whitespace2_re = re.compile(r".*\s\s", re.U)
 def validate_cols_level1(cols):
     """
     Tests that can run on a single line and pertain only to the CoNLL-U file
@@ -781,7 +802,7 @@ def validate_cols_level1(cols):
     # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
     for col_idx in range(MISC+1):
         if col_idx >= len(cols):
-            break # this has been already reported in trees()
+            break # this has been already reported in next_sentence()
         # Must never be empty
         if not cols[col_idx]:
             testid = 'empty-column'
@@ -798,7 +819,7 @@ def validate_cols_level1(cols):
                 testmessage = f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
                 warn(testmessage, testclass, testlevel, testid)
             # Must never contain two consecutive whitespace characters
-            if whitespace2_re.match(cols[col_idx]):
+            if crex.ws2.search(cols[col_idx]):
                 testid = 'repeated-whitespace'
                 testmessage = f'Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}.'
                 warn(testmessage, testclass, testlevel, testid)
@@ -807,16 +828,16 @@ def validate_cols_level1(cols):
     if is_multiword_token(cols):
         for col_idx in (FORM, LEMMA):
             if col_idx >= len(cols):
-                break # this has been already reported in trees()
-            if whitespace_re.match(cols[col_idx]):
+                break # this has been already reported in next_sentence()
+            if crex.ws.search(cols[col_idx]):
                 testid = 'invalid-whitespace-mwt'
                 testmessage = f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
                 warn(testmessage, testclass, testlevel, testid)
     # These columns must not have whitespace.
     for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
         if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]):
+            break # this has been already reported in next_sentence()
+        if crex.ws.search(cols[col_idx]):
             testid = 'invalid-whitespace'
             testmessage = f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
             warn(testmessage, testclass, testlevel, testid)
@@ -828,16 +849,19 @@ def validate_cols_level1(cols):
 
 
 
-##### Tests applicable to the whole tree
+#------------------------------------------------------------------------------
+# Level 1 tests applicable to the whole sentence.
+#------------------------------------------------------------------------------
 
 
 
-interval_re = re.compile(r"^([0-9]+)-([0-9]+)$", re.U)
-def validate_id_sequence(tree):
+def validate_id_sequence(sentence):
     """
     Validates that the ID sequence is correctly formed.
-    Besides issuing a warning if an error is found, it also returns False to
-    the caller so it can avoid building a tree from corrupt ids.
+    Besides reporting the errors, it also returns False to the caller so it can
+    avoid building a tree from corrupt IDs.
+
+    sentence ... array of arrays, each inner array contains columns of one line
     """
     ok = True
     testlevel = 1
@@ -845,7 +869,7 @@ def validate_id_sequence(tree):
     words=[]
     tokens=[]
     current_word_id, next_empty_id = 0, 1
-    for cols in tree:
+    for cols in sentence:
         if not is_empty_node(cols):
             next_empty_id = 1    # reset sequence
         if is_word(cols):
@@ -856,7 +880,7 @@ def validate_id_sequence(tree):
             if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
                 tokens.append((t_id, t_id)) # nope - let's make a default interval for it
         elif is_multiword_token(cols):
-            match = interval_re.match(cols[ID]) # Check the interval against the regex
+            match = crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
             if not match: # This should not happen. The function is_multiword_token() would then not return True.
                 testid = 'invalid-word-interval'
                 testmessage = f"Spurious word interval definition: '{cols[ID]}'."
@@ -916,17 +940,19 @@ def validate_id_sequence(tree):
 
 
 
-def validate_token_ranges(tree):
+def validate_token_ranges(sentence):
     """
     Checks that the word ranges for multiword tokens are valid.
+
+    sentence ... array of arrays, each inner array contains columns of one line
     """
     testlevel = 1
     testclass = 'Format'
     covered = set()
-    for cols in tree:
+    for cols in sentence:
         if not is_multiword_token(cols):
             continue
-        m = interval_re.match(cols[ID])
+        m = crex.mwtid.fullmatch(cols[ID])
         if not m: # This should not happen. The function is_multiword_token() would then not return True.
             testid = 'invalid-word-interval'
             testmessage = f"Spurious word interval definition: '{cols[ID]}'."
@@ -947,6 +973,11 @@ def validate_token_ranges(tree):
 
 
 def validate_newlines(inp):
+    """
+    Checks that the input file consistently uses linux-style newlines (LF only,
+    not CR LF like in Windows). To be run on the input file handle after the
+    whole input has been read.
+    """
     if inp.newlines and inp.newlines != '\n':
         testlevel = 1
         testclass = 'Format'
@@ -965,16 +996,18 @@ def validate_newlines(inp):
 
 
 
-###### Metadata tests #########
+#------------------------------------------------------------------------------
+# Level 2 tests of sentence metadata.
+#------------------------------------------------------------------------------
 
 
 
 def validate_sent_id(comments, known_ids, lcode):
     testlevel = 2
     testclass = 'Metadata'
-    matched=[]
+    matched = []
     for c in comments:
-        match=sentid_re.match(c)
+        match = crex.sentid.fullmatch(c)
         if match:
             matched.append(match)
         else:
@@ -1006,14 +1039,11 @@ def validate_sent_id(comments, known_ids, lcode):
 
 
 
-newdoc_re = re.compile(r"^#\s*newdoc(\s|$)")
-newpar_re = re.compile(r"^#\s*newpar(\s|$)")
-text_re = re.compile(r"^#\s*text\s*=\s*(.+)$")
 def validate_text_meta(comments, tree, args):
     # Remember if SpaceAfter=No applies to the last word of the sentence.
     # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
     global state
-    # In trees(), state.sentence_line was already moved to the first token/node line
+    # In next_sentence(), state.sentence_line was already moved to the first token/node line
     # after the sentence comment lines. While this is useful in most validation
     # functions, it complicates things here where we also work with the comments.
     # warn(lineno=-1) will print the state.sentence_line, i.e., after the comments.
@@ -1025,13 +1055,13 @@ def validate_text_meta(comments, tree, args):
     newpar_matched = []
     text_matched = []
     for c in comments:
-        newdoc_match = newdoc_re.match(c)
+        newdoc_match = crex.newdoc.fullmatch(c)
         if newdoc_match:
             newdoc_matched.append(newdoc_match)
-        newpar_match = newpar_re.match(c)
+        newpar_match = crex.newpar.fullmatch(c)
         if newpar_match:
             newpar_matched.append(newpar_match)
-        text_match = text_re.match(c)
+        text_match = crex.text.fullmatch(c)
         if text_match:
             text_matched.append(text_match)
     if len(newdoc_matched) > 1:
@@ -1132,14 +1162,16 @@ def validate_text_meta(comments, tree, args):
 
 
 
-##### Tests applicable to a single row indpendently of the others
+#------------------------------------------------------------------------------
+# Level 2 tests applicable to a single line independently of the others.
+#------------------------------------------------------------------------------
 
 
 
 def validate_cols(cols, args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
-    called from trees() if level>1.
+    called from next_sentence() if level>1.
     """
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
@@ -1181,7 +1213,7 @@ def validate_character_constraints(cols):
     if is_multiword_token(cols):
         return
     if UPOS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     if not (upos_re.match(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
         testclass = 'Morpho'
         testid = 'invalid-upos'
@@ -1212,7 +1244,7 @@ def validate_character_constraints(cols):
 def validate_upos(cols):
     global data
     if UPOS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     if is_empty_node(cols) and cols[UPOS] == '_':
         return
     if cols[UPOS] not in data.upos:
@@ -1237,7 +1269,7 @@ def validate_features(cols, args):
     global data
     testclass = 'Morpho'
     if FEATS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     feats = cols[FEATS]
     if feats == '_':
         return True
@@ -1425,7 +1457,7 @@ def validate_token_empty_vals(cols):
         if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
             # If a multi-word token has Typo=Yes, its component words must not have it.
             # We must remember the span of the MWT and check it in validate_features().
-            m = interval_re.match(cols[ID])
+            m = crex.mwtid.fullmatch(cols[ID])
             state.mwt_typo_span_end = m.group(2)
         elif cols[col_idx] != '_':
             testlevel = 2
@@ -1456,7 +1488,7 @@ def validate_empty_node_empty_vals(cols):
 def validate_deprels(cols, args):
     global data
     if DEPREL >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     # List of permited relations is language-specific.
     # The current token may be in a different language due to code switching.
     deprelset = data.get_deprel_for_language(args.lang)
@@ -1491,7 +1523,7 @@ def validate_deprels(cols, args):
             data.warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel, testid)
     if DEPS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     edeprelset = data.get_edeprel_for_language(args.lang)
     if edeprelset is not None and cols[DEPS] != '_':
         for head_deprel in cols[DEPS].split('|'):
@@ -1516,7 +1548,9 @@ def validate_deprels(cols, args):
 
 
 
-##### Tests applicable to the whole sentence
+#------------------------------------------------------------------------------
+# Level 2 tests applicable to the whole sentence.
+#------------------------------------------------------------------------------
 
 
 
@@ -1530,7 +1564,7 @@ def subset_to_words_and_empty_nodes(tree):
 
 def deps_list(cols):
     if DEPS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     if cols[DEPS] == '_':
         deps = []
     else:
@@ -1553,7 +1587,7 @@ def validate_id_references(tree):
     ids = set([cols[ID] for cols in word_tree])
     for cols in word_tree:
         if HEAD >= len(cols):
-            return # this has been already reported in trees()
+            return # this has been already reported in next_sentence()
         # Test the basic HEAD only for non-empty nodes.
         # We have checked elsewhere that it is empty for empty nodes.
         if not is_empty_node(cols):
@@ -1571,7 +1605,7 @@ def validate_id_references(tree):
                 warn(testmessage, testclass, testlevel, testid)
                 ok = False
         if DEPS >= len(cols):
-            return False # this has been already reported in trees()
+            return False # this has been already reported in next_sentence()
         try:
             deps = deps_list(cols)
         except ValueError:
@@ -1709,7 +1743,7 @@ def validate_root(tree):
     for cols in tree:
         if is_word(cols):
             if HEAD >= len(cols):
-                continue # this has been already reported in trees()
+                continue # this has been already reported in next_sentence()
             if cols[HEAD] == '0' and lspec2ud(cols[DEPREL]) != 'root':
                 testclass = 'Syntax'
                 testid = '0-is-not-root'
@@ -1722,7 +1756,7 @@ def validate_root(tree):
                 warn(testmessage, testclass, testlevel, testid)
         if is_word(cols) or is_empty_node(cols):
             if DEPS >= len(cols):
-                continue # this has been already reported in trees()
+                continue # this has been already reported in next_sentence()
             try:
                 deps = deps_list(cols)
             except ValueError:
@@ -1759,7 +1793,7 @@ def validate_deps(tree):
         if not (is_word(cols) or is_empty_node(cols)):
             continue
         if DEPS >= len(cols):
-            continue # this has been already reported in trees()
+            continue # this has been already reported in next_sentence()
         # Remember whether there is at least one difference between the basic
         # tree and the enhanced graph in the entire dataset.
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
@@ -1833,7 +1867,7 @@ def validate_misc(tree):
         if not (is_word(cols) or is_empty_node(cols)):
             continue
         if MISC >= len(cols):
-            continue # this has been already reported in trees()
+            continue # this has been already reported in next_sentence()
         if cols[MISC] == '_':
             continue
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
@@ -1891,7 +1925,6 @@ def validate_misc(tree):
 
 
 
-###!!! Just testing now: Can we switch to Udapi when building and searching the tree?
 def build_tree_udapi(lines):
     root = conllu_reader.read_tree_from_lines(lines)
     return root
@@ -2676,8 +2709,8 @@ def validate_whitespace(cols, args):
     tospacedata = data.get_tospace_for_language(args.lang)
     for col_idx in (FORM, LEMMA):
         if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]) is not None:
+            break # this has been already reported in next_sentence()
+        if crex.ws.search(cols[col_idx]):
             # Whitespace found.
             # Does the FORM/LEMMA pass the regular expression that defines permitted words with spaces in this language?
             if tospacedata:
@@ -2797,8 +2830,8 @@ def validate_misc_entity(comments, sentence):
     sentid = ''
     for c in comments:
         global_entity_match = global_entity_re.match(c)
-        newdoc_match = newdoc_re.match(c)
-        sentid_match = sentid_re.match(c)
+        newdoc_match = crex.newdoc.fullmatch(c)
+        sentid_match = crex.sentid.fullmatch(c)
         if global_entity_match:
             # As a global declaration, global.Entity is expected only once per file.
             # However, we may be processing multiple files or people may have created
@@ -3359,13 +3392,16 @@ def validate_misc_entity(comments, sentence):
 
 
 def validate(inp, args, known_sent_ids):
-    for all_lines, comments, sentence in trees(inp, args):
-        # The individual lines were validated already in trees().
+    for all_lines, comments, sentence in next_sentence(inp, args):
+        if args.level > 1:
+            for cols in sentence:
+                validate_cols(cols, args)
+        # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
         # Note that low-level errors such as wrong number of columns would be
-        # reported in trees() but then the lines would be thrown away and no
-        # tree lines would be yielded—meaning that we will not encounter such
-        # a mess here.
+        # reported in next_sentence() but then the lines would be thrown away
+        # and no tree lines would be yielded—meaning that we will not encounter
+        # such a mess here.
         idseqok = validate_id_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
