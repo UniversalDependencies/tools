@@ -64,6 +64,9 @@ class State:
         # Key: testid; value: dict with parameters of the error and the list of
         # its occurrences.
         self.delayed_feature_errors = {}
+        # Remember all sentence ids seen in all input files (presumably one
+        # corpus). We need it to check that each id is unique.
+        self.known_sent_ids = set()
         #----------------------------------------------------------------------
         # Various things that we may have seen earlier in the corpus. The value
         # is None if we have not seen it, otherwise it is the line number of
@@ -504,9 +507,72 @@ class Data:
 
 
 
+class CompiledRegexes:
+    """
+    The CompiledRegexes class holds various regular expressions needed to
+    recognize individual elements of the CoNLL-U format, precompiled to speed
+    up parsing. Individual expressions are typically not enclosed in ^...$
+    because one can use re.fullmatch() if it is desired that the whole string
+    matches the expression.
+    """
+    def __init__(self):
+        # Whitespace.
+        self.ws = re.compile(r"\s+")
+        # Two consecutive whitespaces.
+        self.ws2 = re.compile(r"\s\s")
+        # Regular word/node id: integer number.
+        self.wordid = re.compile(r"[1-9][0-9]*")
+        # Multiword token id: range of integers.
+        # The two parts are bracketed so they can be captured and processed separately.
+        self.mwtid = re.compile(r"([1-9][0-9]*)-([1-9][0-9]*)")
+        # Empty node id: "decimal" number (but 1.10 != 1.1).
+        # The two parts are bracketed so they can be captured and processed separately.
+        self.enodeid = re.compile(r"([0-9]+)\.([1-9][0-9]*)")
+        # New document comment line. Document id, if present, is bracketed.
+        self.newdoc = re.compile(r"#\s*newdoc(?:\s+(\S+))?")
+        # New paragraph comment line. Paragraph id, if present, is bracketed.
+        self.newpar = re.compile(r"#\s*newpar(?:\s+(\S+))?")
+        # Sentence id comment line. The actual id is bracketed.
+        self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
+        # Sentence text comment line. The actual text is bracketed.
+        self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
+        # Global entity comment is a declaration of entity attributes in MISC.
+        # It occurs once per document and it is optional (only CorefUD data).
+        # The actual attribute declaration is bracketed so it can be captured in the match.
+        self.global_entity = re.compile(r"#\s*global\.Entity\s*=\s*(.+)")
+        # UPOS tag.
+        self.upos = re.compile(r"[A-Z]+")
+        # Feature=value pair.
+        # Feature name and feature value are bracketed so that each can be captured separately in the match.
+        self.featval = re.compile(r"([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)")
+        self.val = re.compile(r"[A-Z0-9][A-Za-z0-9]*")
+        # Basic parent reference (HEAD).
+        self.head = re.compile(r"(0|[1-9][0-9]*)")
+        # Enhanced parent reference (head).
+        self.ehead = re.compile(r"(0|[1-9][0-9]*)(\.[1-9][0-9]*)?")
+        # Basic dependency relation (including optional subtype).
+        self.deprel = re.compile(r"[a-z]+(:[a-z]+)?")
+        # Enhanced dependency relation (possibly with Unicode subtypes).
+        # Ll ... lowercase Unicode letters
+        # Lm ... modifier Unicode letters (e.g., superscript h)
+        # Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+        # M .... combining diacritical marks
+        # Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+        edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
+        # There must be always the universal part, consisting only of ASCII letters.
+        # There can be up to three additional, colon-separated parts: subtype, preposition and case.
+        # One of them, the preposition, may contain Unicode letters. We do not know which one it is
+        # (only if there are all four parts, we know it is the third one).
+        # ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
+        edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
+        self.edeprel = re.compile(edeprel_resrc)
+
+
+
 # Global variables:
 state = State()
 data = Data()
+crex = CompiledRegexes()
 conllu_reader = udapi.block.read.conllu.Conllu()
 
 
@@ -557,25 +623,22 @@ def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None
 
 
 
-###### Support functions
-ws_re = re.compile(r"^\s+$")
+# Support functions.
+
 def is_whitespace(line):
-    return ws_re.match(line)
+    return crex.ws.fullmatch(line)
 
-word_re = re.compile(r"^[1-9][0-9]*$")
 def is_word(cols):
-    return word_re.match(cols[ID])
+    return crex.wordid.fullmatch(cols[ID])
 
-mwt_re = re.compile(r"^[1-9][0-9]*-[1-9][0-9]*$")
 def is_multiword_token(cols):
-    return mwt_re.match(cols[ID])
+    return crex.mwtid.fullmatch(cols[ID])
 
-empty_node_re = re.compile(r"^[0-9]+\.[1-9][0-9]*$")
 def is_empty_node(cols):
-    return empty_node_re.match(cols[ID])
+    return crex.enodeid.fullmatch(cols[ID])
 
 def parse_empty_node_id(cols):
-    m = re.match(r"^([0-9]+)\.([0-9]+)$", cols[ID])
+    m = crex.enodeid.fullmatch(cols[ID])
     assert m, 'parse_empty_node_id with non-empty node'
     return m.groups()
 
@@ -605,14 +668,21 @@ def lemmatl(node):
 
 
 
-sentid_re=re.compile(r"^# sent_id\s*=\s*(\S+)$")
-def trees(inp, args):
+def next_sentence(inp, args):
     """
     `inp` a file-like object yielding lines as unicode
     `args` are needed for choosing the tests
 
     This function does elementary checking of the input and yields one
-    sentence at a time from the input stream.
+    sentence at a time from the input stream. The function guarantees
+    elementary integrity of its yields. Some lines may be skipped (e.g.,
+    extra empty lines or misplaced comments), and a whole sentence will be
+    skipped if one of its token lines has unexpected number of columns.
+    
+    However, some low-level errors currently do not lead to excluding the
+    sentence from being yielded and put to subsequent tests. Specifically,
+    character constraints on individual fields are tested here but errors
+    are not considered fatal.
 
     This function is a generator. The caller can call it in a 'for x in ...'
     loop. In each iteration of the caller's loop, the generator will generate
@@ -665,7 +735,7 @@ def trees(inp, args):
             # everything that looks like a sentence id and use it in the error messages.
             # Line numbers themselves may not be sufficient if we are reading multiple
             # files from a pipe.
-            match = sentid_re.match(line)
+            match = crex.sentid.fullmatch(line)
             if match:
                 state.sentence_id = match.group(1)
             if not token_lines_fields: # before sentence
@@ -676,24 +746,27 @@ def trees(inp, args):
                 testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
                 warn(testmessage, testclass, testlevel, testid)
         elif line[0].isdigit():
+            ###!!! We do not test unicode normalization on comment lines although
+            ###!!! perhaps we should. But first we would have to modify the implementation,
+            ###!!! which currently assumes it can tell the user in which field the error
+            ###!!! occurred.
             validate_unicode_normalization(line)
             if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
             cols = line.split("\t")
-            if len(cols) != COLCOUNT:
+            # If there is an unexpected number of columns, do not test their contents.
+            # Maybe the contents belongs to a different column. And we could see
+            # an exception if a column value is missing.
+            if len(cols) == COLCOUNT:
+                all_lines.append(line)
+                token_lines_fields.append(cols)
+                # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
+                validate_cols_level1(cols)
+            else:
                 testid = 'number-of-columns'
                 testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The contents of the columns will not be checked.'
                 warn(testmessage, testclass, testlevel, testid)
                 corrupted = True
-            # If there is an unexpected number of columns, do not test their contents.
-            # Maybe the contents belongs to a different column. And we could see
-            # an exception if a column value is missing.
-            else:
-                all_lines.append(line)
-                token_lines_fields.append(cols)
-                validate_cols_level1(cols)
-                if args.level > 1:
-                    validate_cols(cols, args)
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
             testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
@@ -708,7 +781,9 @@ def trees(inp, args):
 
 
 
-###### Tests applicable to a single row indpendently of the others
+#------------------------------------------------------------------------------
+# Level 1 tests applicable to a single line independently of the others.
+#------------------------------------------------------------------------------
 
 
 
@@ -750,8 +825,6 @@ def validate_unicode_normalization(text):
 
 
 
-whitespace_re = re.compile(r".*\s", re.U)
-whitespace2_re = re.compile(r".*\s\s", re.U)
 def validate_cols_level1(cols):
     """
     Tests that can run on a single line and pertain only to the CoNLL-U file
@@ -762,7 +835,7 @@ def validate_cols_level1(cols):
     # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
     for col_idx in range(MISC+1):
         if col_idx >= len(cols):
-            break # this has been already reported in trees()
+            break # this has been already reported in next_sentence()
         # Must never be empty
         if not cols[col_idx]:
             testid = 'empty-column'
@@ -779,7 +852,7 @@ def validate_cols_level1(cols):
                 testmessage = f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
                 warn(testmessage, testclass, testlevel, testid)
             # Must never contain two consecutive whitespace characters
-            if whitespace2_re.match(cols[col_idx]):
+            if crex.ws2.search(cols[col_idx]):
                 testid = 'repeated-whitespace'
                 testmessage = f'Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}.'
                 warn(testmessage, testclass, testlevel, testid)
@@ -788,16 +861,16 @@ def validate_cols_level1(cols):
     if is_multiword_token(cols):
         for col_idx in (FORM, LEMMA):
             if col_idx >= len(cols):
-                break # this has been already reported in trees()
-            if whitespace_re.match(cols[col_idx]):
+                break # this has been already reported in next_sentence()
+            if crex.ws.search(cols[col_idx]):
                 testid = 'invalid-whitespace-mwt'
                 testmessage = f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
                 warn(testmessage, testclass, testlevel, testid)
     # These columns must not have whitespace.
     for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
         if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]):
+            break # this has been already reported in next_sentence()
+        if crex.ws.search(cols[col_idx]):
             testid = 'invalid-whitespace'
             testmessage = f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
             warn(testmessage, testclass, testlevel, testid)
@@ -809,16 +882,19 @@ def validate_cols_level1(cols):
 
 
 
-##### Tests applicable to the whole tree
+#------------------------------------------------------------------------------
+# Level 1 tests applicable to the whole sentence.
+#------------------------------------------------------------------------------
 
 
 
-interval_re = re.compile(r"^([0-9]+)-([0-9]+)$", re.U)
-def validate_id_sequence(tree):
+def validate_id_sequence(sentence):
     """
     Validates that the ID sequence is correctly formed.
-    Besides issuing a warning if an error is found, it also returns False to
-    the caller so it can avoid building a tree from corrupt ids.
+    Besides reporting the errors, it also returns False to the caller so it can
+    avoid building a tree from corrupt IDs.
+
+    sentence ... array of arrays, each inner array contains columns of one line
     """
     ok = True
     testlevel = 1
@@ -826,7 +902,7 @@ def validate_id_sequence(tree):
     words=[]
     tokens=[]
     current_word_id, next_empty_id = 0, 1
-    for cols in tree:
+    for cols in sentence:
         if not is_empty_node(cols):
             next_empty_id = 1    # reset sequence
         if is_word(cols):
@@ -837,7 +913,7 @@ def validate_id_sequence(tree):
             if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
                 tokens.append((t_id, t_id)) # nope - let's make a default interval for it
         elif is_multiword_token(cols):
-            match = interval_re.match(cols[ID]) # Check the interval against the regex
+            match = crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
             if not match: # This should not happen. The function is_multiword_token() would then not return True.
                 testid = 'invalid-word-interval'
                 testmessage = f"Spurious word interval definition: '{cols[ID]}'."
@@ -897,17 +973,19 @@ def validate_id_sequence(tree):
 
 
 
-def validate_token_ranges(tree):
+def validate_token_ranges(sentence):
     """
     Checks that the word ranges for multiword tokens are valid.
+
+    sentence ... array of arrays, each inner array contains columns of one line
     """
     testlevel = 1
     testclass = 'Format'
     covered = set()
-    for cols in tree:
+    for cols in sentence:
         if not is_multiword_token(cols):
             continue
-        m = interval_re.match(cols[ID])
+        m = crex.mwtid.fullmatch(cols[ID])
         if not m: # This should not happen. The function is_multiword_token() would then not return True.
             testid = 'invalid-word-interval'
             testmessage = f"Spurious word interval definition: '{cols[ID]}'."
@@ -928,6 +1006,11 @@ def validate_token_ranges(tree):
 
 
 def validate_newlines(inp):
+    """
+    Checks that the input file consistently uses linux-style newlines (LF only,
+    not CR LF like in Windows). To be run on the input file handle after the
+    whole input has been read.
+    """
     if inp.newlines and inp.newlines != '\n':
         testlevel = 1
         testclass = 'Format'
@@ -946,16 +1029,22 @@ def validate_newlines(inp):
 
 
 
-###### Metadata tests #########
+#------------------------------------------------------------------------------
+# Level 2 tests of sentence metadata.
+#------------------------------------------------------------------------------
 
 
 
-def validate_sent_id(comments, known_ids, lcode):
+def validate_sent_id(comments, lcode):
+    """
+    Checks that sentence id exists, is well-formed and unique.
+    """
+    global state
     testlevel = 2
     testclass = 'Metadata'
-    matched=[]
+    matched = []
     for c in comments:
-        match=sentid_re.match(c)
+        match = crex.sentid.fullmatch(c)
         if match:
             matched.append(match)
         else:
@@ -974,8 +1063,8 @@ def validate_sent_id(comments, known_ids, lcode):
     else:
         # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
         # For that to happen, all three files should be tested at once.
-        sid=matched[0].group(1)
-        if sid in known_ids:
+        sid = matched[0].group(1)
+        if sid in state.known_sent_ids:
             testid = 'non-unique-sent-id'
             testmessage = f"Non-unique sent_id attribute '{sid}'."
             warn(testmessage, testclass, testlevel, testid)
@@ -983,36 +1072,35 @@ def validate_sent_id(comments, known_ids, lcode):
             testid = 'slash-in-sent-id'
             testmessage = f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
             warn(testmessage, testclass, testlevel, testid)
-        known_ids.add(sid)
+        state.known_sent_ids.add(sid)
 
 
 
-newdoc_re = re.compile(r"^#\s*newdoc(\s|$)")
-newpar_re = re.compile(r"^#\s*newpar(\s|$)")
-text_re = re.compile(r"^#\s*text\s*=\s*(.+)$")
 def validate_text_meta(comments, tree, args):
-    # Remember if SpaceAfter=No applies to the last word of the sentence.
-    # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+    """
+    Checks metadata other than sentence id, that is, document breaks, paragraph
+    breaks and sentence text (which is also compared to the sequence of the
+    forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+    """
     global state
-    # In trees(), state.sentence_line was already moved to the first token/node line
+    # In next_sentence(), state.sentence_line was already moved to the first token/node line
     # after the sentence comment lines. While this is useful in most validation
     # functions, it complicates things here where we also work with the comments.
     # warn(lineno=-1) will print the state.sentence_line, i.e., after the comments.
     # warn() without lineno will refer to the empty line after the sentence.
-    global state
     testlevel = 2
     testclass = 'Metadata'
     newdoc_matched = []
     newpar_matched = []
     text_matched = []
     for c in comments:
-        newdoc_match = newdoc_re.match(c)
+        newdoc_match = crex.newdoc.fullmatch(c)
         if newdoc_match:
             newdoc_matched.append(newdoc_match)
-        newpar_match = newpar_re.match(c)
+        newpar_match = crex.newpar.fullmatch(c)
         if newpar_match:
             newpar_matched.append(newpar_match)
-        text_match = text_re.match(c)
+        text_match = crex.text.fullmatch(c)
         if text_match:
             text_matched.append(text_match)
     if len(newdoc_matched) > 1:
@@ -1050,9 +1138,6 @@ def validate_text_meta(comments, tree, args):
         iline = -1
         for cols in tree:
             iline += 1
-            if MISC >= len(cols):
-                # This error has been reported elsewhere but we cannot check MISC now.
-                continue
             if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
                 testid = 'nospaceafter-yes'
                 testmessage = "'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
@@ -1097,11 +1182,13 @@ def validate_text_meta(comments, tree, args):
                     mismatch_reported = 1
             else:
                 stext = stext[len(cols[FORM]):] # eat the form
+                # Remember if SpaceAfter=No applies to the last word of the sentence.
+                # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
                 if 'SpaceAfter=No' in cols[MISC].split("|"):
                     state.spaceafterno_in_effect = True
                 else:
                     state.spaceafterno_in_effect = False
-                    if args.check_space_after and (stext) and not stext[0].isspace():
+                    if (stext) and not stext[0].isspace():
                         testid = 'missing-spaceafter'
                         testmessage = f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
                         warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line+iline)
@@ -1113,313 +1200,32 @@ def validate_text_meta(comments, tree, args):
 
 
 
-##### Tests applicable to a single row indpendently of the others
+#------------------------------------------------------------------------------
+# Level 2 tests applicable to a single line independently of the others.
+#------------------------------------------------------------------------------
 
 
 
-def validate_cols(cols, args):
+def validate_cols_level2(cols, args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
-    called from trees() if level>1.
+    called from next_sentence() if level>1.
     """
+    # Multiword tokens and empty nodes can or must have certain fields empty.
+    if is_multiword_token(cols):
+        validate_mwt_empty_vals(cols)
+    if is_empty_node(cols):
+        validate_empty_node_empty_vals(cols) # level 2
     if is_word(cols) or is_empty_node(cols):
         validate_character_constraints(cols) # level 2
         validate_upos(cols) # level 2
-        validate_features(cols, args) # level 2 and up (relevant code checks whether higher level is required)
-    elif is_multiword_token(cols):
-        validate_token_empty_vals(cols)
-    # else do nothing; we have already reported wrong ID format at level 1
+        validate_features_level2(cols, args) # level 2 (level 4 tests will be called later)
     if is_word(cols):
         validate_deprels(cols, args) # level 2 and up
-    elif is_empty_node(cols):
-        validate_empty_node_empty_vals(cols) # level 2
-    if args.level > 3:
-        validate_whitespace(cols, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
 
 
 
-# Ll ... lowercase Unicode letters
-# Lm ... modifier Unicode letters (e.g., superscript h)
-# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
-# M .... combining diacritical marks
-# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
-edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
-# There must be always the universal part, consisting only of ASCII letters.
-# There can be up to three additional, colon-separated parts: subtype, preposition and case.
-# One of them, the preposition, may contain Unicode letters. We do not know which one it is
-# (only if there are all four parts, we know it is the third one).
-# ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
-edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
-edeprel_re = re.compile(edeprel_resrc)
-deprel_re = re.compile(r"^[a-z]+(:[a-z]+)?$")
-upos_re = re.compile(r"^[A-Z]+$")
-def validate_character_constraints(cols):
-    """
-    Checks general constraints on valid characters, e.g. that UPOS
-    only contains [A-Z].
-    """
-    testlevel = 2
-    if is_multiword_token(cols):
-        return
-    if UPOS >= len(cols):
-        return # this has been already reported in trees()
-    if not (upos_re.match(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
-        testclass = 'Morpho'
-        testid = 'invalid-upos'
-        testmessage = f"Invalid UPOS value '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
-    if not (deprel_re.match(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
-        testclass = 'Syntax'
-        testid = 'invalid-deprel'
-        testmessage = f"Invalid DEPREL value '{cols[DEPREL]}'."
-        warn(testmessage, testclass, testlevel, testid)
-    try:
-        deps_list(cols)
-    except ValueError:
-        testclass = 'Enhanced'
-        testid = 'invalid-deps'
-        testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-        warn(testmessage, testclass, testlevel, testid)
-        return
-    if any(deprel for head, deprel in deps_list(cols)
-        if not edeprel_re.match(deprel)):
-            testclass = 'Enhanced'
-            testid = 'invalid-edeprel'
-            testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
-            warn(testmessage, testclass, testlevel, testid)
-
-
-
-def validate_upos(cols):
-    global data
-    if UPOS >= len(cols):
-        return # this has been already reported in trees()
-    if is_empty_node(cols) and cols[UPOS] == '_':
-        return
-    if cols[UPOS] not in data.upos:
-        testlevel = 2
-        testclass = 'Morpho'
-        testid = 'unknown-upos'
-        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
-
-
-
-attr_val_re=re.compile(r"^([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)$")
-val_re=re.compile(r"^[A-Z0-9][A-Za-z0-9]*")
-def validate_features(cols, args):
-    """
-    Checks general constraints on feature-value format. On level 4 and higher,
-    also checks that a feature-value pair is listed as approved. (Every pair
-    must be allowed on level 2 because it could be defined as language-specific.
-    To disallow non-universal features, test on level 4 with language 'ud'.)
-    """
-    global state
-    global data
-    testclass = 'Morpho'
-    if FEATS >= len(cols):
-        return # this has been already reported in trees()
-    feats = cols[FEATS]
-    if feats == '_':
-        return True
-    features_present()
-    # List of permited features is language-specific.
-    # The current token may be in a different language due to code switching.
-    lang = args.lang
-    default_featset = featset = data.get_feats_for_language(lang)
-    altlang = get_alt_language(cols[MISC])
-    if altlang:
-        lang = altlang
-        featset = data.get_feats_for_language(altlang)
-    feat_list=feats.split('|')
-    if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
-        testlevel = 2
-        testid = 'unsorted-features'
-        testmessage = f"Morphological features must be sorted: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid)
-    attr_set = set() # I'll gather the set of features here to check later that none is repeated.
-    for f in feat_list:
-        match = attr_val_re.match(f)
-        if match is None:
-            testlevel = 2
-            testid = 'invalid-feature'
-            testmessage = f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
-            warn(testmessage, testclass, testlevel, testid)
-            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
-        else:
-            # Check that the values are sorted as well
-            attr = match.group(1)
-            attr_set.add(attr)
-            values = match.group(2).split(',')
-            if len(values) != len(set(values)):
-                testlevel = 2
-                testid = 'repeated-feature-value'
-                testmessage = f"Repeated feature values are disallowed: '{feats}'"
-                warn(testmessage, testclass, testlevel, testid)
-            if [v.lower() for v in values] != sorted(v.lower() for v in values):
-                testlevel = 2
-                testid = 'unsorted-feature-values'
-                testmessage = f"If a feature has multiple values, these must be sorted: '{f}'"
-                warn(testmessage, testclass, testlevel, testid)
-            for v in values:
-                if not val_re.match(v):
-                    testlevel = 2
-                    testid = 'invalid-feature-value'
-                    testmessage = f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
-                    warn(testmessage, testclass, testlevel, testid)
-                # Level 2 tests character properties and canonical order but not that the f-v pair is known.
-                # Level 4 also checks whether the feature value is on the list.
-                # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
-                if args.level > 3:
-                    testlevel = 4
-                    # The feature Typo=Yes is the only feature allowed on a multi-word token line.
-                    # If it occurs there, it cannot be duplicated on the lines of the component words.
-                    if attr == 'Typo' and state.mwt_typo_span_end and cols[ID] <= state.mwt_typo_span_end:
-                        testid = 'mwt-typo-repeated-at-word'
-                        testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
-                        warn(testmessage, testclass, testlevel, testid)
-                    # In case of code switching, the current token may not be in the default language
-                    # and then its features are checked against a different feature set. An exception
-                    # is the feature Foreign, which always relates to the default language of the
-                    # corpus (but Foreign=Yes should probably be allowed for all UPOS categories in
-                    # all languages).
-                    effective_featset = featset
-                    effective_lang = lang
-                    if attr == 'Foreign':
-                        # Revert to the default.
-                        effective_featset = default_featset
-                        effective_lang = args.lang
-                    if effective_featset is not None:
-                        if attr not in effective_featset:
-                            testid = 'feature-unknown'
-                            testmessage = f"Feature {attr} is not documented for language [{effective_lang}]."
-                            if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                # If some features were excluded because they are not documented,
-                                # tell the user when the first unknown feature is encountered in the data.
-                                # Then erase this (long) introductory message and do not repeat it with
-                                # other instances of unknown features.
-                                testmessage += "\n\n" + data.warn_on_undoc_feats
-                                data.warn_on_undoc_feats = ''
-                            warn(testmessage, testclass, testlevel, testid)
-                        else:
-                            lfrecord = effective_featset[attr]
-                            if lfrecord['permitted'] == 0:
-                                testid = 'feature-not-permitted'
-                                testmessage = f"Feature {attr} is not permitted in language [{effective_lang}]."
-                                if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                    testmessage += "\n\n" + data.warn_on_undoc_feats
-                                    data.warn_on_undoc_feats = ''
-                                warn(testmessage, testclass, testlevel, testid)
-                            else:
-                                values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
-                                if not v in values:
-                                    testid = 'feature-value-unknown'
-                                    testmessage = f"Value {v} is not documented for feature {attr} in language [{effective_lang}]."
-                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                                        data.warn_on_undoc_feats = ''
-                                    warn(testmessage, testclass, testlevel, testid)
-                                elif not cols[UPOS] in lfrecord['byupos']:
-                                    testid = 'feature-upos-not-permitted'
-                                    testmessage = f"Feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                                        data.warn_on_undoc_feats = ''
-                                    warn(testmessage, testclass, testlevel, testid)
-                                elif not v in lfrecord['byupos'][cols[UPOS]] or lfrecord['byupos'][cols[UPOS]][v]==0:
-                                    testid = 'feature-value-upos-not-permitted'
-                                    testmessage = f"Value {v} of feature {attr} is not permitted with UPOS {cols[UPOS]} in language [{effective_lang}]."
-                                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                                        data.warn_on_undoc_feats = ''
-                                    warn(testmessage, testclass, testlevel, testid)
-    if len(attr_set) != len(feat_list):
-        testlevel = 2
-        testid = 'repeated-feature'
-        testmessage = f"Repeated features are disallowed: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid)
-    if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(cols[ID]):
-        state.mwt_typo_span_end = None
-
-
-
-def features_present():
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function is called when the first morphological
-    feature is encountered. It remembers that from now on, missing features can
-    be reported as errors. In addition, if any such errors have already been
-    encountered, they will be reported now.
-    """
-    global state
-    if not state.seen_morpho_feature:
-        state.seen_morpho_feature = state.current_line
-        for testid in state.delayed_feature_errors:
-            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                warn(state.delayed_feature_errors[testid]['message'],
-                     state.delayed_feature_errors[testid]['class'],
-                     state.delayed_feature_errors[testid]['level'],
-                     testid, nodeid=occurrence['nodeid'],
-                     lineno=occurrence['lineno'])
-
-
-
-def validate_required_feature(feats, fv, testmessage, testlevel, testid, nodeid, lineno):
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function will check the presence of a feature
-    and if it is missing, an error will be reported only if at least one feature
-    has been already encountered. Otherwise the error will be remembered and it
-    may be reported afterwards if any feature is encountered later.
-    """
-    global state
-    testclass = 'Morpho'
-    ###!!! We may want to check that any value of a given feature is present,
-    ###!!! or even that a particular value is present. Currently we only test
-    ###!!! Typo=Yes, i.e., the latter case.
-    if not fv in feats.split('|'):
-        if state.seen_morpho_feature:
-            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
-        else:
-            if not testid in state.delayed_feature_errors:
-                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel,
-                                                  'message': testmessage, 'occurrences': []}
-            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid,
-                                                                  'lineno': lineno})
-
-
-
-def validate_required_feature_udapi(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function will check the presence of a feature
-    and if it is missing, an error will be reported only if at least one feature
-    has been already encountered. Otherwise the error will be remembered and it
-    may be reported afterwards if any feature is encountered later.
-    
-    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
-    required_feature ... the feature name (string)
-    required_value ... the feature value (string; multivalues are not supported)
-    """
-    global state
-    testclass = 'Morpho'
-    ###!!! We may want to check that any value of a given feature is present,
-    ###!!! or even that a particular value is present. Currently we only test
-    ###!!! Typo=Yes, i.e., the latter case.
-    if feats[required_feature] != required_value:
-        if state.seen_morpho_feature:
-            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
-        else:
-            if not testid in state.delayed_feature_errors:
-                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
-            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
-
-
-
-def validate_token_empty_vals(cols):
+def validate_mwt_empty_vals(cols):
     """
     Checks that a multi-word token has _ empty values in all fields except MISC.
     This is required by UD guidelines although it is not a problem in general,
@@ -1431,8 +1237,8 @@ def validate_token_empty_vals(cols):
         # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
         if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
             # If a multi-word token has Typo=Yes, its component words must not have it.
-            # We must remember the span of the MWT and check it in validate_features().
-            m = interval_re.match(cols[ID])
+            # We must remember the span of the MWT and check it in validate_features_level4().
+            m = crex.mwtid.fullmatch(cols[ID])
             state.mwt_typo_span_end = m.group(2)
         elif cols[col_idx] != '_':
             testlevel = 2
@@ -1460,10 +1266,134 @@ def validate_empty_node_empty_vals(cols):
 
 
 
+def validate_character_constraints(cols):
+    """
+    Checks general constraints on valid characters, e.g. that UPOS
+    only contains [A-Z].
+    """
+    testlevel = 2
+    if is_multiword_token(cols):
+        return
+    if not (crex.upos.fullmatch(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
+        testclass = 'Morpho'
+        testid = 'invalid-upos'
+        testmessage = f"Invalid UPOS value '{cols[UPOS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+    if not (crex.deprel.fullmatch(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
+        testclass = 'Syntax'
+        testid = 'invalid-deprel'
+        testmessage = f"Invalid DEPREL value '{cols[DEPREL]}'."
+        warn(testmessage, testclass, testlevel, testid)
+    try:
+        deps_list(cols)
+    except ValueError:
+        testclass = 'Enhanced'
+        testid = 'invalid-deps'
+        testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+        return
+    if any(deprel for head, deprel in deps_list(cols)
+        if not crex.edeprel.fullmatch(deprel)):
+            testclass = 'Enhanced'
+            testid = 'invalid-edeprel'
+            testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
+            warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_upos(cols):
+    """
+    Checks that the UPOS field contains one of the 17 known tags.
+    """
+    global data
+    if is_empty_node(cols) and cols[UPOS] == '_':
+        return
+    if cols[UPOS] not in data.upos:
+        testlevel = 2
+        testclass = 'Morpho'
+        testid = 'unknown-upos'
+        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
+        warn(testmessage, testclass, testlevel, testid)
+
+
+
+def validate_features_level2(cols, args):
+    """
+    Checks general constraints on feature-value format: Permitted characters in
+    feature name and value, features must be sorted alphabetically, features
+    cannot be repeated etc.
+    """
+    testclass = 'Morpho'
+    testlevel = 2
+    feats = cols[FEATS]
+    if feats == '_':
+        return True
+    features_present()
+    feat_list = feats.split('|')
+    if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
+        testid = 'unsorted-features'
+        testmessage = f"Morphological features must be sorted: '{feats}'."
+        warn(testmessage, testclass, testlevel, testid)
+    attr_set = set() # I'll gather the set of features here to check later that none is repeated.
+    for f in feat_list:
+        match = crex.featval.fullmatch(f)
+        if match is None:
+            testid = 'invalid-feature'
+            testmessage = f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
+            warn(testmessage, testclass, testlevel, testid)
+            attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
+        else:
+            # Check that the values are sorted as well
+            attr = match.group(1)
+            attr_set.add(attr)
+            values = match.group(2).split(',')
+            if len(values) != len(set(values)):
+                testid = 'repeated-feature-value'
+                testmessage = f"Repeated feature values are disallowed: '{feats}'"
+                warn(testmessage, testclass, testlevel, testid)
+            if [v.lower() for v in values] != sorted(v.lower() for v in values):
+                testid = 'unsorted-feature-values'
+                testmessage = f"If a feature has multiple values, these must be sorted: '{f}'"
+                warn(testmessage, testclass, testlevel, testid)
+            for v in values:
+                if not crex.val.fullmatch(v):
+                    testid = 'invalid-feature-value'
+                    testmessage = f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
+                    warn(testmessage, testclass, testlevel, testid)
+                # Level 2 tests character properties and canonical order but not that the f-v pair is known.
+    if len(attr_set) != len(feat_list):
+        testid = 'repeated-feature'
+        testmessage = f"Repeated features are disallowed: '{feats}'."
+        warn(testmessage, testclass, testlevel, testid)
+
+
+
+def features_present():
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function is called when the first morphological
+    feature is encountered. It remembers that from now on, missing features can
+    be reported as errors. In addition, if any such errors have already been
+    encountered, they will be reported now.
+    """
+    global state
+    if not state.seen_morpho_feature:
+        state.seen_morpho_feature = state.current_line
+        for testid in state.delayed_feature_errors:
+            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
+                warn(state.delayed_feature_errors[testid]['message'],
+                     state.delayed_feature_errors[testid]['class'],
+                     state.delayed_feature_errors[testid]['level'],
+                     testid, nodeid=occurrence['nodeid'],
+                     lineno=occurrence['lineno'])
+
+
+
 def validate_deprels(cols, args):
     global data
     if DEPREL >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     # List of permited relations is language-specific.
     # The current token may be in a different language due to code switching.
     deprelset = data.get_deprel_for_language(args.lang)
@@ -1498,7 +1428,7 @@ def validate_deprels(cols, args):
             data.warn_on_undoc_deps = ''
         warn(testmessage, testclass, testlevel, testid)
     if DEPS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     edeprelset = data.get_edeprel_for_language(args.lang)
     if edeprelset is not None and cols[DEPS] != '_':
         for head_deprel in cols[DEPS].split('|'):
@@ -1523,7 +1453,9 @@ def validate_deprels(cols, args):
 
 
 
-##### Tests applicable to the whole sentence
+#------------------------------------------------------------------------------
+# Level 2 tests applicable to the whole sentence.
+#------------------------------------------------------------------------------
 
 
 
@@ -1537,7 +1469,7 @@ def subset_to_words_and_empty_nodes(tree):
 
 def deps_list(cols):
     if DEPS >= len(cols):
-        return # this has been already reported in trees()
+        return # this has been already reported in next_sentence()
     if cols[DEPS] == '_':
         deps = []
     else:
@@ -1548,8 +1480,6 @@ def deps_list(cols):
 
 
 
-basic_head_re = re.compile(r"^(0|[1-9][0-9]*)$")
-enhanced_head_re = re.compile(r"^(0|[1-9][0-9]*)(\.[1-9][0-9]*)?$")
 def validate_id_references(tree):
     """
     Validates that HEAD and DEPS reference existing IDs.
@@ -1559,12 +1489,10 @@ def validate_id_references(tree):
     word_tree = subset_to_words_and_empty_nodes(tree)
     ids = set([cols[ID] for cols in word_tree])
     for cols in word_tree:
-        if HEAD >= len(cols):
-            return # this has been already reported in trees()
         # Test the basic HEAD only for non-empty nodes.
         # We have checked elsewhere that it is empty for empty nodes.
         if not is_empty_node(cols):
-            match = basic_head_re.match(cols[HEAD])
+            match = crex.head.fullmatch(cols[HEAD])
             if match is None:
                 testclass = 'Format'
                 testid = 'invalid-head'
@@ -1577,8 +1505,6 @@ def validate_id_references(tree):
                 testmessage = f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
                 warn(testmessage, testclass, testlevel, testid)
                 ok = False
-        if DEPS >= len(cols):
-            return False # this has been already reported in trees()
         try:
             deps = deps_list(cols)
         except ValueError:
@@ -1590,7 +1516,7 @@ def validate_id_references(tree):
             ok = False
             continue
         for head, deprel in deps:
-            match = enhanced_head_re.match(head)
+            match = crex.ehead.fullmatch(head)
             if match is None:
                 testclass = 'Format'
                 testid = 'invalid-ehead'
@@ -1614,6 +1540,10 @@ def validate_tree(sentence):
     node. In case of fatal problems (missing HEAD etc.) returns None
     (and reports the error, unless it is something that should have been
     reported earlier).
+
+    We will assume that this function is called only if both ID and HEAD values
+    have been found valid for all tree nodes, including the sequence of IDs
+    and the references from HEAD to existing IDs.
     
     This function originally served to build a data structure that would
     describe the tree and make it accessible during subsequent tests. Now we
@@ -1626,85 +1556,61 @@ def validate_tree(sentence):
         2. It will provide line number for each node. We will need it when
            reporting subsequent errors on that node, and it is currently not
            available in Udapi.
-
-    tree ... dictionary:
-      nodes ... array of word lines, i.e., lists of columns;
-          mwt and empty nodes are skipped, indices equal to ids (nodes[0] is empty)
-      children ... array of sets of children indices (numbers, not strings);
-          indices to this array equal to ids (children[0] are the children of the root)
-      linenos ... array of line numbers in the file, corresponding to nodes
-          (needed in error messages). Only this array is now returned from the
-          function!
     """
+    global state
     testlevel = 2
     testclass = 'Syntax'
-    global state
     node_line = state.sentence_line - 1
-    children = {} # node -> set of children
-    tree = {
-        'nodes':    [['0', '_', '_', '_', '_', '_', '_', '_', '_', '_']], # add artificial node 0
-        'children': [],
-        'linenos':  [state.sentence_line] # for node 0
-    }
+    children = {} # int(node id) -> set of children
+    linenos = [state.sentence_line] # for node 0
     for cols in sentence:
         node_line += 1
         if not is_word(cols):
             continue
-        # Even MISC may be needed when checking the annotation guidelines
-        # (for instance, SpaceAfter=No must not occur inside a goeswith span).
-        if MISC >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            id_ = int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            head = int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
+        # ID and HEAD values have been validated before and this function would
+        # not be called if they were not OK. So we can now safely convert them
+        # to integers.
+        id_ = int(cols[ID])
+        head = int(cols[HEAD])
         if head == id_:
             testid = 'head-self-loop'
             testmessage = f'HEAD == ID for {cols[ID]}'
             warn(testmessage, testclass, testlevel, testid, lineno=node_line)
             return None
-        tree['nodes'].append(cols)
-        tree['linenos'].append(node_line)
+        linenos.append(node_line)
         # Incrementally build the set of children of every node.
-        children.setdefault(cols[HEAD], set()).add(id_)
-    for cols in tree['nodes']:
-        tree['children'].append(sorted(children.get(cols[ID], [])))
+        children.setdefault(head, set()).add(id_)
+    n_words = len(linenos)-1 # minus the technical root node
+    word_ids = list(range(1, n_words+1))
     # Check that there is just one node with the root relation.
-    if len(tree['children'][0]) > 1 and args.single_root:
+    children_0 = sorted(children.get(0, []))
+    if len(children_0) > 1 and args.single_root:
         testid = 'multiple-roots'
-        testmessage = f"Multiple root words: {tree['children'][0]}"
+        testmessage = f"Multiple root words: {children_0}"
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
         return None
-    # Return None if there are any cycles. Avoid surprises when working with the graph.
+    # Return None if there are any cycles. Otherwise we could not later ask
+    # Udapi to built a data structure representing the tree.
     # Presence of cycles is equivalent to presence of unreachable nodes.
     projection = set()
     node_id = 0
     nodes = list((node_id,))
     while nodes:
         node_id = nodes.pop()
-        for child in tree['children'][node_id]:
+        children_id = sorted(children.get(node_id, []))
+        for child in children_id:
             if child in projection:
                 continue # skip cycles
             projection.add(child)
             nodes.append(child)
-    unreachable = set(range(1, len(tree['nodes']) - 1)) - projection
+    unreachable = set(word_ids) - projection
     if unreachable:
         testid = 'non-tree'
         str_unreachable = ','.join(str(w) for w in sorted(unreachable))
         testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
         return None
-    return tree['linenos']
+    return linenos
 
 
 
@@ -1716,7 +1622,7 @@ def validate_root(tree):
     for cols in tree:
         if is_word(cols):
             if HEAD >= len(cols):
-                continue # this has been already reported in trees()
+                continue # this has been already reported in next_sentence()
             if cols[HEAD] == '0' and lspec2ud(cols[DEPREL]) != 'root':
                 testclass = 'Syntax'
                 testid = '0-is-not-root'
@@ -1729,7 +1635,7 @@ def validate_root(tree):
                 warn(testmessage, testclass, testlevel, testid)
         if is_word(cols) or is_empty_node(cols):
             if DEPS >= len(cols):
-                continue # this has been already reported in trees()
+                continue # this has been already reported in next_sentence()
             try:
                 deps = deps_list(cols)
             except ValueError:
@@ -1766,7 +1672,7 @@ def validate_deps(tree):
         if not (is_word(cols) or is_empty_node(cols)):
             continue
         if DEPS >= len(cols):
-            continue # this has been already reported in trees()
+            continue # this has been already reported in next_sentence()
         # Remember whether there is at least one difference between the basic
         # tree and the enhanced graph in the entire dataset.
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
@@ -1840,7 +1746,7 @@ def validate_misc(tree):
         if not (is_word(cols) or is_empty_node(cols)):
             continue
         if MISC >= len(cols):
-            continue # this has been already reported in trees()
+            continue # this has been already reported in next_sentence()
         if cols[MISC] == '_':
             continue
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
@@ -1898,7 +1804,6 @@ def validate_misc(tree):
 
 
 
-###!!! Just testing now: Can we switch to Udapi when building and searching the tree?
 def build_tree_udapi(lines):
     root = conllu_reader.read_tree_from_lines(lines)
     return root
@@ -2023,6 +1928,35 @@ def get_graph_projection(node_id, graph, projection):
 #==============================================================================
 # Level 3 tests. Annotation content vs. the guidelines (only universal tests).
 #==============================================================================
+
+
+
+def validate_required_feature(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function will check the presence of a feature
+    and if it is missing, an error will be reported only if at least one feature
+    has been already encountered. Otherwise the error will be remembered and it
+    may be reported afterwards if any feature is encountered later.
+    
+    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
+    required_feature ... the feature name (string)
+    required_value ... the feature value (string; multivalues are not supported)
+    """
+    global state
+    testclass = 'Morpho'
+    # We may want to check that any value of a given feature is present,
+    # or even that a particular value is present. Currently we only test
+    # Typo=Yes, i.e., the latter case. The other options will be added
+    # when the need arises.
+    if feats[required_feature] != required_value:
+        if state.seen_morpho_feature:
+            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
+        else:
+            if not testid in state.delayed_feature_errors:
+                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
+            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
 
 
 
@@ -2465,7 +2399,7 @@ def validate_goeswith_span(node, lineno):
         # required if the treebank does not have features at all.
         testid = 'goeswith-missing-typo'
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature_udapi(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
+        validate_required_feature(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
 
 
 
@@ -2671,8 +2605,8 @@ def validate_whitespace(cols, args):
     """
     Checks a single line for disallowed whitespace.
     Here we assume that all language-independent whitespace-related tests have
-    already been done in validate_cols_level1(), so we only check for words
-    with spaces that are explicitly allowed in a given language.
+    already been done on level 1, so we only check for words with spaces that
+    are explicitly allowed in a given language.
     """
     global data
     testlevel = 4
@@ -2682,9 +2616,7 @@ def validate_whitespace(cols, args):
         return
     tospacedata = data.get_tospace_for_language(args.lang)
     for col_idx in (FORM, LEMMA):
-        if col_idx >= len(cols):
-            break # this has been already reported in trees()
-        if whitespace_re.match(cols[col_idx]) is not None:
+        if crex.ws.search(cols[col_idx]):
             # Whitespace found.
             # Does the FORM/LEMMA pass the regular expression that defines permitted words with spaces in this language?
             if tospacedata:
@@ -2701,38 +2633,127 @@ def validate_whitespace(cols, args):
 
 
 
+def validate_features_level4(node, line, args):
+    """
+    Checks general constraints on feature-value format. On level 4 and higher,
+    also checks that a feature-value pair is listed as approved. (Every pair
+    must be allowed on level 2 because it could be defined as language-specific.
+    To disallow non-universal features, test on level 4 with language 'ud'.)
+    Parameters:
+      'node' ....... udapi.core.node.Node object
+      'line' ....... line number of the node within the file
+    """
+    global state
+    global data
+    testclass = 'Morpho'
+    testlevel = 4
+    if str(node.feats) == '_':
+        return True
+    # List of permited features is language-specific.
+    # The current token may be in a different language due to code switching.
+    lang = args.lang
+    default_featset = featset = data.get_feats_for_language(lang)
+    altlang = get_alt_language(node)
+    if altlang:
+        lang = altlang
+        featset = data.get_feats_for_language(altlang)
+    for f in node.feats:
+        values = node.feats[f].split(',')
+        for v in values:
+            # Level 2 tested character properties and canonical order but not that the f-v pair is known.
+            # Level 4 also checks whether the feature value is on the list.
+            # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
+            # The feature Typo=Yes is the only feature allowed on a multi-word token line.
+            # If it occurs there, it cannot be duplicated on the lines of the component words.
+            if f == 'Typo' and state.mwt_typo_span_end and node.ord <= state.mwt_typo_span_end:
+                testid = 'mwt-typo-repeated-at-word'
+                testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
+                warn(testmessage, testclass, testlevel, testid, lineno=line)
+            # In case of code switching, the current token may not be in the default language
+            # and then its features are checked against a different feature set. An exception
+            # is the feature Foreign, which always relates to the default language of the
+            # corpus (but Foreign=Yes should probably be allowed for all UPOS categories in
+            # all languages).
+            effective_featset = featset
+            effective_lang = lang
+            if f == 'Foreign':
+                # Revert to the default.
+                effective_featset = default_featset
+                effective_lang = args.lang
+            if effective_featset is not None:
+                if f not in effective_featset:
+                    testid = 'feature-unknown'
+                    testmessage = f"Feature {f} is not documented for language [{effective_lang}]."
+                    if not altlang and len(data.warn_on_undoc_feats) > 0:
+                        # If some features were excluded because they are not documented,
+                        # tell the user when the first unknown feature is encountered in the data.
+                        # Then erase this (long) introductory message and do not repeat it with
+                        # other instances of unknown features.
+                        testmessage += "\n\n" + data.warn_on_undoc_feats
+                        data.warn_on_undoc_feats = ''
+                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+                else:
+                    lfrecord = effective_featset[f]
+                    if lfrecord['permitted'] == 0:
+                        testid = 'feature-not-permitted'
+                        testmessage = f"Feature {f} is not permitted in language [{effective_lang}]."
+                        if not altlang and len(data.warn_on_undoc_feats) > 0:
+                            testmessage += "\n\n" + data.warn_on_undoc_feats
+                            data.warn_on_undoc_feats = ''
+                        warn(testmessage, testclass, testlevel, testid, lineno=line)
+                    else:
+                        values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
+                        if not v in values:
+                            testid = 'feature-value-unknown'
+                            testmessage = f"Value {v} is not documented for feature {f} in language [{effective_lang}]."
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel, testid, lineno=line)
+                        elif not node.upos in lfrecord['byupos']:
+                            testid = 'feature-upos-not-permitted'
+                            testmessage = f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}]."
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel, testid, lineno=line)
+                        elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
+                            testid = 'feature-value-upos-not-permitted'
+                            testmessage = f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}]."
+                            if not altlang and len(data.warn_on_undoc_feats) > 0:
+                                testmessage += "\n\n" + data.warn_on_undoc_feats
+                                data.warn_on_undoc_feats = ''
+                            warn(testmessage, testclass, testlevel, testid, lineno=line)
+    if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
+        state.mwt_typo_span_end = None
+
+
+
 #==============================================================================
 # Level 5 tests. Annotation content vs. the guidelines, language-specific.
 #==============================================================================
 
 
 
-def validate_auxiliary_verbs(cols, children, nodes, line, lang):
+def validate_auxiliary_verbs(node, line, lang):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
     Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
+      'node' ....... udapi.core.node.Node object
       'line' ....... line number of the node within the file
     """
     global data
-    if cols[UPOS] == 'AUX' and cols[LEMMA] != '_':
-        altlang = get_alt_language(cols[MISC])
+    if node.upos == 'AUX' and node.lemma != '_':
+        altlang = get_alt_language(node)
         if altlang:
             lang = altlang
         auxlist = data.get_aux_for_language(lang)
-        auxdict = {}
-        if auxlist != []:
-            auxdict = {lang: auxlist}
-        lspecauxs = auxdict.get(lang, None)
-        if not lspecauxs or not cols[LEMMA] in lspecauxs:
+        if not auxlist or not node.lemma in auxlist:
             testlevel = 5
             testclass = 'Morpho'
             testid = 'aux-lemma'
-            testmessage = f"'{cols[LEMMA]}' is not an auxiliary in language [{lang}]"
+            testmessage = f"'{node.lemma}' is not an auxiliary in language [{lang}]"
             if not altlang and len(data.warn_on_undoc_aux) > 0:
                 # Tell the user which auxiliaries are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
@@ -2740,36 +2761,29 @@ def validate_auxiliary_verbs(cols, children, nodes, line, lang):
                 # other instances of unknown auxiliaries.
                 testmessage += "\n\n" + data.warn_on_undoc_aux
                 data.warn_on_undoc_aux = ''
-            warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
 
 
 
-def validate_copula_lemmas(cols, children, nodes, line, lang):
+def validate_copula_lemmas(node, line, lang):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
     Parameters:
-      'cols' ....... columns of the head node
-      'children' ... list of ids
-      'nodes' ...... dictionary where we can translate the node id into its
-                     CoNLL-U columns
+      'node' ....... udapi.core.node.Node object
       'line' ....... line number of the node within the file
     """
     global data
-    if cols[DEPREL] == 'cop' and cols[LEMMA] != '_':
-        altlang = get_alt_language(cols[MISC])
+    if node.udeprel == 'cop' and node.lemma != '_':
+        altlang = get_alt_language(node)
         if altlang:
             lang = altlang
         coplist = data.get_cop_for_language(lang)
-        copdict = {}
-        if coplist != []:
-            copdict = {lang: coplist}
-        lspeccops = copdict.get(lang, None)
-        if not lspeccops or not cols[LEMMA] in lspeccops:
+        if not coplist or not node.lemma in coplist:
             testlevel = 5
             testclass = 'Syntax'
             testid = 'cop-lemma'
-            testmessage = f"'{cols[LEMMA]}' is not a copula in language [{lang}]"
+            testmessage = f"'{node.lemma}' is not a copula in language [{lang}]"
             if not altlang and len(data.warn_on_undoc_cop) > 0:
                 # Tell the user which copulas are documented and where to document
                 # new ones when the first unknown auxiliary is encountered in the data.
@@ -2777,56 +2791,23 @@ def validate_copula_lemmas(cols, children, nodes, line, lang):
                 # other instances of unknown copulas.
                 testmessage += "\n\n" + data.warn_on_undoc_cop
                 data.warn_on_undoc_cop = ''
-            warn(testmessage, testclass, testlevel, testid, nodeid=cols[ID], lineno=line)
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
 
 
 
-def validate_lspec_annotation(tree, lang):
+def validate_lspec_annotation(tree, linenos, lang):
     """
     Checks language-specific consequences of the annotation guidelines.
+    
+    tree ... udapi.core.root.Root object
+    linenos ... array of line numbers, indexed by node ords (IDs)
     """
-    ###!!! Building the information about the tree is repeated and has been done in the other functions before.
-    ###!!! We should remember the information and not build it several times!
     global state
-    node_line = state.sentence_line - 1
-    lines = {} # node id -> line number of that node (for error messages)
-    nodes = {} # node id -> columns of that node
-    children = {} # node -> set of children
-    for cols in tree:
-        node_line += 1
-        if not is_word(cols):
-            continue
-        if HEAD >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        if cols[HEAD]=='_':
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        try:
-            int(cols[ID])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        try:
-            int(cols[HEAD])
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return
-        # Incrementally build the set of children of every node.
-        lines.setdefault(cols[ID], node_line)
-        nodes.setdefault(cols[ID], cols)
-        children.setdefault(cols[HEAD], set()).add(cols[ID])
-    for cols in tree:
-        if not is_word(cols):
-            continue
-        myline = lines.get(cols[ID], state.sentence_line)
-        mychildren = children.get(cols[ID], [])
-        validate_auxiliary_verbs(cols, mychildren, nodes, myline, lang)
-        validate_copula_lemmas(cols, mychildren, nodes, myline, lang)
+    nodes = tree.descendants
+    for node in nodes:
+        myline = linenos[node.ord]
+        validate_auxiliary_verbs(node, myline, lang)
+        validate_copula_lemmas(node, myline, lang)
 
 
 
@@ -2838,7 +2819,6 @@ def validate_lspec_annotation(tree, lang):
 
 
 
-global_entity_re = re.compile(r"^#\s*global\.Entity\s*=\s*(.+)$")
 def validate_misc_entity(comments, sentence):
     """
     Optionally checks the well-formedness of the MISC attributes that pertain
@@ -2850,9 +2830,9 @@ def validate_misc_entity(comments, sentence):
     iline = 0
     sentid = ''
     for c in comments:
-        global_entity_match = global_entity_re.match(c)
-        newdoc_match = newdoc_re.match(c)
-        sentid_match = sentid_re.match(c)
+        global_entity_match = crex.global_entity.fullmatch(c)
+        newdoc_match = crex.newdoc.fullmatch(c)
+        sentid_match = crex.sentid.fullmatch(c)
         if global_entity_match:
             # As a global declaration, global.Entity is expected only once per file.
             # However, we may be processing multiple files or people may have created
@@ -3412,10 +3392,14 @@ def validate_misc_entity(comments, sentence):
 
 
 
-def validate(inp, out, args, known_sent_ids):
-    for all_lines, comments, sentence in trees(inp, args):
-        # The individual lines were validated already in trees().
+def validate(inp, args):
+    for all_lines, comments, sentence in next_sentence(inp, args):
+        # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
+        # Note that low-level errors such as wrong number of columns would be
+        # reported in next_sentence() but then the lines would be thrown away
+        # and no tree lines would be yielded—meaning that we will not encounter
+        # such a mess here.
         idseqok = validate_id_sequence(sentence) # level 1
         validate_token_ranges(sentence) # level 1
         if args.level > 1:
@@ -3428,12 +3412,17 @@ def validate(inp, out, args, known_sent_ids):
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us.
-            ###!!! There is still work to be done so that the Udapi data
-            ###!!! structures are used in all subsequent tests.
             tree = build_tree_udapi(all_lines)
-            validate_sent_id(comments, known_sent_ids, args.lang) # level 2
-            if args.check_tree_text:
-                validate_text_meta(comments, sentence, args) # level 2
+            validate_sent_id(comments, args.lang) # level 2
+            validate_text_meta(comments, sentence, args) # level 2
+            for cols in sentence:
+                validate_cols_level2(cols, args)
+                if args.level > 3:
+                    validate_whitespace(cols, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
+            nodes = tree.descendants
+            for node in nodes:
+                if args.level > 3:
+                    validate_features_level4(node, linenos[node.ord], args)
             validate_root(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
@@ -3442,7 +3431,7 @@ def validate(inp, out, args, known_sent_ids):
             if args.level > 2:
                 validate_annotation(tree, linenos) # level 3
                 if args.level > 4:
-                    validate_lspec_annotation(sentence, args.lang) # level 5
+                    validate_lspec_annotation(tree, linenos, args.lang) # level 5
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if egraph:
                 if args.level > 2:
@@ -3451,21 +3440,16 @@ def validate(inp, out, args, known_sent_ids):
 
 
 
-alt_lang_re = re.compile(r"Lang=(.+)")
-def get_alt_language(misc):
+def get_alt_language(node):
     """
-    Takes the value of the MISC column for a token and checks it for the
-    attribute Lang=xxx. If present, it is interpreted as the code of the
-    language in which the current token is. This is uselful for code switching,
-    if a phrase is in a language different from the main language of the
-    document. The validator can then temporarily switch to a different set
-    of language-specific tests.
+    In code-switching analysis of foreign words, an attribute in the MISC column
+    will hold the code of the language of the current word. Certain tests will
+    then use language-specific lists from that language instead of the main
+    language of the document. This function returns the alternative language
+    code if present, otherwise it returns None.
     """
-    misclist = misc.split('|')
-    for attr in misclist:
-        m = alt_lang_re.match(attr)
-        if m:
-            return m.group(1)
+    if node.misc['Lang'] != '':
+        return node.misc['Lang']
     return None
 
 
@@ -3508,16 +3492,6 @@ if __name__=="__main__":
                             help="""Allow trees with several root words
                             (single root required by default).""")
 
-    meta_group = opt_parser.add_argument_group("Metadata constraints",
-                                               "Options for checking the validity of tree metadata.")
-    meta_group.add_argument("--no-tree-text",
-                            action="store_false", default=True, dest="check_tree_text",
-                            help="""Do not test tree text.
-                            For internal use only, this test is required and on by default.""")
-    meta_group.add_argument("--no-space-after",
-                            action="store_false", default=True, dest="check_space_after",
-                            help="Do not test presence of SpaceAfter=No.")
-
     coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
                                                 "Options for checking coreference and entity annotation.")
     coref_group.add_argument('--coref',
@@ -3544,7 +3518,6 @@ if __name__=="__main__":
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 
     try:
-        known_sent_ids = set()
         open_files = []
         if args.input == []:
             args.input.append('-')
@@ -3558,7 +3531,7 @@ if __name__=="__main__":
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for state.current_file_name, inp in zip(args.input, open_files):
-            validate(inp, out, args, known_sent_ids)
+            validate(inp, args)
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
         if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
