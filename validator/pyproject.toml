@@ -12,7 +12,7 @@ version = "0.0.1"
 authors = [
 	{ name="Filip Ginter"},
 	{ name="Sampo Pyysalo"},
-	{ name="Dan Zeman"},
+	{ name="Daniel Zeman", email="zeman@ufal.mff.cuni.cz"},
 	{ name="Arianna Masciolini", email="arianna.masciolini@gu.se"},
 	{ name="Ludovica Pannitto", email="ellepannitto@gmail.com"}
 ]
