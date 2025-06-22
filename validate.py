@@ -1793,68 +1793,28 @@ def build_tree_udapi(lines):
 
 
 
-def build_egraph(sentence):
+def validate_deps_all_or_none(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
-    a sentence. Returns a dictionary with items providing easier access to the
-    enhanced graph structure. In case of fatal problems returns None
-    but does not report the error (presumably it has already been reported).
-    However, once the graph has been found and built, this function verifies
-    that the graph is connected and generates an error if it is not.
-
-    egraph ... dictionary:
-      nodes ... dictionary of dictionaries, each corresponding to a word or an empty node; mwt lines are skipped
-          keys equal to node ids (i.e. strings that look like integers or decimal numbers; key 0 is the artificial root node)
-          value is a dictionary-record:
-              cols ... array of column values from the input line corresponding to the node
-              children ... set of children ids (strings)
-              lineno ... line number in the file (needed in error messages)
+    a sentence. Returns a dict with line number corresponding to each graph
+    node (dict keys are node IDs, which can be decimal for empty nodes).
+    In case of fatal problems (missing HEAD etc.) returns None
+    (and reports the error, unless it is something that should have been
+    reported earlier).
     """
     global state
     node_line = state.sentence_line - 1
     egraph_exists = False # enhanced deps are optional
-    rootnode = {
-        'cols': ['0', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
-        'deps': [],
-        'parents': set(),
-        'children': set(),
-        'lineno': state.sentence_line
-    }
-    egraph = {
-        '0': rootnode
-    } # structure described above
+    linenos = {0: state.sentence_line}
     nodeids = set()
     for cols in sentence:
         node_line += 1
         if is_multiword_token(cols):
             continue
-        if MISC >= len(cols):
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        try:
-            deps = deps_list(cols)
-            heads = [h for h, d in deps]
-        except ValueError:
-            # This error has been reported on lower levels, do not report it here.
-            # Do not continue to check annotation if there are elementary flaws.
-            return None
-        if is_empty_node(cols):
+        if is_empty_node(cols) or cols[DEPS] != '_':
             egraph_exists = True
         nodeids.add(cols[ID])
-        # The graph may already contain a record for the current node if one of
-        # the previous nodes is its child. If it doesn't, we will create it now.
-        egraph.setdefault(cols[ID], {})
-        egraph[cols[ID]]['cols'] = cols
-        egraph[cols[ID]]['deps'] = deps_list(cols)
-        egraph[cols[ID]]['parents'] = set([h for h, d in deps])
-        egraph[cols[ID]].setdefault('children', set())
-        egraph[cols[ID]]['lineno'] = node_line
-        # Incrementally build the set of children of every node.
-        for h in heads:
-            egraph_exists = True
-            egraph.setdefault(h, {})
-            egraph[h].setdefault('children', set()).add(cols[ID])
+        linenos[cols[ID]] = node_line
     # We are currently testing the existence of enhanced graphs separately for each sentence.
     # However, we should not allow that one sentence has a connected egraph and another
     # has no enhanced dependencies. Such inconsistency could come as a nasty surprise
@@ -1875,36 +1835,76 @@ def build_egraph(sentence):
                 testid = 'edeps-only-sometimes'
                 testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
-        return None
-    # Check that the graph is connected. The UD v2 guidelines do not license unconnected graphs.
-    # Compute projection of every node. Beware of cycles.
+    return linenos
+
+
+
+def validate_egraph_connected(nodes, linenos):
+    """
+    Takes the list of nodes (including empty nodes). If there are enhanced
+    dependencies in DEPS, builds the enhanced graph and checks that it is
+    rooted and connected.
+
+    Parameters
+    ----------
+    nodes : list of udapi.core.node.Node objects
+        List of nodes in the sentence, including empty nodes, sorted by word
+        order.
+    linenos : dict
+        Indexed by node ID (string), contains the line number on which the node
+        occurs.
+    """
+    global state
+    testlevel = 2
+    testclass = 'Enhanced'
+    node_line = state.sentence_line - 1
+    egraph_exists = False # enhanced deps are optional
+    rootnode = {
+        'children': set()
+    }
+    egraph = {
+        '0': rootnode
+    } # structure described above
+    nodeids = set()
+    for node in nodes:
+        node_line += 1
+        parents = [x['parent'] for x in node.deps]
+        if node.is_empty() or len(parents) > 0:
+            egraph_exists = True
+        nodeids.add(str(node.ord))
+        # The graph may already contain a record for the current node if one of
+        # the previous nodes is its child. If it doesn't, we will create it now.
+        egraph.setdefault(str(node.ord), {})
+        egraph[str(node.ord)].setdefault('children', set())
+        # Incrementally build the set of children of every node.
+        for p in parents:
+            egraph.setdefault(str(p.ord), {})
+            egraph[str(p.ord)].setdefault('children', set()).add(str(node.ord))
+    # If there is no trace of enhanced annotation, there are no requirements
+    # on the enhanced graph.
+    if not egraph_exists:
+        return
+    # Check that the graph is rooted and connected. The UD guidelines do not
+    # license unconnected graphs. Projection of the technical root (ord '0')
+    # must contain all nodes.
     projection = set()
-    get_graph_projection('0', egraph, projection)
-    unreachable = nodeids - projection
-    if unreachable:
-        sur = sorted(unreachable)
-        testid = 'unconnected-egraph'
-        testmessage = f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
-    return egraph
-
-
-
-def get_graph_projection(node_id, graph, projection):
-    """
-    Like get_projection() above, but works with the enhanced graph data structure.
-    Collects node ids in the set called projection.
-    """
-    nodes = list((node_id,))
-    while nodes:
-        node_id = nodes.pop()
-        for child in graph[node_id]['children']:
+    node_id = '0'
+    projnodes = list((node_id,))
+    while projnodes:
+        node_id = projnodes.pop()
+        for child in egraph[node_id]['children']:
             if child in projection:
                 continue # skip cycles
             projection.add(child)
-            nodes.append(child)
-    return projection
+            projnodes.append(child)
+    unreachable = nodeids - projection
+    if unreachable:
+        sur = sorted(unreachable)
+        lineno = linenos[sur[0]]
+        testid = 'unconnected-egraph'
+        testmessage = f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
+        warn(testmessage, testclass, testlevel, testid, lineno=lineno)
+        return None
 
 
 
@@ -2538,13 +2538,22 @@ def validate_annotation(tree, linenos):
 
 
 
-def validate_enhanced_annotation(graph):
+def validate_enhanced_orphan(node, line):
     """
     Checks universally valid consequences of the annotation guidelines in the
     enhanced representation. Currently tests only phenomena specific to the
     enhanced dependencies; however, we should also test things that are
     required in the basic dependencies (such as left-to-right coordination),
     unless it is obvious that in enhanced dependencies such things are legal.
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose incoming relations will be validated. This function
+        operates on both regular and empty nodes. Make sure to call it for
+        empty nodes, too!
+    line : int
+        Number of the line where the node occurs in the file.
     """
     testlevel = 3
     testclass = 'Enhanced'
@@ -2553,27 +2562,26 @@ def validate_enhanced_annotation(graph):
     # only if this treebank addresses gapping. We do not know it until we see
     # the first empty node.
     global state
-    for node_id in graph.keys():
-        if is_empty_node(graph[node_id]['cols']):
-            if not state.seen_empty_node:
-                ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                state.seen_empty_node = graph[node_id]['lineno']
-                # Empty node itself is not an error. Report it only for the first time
-                # and only if an orphan occurred before it.
-                if state.seen_enhanced_orphan:
-                    testid = 'empty-node-after-eorphan'
-                    testmessage = f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
-                    warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
-        udeprels = set([lspec2ud(d) for h, d in graph[node_id]['deps']])
-        if 'orphan' in udeprels:
-            if not state.seen_enhanced_orphan:
-                ###!!! This may not be exactly the first occurrence because the ids (keys) are not sorted.
-                state.seen_enhanced_orphan = graph[node_id]['lineno']
-            # If we have seen an empty node, then the orphan is an error.
-            if  state.seen_empty_node:
-                testid = 'eorphan-after-empty-node'
-                testmessage = f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node_id, lineno=graph[node_id]['lineno'])
+    if str(node.deps) == '_':
+        return
+    if node.is_empty():
+        if not state.seen_empty_node:
+            state.seen_empty_node = line
+            # Empty node itself is not an error. Report it only for the first time
+            # and only if an orphan occurred before it.
+            if state.seen_enhanced_orphan:
+                testid = 'empty-node-after-eorphan'
+                testmessage = f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
+    udeprels = set([lspec2ud(edep['deprel']) for edep in node.deps])
+    if 'orphan' in udeprels:
+        if not state.seen_enhanced_orphan:
+            state.seen_enhanced_orphan = line
+        # If we have seen an empty node, then the orphan is an error.
+        if  state.seen_empty_node:
+            testid = 'eorphan-after-empty-node'
+            testmessage = f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
+            warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
 
 
 
@@ -3494,9 +3502,20 @@ def validate(inp, args):
             idrefok = idseqok and validate_id_references(sentence) # level 2
             if not idrefok:
                 continue
-            linenos = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-            if not linenos:
+            blinenos = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+            if not blinenos:
                 continue
+            # Test that enhanced graphs exist either for all sentences or for
+            # none. As a side effect, get line numbers for all nodes including
+            # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
+            # These line numbers are returned in any case, even if there are no
+            # enhanced dependencies, hence we can rely on them even with basic
+            # trees.
+            ###!!! This is unclean design. Perhaps we should obtain the linenos
+            ###!!! separately. And validate_tree() above should no longer bother
+            ###!!! returning partial linenos; it can just return a boolean value.
+            ###!!! Perhaps linenos could be collected in validate_id_references().
+            linenos = validate_deps_all_or_none(sentence)
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us.
@@ -3512,25 +3531,22 @@ def validate(inp, args):
                 validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
             nodes = tree.descendants_and_empty
             for node in nodes:
-                ###!!! We know line numbers of regular nodes. We must collect them from empty nodes, too. For now, give at least the line where the sentence begins.
-                line = linenos[node.ord] if not node.is_empty() else state.sentence_line
+                line = linenos[str(node.ord)]
                 validate_deprels(node, line, args) # level 2 and 4
                 validate_root(node, line) # level 2: deprel root <=> head 0
-                if args.level > 3:
-                    # To disallow words with spaces everywhere, use --lang ud.
-                    validate_words_with_spaces(node, line, args.lang) # level 4
-                    validate_features_level4(node, line, args.lang) # level 4
-                    if args.level > 4:
-                        validate_auxiliary_verbs(node, line, args.lang) # level 5
-                        validate_copula_lemmas(node, line, args.lang) # level 5
-            # Tests on whole trees.
-            if args.level > 2:
-                validate_annotation(tree, linenos) # level 3
-            # Tests on enhanced graphs.
-            egraph = build_egraph(sentence) # level 2 test: egraph is connected
-            if egraph:
                 if args.level > 2:
-                    validate_enhanced_annotation(egraph) # level 3
+                    validate_enhanced_orphan(node, line) # level 3
+                    if args.level > 3:
+                        # To disallow words with spaces everywhere, use --lang ud.
+                        validate_words_with_spaces(node, line, args.lang) # level 4
+                        validate_features_level4(node, line, args.lang) # level 4
+                        if args.level > 4:
+                            validate_auxiliary_verbs(node, line, args.lang) # level 5
+                            validate_copula_lemmas(node, line, args.lang) # level 5
+            # Tests on whole trees and enhanced graphs.
+            if args.level > 2:
+                validate_annotation(tree, blinenos) # level 3 ###!!! switch to linenos; but then all the functions must access it via str(node.ord)!
+                validate_egraph_connected(nodes, linenos)
             if args.check_coref:
                 validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
     validate_newlines(inp) # level 1
