@@ -1805,7 +1805,7 @@ def validate_deps_all_or_none(sentence):
     global state
     node_line = state.sentence_line - 1
     egraph_exists = False # enhanced deps are optional
-    linenos = {0: state.sentence_line}
+    linenos = {'0': state.sentence_line}
     nodeids = set()
     for cols in sentence:
         node_line += 1
