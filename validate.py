@@ -2747,6 +2747,7 @@ def validate_deprels(node, line, args):
         Command-line arguments and options. We need .lang and .level.
     """
     global data
+    testlevel = 4
     # List of permited relations is language-specific.
     # The current token may be in a different language due to code switching.
     # Unlike with features and auxiliaries, with deprels it is less clear
@@ -2769,7 +2770,6 @@ def validate_deprels(node, line, args):
             alt_deprelset = data.get_deprel_for_language(naltlang)
         # Test only the universal part if testing at universal level.
         deprel = node.deprel
-        testlevel = 4
         if args.level < 4:
             deprel = node.udeprel
             testlevel = 2
@@ -2788,7 +2788,7 @@ def validate_deprels(node, line, args):
     # If there are enhanced dependencies, test their deprels, too.
     # We already know that the contents of DEPS is parsable (deps_list() was
     # first called from validate_id_references() and the head indices are OK).
-    ###!!! Did we also check the order of the relations before coming here?
+    # The order of enhanced dependencies was already checked in validate_deps().
     if str(node.deps) != '_':
         main_edeprelset = data.get_edeprel_for_language(mainlang)
         alt_edeprelset = data.get_edeprel_for_language(naltlang)
@@ -2798,7 +2798,8 @@ def validate_deprels(node, line, args):
             paltlang = get_alt_language(parent)
             if args.level < 4:
                 deprel = lspec2ud(deprel)
-            if deprel not in main_edeprelset and not (naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
+                testlevel = 2
+            if not (deprel in main_edeprelset or naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
                 testclass = 'Enhanced'
                 testid = 'unknown-edeprel'
                 testmessage = f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
