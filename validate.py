@@ -1206,30 +1206,76 @@ def validate_text_meta(comments, tree, args):
 
 
 
-def validate_cols_level2(cols, args):
+def deps_list(cols):
+    """
+    Parses the contents of the DEPS column and returns a list of incoming
+    enhanced dependencies. This is needed in early tests, before the sentence
+    has been fed to Udapi.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+
+    Raises
+    ------
+    ValueError
+        If the contents of DEPS cannot be parsed. Note that this does not catch
+        all possible violations of the format, e.g., bad order of the relations
+        will not raise an exception.
+
+    Returns
+    -------
+    deps : list
+        Each list item is a two-member list, containing the parent index (head)
+        and the relation type (deprel).
+    """
+    if cols[DEPS] == '_':
+        deps = []
+    else:
+        deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
+    if any(hd for hd in deps if len(hd) != 2):
+        raise ValueError(f'malformed DEPS: {cols[DEPS]}')
+    return deps
+
+
+
+def validate_cols_level2(cols, line, args):
     """
     All tests that can run on a single line. Done as soon as the line is read,
     called from next_sentence() if level>1.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
     """
     # Multiword tokens and empty nodes can or must have certain fields empty.
     if is_multiword_token(cols):
-        validate_mwt_empty_vals(cols)
+        validate_mwt_empty_vals(cols, line)
     if is_empty_node(cols):
-        validate_empty_node_empty_vals(cols) # level 2
+        validate_empty_node_empty_vals(cols, line) # level 2
     if is_word(cols) or is_empty_node(cols):
-        validate_character_constraints(cols) # level 2
-        validate_upos(cols) # level 2
-        validate_features_level2(cols, args) # level 2 (level 4 tests will be called later)
-    if is_word(cols):
-        validate_deprels(cols, args) # level 2 and up
+        validate_character_constraints(cols, line) # level 2
+        validate_upos(cols, line) # level 2
+        validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
 
 
 
-def validate_mwt_empty_vals(cols):
+def validate_mwt_empty_vals(cols, line):
     """
     Checks that a multi-word token has _ empty values in all fields except MISC.
     This is required by UD guidelines although it is not a problem in general,
     therefore a level 2 test.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
     """
     global state
     assert is_multiword_token(cols), 'internal error'
@@ -1245,15 +1291,22 @@ def validate_mwt_empty_vals(cols):
             testclass = 'Format'
             testid = 'mwt-nonempty-field'
             testmessage = f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
-def validate_empty_node_empty_vals(cols):
+def validate_empty_node_empty_vals(cols, line):
     """
     Checks that an empty node has _ empty values in HEAD and DEPREL. This is
     required by UD guidelines but not necessarily by CoNLL-U, therefore
     a level 2 test.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
     """
     assert is_empty_node(cols), 'internal error'
     for col_idx in (HEAD, DEPREL):
@@ -1262,14 +1315,21 @@ def validate_empty_node_empty_vals(cols):
             testclass = 'Format'
             testid = 'mwt-nonempty-field'
             testmessage = f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
-def validate_character_constraints(cols):
+def validate_character_constraints(cols, line):
     """
     Checks general constraints on valid characters, e.g. that UPOS
     only contains [A-Z].
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
     """
     testlevel = 2
     if is_multiword_token(cols):
@@ -1278,32 +1338,39 @@ def validate_character_constraints(cols):
         testclass = 'Morpho'
         testid = 'invalid-upos'
         testmessage = f"Invalid UPOS value '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
     if not (crex.deprel.fullmatch(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
         testclass = 'Syntax'
         testid = 'invalid-deprel'
         testmessage = f"Invalid DEPREL value '{cols[DEPREL]}'."
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
     try:
         deps_list(cols)
     except ValueError:
         testclass = 'Enhanced'
         testid = 'invalid-deps'
         testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
         return
     if any(deprel for head, deprel in deps_list(cols)
         if not crex.edeprel.fullmatch(deprel)):
             testclass = 'Enhanced'
             testid = 'invalid-edeprel'
             testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
-def validate_upos(cols):
+def validate_upos(cols, line):
     """
     Checks that the UPOS field contains one of the 17 known tags.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
     """
     global data
     if is_empty_node(cols) and cols[UPOS] == '_':
@@ -1313,15 +1380,22 @@ def validate_upos(cols):
         testclass = 'Morpho'
         testid = 'unknown-upos'
         testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
-def validate_features_level2(cols, args):
+def validate_features_level2(cols, line, args):
     """
     Checks general constraints on feature-value format: Permitted characters in
     feature name and value, features must be sorted alphabetically, features
     cannot be repeated etc.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
     """
     testclass = 'Morpho'
     testlevel = 2
@@ -1333,14 +1407,14 @@ def validate_features_level2(cols, args):
     if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
         testid = 'unsorted-features'
         testmessage = f"Morphological features must be sorted: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
     attr_set = set() # I'll gather the set of features here to check later that none is repeated.
     for f in feat_list:
         match = crex.featval.fullmatch(f)
         if match is None:
             testid = 'invalid-feature'
             testmessage = f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
-            warn(testmessage, testclass, testlevel, testid)
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             # Check that the values are sorted as well
@@ -1350,21 +1424,21 @@ def validate_features_level2(cols, args):
             if len(values) != len(set(values)):
                 testid = 'repeated-feature-value'
                 testmessage = f"Repeated feature values are disallowed: '{feats}'"
-                warn(testmessage, testclass, testlevel, testid)
+                warn(testmessage, testclass, testlevel, testid, lineno=line)
             if [v.lower() for v in values] != sorted(v.lower() for v in values):
                 testid = 'unsorted-feature-values'
                 testmessage = f"If a feature has multiple values, these must be sorted: '{f}'"
-                warn(testmessage, testclass, testlevel, testid)
+                warn(testmessage, testclass, testlevel, testid, lineno=line)
             for v in values:
                 if not crex.val.fullmatch(v):
                     testid = 'invalid-feature-value'
                     testmessage = f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
-                    warn(testmessage, testclass, testlevel, testid)
+                    warn(testmessage, testclass, testlevel, testid, lineno=line)
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
     if len(attr_set) != len(feat_list):
         testid = 'repeated-feature'
         testmessage = f"Repeated features are disallowed: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid)
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
@@ -1390,66 +1464,146 @@ def features_present():
 
 
 
-def validate_deprels(cols, args):
-    global data
-    if DEPREL >= len(cols):
-        return # this has been already reported in next_sentence()
-    # List of permited relations is language-specific.
-    # The current token may be in a different language due to code switching.
-    deprelset = data.get_deprel_for_language(args.lang)
-    ###!!! Unlike with features and auxiliaries, with deprels it is less clear
-    ###!!! whether we actually want to switch the set of labels when the token
-    ###!!! belongs to another language. If the set is changed at all, then it
-    ###!!! should be a union of the main language and the token language.
-    ###!!! Otherwise we risk that, e.g., we have allowed 'flat:name' for our
-    ###!!! language, the maintainers of the other language have not allowed it,
-    ###!!! and then we could not use it when the foreign language is active.
-    ###!!! (This has actually happened in French GSD.)
-    altlang = None
-    #altlang = get_alt_language(cols[MISC])
-    #if altlang:
-    #    deprelset = get_depreldata_for_language(altlang)
-    # Test only the universal part if testing at universal level.
-    deprel = cols[DEPREL]
-    testlevel = 4
-    if args.level < 4:
-        deprel = lspec2ud(deprel)
-        testlevel = 2
-    if deprelset is not None and deprel not in deprelset:
-        testclass = 'Syntax'
-        testid = 'unknown-deprel'
-        # If some relations were excluded because they are not documented,
-        # tell the user when the first unknown relation is encountered in the data.
-        # Then erase this (long) introductory message and do not repeat it with
-        # other instances of unknown relations.
-        testmessage = f"Unknown DEPREL label: '{cols[DEPREL]}'"
-        if not altlang and len(data.warn_on_undoc_deps) > 0:
-            testmessage += "\n\n" + data.warn_on_undoc_deps
-            data.warn_on_undoc_deps = ''
-        warn(testmessage, testclass, testlevel, testid)
-    if DEPS >= len(cols):
-        return # this has been already reported in next_sentence()
-    edeprelset = data.get_edeprel_for_language(args.lang)
-    if edeprelset is not None and cols[DEPS] != '_':
-        for head_deprel in cols[DEPS].split('|'):
-            try:
-                head,deprel=head_deprel.split(':', 1)
-            except ValueError:
-                testclass = 'Enhanced'
-                testid = 'invalid-head-deprel' # but it would have probably triggered another error above
-                testmessage = f"Malformed head:deprel pair '{head_deprel}'."
-                warn(testmessage, testclass, testlevel, testid)
-                continue
-            if args.level < 4:
-                deprel = lspec2ud(deprel)
-            if deprel not in edeprelset:
-                testclass = 'Enhanced'
-                testid = 'unknown-edeprel'
-                testmessage = f"Unknown enhanced relation type '{deprel}' in '{head_deprel}'"
-                if not altlang and len(data.warn_on_undoc_edeps) > 0:
-                    testmessage += "\n\n" + data.warn_on_undoc_edeps
-                    data.warn_on_undoc_edeps = ''
-                warn(testmessage, testclass, testlevel, testid)
+def validate_deps(cols, line):
+    """
+    Validates that DEPS is correctly formatted and that there are no
+    self-loops in DEPS (longer cycles are allowed in enhanced graphs but
+    self-loops are not).
+    
+    This function must be run on raw DEPS before it is fed into Udapi because
+    it checks the order of relations, which is not guaranteed to be preserved
+    in Udapi. On the other hand, we assume that it is run after
+    validate_id_references() and only if DEPS is parsable and the head indices
+    in it are OK.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
+    """
+    global state
+    testlevel = 2
+    if not (is_word(cols) or is_empty_node(cols)):
+        return
+    # Remember whether there is at least one difference between the basic
+    # tree and the enhanced graph in the entire dataset.
+    if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
+        state.seen_enhancement = line
+    # We already know that the contents of DEPS is parsable (deps_list() was
+    # first called from validate_id_references() and the head indices are OK).
+    deps = deps_list(cols)
+    heads = [float(h) for h, d in deps]
+    if heads != sorted(heads):
+        testclass = 'Format'
+        testid = 'unsorted-deps'
+        testmessage = f"DEPS not sorted by head index: '{cols[DEPS]}'"
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
+    else:
+        lasth = None
+        lastd = None
+        for h, d in deps:
+            if h == lasth:
+                if d < lastd:
+                    testclass = 'Format'
+                    testid = 'unsorted-deps-2'
+                    testmessage = f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
+                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+                elif d == lastd:
+                    testclass = 'Format'
+                    testid = 'repeated-deps'
+                    testmessage = f"DEPS contain multiple instances of the same relation '{h}:{d}'"
+                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+            lasth = h
+            lastd = d
+    try:
+        id_ = float(cols[ID])
+    except ValueError:
+        # This error has been reported previously.
+        return
+    if id_ in heads:
+        testclass = 'Enhanced'
+        testid = 'deps-self-loop'
+        testmessage = f"Self-loop in DEPS for '{cols[ID]}'"
+        warn(testmessage, testclass, testlevel, testid, lineno=line)
+
+
+
+def validate_misc(cols, line):
+    """
+    In general, the MISC column can contain almost anything. However, if there
+    is a vertical bar character, it is interpreted as the separator of two
+    MISC attributes, which may or may not have the form of attribute=value pair.
+    In general it is not forbidden that the same attribute appears several times
+    with different values, but this should not happen for selected attributes
+    that are described in the UD documentation.
+    
+    This function must be run on raw MISC before it is fed into Udapi because
+    Udapi is not prepared for some of the less recommended usages of MISC.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    line : int
+        Number of the line where the node occurs in the file.
+    """
+    testlevel = 2
+    if cols[MISC] == '_':
+        return
+    misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
+    mamap = {}
+    for ma in misc:
+        if ma[0] == '':
+            if len(ma) == 1:
+                testclass = 'Warning' # warning only
+                testid = 'empty-misc'
+                testmessage = "Empty attribute in MISC; possible misinterpreted vertical bar?"
+                warn(testmessage, testclass, testlevel, testid, lineno=line)
+            else:
+                testclass = 'Warning' # warning only
+                testid = 'empty-misc-key'
+                testmessage = f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
+                warn(testmessage, testclass, testlevel, testid, lineno=line)
+        # We do not warn about MISC items that do not contain '='.
+        # But the remaining error messages below assume that ma[1] exists.
+        if len(ma) == 1:
+            ma.append('')
+        if re.match(r"^\s", ma[0]):
+            testclass = 'Warning' # warning only
+            testid = 'misc-extra-space'
+            testmessage = f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+        elif re.search(r"\s$", ma[0]):
+            testclass = 'Warning' # warning only
+            testid = 'misc-extra-space'
+            testmessage = f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+        elif re.match(r"^\s", ma[1]):
+            testclass = 'Warning' # warning only
+            testid = 'misc-extra-space'
+            testmessage = f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+        elif re.search(r"\s$", ma[1]):
+            testclass = 'Warning' # warning only
+            testid = 'misc-extra-space'
+            testmessage = f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+        if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
+            mamap.setdefault(ma[0], 0)
+            mamap[ma[0]] = mamap[ma[0]] + 1
+        elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$", ma[0], re.IGNORECASE):
+            testclass = 'Warning' # warning only
+            testid = 'misc-attr-typo'
+            testmessage = f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+    for a in list(mamap):
+        if mamap[a] > 1:
+            testclass = 'Format' # this one is real error
+            testid = 'repeated-misc'
+            testmessage = f"MISC attribute '{a}' not supposed to occur twice"
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
@@ -1459,34 +1613,13 @@ def validate_deprels(cols, args):
 
 
 
-def subset_to_words_and_empty_nodes(tree):
-    """
-    Only picks word and empty node lines, skips multiword token lines.
-    """
-    return [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
-
-
-
-def deps_list(cols):
-    if DEPS >= len(cols):
-        return # this has been already reported in next_sentence()
-    if cols[DEPS] == '_':
-        deps = []
-    else:
-        deps = [hd.split(':',1) for hd in cols[DEPS].split('|')]
-    if any(hd for hd in deps if len(hd) != 2):
-        raise ValueError(f'malformed DEPS: {cols[DEPS]}')
-    return deps
-
-
-
 def validate_id_references(tree):
     """
     Validates that HEAD and DEPS reference existing IDs.
     """
     ok = True
     testlevel = 2
-    word_tree = subset_to_words_and_empty_nodes(tree)
+    word_tree = [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
     ids = set([cols[ID] for cols in word_tree])
     for cols in word_tree:
         # Test the basic HEAD only for non-empty nodes.
@@ -1614,193 +1747,43 @@ def validate_tree(sentence):
 
 
 
-def validate_root(tree):
+def validate_root(node, line):
     """
     Checks that DEPREL is "root" iff HEAD is 0.
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose incoming relation will be validated. This function
+        operates on both regular and empty nodes. Make sure to call it for
+        empty nodes, too!
+    line : int
+        Number of the line where the node occurs in the file.
     """
     testlevel = 2
-    for cols in tree:
-        if is_word(cols):
-            if HEAD >= len(cols):
-                continue # this has been already reported in next_sentence()
-            if cols[HEAD] == '0' and lspec2ud(cols[DEPREL]) != 'root':
-                testclass = 'Syntax'
-                testid = '0-is-not-root'
-                testmessage = "DEPREL must be 'root' if HEAD is 0."
-                warn(testmessage, testclass, testlevel, testid)
-            if cols[HEAD] != '0' and lspec2ud(cols[DEPREL]) == 'root':
-                testclass = 'Syntax'
-                testid = 'root-is-not-0'
-                testmessage = "DEPREL cannot be 'root' if HEAD is not 0."
-                warn(testmessage, testclass, testlevel, testid)
-        if is_word(cols) or is_empty_node(cols):
-            if DEPS >= len(cols):
-                continue # this has been already reported in next_sentence()
-            try:
-                deps = deps_list(cols)
-            except ValueError:
-                # Similar errors have probably been reported earlier.
-                testclass = 'Format'
-                testid = 'invalid-deps'
-                testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-                warn(testmessage, testclass, testlevel, testid)
-                continue
-            for head, deprel in deps:
-                if head == '0' and lspec2ud(deprel) != 'root':
-                    testclass = 'Enhanced'
-                    testid = 'enhanced-0-is-not-root'
-                    testmessage = "Enhanced relation type must be 'root' if head is 0."
-                    warn(testmessage, testclass, testlevel, testid)
-                if head != '0' and lspec2ud(deprel) == 'root':
-                    testclass = 'Enhanced'
-                    testid = 'enhanced-root-is-not-0'
-                    testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
-                    warn(testmessage, testclass, testlevel, testid)
-
-
-
-def validate_deps(tree):
-    """
-    Validates that DEPS is correctly formatted and that there are no
-    self-loops in DEPS.
-    """
-    global state
-    testlevel = 2
-    node_line = state.sentence_line - 1
-    for cols in tree:
-        node_line += 1
-        if not (is_word(cols) or is_empty_node(cols)):
-            continue
-        if DEPS >= len(cols):
-            continue # this has been already reported in next_sentence()
-        # Remember whether there is at least one difference between the basic
-        # tree and the enhanced graph in the entire dataset.
-        if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
-            state.seen_enhancement = node_line
-        try:
-            deps = deps_list(cols)
-            heads = [float(h) for h, d in deps]
-        except ValueError:
-            # Similar errors have probably been reported earlier.
-            testclass = 'Format'
-            testid = 'invalid-deps'
-            testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            return
-        if heads != sorted(heads):
-            testclass = 'Format'
-            testid = 'unsorted-deps'
-            testmessage = f"DEPS not sorted by head index: '{cols[DEPS]}'"
-            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-        else:
-            lasth = None
-            lastd = None
-            for h, d in deps:
-                if h == lasth:
-                    if d < lastd:
-                        testclass = 'Format'
-                        testid = 'unsorted-deps-2'
-                        testmessage = f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
-                        warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-                    elif d == lastd:
-                        testclass = 'Format'
-                        testid = 'repeated-deps'
-                        testmessage = f"DEPS contain multiple instances of the same relation '{h}:{d}'"
-                        warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-                lasth = h
-                lastd = d
-                ###!!! This is now also tested above in validate_root(). We must reorganize testing of the enhanced structure so that the same thing is not tested multiple times.
-                # Like in the basic representation, head 0 implies relation root and vice versa.
-                # Note that the enhanced graph may have multiple roots (coordination of predicates).
-                #ud = lspec2ud(d)
-                #if h == '0' and ud != 'root':
-                #    warn(f"Illegal relation '%s:%s' in DEPS: must be 'root' if head is 0" % (h, d), 'Format', lineno=node_line)
-                #if ud == 'root' and h != '0':
-                #    warn(f"Illegal relation '%s:%s' in DEPS: cannot be 'root' if head is not 0" % (h, d), 'Format', lineno=node_line)
-        try:
-            id_ = float(cols[ID])
-        except ValueError:
-            # This error has been reported previously.
-            return
-        if id_ in heads:
+    if not node.is_empty():
+        if node.parent.ord == 0 and node.udeprel != 'root':
+            testclass = 'Syntax'
+            testid = '0-is-not-root'
+            testmessage = "DEPREL must be 'root' if HEAD is 0."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+        if node.parent.ord != 0 and node.udeprel == 'root':
+            testclass = 'Syntax'
+            testid = 'root-is-not-0'
+            testmessage = "DEPREL cannot be 'root' if HEAD is not 0."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+    # In the enhanced graph, test both regular and empty roots.
+    for edep in node.deps:
+        if edep['parent'].ord == 0 and lspec2ud(edep['deprel']) != 'root':
             testclass = 'Enhanced'
-            testid = 'deps-self-loop'
-            testmessage = f"Self-loop in DEPS for '{cols[ID]}'"
-            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-
-
-
-def validate_misc(tree):
-    """
-    In general, the MISC column can contain almost anything. However, if there
-    is a vertical bar character, it is interpreted as the separator of two
-    MISC attributes, which may or may not have the form of attribute=value pair.
-    In general it is not forbidden that the same attribute appears several times
-    with different values, but this should not happen for selected attributes
-    that are described in the UD documentation.
-    """
-    testlevel = 2
-    node_line = state.sentence_line - 1
-    for cols in tree:
-        node_line += 1
-        if not (is_word(cols) or is_empty_node(cols)):
-            continue
-        if MISC >= len(cols):
-            continue # this has been already reported in next_sentence()
-        if cols[MISC] == '_':
-            continue
-        misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
-        mamap = {}
-        for ma in misc:
-            if ma[0] == '':
-                if len(ma) == 1:
-                    testclass = 'Warning' # warning only
-                    testid = 'empty-misc'
-                    testmessage = "Empty attribute in MISC; possible misinterpreted vertical bar?"
-                    warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-                else:
-                    testclass = 'Warning' # warning only
-                    testid = 'empty-misc-key'
-                    testmessage = f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
-                    warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            # We do not warn about MISC items that do not contain '='.
-            # But the remaining error messages below assume that ma[1] exists.
-            if len(ma) == 1:
-                ma.append('')
-            if re.match(r"^\s", ma[0]):
-                testclass = 'Warning' # warning only
-                testid = 'misc-extra-space'
-                testmessage = f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            elif re.search(r"\s$", ma[0]):
-                testclass = 'Warning' # warning only
-                testid = 'misc-extra-space'
-                testmessage = f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            elif re.match(r"^\s", ma[1]):
-                testclass = 'Warning' # warning only
-                testid = 'misc-extra-space'
-                testmessage = f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            elif re.search(r"\s$", ma[1]):
-                testclass = 'Warning' # warning only
-                testid = 'misc-extra-space'
-                testmessage = f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
-                mamap.setdefault(ma[0], 0)
-                mamap[ma[0]] = mamap[ma[0]] + 1
-            elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$", ma[0], re.IGNORECASE):
-                testclass = 'Warning' # warning only
-                testid = 'misc-attr-typo'
-                testmessage = f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-        for a in list(mamap):
-            if mamap[a] > 1:
-                testclass = 'Format' # this one is real error
-                testid = 'repeated-misc'
-                testmessage = f"MISC attribute '{a}' not supposed to occur twice"
-                warn(testmessage, testclass, testlevel, testid, lineno=node_line)
+            testid = 'enhanced-0-is-not-root'
+            testmessage = "Enhanced relation type must be 'root' if head is 0."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+        if edep['parent'].ord != 0 and lspec2ud(edep['deprel']) == 'root':
+            testclass = 'Enhanced'
+            testid = 'enhanced-root-is-not-0'
+            testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
@@ -2648,10 +2631,9 @@ def validate_words_with_spaces(node, line, lang):
 
 def validate_features_level4(node, line, lang):
     """
-    Checks general constraints on feature-value format. On level 4 and higher,
-    also checks that a feature-value pair is listed as approved. (Every pair
-    must be allowed on level 2 because it could be defined as language-specific.
-    To disallow non-universal features, test on level 4 with language 'ud'.)
+    Checks that a feature-value pair is listed as approved. Feature lists are
+    language-specific. To disallow non-universal features, test on level 4 with
+    language 'ud'.
     
     Parameters
     ----------
@@ -2745,6 +2727,85 @@ def validate_features_level4(node, line, lang):
                             warn(testmessage, testclass, testlevel, testid, lineno=line)
     if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
         state.mwt_typo_span_end = None
+
+
+
+def validate_deprels(node, line, args):
+    """
+    Checks that a dependency relation label is listed as approved in the given
+    language. As a language-specific test, this function generally belongs to
+    level 4, but it can be also used on levels 2 and 3, in which case it will
+    check only the main dependency type and ignore any subtypes.
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose incoming relation will be validated.
+    line : int
+        Number of the line where the node occurs in the file.
+    args : object
+        Command-line arguments and options. We need .lang and .level.
+    """
+    global data
+    # List of permited relations is language-specific.
+    # The current token may be in a different language due to code switching.
+    # Unlike with features and auxiliaries, with deprels it is less clear
+    # whether we want to switch the set of labels when the token belongs to
+    # another language. Especially with subtypes that are not so much language
+    # specific. For example, we may have allowed 'flat:name' for our language,
+    # the maintainers of the other language have not allowed it, and then we
+    # could not use it when the foreign language is active. (This actually
+    # happened in French GSD.) We will thus allow the union of the main and the
+    # alternative deprelset when both the parent and the child belong to the
+    # same alternative language. Otherwise, only the main deprelset is allowed.
+    mainlang = args.lang
+    naltlang = get_alt_language(node)
+    # The basic relation should be tested on regular nodes but not on empty nodes.
+    if not node.is_empty():
+        paltlang = get_alt_language(node.parent)
+        main_deprelset = data.get_deprel_for_language(mainlang)
+        alt_deprelset = set()
+        if naltlang != None and naltlang != mainlang and naltlang == paltlang:
+            alt_deprelset = data.get_deprel_for_language(naltlang)
+        # Test only the universal part if testing at universal level.
+        deprel = node.deprel
+        testlevel = 4
+        if args.level < 4:
+            deprel = node.udeprel
+            testlevel = 2
+        if deprel not in main_deprelset and deprel not in alt_deprelset:
+            testclass = 'Syntax'
+            testid = 'unknown-deprel'
+            # If some relations were excluded because they are not documented,
+            # tell the user when the first unknown relation is encountered in the data.
+            # Then erase this (long) introductory message and do not repeat it with
+            # other instances of unknown relations.
+            testmessage = f"Unknown DEPREL label: '{deprel}'"
+            if not naltlang and len(data.warn_on_undoc_deps) > 0:
+                testmessage += "\n\n" + data.warn_on_undoc_deps
+                data.warn_on_undoc_deps = ''
+            warn(testmessage, testclass, testlevel, testid, lineno=line)
+    # If there are enhanced dependencies, test their deprels, too.
+    # We already know that the contents of DEPS is parsable (deps_list() was
+    # first called from validate_id_references() and the head indices are OK).
+    ###!!! Did we also check the order of the relations before coming here?
+    if str(node.deps) != '_':
+        main_edeprelset = data.get_edeprel_for_language(mainlang)
+        alt_edeprelset = data.get_edeprel_for_language(naltlang)
+        for edep in node.deps:
+            parent = edep['parent']
+            deprel = edep['deprel']
+            paltlang = get_alt_language(parent)
+            if args.level < 4:
+                deprel = lspec2ud(deprel)
+            if deprel not in main_edeprelset and not (naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
+                testclass = 'Enhanced'
+                testid = 'unknown-edeprel'
+                testmessage = f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+                if not naltlang and len(data.warn_on_undoc_edeps) > 0:
+                    testmessage += "\n\n" + data.warn_on_undoc_edeps
+                    data.warn_on_undoc_edeps = ''
+                warn(testmessage, testclass, testlevel, testid, lineno=line)
 
 
 
@@ -3408,6 +3469,17 @@ def validate_misc_entity(comments, sentence):
 
 
 def validate(inp, args):
+    """
+    The main entry point for all validation tests. It reads sentences from the
+    input stream one by one, each sentence is immediately tested.
+
+    Parameters
+    ----------
+    inp : open file handle
+        The CoNLL-U-formatted input stream.
+    args : object
+        Command-line options; we need .level and .lang.
+    """
     for all_lines, comments, sentence in next_sentence(inp, args):
         # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
@@ -3431,28 +3503,35 @@ def validate(inp, args):
             validate_sent_id(comments, args.lang) # level 2
             validate_text_meta(comments, sentence, args) # level 2
             # Tests of individual nodes.
+            line = state.sentence_line - 1
             for cols in sentence:
-                validate_cols_level2(cols, args)
-            nodes = tree.descendants
+                line += 1
+                validate_cols_level2(cols, line, args)
+                validate_deps(cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
+            nodes = tree.descendants_and_empty
             for node in nodes:
+                ###!!! We know line numbers of regular nodes. We must collect them from empty nodes, too. For now, give at least the line where the sentence begins.
+                line = linenos[node.ord] if not node.is_empty() else state.sentence_line
+                validate_deprels(node, line, args) # level 2 and 4
+                validate_root(node, line) # level 2: deprel root <=> head 0
                 if args.level > 3:
                     # To disallow words with spaces everywhere, use --lang ud.
-                    validate_words_with_spaces(node, linenos[node.ord], args.lang) # level 4
-                    validate_features_level4(node, linenos[node.ord], args.lang) # level 4
+                    validate_words_with_spaces(node, line, args.lang) # level 4
+                    validate_features_level4(node, line, args.lang) # level 4
                     if args.level > 4:
-                        validate_auxiliary_verbs(node, linenos[node.ord], args.lang) # level 5
-                        validate_copula_lemmas(node, linenos[node.ord], args.lang) # level 5
-            validate_root(sentence) # level 2
-            validate_deps(sentence) # level 2 and up
-            validate_misc(sentence) # level 2 and up
-            if args.check_coref:
-                validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
+                        validate_auxiliary_verbs(node, line, args.lang) # level 5
+                        validate_copula_lemmas(node, line, args.lang) # level 5
+            # Tests on whole trees.
             if args.level > 2:
                 validate_annotation(tree, linenos) # level 3
+            # Tests on enhanced graphs.
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if egraph:
                 if args.level > 2:
                     validate_enhanced_annotation(egraph) # level 3
+            if args.check_coref:
+                validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
     validate_newlines(inp) # level 1
 
 
