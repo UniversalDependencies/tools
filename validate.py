@@ -2601,47 +2601,66 @@ def validate_enhanced_annotation(graph):
 
 
 
-def validate_whitespace(cols, args):
+def validate_words_with_spaces(node, line, lang):
     """
     Checks a single line for disallowed whitespace.
     Here we assume that all language-independent whitespace-related tests have
     already been done on level 1, so we only check for words with spaces that
     are explicitly allowed in a given language.
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node to be validated.
+    line : int
+        Number of the line where the node occurs in the file.
+    lang : str
+        Code of the main language of the corpus.
     """
     global data
     testlevel = 4
     testclass = 'Format'
-    # We already verified that a multiword token does not contain a space (see validate_cols_level1()).
-    if is_multiword_token(cols):
-        return
-    tospacedata = data.get_tospace_for_language(args.lang)
-    for col_idx in (FORM, LEMMA):
-        if crex.ws.search(cols[col_idx]):
-            # Whitespace found.
-            # Does the FORM/LEMMA pass the regular expression that defines permitted words with spaces in this language?
+    # List of permited words with spaces is language-specific.
+    # The current token may be in a different language due to code switching.
+    tospacedata = data.get_tospace_for_language(lang)
+    altlang = get_alt_language(node)
+    if altlang:
+        lang = altlang
+        tospacedata = data.get_tospace_for_language(altlang)
+    for column in ('FORM', 'LEMMA'):
+        word = node.form if column == 'FORM' else node.lemma
+        # Is there whitespace in the word?
+        if crex.ws.search(word):
+            # Whitespace found. Does the word pass the regular expression that defines permitted words with spaces in this language?
             if tospacedata:
                 # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
-                string_to_test = re.sub(r'\xA0', ' ', cols[col_idx])
+                string_to_test = re.sub(r'\xA0', ' ', word)
                 if not tospacedata[1].fullmatch(string_to_test):
                     testid = 'invalid-word-with-space'
-                    testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
-                    warn(testmessage, testclass, testlevel, testid, explanation="\n"+data.warn_on_undoc_tospaces)
+                    testmessage = f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace."
+                    warn(testmessage, testclass, testlevel, testid, lineno=line, explanation="\n"+data.warn_on_undoc_tospaces)
             else:
                 testid = 'invalid-word-with-space'
-                testmessage = f"'{cols[col_idx]}' in column {COLNAMES[col_idx]} is not on the list of exceptions allowed to contain whitespace."
-                warn(testmessage, testclass, testlevel, testid, explanation="\n"+data.warn_on_undoc_tospaces)
+                testmessage = f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace."
+                warn(testmessage, testclass, testlevel, testid, lineno=line, explanation="\n"+data.warn_on_undoc_tospaces)
 
 
 
-def validate_features_level4(node, line, args):
+def validate_features_level4(node, line, lang):
     """
     Checks general constraints on feature-value format. On level 4 and higher,
     also checks that a feature-value pair is listed as approved. (Every pair
     must be allowed on level 2 because it could be defined as language-specific.
     To disallow non-universal features, test on level 4 with language 'ud'.)
-    Parameters:
-      'node' ....... udapi.core.node.Node object
-      'line' ....... line number of the node within the file
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node to be validated.
+    line : int
+        Number of the line where the node occurs in the file.
+    lang : str
+        Code of the main language of the corpus.
     """
     global state
     global data
@@ -2651,7 +2670,7 @@ def validate_features_level4(node, line, args):
         return True
     # List of permited features is language-specific.
     # The current token may be in a different language due to code switching.
-    lang = args.lang
+    default_lang = lang
     default_featset = featset = data.get_feats_for_language(lang)
     altlang = get_alt_language(node)
     if altlang:
@@ -2679,7 +2698,7 @@ def validate_features_level4(node, line, args):
             if f == 'Foreign':
                 # Revert to the default.
                 effective_featset = default_featset
-                effective_lang = args.lang
+                effective_lang = default_lang
             if effective_featset is not None:
                 if f not in effective_featset:
                     testid = 'feature-unknown'
@@ -2739,9 +2758,15 @@ def validate_auxiliary_verbs(node, line, lang):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
-    Parameters:
-      'node' ....... udapi.core.node.Node object
-      'line' ....... line number of the node within the file
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node to be validated.
+    line : int
+        Number of the line where the node occurs in the file.
+    lang : str
+        Code of the main language of the corpus.
     """
     global data
     if node.upos == 'AUX' and node.lemma != '_':
@@ -2769,9 +2794,15 @@ def validate_copula_lemmas(node, line, lang):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
-    Parameters:
-      'node' ....... udapi.core.node.Node object
-      'line' ....... line number of the node within the file
+    
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node to be validated.
+    line : int
+        Number of the line where the node occurs in the file.
+    lang : str
+        Code of the main language of the corpus.
     """
     global data
     if node.udeprel == 'cop' and node.lemma != '_':
@@ -2792,22 +2823,6 @@ def validate_copula_lemmas(node, line, lang):
                 testmessage += "\n\n" + data.warn_on_undoc_cop
                 data.warn_on_undoc_cop = ''
             warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=line)
-
-
-
-def validate_lspec_annotation(tree, linenos, lang):
-    """
-    Checks language-specific consequences of the annotation guidelines.
-    
-    tree ... udapi.core.root.Root object
-    linenos ... array of line numbers, indexed by node ords (IDs)
-    """
-    global state
-    nodes = tree.descendants
-    for node in nodes:
-        myline = linenos[node.ord]
-        validate_auxiliary_verbs(node, myline, lang)
-        validate_copula_lemmas(node, myline, lang)
 
 
 
@@ -3415,14 +3430,18 @@ def validate(inp, args):
             tree = build_tree_udapi(all_lines)
             validate_sent_id(comments, args.lang) # level 2
             validate_text_meta(comments, sentence, args) # level 2
+            # Tests of individual nodes.
             for cols in sentence:
                 validate_cols_level2(cols, args)
-                if args.level > 3:
-                    validate_whitespace(cols, args) # level 4 (it is language-specific; to disallow everywhere, use --lang ud)
             nodes = tree.descendants
             for node in nodes:
                 if args.level > 3:
-                    validate_features_level4(node, linenos[node.ord], args)
+                    # To disallow words with spaces everywhere, use --lang ud.
+                    validate_words_with_spaces(node, linenos[node.ord], args.lang) # level 4
+                    validate_features_level4(node, linenos[node.ord], args.lang) # level 4
+                    if args.level > 4:
+                        validate_auxiliary_verbs(node, linenos[node.ord], args.lang) # level 5
+                        validate_copula_lemmas(node, linenos[node.ord], args.lang) # level 5
             validate_root(sentence) # level 2
             validate_deps(sentence) # level 2 and up
             validate_misc(sentence) # level 2 and up
@@ -3430,8 +3449,6 @@ def validate(inp, args):
                 validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
             if args.level > 2:
                 validate_annotation(tree, linenos) # level 3
-                if args.level > 4:
-                    validate_lspec_annotation(tree, linenos, args.lang) # level 5
             egraph = build_egraph(sentence) # level 2 test: egraph is connected
             if egraph:
                 if args.level > 2:
@@ -3447,6 +3464,11 @@ def get_alt_language(node):
     then use language-specific lists from that language instead of the main
     language of the document. This function returns the alternative language
     code if present, otherwise it returns None.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node (word) whose language is being queried.
     """
     if node.misc['Lang'] != '':
         return node.misc['Lang']
