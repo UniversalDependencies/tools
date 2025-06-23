@@ -189,7 +189,7 @@ class Data:
         if not lcode in self.feats:
             return {}
         return self.feats[lcode]
-    
+
     def get_deprel_for_language(self, lcode):
         """
         Searches the previously loaded database of dependency relation labels.
@@ -410,7 +410,7 @@ class Data:
             msg += ', '.join(auxdata) + "\n"
             msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
         return msg
-    
+
     def explain_cop(self, lcode):
         """
         Returns explanation message for copulas of a particular language.
@@ -431,7 +431,7 @@ class Data:
             msg += ', '.join(copdata) + "\n"
             msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
         return msg
-    
+
     def explain_tospace(self, lcode):
         """
         Returns explanation message for tokens with spaces of a particular language.
@@ -452,7 +452,7 @@ class Data:
             msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
             msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
         return msg
-    
+
     def save_explanations(self, lcode):
         """
         Temporary solution, it should be refactored. We store the messages
@@ -678,7 +678,7 @@ def next_sentence(inp, args):
     elementary integrity of its yields. Some lines may be skipped (e.g.,
     extra empty lines or misplaced comments), and a whole sentence will be
     skipped if one of its token lines has unexpected number of columns.
-    
+
     However, some low-level errors currently do not lead to excluding the
     sentence from being yielded and put to subsequent tests. Specifically,
     character constraints on individual fields are tested here but errors
@@ -703,6 +703,7 @@ def next_sentence(inp, args):
         if not state.comment_start_line:
             state.comment_start_line = state.current_line
         line = line.rstrip("\n")
+        validate_unicode_normalization(line)
         if is_whitespace(line):
             testid = 'pseudo-empty-line'
             testmessage = 'Spurious line that appears empty but is not; there are whitespace characters.'
@@ -746,11 +747,6 @@ def next_sentence(inp, args):
                 testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
                 warn(testmessage, testclass, testlevel, testid)
         elif line[0].isdigit():
-            ###!!! We do not test unicode normalization on comment lines although
-            ###!!! perhaps we should. But first we would have to modify the implementation,
-            ###!!! which currently assumes it can tell the user in which field the error
-            ###!!! occurred.
-            validate_unicode_normalization(line)
             if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
             cols = line.split("\t")
@@ -825,6 +821,14 @@ def validate_unicode_normalization(text):
     Tests that letters composed of multiple Unicode characters (such as a base
     letter plus combining diacritics) conform to NFC normalization (canonical
     decomposition followed by canonical composition).
+
+    Parameters
+    ----------
+    text : str
+        The input line to be tested. If the line consists of TAB-separated
+        fields (token line), errors reports will specify the field where the
+        error occurred. Otherwise (comment line), the error report will not be
+        localized.
     """
     normalized_text = unicodedata.normalize('NFC', text)
     if text != normalized_text:
@@ -851,7 +855,10 @@ def validate_unicode_normalization(text):
         testlevel = 1
         testclass = 'Unicode'
         testid = 'unicode-normalization'
-        testmessage = f"Unicode not normalized: {COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
+        if len(tcols) > 1:
+            testmessage = f"Unicode not normalized: {COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
+        else:
+            testmessage = f"Unicode not normalized: character[{firstj}] is {inpfirst}, should be {nfcfirst}."
         explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
         explanation = f"\n\nThis error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository.\n"
         warn(testmessage, testclass, testlevel, testid, explanation=explanation)
@@ -1502,7 +1509,7 @@ def validate_deps(cols, line):
     Validates that DEPS is correctly formatted and that there are no
     self-loops in DEPS (longer cycles are allowed in enhanced graphs but
     self-loops are not).
-    
+
     This function must be run on raw DEPS before it is fed into Udapi because
     it checks the order of relations, which is not guaranteed to be preserved
     in Udapi. On the other hand, we assume that it is run after
@@ -1571,7 +1578,7 @@ def validate_misc(cols, line):
     In general it is not forbidden that the same attribute appears several times
     with different values, but this should not happen for selected attributes
     that are described in the UD documentation.
-    
+
     This function must be run on raw MISC before it is fed into Udapi because
     Udapi is not prepared for some of the less recommended usages of MISC.
 
@@ -1721,7 +1728,7 @@ def validate_tree(sentence):
     We will assume that this function is called only if both ID and HEAD values
     have been found valid for all tree nodes, including the sequence of IDs
     and the references from HEAD to existing IDs.
-    
+
     This function originally served to build a data structure that would
     describe the tree and make it accessible during subsequent tests. Now we
     use the Udapi data structures instead but we still have to call this
@@ -1797,7 +1804,7 @@ def validate_tree(sentence):
 def validate_root(node, line):
     """
     Checks that DEPREL is "root" iff HEAD is 0.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -1843,25 +1850,17 @@ def build_tree_udapi(lines):
 def validate_deps_all_or_none(sentence):
     """
     Takes the list of non-comment lines (line = list of columns) describing
-    a sentence. Returns a dict with line number corresponding to each graph
-    node (dict keys are node IDs, which can be decimal for empty nodes).
-    In case of fatal problems (missing HEAD etc.) returns None
-    (and reports the error, unless it is something that should have been
-    reported earlier).
+    a sentence. Checks that enhanced dependencies are present if they were
+    present at another sentence, and absent if they were absent at another
+    sentence.
     """
     global state
-    node_line = state.sentence_line - 1
     egraph_exists = False # enhanced deps are optional
-    linenos = {'0': state.sentence_line}
-    nodeids = set()
     for cols in sentence:
-        node_line += 1
         if is_multiword_token(cols):
             continue
         if is_empty_node(cols) or cols[DEPS] != '_':
             egraph_exists = True
-        nodeids.add(cols[ID])
-        linenos[cols[ID]] = node_line
     # We are currently testing the existence of enhanced graphs separately for each sentence.
     # However, we should not allow that one sentence has a connected egraph and another
     # has no enhanced dependencies. Such inconsistency could come as a nasty surprise
@@ -1882,7 +1881,6 @@ def validate_deps_all_or_none(sentence):
                 testid = 'edeps-only-sometimes'
                 testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
                 warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
-    return linenos
 
 
 
@@ -1969,7 +1967,7 @@ def validate_required_feature(feats, required_feature, required_value, testmessa
     and if it is missing, an error will be reported only if at least one feature
     has been already encountered. Otherwise the error will be remembered and it
     may be reported afterwards if any feature is encountered later.
-    
+
     feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
     required_feature ... the feature name (string)
     required_value ... the feature value (string; multivalues are not supported)
@@ -2550,51 +2548,36 @@ def validate_goeswith_morphology_and_edeps(node, lineno):
 
 
 
-def collect_ancestors(node):
-    """
-    Usage: ancestors = collect_ancestors(node)
-    Returns the list of all ancestors of the current node, including the
-    technical root.
-
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The tree node whose ancestors we are looking for.
-
-    Returns
-    -------
-    ancestors : list of udapi.core.node.Node objects
-        The list of ancestors including the technical root.
-    """
-    ancestors = []
-    while not node.is_root():
-        node = node.parent
-        ancestors.append(node)
-    # Udapi returns all lists of nodes sorted by ord, let's do the same here.
-    ancestors.sort()
-    return ancestors
-
-
-
-###!!! Is there a Udapi function that could replace this?
 def get_caused_nonprojectivities(node):
     """
     Checks whether a node is in a gap of a nonprojective edge. Report true only
     if the node's parent is not in the same gap. (We use this function to check
     that a punctuation node does not cause nonprojectivity. But if it has been
-    dragged to the gap with a larger subtree, then we do not blame it.)
+    dragged to the gap with a larger subtree, then we do not blame it.) This
+    extra condition makes this function different from node.is_nonprojective_gap();
+    another difference is that instead of just detecting the nonprojectivity,
+    we return the nonprojective nodes so we can report them.
 
     Parameters
     ----------
     node : udapi.core.node.Node object
         The tree node to be tested.
+
+    Returns
+    -------
+    cross : list of udapi.core.node.Node objects
+        The nodes whose attachment is nonprojective because of the current node.
     """
     nodes = node.root.descendants
     iid = node.ord
     # We need to find all nodes that are not ancestors of this node and lie
     # on other side of this node than their parent. First get the set of
     # ancestors.
-    ancestors = collect_ancestors(node)
+    ancestors = []
+    current_node = node
+    while not current_node.is_root():
+        current_node = current_node.parent
+        ancestors.append(current_node)
     maxid = nodes[-1].ord
     # Get the lists of nodes to either side of id.
     # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
@@ -2627,10 +2610,21 @@ def get_gap(node):
     Returns the list of nodes between node and its parent that are not dominated
     by the parent. If the list is not empty, the node is attached nonprojectively.
 
+    Note that the Udapi Node class does not have a method like this. It has
+    is_nonprojective(), which returns the boolean decision without showing the
+    nodes in the gap. There is also the function is_nonprojective_gap() but it,
+    too, does not deliver what we need.
+
     Parameters
     ----------
     node : udapi.core.node.Node object
         The tree node to be tested.
+
+    Returns
+    -------
+    gap : list of udapi.core.node.Node objects
+        The nodes in the gap of the current node's relation to its parent,
+        sorted by their ords (IDs).
     """
     iid = node.ord
     pid = node.parent.ord
@@ -2709,7 +2703,7 @@ def validate_enhanced_orphan(node, line):
     enhanced dependencies; however, we should also test things that are
     required in the basic dependencies (such as left-to-right coordination),
     unless it is obvious that in enhanced dependencies such things are legal.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -2762,7 +2756,7 @@ def validate_words_with_spaces(node, line, lang):
     Here we assume that all language-independent whitespace-related tests have
     already been done on level 1, so we only check for words with spaces that
     are explicitly allowed in a given language.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -2806,7 +2800,7 @@ def validate_features_level4(node, line, lang):
     Checks that a feature-value pair is listed as approved. Feature lists are
     language-specific. To disallow non-universal features, test on level 4 with
     language 'ud'.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -2908,7 +2902,7 @@ def validate_deprels(node, line, args):
     language. As a language-specific test, this function generally belongs to
     level 4, but it can be also used on levels 2 and 3, in which case it will
     check only the main dependency type and ignore any subtypes.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -2992,7 +2986,7 @@ def validate_auxiliary_verbs(node, line, lang):
     """
     Verifies that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -3028,7 +3022,7 @@ def validate_copula_lemmas(node, line, lang):
     """
     Verifies that the relation cop is used only with lemmas that are known to
     act as copulas in the given language.
-    
+
     Parameters
     ----------
     node : udapi.core.node.Node object
@@ -3670,6 +3664,12 @@ def validate(inp, args):
             treeok = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
             if not treeok:
                 continue
+            # If we successfully passed all the tests above, it is probably
+            # safe to give the lines to Udapi and ask it to build the tree data
+            # structure for us.
+            tree = build_tree_udapi(all_lines)
+            validate_sent_id(comments, args.lang) # level 2
+            validate_text_meta(comments, sentence, args) # level 2
             # Test that enhanced graphs exist either for all sentences or for
             # none. As a side effect, get line numbers for all nodes including
             # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
@@ -3677,12 +3677,6 @@ def validate(inp, args):
             # enhanced dependencies, hence we can rely on them even with basic
             # trees.
             validate_deps_all_or_none(sentence)
-            # If we successfully passed all the tests above, it is probably
-            # safe to give the lines to Udapi and ask it to build the tree data
-            # structure for us.
-            tree = build_tree_udapi(all_lines)
-            validate_sent_id(comments, args.lang) # level 2
-            validate_text_meta(comments, sentence, args) # level 2
             # Tests of individual nodes.
             line = state.sentence_line - 1
             for cols in sentence:
