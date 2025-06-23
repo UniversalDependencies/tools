@@ -781,6 +781,39 @@ def next_sentence(inp, args):
 
 
 
+def get_line_numbers_for_ids(sentence):
+    """
+    Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
+    For each mwt / node / word, gets the number of the line in the input
+    file where the mwt / node / word occurs. We will need this in other
+    functions to be able to report the line on which an error occurred.
+
+    Parameters
+    ----------
+    sentence : list
+        List of mwt / words / nodes, each represented as a list of columns.
+
+    Returns
+    -------
+    linenos : dict
+        Key: word ID (string, not int; decimal for empty nodes and range for
+        mwt lines). Value: 1-based index of the line in the file (int).
+    """
+    global state
+    linenos = {}
+    node_line = state.sentence_line - 1
+    for cols in sentence:
+        node_line += 1
+        linenos[cols[ID]] = node_line
+        # For normal words, add them also under integer keys, just in case
+        # we later forget to convert node.ord to string. But we cannot do the
+        # same for empty nodes and multiword tokens.
+        if is_word(cols):
+            linenos[int(cols[ID])] = node_line
+    return linenos
+
+
+
 #------------------------------------------------------------------------------
 # Level 1 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
@@ -1613,13 +1646,24 @@ def validate_misc(cols, line):
 
 
 
-def validate_id_references(tree):
+def validate_id_references(sentence):
     """
-    Validates that HEAD and DEPS reference existing IDs.
+    Verifies that HEAD and DEPS reference existing IDs. If this function does
+    not return True, most of the other tests should be skipped for the current
+    sentence (in particular anything that considers the tree structure).
+
+    Parameters
+    ----------
+    sentence : list
+        Lines (arrays of columns): words, mwt tokens, empty nodes.
+
+    Returns
+    -------
+    ok : bool
     """
     ok = True
     testlevel = 2
-    word_tree = [cols for cols in tree if is_word(cols) or is_empty_node(cols)]
+    word_tree = [cols for cols in sentence if is_word(cols) or is_empty_node(cols)]
     ids = set([cols[ID] for cols in word_tree])
     for cols in word_tree:
         # Test the basic HEAD only for non-empty nodes.
@@ -1681,25 +1725,30 @@ def validate_tree(sentence):
     This function originally served to build a data structure that would
     describe the tree and make it accessible during subsequent tests. Now we
     use the Udapi data structures instead but we still have to call this
-    function first, for two reasons:
-        
-        1. It will survive and report ill-formed input. In such a case, the
-           Udapi data structure will not be built and Udapi-based tests will
-           be skipped.
-        2. It will provide line number for each node. We will need it when
-           reporting subsequent errors on that node, and it is currently not
-           available in Udapi.
+    function first because it will survive and report ill-formed input. In
+    such a case, the Udapi data structure will not be built and Udapi-based
+    tests will be skipped.
+
+    Parameters
+    ----------
+    sentence : list
+        Lines (arrays of columns): words, mwt tokens, empty nodes.
+
+    Returns
+    -------
+    ok : bool
     """
     global state
     testlevel = 2
     testclass = 'Syntax'
     node_line = state.sentence_line - 1
     children = {} # int(node id) -> set of children
-    linenos = [state.sentence_line] # for node 0
+    n_words = 0
     for cols in sentence:
         node_line += 1
         if not is_word(cols):
             continue
+        n_words += 1
         # ID and HEAD values have been validated before and this function would
         # not be called if they were not OK. So we can now safely convert them
         # to integers.
@@ -1709,11 +1758,9 @@ def validate_tree(sentence):
             testid = 'head-self-loop'
             testmessage = f'HEAD == ID for {cols[ID]}'
             warn(testmessage, testclass, testlevel, testid, lineno=node_line)
-            return None
-        linenos.append(node_line)
+            return False
         # Incrementally build the set of children of every node.
         children.setdefault(head, set()).add(id_)
-    n_words = len(linenos)-1 # minus the technical root node
     word_ids = list(range(1, n_words+1))
     # Check that there is just one node with the root relation.
     children_0 = sorted(children.get(0, []))
@@ -1721,7 +1768,7 @@ def validate_tree(sentence):
         testid = 'multiple-roots'
         testmessage = f"Multiple root words: {children_0}"
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
+        return False
     # Return None if there are any cycles. Otherwise we could not later ask
     # Udapi to built a data structure representing the tree.
     # Presence of cycles is equivalent to presence of unreachable nodes.
@@ -1742,8 +1789,8 @@ def validate_tree(sentence):
         str_unreachable = ','.join(str(w) for w in sorted(unreachable))
         testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
         warn(testmessage, testclass, testlevel, testid, lineno=-1)
-        return None
-    return linenos
+        return False
+    return True
 
 
 
@@ -3607,6 +3654,7 @@ def validate(inp, args):
         Command-line options; we need .level and .lang.
     """
     for all_lines, comments, sentence in next_sentence(inp, args):
+        linenos = get_line_numbers_for_ids(sentence)
         # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
         # Note that low-level errors such as wrong number of columns would be
@@ -3619,8 +3667,8 @@ def validate(inp, args):
             idrefok = idseqok and validate_id_references(sentence) # level 2
             if not idrefok:
                 continue
-            blinenos = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-            if not blinenos:
+            treeok = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+            if not treeok:
                 continue
             # Test that enhanced graphs exist either for all sentences or for
             # none. As a side effect, get line numbers for all nodes including
@@ -3628,11 +3676,7 @@ def validate(inp, args):
             # These line numbers are returned in any case, even if there are no
             # enhanced dependencies, hence we can rely on them even with basic
             # trees.
-            ###!!! This is unclean design. Perhaps we should obtain the linenos
-            ###!!! separately. And validate_tree() above should no longer bother
-            ###!!! returning partial linenos; it can just return a boolean value.
-            ###!!! Perhaps linenos could be collected in validate_id_references().
-            linenos = validate_deps_all_or_none(sentence)
+            validate_deps_all_or_none(sentence)
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us.
