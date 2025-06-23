@@ -577,6 +577,72 @@ conllu_reader = udapi.block.read.conllu.Conllu()
 
 
 
+class Incident:
+    """
+    Instances of this class describe individual errors or warnings in the input
+    file.
+    """
+    default_level = 1
+    default_testclass = 'Format'
+    default_testid = 'generic-error'
+    default_message = 'No error description provided.'
+    def __init__(self, level=None, testclass=None, testid=None, message=None, lineno=None, nodeid=None, explanation=''):
+        global state
+        # Validation level to which the incident belongs. Integer 1-5.
+        self.level = self.default_level if level == None else level
+        # Thematic area to which the incident belongs: Format, Meta, Morpho,
+        # Syntax, Enhanced, Coref, Warning.
+        self.testclass = self.default_testclass if testclass == None else testclass
+        # Identifier of the test that lead to the incident. Short string.
+        self.testid = self.default_testid if testid == None else testid
+        # Verbose description of the error for the user. It does not have to be
+        # identical for all errors with the same testid because it can contain
+        # instance-specific data (e.g. the word form).
+        self.message = self.default_message if message == None else message
+        # Additional more verbose information. To be printed with the first
+        # incident of a given type.
+        self.explanation = explanation
+        # File name. The default is the file from which we are reading right
+        # now ('-' if reading from STDIN).
+        self.filename = 'STDIN' if state.current_file_name == '-' else os.path.basename(state.current_file_name)
+        # Line number. The default is the most recently read line as recorded
+        # in the global state; but in most cases we need to get the number
+        # during instantiation, as the most recently read line is the last line
+        # of the sentence, and the error was found on one of the words of the
+        # sentence.
+        self.lineno = state.current_line if lineno == None else lineno
+        # Current (most recently read) sentence id.
+        self.sentid = state.sentence_id
+        # ID of the node on which the error occurred (if it pertains to one node).
+        self.nodeid = nodeid
+
+    def report(self):
+        global state, args
+        # Even if we should be quiet, at least count the error.
+        state.error_counter[self.testclass] = state.error_counter.get(self.testclass, 0)+1
+        if args.quiet:
+            return
+        # Suppress error messages of a type of which we have seen too many.
+        if args.max_err > 0 and state.error_counter[self.testclass] > args.max_err:
+            if state.error_counter[self.testclass] == args.max_err + 1:
+                print(f'...suppressing further errors regarding {self.testclass}', file=sys.stderr)
+            return # suppressed
+        # If we are here, the error message should really be printed.
+        # Address of the incident.
+        address = f'Line {self.lineno} Sent {self.sentid} Node {self.nodeid}'
+        # Insert file name if there are several input files.
+        if len(args.input) > 1:
+            address = f'(in {self.filename}) ' + address
+        # Classification of the incident.
+        levelclassid = f'L{self.level} {self.testclass} {self.testid}'
+        # Message (+ explanation, if this is the first error of its kind).
+        message = self.message
+        if self.explanation and state.error_counter[self.testclass] == 1:
+            message += "\n\n" + self.explanation + "\n\n"
+        print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
+
+
+
 def warn(msg, testclass, testlevel, testid, lineno=0, nodeid=0, explanation=None):
     """
     Print the error/warning message.
