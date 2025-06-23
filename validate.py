@@ -1926,6 +1926,25 @@ def validate_required_feature(feats, required_feature, required_value, testmessa
     feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
     required_feature ... the feature name (string)
     required_value ... the feature value (string; multivalues are not supported)
+
+    Parameters
+    ----------
+    feats : udapi.core.dualdict.DualDict object
+        The feature-value set to be tested whether they contain the required one.
+    required_feature : str
+        The name of the required feature.
+    required_value : str
+        The required value of the feature.
+    testmessage : str
+        The error message if the feature is missing or has a wrong value.
+    testlevel : int
+        The error level.
+    testid : str
+        The error id.
+    nodeid : str
+        The ID of the current node.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     global state
     testclass = 'Morpho'
@@ -1948,6 +1967,13 @@ def validate_upos_vs_deprel(node, lineno):
     For certain relations checks that the dependent word belongs to an expected
     part-of-speech category. Occasionally we may have to check the children of
     the node, too.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     testlevel = 3
     testclass = 'Syntax'
@@ -2061,6 +2087,16 @@ def validate_flat_foreign(child, lineno, linenos):
     to provide the analysis according to the source language. If flat:foreign
     is used, both the parent and the child should have the Foreign=Yes feature
     and their UPOS tag should be X.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
+    linenos : dict
+        Key is node ID (string, not int or float!) Value is the 1-based index
+        of the line where the node occurs (int).
     """
     testlevel = 3
     testclass = 'Warning' # or Morpho
@@ -2074,7 +2110,7 @@ def validate_flat_foreign(child, lineno, linenos):
     if parent.upos != 'X' or parent.feats != 'Foreign=Yes':
         testid = 'flat-foreign-upos-feats'
         testmessage = "The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        warn(testmessage, testclass, testlevel, testid, nodeid=parent.ord, lineno=linenos[parent.ord])
+        warn(testmessage, testclass, testlevel, testid, nodeid=parent.ord, lineno=linenos[str(parent.ord)])
 
 
 
@@ -2083,6 +2119,13 @@ def validate_left_to_right_relations(node, lineno):
     Certain UD relations must always go left-to-right.
     Here we currently check the rule for the basic dependencies.
     The same should also be tested for the enhanced dependencies!
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     testlevel = 3
     testclass = 'Syntax'
@@ -2127,6 +2170,13 @@ def validate_single_subject(node, lineno):
     possible to replace the :outer subtype with Subject=Outer in MISC. The MISC
     attribute is just a directive for the validator and no parser is expected
     to predict it.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
 
     def is_inner_subject(node):
@@ -2162,6 +2212,13 @@ def validate_orphan(node, lineno):
     orphan in gapping constructions. A common error is that the promoted orphan
     gets the orphan relation too. The parent of orphan is typically attached
     via a conj relation, although some other relations are plausible too.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     # This is a level 3 test, we will check only the universal part of the relation.
     if node.udeprel == 'orphan':
@@ -2190,6 +2247,16 @@ def validate_functional_leaves(node, lineno, linenos):
     Most of the time, function-word nodes should be leaves. This function
     checks for known exceptions and warns in the other cases.
     (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
+    linenos : dict
+        Key is node ID (string, not int or float!) Value is the 1-based index
+        of the line where the node occurs (int).
     """
     testlevel = 3
     testclass = 'Syntax'
@@ -2247,11 +2314,11 @@ def validate_functional_leaves(node, lineno, linenos):
             if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-mark-case'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-aux-cop'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
@@ -2289,15 +2356,15 @@ def validate_functional_leaves(node, lineno, linenos):
             if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not (pfeats['Poss'] == 'Yes' and re.match(r"^(appos|acl|nmod)$", cdeprel)):
                 testid = 'leaf-det'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 testid = 'leaf-clf'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-cc'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             # Fixed expressions should not be nested, i.e., no chains of fixed relations.
             # As they are supposed to represent functional elements, they should not have
             # other dependents either, with the possible exception of conj.
@@ -2309,18 +2376,18 @@ def validate_functional_leaves(node, lineno, linenos):
             elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
                 testid = 'leaf-fixed'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             # Goeswith cannot have any children, not even another goeswith.
             elif pdeprel == 'goeswith':
                 testid = 'leaf-goeswith'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
             # Punctuation can exceptionally have other punct children if an exclamation
             # mark is in brackets or quotes. It cannot have other children.
             elif pdeprel == 'punct' and cdeprel != 'punct':
                 testid = 'leaf-punct'
                 testmessage = f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[idchild])
+                warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=linenos[str(idchild)])
 
 
 
@@ -2333,6 +2400,13 @@ def validate_fixed_span(node, lineno):
     Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
     Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
     as just a warning.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     fxchildren = [c for c in node.children if c.udeprel == 'fixed']
     if fxchildren:
@@ -2358,6 +2432,13 @@ def validate_goeswith_span(node, lineno):
     nodes really were separated by whitespace. If there is another node in the
     middle, it must be also attached via 'goeswith'. The parameter id refers to
     the node whose goeswith children we test.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     testlevel = 3
     testclass = 'Syntax'
@@ -2391,6 +2472,13 @@ def validate_goeswith_morphology_and_edeps(node, lineno):
     If a node has the 'goeswith' incoming relation, it is a non-first part of
     a mistakenly interrupted word. The lemma, upos tag and morphological features
     of the word should be annotated at the first part, not here.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     testlevel = 3
     if node.udeprel == 'goeswith':
@@ -2420,6 +2508,16 @@ def collect_ancestors(node):
     Usage: ancestors = collect_ancestors(node)
     Returns the list of all ancestors of the current node, including the
     technical root.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node whose ancestors we are looking for.
+
+    Returns
+    -------
+    ancestors : list of udapi.core.node.Node objects
+        The list of ancestors including the technical root.
     """
     ancestors = []
     while not node.is_root():
@@ -2439,7 +2537,10 @@ def get_caused_nonprojectivities(node):
     that a punctuation node does not cause nonprojectivity. But if it has been
     dragged to the gap with a larger subtree, then we do not blame it.)
 
-    node ... Udapi Node object
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
     """
     nodes = node.root.descendants
     iid = node.ord
@@ -2478,6 +2579,11 @@ def get_gap(node):
     """
     Returns the list of nodes between node and its parent that are not dominated
     by the parent. If the list is not empty, the node is attached nonprojectively.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
     """
     iid = node.ord
     pid = node.parent.ord
@@ -2496,6 +2602,13 @@ def validate_projective_punctuation(node, lineno):
     """
     Punctuation is not supposed to cause nonprojectivity or to be attached
     nonprojectively.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
     """
     testlevel = 3
     testclass = 'Syntax'
@@ -2515,16 +2628,20 @@ def validate_projective_punctuation(node, lineno):
 
 def validate_annotation(tree, linenos):
     """
-    Checks universally valid consequences of the annotation guidelines.
-    
-    tree ... udapi.core.root.Root object
-    linenos ... Array with line number for each node (indexed by node
-             ord (ID)). This is the only thing we still need from the old
-             build_tree() function.
+    Checks universally valid consequences of the annotation guidelines. Looks
+    at regular nodes and basic tree, not at enhanced graph (which is checked
+    elsewhere).
+
+    Parameters
+    ----------
+    tree : udapi.core.root.Root object
+    linenos : dict
+        Key is node ID (string, not int or float!) Value is the 1-based index
+        of the line where the node occurs (int).
     """
     nodes = tree.descendants
     for node in nodes:
-        lineno = linenos[node.ord]
+        lineno = linenos[str(node.ord)]
         validate_upos_vs_deprel(node, lineno)
         validate_flat_foreign(node, lineno, linenos)
         validate_left_to_right_relations(node, lineno)
@@ -3545,7 +3662,7 @@ def validate(inp, args):
                             validate_copula_lemmas(node, line, args.lang) # level 5
             # Tests on whole trees and enhanced graphs.
             if args.level > 2:
-                validate_annotation(tree, blinenos) # level 3 ###!!! switch to linenos; but then all the functions must access it via str(node.ord)!
+                validate_annotation(tree, linenos) # level 3
                 validate_egraph_connected(nodes, linenos)
             if args.check_coref:
                 validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
