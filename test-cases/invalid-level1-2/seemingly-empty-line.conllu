@@ -1,0 +1,9 @@
+# Invalid because the line after the sentence is not empty. It contains TAB characters.
+# sent_id = 1
+# text = first
+1	first	first	ADJ	_	_	0	root	_	_
+									
+# sent_id = 2
+# text = second
+1	second	second	ADJ	_	_	0	root	_	_
+

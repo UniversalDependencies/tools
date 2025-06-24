@@ -65,7 +65,7 @@ Syntax errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\empty-sentence.conllu
-[Line 3]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 3 Sent None]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 Format errors: 1
 *** FAILED *** with 1 errors
 
@@ -276,6 +276,12 @@ Format errors: 2
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\overlapping-multiword.conllu
 [Line 12 Sent overlapping-multiword]: [L1 Format overlapping-word-intervals] Range overlaps with others: 3-4
+Format errors: 1
+*** FAILED *** with 1 errors
+
+--------------------------------------------------------------------------------
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\seemingly-empty-line.conllu
+[Line 5 Sent 1]: [L1 Format pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
 Format errors: 1
 *** FAILED *** with 1 errors
 
