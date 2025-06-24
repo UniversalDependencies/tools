@@ -244,7 +244,7 @@ Metadata errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\multiple-sent_id.conllu
-[Line 24 Sent tanl2]: [L2 Metadata multiple-sent-id] Multiple sent_id attributes.
+[Line 19 Sent tanl2]: [L2 Metadata multiple-sent-id] Multiple sent_id attributes.
 Metadata errors: 1
 *** FAILED *** with 1 errors
 
@@ -256,7 +256,7 @@ Format errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\no-sent_id.conllu
-[Line 14 Sent tanl1]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
+[Line 8 Sent tanl1]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
 Metadata errors: 1
 *** FAILED *** with 1 errors
 
