@@ -1,0 +1,9 @@
+# Unicode has multiple ways how to encode certain glyphs. UD data must always use the canonical way.
+# For example, 'č' is one character (U+010D = LATIN SMALL LETTER C WITH CARON) and it is OK because it is the canonical encoding of this character.
+# The non-canonical way is 'č' (two characters: U+0063 = LATIN SMALL LETTER C, U+030C = COMBINING CARON).
+# On the other hand, 'с̌' (two characters: U+0441 = CYRILLIC SMALL LETTER ES, U+030C = COMBINING CARON) looks the same but it cannot be normalized to a single character because it is supposed to be Cyrillic.
+# In the example below, we use the Cyrillic+Combining sequence in FORM and Latin+Combining in LEMMA. Only the latter should be reported as an error.
+# sent_id = 1
+# text = proс̌
+1	proс̌	proč	ADV	_	_	0	root	_	_
+

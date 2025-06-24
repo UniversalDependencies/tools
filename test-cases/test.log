@@ -336,6 +336,16 @@ Format errors: 3
 *** FAILED *** with 3 errors
 
 --------------------------------------------------------------------------------
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\unnormalized-unicode.conllu
+[Line 3 Sent None]: [L1 Unicode unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+
+This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
+
+[Line 8 Sent 1]: [L1 Unicode unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+Unicode errors: 2
+*** FAILED *** with 2 errors
+
+--------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\uppercase-deprel.conllu
 [Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'.
 [Line 5 Sent uppercase-deprel]: [L2 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
