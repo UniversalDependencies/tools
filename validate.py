@@ -582,10 +582,13 @@ class Incident:
     Instances of this class describe individual errors or warnings in the input
     file.
     """
+    # We can modify the class-level defaults before a batch of similar tests.
+    # Then we do not have to repeat the shared parameters for each test.
     default_level = 1
     default_testclass = 'Format'
     default_testid = 'generic-error'
     default_message = 'No error description provided.'
+    default_lineno = None
     def __init__(self, level=None, testclass=None, testid=None, message=None, lineno=None, nodeid=None, explanation=''):
         global state
         # Validation level to which the incident belongs. Integer 1-5.
@@ -610,7 +613,7 @@ class Incident:
         # during instantiation, as the most recently read line is the last line
         # of the sentence, and the error was found on one of the words of the
         # sentence.
-        self.lineno = state.current_line if lineno == None else lineno
+        self.lineno = lineno if lineno != None else self.default_lineno if self.default_lineno != None else state.current_line
         # Current (most recently read) sentence id.
         self.sentid = state.sentence_id
         # ID of the node on which the error occurred (if it pertains to one node).
@@ -826,15 +829,20 @@ def next_sentence(inp, args):
                 validate_cols_level1(cols)
             else:
                 testid = 'number-of-columns'
-                testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The contents of the columns will not be checked.'
+                testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The line will be excluded from further tests.'
                 warn(testmessage, testclass, testlevel, testid)
                 corrupted = True
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             testid = 'invalid-line'
-            testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
+            testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
             warn(testmessage, testclass, testlevel, testid)
     else: # end of file
-        if comment_lines or token_lines_fields: # These should have been yielded on an empty line!
+        if comment_lines and not token_lines_fields:
+            # Comments at the end of the file, no sentence follows them.
+            testid = 'misplaced-comment'
+            testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
+            warn(testmessage, testclass, testlevel, testid)
+        elif comment_lines or token_lines_fields: # These should have been yielded on an empty line!
             testid = 'missing-empty-line'
             testmessage = 'Missing empty line after the last sentence.'
             warn(testmessage, testclass, testlevel, testid)
@@ -980,11 +988,10 @@ def validate_cols_level1(cols):
             testid = 'invalid-whitespace'
             testmessage = f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
             warn(testmessage, testclass, testlevel, testid)
-    # Check for the format of the ID value. (ID must not be empty.)
-    if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
-        testid = 'invalid-word-id'
-        testmessage = f"Unexpected ID format '{cols[ID]}'."
-        warn(testmessage, testclass, testlevel, testid)
+    # We should also check the ID format (e.g., '1' is good, '01' is wrong).
+    # Although it is checking just a single column, we will do it in
+    # validate_id_sequence() because that function has the power to block
+    # further tests, which could choke up on this.
 
 
 
@@ -1009,6 +1016,13 @@ def validate_id_sequence(sentence):
     tokens=[]
     current_word_id, next_empty_id = 0, 1
     for cols in sentence:
+        # Check for the format of the ID value. (ID must not be empty.)
+        if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
+            testid = 'invalid-word-id'
+            testmessage = f"Unexpected ID format '{cols[ID]}'."
+            warn(testmessage, testclass, testlevel, testid)
+            ok = False
+            continue
         if not is_empty_node(cols):
             next_empty_id = 1    # reset sequence
         if is_word(cols):
