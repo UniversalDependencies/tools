@@ -614,6 +614,8 @@ class Incident:
         # of the sentence, and the error was found on one of the words of the
         # sentence.
         self.lineno = lineno if lineno != None else self.default_lineno if self.default_lineno != None else state.current_line
+        if self.lineno < 0:
+            self.lineno = state.sentence_line
         # Current (most recently read) sentence id.
         self.sentid = state.sentence_id
         # ID of the node on which the error occurred (if it pertains to one node).
@@ -632,7 +634,9 @@ class Incident:
             return # suppressed
         # If we are here, the error message should really be printed.
         # Address of the incident.
-        address = f'Line {self.lineno} Sent {self.sentid} Node {self.nodeid}'
+        address = f'Line {self.lineno} Sent {self.sentid}'
+        if self.nodeid:
+            address += f' Node {self.nodeid}'
         # Insert file name if there are several input files.
         if len(args.input) > 1:
             address = f'(in {self.filename}) ' + address
@@ -641,7 +645,7 @@ class Incident:
         # Message (+ explanation, if this is the first error of its kind).
         message = self.message
         if self.explanation and state.error_counter[self.testclass] == 1:
-            message += "\n\n" + self.explanation + "\n\n"
+            message += "\n\n" + self.explanation + "\n"
         print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
 
 
@@ -765,8 +769,9 @@ def next_sentence(inp, args):
     token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields
     corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
     state.comment_start_line = None
-    testlevel = 1
-    testclass = 'Format'
+    Incident.default_level = 1
+    Incident.default_testclass = 'Format'
+    Incident.default_lineno = None # use the most recently read line
     for line_counter, line in enumerate(inp):
         state.current_line = line_counter+1
         if not state.comment_start_line:
@@ -774,9 +779,10 @@ def next_sentence(inp, args):
         line = line.rstrip("\n")
         validate_unicode_normalization(line)
         if is_whitespace(line):
-            testid = 'pseudo-empty-line'
-            testmessage = 'Spurious line that appears empty but is not; there are whitespace characters.'
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='pseudo-empty-line',
+                message='Spurious line that appears empty but is not; there are whitespace characters.'
+            ).report()
             # We will pretend that the line terminates a sentence in order to
             # avoid subsequent misleading error messages.
             if token_lines_fields:
@@ -797,9 +803,10 @@ def next_sentence(inp, args):
                 corrupted = False
                 state.comment_start_line = None
             else:
-                testid = 'extra-empty-line'
-                testmessage = 'Spurious empty line. Only one empty line is expected after every sentence.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='extra-empty-line',
+                    message='Spurious empty line. Only one empty line is expected after every sentence.'
+                ).report()
         elif line[0] == '#':
             # We will really validate sentence ids later. But now we want to remember
             # everything that looks like a sentence id and use it in the error messages.
@@ -812,9 +819,10 @@ def next_sentence(inp, args):
                 all_lines.append(line)
                 comment_lines.append(line)
             else:
-                testid = 'misplaced-comment'
-                testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='misplaced-comment',
+                    message='Spurious comment line. Comments are only allowed before a sentence.'
+                ).report()
         elif line[0].isdigit():
             if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
@@ -826,26 +834,30 @@ def next_sentence(inp, args):
                 all_lines.append(line)
                 token_lines_fields.append(cols)
                 # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
-                validate_cols_level1(cols)
+                validate_whitespace(cols)
             else:
-                testid = 'number-of-columns'
-                testmessage = f'The line has {len(cols)} columns but {COLCOUNT} are expected. The line will be excluded from further tests.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='number-of-columns',
+                    message=f'The line has {len(cols)} columns but {COLCOUNT} are expected. The line will be excluded from further tests.'
+                ).report()
                 corrupted = True
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
-            testid = 'invalid-line'
-            testmessage = f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='invalid-line',
+                message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
+            ).report()
     else: # end of file
         if comment_lines and not token_lines_fields:
             # Comments at the end of the file, no sentence follows them.
-            testid = 'misplaced-comment'
-            testmessage = 'Spurious comment line. Comments are only allowed before a sentence.'
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='misplaced-comment',
+                message='Spurious comment line. Comments are only allowed before a sentence.'
+            ).report()
         elif comment_lines or token_lines_fields: # These should have been yielded on an empty line!
-            testid = 'missing-empty-line'
-            testmessage = 'Missing empty line after the last sentence.'
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='missing-empty-line',
+                message='Missing empty line after the last sentence.'
+            ).report()
             if not corrupted:
                 yield all_lines, comment_lines, token_lines_fields
 
@@ -926,50 +938,61 @@ def validate_unicode_normalization(text):
                     break
             if firsti >= 0:
                 break
-        testlevel = 1
-        testclass = 'Unicode'
-        testid = 'unicode-normalization'
         if len(tcols) > 1:
             testmessage = f"Unicode not normalized: {COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
         else:
             testmessage = f"Unicode not normalized: character[{firstj}] is {inpfirst}, should be {nfcfirst}."
         explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
-        explanation = f"\n\nThis error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository.\n"
-        warn(testmessage, testclass, testlevel, testid, explanation=explanation)
+        Incident(
+            level=1,
+            testclass='Unicode',
+            testid='unicode-normalization',
+            message=testmessage,
+            explanation=f"This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
+        ).report()
 
 
 
-def validate_cols_level1(cols):
+def validate_whitespace(cols):
     """
-    Tests that can run on a single line and pertain only to the CoNLL-U file
-    format, not to predefined sets of UD tags.
+    Checks that columns are not empty and do not contain whitespace characters
+    except for patterns that could be allowed at level 4. Applies to all types
+    of TAB-containing lines: nodes / words, mwt ranges, empty nodes.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
     """
-    testlevel = 1
-    testclass = 'Format'
+    Incident.default_level = 1
+    Incident.default_testclass = 'Format'
+    Incident.default_lineno = None # use the most recently read line
     # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
-    for col_idx in range(MISC+1):
-        if col_idx >= len(cols):
-            break # this has been already reported in next_sentence()
+    for col_idx in range(COLCOUNT):
         # Must never be empty
         if not cols[col_idx]:
-            testid = 'empty-column'
-            testmessage = f'Empty value in column {COLNAMES[col_idx]}.'
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='empty-column',
+                message=f'Empty value in column {COLNAMES[col_idx]}.'
+            ).report()
         else:
             # Must never have leading/trailing whitespace
             if cols[col_idx][0].isspace():
-                testid = 'leading-whitespace'
-                testmessage = f'Leading whitespace not allowed in column {COLNAMES[col_idx]}.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='leading-whitespace',
+                    message=f'Leading whitespace not allowed in column {COLNAMES[col_idx]}.'
+                ).report()
             if cols[col_idx][-1].isspace():
-                testid = 'trailing-whitespace'
-                testmessage = f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='trailing-whitespace',
+                    message=f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
+                ).report()
             # Must never contain two consecutive whitespace characters
             if crex.ws2.search(cols[col_idx]):
-                testid = 'repeated-whitespace'
-                testmessage = f'Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='repeated-whitespace',
+                    message=f'Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}.'
+                ).report()
     # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
     # If it contains a space, it does not make sense to treat it as a MWT.
     if is_multiword_token(cols):
@@ -977,17 +1000,19 @@ def validate_cols_level1(cols):
             if col_idx >= len(cols):
                 break # this has been already reported in next_sentence()
             if crex.ws.search(cols[col_idx]):
-                testid = 'invalid-whitespace-mwt'
-                testmessage = f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='invalid-whitespace-mwt',
+                    message=f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
+                ).report()
     # These columns must not have whitespace.
     for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
         if col_idx >= len(cols):
             break # this has been already reported in next_sentence()
         if crex.ws.search(cols[col_idx]):
-            testid = 'invalid-whitespace'
-            testmessage = f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='invalid-whitespace',
+                message=f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
+            ).report()
     # We should also check the ID format (e.g., '1' is good, '01' is wrong).
     # Although it is checking just a single column, we will do it in
     # validate_id_sequence() because that function has the power to block
@@ -1010,17 +1035,19 @@ def validate_id_sequence(sentence):
     sentence ... array of arrays, each inner array contains columns of one line
     """
     ok = True
-    testlevel = 1
-    testclass = 'Format'
+    Incident.default_level = 1
+    Incident.default_testclass = 'Format'
+    Incident.default_lineno = None # use the most recently read line
     words=[]
     tokens=[]
     current_word_id, next_empty_id = 0, 1
     for cols in sentence:
         # Check for the format of the ID value. (ID must not be empty.)
         if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
-            testid = 'invalid-word-id'
-            testmessage = f"Unexpected ID format '{cols[ID]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='invalid-word-id',
+                message=f"Unexpected ID format '{cols[ID]}'."
+            ).report()
             ok = False
             continue
         if not is_empty_node(cols):
@@ -1035,25 +1062,28 @@ def validate_id_sequence(sentence):
         elif is_multiword_token(cols):
             match = crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
             if not match: # This should not happen. The function is_multiword_token() would then not return True.
-                testid = 'invalid-word-interval'
-                testmessage = f"Spurious word interval definition: '{cols[ID]}'."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='invalid-word-interval',
+                    message=f"Spurious word interval definition: '{cols[ID]}'."
+                ).report()
                 ok = False
                 continue
             beg, end = int(match.group(1)), int(match.group(2))
             if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
-                testid = 'misplaced-word-interval'
-                testmessage = 'Multiword range not before its first word.'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='misplaced-word-interval',
+                    message='Multiword range not before its first word.'
+                ).report()
                 ok = False
                 continue
             tokens.append((beg, end))
         elif is_empty_node(cols):
             word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
             if word_id != current_word_id or empty_id != next_empty_id:
-                testid = 'misplaced-empty-node'
-                testmessage = f'Empty node id {cols[ID]}, expected {current_word_id}.{next_empty_id}'
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='misplaced-empty-node',
+                    message=f'Empty node id {cols[ID]}, expected {current_word_id}.{next_empty_id}'
+                ).report()
                 ok = False
             next_empty_id += 1
             # Interaction of multiword tokens and empty nodes if there is an empty
@@ -1061,32 +1091,37 @@ def validate_id_sequence(sentence):
             # This sequence is correct: 4 4.1 5-6 5 6
             # This sequence is wrong:   4 5-6 4.1 5 6
             if word_id == current_word_id and tokens and word_id < tokens[-1][0]:
-                testid = 'misplaced-empty-node'
-                testmessage = f"Empty node id {cols[ID]} must occur before multiword token {tokens[-1][0]}-{tokens[-1][1]}."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='misplaced-empty-node',
+                    message=f"Empty node id {cols[ID]} must occur before multiword token {tokens[-1][0]}-{tokens[-1][1]}."
+                ).report()
                 ok = False
     # Now let's do some basic sanity checks on the sequences.
     # Expected sequence of word IDs is 1, 2, ...
     expstrseq = ','.join(str(x) for x in range(1, len(words) + 1))
     wrdstrseq = ','.join(str(x) for x in words)
     if wrdstrseq != expstrseq:
-        testid = 'word-id-sequence'
-        testmessage = f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        Incident(
+            lineno=-1,
+            testid='word-id-sequence',
+            message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
+        ).report()
         ok = False
     # Check elementary sanity of word intervals.
     # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
     for (b, e) in tokens:
-        if e<b: # end before beginning
-            testid = 'reversed-word-interval'
-            testmessage = f'Spurious token interval {b}-{e}'
-            warn(testmessage, testclass, testlevel, testid)
+        if e < b: # end before beginning
+            Incident(
+                testid='reversed-word-interval',
+                message=f'Spurious token interval {b}-{e}'
+            ).report()
             ok = False
             continue
-        if b<1 or e>len(words): # out of range
-            testid = 'word-interval-out'
-            testmessage = f'Spurious token interval {b}-{e} (out of range)'
-            warn(testmessage, testclass, testlevel, testid)
+        if b < 1 or e > len(words): # out of range
+            Incident(
+                testid='word-interval-out',
+                message=f'Spurious token interval {b}-{e} (out of range)'
+            ).report()
             ok = False
             continue
     return ok
@@ -1099,28 +1134,28 @@ def validate_token_ranges(sentence):
 
     sentence ... array of arrays, each inner array contains columns of one line
     """
-    testlevel = 1
-    testclass = 'Format'
+    Incident.default_level = 1
+    Incident.default_testclass = 'Format'
+    Incident.default_lineno = None # use the most recently read line
     covered = set()
     for cols in sentence:
         if not is_multiword_token(cols):
             continue
         m = crex.mwtid.fullmatch(cols[ID])
         if not m: # This should not happen. The function is_multiword_token() would then not return True.
-            testid = 'invalid-word-interval'
-            testmessage = f"Spurious word interval definition: '{cols[ID]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='invalid-word-interval',
+                message=f"Spurious word interval definition: '{cols[ID]}'."
+            ).report()
             continue
         start, end = m.groups()
-        try:
-            start, end = int(start), int(end)
-        except ValueError:
-            assert False, 'internal error' # RE should assure that this works
+        start, end = int(start), int(end)
         # Do not test if start >= end: This was already tested above in validate_id_sequence().
         if covered & set(range(start, end+1)):
-            testid = 'overlapping-word-intervals'
-            testmessage = f'Range overlaps with others: {cols[ID]}'
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='overlapping-word-intervals',
+                message=f'Range overlaps with others: {cols[ID]}'
+            ).report()
         covered |= set(range(start, end+1))
 
 
@@ -1132,11 +1167,12 @@ def validate_newlines(inp):
     whole input has been read.
     """
     if inp.newlines and inp.newlines != '\n':
-        testlevel = 1
-        testclass = 'Format'
-        testid = 'non-unix-newline'
-        testmessage = 'Only the unix-style LF line terminator is allowed.'
-        warn(testmessage, testclass, testlevel, testid)
+        Incident(
+            level=1,
+            testclass='Format',
+            testid='non-unix-newline',
+            message='Only the unix-style LF line terminator is allowed.'
+        ).report()
 
 
 
