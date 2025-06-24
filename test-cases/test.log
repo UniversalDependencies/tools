@@ -1,18 +1,8 @@
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\ambiguous-feature.conllu
 [Line 4 Sent ambiguous-feature]: [L2 Morpho invalid-feature] Spurious morphological feature: 'A=B=C'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 4 Sent ambiguous-feature]: [L4 Morpho feature-unknown] Feature A is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\cyclic-deps.conllu
@@ -28,48 +18,15 @@ Format errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\dos-newlines.conllu
-[Line 9 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 9 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 12 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 12 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 13 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 13 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 18 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 18 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Mod is not documented for language [en].
-[Line 18 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 19 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 19 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 20 Sent dos-newlines3 Node 3]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
 [Line 23 Sent dos-newlines3]: [L1 Format non-unix-newline] Only the unix-style LF line terminator is allowed.
 Format errors: 1
-Morpho errors: 11
-Warnings: 1
-*** FAILED *** with 12 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\duplicate-feature.conllu
 [Line 4 Sent duplicate-feature]: [L2 Morpho repeated-feature] Repeated features are disallowed: 'Gen=M|Gen=M'.
-[Line 4 Sent duplicate-feature]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\duplicate-id.conllu
@@ -80,35 +37,14 @@ Format errors: 1
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\duplicate-layered-feature.conllu
 [Line 4 Sent duplicate-layered-feature]: [L2 Morpho repeated-feature] Repeated features are disallowed: 'Number=Sing|Number[psor]=Plur|Number[psor]=Sing'.
-[Line 4 Sent duplicate-layered-feature]: [L4 Morpho feature-unknown] Feature Number[psor] is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\duplicate-value.conllu
 [Line 4 Sent duplicate-value]: [L2 Morpho repeated-feature-value] Repeated feature values are disallowed: 'Gen=M,M'
-[Line 4 Sent duplicate-value]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 4 Sent duplicate-value]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-Morpho errors: 3
-*** FAILED *** with 3 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\empty-field.conllu
@@ -181,9 +117,9 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
 [Line 4 Sent id-with-extra-0]: [L1 Format invalid-word-id] Unexpected ID format '01'.
 [Line 5 Sent id-with-extra-0]: [L0 Format exception] Exception caught!
 Traceback (most recent call last):
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3873, in <module>
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3876, in <module>
     validate(inp, args)
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3755, in validate
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3758, in validate
     line = linenos[str(node.ord)]
            ~~~~~~~^^^^^^^^^^^^^^^
 KeyError: '1'
@@ -199,26 +135,8 @@ Enhanced errors: 1
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\invalid-deps-order.conllu
 [Line 4 Sent invalid-deps-order]: [L2 Format unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'
-[Line 4 Sent invalid-deps-order]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 5 Sent invalid-deps-order]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 5 Sent invalid-deps-order]: [L4 Morpho feature-unknown] Feature Per is not documented for language [en].
-[Line 7 Sent invalid-deps-order]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 7 Sent invalid-deps-order]: [L4 Morpho feature-unknown] Feature Per is not documented for language [en].
-[Line 8 Sent invalid-deps-order]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 4 Sent invalid-deps-order]: [L2 Enhanced unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2', '3', '4', '5', '6'] are not reachable from any root
-Enhanced errors: 1
 Format errors: 1
-Morpho errors: 6
-*** FAILED *** with 8 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\invalid-deps-syntax.conllu
@@ -237,12 +155,12 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
 [Line 5 Sent invalid-range-format]: [L1 Format invalid-word-id] Unexpected ID format '2-X'.
 [Line 11 Sent invalid-range-format]: [L0 Format exception] Exception caught!
 Traceback (most recent call last):
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3873, in <module>
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3876, in <module>
     validate(inp, args)
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3736, in validate
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3739, in validate
     tree = build_tree_udapi(all_lines)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 1911, in build_tree_udapi
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 1914, in build_tree_udapi
     root = conllu_reader.read_tree_from_lines(lines)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\zeman\Documents\lingvistika-projekty\udapi-python\udapi\block\read\conllu.py", line 225, in read_tree_from_lines
@@ -261,50 +179,20 @@ Format errors: 1
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\lowercase-feature-in-empty.conllu
 [Line 5 Sent lowercase-feature-in-empty]: [L2 Morpho invalid-feature] Spurious morphological feature: 'tense=Pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 5 Sent lowercase-feature-in-empty]: [L4 Morpho feature-unknown] Feature tense is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\lowercase-feature-value-in-empty.conllu
 [Line 5 Sent lowercase-feature-value-in-empty]: [L2 Morpho invalid-feature] Spurious morphological feature: 'Tense=pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 5 Sent lowercase-feature-value-in-empty]: [L4 Morpho feature-value-unknown] Value pres is not documented for feature Tense in language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\lowercase-feature.conllu
 [Line 5 Sent lowercase-feature]: [L2 Morpho invalid-feature] Spurious morphological feature: 'lower=Nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 5 Sent lowercase-feature]: [L4 Morpho feature-unknown] Feature lower is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\lowercase-postag-in-empty.conllu
@@ -323,41 +211,14 @@ Morpho errors: 2
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\lowercase-value.conllu
 [Line 5 Sent lowercase-value]: [L2 Morpho invalid-feature] Spurious morphological feature: 'Lower=nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 5 Sent lowercase-value]: [L4 Morpho feature-unknown] Feature Lower is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\malformed_deps.conllu
 [Line 15 Sent malformed_deps2]: [L2 Format invalid-deps] Failed to parse DEPS: 'xxx'.
-[Line 18 Sent malformed_deps3]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 18 Sent malformed_deps3]: [L4 Morpho feature-unknown] Feature Mod is not documented for language [en].
-[Line 18 Sent malformed_deps3]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 19 Sent malformed_deps3]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 19 Sent malformed_deps3]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 20 Sent malformed_deps3 Node 3]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
 Format errors: 1
-Morpho errors: 5
-Warnings: 1
-*** FAILED *** with 6 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misindexed-empty-node.conllu
@@ -368,35 +229,14 @@ Format errors: 1
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misordered-feature.conllu
 [Line 5 Sent misordered-feature]: [L2 Morpho unsorted-features] Morphological features must be sorted: 'XB=True|Xa=True'.
-[Line 5 Sent misordered-feature]: [L4 Morpho feature-unknown] Feature XB is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 5 Sent misordered-feature]: [L4 Morpho feature-unknown] Feature Xa is not documented for language [en].
-Morpho errors: 3
-*** FAILED *** with 3 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misordered-layered-feature.conllu
 [Line 5 Sent misordered-layered-feature]: [L2 Morpho unsorted-features] Morphological features must be sorted: 'Number[psor]=Plur|Number=Sing'.
-[Line 5 Sent misordered-layered-feature]: [L4 Morpho feature-unknown] Feature Number[psor] is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misordered-multiword.conllu
@@ -406,58 +246,26 @@ Format errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misplaced-comment-end.conllu
-[Line 4 Sent misplaced-comment-end]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 4 Sent misplaced-comment-end]: [L4 Morpho feature-unknown] Feature Per is not documented for language [en].
-[Line 6 Sent misplaced-comment-end]: [L4 Morpho feature-unknown] Feature Tens is not documented for language [en].
-[Line 9 Sent misplaced-comment-end]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 7 Sent misplaced-comment-end Node 3]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 [Line 12 Sent misplaced-comment-end]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
 [Line 12 Sent misplaced-comment-end]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
 [Line 4 Sent misplaced-comment-end]: [L2 Metadata missing-text] Missing the text attribute.
 [Line 12 Sent misplaced-comment-end]: [L0 Format exception] Exception caught!
 Traceback (most recent call last):
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3873, in <module>
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3876, in <module>
     validate(inp, args)
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3753, in validate
+  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3756, in validate
     nodes = tree.descendants_and_empty
             ^^^^^^^^^^^^^^^^^^^^^^^^^^
 AttributeError: 'NoneType' object has no attribute 'descendants_and_empty'
 Format errors: 2
 Metadata errors: 2
-Morpho errors: 4
-Syntax errors: 1
-*** FAILED *** with 9 errors
+*** FAILED *** with 4 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misplaced-comment-mid.conllu
 [Line 6 Sent misplaced-comment-mid]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-[Line 4 Sent misplaced-comment-mid]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 4 Sent misplaced-comment-mid]: [L4 Morpho feature-unknown] Feature Per is not documented for language [en].
-[Line 6 Sent misplaced-comment-mid]: [L4 Morpho feature-unknown] Feature Tens is not documented for language [en].
-[Line 9 Sent misplaced-comment-mid]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 7 Sent misplaced-comment-mid Node 3]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 Format errors: 1
-Morpho errors: 4
-Syntax errors: 1
-*** FAILED *** with 6 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\missing-final-line.conllu
@@ -473,84 +281,28 @@ Metadata errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\multiple-sent_id.conllu
-[Line 4 Sent tanl1 Node 2]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is 'case' ('.')
-[Line 8 Sent tanl2]: [L4 Morpho feature-value-upos-not-permitted] Value Masc of feature Gender is not permitted with UPOS NOUN in language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 11 Sent tanl2]: [L4 Morpho feature-value-upos-not-permitted] Value Fem of feature Gender is not permitted with UPOS DET in language [en].
-[Line 12 Sent tanl2]: [L4 Morpho feature-value-upos-not-permitted] Value Fem of feature Gender is not permitted with UPOS NOUN in language [en].
 [Line 24 Sent tanl2]: [L2 Metadata multiple-sent-id] Multiple sent_id attributes.
-[Line 19 Sent tanl2]: [L4 Morpho feature-upos-not-permitted] Feature Gender is not permitted with UPOS VERB in language [en].
-[Line 20 Sent tanl2]: [L4 Morpho feature-value-upos-not-permitted] Value Fem of feature Gender is not permitted with UPOS DET in language [en].
-[Line 21 Sent tanl2 Node 3]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
 Metadata errors: 1
-Morpho errors: 5
-Syntax errors: 1
-Warnings: 1
-*** FAILED *** with 7 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\multiword-with-pos.conllu
 [Line 6 Sent multiword-with-pos]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
-[Line 5 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 5 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Per is not documented for language [en].
-[Line 7 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Tens is not documented for language [en].
-[Line 10 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 8 Sent multiword-with-pos Node 3]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 Format errors: 1
-Morpho errors: 4
-Syntax errors: 1
-*** FAILED *** with 6 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\no-sent_id.conllu
-[Line 4 Sent tanl1 Node 2]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is 'case' ('.')
 [Line 14 Sent tanl1]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
-[Line 8 Sent tanl1]: [L4 Morpho feature-value-upos-not-permitted] Value Masc of feature Gender is not permitted with UPOS NOUN in language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 11 Sent tanl1]: [L4 Morpho feature-value-upos-not-permitted] Value Fem of feature Gender is not permitted with UPOS DET in language [en].
-[Line 12 Sent tanl1]: [L4 Morpho feature-value-upos-not-permitted] Value Fem of feature Gender is not permitted with UPOS NOUN in language [en].
-[Line 17 Sent tanl3]: [L4 Morpho feature-upos-not-permitted] Feature Gender is not permitted with UPOS VERB in language [en].
-[Line 18 Sent tanl3]: [L4 Morpho feature-value-upos-not-permitted] Value Fem of feature Gender is not permitted with UPOS DET in language [en].
-[Line 19 Sent tanl3 Node 3]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
 Metadata errors: 1
-Morpho errors: 5
-Syntax errors: 1
-Warnings: 1
-*** FAILED *** with 7 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\non-proj.conllu
 [Line 5]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
 [Line 1]: [L2 Metadata missing-text] Missing the text attribute.
-[Line 3 Node 3]: [L3 Syntax punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [Node<?#2, B>]
 Metadata errors: 2
-Syntax errors: 1
-*** FAILED *** with 3 errors
+*** FAILED *** with 2 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\nonsequential-empty-node-id.conllu
@@ -568,31 +320,14 @@ Format errors: 2
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\overlapping-multiword.conllu
 [Line 12 Sent overlapping-multiword]: [L1 Format overlapping-word-intervals] Range overlaps with others: 3-4
-[Line 4 Sent overlapping-multiword]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 4 Sent overlapping-multiword]: [L4 Morpho feature-unknown] Feature Per is not documented for language [en].
-[Line 6 Sent overlapping-multiword]: [L4 Morpho feature-unknown] Feature Tens is not documented for language [en].
-[Line 10 Sent overlapping-multiword]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 8 Sent overlapping-multiword Node 3]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 Format errors: 1
-Morpho errors: 4
-Syntax errors: 1
-*** FAILED *** with 6 errors
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\self-cycle-deps.conllu
 [Line 5 Sent self-cycle-deps]: [L2 Enhanced deps-self-loop] Self-loop in DEPS for '2'
-[Line 4 Sent self-cycle-deps]: [L2 Enhanced unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2'] are not reachable from any root
-Enhanced errors: 2
-*** FAILED *** with 2 errors
+Enhanced errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\self-cycle-head.conllu
@@ -602,13 +337,7 @@ Syntax errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\space-in-field.conllu
-[Line 4 Sent space-in-field]: [L4 Format invalid-word-with-space] 'not valid' in column FORM is not on the list of exceptions allowed to contain whitespace. 
-No tokens with spaces have been permitted for language [en].
-They can be permitted at the address below (if the language has an ISO code and is registered with UD):
-https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl
-
-Format errors: 1
-*** FAILED *** with 1 errors
+*** PASSED ***
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\tanl-broken.conllu
@@ -622,49 +351,17 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
 [Line 20 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 21 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 21 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 20 Sent tanl-broken3]: [L4 Morpho feature-unknown] Feature gen is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 20 Sent tanl-broken3]: [L4 Morpho feature-unknown] Feature mod is not documented for language [en].
-[Line 20 Sent tanl-broken3]: [L4 Morpho feature-unknown] Feature num is not documented for language [en].
-[Line 21 Sent tanl-broken3]: [L4 Morpho feature-unknown] Feature gen is not documented for language [en].
-[Line 21 Sent tanl-broken3]: [L4 Morpho feature-unknown] Feature num is not documented for language [en].
-[Line 22 Sent tanl-broken3 Node 3]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
 Format errors: 5
-Morpho errors: 10
-Warnings: 1
-*** FAILED *** with 15 errors
+Morpho errors: 5
+*** FAILED *** with 10 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\token_with_cols_filled.conllu
 [Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
 [Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
 [Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
-[Line 5 Sent token-with-cols-filled]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-
-The following 63 feature values are currently permitted in language [en]:
-Abbr=Yes, Case=Acc, Case=Gen, Case=Nom, Definite=Def, Definite=Ind, Degree=Cmp, Degree=Pos, Degree=Sup, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=PRON, ExtPos=PROPN, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Mood=Imp, Mood=Ind, Mood=Sub, NumForm=Combi, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, Number=Plur, Number=Ptan, Number=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Poss=Yes, PronType=Art, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rcp, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Arch, Style=Coll, Style=Expr, Style=Slng, Style=Vrnc, Tense=Past, Tense=Pres, Typo=Yes, VerbForm=Fin, VerbForm=Ger, VerbForm=Inf, VerbForm=Part, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-[Line 5 Sent token-with-cols-filled]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 8 Sent token-with-cols-filled]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 8 Sent token-with-cols-filled]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
-[Line 9 Sent token-with-cols-filled]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [en].
-[Line 9 Sent token-with-cols-filled]: [L4 Morpho feature-unknown] Feature Num is not documented for language [en].
 Format errors: 3
-Morpho errors: 6
-*** FAILED *** with 9 errors
+*** FAILED *** with 3 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\trailing-tab.conllu
@@ -677,45 +374,32 @@ Format errors: 3
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\uppercase-deprel.conllu
 [Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'.
-[Line 5 Sent uppercase-deprel]: [L4 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
+[Line 5 Sent uppercase-deprel]: [L2 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
 
-The following 58 relations are currently permitted in language [en]:
-acl, acl:relcl, advcl, advcl:relcl, advmod, amod, appos, aux, aux:pass, case, cc, cc:preconj, ccomp, clf, compound, compound:prt, conj, cop, csubj, csubj:outer, csubj:pass, dep, det, det:poss, det:predet, discourse, dislocated, expl, fixed, flat, flat:foreign, goeswith, iobj, list, mark, nmod, nmod:desc, nmod:npmod, nmod:poss, nmod:tmod, nmod:unmarked, nsubj, nsubj:outer, nsubj:pass, nummod, obj, obl, obl:agent, obl:npmod, obl:tmod, obl:unmarked, orphan, parataxis, punct, reparandum, root, vocative, xcomp
+The following 37 relations are currently permitted in language [ud]:
+acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nummod, obj, obl, orphan, parataxis, punct, reparandum, root, vocative, xcomp
 If a language needs a relation subtype that is not documented in the universal guidelines, the relation
 must have a language-specific documentation page in a prescribed format.
 See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
 Documented dependency relations can be specifically turned on/off for each language in which they are used.
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.
 
-[Line 5 Sent uppercase-deprel Node 2]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is 'Punct' ('PUNCT')
-Syntax errors: 3
-*** FAILED *** with 3 errors
+Syntax errors: 2
+*** FAILED *** with 2 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\uppercase-deps-deprel.conllu
 [Line 5 Sent uppercase-deps-deprel]: [L2 Enhanced invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
-[Line 5 Sent uppercase-deps-deprel]: [L4 Enhanced unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
+[Line 5 Sent uppercase-deps-deprel]: [L2 Enhanced unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
 
-The following 1867 enhanced relations are currently permitted in language [en]:
-acl, acl:about, acl:about_whether, acl:after, acl:against, acl:along_with, acl:although, acl:as, acl:as_if, acl:as_to, acl:as_with, acl:at, acl:before, acl:behind, acl:between, acl:beyond, acl:but, acl:but_to, acl:concerning, acl:except_that, acl:except_where, acl:for, acl:for_to, acl:from, acl:if, acl:in, acl:including, acl:including_for, acl:including_whether, acl:inside, acl:instead_of, acl:into, acl:like, acl:near, acl:of, acl:of_if, acl:of_why, acl:on, acl:on_whether, acl:once, acl:over, acl:past, acl:prior_to, acl:regarding, acl:relcl, acl:relcl:about, acl:relcl:about_whether, acl:relcl:after, acl:relcl:against, acl:relcl:along_with, acl:relcl:although, acl:relcl:as, acl:relcl:as_if, acl:relcl:as_to, acl:relcl:as_with, acl:relcl:at, acl:relcl:before, acl:relcl:behind, acl:relcl:between, acl:relcl:beyond, acl:relcl:but, acl:relcl:but_to, acl:relcl:concerning, acl:relcl:except_that, acl:relcl:except_where, acl:relcl:for, acl:relcl:for_to, acl:relcl:from, acl:relcl:if, acl:relcl:in, acl:relcl:including, acl:relcl:including_for, acl:relcl:including_whether, acl:relcl:inside, acl:relcl:instead_of, acl:relcl:into, acl:relcl:like, acl:relcl:near, acl:relcl:of, acl:relcl:of_if, acl:relcl:of_why, acl:relcl:on, acl:relcl:on_whether, acl:relcl:once, acl:relcl:over, acl:relcl:past, acl:relcl:prior_to, acl:relcl:regarding, acl:relcl:since, acl:relcl:such_as, acl:relcl:such_that, acl:relcl:than, acl:relcl:than_to, acl:relcl:that, acl:relcl:though, acl:relcl:to, acl:relcl:toward, acl:relcl:towards, acl:relcl:under, acl:relcl:until, acl:relcl:upon, acl:relcl:when, acl:relcl:where, acl:relcl:whereby, acl:relcl:whether, acl:relcl:why, acl:relcl:with, acl:since, acl:such_as, acl:such_that, acl:than, acl:than_to, acl:that, acl:though, acl:to, acl:toward, acl:towards, acl:under, acl:until, acl:upon, acl:when, acl:where, acl:whereby, acl:whether, acl:why, acl:with, advcl, advcl:about, advcl:about_whether, advcl:after, advcl:against, advcl:albeit, advcl:along_with, advcl:although, advcl:as, advcl:as_for, advcl:as_if, advcl:as_in, advcl:as_opposed_to, advcl:as_though, advcl:as_to, advcl:as_well_as, advcl:as_with, advcl:at, advcl:because, advcl:because_to, advcl:before, advcl:behind, advcl:besides, advcl:between, advcl:beyond, advcl:but, advcl:by, advcl:cause, advcl:despite, advcl:due_to, advcl:during, advcl:except, advcl:except_for, advcl:except_that, advcl:except_where, advcl:excluding, advcl:for, advcl:for_if, advcl:for_to, advcl:from, advcl:given, advcl:if, advcl:if_to, advcl:iff, advcl:in, advcl:in_between, advcl:in_case, advcl:in_order, advcl:in_order_for, advcl:in_order_to, advcl:in_that, advcl:including_by, advcl:including_for, advcl:inside, advcl:insofar_as, advcl:instead_of, advcl:into, advcl:lest, advcl:like, advcl:like_by, advcl:of, advcl:of_whether, advcl:on, advcl:on_whether, advcl:once, advcl:out, advcl:over, advcl:past, advcl:prior_to, advcl:provided, advcl:rather_than, advcl:relcl, advcl:relcl:about, advcl:relcl:about_whether, advcl:relcl:after, advcl:relcl:against, advcl:relcl:albeit, advcl:relcl:along_with, advcl:relcl:although, advcl:relcl:as, advcl:relcl:as_for, advcl:relcl:as_if, advcl:relcl:as_in, advcl:relcl:as_opposed_to, advcl:relcl:as_though, advcl:relcl:as_to, advcl:relcl:as_well_as, advcl:relcl:as_with, advcl:relcl:at, advcl:relcl:because, advcl:relcl:because_to, advcl:relcl:before, advcl:relcl:behind, advcl:relcl:besides, advcl:relcl:between, advcl:relcl:beyond, advcl:relcl:but, advcl:relcl:by, advcl:relcl:cause, advcl:relcl:despite, advcl:relcl:due_to, advcl:relcl:during, advcl:relcl:except, advcl:relcl:except_for, advcl:relcl:except_that, advcl:relcl:except_where, advcl:relcl:excluding, advcl:relcl:for, advcl:relcl:for_if, advcl:relcl:for_to, advcl:relcl:from, advcl:relcl:given, advcl:relcl:if, advcl:relcl:if_to, advcl:relcl:iff, advcl:relcl:in, advcl:relcl:in_between, advcl:relcl:in_case, advcl:relcl:in_order, advcl:relcl:in_order_for, advcl:relcl:in_order_to, advcl:relcl:in_that, advcl:relcl:including_by, advcl:relcl:including_for, advcl:relcl:inside, advcl:relcl:insofar_as, advcl:relcl:instead_of, advcl:relcl:into, advcl:relcl:lest, advcl:relcl:like, advcl:relcl:like_by, advcl:relcl:of, advcl:relcl:of_whether, advcl:relcl:on, advcl:relcl:on_whether, advcl:relcl:once, advcl:relcl:out, advcl:relcl:over, advcl:relcl:past, advcl:relcl:prior_to, advcl:relcl:provided, advcl:relcl:rather_than, advcl:relcl:save, advcl:relcl:since, advcl:relcl:so, advcl:relcl:so_as_to, advcl:relcl:so_that, advcl:relcl:such_as, advcl:relcl:such_that, advcl:relcl:than, advcl:relcl:than_if, advcl:relcl:that, advcl:relcl:the, advcl:relcl:though, advcl:relcl:through, advcl:relcl:till, advcl:relcl:to, advcl:relcl:toward, advcl:relcl:towards, advcl:relcl:under, advcl:relcl:unless, advcl:relcl:until, advcl:relcl:upon, advcl:relcl:versus, advcl:relcl:when, advcl:relcl:where, advcl:relcl:whereas, advcl:relcl:whether, advcl:relcl:while, advcl:relcl:whilst, advcl:relcl:whither, advcl:relcl:with, advcl:relcl:without, advcl:save, advcl:since, advcl:so, advcl:so_as_to, advcl:so_that, advcl:such_as, advcl:such_that, advcl:than, advcl:than_if, advcl:that, advcl:the, advcl:though, advcl:through, advcl:till, advcl:to, advcl:toward, advcl:towards, advcl:under, advcl:unless, advcl:until, advcl:upon, advcl:versus, advcl:when, advcl:where, advcl:whereas, advcl:whether, advcl:while, advcl:whilst, advcl:whither, advcl:with, advcl:without, advmod, amod, appos, aux, aux:pass, case, cc, cc:preconj, ccomp, clf, compound, compound:prt, conj, conj:and, conj:and_or, conj:and_yet, conj:as_well_as, conj:but, conj:et, conj:for, conj:intersection, conj:let_alone, conj:minus, conj:nor, conj:not, conj:not_to_mention, conj:or, conj:plus, conj:plus_minus, conj:rather_than, conj:setdiff, conj:slash, conj:so, conj:though, conj:union, conj:yet, cop, csubj, csubj:outer, csubj:outer:xsubj, csubj:pass, csubj:pass:xsubj, csubj:xsubj, dep, det, det:poss, det:predet, discourse, dislocated, expl, fixed, flat, flat:foreign, goeswith, iobj, list, mark, nmod, nmod:a_la, nmod:aboard, nmod:about, nmod:above, nmod:according_to, nmod:across, nmod:after, nmod:against, nmod:along, nmod:along_with, nmod:alongside, nmod:amid, nmod:amidst, nmod:among, nmod:amongst, nmod:around, nmod:as, nmod:as_far_as, nmod:as_for, nmod:as_in, nmod:as_of, nmod:as_opposed_to, nmod:as_to, nmod:aside, nmod:astride, nmod:at, nmod:atop, nmod:barring, nmod:because_of, nmod:before, nmod:behind, nmod:below, nmod:beneath, nmod:beside, nmod:besides, nmod:between, nmod:beyond, nmod:but, nmod:by, nmod:circa, nmod:colon, nmod:concerning, nmod:depending, nmod:depending_on, nmod:depending_upon, nmod:desc, nmod:desc:a_la, nmod:desc:aboard, nmod:desc:about, nmod:desc:above, nmod:desc:according_to, nmod:desc:across, nmod:desc:after, nmod:desc:against, nmod:desc:along, nmod:desc:along_with, nmod:desc:alongside, nmod:desc:amid, nmod:desc:amidst, nmod:desc:among, nmod:desc:amongst, nmod:desc:around, nmod:desc:as, nmod:desc:as_far_as, nmod:desc:as_for, nmod:desc:as_in, nmod:desc:as_of, nmod:desc:as_opposed_to, nmod:desc:as_to, nmod:desc:aside, nmod:desc:astride, nmod:desc:at, nmod:desc:atop, nmod:desc:barring, nmod:desc:because_of, nmod:desc:before, nmod:desc:behind, nmod:desc:below, nmod:desc:beneath, nmod:desc:beside, nmod:desc:besides, nmod:desc:between, nmod:desc:beyond, nmod:desc:but, nmod:desc:by, nmod:desc:circa, nmod:desc:colon, nmod:desc:concerning, nmod:desc:depending, nmod:desc:depending_on, nmod:desc:depending_upon, nmod:desc:despite, nmod:desc:down, nmod:desc:due_to, nmod:desc:during, nmod:desc:except, nmod:desc:except_for, nmod:desc:except_on, nmod:desc:excluding, nmod:desc:following, nmod:desc:for, nmod:desc:for_post, nmod:desc:from, nmod:desc:from_across, nmod:desc:from_among, nmod:desc:from_behind, nmod:desc:from_below, nmod:desc:from_out_of, nmod:desc:from_outside, nmod:desc:from_over, nmod:desc:given, nmod:desc:in, nmod:desc:in_between, nmod:desc:in_case_of, nmod:desc:including, nmod:desc:including_before, nmod:desc:including_for, nmod:desc:including_in, nmod:desc:inside, nmod:desc:instead_of, nmod:desc:into, nmod:desc:like, nmod:desc:minus, nmod:desc:near, nmod:desc:nearby, nmod:desc:next_to, nmod:desc:nigh, nmod:desc:notwithstanding, nmod:desc:of, nmod:desc:off, nmod:desc:off_of, nmod:desc:on, nmod:desc:on_board, nmod:desc:onto, nmod:desc:opposite, nmod:desc:out, nmod:desc:out_of, nmod:desc:outside, nmod:desc:over, nmod:desc:past, nmod:desc:per, nmod:desc:post, nmod:desc:prior_to, nmod:desc:pro, nmod:desc:re, nmod:desc:regarding, nmod:desc:regardless, nmod:desc:round, nmod:desc:sans, nmod:desc:save, nmod:desc:since, nmod:desc:slash, nmod:desc:such_as, nmod:desc:than, nmod:desc:than_in, nmod:desc:through, nmod:desc:throughout, nmod:desc:thru, nmod:desc:till, nmod:desc:times, nmod:desc:to, nmod:desc:toward, nmod:desc:towards, nmod:desc:under, nmod:desc:underneath, nmod:desc:unlike, nmod:desc:until, nmod:desc:unto, nmod:desc:up, nmod:desc:up_to, nmod:desc:upon, nmod:desc:versus, nmod:desc:versus_per, nmod:desc:via, nmod:desc:whilst, nmod:desc:with, nmod:desc:within, nmod:desc:without, nmod:desc:x, nmod:despite, nmod:down, nmod:due_to, nmod:during, nmod:except, nmod:except_for, nmod:except_on, nmod:excluding, nmod:following, nmod:for, nmod:for_post, nmod:from, nmod:from_across, nmod:from_among, nmod:from_behind, nmod:from_below, nmod:from_out_of, nmod:from_outside, nmod:from_over, nmod:given, nmod:in, nmod:in_between, nmod:in_case_of, nmod:including, nmod:including_before, nmod:including_for, nmod:including_in, nmod:inside, nmod:instead_of, nmod:into, nmod:like, nmod:minus, nmod:near, nmod:nearby, nmod:next_to, nmod:nigh, nmod:notwithstanding, nmod:npmod, nmod:npmod:a_la, nmod:npmod:aboard, nmod:npmod:about, nmod:npmod:above, nmod:npmod:according_to, nmod:npmod:across, nmod:npmod:after, nmod:npmod:against, nmod:npmod:along, nmod:npmod:along_with, nmod:npmod:alongside, nmod:npmod:amid, nmod:npmod:amidst, nmod:npmod:among, nmod:npmod:amongst, nmod:npmod:around, nmod:npmod:as, nmod:npmod:as_far_as, nmod:npmod:as_for, nmod:npmod:as_in, nmod:npmod:as_of, nmod:npmod:as_opposed_to, nmod:npmod:as_to, nmod:npmod:aside, nmod:npmod:astride, nmod:npmod:at, nmod:npmod:atop, nmod:npmod:barring, nmod:npmod:because_of, nmod:npmod:before, nmod:npmod:behind, nmod:npmod:below, nmod:npmod:beneath, nmod:npmod:beside, nmod:npmod:besides, nmod:npmod:between, nmod:npmod:beyond, nmod:npmod:but, nmod:npmod:by, nmod:npmod:circa, nmod:npmod:colon, nmod:npmod:concerning, nmod:npmod:depending, nmod:npmod:depending_on, nmod:npmod:depending_upon, nmod:npmod:despite, nmod:npmod:down, nmod:npmod:due_to, nmod:npmod:during, nmod:npmod:except, nmod:npmod:except_for, nmod:npmod:except_on, nmod:npmod:excluding, nmod:npmod:following, nmod:npmod:for, nmod:npmod:for_post, nmod:npmod:from, nmod:npmod:from_across, nmod:npmod:from_among, nmod:npmod:from_behind, nmod:npmod:from_below, nmod:npmod:from_out_of, nmod:npmod:from_outside, nmod:npmod:from_over, nmod:npmod:given, nmod:npmod:in, nmod:npmod:in_between, nmod:npmod:in_case_of, nmod:npmod:including, nmod:npmod:including_before, nmod:npmod:including_for, nmod:npmod:including_in, nmod:npmod:inside, nmod:npmod:instead_of, nmod:npmod:into, nmod:npmod:like, nmod:npmod:minus, nmod:npmod:near, nmod:npmod:nearby, nmod:npmod:next_to, nmod:npmod:nigh, nmod:npmod:notwithstanding, nmod:npmod:of, nmod:npmod:off, nmod:npmod:off_of, nmod:npmod:on, nmod:npmod:on_board, nmod:npmod:onto, nmod:npmod:opposite, nmod:npmod:out, nmod:npmod:out_of, nmod:npmod:outside, nmod:npmod:over, nmod:npmod:past, nmod:npmod:per, nmod:npmod:post, nmod:npmod:prior_to, nmod:npmod:pro, nmod:npmod:re, nmod:npmod:regarding, nmod:npmod:regardless, nmod:npmod:round, nmod:npmod:sans, nmod:npmod:save, nmod:npmod:since, nmod:npmod:slash, nmod:npmod:such_as, nmod:npmod:than, nmod:npmod:than_in, nmod:npmod:through, nmod:npmod:throughout, nmod:npmod:thru, nmod:npmod:till, nmod:npmod:times, nmod:npmod:to, nmod:npmod:toward, nmod:npmod:towards, nmod:npmod:under, nmod:npmod:underneath, nmod:npmod:unlike, nmod:npmod:until, nmod:npmod:unto, nmod:npmod:up, nmod:npmod:up_to, nmod:npmod:upon, nmod:npmod:versus, nmod:npmod:versus_per, nmod:npmod:via, nmod:npmod:whilst, nmod:npmod:with, nmod:npmod:within, nmod:npmod:without, nmod:npmod:x, nmod:of, nmod:off, nmod:off_of, nmod:on, nmod:on_board, nmod:onto, nmod:opposite, nmod:out, nmod:out_of, nmod:outside, nmod:over, nmod:past, nmod:per, nmod:poss, nmod:poss:a_la, nmod:poss:aboard, nmod:poss:about, nmod:poss:above, nmod:poss:according_to, nmod:poss:across, nmod:poss:after, nmod:poss:against, nmod:poss:along, nmod:poss:along_with, nmod:poss:alongside, nmod:poss:amid, nmod:poss:amidst, nmod:poss:among, nmod:poss:amongst, nmod:poss:around, nmod:poss:as, nmod:poss:as_far_as, nmod:poss:as_for, nmod:poss:as_in, nmod:poss:as_of, nmod:poss:as_opposed_to, nmod:poss:as_to, nmod:poss:aside, nmod:poss:astride, nmod:poss:at, nmod:poss:atop, nmod:poss:barring, nmod:poss:because_of, nmod:poss:before, nmod:poss:behind, nmod:poss:below, nmod:poss:beneath, nmod:poss:beside, nmod:poss:besides, nmod:poss:between, nmod:poss:beyond, nmod:poss:but, nmod:poss:by, nmod:poss:circa, nmod:poss:colon, nmod:poss:concerning, nmod:poss:depending, nmod:poss:depending_on, nmod:poss:depending_upon, nmod:poss:despite, nmod:poss:down, nmod:poss:due_to, nmod:poss:during, nmod:poss:except, nmod:poss:except_for, nmod:poss:except_on, nmod:poss:excluding, nmod:poss:following, nmod:poss:for, nmod:poss:for_post, nmod:poss:from, nmod:poss:from_across, nmod:poss:from_among, nmod:poss:from_behind, nmod:poss:from_below, nmod:poss:from_out_of, nmod:poss:from_outside, nmod:poss:from_over, nmod:poss:given, nmod:poss:in, nmod:poss:in_between, nmod:poss:in_case_of, nmod:poss:including, nmod:poss:including_before, nmod:poss:including_for, nmod:poss:including_in, nmod:poss:inside, nmod:poss:instead_of, nmod:poss:into, nmod:poss:like, nmod:poss:minus, nmod:poss:near, nmod:poss:nearby, nmod:poss:next_to, nmod:poss:nigh, nmod:poss:notwithstanding, nmod:poss:of, nmod:poss:off, nmod:poss:off_of, nmod:poss:on, nmod:poss:on_board, nmod:poss:onto, nmod:poss:opposite, nmod:poss:out, nmod:poss:out_of, nmod:poss:outside, nmod:poss:over, nmod:poss:past, nmod:poss:per, nmod:poss:post, nmod:poss:prior_to, nmod:poss:pro, nmod:poss:re, nmod:poss:regarding, nmod:poss:regardless, nmod:poss:round, nmod:poss:sans, nmod:poss:save, nmod:poss:since, nmod:poss:slash, nmod:poss:such_as, nmod:poss:than, nmod:poss:than_in, nmod:poss:through, nmod:poss:throughout, nmod:poss:thru, nmod:poss:till, nmod:poss:times, nmod:poss:to, nmod:poss:toward, nmod:poss:towards, nmod:poss:under, nmod:poss:underneath, nmod:poss:unlike, nmod:poss:until, nmod:poss:unto, nmod:poss:up, nmod:poss:up_to, nmod:poss:upon, nmod:poss:versus, nmod:poss:versus_per, nmod:poss:via, nmod:poss:whilst, nmod:poss:with, nmod:poss:within, nmod:poss:without, nmod:poss:x, nmod:post, nmod:prior_to, nmod:pro, nmod:re, nmod:regarding, nmod:regardless, nmod:round, nmod:sans, nmod:save, nmod:since, nmod:slash, nmod:such_as, nmod:than, nmod:than_in, nmod:through, nmod:throughout, nmod:thru, nmod:till, nmod:times, nmod:tmod, nmod:tmod:a_la, nmod:tmod:aboard, nmod:tmod:about, nmod:tmod:above, nmod:tmod:according_to, nmod:tmod:across, nmod:tmod:after, nmod:tmod:against, nmod:tmod:along, nmod:tmod:along_with, nmod:tmod:alongside, nmod:tmod:amid, nmod:tmod:amidst, nmod:tmod:among, nmod:tmod:amongst, nmod:tmod:around, nmod:tmod:as, nmod:tmod:as_far_as, nmod:tmod:as_for, nmod:tmod:as_in, nmod:tmod:as_of, nmod:tmod:as_opposed_to, nmod:tmod:as_to, nmod:tmod:aside, nmod:tmod:astride, nmod:tmod:at, nmod:tmod:atop, nmod:tmod:barring, nmod:tmod:because_of, nmod:tmod:before, nmod:tmod:behind, nmod:tmod:below, nmod:tmod:beneath, nmod:tmod:beside, nmod:tmod:besides, nmod:tmod:between, nmod:tmod:beyond, nmod:tmod:but, nmod:tmod:by, nmod:tmod:circa, nmod:tmod:colon, nmod:tmod:concerning, nmod:tmod:depending, nmod:tmod:depending_on, nmod:tmod:depending_upon, nmod:tmod:despite, nmod:tmod:down, nmod:tmod:due_to, nmod:tmod:during, nmod:tmod:except, nmod:tmod:except_for, nmod:tmod:except_on, nmod:tmod:excluding, nmod:tmod:following, nmod:tmod:for, nmod:tmod:for_post, nmod:tmod:from, nmod:tmod:from_across, nmod:tmod:from_among, nmod:tmod:from_behind, nmod:tmod:from_below, nmod:tmod:from_out_of, nmod:tmod:from_outside, nmod:tmod:from_over, nmod:tmod:given, nmod:tmod:in, nmod:tmod:in_between, nmod:tmod:in_case_of, nmod:tmod:including, nmod:tmod:including_before, nmod:tmod:including_for, nmod:tmod:including_in, nmod:tmod:inside, nmod:tmod:instead_of, nmod:tmod:into, nmod:tmod:like, nmod:tmod:minus, nmod:tmod:near, nmod:tmod:nearby, nmod:tmod:next_to, nmod:tmod:nigh, nmod:tmod:notwithstanding, nmod:tmod:of, nmod:tmod:off, nmod:tmod:off_of, nmod:tmod:on, nmod:tmod:on_board, nmod:tmod:onto, nmod:tmod:opposite, nmod:tmod:out, nmod:tmod:out_of, nmod:tmod:outside, nmod:tmod:over, nmod:tmod:past, nmod:tmod:per, nmod:tmod:post, nmod:tmod:prior_to, nmod:tmod:pro, nmod:tmod:re, nmod:tmod:regarding, nmod:tmod:regardless, nmod:tmod:round, nmod:tmod:sans, nmod:tmod:save, nmod:tmod:since, nmod:tmod:slash, nmod:tmod:such_as, nmod:tmod:than, nmod:tmod:than_in, nmod:tmod:through, nmod:tmod:throughout, nmod:tmod:thru, nmod:tmod:till, nmod:tmod:times, nmod:tmod:to, nmod:tmod:toward, nmod:tmod:towards, nmod:tmod:under, nmod:tmod:underneath, nmod:tmod:unlike, nmod:tmod:until, nmod:tmod:unto, nmod:tmod:up, nmod:tmod:up_to, nmod:tmod:upon, nmod:tmod:versus, nmod:tmod:versus_per, nmod:tmod:via, nmod:tmod:whilst, nmod:tmod:with, nmod:tmod:within, nmod:tmod:without, nmod:tmod:x, nmod:to, nmod:toward, nmod:towards, nmod:under, nmod:underneath, nmod:unlike, nmod:unmarked, nmod:unmarked:a_la, nmod:unmarked:aboard, nmod:unmarked:about, nmod:unmarked:above, nmod:unmarked:according_to, nmod:unmarked:across, nmod:unmarked:after, nmod:unmarked:against, nmod:unmarked:along, nmod:unmarked:along_with, nmod:unmarked:alongside, nmod:unmarked:amid, nmod:unmarked:amidst, nmod:unmarked:among, nmod:unmarked:amongst, nmod:unmarked:around, nmod:unmarked:as, nmod:unmarked:as_far_as, nmod:unmarked:as_for, nmod:unmarked:as_in, nmod:unmarked:as_of, nmod:unmarked:as_opposed_to, nmod:unmarked:as_to, nmod:unmarked:aside, nmod:unmarked:astride, nmod:unmarked:at, nmod:unmarked:atop, nmod:unmarked:barring, nmod:unmarked:because_of, nmod:unmarked:before, nmod:unmarked:behind, nmod:unmarked:below, nmod:unmarked:beneath, nmod:unmarked:beside, nmod:unmarked:besides, nmod:unmarked:between, nmod:unmarked:beyond, nmod:unmarked:but, nmod:unmarked:by, nmod:unmarked:circa, nmod:unmarked:colon, nmod:unmarked:concerning, nmod:unmarked:depending, nmod:unmarked:depending_on, nmod:unmarked:depending_upon, nmod:unmarked:despite, nmod:unmarked:down, nmod:unmarked:due_to, nmod:unmarked:during, nmod:unmarked:except, nmod:unmarked:except_for, nmod:unmarked:except_on, nmod:unmarked:excluding, nmod:unmarked:following, nmod:unmarked:for, nmod:unmarked:for_post, nmod:unmarked:from, nmod:unmarked:from_across, nmod:unmarked:from_among, nmod:unmarked:from_behind, nmod:unmarked:from_below, nmod:unmarked:from_out_of, nmod:unmarked:from_outside, nmod:unmarked:from_over, nmod:unmarked:given, nmod:unmarked:in, nmod:unmarked:in_between, nmod:unmarked:in_case_of, nmod:unmarked:including, nmod:unmarked:including_before, nmod:unmarked:including_for, nmod:unmarked:including_in, nmod:unmarked:inside, nmod:unmarked:instead_of, nmod:unmarked:into, nmod:unmarked:like, nmod:unmarked:minus, nmod:unmarked:near, nmod:unmarked:nearby, nmod:unmarked:next_to, nmod:unmarked:nigh, nmod:unmarked:notwithstanding, nmod:unmarked:of, nmod:unmarked:off, nmod:unmarked:off_of, nmod:unmarked:on, nmod:unmarked:on_board, nmod:unmarked:onto, nmod:unmarked:opposite, nmod:unmarked:out, nmod:unmarked:out_of, nmod:unmarked:outside, nmod:unmarked:over, nmod:unmarked:past, nmod:unmarked:per, nmod:unmarked:post, nmod:unmarked:prior_to, nmod:unmarked:pro, nmod:unmarked:re, nmod:unmarked:regarding, nmod:unmarked:regardless, nmod:unmarked:round, nmod:unmarked:sans, nmod:unmarked:save, nmod:unmarked:since, nmod:unmarked:slash, nmod:unmarked:such_as, nmod:unmarked:than, nmod:unmarked:than_in, nmod:unmarked:through, nmod:unmarked:throughout, nmod:unmarked:thru, nmod:unmarked:till, nmod:unmarked:times, nmod:unmarked:to, nmod:unmarked:toward, nmod:unmarked:towards, nmod:unmarked:under, nmod:unmarked:underneath, nmod:unmarked:unlike, nmod:unmarked:until, nmod:unmarked:unto, nmod:unmarked:up, nmod:unmarked:up_to, nmod:unmarked:upon, nmod:unmarked:versus, nmod:unmarked:versus_per, nmod:unmarked:via, nmod:unmarked:whilst, nmod:unmarked:with, nmod:unmarked:within, nmod:unmarked:without, nmod:unmarked:x, nmod:until, nmod:unto, nmod:up, nmod:up_to, nmod:upon, nmod:versus, nmod:versus_per, nmod:via, nmod:whilst, nmod:with, nmod:within, nmod:without, nmod:x, nsubj, nsubj:outer, nsubj:outer:xsubj, nsubj:pass, nsubj:pass:xsubj, nsubj:xsubj, nummod, obj, obl, obl:a_la, obl:aboard, obl:about, obl:above, obl:according_to, obl:across, obl:after, obl:against, obl:agent, obl:agent:a_la, obl:agent:aboard, obl:agent:about, obl:agent:above, obl:agent:according_to, obl:agent:across, obl:agent:after, obl:agent:against, obl:agent:along, obl:agent:along_with, obl:agent:alongside, obl:agent:amid, obl:agent:amidst, obl:agent:among, obl:agent:amongst, obl:agent:around, obl:agent:as, obl:agent:as_far_as, obl:agent:as_for, obl:agent:as_in, obl:agent:as_of, obl:agent:as_opposed_to, obl:agent:as_to, obl:agent:aside, obl:agent:astride, obl:agent:at, obl:agent:atop, obl:agent:barring, obl:agent:because_of, obl:agent:before, obl:agent:behind, obl:agent:below, obl:agent:beneath, obl:agent:beside, obl:agent:besides, obl:agent:between, obl:agent:beyond, obl:agent:but, obl:agent:by, obl:agent:circa, obl:agent:concerning, obl:agent:depending, obl:agent:depending_on, obl:agent:depending_upon, obl:agent:despite, obl:agent:down, obl:agent:due_to, obl:agent:during, obl:agent:except, obl:agent:except_for, obl:agent:except_on, obl:agent:excluding, obl:agent:following, obl:agent:for, obl:agent:for_post, obl:agent:from, obl:agent:from_across, obl:agent:from_among, obl:agent:from_behind, obl:agent:from_below, obl:agent:from_out_of, obl:agent:from_outside, obl:agent:from_over, obl:agent:given, obl:agent:in, obl:agent:in_between, obl:agent:in_case_of, obl:agent:including, obl:agent:including_before, obl:agent:including_for, obl:agent:including_in, obl:agent:inside, obl:agent:instead_of, obl:agent:into, obl:agent:like, obl:agent:minus, obl:agent:near, obl:agent:nearby, obl:agent:next_to, obl:agent:nigh, obl:agent:notwithstanding, obl:agent:of, obl:agent:off, obl:agent:off_of, obl:agent:on, obl:agent:on_board, obl:agent:onto, obl:agent:opposite, obl:agent:out, obl:agent:out_of, obl:agent:outside, obl:agent:over, obl:agent:past, obl:agent:per, obl:agent:post, obl:agent:prior_to, obl:agent:rather_than, obl:agent:re, obl:agent:regarding, obl:agent:regardless, obl:agent:round, obl:agent:sans, obl:agent:save, obl:agent:since, obl:agent:slash, obl:agent:than, obl:agent:than_in, obl:agent:through, obl:agent:throughout, obl:agent:thru, obl:agent:till, obl:agent:to, obl:agent:to_before, obl:agent:toward, obl:agent:towards, obl:agent:under, obl:agent:underneath, obl:agent:unlike, obl:agent:until, obl:agent:unto, obl:agent:up, obl:agent:up_to, obl:agent:upon, obl:agent:versus, obl:agent:versus_per, obl:agent:via, obl:agent:whilst, obl:agent:with, obl:agent:within, obl:agent:without, obl:agent:x, obl:along, obl:along_with, obl:alongside, obl:amid, obl:amidst, obl:among, obl:amongst, obl:around, obl:as, obl:as_far_as, obl:as_for, obl:as_in, obl:as_of, obl:as_opposed_to, obl:as_to, obl:aside, obl:astride, obl:at, obl:atop, obl:barring, obl:because_of, obl:before, obl:behind, obl:below, obl:beneath, obl:beside, obl:besides, obl:between, obl:beyond, obl:but, obl:by, obl:circa, obl:concerning, obl:depending, obl:depending_on, obl:depending_upon, obl:despite, obl:down, obl:due_to, obl:during, obl:except, obl:except_for, obl:except_on, obl:excluding, obl:following, obl:for, obl:for_post, obl:from, obl:from_across, obl:from_among, obl:from_behind, obl:from_below, obl:from_out_of, obl:from_outside, obl:from_over, obl:given, obl:in, obl:in_between, obl:in_case_of, obl:including, obl:including_before, obl:including_for, obl:including_in, obl:inside, obl:instead_of, obl:into, obl:like, obl:minus, obl:near, obl:nearby, obl:next_to, obl:nigh, obl:notwithstanding, obl:npmod, obl:npmod:a_la, obl:npmod:aboard, obl:npmod:about, obl:npmod:above, obl:npmod:according_to, obl:npmod:across, obl:npmod:after, obl:npmod:against, obl:npmod:along, obl:npmod:along_with, obl:npmod:alongside, obl:npmod:amid, obl:npmod:amidst, obl:npmod:among, obl:npmod:amongst, obl:npmod:around, obl:npmod:as, obl:npmod:as_far_as, obl:npmod:as_for, obl:npmod:as_in, obl:npmod:as_of, obl:npmod:as_opposed_to, obl:npmod:as_to, obl:npmod:aside, obl:npmod:astride, obl:npmod:at, obl:npmod:atop, obl:npmod:barring, obl:npmod:because_of, obl:npmod:before, obl:npmod:behind, obl:npmod:below, obl:npmod:beneath, obl:npmod:beside, obl:npmod:besides, obl:npmod:between, obl:npmod:beyond, obl:npmod:but, obl:npmod:by, obl:npmod:circa, obl:npmod:concerning, obl:npmod:depending, obl:npmod:depending_on, obl:npmod:depending_upon, obl:npmod:despite, obl:npmod:down, obl:npmod:due_to, obl:npmod:during, obl:npmod:except, obl:npmod:except_for, obl:npmod:except_on, obl:npmod:excluding, obl:npmod:following, obl:npmod:for, obl:npmod:for_post, obl:npmod:from, obl:npmod:from_across, obl:npmod:from_among, obl:npmod:from_behind, obl:npmod:from_below, obl:npmod:from_out_of, obl:npmod:from_outside, obl:npmod:from_over, obl:npmod:given, obl:npmod:in, obl:npmod:in_between, obl:npmod:in_case_of, obl:npmod:including, obl:npmod:including_before, obl:npmod:including_for, obl:npmod:including_in, obl:npmod:inside, obl:npmod:instead_of, obl:npmod:into, obl:npmod:like, obl:npmod:minus, obl:npmod:near, obl:npmod:nearby, obl:npmod:next_to, obl:npmod:nigh, obl:npmod:notwithstanding, obl:npmod:of, obl:npmod:off, obl:npmod:off_of, obl:npmod:on, obl:npmod:on_board, obl:npmod:onto, obl:npmod:opposite, obl:npmod:out, obl:npmod:out_of, obl:npmod:outside, obl:npmod:over, obl:npmod:past, obl:npmod:per, obl:npmod:post, obl:npmod:prior_to, obl:npmod:rather_than, obl:npmod:re, obl:npmod:regarding, obl:npmod:regardless, obl:npmod:round, obl:npmod:sans, obl:npmod:save, obl:npmod:since, obl:npmod:slash, obl:npmod:than, obl:npmod:than_in, obl:npmod:through, obl:npmod:throughout, obl:npmod:thru, obl:npmod:till, obl:npmod:to, obl:npmod:to_before, obl:npmod:toward, obl:npmod:towards, obl:npmod:under, obl:npmod:underneath, obl:npmod:unlike, obl:npmod:until, obl:npmod:unto, obl:npmod:up, obl:npmod:up_to, obl:npmod:upon, obl:npmod:versus, obl:npmod:versus_per, obl:npmod:via, obl:npmod:whilst, obl:npmod:with, obl:npmod:within, obl:npmod:without, obl:npmod:x, obl:of, obl:off, obl:off_of, obl:on, obl:on_board, obl:onto, obl:opposite, obl:out, obl:out_of, obl:outside, obl:over, obl:past, obl:per, obl:post, obl:prior_to, obl:rather_than, obl:re, obl:regarding, obl:regardless, obl:round, obl:sans, obl:save, obl:since, obl:slash, obl:than, obl:than_in, obl:through, obl:throughout, obl:thru, obl:till, obl:tmod, obl:tmod:a_la, obl:tmod:aboard, obl:tmod:about, obl:tmod:above, obl:tmod:according_to, obl:tmod:across, obl:tmod:after, obl:tmod:against, obl:tmod:along, obl:tmod:along_with, obl:tmod:alongside, obl:tmod:amid, obl:tmod:amidst, obl:tmod:among, obl:tmod:amongst, obl:tmod:around, obl:tmod:as, obl:tmod:as_far_as, obl:tmod:as_for, obl:tmod:as_in, obl:tmod:as_of, obl:tmod:as_opposed_to, obl:tmod:as_to, obl:tmod:aside, obl:tmod:astride, obl:tmod:at, obl:tmod:atop, obl:tmod:barring, obl:tmod:because_of, obl:tmod:before, obl:tmod:behind, obl:tmod:below, obl:tmod:beneath, obl:tmod:beside, obl:tmod:besides, obl:tmod:between, obl:tmod:beyond, obl:tmod:but, obl:tmod:by, obl:tmod:circa, obl:tmod:concerning, obl:tmod:depending, obl:tmod:depending_on, obl:tmod:depending_upon, obl:tmod:despite, obl:tmod:down, obl:tmod:due_to, obl:tmod:during, obl:tmod:except, obl:tmod:except_for, obl:tmod:except_on, obl:tmod:excluding, obl:tmod:following, obl:tmod:for, obl:tmod:for_post, obl:tmod:from, obl:tmod:from_across, obl:tmod:from_among, obl:tmod:from_behind, obl:tmod:from_below, obl:tmod:from_out_of, obl:tmod:from_outside, obl:tmod:from_over, obl:tmod:given, obl:tmod:in, obl:tmod:in_between, obl:tmod:in_case_of, obl:tmod:including, obl:tmod:including_before, obl:tmod:including_for, obl:tmod:including_in, obl:tmod:inside, obl:tmod:instead_of, obl:tmod:into, obl:tmod:like, obl:tmod:minus, obl:tmod:near, obl:tmod:nearby, obl:tmod:next_to, obl:tmod:nigh, obl:tmod:notwithstanding, obl:tmod:of, obl:tmod:off, obl:tmod:off_of, obl:tmod:on, obl:tmod:on_board, obl:tmod:onto, obl:tmod:opposite, obl:tmod:out, obl:tmod:out_of, obl:tmod:outside, obl:tmod:over, obl:tmod:past, obl:tmod:per, obl:tmod:post, obl:tmod:prior_to, obl:tmod:rather_than, obl:tmod:re, obl:tmod:regarding, obl:tmod:regardless, obl:tmod:round, obl:tmod:sans, obl:tmod:save, obl:tmod:since, obl:tmod:slash, obl:tmod:than, obl:tmod:than_in, obl:tmod:through, obl:tmod:throughout, obl:tmod:thru, obl:tmod:till, obl:tmod:to, obl:tmod:to_before, obl:tmod:toward, obl:tmod:towards, obl:tmod:under, obl:tmod:underneath, obl:tmod:unlike, obl:tmod:until, obl:tmod:unto, obl:tmod:up, obl:tmod:up_to, obl:tmod:upon, obl:tmod:versus, obl:tmod:versus_per, obl:tmod:via, obl:tmod:whilst, obl:tmod:with, obl:tmod:within, obl:tmod:without, obl:tmod:x, obl:to, obl:to_before, obl:toward, obl:towards, obl:under, obl:underneath, obl:unlike, obl:unmarked, obl:unmarked:a_la, obl:unmarked:aboard, obl:unmarked:about, obl:unmarked:above, obl:unmarked:according_to, obl:unmarked:across, obl:unmarked:after, obl:unmarked:against, obl:unmarked:along, obl:unmarked:along_with, obl:unmarked:alongside, obl:unmarked:amid, obl:unmarked:amidst, obl:unmarked:among, obl:unmarked:amongst, obl:unmarked:around, obl:unmarked:as, obl:unmarked:as_far_as, obl:unmarked:as_for, obl:unmarked:as_in, obl:unmarked:as_of, obl:unmarked:as_opposed_to, obl:unmarked:as_to, obl:unmarked:aside, obl:unmarked:astride, obl:unmarked:at, obl:unmarked:atop, obl:unmarked:barring, obl:unmarked:because_of, obl:unmarked:before, obl:unmarked:behind, obl:unmarked:below, obl:unmarked:beneath, obl:unmarked:beside, obl:unmarked:besides, obl:unmarked:between, obl:unmarked:beyond, obl:unmarked:but, obl:unmarked:by, obl:unmarked:circa, obl:unmarked:concerning, obl:unmarked:depending, obl:unmarked:depending_on, obl:unmarked:depending_upon, obl:unmarked:despite, obl:unmarked:down, obl:unmarked:due_to, obl:unmarked:during, obl:unmarked:except, obl:unmarked:except_for, obl:unmarked:except_on, obl:unmarked:excluding, obl:unmarked:following, obl:unmarked:for, obl:unmarked:for_post, obl:unmarked:from, obl:unmarked:from_across, obl:unmarked:from_among, obl:unmarked:from_behind, obl:unmarked:from_below, obl:unmarked:from_out_of, obl:unmarked:from_outside, obl:unmarked:from_over, obl:unmarked:given, obl:unmarked:in, obl:unmarked:in_between, obl:unmarked:in_case_of, obl:unmarked:including, obl:unmarked:including_before, obl:unmarked:including_for, obl:unmarked:including_in, obl:unmarked:inside, obl:unmarked:instead_of, obl:unmarked:into, obl:unmarked:like, obl:unmarked:minus, obl:unmarked:near, obl:unmarked:nearby, obl:unmarked:next_to, obl:unmarked:nigh, obl:unmarked:notwithstanding, obl:unmarked:of, obl:unmarked:off, obl:unmarked:off_of, obl:unmarked:on, obl:unmarked:on_board, obl:unmarked:onto, obl:unmarked:opposite, obl:unmarked:out, obl:unmarked:out_of, obl:unmarked:outside, obl:unmarked:over, obl:unmarked:past, obl:unmarked:per, obl:unmarked:post, obl:unmarked:prior_to, obl:unmarked:rather_than, obl:unmarked:re, obl:unmarked:regarding, obl:unmarked:regardless, obl:unmarked:round, obl:unmarked:sans, obl:unmarked:save, obl:unmarked:since, obl:unmarked:slash, obl:unmarked:than, obl:unmarked:than_in, obl:unmarked:through, obl:unmarked:throughout, obl:unmarked:thru, obl:unmarked:till, obl:unmarked:to, obl:unmarked:to_before, obl:unmarked:toward, obl:unmarked:towards, obl:unmarked:under, obl:unmarked:underneath, obl:unmarked:unlike, obl:unmarked:until, obl:unmarked:unto, obl:unmarked:up, obl:unmarked:up_to, obl:unmarked:upon, obl:unmarked:versus, obl:unmarked:versus_per, obl:unmarked:via, obl:unmarked:whilst, obl:unmarked:with, obl:unmarked:within, obl:unmarked:without, obl:unmarked:x, obl:until, obl:unto, obl:up, obl:up_to, obl:upon, obl:versus, obl:versus_per, obl:via, obl:whilst, obl:with, obl:within, obl:without, obl:x, orphan, parataxis, punct, ref, reparandum, root, vocative, xcomp
+The following 40 enhanced relations are currently permitted in language [ud]:
+acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, csubj:xsubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nsubj:xsubj, nummod, obj, obl, orphan, parataxis, punct, ref, reparandum, root, vocative, xcomp
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.
 
-[Line 4 Sent uppercase-deps-deprel]: [L2 Enhanced unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2'] are not reachable from any root
-Enhanced errors: 3
-*** FAILED *** with 3 errors
+Enhanced errors: 2
+*** FAILED *** with 2 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\whitespace_nonv.conllu
-[Line 6 Sent whitespace_nonv]: [L4 Format invalid-word-with-space] 'a 000' in column FORM is not on the list of exceptions allowed to contain whitespace. 
-No tokens with spaces have been permitted for language [en].
-They can be permitted at the address below (if the language has an ISO code and is registered with UD):
-https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl
-
-[Line 6 Sent whitespace_nonv]: [L4 Format invalid-word-with-space] '100 000' in column LEMMA is not on the list of exceptions allowed to contain whitespace.
-[Line 7 Sent whitespace_nonv]: [L4 Format invalid-word-with-space] '50 000' in column FORM is not on the list of exceptions allowed to contain whitespace.
-[Line 7 Sent whitespace_nonv]: [L4 Format invalid-word-with-space] 'v 000' in column LEMMA is not on the list of exceptions allowed to contain whitespace.
-[Line 5 Sent whitespace_nonv Node 1]: [L3 Syntax too-many-subjects] Multiple subjects [2, 3] ('a 000', '50 000') not subtyped as ':outer'. Outer subjects are allowed if a clause acts as the predicate of another clause.
-Format errors: 4
-Syntax errors: 1
-*** FAILED *** with 5 errors
+*** PASSED ***
 
