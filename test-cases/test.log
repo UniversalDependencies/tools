@@ -64,10 +64,6 @@ Syntax errors: 1
 *** FAILED *** with 3 errors
 
 --------------------------------------------------------------------------------
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\empty-node-without-dependent.conllu
-*** PASSED ***
-
---------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\empty-sentence.conllu
 [Line 3]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 Format errors: 1
@@ -81,9 +77,9 @@ Format errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\extra-field.conllu
-[Line 4 Sent extra-field]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The contents of the columns will not be checked.
+[Line 4 Sent extra-field]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
 [Line 5 Sent extra-field]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 5 Sent extra-field]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
+[Line 5 Sent extra-field]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 Format errors: 3
 *** FAILED *** with 3 errors
 
@@ -114,17 +110,9 @@ Format errors: 2
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\id-with-extra-0.conllu
-[Line 4 Sent id-with-extra-0]: [L1 Format invalid-word-id] Unexpected ID format '01'.
-[Line 5 Sent id-with-extra-0]: [L0 Format exception] Exception caught!
-Traceback (most recent call last):
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3876, in <module>
-    validate(inp, args)
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3758, in validate
-    line = linenos[str(node.ord)]
-           ~~~~~~~^^^^^^^^^^^^^^^
-KeyError: '1'
-Format errors: 2
-*** FAILED *** with 2 errors
+[Line 5 Sent id-with-extra-0]: [L1 Format invalid-word-id] Unexpected ID format '01'.
+Format errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\invalid-deps-id.conllu
@@ -152,23 +140,9 @@ Syntax errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\invalid-range-format.conllu
-[Line 5 Sent invalid-range-format]: [L1 Format invalid-word-id] Unexpected ID format '2-X'.
-[Line 11 Sent invalid-range-format]: [L0 Format exception] Exception caught!
-Traceback (most recent call last):
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3876, in <module>
-    validate(inp, args)
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3739, in validate
-    tree = build_tree_udapi(all_lines)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 1914, in build_tree_udapi
-    root = conllu_reader.read_tree_from_lines(lines)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\zeman\Documents\lingvistika-projekty\udapi-python\udapi\block\read\conllu.py", line 225, in read_tree_from_lines
-    words = nodes[int(range_start):int(range_end) + 1]
-                                   ^^^^^^^^^^^^^^
-ValueError: invalid literal for int() with base 10: 'X'
-Format errors: 2
-*** FAILED *** with 2 errors
+[Line 11 Sent invalid-range-format]: [L1 Format invalid-word-id] Unexpected ID format '2-X'.
+Format errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\invalid-range.conllu
@@ -246,20 +220,9 @@ Format errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misplaced-comment-end.conllu
-[Line 12 Sent misplaced-comment-end]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
-[Line 12 Sent misplaced-comment-end]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
-[Line 4 Sent misplaced-comment-end]: [L2 Metadata missing-text] Missing the text attribute.
-[Line 12 Sent misplaced-comment-end]: [L0 Format exception] Exception caught!
-Traceback (most recent call last):
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3876, in <module>
-    validate(inp, args)
-  File "C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\..\validate.py", line 3756, in validate
-    nodes = tree.descendants_and_empty
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'descendants_and_empty'
-Format errors: 2
-Metadata errors: 2
-*** FAILED *** with 4 errors
+[Line 12 Sent misplaced-comment-end]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+Format errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\misplaced-comment-mid.conllu
@@ -365,9 +328,9 @@ Format errors: 3
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\nonvalid\trailing-tab.conllu
-[Line 4 Sent trailing-tab]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The contents of the columns will not be checked.
+[Line 4 Sent trailing-tab]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
 [Line 5 Sent trailing-tab]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 5 Sent trailing-tab]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
+[Line 5 Sent trailing-tab]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 Format errors: 3
 *** FAILED *** with 3 errors
 

@@ -1,0 +1,8 @@
+# sent_id = non-proj
+# text = A B , C
+# This is invalid on level 3 because the comma is attached nonprojectively.
+1	A	A	NOUN	_	_	2	nsubj	_	_
+2	B	B	VERB	_	_	0	root	_	_
+3	,	,	PUNCT	_	_	1	punct	_	_
+4	C	C	ADV	_	_	2	advmod	_	_
+
