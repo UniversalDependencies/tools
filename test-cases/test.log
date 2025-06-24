@@ -170,17 +170,15 @@ Morpho errors: 1
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-postag-in-empty.conllu
-[Line 5 Sent lowercase-postag-in-empty]: [L2 Morpho invalid-upos] Invalid UPOS value 'verb'.
 [Line 5 Sent lowercase-postag-in-empty]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'verb'.
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-postag.conllu
-[Line 4 Sent lowercase-postag]: [L2 Morpho invalid-upos] Invalid UPOS value 'noun'.
 [Line 4 Sent lowercase-postag]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'noun'.
-Morpho errors: 2
-*** FAILED *** with 2 errors
+Morpho errors: 1
+*** FAILED *** with 1 errors
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-value.conllu
@@ -347,7 +345,7 @@ Unicode errors: 2
 
 --------------------------------------------------------------------------------
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\uppercase-deprel.conllu
-[Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'.
+[Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
 [Line 5 Sent uppercase-deprel]: [L2 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
 
 The following 37 relations are currently permitted in language [ud]:

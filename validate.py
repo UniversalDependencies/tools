@@ -1418,30 +1418,6 @@ def deps_list(cols):
 
 
 
-def validate_cols_level2(cols, line, args):
-    """
-    All tests that can run on a single line. Done as soon as the line is read,
-    called from next_sentence() if level>1.
-
-    Parameters
-    ----------
-    cols : list
-        The values of the columns on the current node / token line.
-    line : int
-        Number of the line where the node occurs in the file.
-    """
-    # Multiword tokens and empty nodes can or must have certain fields empty.
-    if is_multiword_token(cols):
-        validate_mwt_empty_vals(cols, line)
-    if is_empty_node(cols):
-        validate_empty_node_empty_vals(cols, line) # level 2
-    if is_word(cols) or is_empty_node(cols):
-        validate_character_constraints(cols, line) # level 2
-        validate_upos(cols, line) # level 2
-        validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
-
-
-
 def validate_mwt_empty_vals(cols, line):
     """
     Checks that a multi-word token has _ empty values in all fields except MISC.
@@ -1465,11 +1441,13 @@ def validate_mwt_empty_vals(cols, line):
             m = crex.mwtid.fullmatch(cols[ID])
             state.mwt_typo_span_end = m.group(2)
         elif cols[col_idx] != '_':
-            testlevel = 2
-            testclass = 'Format'
-            testid = 'mwt-nonempty-field'
-            testmessage = f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                lineno=line,
+                level=2,
+                testclass='Format',
+                testid='mwt-nonempty-field',
+                message=f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
+            ).report()
 
 
 
@@ -1489,11 +1467,13 @@ def validate_empty_node_empty_vals(cols, line):
     assert is_empty_node(cols), 'internal error'
     for col_idx in (HEAD, DEPREL):
         if cols[col_idx]!= '_':
-            testlevel = 2
-            testclass = 'Format'
-            testid = 'mwt-nonempty-field'
-            testmessage = f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                lineno=line,
+                level=2,
+                testclass='Format',
+                testid='mwt-nonempty-field',
+                message=f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
+            ).report()
 
 
 
@@ -1509,33 +1489,34 @@ def validate_character_constraints(cols, line):
     line : int
         Number of the line where the node occurs in the file.
     """
-    testlevel = 2
+    Incident.default_level = 2
+    Incident.default_lineno = line
     if is_multiword_token(cols):
         return
-    if not (crex.upos.fullmatch(cols[UPOS]) or (is_empty_node(cols) and cols[UPOS] == '_')):
-        testclass = 'Morpho'
-        testid = 'invalid-upos'
-        testmessage = f"Invalid UPOS value '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+    # Do not test the regular expression crex.upos here. We will test UPOS
+    # directly against the list of known tags. That is a level 2 test, too.
     if not (crex.deprel.fullmatch(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
-        testclass = 'Syntax'
-        testid = 'invalid-deprel'
-        testmessage = f"Invalid DEPREL value '{cols[DEPREL]}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+        Incident(
+            testclass='Syntax',
+            testid='invalid-deprel',
+            message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
+        ).report()
     try:
         deps_list(cols)
     except ValueError:
-        testclass = 'Enhanced'
-        testid = 'invalid-deps'
-        testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+        Incident(
+            testclass='Enhanced',
+            testid='invalid-deps',
+            message=f"Failed to parse DEPS: '{cols[DEPS]}'."
+        ).report()
         return
     if any(deprel for head, deprel in deps_list(cols)
         if not crex.edeprel.fullmatch(deprel)):
-            testclass = 'Enhanced'
-            testid = 'invalid-edeprel'
-            testmessage = f"Invalid enhanced relation type: '{cols[DEPS]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testclass='Enhanced',
+                testid='invalid-edeprel',
+                message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
+            ).report()
 
 
 
@@ -1553,12 +1534,17 @@ def validate_upos(cols, line):
     global data
     if is_empty_node(cols) and cols[UPOS] == '_':
         return
-    if cols[UPOS] not in data.upos:
-        testlevel = 2
-        testclass = 'Morpho'
-        testid = 'unknown-upos'
-        testmessage = f"Unknown UPOS tag: '{cols[UPOS]}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+    # Just in case, we still match UPOS against the regular expression that
+    # checks general character constraints. However, the list of UPOS, loaded
+    # from a JSON file, should conform to the regular expression.
+    if not crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in data.upos:
+        Incident(
+            lineno=line,
+            level=2,
+            testclass='Morpho',
+            testid='unknown-upos',
+            message=f"Unknown UPOS tag: '{cols[UPOS]}'."
+        ).report()
 
 
 
@@ -1575,24 +1561,27 @@ def validate_features_level2(cols, line, args):
     line : int
         Number of the line where the node occurs in the file.
     """
-    testclass = 'Morpho'
-    testlevel = 2
+    Incident.default_lineno = line
+    Incident.default_level = 2
+    Incident.default_testclass = 'Morpho'
     feats = cols[FEATS]
     if feats == '_':
         return True
     features_present()
     feat_list = feats.split('|')
     if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
-        testid = 'unsorted-features'
-        testmessage = f"Morphological features must be sorted: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+        Incident(
+            testid='unsorted-features',
+            message=f"Morphological features must be sorted: '{feats}'."
+        ).report()
     attr_set = set() # I'll gather the set of features here to check later that none is repeated.
     for f in feat_list:
         match = crex.featval.fullmatch(f)
         if match is None:
-            testid = 'invalid-feature'
-            testmessage = f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='invalid-feature',
+                message=f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
+            ).report()
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
         else:
             # Check that the values are sorted as well
@@ -1600,23 +1589,27 @@ def validate_features_level2(cols, line, args):
             attr_set.add(attr)
             values = match.group(2).split(',')
             if len(values) != len(set(values)):
-                testid = 'repeated-feature-value'
-                testmessage = f"Repeated feature values are disallowed: '{feats}'"
-                warn(testmessage, testclass, testlevel, testid, lineno=line)
+                Incident(
+                    testid='repeated-feature-value',
+                    message=f"Repeated feature values are disallowed: '{feats}'"
+                ).report()
             if [v.lower() for v in values] != sorted(v.lower() for v in values):
-                testid = 'unsorted-feature-values'
-                testmessage = f"If a feature has multiple values, these must be sorted: '{f}'"
-                warn(testmessage, testclass, testlevel, testid, lineno=line)
+                Incident(
+                    testid='unsorted-feature-values',
+                    message=f"If a feature has multiple values, these must be sorted: '{f}'"
+                ).report()
             for v in values:
                 if not crex.val.fullmatch(v):
-                    testid = 'invalid-feature-value'
-                    testmessage = f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
-                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+                    Incident(
+                        testid='invalid-feature-value',
+                        message=f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
+                    ).report()
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
     if len(attr_set) != len(feat_list):
-        testid = 'repeated-feature'
-        testmessage = f"Repeated features are disallowed: '{feats}'."
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+        Incident(
+            testid='repeated-feature',
+            message=f"Repeated features are disallowed: '{feats}'."
+        ).report()
 
 
 
@@ -1662,7 +1655,9 @@ def validate_deps(cols, line):
         Number of the line where the node occurs in the file.
     """
     global state
-    testlevel = 2
+    Incident.default_lineno = line
+    Incident.default_level = 2
+    Incident.default_testclass = 'Format'
     if not (is_word(cols) or is_empty_node(cols)):
         return
     # Remember whether there is at least one difference between the basic
@@ -1672,27 +1667,29 @@ def validate_deps(cols, line):
     # We already know that the contents of DEPS is parsable (deps_list() was
     # first called from validate_id_references() and the head indices are OK).
     deps = deps_list(cols)
+    ###!!! Float will not work if there are 10 empty nodes between the same two
+    ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
     heads = [float(h) for h, d in deps]
     if heads != sorted(heads):
-        testclass = 'Format'
-        testid = 'unsorted-deps'
-        testmessage = f"DEPS not sorted by head index: '{cols[DEPS]}'"
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+        Incident(
+            testid='unsorted-deps',
+            message=f"DEPS not sorted by head index: '{cols[DEPS]}'"
+        ).report()
     else:
         lasth = None
         lastd = None
         for h, d in deps:
             if h == lasth:
                 if d < lastd:
-                    testclass = 'Format'
-                    testid = 'unsorted-deps-2'
-                    testmessage = f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
-                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+                    Incident(
+                        testid='unsorted-deps-2',
+                        message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
+                    ).report()
                 elif d == lastd:
-                    testclass = 'Format'
-                    testid = 'repeated-deps'
-                    testmessage = f"DEPS contain multiple instances of the same relation '{h}:{d}'"
-                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+                    Incident(
+                        testid='repeated-deps',
+                        message=f"DEPS contain multiple instances of the same relation '{h}:{d}'"
+                    ).report()
             lasth = h
             lastd = d
     try:
@@ -1701,10 +1698,11 @@ def validate_deps(cols, line):
         # This error has been reported previously.
         return
     if id_ in heads:
-        testclass = 'Enhanced'
-        testid = 'deps-self-loop'
-        testmessage = f"Self-loop in DEPS for '{cols[ID]}'"
-        warn(testmessage, testclass, testlevel, testid, lineno=line)
+        Incident(
+            testclass='Enhanced',
+            testid='deps-self-loop',
+            message=f"Self-loop in DEPS for '{cols[ID]}'"
+        ).report()
 
 
 
@@ -1727,7 +1725,9 @@ def validate_misc(cols, line):
     line : int
         Number of the line where the node occurs in the file.
     """
-    testlevel = 2
+    Incident.default_lineno = line
+    Incident.default_level = 2
+    Incident.default_testclass = 'Warning'
     if cols[MISC] == '_':
         return
     misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
@@ -1735,53 +1735,54 @@ def validate_misc(cols, line):
     for ma in misc:
         if ma[0] == '':
             if len(ma) == 1:
-                testclass = 'Warning' # warning only
-                testid = 'empty-misc'
-                testmessage = "Empty attribute in MISC; possible misinterpreted vertical bar?"
-                warn(testmessage, testclass, testlevel, testid, lineno=line)
+                Incident(
+                    testid='empty-misc',
+                    message="Empty attribute in MISC; possible misinterpreted vertical bar?"
+                ).report()
             else:
-                testclass = 'Warning' # warning only
-                testid = 'empty-misc-key'
-                testmessage = f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
-                warn(testmessage, testclass, testlevel, testid, lineno=line)
+                Incident(
+                    testid='empty-misc-key',
+                    message=f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
+                ).report()
         # We do not warn about MISC items that do not contain '='.
         # But the remaining error messages below assume that ma[1] exists.
         if len(ma) == 1:
             ma.append('')
         if re.match(r"^\s", ma[0]):
-            testclass = 'Warning' # warning only
-            testid = 'misc-extra-space'
-            testmessage = f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='misc-extra-space',
+                message=f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
+            ).report()
         elif re.search(r"\s$", ma[0]):
-            testclass = 'Warning' # warning only
-            testid = 'misc-extra-space'
-            testmessage = f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='misc-extra-space',
+                message=f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
+            ).report()
         elif re.match(r"^\s", ma[1]):
-            testclass = 'Warning' # warning only
-            testid = 'misc-extra-space'
-            testmessage = f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='misc-extra-space',
+                message=f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
+            ).report()
         elif re.search(r"\s$", ma[1]):
-            testclass = 'Warning' # warning only
-            testid = 'misc-extra-space'
-            testmessage = f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='misc-extra-space',
+                message=f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
+            ).report()
         if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
             mamap.setdefault(ma[0], 0)
             mamap[ma[0]] = mamap[ma[0]] + 1
         elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$", ma[0], re.IGNORECASE):
-            testclass = 'Warning' # warning only
-            testid = 'misc-attr-typo'
-            testmessage = f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='misc-attr-typo',
+                message=f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
+            ).report()
     for a in list(mamap):
         if mamap[a] > 1:
-            testclass = 'Format' # this one is real error
-            testid = 'repeated-misc'
-            testmessage = f"MISC attribute '{a}' not supposed to occur twice"
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testclass='Format', # this one is real error
+                testid='repeated-misc',
+                message=f"MISC attribute '{a}' not supposed to occur twice"
+            ).report()
 
 
 
@@ -1807,7 +1808,8 @@ def validate_id_references(sentence):
     ok : bool
     """
     ok = True
-    testlevel = 2
+    Incident.default_level = 2
+    Incident.default_testclass = 'Format'
     word_tree = [cols for cols in sentence if is_word(cols) or is_empty_node(cols)]
     ids = set([cols[ID] for cols in word_tree])
     for cols in word_tree:
@@ -1816,40 +1818,42 @@ def validate_id_references(sentence):
         if not is_empty_node(cols):
             match = crex.head.fullmatch(cols[HEAD])
             if match is None:
-                testclass = 'Format'
-                testid = 'invalid-head'
-                testmessage = f"Invalid HEAD: '{cols[HEAD]}'."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='invalid-head',
+                    message=f"Invalid HEAD: '{cols[HEAD]}'."
+                ).report()
                 ok = False
             if not (cols[HEAD] in ids or cols[HEAD] == '0'):
-                testclass = 'Syntax'
-                testid = 'unknown-head'
-                testmessage = f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testclass='Syntax',
+                    testid='unknown-head',
+                    message=f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
+                ).report()
                 ok = False
         try:
             deps = deps_list(cols)
         except ValueError:
             # Similar errors have probably been reported earlier.
-            testclass = 'Format'
-            testid = 'invalid-deps'
-            testmessage = f"Failed to parse DEPS: '{cols[DEPS]}'."
-            warn(testmessage, testclass, testlevel, testid)
+            Incident(
+                testid='invalid-deps',
+                message=f"Failed to parse DEPS: '{cols[DEPS]}'."
+            ).report()
             ok = False
             continue
         for head, deprel in deps:
             match = crex.ehead.fullmatch(head)
             if match is None:
-                testclass = 'Format'
-                testid = 'invalid-ehead'
-                testmessage = f"Invalid enhanced head reference: '{head}'."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testid='invalid-ehead',
+                    message=f"Invalid enhanced head reference: '{head}'."
+                ).report()
                 ok = False
             if not (head in ids or head == '0'):
-                testclass = 'Enhanced'
-                testid = 'unknown-ehead'
-                testmessage = f"Undefined enhanced head reference (no such ID): '{head}'."
-                warn(testmessage, testclass, testlevel, testid)
+                Incident(
+                    testclass='Enhanced',
+                    testid='unknown-ehead',
+                    message=f"Undefined enhanced head reference (no such ID): '{head}'."
+                ).report()
                 ok = False
     return ok
 
@@ -1884,8 +1888,8 @@ def validate_tree(sentence):
     ok : bool
     """
     global state
-    testlevel = 2
-    testclass = 'Syntax'
+    Incident.default_level = 2
+    Incident.default_testclass = 'Syntax'
     node_line = state.sentence_line - 1
     children = {} # int(node id) -> set of children
     n_words = 0
@@ -1900,9 +1904,11 @@ def validate_tree(sentence):
         id_ = int(cols[ID])
         head = int(cols[HEAD])
         if head == id_:
-            testid = 'head-self-loop'
-            testmessage = f'HEAD == ID for {cols[ID]}'
-            warn(testmessage, testclass, testlevel, testid, lineno=node_line)
+            Incident(
+                lineno=node_line,
+                testid='head-self-loop',
+                message=f'HEAD == ID for {cols[ID]}'
+            ).report()
             return False
         # Incrementally build the set of children of every node.
         children.setdefault(head, set()).add(id_)
@@ -1910,9 +1916,11 @@ def validate_tree(sentence):
     # Check that there is just one node with the root relation.
     children_0 = sorted(children.get(0, []))
     if len(children_0) > 1 and args.single_root:
-        testid = 'multiple-roots'
-        testmessage = f"Multiple root words: {children_0}"
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        Incident(
+            lineno=-1,
+            testid='multiple-roots',
+            message=f"Multiple root words: {children_0}"
+        ).report()
         return False
     # Return None if there are any cycles. Otherwise we could not later ask
     # Udapi to built a data structure representing the tree.
@@ -1930,10 +1938,12 @@ def validate_tree(sentence):
             nodes.append(child)
     unreachable = set(word_ids) - projection
     if unreachable:
-        testid = 'non-tree'
         str_unreachable = ','.join(str(w) for w in sorted(unreachable))
-        testmessage = f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
-        warn(testmessage, testclass, testlevel, testid, lineno=-1)
+        Incident(
+            lineno=-1,
+            testid='non-tree',
+            message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
+        ).report()
         return False
     return True
 
@@ -1952,30 +1962,34 @@ def validate_root(node, line):
     line : int
         Number of the line where the node occurs in the file.
     """
-    testlevel = 2
+    Incident.default_lineno = line
+    Incident.default_level = 2
+    Incident.default_testclass = 'Syntax'
     if not node.is_empty():
         if node.parent.ord == 0 and node.udeprel != 'root':
-            testclass = 'Syntax'
-            testid = '0-is-not-root'
-            testmessage = "DEPREL must be 'root' if HEAD is 0."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='0-is-not-root',
+                message="DEPREL must be 'root' if HEAD is 0."
+            ).report()
         if node.parent.ord != 0 and node.udeprel == 'root':
-            testclass = 'Syntax'
-            testid = 'root-is-not-0'
-            testmessage = "DEPREL cannot be 'root' if HEAD is not 0."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testid='root-is-not-0',
+                message="DEPREL cannot be 'root' if HEAD is not 0."
+            ).report()
     # In the enhanced graph, test both regular and empty roots.
     for edep in node.deps:
         if edep['parent'].ord == 0 and lspec2ud(edep['deprel']) != 'root':
-            testclass = 'Enhanced'
-            testid = 'enhanced-0-is-not-root'
-            testmessage = "Enhanced relation type must be 'root' if head is 0."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testclass='Enhanced',
+                testid='enhanced-0-is-not-root',
+                message="Enhanced relation type must be 'root' if head is 0."
+            ).report()
         if edep['parent'].ord != 0 and lspec2ud(edep['deprel']) == 'root':
-            testclass = 'Enhanced'
-            testid = 'enhanced-root-is-not-0'
-            testmessage = "Enhanced relation type cannot be 'root' if head is not 0."
-            warn(testmessage, testclass, testlevel, testid, lineno=line)
+            Incident(
+                testclass='Enhanced',
+                testid='enhanced-root-is-not-0',
+                message="Enhanced relation type cannot be 'root' if head is not 0."
+            ).report()
 
 
 
@@ -2003,22 +2017,25 @@ def validate_deps_all_or_none(sentence):
     # However, we should not allow that one sentence has a connected egraph and another
     # has no enhanced dependencies. Such inconsistency could come as a nasty surprise
     # to the users.
-    testlevel = 2
-    testclass = 'Enhanced'
+    Incident.default_lineno = state.sentence_line
+    Incident.default_level = 2
+    Incident.default_testclass = 'Enhanced'
     if egraph_exists:
         if not state.seen_enhanced_graph:
             state.seen_enhanced_graph = state.sentence_line
             if state.seen_tree_without_enhanced_graph:
-                testid = 'edeps-only-sometimes'
-                testmessage = f"Enhanced graph must be empty because we saw empty DEPS on line {state.seen_tree_without_enhanced_graph}"
-                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
+                Incident(
+                    testid='edeps-only-sometimes',
+                    message=f"Enhanced graph must be empty because we saw empty DEPS on line {state.seen_tree_without_enhanced_graph}"
+                ).report()
     else:
         if not state.seen_tree_without_enhanced_graph:
             state.seen_tree_without_enhanced_graph = state.sentence_line
             if state.seen_enhanced_graph:
-                testid = 'edeps-only-sometimes'
-                testmessage = f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
-                warn(testmessage, testclass, testlevel, testid, lineno=state.sentence_line)
+                Incident(
+                    testid='edeps-only-sometimes',
+                    message=f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
+                ).report()
 
 
 
@@ -2038,19 +2055,10 @@ def validate_egraph_connected(nodes, linenos):
         occurs.
     """
     global state
-    testlevel = 2
-    testclass = 'Enhanced'
-    node_line = state.sentence_line - 1
     egraph_exists = False # enhanced deps are optional
-    rootnode = {
-        'children': set()
-    }
-    egraph = {
-        '0': rootnode
-    } # structure described above
+    egraph = {'0': {'children': set()}}
     nodeids = set()
     for node in nodes:
-        node_line += 1
         parents = [x['parent'] for x in node.deps]
         if node.is_empty() or len(parents) > 0:
             egraph_exists = True
@@ -2083,10 +2091,13 @@ def validate_egraph_connected(nodes, linenos):
     unreachable = nodeids - projection
     if unreachable:
         sur = sorted(unreachable)
-        lineno = linenos[sur[0]]
-        testid = 'unconnected-egraph'
-        testmessage = f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
-        warn(testmessage, testclass, testlevel, testid, lineno=lineno)
+        Incident(
+            lineno=linenos[sur[0]],
+            level=2,
+            testclass='Enhanced',
+            testid='unconnected-egraph',
+            message=f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
+        ).report()
         return None
 
 
@@ -3819,7 +3830,15 @@ def validate(inp, args):
             line = state.sentence_line - 1
             for cols in sentence:
                 line += 1
-                validate_cols_level2(cols, line, args)
+                # Multiword tokens and empty nodes can or must have certain fields empty.
+                if is_multiword_token(cols):
+                    validate_mwt_empty_vals(cols, line)
+                if is_empty_node(cols):
+                    validate_empty_node_empty_vals(cols, line) # level 2
+                if is_word(cols) or is_empty_node(cols):
+                    validate_character_constraints(cols, line) # level 2
+                    validate_upos(cols, line) # level 2
+                    validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
                 validate_deps(cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                 validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
             nodes = tree.descendants_and_empty
