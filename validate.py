@@ -1627,11 +1627,7 @@ def features_present():
         state.seen_morpho_feature = state.current_line
         for testid in state.delayed_feature_errors:
             for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                warn(state.delayed_feature_errors[testid]['message'],
-                     state.delayed_feature_errors[testid]['class'],
-                     state.delayed_feature_errors[testid]['level'],
-                     testid, nodeid=occurrence['nodeid'],
-                     lineno=occurrence['lineno'])
+                occurrence.report()
 
 
 
@@ -2108,7 +2104,7 @@ def validate_egraph_connected(nodes, linenos):
 
 
 
-def validate_required_feature(feats, required_feature, required_value, testmessage, testlevel, testid, nodeid, lineno):
+def validate_required_feature(feats, required_feature, required_value, incident):
     """
     In general, the annotation of morphological features is optional, although
     highly encouraged. However, if the treebank does have features, then certain
@@ -2117,10 +2113,6 @@ def validate_required_feature(feats, required_feature, required_value, testmessa
     has been already encountered. Otherwise the error will be remembered and it
     may be reported afterwards if any feature is encountered later.
 
-    feats ... a udapi.core.feats.Feats (udapi.core.dualdict.DualDict) object
-    required_feature ... the feature name (string)
-    required_value ... the feature value (string; multivalues are not supported)
-
     Parameters
     ----------
     feats : udapi.core.dualdict.DualDict object
@@ -2128,31 +2120,23 @@ def validate_required_feature(feats, required_feature, required_value, testmessa
     required_feature : str
         The name of the required feature.
     required_value : str
-        The required value of the feature.
-    testmessage : str
-        The error message if the feature is missing or has a wrong value.
-    testlevel : int
-        The error level.
-    testid : str
-        The error id.
-    nodeid : str
-        The ID of the current node.
-    lineno : int
-        The 1-based index of the line where the node occurs.
+        The required value of the feature. Multivalues are not supported (they
+        are just a string value containing one or more commas).
+    incident : Incident object
+        The message that should be printed if the error is confirmed.
     """
     global state
-    testclass = 'Morpho'
     # We may want to check that any value of a given feature is present,
     # or even that a particular value is present. Currently we only test
     # Typo=Yes, i.e., the latter case. The other options will be added
     # when the need arises.
     if feats[required_feature] != required_value:
         if state.seen_morpho_feature:
-            warn(testmessage, testclass, testlevel, testid, nodeid=nodeid, lineno=lineno)
+            incident.report()
         else:
             if not testid in state.delayed_feature_errors:
-                state.delayed_feature_errors[testid] = {'class': testclass, 'level': testlevel, 'message': testmessage, 'occurrences': []}
-            state.delayed_feature_errors[testid]['occurrences'].append({'nodeid': nodeid, 'lineno': lineno})
+                state.delayed_feature_errors[incident.testid] = {'occurrences': []}
+            state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 
 
 
@@ -2169,8 +2153,9 @@ def validate_upos_vs_deprel(node, lineno):
     lineno : int
         The 1-based index of the line where the node occurs.
     """
-    testlevel = 3
-    testclass = 'Syntax'
+    Incident.default_lineno = lineno
+    Incident.default_level = 3
+    Incident.default_testclass = 'Syntax'
     # Occasionally a word may be marked by the feature ExtPos as acting as
     # a part of speech different from its usual one (which is given in UPOS).
     # Typical examples are words that head fixed multiword expressions (the
@@ -2188,10 +2173,12 @@ def validate_upos_vs_deprel(node, lineno):
     # even if it does not need it to pass the tests in this function.
     if 'fixed' in childrels and not node.feats['ExtPos']:
         fixed_forms = [node.form] + [x.form for x in node.children if x.udeprel == 'fixed']
-        testid = 'fixed-without-extpos'
         str_fixed_forms = ' '.join(fixed_forms)
-        testmessage = f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
-        warn(testmessage, 'Warning', testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testclass='Warning',
+            testid='fixed-without-extpos',
+            message=f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
+        ).report()
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -2202,17 +2189,19 @@ def validate_upos_vs_deprel(node, lineno):
     #    warn(f"Node %s: '%s' should be a nominal but it is '%s'" % (cols[ID], deprel, upos), 'Syntax', lineno=-1)
     # Determiner can alternate with a pronoun.
     if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
-        testid = 'rel-upos-det'
-        testmessage = f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-det',
+            message=f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
     # https://github.com/UniversalDependencies/docs/issues/596,
     # we concluded that the validator will tolerate them.
     if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", upos):
-        testid = 'rel-upos-nummod'
-        testmessage = f"'nummod' should be 'NUM' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-nummod',
+            message=f"'nummod' should be 'NUM' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
@@ -2220,57 +2209,71 @@ def validate_upos_vs_deprel(node, lineno):
     # I am not sure whether advmod is the best relation for them but the alternative
     # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
     if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
-        testid = 'rel-upos-advmod'
-        testmessage = f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-advmod',
+            message=f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
-        testid = 'rel-upos-expl'
-        testmessage = f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-expl',
+            message=f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
-        testid = 'rel-upos-aux'
-        testmessage = f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-aux',
+            message=f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
-        testid = 'rel-upos-cop'
-        testmessage = f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-cop',
+            message=f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
     # VERB: [en] including
     # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
     if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
-        testid = 'rel-upos-case'
-        testmessage = f"'case' should not be '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-case',
+            message=f"'case' should not be '{upos}' ('{formtl(node)}')"
+        ).report()
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
+    ###!!! In 2024 I wanted to re-enable the test because people could use the
+    ###!!! newly approved ExtPos feature to signal that "regarding" is acting
+    ###!!! as a function word, but Amir was opposed to the idea that ExtPos would
+    ###!!! now be required also for single-word expressions.
     if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
-        testid = 'rel-upos-mark'
-        testmessage = f"'mark' should not be '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-mark',
+            message=f"'mark' should not be '{upos}' ('{formtl(node)}')"
+        ).report()
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
-        testid = 'rel-upos-cc'
-        testmessage = f"'cc' should not be '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-cc',
+            message=f"'cc' should not be '{upos}' ('{formtl(node)}')"
+        ).report()
     if deprel == 'punct' and upos != 'PUNCT':
-        testid = 'rel-upos-punct'
-        testmessage = f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-punct',
+            message=f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(node)}')"
+        ).report()
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
-        testid = 'upos-rel-punct'
-        testmessage = f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{formtl(node)}')"
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='upos-rel-punct',
+            message=f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{formtl(node)}')"
+        ).report()
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
-        testid = 'rel-upos-fixed'
-        testmessage = "'fixed' should not be used for proper nouns ('{formtl(node)}')."
-        warn(testmessage, testclass, testlevel, testid, nodeid=node.ord, lineno=lineno)
+        Incident(
+            testid='rel-upos-fixed',
+            message=f"'fixed' should not be used for proper nouns ('{formtl(node)}')."
+        ).report()
 
 
 
@@ -2657,7 +2660,7 @@ def validate_goeswith_span(node, lineno):
         # required if the treebank does not have features at all.
         testid = 'goeswith-missing-typo'
         testmessage = "Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
-        validate_required_feature(node.feats, 'Typo', 'Yes', testmessage, testlevel, testid, node.ord, lineno)
+        validate_required_feature(node.feats, 'Typo', 'Yes', Incident(level=testlevel, testclass='Morpho', testid=testid, message=testmessage, nodeid=node.ord, lineno=lineno))
 
 
 

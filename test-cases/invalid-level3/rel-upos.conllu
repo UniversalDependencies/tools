@@ -1,0 +1,275 @@
+# Various level 3 tests on the compatibility between UPOS tags and DEPREL types.
+# Node 12 invalid: NUM should be nummod, det should be DET.
+# source = nl_alpino dev
+# sent_id = WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4
+# text = Hij loste starter Patrick Beljaards na 5 2/3 innings af.
+# text_en = He relieved starter Patrick Beljaards after 5 2/3 innings.
+1	Hij	hij	PRON	VNW|pers|pron|nomin|vol|3|ev|masc	Case=Nom|Person=3|PronType=Prs	2	nsubj	_	_
+2	loste	af_lossen	VERB	WW|pv|verl|ev	Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	_
+3	starter	starter	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	2	obj	_	_
+4	Patrick	Patrick	PROPN	SPEC|deeleigen	_	3	appos	_	_
+5	Beljaards	Beljaards	PROPN	SPEC|deeleigen	_	4	flat	_	_
+6	na	na	ADP	VZ|init	_	9	case	_	_
+7	5	5	NUM	TW|hoofd|prenom|stan	_	9	det	_	_
+8	2/3	2/3	DET	SPEC|symb	_	7	fixed	_	_
+9	innings	inning	NOUN	N|soort|mv|basis	Number=Plur	2	obl	_	_
+10	af	af	ADP	VZ|fin	_	2	compound:prt	_	SpaceAfter=No
+11	.	.	PUNCT	LET	_	2	punct	_	_
+
+# Nodes 17 and 27 invalid: nummod should be NUM, the UPOS column is actually correct, but it is overridden by ExtPos=PROPN in FEATS.
+# text = Inauguram no Lagar do Azeite, em Oeiras, pelas 21h30, o X Salão Livre de Humor / Oeiras 97 e o VIII Festival Internacional de Humor.
+# sent_id = CP891-2
+# source = pt_bosque dev
+1	Inauguram	inaugurar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+2-3	no	_	_	_	_	_	_	_	_
+2	em	em	ADP	_	_	4	case	_	_
+3	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	_
+4	Lagar	Lagar	PROPN	_	Gender=Masc|Number=Sing	1	obl	_	_
+5-6	do	_	_	_	_	_	_	_	_
+5	de	de	ADP	_	_	7	case	_	_
+6	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	Azeite	Azeite	PROPN	_	Number=Sing	4	nmod	_	SpaceAfter=No
+8	,	,	PUNCT	_	_	10	punct	_	_
+9	em	em	ADP	_	_	10	case	_	_
+10	Oeiras	Oeiras	PROPN	_	Gender=Fem|Number=Sing	4	nmod	_	SpaceAfter=No
+11	,	,	PUNCT	_	_	10	punct	_	_
+12-13	pelas	_	_	_	_	_	_	_	_
+12	por	por	ADP	_	_	14	case	_	_
+13	as	o	DET	_	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	14	det	_	_
+14	21h30	21h30	NOUN	_	Gender=Fem|Number=Plur	1	obl	_	SpaceAfter=No
+15	,	,	PUNCT	_	_	18	punct	_	_
+16	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	18	det	_	_
+17	X	X	NUM	_	ExtPos=PROPN|Gender=Masc|Number=Sing	18	nummod	_	_
+18	Salão	salão	NOUN	_	Gender=Masc|Number=Sing	1	obl	_	_
+19	Livre	livre	ADJ	_	Gender=Masc|Number=Sing	18	amod	_	_
+20	de	de	ADP	_	_	21	case	_	_
+21	Humor	Humor	PROPN	_	Number=Sing	18	nmod	_	_
+22	/	/	PUNCT	_	_	23	punct	_	_
+23	Oeiras	Oeiras	PROPN	_	ExtPos=PROPN|Number=Sing	18	conj	_	_
+24	97	97	NUM	_	Number=Sing	23	nummod	_	_
+25	e	e	CCONJ	_	_	28	cc	_	_
+26	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	28	det	_	_
+27	VIII	VIII	NUM	_	ExtPos=PROPN|Gender=Masc|Number=Sing	28	nummod	_	_
+28	Festival	festival	NOUN	_	Gender=Masc|Number=Sing	18	conj	_	_
+29	Internacional	internacional	ADJ	_	Gender=Masc|Number=Sing	28	amod	_	_
+30	de	de	ADP	_	_	31	case	_	_
+31	Humor	Humor	PROPN	_	Number=Sing	28	nmod	_	SpaceAfter=No
+32	.	.	PUNCT	_	_	1	punct	_	_
+
+# Node 1 invalid: advmod should be ADV but it is ADP. Perhaps it could be fixed with ExtPos=ADV, given that it is annotated as fixed expression "fir des".
+# sent_id = wikisample_Boarische-Grammatik-Konjunktiona_71
+# text = Fir des das'a su olt is, is'a nu guat banånd.
+# source = bar_maibaam test
+1	Fir	_	ADP	_	_	6	advmod	_	GermanLemma=für
+2	des	_	DET	_	_	1	fixed	_	GermanLemma=das
+3	das	_	SCONJ	_	_	6	mark	_	GermanLemma=dass|SpaceAfter=No
+4	'a	_	PRON	_	_	6	nsubj	_	GermanLemma=er
+5	su	_	ADV	_	_	6	advmod	_	GermanLemma=so
+6	olt	_	ADJ	_	_	13	advcl	_	GermanLemma=alt
+7	is	_	AUX	_	_	6	cop	_	GermanLemma=sein|SpaceAfter=No
+8	,	_	PUNCT	_	_	6	punct	_	GermanLemma=,
+9	is	_	AUX	_	_	13	cop	_	GermanLemma=sein|SpaceAfter=No
+10	'a	_	PRON	_	_	13	nsubj	_	GermanLemma=er
+11	nu	_	ADV	_	_	13	advmod	_	GermanLemma=noch
+12	guat	_	ADJ	_	_	13	advmod	_	GermanLemma=gut
+13	banånd	_	ADV	_	_	0	root	_	GermanLemma=beieinander|SpaceAfter=No
+14	.	_	PUNCT	_	_	13	punct	_	GermanLemma=.
+
+# Node 3 invalid: expl should be PRON.
+# source = fy_frysk test
+# sent_id = 646
+# text = It liket der dus op, dat hamsters yn torpor guon skaaimerken ien en mien hawwe mei minsken mei de sykte fan Alzheimer
+# text_en = It therefore appears that hamsters in torpor share some characteristics with humans with Alzheimer's disease
+1	It	it	PRON	VNW|pers|pron|stan|red|3|ev|onz	Person=3|PronType=Prs	2	nsubj	_	_
+2	liket	lykje	AUX	WW|pv|tgw|met-t	Number=Sing|Tense=Pres|VerbForm=Fin	0	root	_	_
+3	der	der	ADV	VNW|aanw|adv-pron|stan|red|3|getal	Person=3|PronType=Dem	16	expl	_	_
+4	dus	dus	ADV	BW	_	2	advmod	_	_
+5	op	op	ADP	VZ|fin	_	16	case	_	SpaceAfter=No
+6	,	,	PUNCT	LET	_	5	punct	_	_
+7	dat	dat	SCONJ	VG|onder	_	16	mark	_	_
+8	hamsters	hamster	NOUN	N|soort|mv|basis	Number=Plur	16	nsubj	_	_
+9	yn	yn	ADP	VZ|init	_	10	case	_	_
+10	torpor	torpor	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	8	nmod	_	_
+11	guon	guon	DET	VNW|onbep|det|stan|prenom|met-e|rest	_	12	det	_	_
+12	skaaimerken	skaaimerk	NOUN	N|soort|mv|basis	Number=Plur	16	obj	_	_
+13	ien	ien	NUM	TW|hoofd|prenom|stan	_	16	obj	_	_
+14	en	en	CCONJ	VG|neven	_	15	cc	_	_
+15	mien	mien	ADJ	ADJ|vrij|basis|zonder	Degree=Pos	13	conj	_	_
+16	hawwe	hawwe	AUX	WW|pv|tgw|mv	Number=Plur|Tense=Pres|VerbForm=Fin	2	advcl	_	_
+17	mei	mei	ADP	VZ|init	_	18	case	_	_
+18	minsken	minske	NOUN	N|soort|mv|basis	Number=Plur	16	obl	_	_
+19	mei	mei	ADP	VZ|init	_	21	case	_	_
+20	de	de	DET	LID|bep|stan|rest	Definite=Def	21	det	_	_
+21	sykte	sykte	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	18	nmod	_	_
+22	fan	fan	ADP	VZ|init	_	23	case	_	_
+23	Alzheimer	Alzheimer	PROPN	N|eigen|ev|basis|zijd|stan	Gender=Com|Number=Sing	21	nmod	_	SpaceAfter=No
+
+# Node 2 invalid: If "have" is used as auxiliary, its UPOS must be AUX and not VERB.
+# sent_id = rel-upos-aux
+# text = I have eaten Chinese food .
+1	I	I	PRON	_	_	3	nsubj	_	_
+2	have	have	VERB	_	_	3	aux	_	_
+3	eaten	eat	VERB	_	_	0	root	_	_
+4	Chinese	Chinese	ADJ	_	_	5	amod	_	_
+5	food	food	NOUN	_	_	3	obj	_	_
+6	.	.	PUNCT	_	_	3	punct	_	_
+
+# Node 19 invalid: If "vere" is used as copula, its UPOS must be AUX and not VERB.
+# sent_id = 003966
+# text = denne skalleseien han e # han var e # eg veit ikkje å seie kor stor han kunne vere
+# source = no_nynorsklia dev
+1	denne	denne	DET	_	Gender=Masc|Number=Sing|PronType=Dem	2	det	_	_
+2	skalleseien	skallesei	NOUN	_	Definite=Def|Gender=Masc|Number=Sing	0	root	_	_
+3	han	han	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	6	reparandum	_	_
+4	e	e	X	_	_	6	discourse:filler	_	_
+5	#	#	PUNCT	_	_	4	punct	_	_
+6	han	han	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	_
+7	var	vere	AUX	_	Mood=Ind|Tense=Past|VerbForm=Fin	2	cop	_	_
+8	e	e	X	_	_	10	discourse:filler	_	_
+9	#	#	PUNCT	_	_	8	punct	_	_
+10	eg	eg	PRON	_	Animacy=Hum|Case=Nom|Number=Sing|Person=1|PronType=Prs	11	nsubj	_	_
+11	veit	vite	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	2	conj	_	_
+12	ikkje	ikkje	PART	_	Polarity=Neg	11	advmod	_	_
+13	å	å	PART	_	_	14	mark	_	_
+14	seie	seie	VERB	_	VerbForm=Inf	11	xcomp	_	_
+15	kor	kor	ADV	_	_	16	advmod	_	_
+16	stor	stor	ADJ	_	Definite=Ind|Degree=Pos|Number=Sing	14	xcomp	_	_
+17	han	han	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	16	nsubj	_	_
+18	kunne	kunne	AUX	_	Mood=Ind|Tense=Past|VerbForm=Fin	16	aux	_	_
+19	vere	vere	VERB	_	VerbForm=Inf	16	cop	_	_
+
+# Node 1 invalid: case should be ADP, not PRON. Perhaps it could be solved using ExtPos=ADP (there is fixed expression "tot i").
+# sent_id = CESS-CAT-A-20000925-15876-s8
+# text = Tot i les crítiques,
+# source = ca_ancora dev
+1	Tot	tot	PRON	sps00	Gender=Masc|Number=Sing|PronType=Tot	4	case	_	MWE=Tot_i|MWEPOS=ADP
+2	i	i	CCONJ	_	_	1	fixed	_	_
+3	les	el	DET	da0fp0	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	4	det	_	Entity=(CESSCATA2000092515876c19--2-CorefType:dx.token
+4	crítiques	crítica	NOUN	ncfp000	Gender=Fem|Number=Plur	0	root	_	SpaceAfter=No|Entity=CESSCATA2000092515876c19)
+5	,	,	PUNCT	fc	PunctType=Comm	4	punct	_	_
+
+# Node 19 invalid: mark should be SCONJ, not NOUN. Perhaps it could be solved using ExtPos=SCONJ (there is fixed expression "obzirom da").
+# sent_id = news.hr-s112
+# text = Herojske jedinice nisu nepobjedive kao što im to ime sugerira, a važno ih je što više koristiti obzirom da jednako kao i zapovjednik napreduju i bivaju ojačane na razne načine.
+# source hr_set train
+1	Herojske	herojski	ADJ	Agpfpny	Case=Nom|Definite=Def|Degree=Pos|Gender=Fem|Number=Plur	2	amod	_	_
+2	jedinice	jedinica	NOUN	Ncfpn	Case=Nom|Gender=Fem|Number=Plur	4	nsubj	_	_
+3	nisu	biti	AUX	Var3p	Mood=Ind|Number=Plur|Person=3|Polarity=Neg|Tense=Pres|VerbForm=Fin	4	cop	_	_
+4	nepobjedive	nepobjediv	ADJ	Agpfpny	Case=Nom|Definite=Def|Degree=Pos|Gender=Fem|Number=Plur	0	root	_	_
+5	kao	kao	SCONJ	Cs	_	10	mark	_	_
+6	što	što	SCONJ	Cs	_	5	fixed	_	_
+7	im	oni	PRON	Pp3-pd	Case=Dat|Number=Plur|Person=3|PronType=Prs	10	iobj	_	_
+8	to	taj	DET	Pd-nsa	Case=Acc|Gender=Neut|Number=Sing|PronType=Dem	10	obj	_	_
+9	ime	ime	NOUN	Ncnsn	Case=Nom|Gender=Neut|Number=Sing	10	nsubj	_	_
+10	sugerira	sugerirati	VERB	Vmr3s	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	advcl	_	SpaceAfter=No
+11	,	,	PUNCT	Z	_	13	punct	_	_
+12	a	a	CCONJ	Cc	_	13	cc	_	_
+13	važno	važan	ADJ	Agpnsny	Case=Nom|Definite=Def|Degree=Pos|Gender=Neut|Number=Sing	4	conj	_	_
+14	ih	oni	PRON	Pp3-pa	Case=Acc|Number=Plur|Person=3|PronType=Prs	13	obj	_	_
+15	je	biti	AUX	Var3s	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	13	cop	_	_
+16	što	što	PART	Qo	_	17	discourse	_	_
+17	više	mnogo	ADV	Rgc	Degree=Cmp	18	advmod	_	_
+18	koristiti	koristiti	VERB	Vmn	VerbForm=Inf	13	xcomp	_	_
+19	obzirom	obzir	NOUN	Ncmsi	Case=Ins|Gender=Masc|Number=Sing	25	mark	_	_
+20	da	da	SCONJ	Cs	_	19	fixed	_	_
+21	jednako	jednako	ADV	Rgp	Degree=Pos	22	advmod	_	_
+22	kao	kao	SCONJ	Cs	_	24	case	_	_
+23	i	i	PART	Qo	_	22	fixed	_	_
+24	zapovjednik	zapovjednik	NOUN	Ncmsn	Case=Nom|Gender=Masc|Number=Sing	25	obl	_	_
+25	napreduju	napredovati	VERB	Vmr3p	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	13	advcl	_	_
+26	i	i	CCONJ	Cc	_	27	cc	_	_
+27	bivaju	bivati	VERB	Vmr3p	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	25	conj	_	_
+28	ojačane	ojačati	ADJ	Appfpny	Case=Nom|Definite=Def|Degree=Pos|Gender=Fem|Number=Plur|VerbForm=Part|Voice=Pass	27	xcomp	_	_
+29	na	na	ADP	Sa	Case=Acc	31	case	_	_
+30	razne	razni	ADJ	Agpmpay	Case=Acc|Definite=Def|Degree=Pos|Gender=Masc|Number=Plur	31	amod	_	_
+31	načine	način	NOUN	Ncmpa	Case=Acc|Gender=Masc|Number=Plur	28	obl	_	SpaceAfter=No
+32	.	.	PUNCT	Z	_	4	punct	_	_
+
+# Node 14 invalid: cc should be CCONJ, not NOUN. Perhaps it could be solved using ExtPos=CCONJ (there is fixed expression "maraon le").
+# sent_id = 2509
+# text = Bóithre a chur ar fáil agus a chothabháil i mbaile Lios Tuathail, maraon le leorsoláthar d'áiseanna páirceála, bainistiú éifeachtúil a dhéanamh ar an trácht, agus na cosáin a fheabhsú.
+# text_en = To provide and maintain roads in the town of Listowel, including adequate provision of parking facilities, efficient traffic management, and improvement of footpaths.
+# source = ga_idt train
+1	Bóithre	bóthar	NOUN	Noun	Case=Nom|Gender=Masc|Number=Plur	0	root	_	_
+2	a	a	PART	Inf	PartType=Inf	3	mark	_	_
+3	chur	cur	NOUN	Noun	Form=Len|VerbForm=Inf	1	xcomp	_	_
+4	ar	ar	ADP	Simp	_	5	case	_	_
+5	fáil	fáil	NOUN	Noun	VerbForm=Inf	3	xcomp	_	_
+6	agus	agus	CCONJ	Coord	_	8	cc	_	_
+7	a	a	PART	Inf	PartType=Inf	8	mark	_	_
+8	chothabháil	cothabháil	NOUN	Noun	Form=Len|VerbForm=Inf	3	conj	_	_
+9	i	i	ADP	Simp	_	10	case	_	_
+10	mbaile	baile	NOUN	Noun	Case=Nom|Definite=Def|Form=Ecl|Gender=Masc|Number=Sing	3	obl	_	_
+11	Lios	lios	PROPN	Noun	Definite=Def|Gender=Masc|Number=Sing	10	nmod	_	NamedEntity=Yes
+12	Tuathail	Tuathail	PROPN	Noun	Case=Gen|Definite=Def|Gender=Masc|Number=Sing	11	nmod	_	NamedEntity=Yes|SpaceAfter=No
+13	,	,	PUNCT	Punct	_	14	punct	_	_
+14	maraon	aon	NOUN	Noun	Case=Nom|Gender=Masc|Number=Sing	16	cc	_	_
+15	le	le	ADP	Simp	_	14	fixed	_	_
+16	leorsoláthar	leorsholáthar	NOUN	Noun	Case=Nom|Gender=Masc|Number=Sing|Typo=Yes	3	conj	_	_
+17	d'	de	ADP	Simp	_	18	case	_	SpaceAfter=No
+18	áiseanna	áis	NOUN	Noun	Case=Nom|Gender=Fem|Number=Plur	16	nmod	_	_
+19	páirceála	páirceáil	NOUN	Noun	Case=Gen|VerbForm=Inf	18	nmod	_	SpaceAfter=No
+20	,	,	PUNCT	Punct	_	21	punct	_	_
+21	bainistiú	bainistiú	NOUN	Noun	VerbForm=Inf	24	obj	_	_
+22	éifeachtúil	éifeachtúil	ADJ	Adj	Degree=Pos	21	amod	_	_
+23	a	a	PART	Inf	PartType=Inf	24	mark	_	_
+24	dhéanamh	déanamh	NOUN	Noun	Form=Len|VerbForm=Inf	3	conj	_	_
+25	ar	ar	ADP	Simp	_	27	case	_	_
+26	an	an	DET	Art	Definite=Def|Number=Sing|PronType=Art	27	det	_	_
+27	trácht	trácht	NOUN	Noun	Case=Nom|Definite=Def|Gender=Masc|Number=Sing	24	obl	_	SpaceAfter=No
+28	,	,	PUNCT	Punct	_	33	punct	_	_
+29	agus	agus	CCONJ	Coord	_	33	cc	_	_
+30	na	an	DET	Art	Definite=Def|Number=Plur|PronType=Art	31	det	_	_
+31	cosáin	cosán	NOUN	Noun	Case=Nom|Definite=Def|Gender=Masc|Number=Plur	33	obj	_	_
+32	a	a	PART	Inf	PartType=Inf	33	mark	_	_
+33	fheabhsú	feabhsú	NOUN	Noun	Form=Len|VerbForm=Inf	3	conj	_	SpaceAfter=No
+34	.	.	PUNCT	.	_	1	punct	_	_
+
+# Nodes 3 and 4 are invalid because their UPOS tags are swapped and PUNCT does not accompany the punct DEPREL.
+# sent_id = punct
+# text = John loves Mary.
+1	John	John	PROPN	_	_	2	nsubj	_	_
+2	loves	love	VERB	_	_	0	root	_	_
+3	Mary	Mary	PUNCT	_	_	2	obj	_	SpaceAfter=No
+4	.	.	PROPN	_	_	2	punct	_	_
+
+# Nodes 7 and 8 are invalid because fixed should not be used for PROPN.
+# sent_id = 14356
+# text = Marahil, noong bago mag-Laos SEA Games ay hindi ganoon kalakas ang boses ni Joey sa POC o talagang hindi lang siya pinakinggan ng kanyang mga kasama roon.
+# source = tl_newscrawl test
+1	Marahil	Marahil	ADV	_	_	12	advmod	_	SpaceAfter=No
+2	,	,	PUNCT	_	_	1	punct	_	_
+3-4	noong	_	_	_	_	_	_	_	_
+3	noo	noon	ADJ	_	Case=Gen|Deixis=Remt|PronType=Dem	6	advmod	_	_
+4	-ng	na	PART	_	_	3	case	_	_
+5	bago	bago	SCONJ	_	_	6	mark	_	_
+6	mag-Laos	Laos	VERB	_	_	12	advcl	_	_
+7	SEA	Sea	PROPN	_	_	6	fixed	_	_
+8	Games	Games	PROPN	_	_	6	fixed	_	_
+9	ay	ay	PART	_	_	6	discourse	_	_
+10	hindi	hindi	ADV	_	Polarity=Neg	12	advmod	_	_
+11	ganoon	ganoon	ADV	_	_	12	advmod	_	_
+12	kalakas	lakas	NOUN	_	_	0	root	_	_
+13	ang	ang	DET	_	Case=Nom	14	det	_	_
+14	boses	boses	NOUN	_	_	12	nsubj	_	_
+15	ni	ni	ADP	_	Case=Gen|Number=Sing	16	case	_	_
+16	Joey	Joey	PROPN	_	_	14	nmod:poss	_	_
+17	sa	sa	ADP	_	Case=Loc	18	case	_	_
+18	POC	POC	PROPN	_	_	12	obl	_	_
+19	o	o	CCONJ	_	_	25	cc	_	_
+20-21	talagang	_	_	_	_	_	_	_	_
+20	talaga	talaga	ADV	_	_	22	advmod	_	_
+21	-ng	na	PART	_	_	20	case	_	_
+22	hindi	hindi	ADV	_	Polarity=Neg	25	advmod	_	_
+23	lang	lang	ADV	_	_	22	advmod	_	_
+24	siya	siya	PRON	_	Case=Nom|Number=Sing|Person=3|PronType=Prs	25	nsubj	_	_
+25	pinakinggan	kinig	VERB	_	Aspect=Perf|Mood=Ind|Voice=Cau	12	conj	_	_
+26	ng	ng	ADP	_	Case=Gen	30	case	_	_
+27-28	kanyang	_	_	_	_	_	_	_	_
+27	kanya	kaniya	PRON	_	Case=Dat|Number=Sing|Person=3|PronType=Prs	30	nmod:poss	_	_
+28	-ng	na	PART	_	_	27	case	_	_
+29	mga	mga	DET	_	Number=Plur	30	det	_	_
+30	kasama	sama	NOUN	_	_	25	obj:agent	_	_
+31	roon	doon	PRON	_	Case=Loc|Deixis=Remt|PronType=Dem	30	nmod	_	SpaceAfter=No
+32	.	.	PUNCT	_	_	12	punct	_	_
+

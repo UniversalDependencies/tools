@@ -380,6 +380,34 @@ Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\rel-upos.conllu 
+[Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning fixed-without-extpos] Fixed expression '5 2/3' does not have the 'ExtPos' feature
+[Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Syntax rel-upos-det] 'det' should be 'DET' or 'PRON' but it is 'NUM' ('5')
+[Line 42 Sent CP891-2]: [L3 Syntax rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('X')
+[Line 52 Sent CP891-2]: [L3 Syntax rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('VIII')
+[Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning fixed-without-extpos] Fixed expression 'Fir des' does not have the 'ExtPos' feature
+[Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Syntax rel-upos-advmod] 'advmod' should be 'ADV' but it is 'ADP' ('Fir')
+[Line 85 Sent 646]: [L3 Syntax rel-upos-expl] 'expl' should normally be 'PRON' but it is 'ADV' ('der')
+[Line 111 Sent rel-upos-aux]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'VERB' ('have')
+[Line 139 Sent 003966]: [L3 Syntax rel-upos-cop] 'cop' should be 'AUX' or 'PRON'/'DET' but it is 'VERB' ('vere')
+[Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 Warning fixed-without-extpos] Fixed expression 'Tot i' does not have the 'ExtPos' feature
+[Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 Syntax rel-upos-case] 'case' should not be 'PRON' ('Tot')
+[Line 159 Sent news.hr-s112]: [L3 Warning fixed-without-extpos] Fixed expression 'kao što' does not have the 'ExtPos' feature
+[Line 173 Sent news.hr-s112]: [L3 Warning fixed-without-extpos] Fixed expression 'obzirom da' does not have the 'ExtPos' feature
+[Line 173 Sent news.hr-s112]: [L3 Syntax rel-upos-mark] 'mark' should not be 'NOUN' ('obzirom')
+[Line 176 Sent news.hr-s112]: [L3 Warning fixed-without-extpos] Fixed expression 'kao i' does not have the 'ExtPos' feature
+[Line 206 Sent 2509]: [L3 Warning fixed-without-extpos] Fixed expression 'maraon le' does not have the 'ExtPos' feature
+[Line 206 Sent 2509]: [L3 Syntax rel-upos-cc] 'cc' should not be 'NOUN' ('maraon')
+[Line 233 Sent punct]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is 'obj' ('Mary')
+[Line 234 Sent punct]: [L3 Syntax rel-upos-punct] 'punct' must be 'PUNCT' but it is 'PROPN' ('.')
+[Line 246 Sent 14356]: [L3 Warning fixed-without-extpos] Fixed expression 'mag-Laos SEA Games' does not have the 'ExtPos' feature
+[Line 247 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('SEA').
+[Line 248 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('Games').
+Syntax errors: 14
+Warnings: 8
+*** FAILED *** with 14 errors
+ 
+-------------------------------------------------------------------------------- 
 THE FOLLOWING FILES SHOULD BE VALID 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\empty-file.conllu 
