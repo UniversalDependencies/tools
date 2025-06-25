@@ -1,27 +1,32 @@
 @echo off
 REM Test the UD validator on a set of short CoNLL-U files.
 REM The log file is versioned, so we can check git diff and see if it is OK.
-REM Usage: tools\test-cases\test.bat > tools\test-cases\test.log 2>&1
+REM Usage: tools\test-cases\test.bat 2> tools\test-cases\test.log
 SET "SCRIPT_DIR=%~dp0"
 for %%f in ("%SCRIPT_DIR%invalid-level1-2\*.conllu") do (
-    @echo --------------------------------------------------------------------------------
-    @echo Processing file: %%f
+    @echo -------------------------------------------------------------------------------- 1>&2
+    @echo %%f
+    @echo Processing file: %%f 1>&2
     python %SCRIPT_DIR%..\validate.py --level 2 --lang ud "%%f"
-    @echo.
+    @echo. 1>&2
 )
+@echo -------------------------------------------------------------------------------- 1>&2
 @echo --------------------------------------------------------------------------------
-@echo LEVEL 3 TESTS
+@echo LEVEL 3 TESTS 1>&2
 for %%f in ("%SCRIPT_DIR%invalid-level3\*.conllu") do (
-    @echo --------------------------------------------------------------------------------
-    @echo Processing file: %%f
+    @echo -------------------------------------------------------------------------------- 1>&2
+    @echo %%f
+    @echo Processing file: %%f 1>&2
     python %SCRIPT_DIR%..\validate.py --level 3 --lang ud "%%f"
-    @echo.
+    @echo. 1>&2
 )
+@echo -------------------------------------------------------------------------------- 1>&2
 @echo --------------------------------------------------------------------------------
-@echo THE FOLLOWING FILES SHOULD BE VALID
+@echo THE FOLLOWING FILES SHOULD BE VALID 1>&2
 for %%f in ("%SCRIPT_DIR%valid\*.conllu") do (
-    @echo --------------------------------------------------------------------------------
-    @echo Processing file: %%f
+    @echo -------------------------------------------------------------------------------- 1>&2
+    @echo %%f
+    @echo Processing file: %%f 1>&2
     python %SCRIPT_DIR%..\validate.py --level 3 --lang ud "%%f"
-    @echo.
+    @echo. 1>&2
 )
