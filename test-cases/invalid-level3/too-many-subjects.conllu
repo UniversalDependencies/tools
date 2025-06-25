@@ -1,0 +1,55 @@
+# Invalid because node 12 has two subjects: nodes 2 and 11.
+# source = gl_ctg dev
+# sent_id = dev-6
+# text = As situacións de pobreza severa -nas que as persoas viven á marxe da sociedade ou están apartadas completamente das normas sociais convencionaisacumúlanse frecuentemente sobre os grupos e persoas de maior risco, dando orixe a situacións de auténtica polipatoloxía social.
+1	As	o	DET	DA0FP0	_	2	det	_	Treeler:spec
+2	situacións	situación	NOUN	NCFP000	_	12	nsubj	_	Treeler:suj
+3	de	de	ADP	SPS00	_	4	case	_	Treeler:sp
+4	pobreza	pobreza	NOUN	NCFS000	_	2	nmod	_	Treeler:sn
+5	severa	severo	ADJ	AQ0FS0	_	4	amod	_	Treeler:s.a
+6-7	-n	_	_	_	_	_	_	_	SpaceAfter=No
+6	_	_	PUNCT	Fg	_	2	punct	_	Treeler:f
+7	en	en	ADP	SPS00	_	12	case	_	Treeler:cc
+8	as	o	DET	DA0FP0	_	12	det	_	Treeler:spec
+9	que	que	SCONJ	CS	_	12	mark	_	Treeler:conj
+10	as	o	DET	DA0FP0	_	11	det	_	Treeler:spec
+11	persoas	persoa	NOUN	NCFP000	_	12	nsubj	_	Treeler:suj
+12	viven	vivir	VERB	VMIP3P0	_	0	root	_	Treeler:sentence
+13-14	á	_	_	_	_	_	_	_	_
+13	a	a	ADP	SPS00	_	12	obj	_	Treeler:cd
+14	a	o	DET	DA0FS0	_	15	det	_	Treeler:spec
+15	marxe	marxe	NOUN	NCFS000	_	13	nmod	_	ToDo=nmod|Treeler:sn
+16-17	da	_	_	_	_	_	_	_	_
+16	de	de	ADP	SPS00	_	18	case	_	Treeler:sp
+17	a	o	DET	DA0FS0	_	18	det	_	Treeler:spec
+18	sociedade	sociedade	NOUN	NCFS000	_	15	nmod	_	Treeler:sn
+19	ou	ou	CCONJ	CC	_	12	cc	_	ToDo=cc-without-conj|Treeler:coord
+20	están	estar	AUX	VMIP3P0	_	21	cop	_	Treeler:S
+21	apartadas	apartar	VERB	VMP00PF	_	12	ccomp	_	Treeler:atr
+22	completamente	completamente	ADV	RG	_	21	case	_	Treeler:cc
+23-24	das	_	_	_	_	_	_	_	_
+23	de	de	ADP	SPS00	_	25	case	_	Treeler:creg
+24	as	o	DET	DA0FP0	_	25	det	_	Treeler:spec
+25	normas	norma	NOUN	NCFP000	_	21	obl	_	Treeler:sn
+26	sociais	social	ADJ	AQ0CP0	_	25	amod	_	Treeler:s.a
+27	convencionaisacumúlanse	convencionaisacumúlanse	ADJ	AQ0CS0	_	25	amod	_	Treeler:s.a
+28	frecuentemente	frecuente	ADV	RG	_	27	advmod	_	Treeler:sadv
+29	sobre	sobre	ADP	SPS00	_	31	case	_	Treeler:sp
+30	os	o	DET	DA0MP0	_	31	det	_	Treeler:spec
+31	grupos	grupo	NOUN	NCMP000	_	25	nmod	_	Treeler:sn
+32	e	e	CCONJ	CC	_	31	cc	_	ToDo=cc-without-conj|Treeler:coord
+33	persoas	persoa	NOUN	NCFP000	_	31	nmod	_	Treeler:sn
+34	de	de	ADP	SPS00	_	36	case	_	Treeler:sp
+35	maior	maior	ADJ	AQ0CS0	_	36	amod	_	Treeler:s.a
+36	risco	risco	NOUN	NCMS000	_	33	nmod	_	SpaceAfter=No|Treeler:sn
+37	,	,	PUNCT	Fc	_	38	punct	_	Treeler:f
+38	dando	dar	VERB	VMG0000	_	36	ccomp	_	Treeler:S
+39	orixe	orixe	NOUN	NCFS000	_	38	obj	_	Treeler:cd
+40	a	a	ADP	SPS00	_	38	iobj	_	Treeler:ci
+41	situacións	situación	NOUN	NCFP000	_	40	nmod	_	ToDo=nmod|Treeler:sn
+42	de	de	ADP	SPS00	_	44	case	_	Treeler:sp
+43	auténtica	auténtico	ADJ	AQ0FS0	_	44	amod	_	Treeler:s.a
+44	polipatoloxía	polipatoloxía	NOUN	NCFS000	_	41	nmod	_	Treeler:sn
+45	social	social	ADJ	AQ0CS0	_	44	amod	_	SpaceAfter=No|Treeler:s.a
+46	.	.	PUNCT	Fp	_	12	punct	_	Treeler:f
+
