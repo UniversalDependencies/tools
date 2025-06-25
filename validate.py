@@ -2134,7 +2134,7 @@ def validate_required_feature(feats, required_feature, required_value, incident)
         if state.seen_morpho_feature:
             incident.report()
         else:
-            if not testid in state.delayed_feature_errors:
+            if not incident.testid in state.delayed_feature_errors:
                 state.delayed_feature_errors[incident.testid] = {'occurrences': []}
             state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 
