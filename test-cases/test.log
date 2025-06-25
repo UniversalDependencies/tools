@@ -408,6 +408,21 @@ Warnings: 8
 *** FAILED *** with 14 errors
  
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\right-to-left.conllu 
+[Line 9 Sent 13147 Node 3]: [L3 Syntax right-to-left-conj] Parent of relation 'conj' must precede the child in the word order.
+[Line 11 Sent 13147 Node 5]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
+[Line 13 Sent 13147 Node 7]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
+[Line 30 Sent ASCA.YEAR0738.001.002 Node 5]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
+[Line 31 Sent ASCA.YEAR0738.001.002 Node 6]: [L3 Syntax right-to-left-appos] Parent of relation 'appos' must precede the child in the word order.
+[Line 48 Sent P334676 Node 10]: [L3 Syntax right-to-left-fixed] Parent of relation 'fixed' must precede the child in the word order.
+[Line 49 Sent P334676]: [L3 Warning fixed-without-extpos] Fixed expression 'b\u0113t ina' does not have the 'ExtPos' feature
+[Line 65 Sent goeswith Node 1]: [L3 Syntax right-to-left-goeswith] Parent of relation 'goeswith' must precede the child in the word order.
+[Line 66 Sent goeswith Node 2]: [L3 Syntax goeswith-gap] Gaps in goeswith group [Node<goeswith#1, with>, Node<goeswith#2, in>] != [].
+Syntax errors: 8
+Warnings: 1
+*** FAILED *** with 8 errors
+ 
+-------------------------------------------------------------------------------- 
 THE FOLLOWING FILES SHOULD BE VALID 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\empty-file.conllu 
