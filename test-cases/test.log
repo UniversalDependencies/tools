@@ -419,10 +419,23 @@ Syntax errors: 1
  
 -------------------------------------------------------------------------------- 
 LEVEL 4-5 TESTS 
-This file should actually be valid but I have it here as a placeholder to at least run the validator once on all levels. 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
-*** PASSED ***
+[Line 9 Sent n01001011 Node 1]: [L4 Morpho feature-unknown] Feature NonExistent is not documented for language [cs].
+
+The following 95 feature values are currently permitted in language [cs]:
+Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
+If a language needs a feature that is not documented in the universal guidelines, the feature must
+have a language-specific documentation page in a prescribed format.
+See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
+All features including universal must be specifically turned on for each language in which they are used.
+See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
+
+
+[Line 10 Sent n01001011 Node 2]: [L4 Morpho feature-value-unknown] Value Ine is not documented for feature Case in language [cs].
+[Line 12 Sent n01001011 Node 4]: [L4 Morpho feature-upos-not-permitted] Feature PronType is not permitted with UPOS NOUN in language [cs].
+Morpho errors: 3
+*** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 THE FOLLOWING FILES SHOULD BE VALID 
