@@ -347,6 +347,16 @@ Unicode errors: 2
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\uppercase-deprel.conllu 
 [Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
 [Line 5 Sent uppercase-deprel Node 2]: [L2 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
+
+The following 37 relations are currently permitted in language [ud]:
+acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nummod, obj, obl, orphan, parataxis, punct, reparandum, root, vocative, xcomp
+If a language needs a relation subtype that is not documented in the universal guidelines, the relation
+must have a language-specific documentation page in a prescribed format.
+See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
+Documented dependency relations can be specifically turned on/off for each language in which they are used.
+See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.
+
+
 Syntax errors: 2
 *** FAILED *** with 2 errors
  
@@ -354,6 +364,12 @@ Syntax errors: 2
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
 [Line 5 Sent uppercase-deps-deprel]: [L2 Enhanced invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
 [Line 5 Sent uppercase-deps-deprel Node 2]: [L2 Enhanced unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
+
+The following 40 enhanced relations are currently permitted in language [ud]:
+acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, csubj:xsubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nsubj:xsubj, nummod, obj, obl, orphan, parataxis, punct, ref, reparandum, root, vocative, xcomp
+See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.
+
+
 Enhanced errors: 2
 *** FAILED *** with 2 errors
  
