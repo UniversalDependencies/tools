@@ -57,6 +57,11 @@ class State:
         # Error counter by error type. Key: error type; value: error count.
         # Incremented in Incident.report().
         self.error_counter = {}
+        # Set of detailed error explanations that have been printed so far.
+        # Each explanation will be printed only once. Typically, an explanation
+        # can be identified by test id + language code. Nevertheless, we put
+        # the whole explanation to the set.
+        self.explanation_printed = set()
         # Some feature-related errors can only be reported if the corpus
         # contains feature annotation because features are optional in general.
         # Once we see the first feature, we can flush all accummulated
@@ -162,20 +167,19 @@ class Data:
         # Tokens with spaces in the FORM and LEMMA columns.
         # Key: language code; value: data from tospace.json.
         self.tospace = {}
-        # Explanations to be added to the first occurrence of an error that
-        # complains about undocumented features, deprels etc. These are filled
-        # after reading the respective JSON files and emptied once the first
-        # error is encountered and the explanation is printed.
-        ###!!! Tentatively moving these variables here, although we may want to
-        ###!!! overhaul the whole mechanism in the future.
-        self.warn_on_undoc_feats = '' # filled after reading docfeats.json; printed when an unknown feature is encountered in the data
-        self.warn_on_undoc_deps = '' # filled after reading docdeps.json; printed when an unknown relation is encountered in the data
-        self.warn_on_undoc_edeps = '' # filled after reading edeprels.json; printed when an unknown enhanced relation is encountered in the data
-        self.warn_on_undoc_aux = '' # filled after reading data.json; printed when an unknown auxiliary is encountered in the data
-        self.warn_on_undoc_cop = '' # filled after reading data.json; printed when an unknown copula is encountered in the data
-        self.warn_on_undoc_tospaces = '' # filled after reading tospace.json; printed when an unknown token with space is encountered in the data
         # Load language-specific data from external JSON files.
         self.load()
+        # For each of the language-specific lists, we can generate an
+        # explanation for the user in case they use something that is not on
+        # the list. The explanation will be printed only once but the explain
+        # function may be called thousand times, so let us cache the output to
+        # reduce the time waste a little.
+        self._explanation_feats = {}
+        self._explanation_deprel = {}
+        self._explanation_edeprel = {}
+        self._explanation_aux = {}
+        self._explanation_cop = {}
+        self._explanation_tospace = {}
 
     def get_feats_for_language(self, lcode):
         """
@@ -295,6 +299,8 @@ class Data:
         Returns explanation message for features of a particular language.
         To be called after language-specific features have been loaded.
         """
+        if lcode in self._explanation_feats:
+            return self._explanation_feats[lcode]
         featset = self.get_feats_for_language(lcode)
         # Prepare a global message about permitted features and values. We will add
         # it to the first error message about an unknown feature. Note that this
@@ -325,6 +331,7 @@ class Data:
             msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
             msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
+        self._explanation_feats[lcode] = msg
         return msg
 
     def explain_deprel(self, lcode):
@@ -332,6 +339,8 @@ class Data:
         Returns explanation message for deprels of a particular language.
         To be called after language-specific deprels have been loaded.
         """
+        if lcode in self._explanation_deprel:
+            return self._explanation_deprel[lcode]
         deprelset = self.get_deprel_for_language(lcode)
         # Prepare a global message about permitted relation labels. We will add
         # it to the first error message about an unknown relation. Note that this
@@ -362,6 +371,7 @@ class Data:
             msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
             msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
+        self._explanation_deprel[lcode] = msg
         return msg
 
     def explain_edeprel(self, lcode):
@@ -369,6 +379,8 @@ class Data:
         Returns explanation message for edeprels of a particular language.
         To be called after language-specific edeprels have been loaded.
         """
+        if lcode in self._explanation_edeprel:
+            return self._explanation_edeprel[lcode]
         edeprelset = self.get_edeprel_for_language(lcode)
         # Prepare a global message about permitted relation labels. We will add
         # it to the first error message about an unknown relation. Note that this
@@ -388,6 +400,7 @@ class Data:
             msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
             msg += ', '.join(sorted_case_markers) + "\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
+        self._explanation_deprel[lcode] = msg
         return msg
 
     def explain_aux(self, lcode):
@@ -395,6 +408,8 @@ class Data:
         Returns explanation message for auxiliaries of a particular language.
         To be called after language-specific auxiliaries have been loaded.
         """
+        if lcode in self._explanation_aux:
+            return self._explanation_aux[lcode]
         auxdata = self.get_aux_for_language(lcode)
         # Prepare a global message about permitted auxiliary lemmas. We will add
         # it to the first error message about an unknown auxiliary. Note that this
@@ -409,6 +424,7 @@ class Data:
             msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{args.lang}]:\n"
             msg += ', '.join(auxdata) + "\n"
             msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+        self._explanation_aux[lcode] = msg
         return msg
 
     def explain_cop(self, lcode):
@@ -416,6 +432,8 @@ class Data:
         Returns explanation message for copulas of a particular language.
         To be called after language-specific copulas have been loaded.
         """
+        if lcode in self._explanation_cop:
+            return self._explanation_cop[lcode]
         copdata = self.get_cop_for_language(lcode)
         # Prepare a global message about permitted copula lemmas. We will add
         # it to the first error message about an unknown copula. Note that this
@@ -430,6 +448,7 @@ class Data:
             msg += f"The following {len(copdata)} copulas are currently documented in language [{args.lang}]:\n"
             msg += ', '.join(copdata) + "\n"
             msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+        self._explanation_cop[lcode] = msg
         return msg
 
     def explain_tospace(self, lcode):
@@ -437,6 +456,8 @@ class Data:
         Returns explanation message for tokens with spaces of a particular language.
         To be called after language-specific tokens with spaces have been loaded.
         """
+        if lcode in self._explanation_tospace:
+            return self._explanation_tospace[lcode]
         # Prepare a global message about permitted features and values. We will add
         # it to the first error message about an unknown token with space. Note that
         # this global information pertains to the default validation language and it
@@ -451,22 +472,8 @@ class Data:
             msg += self.tospace[lcode][0]
             msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
             msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
+        self._explanation_tospace[lcode] = msg
         return msg
-
-    def save_explanations(self, lcode):
-        """
-        Temporary solution, it should be refactored. We store the messages
-        generated by the explain_* functions for the current main language.
-        This function must be called from outside because the data object does
-        not know what the main language is.
-        """
-        ###!!! This should be redesigned.
-        self.warn_on_undoc_feats = self.explain_feats(lcode)
-        self.warn_on_undoc_deps = self.explain_deprel(lcode)
-        self.warn_on_undoc_edeps = self.explain_edeprel(lcode)
-        self.warn_on_undoc_aux = self.explain_aux(lcode)
-        self.warn_on_undoc_cop = self.explain_cop(lcode)
-        self.warn_on_undoc_tospaces = self.explain_tospace(lcode)
 
     def load(self):
         """
@@ -644,8 +651,9 @@ class Incident:
         levelclassid = f'L{self.level} {self.testclass} {self.testid}'
         # Message (+ explanation, if this is the first error of its kind).
         message = self.message
-        if self.explanation and state.error_counter[self.testclass] == 1:
+        if self.explanation and self.explanation not in state.explanation_printed:
             message += "\n\n" + self.explanation + "\n"
+            state.explanation_printed.add(self.explanation)
         print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
 
 
@@ -2956,14 +2964,14 @@ def validate_words_with_spaces(node, line, lang):
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                        explanation=data.warn_on_undoc_tospaces
+                        explanation=data.explain_tospace(lang)
                     ).report()
             else:
                 Incident(
                     nodeid=node.ord,
                     testid='invalid-word-with-space',
                     message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                    explanation=data.warn_on_undoc_tospaces
+                    explanation=data.explain_tospace(lang)
                 ).report()
 
 
@@ -3029,7 +3037,7 @@ def validate_features_level4(node, line, lang):
                         nodeid=node.ord,
                         testid='feature-unknown',
                         message=f"Feature {f} is not documented for language [{effective_lang}].",
-                        explanation=data.warn_on_undoc_feats
+                        explanation=data.explain_feats(effective_lang)
                     ).report()
                 else:
                     lfrecord = effective_featset[f]
@@ -3038,7 +3046,7 @@ def validate_features_level4(node, line, lang):
                             nodeid=node.ord,
                             testid='feature-not-permitted',
                             message=f"Feature {f} is not permitted in language [{effective_lang}].",
-                            explanation=data.warn_on_undoc_feats
+                            explanation=data.explain_feats(effective_lang)
                         ).report()
                     else:
                         values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
@@ -3047,21 +3055,21 @@ def validate_features_level4(node, line, lang):
                                 nodeid=node.ord,
                                 testid='feature-value-unknown',
                                 message=f"Value {v} is not documented for feature {f} in language [{effective_lang}].",
-                                explanation=data.warn_on_undoc_feats
+                                explanation=data.explain_feats(effective_lang)
                             ).report()
                         elif not node.upos in lfrecord['byupos']:
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-upos-not-permitted',
                                 message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}].",
-                                explanation=data.warn_on_undoc_feats
+                                explanation=data.explain_feats(effective_lang)
                             ).report()
                         elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-value-upos-not-permitted',
                                 message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}].",
-                                explanation=data.warn_on_undoc_feats
+                                explanation=data.explain_feats(effective_lang)
                             ).report()
     if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
         state.mwt_typo_span_end = None
@@ -3118,7 +3126,7 @@ def validate_deprels(node, line, args):
                 nodeid=node.ord,
                 testid='unknown-deprel',
                 message=f"Unknown DEPREL label: '{deprel}'",
-                explanation=data.warn_on_undoc_deps
+                explanation=data.explain_deprel(mainlang)
             ).report()
     # If there are enhanced dependencies, test their deprels, too.
     # We already know that the contents of DEPS is parsable (deps_list() was
@@ -3140,7 +3148,7 @@ def validate_deprels(node, line, args):
                     nodeid=node.ord,
                     testid='unknown-edeprel',
                     message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
-                    explanation=data.warn_on_undoc_edeps
+                    explanation=data.explain_edeprel(mainlang)
                 ).report()
 
 
@@ -3179,7 +3187,7 @@ def validate_auxiliary_verbs(node, line, lang):
                 testclass='Morpho',
                 testid='aux-lemma',
                 message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
-                explanation=data.warn_on_undoc_aux
+                explanation=data.explain_aux(lang)
             ).report()
 
 
@@ -3212,7 +3220,7 @@ def validate_copula_lemmas(node, line, lang):
                 testclass='Syntax',
                 testid='cop-lemma',
                 message=f"'{node.lemma}' is not a copula in language [{lang}]",
-                explanation=data.warn_on_undoc_cop
+                explanation=data.explain_cop(lang)
             ).report()
 
 
@@ -4037,9 +4045,6 @@ if __name__=="__main__":
     # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
     if args.level < 4:
         args.lang = 'ud'
-
-    ###!!! To be rethought and reworked.
-    data.save_explanations(args.lang)
 
     out = sys.stdout # hard-coding - does this ever need to be anything else?
 

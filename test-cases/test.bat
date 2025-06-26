@@ -23,7 +23,6 @@ for %%f in ("%SCRIPT_DIR%invalid-level3\*.conllu") do (
 @echo -------------------------------------------------------------------------------- 1>&2
 @echo --------------------------------------------------------------------------------
 @echo LEVEL 4-5 TESTS 1>&2
-@echo This file should actually be valid but I have it here as a placeholder to at least run the validator once on all levels. 1>&2
 for %%f in ("%SCRIPT_DIR%invalid-level4-5\*.conllu") do (
     @echo -------------------------------------------------------------------------------- 1>&2
     @echo %%f
