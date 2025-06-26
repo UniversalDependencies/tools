@@ -2984,8 +2984,9 @@ def validate_words_with_spaces(node, line, lang):
         Code of the main language of the corpus.
     """
     global data
-    testlevel = 4
-    testclass = 'Format'
+    Incident.default_lineno = line
+    Incident.default_level = 4
+    Incident.default_testclass = 'Format'
     # List of permited words with spaces is language-specific.
     # The current token may be in a different language due to code switching.
     tospacedata = data.get_tospace_for_language(lang)
@@ -3002,13 +3003,19 @@ def validate_words_with_spaces(node, line, lang):
                 # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
                 string_to_test = re.sub(r'\xA0', ' ', word)
                 if not tospacedata[1].fullmatch(string_to_test):
-                    testid = 'invalid-word-with-space'
-                    testmessage = f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace."
-                    warn(testmessage, testclass, testlevel, testid, lineno=line, explanation="\n"+data.warn_on_undoc_tospaces)
+                    Incident(
+                        nodeid=node.ord,
+                        testid='invalid-word-with-space',
+                        message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
+                        explanation=data.warn_on_undoc_tospaces
+                    ).report()
             else:
-                testid = 'invalid-word-with-space'
-                testmessage = f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace."
-                warn(testmessage, testclass, testlevel, testid, lineno=line, explanation="\n"+data.warn_on_undoc_tospaces)
+                Incident(
+                    nodeid=node.ord,
+                    testid='invalid-word-with-space',
+                    message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
+                    explanation=data.warn_on_undoc_tospaces
+                ).report()
 
 
 
@@ -3029,8 +3036,9 @@ def validate_features_level4(node, line, lang):
     """
     global state
     global data
-    testclass = 'Morpho'
-    testlevel = 4
+    Incident.default_lineno = line
+    Incident.default_level = 4
+    Incident.default_testclass = 'Morpho'
     if str(node.feats) == '_':
         return True
     # List of permited features is language-specific.
@@ -3050,9 +3058,11 @@ def validate_features_level4(node, line, lang):
             # The feature Typo=Yes is the only feature allowed on a multi-word token line.
             # If it occurs there, it cannot be duplicated on the lines of the component words.
             if f == 'Typo' and state.mwt_typo_span_end and node.ord <= state.mwt_typo_span_end:
-                testid = 'mwt-typo-repeated-at-word'
-                testmessage = "Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
-                warn(testmessage, testclass, testlevel, testid, lineno=line)
+                Incident(
+                    nodeid=node.ord,
+                    testid='mwt-typo-repeated-at-word',
+                    message="Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
+                ).report()
             # In case of code switching, the current token may not be in the default language
             # and then its features are checked against a different feature set. An exception
             # is the feature Foreign, which always relates to the default language of the
@@ -3066,48 +3076,44 @@ def validate_features_level4(node, line, lang):
                 effective_lang = default_lang
             if effective_featset is not None:
                 if f not in effective_featset:
-                    testid = 'feature-unknown'
-                    testmessage = f"Feature {f} is not documented for language [{effective_lang}]."
-                    if not altlang and len(data.warn_on_undoc_feats) > 0:
-                        # If some features were excluded because they are not documented,
-                        # tell the user when the first unknown feature is encountered in the data.
-                        # Then erase this (long) introductory message and do not repeat it with
-                        # other instances of unknown features.
-                        testmessage += "\n\n" + data.warn_on_undoc_feats
-                        data.warn_on_undoc_feats = ''
-                    warn(testmessage, testclass, testlevel, testid, lineno=line)
+                    Incident(
+                        nodeid=node.ord,
+                        testid='feature-unknown',
+                        message=f"Feature {f} is not documented for language [{effective_lang}].",
+                        explanation=data.warn_on_undoc_feats
+                    ).report()
                 else:
                     lfrecord = effective_featset[f]
                     if lfrecord['permitted'] == 0:
-                        testid = 'feature-not-permitted'
-                        testmessage = f"Feature {f} is not permitted in language [{effective_lang}]."
-                        if not altlang and len(data.warn_on_undoc_feats) > 0:
-                            testmessage += "\n\n" + data.warn_on_undoc_feats
-                            data.warn_on_undoc_feats = ''
-                        warn(testmessage, testclass, testlevel, testid, lineno=line)
+                        Incident(
+                            nodeid=node.ord,
+                            testid='feature-not-permitted',
+                            message=f"Feature {f} is not permitted in language [{effective_lang}].",
+                            explanation=data.warn_on_undoc_feats
+                        ).report()
                     else:
                         values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                         if not v in values:
-                            testid = 'feature-value-unknown'
-                            testmessage = f"Value {v} is not documented for feature {f} in language [{effective_lang}]."
-                            if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                testmessage += "\n\n" + data.warn_on_undoc_feats
-                                data.warn_on_undoc_feats = ''
-                            warn(testmessage, testclass, testlevel, testid, lineno=line)
+                            Incident(
+                                nodeid=node.ord,
+                                testid='feature-value-unknown',
+                                message=f"Value {v} is not documented for feature {f} in language [{effective_lang}].",
+                                explanation=data.warn_on_undoc_feats
+                            ).report()
                         elif not node.upos in lfrecord['byupos']:
-                            testid = 'feature-upos-not-permitted'
-                            testmessage = f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}]."
-                            if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                testmessage += "\n\n" + data.warn_on_undoc_feats
-                                data.warn_on_undoc_feats = ''
-                            warn(testmessage, testclass, testlevel, testid, lineno=line)
+                            Incident(
+                                nodeid=node.ord,
+                                testid='feature-upos-not-permitted',
+                                message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}].",
+                                explanation=data.warn_on_undoc_feats
+                            ).report()
                         elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
-                            testid = 'feature-value-upos-not-permitted'
-                            testmessage = f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}]."
-                            if not altlang and len(data.warn_on_undoc_feats) > 0:
-                                testmessage += "\n\n" + data.warn_on_undoc_feats
-                                data.warn_on_undoc_feats = ''
-                            warn(testmessage, testclass, testlevel, testid, lineno=line)
+                            Incident(
+                                nodeid=node.ord,
+                                testid='feature-value-upos-not-permitted',
+                                message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}].",
+                                explanation=data.warn_on_undoc_feats
+                            ).report()
     if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
         state.mwt_typo_span_end = None
 

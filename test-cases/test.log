@@ -432,6 +432,13 @@ Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
+LEVEL 4-5 TESTS 
+This file should actually be valid but I have it here as a placeholder to at least run the validator once on all levels. 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
+*** PASSED ***
+ 
+-------------------------------------------------------------------------------- 
 THE FOLLOWING FILES SHOULD BE VALID 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\empty-file.conllu 
