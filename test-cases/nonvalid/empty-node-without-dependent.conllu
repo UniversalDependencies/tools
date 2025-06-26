@@ -1,7 +1,0 @@
-# sent_id = empty-node-without-dependent
-# text = This nonvalid
-# not valid: a null node must have at least one dependent (issue #404)
-1	This	this	PRON	_	_	2	orphan	2:nsubj	_
-1.1	is	is	VERB	_	_	_	_	2:cop	_
-2	nonvalid	nonvalid	ADJ	_	_	0	root	0:root	_
-

@@ -1,8 +1,0 @@
-# sent_id = whitespace_nonv
-# text = layered a 000 50 000
-# nonvalid:
-# (http://universaldependencies.github.io/docs/u/overview/morphology.html#layered-features)
-1	layered	layered	NOUN	N	_	0	root	_	_
-2	a 000	100 000	NOUN	N	_	1	nsubj	_	_
-3	50 000	v 000	NOUN	N	_	1	nsubj	_	_
-

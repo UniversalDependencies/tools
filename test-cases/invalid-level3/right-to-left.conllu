@@ -1,0 +1,69 @@
+# Various level 3 tests of relations that should always go left-to-right.
+# Nodes 3, 5 and 7 invalid: relations conj and flat must go left-to-right.
+# source = tr_ulu test
+# sent_id = 13147
+# text = Merkez_Bankası Başkanı Süreyya_Serdengeçti ile Türkiye_İhracatçılar_Meclisi Başkanı Oğuz Satıcı arasında yaşanan tartışma elbette .
+# text_en = The debate between the Central Bank Governor Süreyya Serdengeçti and the Turkish Exporters Assembly President Oğuz Satıcı, of course.
+1	Merkez_Bankası	Merkez_Bankası	NOUN	Noun	Case=Nom|Number=Sing|Person=3	2	reparandum	_	_
+2	Başkanı	başkan	NOUN	Noun	Case=Nom|Number=Sing|Number[psor]=Sing|Person=3|Person[psor]=3	3	nmod	_	_
+3	Süreyya_Serdengeçti	Süreyya_Serdengeçti	PROPN	Prop	Case=Nom|Number=Sing|Person=3	9	conj	_	_
+4	ile	ile	CCONJ	Conj	_	3	case	_	_
+5	Türkiye_İhracatçılar_Meclisi	Türkiye_İhracatçılar_Meclisi	PROPN	Noun	Case=Nom|Number=Sing|Person=3	6	flat	_	_
+6	Başkanı	başkan	NOUN	Noun	Case=Nom|Number=Sing|Number[psor]=Sing|Person=3|Person[psor]=3	7	nmod	_	_
+7	Oğuz	Oğuz	PROPN	Prop	Case=Nom|Number=Sing|Person=3	9	flat	_	_
+8	Satıcı	satıcı	PROPN	Prop	Case=Nom|Number=Sing|Person=3	7	flat	_	_
+9	arasında	ara	ADJ	NAdj	Case=Loc|Number=Sing|Number[psor]=Sing|Person=3|Person[psor]=3	10	obl	_	_
+10	yaşanan	yaşa	VERB	Verb	Polarity=Pos|Tense=Pres|VerbForm=Part|Voice=Pass	11	acl	_	_
+11	tartışma	tartış	VERB	Verb	Case=Nom|Number=Sing|Person=3|Polarity=Pos	0	root	_	_
+12	elbette	elbette	ADV	Adverb	_	11	advcl	_	_
+13	.	.	PUNCT	Punc	_	11	punct	_	_
+
+# Node 6 is invalid: relation appos must go left-to-right.
+# source = ang_oedt test
+# sent_id = ASCA.YEAR0738.001.002
+# text = and his broðor wæs Ecgbryht Eating ærcebiscep,
+# text_en = And his brother was Archbishop Egbert, Eata's offspring;
+1	and	and	CCONJ	CCONJ	_	7	cc	_	_
+2	his	his	PRON	pronoun	Case=Nom|Number=Sing|Person=3|Poss=Yes|PronType=Prs	3	det:pos	_	_
+3	broðor	brōðor	NOUN	common-noun	Case=Nom|Gender=Masc|Number=Sing	7	nsubj	_	_
+4	wæs	bēon/wesan/sēon	AUX	auxiliary-verb	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	cop	_	_
+5	Ecgbryht	Ecgbryht	PROPN	proper-noun	Case=Nom|Number=Sing	7	flat	_	_
+6	Eating	Eating	ADJ	adjective	Case=Nom|Number=Sing	7	appos	_	_
+7	ærcebiscep	arcebiscop	NOUN	common-noun	Case=Nom|Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No
+8	,	,	PUNCT	punctuation	_	7	punct	_	_
+
+# Node 10 is invalid: relation fixed must go left-to-right.
+# source = akk_mcong train
+# sent_id = P334676
+# text = ina muhhi erbî ša šarru bēlī išpuranni mā šupur ina bēt erbiu ihriṭūni mā qēm dupurāni lukaṭṭiru mā kīma simannu uṣêšu lušabalkitušu
+1	ina	ina	ADP	ADP	_	2	case	_	_
+2	muhhi	muhhu	NOUN	NOUN	Case=Gen|Gender=Masc|NounBase=Bound|Number=Sing	22	dislocated	_	_
+3	erbî	erbû	NOUN	VERB	Case=Gen|Gender=Fem|Number=Sing	2	nmod	_	_
+4	ša	ša	PRON	PRON	_	7	obl	_	_
+5	šarru	šarru	NOUN	NOUN	Case=Nom|Gender=Masc|Number=Sing	7	nsubj	_	_
+6	bēlī	bēlu	NOUN	NOUN	Case=Nom|Gender=Masc|Gender[psor]=Com|Number=Sing|Number[psor]=Sing|Person[psor]=1	5	appos	_	_
+7	išpuranni	šapāru	VERB	VERB	Gender=Masc|Mood=Ind|Number=Sing|Person=3|SubSuff=Yes|Tense=Past|Ventive=Yes|VerbForm=Fin|VerbStem=G	3	acl	_	_
+8	mā	mā	PART	Quotative	_	9	discourse	_	_
+9	šupur	šapāru	VERB	VERB	Gender=Masc|Mood=Imp|Number=Sing|Person=2|VerbStem=G	7	ccomp	_	_
+10	ina	ina	ADP	ADP	_	11	fixed	_	_
+11	bēt	bītu	PRON	PRON	Case=Gen|Gender=Masc|Number=Sing	13	obl	_	_
+12	erbiu	erbû	NOUN	NOUN	Case=Nom|Gender=Masc|Number=Sing	13	nsubj	_	_
+13	ihriṭūni	harāṭu	VERB	VERB	Gender=Masc|Mood=Ind|Number=Sing|Person=3	9	ccomp	_	_
+14	mā	mā	PART	Quotative	_	17	discourse	_	_
+15	qēm	qēmu	NOUN	NOUN	Case=Acc|Gender=Masc|NounBase=Bound|Number=Sing	17	obj	_	_
+16	dupurāni	daprānu	NOUN	NOUN	Case=Gen|Gender=Masc|Number=Plur	15	nmod	_	_
+17	lukaṭṭiru	qatāru	VERB	VERB	Gender=Masc|Mood=Prec|Number=Plur|Person=3|VerbStem=D	9	conj	_	_
+18	mā	mā	PART	Quotative	_	22	discourse	_	_
+19	kīma	kīma	ADP	ADP	_	20	case	_	_
+20	simannu	simānu	NOUN	NOUN	Case=Gen|Gender=Masc|NounBase=Bound|Number=Sing	22	obl	_	_
+21	uṣêšu	aṣû	NOUN	NOUN	Case=Gen|Gender=Masc|Gender[psor]=Masc|Number=Sing|Number[psor]=Sing|Person[psor]=3	20	nmod	_	_
+22	lušabalkitušu	nabalkutu	VERB	VERB	Gender=Masc|Mood=Prec|Number=Plur|Person=3|VerbForm=Fin	0	root	_	_
+
+# Node 1 is invalid: relation goeswith must go left-to-right.
+# sent_id = goeswith
+# text = with in five months
+1	with	_	X	_	_	2	goeswith	_	_
+2	in	within	ADP	_	Typo=Yes	4	case	_	_
+3	five	five	NUM	_	_	4	nummod	_	_
+4	months	month	NOUN	_	_	0	root	_	_
+

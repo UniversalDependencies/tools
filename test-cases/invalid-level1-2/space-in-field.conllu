@@ -1,0 +1,5 @@
+# sent_id = space-in-field
+# text = this could be valid
+# not valid: XPOS cannot contain space. (but in FORM and LEMMA it could be allowed for individual languages and words, and in MISC it is always OK)
+1	this could be valid	valid	NOUN	this is not valid	_	0	root	_	_
+
