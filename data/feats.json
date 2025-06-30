@@ -4216,7 +4216,30 @@
 "Voice[caus]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Yes"], "byupos": {"VERB": {}}, "lastchanged": "2023-10-17-09-51-31", "lastchanger": "pkocharov"}
 },
 "xmf": {
-
+"Abbreviation": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Post"], "evalues": [], "byupos": {}},
+"AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cau", "Dir", "Int", "Loc", "Man", "Rel", "Tim"], "evalues": [], "byupos": {}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Perf"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Unrecognized level 3 heading '### <a name=\"Abl\">`All`</a>: ablative case'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Degree": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dim", "Equ", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Evident": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fh", "Nfh"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Foreign": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Mood": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cnd", "Imp", "Ind", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"NameType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Geo", "Oth", "Prs", "Sur"], "evalues": [], "byupos": {}},
+"NumForm": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Combi", "Digit", "Roman", "Word"], "evalues": [], "byupos": {}},
+"NumType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Card", "Mult", "Ord"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Plur", "Sing"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Number[io]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}},
+"Number[obj]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}},
+"Number[subj]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}},
+"Poss": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"PronType": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Wrong value 'Reflex'. The correct UD label for reflexive pronouns is 'PronType=Prs' together with 'Reflex=Yes'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"PunctType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Brck", "Colo", "Comm", "Dash", "Elip", "Excl", "Peri", "Qest", "Quot", "Semi"], "evalues": [], "byupos": {}},
+"Subcat": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Indir", "Intr", "Tran"], "evalues": [], "byupos": {}},
+"Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fut", "Imp", "Past", "Pqp", "Pres"], "unused_lvalues": ["PastPerf"], "evalues": [], "byupos": {}},
+"VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Part", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aux"], "evalues": [], "byupos": {}},
+"Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Act", "Pass"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "xnr": {
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Prep", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 1}, "ADV": {"Post": 1}, "NOUN": {"Post": 1}}, "lastchanged": "2024-01-19-09-26-09", "lastchanger": "dan-zeman"},
