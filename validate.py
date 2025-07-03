@@ -3036,7 +3036,7 @@ def validate_features_level4(node, line, lang):
                     Incident(
                         nodeid=node.ord,
                         testid='feature-unknown',
-                        message=f"Feature {f} is not documented for language [{effective_lang}].",
+                        message=f"Feature {f} is not documented for language [{effective_lang}] ('{formtl(node)}').",
                         explanation=data.explain_feats(effective_lang)
                     ).report()
                 else:
@@ -3045,7 +3045,7 @@ def validate_features_level4(node, line, lang):
                         Incident(
                             nodeid=node.ord,
                             testid='feature-not-permitted',
-                            message=f"Feature {f} is not permitted in language [{effective_lang}].",
+                            message=f"Feature {f} is not permitted in language [{effective_lang}] ('{formtl(node)}').",
                             explanation=data.explain_feats(effective_lang)
                         ).report()
                     else:
@@ -3054,21 +3054,21 @@ def validate_features_level4(node, line, lang):
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-value-unknown',
-                                message=f"Value {v} is not documented for feature {f} in language [{effective_lang}].",
+                                message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
                             ).report()
                         elif not node.upos in lfrecord['byupos']:
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-upos-not-permitted',
-                                message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}].",
+                                message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
                             ).report()
                         elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-value-upos-not-permitted',
-                                message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}].",
+                                message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
                             ).report()
     if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
