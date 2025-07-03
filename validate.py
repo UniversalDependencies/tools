@@ -1519,6 +1519,12 @@ def validate_features_level2(cols, line, args):
         The values of the columns on the current node / token line.
     line : int
         Number of the line where the node occurs in the file.
+
+    Returns
+    -------
+    safe : bool
+        There were no errors or the errors are not so severe that we should
+        refrain from loading the sentence into Udapi.
     """
     Incident.default_lineno = line
     Incident.default_level = 2
@@ -1534,6 +1540,10 @@ def validate_features_level2(cols, line, args):
             message=f"Morphological features must be sorted: '{feats}'."
         ).report()
     attr_set = set() # I'll gather the set of features here to check later that none is repeated.
+    # Subsequent higher-level tests could fail if a feature is not in the
+    # Feature=Value format. If that happens, we will return False and the caller
+    # can skip the more fragile tests.
+    safe = True
     for f in feat_list:
         match = crex.featval.fullmatch(f)
         if match is None:
@@ -1542,6 +1552,7 @@ def validate_features_level2(cols, line, args):
                 message=f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
             ).report()
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
+            safe = False
         else:
             # Check that the values are sorted as well
             attr = match.group(1)
@@ -1569,6 +1580,7 @@ def validate_features_level2(cols, line, args):
             testid='repeated-feature',
             message=f"Repeated features are disallowed: '{feats}'."
         ).report()
+    return safe
 
 
 
@@ -3895,6 +3907,25 @@ def validate_file(inp, args):
             treeok = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
             if not treeok:
                 continue
+            # Tests of individual nodes that operate on pre-Udapi data structures.
+            # Some of them (bad feature format) may lead to skipping Udapi completely.
+            colssafe = True
+            line = state.sentence_line - 1
+            for cols in sentence:
+                line += 1
+                # Multiword tokens and empty nodes can or must have certain fields empty.
+                if is_multiword_token(cols):
+                    validate_mwt_empty_vals(cols, line)
+                if is_empty_node(cols):
+                    validate_empty_node_empty_vals(cols, line) # level 2
+                if is_word(cols) or is_empty_node(cols):
+                    validate_character_constraints(cols, line) # level 2
+                    validate_upos(cols, line) # level 2
+                    colssafe = colssafe and validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
+                validate_deps(cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
+            if not colssafe:
+                continue
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us.
@@ -3908,21 +3939,7 @@ def validate_file(inp, args):
             # enhanced dependencies, hence we can rely on them even with basic
             # trees.
             validate_deps_all_or_none(sentence)
-            # Tests of individual nodes.
-            line = state.sentence_line - 1
-            for cols in sentence:
-                line += 1
-                # Multiword tokens and empty nodes can or must have certain fields empty.
-                if is_multiword_token(cols):
-                    validate_mwt_empty_vals(cols, line)
-                if is_empty_node(cols):
-                    validate_empty_node_empty_vals(cols, line) # level 2
-                if is_word(cols) or is_empty_node(cols):
-                    validate_character_constraints(cols, line) # level 2
-                    validate_upos(cols, line) # level 2
-                    validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
-                validate_deps(cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
+            # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
                 line = linenos[str(node.ord)]
