@@ -2269,14 +2269,14 @@ def validate_flat_foreign(node, lineno, linenos):
     if node.deprel != 'flat:foreign':
         return
     parent = node.parent
-    if node.upos != 'X' or node.feats != 'Foreign=Yes':
+    if node.upos != 'X' or str(node.feats) != 'Foreign=Yes':
         Incident(
             lineno=lineno,
             nodeid=node.ord,
             testid='flat-foreign-upos-feats',
             message="The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
         ).report()
-    if parent.upos != 'X' or parent.feats != 'Foreign=Yes':
+    if parent.upos != 'X' or str(parent.feats) != 'Foreign=Yes':
         Incident(
             lineno=linenos[str(parent.ord)],
             nodeid=parent.ord,
