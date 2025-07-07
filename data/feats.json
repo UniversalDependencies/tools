@@ -4219,7 +4219,7 @@
 },
 "xmf": {
 "Abbreviation": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
-"AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Post"], "evalues": [], "byupos": {}},
+"AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Post", "Prep"], "evalues": [], "byupos": {}},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cau", "Deg", "Dir", "Int", "Loc", "Man", "Pur", "Tim"], "evalues": ["Rel"], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Perf"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Unrecognized level 3 heading '### <a name=\"Abl\">`All`</a>: ablative case'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
