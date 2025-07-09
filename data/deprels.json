@@ -9627,6 +9627,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-03-23-22-25-06", "lastchanger": "AngledLuffa"},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-07-09-07-00-00", "lastchanger": "AngledLuffa"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-04-03-17-17-02", "lastchanger": "AngledLuffa"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
