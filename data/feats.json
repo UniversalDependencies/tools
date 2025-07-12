@@ -4225,7 +4225,7 @@
 },
 "xmf": {
 "Abbreviation": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
-"AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Post", "Prep"], "evalues": [], "byupos": {}},
+"AdpType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post"], "unused_uvalues": [], "unused_lvalues": ["Prep"], "evalues": [], "byupos": {"ADJ": {"Post": 1}, "NOUN": {"Post": 1}, "NUM": {"Post": 1}, "PRON": {"Post": 1}, "PROPN": {"Post": 1}, "X": {"Post": 1}}, "lastchanged": "2025-07-12-12-00-08", "lastchanger": "ILobzhanidze"},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cau", "Deg", "Dir", "Int", "Loc", "Man", "Pur", "Tim"], "evalues": ["Rel"], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Perf"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abl", "All", "Ben", "Dat", "Erg", "Ess", "Gen", "Ins", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}},
