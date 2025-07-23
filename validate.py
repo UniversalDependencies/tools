@@ -2615,6 +2615,7 @@ def validate_fixed_span(node, lineno):
         # All nodes between me and my last fixed child should be either fixed or punct.
         fxgap = [n for n in fxrange if n.udeprel != 'punct' and n not in fxlist]
         if fxgap:
+            fxordlist = [n.ord for n in fxlist]
             fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
             Incident(
                 lineno=lineno,
@@ -2622,7 +2623,7 @@ def validate_fixed_span(node, lineno):
                 level=3,
                 testclass='Warning',
                 testid='fixed-gap',
-                message=f"Gaps in fixed expression {str(fxlist)} '{fxexpr}'"
+                message=f"Gaps in fixed expression {str(fxordlist)} '{fxexpr}'"
             ).report()
 
 
@@ -2652,10 +2653,12 @@ def validate_goeswith_span(node, lineno):
         gwrange = [n for n in node.root.descendants if n.ord >= node.ord and n.ord <= gwchildren[-1].ord]
         # All nodes between me and my last goeswith child should be goeswith too.
         if gwlist != gwrange:
+            gwordlist = [n.ord for n in gwlist]
+            gwordrange = [n.ord for n in gwrange]
             Incident(
                 nodeid=node.ord,
                 testid='goeswith-gap',
-                message=f"Gaps in goeswith group {str(gwlist)} != {str(gwrange)}."
+                message=f"Gaps in goeswith group {str(gwordlist)} != {str(gwordrange)}."
             ).report()
         # Non-last node in a goeswith range must have a space after itself.
         nospaceafter = [x for x in gwlist[:-1] if x.misc['SpaceAfter'] == 'No']
