@@ -3481,7 +3481,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Pass": 1}, "VERB": {"Act": 1, "Pass": 1}}, "lastchanged": "2025-05-02-23-33-15", "lastchanger": "AngledLuffa"}
 },
 "sdh": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2025-07-23-10-31-56", "lastchanger": "rahonalab"}
 },
 "sei": {
 
