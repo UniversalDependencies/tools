@@ -1733,6 +1733,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-07-29-13-08-25", "lastchanger": "hiwasan"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
