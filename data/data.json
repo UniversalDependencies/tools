@@ -245,6 +245,9 @@
 "saber": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Espero que la [sàpiga] aprofitar.", "exampleen": "I hope you know how to take advantage of it.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-12-53-00", "lastchanger": "dan-zeman"},
 "ser": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "permanent state", "example": "L'agència [era] tan controlada com antiquada.", "exampleen": "The agency was as controlled as it was outdated.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-06-23-19-24", "lastchanger": "dan-zeman"}
 },
+"ckb": {
+"bûn": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "âşeke hetâ zû [bû] le şârî he[bû]", "exampleen": "‘Until recently, the mill, it was found in the city.’", "comment": ""}], "status": "documented", "lastchanged": "2025-07-29-12-41-07", "lastchanger": "hiwasan"}
+},
 "cop": {
 "ϣ": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "ⲛⲥⲉⲛⲁ[ϣ]ⲉⲅⲕⲣⲁⲧⲉⲩⲉ ⲁⲛ", "exampleen": "they will not be able to control themselves", "comment": ""}], "status": "documented", "lastchanged": "2025-04-20-14-23-28", "lastchanger": "amir-zeldes"},
 "ϣⲁ": {"functions": [{"function": "Aspect=Hab", "rule": "combination of the auxiliary, a subject and the infinitive of the main verb", "deficient": "", "example": "[ϣⲁ]ϥⲥⲱⲧⲙ", "exampleen": "He hears (in general, he is wont to hear)", "comment": "Used for gnomic statements"}], "status": "documented", "lastchanged": "2025-04-20-23-25-49", "lastchanger": "amir-zeldes"},
