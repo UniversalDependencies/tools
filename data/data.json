@@ -377,7 +377,7 @@
 },
 "eo": {
 "bezoni": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and the infinitive of the main verb", "deficient": "", "example": "Mi [bezonas] skribi artikolojn.", "exampleen": "I have to write articles.", "comment": ""}], "status": "documented", "lastchanged": "2025-07-31-07-22-23", "lastchanger": "Moya2025"},
-"devi": {"functions": [{"function": "Mood=Des", "rule": "Combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Mi [devas] skribi artikolojn.", "exampleen": "want", "comment": ""}], "status": "documented", "lastchanged": "2025-07-29-09-42-59", "lastchanger": "Moya2025"},
+"devi": {"functions": [{"function": "Mood=Des", "rule": "Combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Mi [devas] skribi artikolojn.", "exampleen": "I want to write articles.", "comment": ""}], "status": "documented", "lastchanged": "2025-07-31-07-22-55", "lastchanger": "Moya2025"},
 "esti": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Mi [estas] feliĉa.", "exampleen": "I am happy.", "comment": ""}], "status": "documented", "lastchanged": "2025-01-14-01-23-46", "lastchanger": "Moya2025"},
 "povi": {"functions": [{"function": "Mood=Pot", "rule": "Combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Mi [povas] skribi artikolojn.", "exampleen": "I can write articles.", "comment": ""}], "status": "documented", "lastchanged": "2025-07-29-09-47-22", "lastchanger": "Moya2025"}
 },
