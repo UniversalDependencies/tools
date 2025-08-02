@@ -1412,6 +1412,9 @@
 "آهي": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "وڏن جو ادب ڪرڻ هڪ سٺو عمل [آهي].", "exampleen": "It [is] a good practice to read the literature of elders.", "comment": ""}], "status": "documented", "lastchanged": "2023-07-25-15-44-16", "lastchanger": "dan-zeman"},
 "سگهي": {"functions": [{"function": "Mood=Pot", "rule": "in conjunction with a main verb, often a Conv verb", "deficient": "", "example": "گيج لڙهي وڃڻ ڪري واڌو پاڻي جي ماپ نه ٿي [سگهي]", "exampleen": "The additional water could not be measured due to the gauge being tilted", "comment": "has inflections for number, passive, pronominal suffix, and infinitive forms"}], "status": "documented", "lastchanged": "2025-05-01-21-04-09", "lastchanger": "AngledLuffa"}
 },
+"sdh": {
+"bîgin": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "yêkileyan[e] hûş dey kelawegey keftîye", "exampleen": "(It) is one of them (who) gives attention (that) his hat has fallen down.", "comment": ""}], "status": "documented", "lastchanged": "2025-08-02-14-59-10", "lastchanger": "hiwasan"}
+},
 "sga": {
 "is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[is]deidbir deit áaigthiu", "exampleen": "it is reasonable for thee to fear him", "comment": "Unlike modern Irish, the copula inflects in Old Irish. In this case, the copula, 'is', represents the English 'it is'."}], "status": "documented", "lastchanged": "2023-02-25-11-29-07", "lastchanger": "AdeDoyle"}
 },
