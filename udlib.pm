@@ -1050,6 +1050,17 @@ sub check_files_data
         push(@{$errors}, "[L0 Repo treebank-size] $folder: treebank is too small: found only $stats->{nsent} sentence$ss and $stats->{nword} word$ws\n");
         $$n_errors++;
     }
+    # Metadata from the README are checked in check_metadata(). Nevertheless,
+    # here we can compare them with the data files. If metadata say Lemmas:
+    # not available, and there are non-empty lemmas in the corpus, it is an
+    # inconsistency that should be reported. We are in the treebank folder, so
+    # we must give '..' as the $udpath to read_readme().
+    my $metadata = read_readme($folder, '..');
+    if(defined($metadata) && $metadata->{Lemmas} eq 'not available' && $stats->{nlemma} > 0)
+    {
+        push(@{$errors}, "[L0 Repo metadata] $folder: README says lemmas not available but there are $stats->{nlemma} non-empty lemmas in the data\n");
+        $$n_errors++;
+    }
     return $ok;
 }
 
@@ -1559,7 +1570,8 @@ sub collect_statistics_about_ud_treebank
         'ntok'   => 0,
         'nfus'   => 0,
         'nword'  => 0,
-        'nabstr' => 0
+        'nabstr' => 0,
+        'nlemma' => 0
     };
     foreach my $file (@files)
     {
@@ -1581,6 +1593,7 @@ sub collect_statistics_about_ud_file
     my $nfus = 0;
     my $nword = 0;
     my $nabstr = 0;
+    my $nlemma = 0;
     open(CONLLU, $file_path) or confess("Cannot read file $file_path: $!");
     while(<CONLLU>)
     {
@@ -1611,6 +1624,13 @@ sub collect_statistics_about_ud_file
         {
             $ntok++;
             $nword++;
+            # Check how many words have non-empty lemmas. We can compare it with
+            # metadata in README (Lemmas: not available).
+            my @f = split(/\t/, $_);
+            if($f[2] ne '_')
+            {
+                $nlemma++;
+            }
         }
     }
     close(CONLLU);
@@ -1620,7 +1640,8 @@ sub collect_statistics_about_ud_file
         'ntok'   => $ntok,
         'nfus'   => $nfus,
         'nword'  => $nword,
-        'nabstr' => $nabstr
+        'nabstr' => $nabstr,
+        'nlemma' => $nlemma
     };
     return $stats;
 }
@@ -1637,11 +1658,10 @@ sub add_statistics
 {
     my $tgt = shift; # hash ref
     my $src = shift; # hash ref
-    $tgt->{nsent}  += $src->{nsent};
-    $tgt->{ntok}   += $src->{ntok};
-    $tgt->{nfus}   += $src->{nfus};
-    $tgt->{nword}  += $src->{nword};
-    $tgt->{nabstr} += $src->{nabstr};
+    foreach my $key (qw(nsent ntok nfus nword nabstr nlemma))
+    {
+        $tgt->{$key} += $src->{$key};
+    }
     return $tgt;
 }
 
