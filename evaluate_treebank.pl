@@ -251,51 +251,6 @@ if($verbose)
     print STDERR ("Universal relations: source of annotation (from README) factor is $rsource.\n");
 }
 #------------------------------------------------------------------------------
-# Udapi MarkBugs (does the content follow the guidelines?)
-# Measured only if the corpus is not empty and if udapy is found at the expected place.
-if($n > 0)
-{
-    $score{udapi} = 1;
-    my $command = get_udapi_command($folder, $record->{lcode});
-    ###!!! In verbose mode we should log the exact version of Udapi that we used, like we do for the tools repository.
-    ###!!! This may be more difficult given that in CGI mode we use the copy in the curren folder instead of the git clone.
-    if(defined($command))
-    {
-        my $output = `$command`;
-        my $nbugs = 0;
-        my $maxwordsperbug = 10; # if there are more bugs than every n-th word, we will count maximum error rate
-        if($output =~ m/(\d+)/)
-        {
-            $nbugs = $1;
-            # Evaluate the proportion of bugs to the size of the treebank
-            # (with a ceiling defined by $maxwordsperbug; anything above is considered "absolutely bad").
-            my $nbugs1 = $nbugs>$n/$maxwordsperbug ? $n/$maxwordsperbug : $nbugs;
-            $score{udapi} = 1-$nbugs1/($n/$maxwordsperbug);
-            $score{udapi} = 0.01 if($score{udapi}<0.01);
-        }
-        if($verbose)
-        {
-            print STDERR ("Udapi:\n");
-            print STDERR ($output);
-            print STDERR ("Udapi: found $nbugs bugs.\n");
-            print STDERR ("Udapi: worst expected case (threshold) is one bug per $maxwordsperbug words. There are $n words.\n");
-        }
-    }
-    elsif($verbose)
-    {
-        print STDERR ("WARNING: Udapi not found. The content-based tests were not performed.\n");
-        print STDERR ("         In order to get a full evaluation, you need to:\n");
-        print STDERR ("         1. Put this script in the current folder:\n");
-        print STDERR ("            https://github.com/UniversalDependencies/docs-automation/blob/master/valdan/udapi-markbugs.sh\n");
-        print STDERR ("         2. Install Python version of Udapi.\n");
-        print STDERR ("         3. Copy udapi-python and pythonlib to the current folder, as indicated in udapi-markbugs.sh.\n");
-    }
-}
-else
-{
-    $score{udapi} = 0;
-}
-#------------------------------------------------------------------------------
 # Genres. Idea: an attempt at a balance of many genres provides for a more
 # versatile dataset. Of course this is just an approximation. We cannot verify
 # how well the authors described the genres in their corpus and how much they
@@ -370,7 +325,6 @@ if($n > 1)
         'tags'     => 3,
         'features' => 3,
         'udeprels' => 3,
-        'udapi'    => 12,
         'genres'   => 3
     );
     my @dimensions = sort(keys(%weights));
@@ -439,35 +393,6 @@ sub get_validator_command
         {
             $command = "$validate --lang $lcode --max-err=10 $folder/$file";
         }
-    }
-    return $command;
-}
-
-
-
-#------------------------------------------------------------------------------
-# Figures out whether Udapi is available and how to invoke it.
-#------------------------------------------------------------------------------
-sub get_udapi_command
-{
-    my $folder = shift;
-    my $lcode = shift;
-    my $command;
-    # If evaluation runs under a CGI script on quest, Udapi must be called through an envelope script.
-    if(-x './udapi-markbugs.sh')
-    {
-        $command = "(cat $folder/*.conllu | ./udapi-markbugs.sh 2>&1) | grep TOTAL";
-    }
-    elsif(which('udapy'))
-    {
-        # If Udapi knows the language (given as the zone of each sentence),
-        # it can customize selected tests for the language.
-        my $read_zone = 'read.Conllu';
-        if(defined($lcode))
-        {
-            $read_zone = "read.Conllu zone=$lcode";
-        }
-        $command = "(cat $folder/*.conllu | udapy $read_zone ud.MarkBugs 2>&1) | grep TOTAL";
     }
     return $command;
 }
