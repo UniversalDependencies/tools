@@ -2408,7 +2408,7 @@ def validate_single_object(node, lineno):
             lineno=lineno,
             nodeid=node.ord,
             level=3,
-            testclass='Warning',
+            testclass='Syntax',
             testid='too-many-objects',
             message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under one predicate."
         ).report()
