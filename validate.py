@@ -2386,6 +2386,35 @@ def validate_single_subject(node, lineno):
 
 
 
+def validate_single_object(node, lineno):
+    """
+    No predicate should have more than one direct object (number of indirect
+    objects is unlimited). Theoretically, ccomp should be understood as a
+    clausal equivalent of a direct object, but we do not have an indirect
+    equivalent, so it seems better to tolerate additional ccomp at present.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
+    """
+    objects = [x for x in node.children if x.udeprel == 'obj']
+    object_ids = [x.ord for x in objects]
+    object_forms = [formtl(x) for x in objects]
+    if len(objects) > 1:
+        Incident(
+            lineno=lineno,
+            nodeid=node.ord,
+            level=3,
+            testclass='Warning',
+            testid='too-many-objects',
+            message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under one predicate."
+        ).report()
+
+
+
 def validate_orphan(node, lineno):
     """
     The orphan relation is used to attach an unpromoted orphan to the promoted
@@ -2871,6 +2900,7 @@ def validate_annotation(tree, linenos):
         validate_flat_foreign(node, lineno, linenos)
         validate_left_to_right_relations(node, lineno)
         validate_single_subject(node, lineno)
+        validate_single_object(node, lineno)
         validate_orphan(node, lineno)
         validate_functional_leaves(node, lineno, linenos)
         validate_fixed_span(node, lineno)
