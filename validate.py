@@ -2111,6 +2111,40 @@ def validate_required_feature(feats, required_feature, required_value, incident)
 
 
 
+def validate_expected_features(node, lineno):
+    """
+    Certain features are expected to occur with certain UPOS or certain values
+    of other features. This function issues warnings instead of errors, as
+    features are in general optional and language-specific. Even the warnings
+    are issued only if the treebank has features. Note that the expectations
+    tested here are considered (more or less) universal. Checking that a given
+    feature-value pair is compatible with a particular UPOS is done using
+    language-specific lists at level 4.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    lineno : int
+        The 1-based index of the line where the node occurs.
+    """
+    Incident.default_lineno = lineno
+    Incident.default_level = 3
+    Incident.default_testclass = 'Warning'
+    ###!!! Also add: PRON and DET should have PronType. NUM should have NumType.
+    if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
+        Incident(
+            testid='verbform-fin-without-mood',
+            message=f"Finite verb '{formtl(node)}' lacks the 'Mood' feature"
+        ).report()
+    elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
+        Incident(
+            testid='mood-without-verbform-fin',
+            message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{formtl(node)}')"
+        ).report()
+
+
+
 def validate_upos_vs_deprel(node, lineno):
     """
     For certain relations checks that the dependent word belongs to an expected
@@ -2896,6 +2930,7 @@ def validate_annotation(tree, linenos):
     nodes = tree.descendants
     for node in nodes:
         lineno = linenos[str(node.ord)]
+        validate_expected_features(node, lineno)
         validate_upos_vs_deprel(node, lineno)
         validate_flat_foreign(node, lineno, linenos)
         validate_left_to_right_relations(node, lineno)
