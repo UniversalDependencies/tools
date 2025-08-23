@@ -2092,16 +2092,21 @@ def validate_required_feature(feats, required_feature, required_value, incident)
         The name of the required feature.
     required_value : str
         The required value of the feature. Multivalues are not supported (they
-        are just a string value containing one or more commas).
+        are just a string value containing one or more commas). If
+        required_value is None or an empty string, it means that we require any
+        non-empty value of required_feature.
     incident : Incident object
         The message that should be printed if the error is confirmed.
     """
     global state
-    # We may want to check that any value of a given feature is present,
-    # or even that a particular value is present. Currently we only test
-    # Typo=Yes, i.e., the latter case. The other options will be added
-    # when the need arises.
-    if feats[required_feature] != required_value:
+    ok = True
+    if required_value:
+        if feats[required_feature] != required_value:
+            ok = False
+    else:
+        if feats[required_feature] == '':
+            ok = False
+    if not ok:
         if state.seen_morpho_feature:
             incident.report()
         else:
@@ -2131,7 +2136,11 @@ def validate_expected_features(node, lineno):
     Incident.default_lineno = lineno
     Incident.default_level = 3
     Incident.default_testclass = 'Warning'
-    ###!!! Also add: PRON and DET should have PronType. NUM should have NumType.
+    if node.upos in ['PRON', 'DET']:
+        validate_required_feature(node.feats, 'PronType', None, Incident(
+            testid='pron-det-without-prontype',
+            message=f"The word '{formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
+        ))
     if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
         Incident(
             testid='verbform-fin-without-mood',
