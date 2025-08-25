@@ -3623,6 +3623,7 @@
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-15-16-34", "lastchanger": "delphinebernhard"},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-15-21-48", "lastchanger": "delphinebernhard"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-12-29-10", "lastchanger": "delphinebernhard"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
