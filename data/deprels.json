@@ -3600,6 +3600,7 @@
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-12-29-31", "lastchanger": "delphinebernhard"},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
