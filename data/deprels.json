@@ -3623,6 +3623,7 @@
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-12-25-01", "lastchanger": "delphinebernhard"},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
