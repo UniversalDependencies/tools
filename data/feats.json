@@ -1455,7 +1455,7 @@
 },
 "gsw": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Epenthesis": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Epenthesis": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "DET": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2025-08-25-12-44-36", "lastchanger": "delphinebernhard"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}}, "lastchanged": "2025-06-27-17-05-08", "lastchanger": "dan-zeman"}
 },
