@@ -3607,7 +3607,7 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"det:predet": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"det:predet": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-15-34-05", "lastchanger": "delphinebernhard"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
