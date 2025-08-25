@@ -3587,7 +3587,7 @@
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-12-26-15", "lastchanger": "delphinebernhard"},
 "advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-12-27-43", "lastchanger": "delphinebernhard"},
-"advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"advmod:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-08-25-15-16-10", "lastchanger": "delphinebernhard"},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
