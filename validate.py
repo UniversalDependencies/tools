@@ -4082,7 +4082,9 @@ def get_alt_language(node):
 
 
 
-if __name__=="__main__":
+def main():
+    global state, args
+
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
     io_group = opt_parser.add_argument_group("Input / output options")
@@ -4184,8 +4186,13 @@ if __name__=="__main__":
     if passed:
         if not args.quiet:
             print('*** PASSED ***', file=sys.stderr)
-        sys.exit(0)
+        return 0
     else:
         if not args.quiet:
             print(f'*** FAILED *** with {nerror} errors', file=sys.stderr)
-        sys.exit(1)
+        return 1
+
+if __name__=="__main__":
+    errcode = main()
+    sys.exit(errcode)
+
