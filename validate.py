@@ -4140,8 +4140,6 @@ if __name__=="__main__":
     if args.level < 4:
         args.lang = 'ud'
 
-    out = sys.stdout # hard-coding - does this ever need to be anything else?
-
     try:
         open_files = []
         if args.input == []:
