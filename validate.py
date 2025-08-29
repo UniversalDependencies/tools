@@ -417,13 +417,13 @@ class Data:
         # should not be used with code-switched segments in alternative languages.
         msg = ''
         if len(auxdata) == 0:
-            msg += f"No auxiliaries have been documented at the address below for language [{args.lang}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+            msg += f"No auxiliaries have been documented at the address below for language [{lcode}].\n"
+            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n"
         else:
             # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{args.lang}]:\n"
+            msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{lcode}]:\n"
             msg += ', '.join(auxdata) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
         self._explanation_aux[lcode] = msg
         return msg
 
@@ -441,13 +441,13 @@ class Data:
         # should not be used with code-switched segments in alternative languages.
         msg = ''
         if len(copdata) == 0:
-            msg += f"No copulas have been documented at the address below for language [{args.lang}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang}\n"
+            msg += f"No copulas have been documented at the address below for language [{lcode}].\n"
+            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n"
         else:
             # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(copdata)} copulas are currently documented in language [{args.lang}]:\n"
+            msg += f"The following {len(copdata)} copulas are currently documented in language [{lcode}]:\n"
             msg += ', '.join(copdata) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={args.lang} for details.\n"
+            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
         self._explanation_cop[lcode] = msg
         return msg
 
