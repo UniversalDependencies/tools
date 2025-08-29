@@ -627,8 +627,7 @@ class Incident:
         # ID of the node on which the error occurred (if it pertains to one node).
         self.nodeid = nodeid
 
-    def report(self):
-        global state, args
+    def report(self, state, args):
         # Even if we should be quiet, at least count the error.
         state.error_counter[self.testclass] = state.error_counter.get(self.testclass, 0)+1
         if args.quiet:
@@ -743,7 +742,7 @@ def next_sentence(inp, args):
             Incident(
                 testid='pseudo-empty-line',
                 message='Spurious line that appears empty but is not; there are whitespace characters.'
-            ).report()
+            ).report(state, args)
             # We will pretend that the line terminates a sentence in order to
             # avoid subsequent misleading error messages.
             if token_lines_fields:
@@ -767,7 +766,7 @@ def next_sentence(inp, args):
                 Incident(
                     testid='extra-empty-line',
                     message='Spurious empty line. Only one empty line is expected after every sentence.'
-                ).report()
+                ).report(state, args)
         elif line[0] == '#':
             # We will really validate sentence ids later. But now we want to remember
             # everything that looks like a sentence id and use it in the error messages.
@@ -783,7 +782,7 @@ def next_sentence(inp, args):
                 Incident(
                     testid='misplaced-comment',
                     message='Spurious comment line. Comments are only allowed before a sentence.'
-                ).report()
+                ).report(state, args)
         elif line[0].isdigit():
             if not token_lines_fields: # new sentence
                 state.sentence_line = state.current_line
@@ -800,25 +799,25 @@ def next_sentence(inp, args):
                 Incident(
                     testid='number-of-columns',
                     message=f'The line has {len(cols)} columns but {COLCOUNT} are expected. The line will be excluded from further tests.'
-                ).report()
+                ).report(state, args)
                 corrupted = True
         else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
             Incident(
                 testid='invalid-line',
                 message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
-            ).report()
+            ).report(state, args)
     else: # end of file
         if comment_lines and not token_lines_fields:
             # Comments at the end of the file, no sentence follows them.
             Incident(
                 testid='misplaced-comment',
                 message='Spurious comment line. Comments are only allowed before a sentence.'
-            ).report()
+            ).report(state, args)
         elif comment_lines or token_lines_fields: # These should have been yielded on an empty line!
             Incident(
                 testid='missing-empty-line',
                 message='Missing empty line after the last sentence.'
-            ).report()
+            ).report(state, args)
             if not corrupted:
                 yield all_lines, comment_lines, token_lines_fields
 
@@ -910,7 +909,7 @@ def validate_unicode_normalization(text):
             testid='unicode-normalization',
             message=testmessage,
             explanation=f"This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
-        ).report()
+        ).report(state, args)
 
 
 
@@ -935,25 +934,25 @@ def validate_whitespace(cols):
             Incident(
                 testid='empty-column',
                 message=f'Empty value in column {COLNAMES[col_idx]}.'
-            ).report()
+            ).report(state, args)
         else:
             # Must never have leading/trailing whitespace
             if cols[col_idx][0].isspace():
                 Incident(
                     testid='leading-whitespace',
                     message=f'Leading whitespace not allowed in column {COLNAMES[col_idx]}.'
-                ).report()
+                ).report(state, args)
             if cols[col_idx][-1].isspace():
                 Incident(
                     testid='trailing-whitespace',
                     message=f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
-                ).report()
+                ).report(state, args)
             # Must never contain two consecutive whitespace characters
             if crex.ws2.search(cols[col_idx]):
                 Incident(
                     testid='repeated-whitespace',
                     message=f'Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}.'
-                ).report()
+                ).report(state, args)
     # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
     # If it contains a space, it does not make sense to treat it as a MWT.
     if is_multiword_token(cols):
@@ -964,7 +963,7 @@ def validate_whitespace(cols):
                 Incident(
                     testid='invalid-whitespace-mwt',
                     message=f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
-                ).report()
+                ).report(state, args)
     # These columns must not have whitespace.
     for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
         if col_idx >= len(cols):
@@ -973,7 +972,7 @@ def validate_whitespace(cols):
             Incident(
                 testid='invalid-whitespace',
                 message=f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-            ).report()
+            ).report(state, args)
     # We should also check the ID format (e.g., '1' is good, '01' is wrong).
     # Although it is checking just a single column, we will do it in
     # validate_id_sequence() because that function has the power to block
@@ -1008,7 +1007,7 @@ def validate_id_sequence(sentence):
             Incident(
                 testid='invalid-word-id',
                 message=f"Unexpected ID format '{cols[ID]}'."
-            ).report()
+            ).report(state, args)
             ok = False
             continue
         if not is_empty_node(cols):
@@ -1026,7 +1025,7 @@ def validate_id_sequence(sentence):
                 Incident(
                     testid='invalid-word-interval',
                     message=f"Spurious word interval definition: '{cols[ID]}'."
-                ).report()
+                ).report(state, args)
                 ok = False
                 continue
             beg, end = int(match.group(1)), int(match.group(2))
@@ -1034,7 +1033,7 @@ def validate_id_sequence(sentence):
                 Incident(
                     testid='misplaced-word-interval',
                     message='Multiword range not before its first word.'
-                ).report()
+                ).report(state, args)
                 ok = False
                 continue
             tokens.append((beg, end))
@@ -1044,7 +1043,7 @@ def validate_id_sequence(sentence):
                 Incident(
                     testid='misplaced-empty-node',
                     message=f'Empty node id {cols[ID]}, expected {current_word_id}.{next_empty_id}'
-                ).report()
+                ).report(state, args)
                 ok = False
             next_empty_id += 1
             # Interaction of multiword tokens and empty nodes if there is an empty
@@ -1055,7 +1054,7 @@ def validate_id_sequence(sentence):
                 Incident(
                     testid='misplaced-empty-node',
                     message=f"Empty node id {cols[ID]} must occur before multiword token {tokens[-1][0]}-{tokens[-1][1]}."
-                ).report()
+                ).report(state, args)
                 ok = False
     # Now let's do some basic sanity checks on the sequences.
     # Expected sequence of word IDs is 1, 2, ...
@@ -1066,7 +1065,7 @@ def validate_id_sequence(sentence):
             lineno=-1,
             testid='word-id-sequence',
             message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
-        ).report()
+        ).report(state, args)
         ok = False
     # Check elementary sanity of word intervals.
     # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
@@ -1075,14 +1074,14 @@ def validate_id_sequence(sentence):
             Incident(
                 testid='reversed-word-interval',
                 message=f'Spurious token interval {b}-{e}'
-            ).report()
+            ).report(state, args)
             ok = False
             continue
         if b < 1 or e > len(words): # out of range
             Incident(
                 testid='word-interval-out',
                 message=f'Spurious token interval {b}-{e} (out of range)'
-            ).report()
+            ).report(state, args)
             ok = False
             continue
     return ok
@@ -1107,7 +1106,7 @@ def validate_token_ranges(sentence):
             Incident(
                 testid='invalid-word-interval',
                 message=f"Spurious word interval definition: '{cols[ID]}'."
-            ).report()
+            ).report(state, args)
             continue
         start, end = m.groups()
         start, end = int(start), int(end)
@@ -1116,7 +1115,7 @@ def validate_token_ranges(sentence):
             Incident(
                 testid='overlapping-word-intervals',
                 message=f'Range overlaps with others: {cols[ID]}'
-            ).report()
+            ).report(state, args)
         covered |= set(range(start, end+1))
 
 
@@ -1135,7 +1134,7 @@ def validate_newlines(inp):
             lineno=state.current_line,
             testid='non-unix-newline',
             message='Only the unix-style LF line terminator is allowed.'
-        ).report()
+        ).report(state, args)
 
 
 
@@ -1172,17 +1171,17 @@ def validate_sent_id(comments, lcode):
                 Incident(
                     testid='invalid-sent-id',
                     message=f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes."
-                ).report()
+                ).report(state, args)
     if not matched:
         Incident(
             testid='missing-sent-id',
             message='Missing the sent_id attribute.'
-        ).report()
+        ).report(state, args)
     elif len(matched) > 1:
         Incident(
             testid='multiple-sent-id',
             message='Multiple sent_id attributes.'
-        ).report()
+        ).report(state, args)
     else:
         # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
         # For that to happen, all three files should be tested at once.
@@ -1191,12 +1190,12 @@ def validate_sent_id(comments, lcode):
             Incident(
                 testid='non-unique-sent-id',
                 message=f"Non-unique sent_id attribute '{sid}'."
-            ).report()
+            ).report(state, args)
         if sid.count('/') > 1 or (sid.count('/') == 1 and lcode != 'ud'):
             Incident(
                 testid='slash-in-sent-id',
                 message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
-            ).report()
+            ).report(state, args)
         state.known_sent_ids.add(sid)
 
 
@@ -1228,34 +1227,34 @@ def validate_text_meta(comments, tree, args):
         Incident(
             testid='multiple-newdoc',
             message='Multiple newdoc attributes.'
-        ).report()
+        ).report(state, args)
     if len(newpar_matched) > 1:
         Incident(
             testid='multiple-newpar',
             message='Multiple newpar attributes.'
-        ).report()
+        ).report(state, args)
     if (newdoc_matched or newpar_matched) and state.spaceafterno_in_effect:
         Incident(
             testid='spaceafter-newdocpar',
             message='New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
-        ).report()
+        ).report(state, args)
     if not text_matched:
         Incident(
             testid='missing-text',
             message='Missing the text attribute.'
-        ).report()
+        ).report(state, args)
     elif len(text_matched) > 1:
         Incident(
             testid='multiple-text',
             message='Multiple text attributes.'
-        ).report()
+        ).report(state, args)
     else:
         stext = text_matched[0].group(1)
         if stext[-1].isspace():
             Incident(
                 testid='text-trailing-whitespace',
                 message='The text attribute must not end with whitespace.'
-            ).report()
+            ).report(state, args)
         # Validate the text against the SpaceAfter attribute in MISC.
         skip_words = set()
         mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
@@ -1269,20 +1268,20 @@ def validate_text_meta(comments, tree, args):
                 Incident(
                     testid='nospaceafter-yes',
                     message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-                ).report()
+                ).report(state, args)
             if len([x for x in cols[MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
                 Incident(
                     lineno=state.sentence_line+iline,
                     testid='spaceafter-value',
                     message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
-                ).report()
+                ).report(state, args)
             if is_empty_node(cols):
                 if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                     Incident(
                         lineno=state.sentence_line+iline,
                         testid='spaceafter-empty-node',
                         message="'SpaceAfter=No' cannot occur with empty nodes."
-                    ).report()
+                    ).report(state, args)
                 continue
             elif is_multiword_token(cols):
                 beg, end = cols[ID].split('-')
@@ -1296,7 +1295,7 @@ def validate_text_meta(comments, tree, args):
                         lineno=state.sentence_line+iline,
                         testid='spaceafter-mwt-node',
                         message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-                    ).report()
+                    ).report(state, args)
                 continue
             else:
                 # Err, I guess we have nothing to do here. :)
@@ -1311,7 +1310,7 @@ def validate_text_meta(comments, tree, args):
                         lineno=state.sentence_line+iline,
                         testid='text-form-mismatch',
                         message=f"Mismatch between the text attribute and the FORM field. Form[{cols[ID]}] is '{cols[FORM]}' but text is '{stext[:len(cols[FORM])+20]}...'"+extra_message
-                    ).report()
+                    ).report(state, args)
                     mismatch_reported = 1
             else:
                 stext = stext[len(cols[FORM]):] # eat the form
@@ -1326,13 +1325,13 @@ def validate_text_meta(comments, tree, args):
                             lineno=state.sentence_line+iline,
                             testid='missing-spaceafter',
                             message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
-                        ).report()
+                        ).report(state, args)
                     stext = stext.lstrip()
         if stext:
             Incident(
                 testid='text-extra-chars',
                 message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
-            ).report()
+            ).report(state, args)
 
 
 
@@ -1405,7 +1404,7 @@ def validate_mwt_empty_vals(cols, line):
                 testclass='Format',
                 testid='mwt-nonempty-field',
                 message=f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -1431,7 +1430,7 @@ def validate_empty_node_empty_vals(cols, line):
                 testclass='Format',
                 testid='mwt-nonempty-field',
                 message=f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -1458,7 +1457,7 @@ def validate_character_constraints(cols, line):
             testclass='Syntax',
             testid='invalid-deprel',
             message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
-        ).report()
+        ).report(state, args)
     try:
         deps_list(cols)
     except ValueError:
@@ -1466,7 +1465,7 @@ def validate_character_constraints(cols, line):
             testclass='Enhanced',
             testid='invalid-deps',
             message=f"Failed to parse DEPS: '{cols[DEPS]}'."
-        ).report()
+        ).report(state, args)
         return
     if any(deprel for head, deprel in deps_list(cols)
         if not crex.edeprel.fullmatch(deprel)):
@@ -1474,7 +1473,7 @@ def validate_character_constraints(cols, line):
                 testclass='Enhanced',
                 testid='invalid-edeprel',
                 message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -1502,7 +1501,7 @@ def validate_upos(cols, line):
             testclass='Morpho',
             testid='unknown-upos',
             message=f"Unknown UPOS tag: '{cols[UPOS]}'."
-        ).report()
+        ).report(state, args)
 
 
 
@@ -1537,7 +1536,7 @@ def validate_features_level2(cols, line, args):
         Incident(
             testid='unsorted-features',
             message=f"Morphological features must be sorted: '{feats}'."
-        ).report()
+        ).report(state, args)
     attr_set = set() # I'll gather the set of features here to check later that none is repeated.
     # Subsequent higher-level tests could fail if a feature is not in the
     # Feature=Value format. If that happens, we will return False and the caller
@@ -1549,7 +1548,7 @@ def validate_features_level2(cols, line, args):
             Incident(
                 testid='invalid-feature',
                 message=f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
-            ).report()
+            ).report(state, args)
             attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
             safe = False
         else:
@@ -1561,24 +1560,24 @@ def validate_features_level2(cols, line, args):
                 Incident(
                     testid='repeated-feature-value',
                     message=f"Repeated feature values are disallowed: '{feats}'"
-                ).report()
+                ).report(state, args)
             if [v.lower() for v in values] != sorted(v.lower() for v in values):
                 Incident(
                     testid='unsorted-feature-values',
                     message=f"If a feature has multiple values, these must be sorted: '{f}'"
-                ).report()
+                ).report(state, args)
             for v in values:
                 if not crex.val.fullmatch(v):
                     Incident(
                         testid='invalid-feature-value',
                         message=f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
-                    ).report()
+                    ).report(state, args)
                 # Level 2 tests character properties and canonical order but not that the f-v pair is known.
     if len(attr_set) != len(feat_list):
         Incident(
             testid='repeated-feature',
             message=f"Repeated features are disallowed: '{feats}'."
-        ).report()
+        ).report(state, args)
     return safe
 
 
@@ -1597,7 +1596,7 @@ def features_present():
         state.seen_morpho_feature = state.current_line
         for testid in state.delayed_feature_errors:
             for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                occurrence.report()
+                occurrence.report(state, args)
 
 
 
@@ -1640,7 +1639,7 @@ def validate_deps(cols, line):
         Incident(
             testid='unsorted-deps',
             message=f"DEPS not sorted by head index: '{cols[DEPS]}'"
-        ).report()
+        ).report(state, args)
     else:
         lasth = None
         lastd = None
@@ -1650,12 +1649,12 @@ def validate_deps(cols, line):
                     Incident(
                         testid='unsorted-deps-2',
                         message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
-                    ).report()
+                    ).report(state, args)
                 elif d == lastd:
                     Incident(
                         testid='repeated-deps',
                         message=f"DEPS contain multiple instances of the same relation '{h}:{d}'"
-                    ).report()
+                    ).report(state, args)
             lasth = h
             lastd = d
     try:
@@ -1668,7 +1667,7 @@ def validate_deps(cols, line):
             testclass='Enhanced',
             testid='deps-self-loop',
             message=f"Self-loop in DEPS for '{cols[ID]}'"
-        ).report()
+        ).report(state, args)
 
 
 
@@ -1704,12 +1703,12 @@ def validate_misc(cols, line):
                 Incident(
                     testid='empty-misc',
                     message="Empty attribute in MISC; possible misinterpreted vertical bar?"
-                ).report()
+                ).report(state, args)
             else:
                 Incident(
                     testid='empty-misc-key',
                     message=f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
-                ).report()
+                ).report(state, args)
         # We do not warn about MISC items that do not contain '='.
         # But the remaining error messages below assume that ma[1] exists.
         if len(ma) == 1:
@@ -1718,22 +1717,22 @@ def validate_misc(cols, line):
             Incident(
                 testid='misc-extra-space',
                 message=f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
-            ).report()
+            ).report(state, args)
         elif re.search(r"\s$", ma[0]):
             Incident(
                 testid='misc-extra-space',
                 message=f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
-            ).report()
+            ).report(state, args)
         elif re.match(r"^\s", ma[1]):
             Incident(
                 testid='misc-extra-space',
                 message=f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
-            ).report()
+            ).report(state, args)
         elif re.search(r"\s$", ma[1]):
             Incident(
                 testid='misc-extra-space',
                 message=f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
-            ).report()
+            ).report(state, args)
         if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
             mamap.setdefault(ma[0], 0)
             mamap[ma[0]] = mamap[ma[0]] + 1
@@ -1741,14 +1740,14 @@ def validate_misc(cols, line):
             Incident(
                 testid='misc-attr-typo',
                 message=f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
-            ).report()
+            ).report(state, args)
     for a in list(mamap):
         if mamap[a] > 1:
             Incident(
                 testclass='Format', # this one is real error
                 testid='repeated-misc',
                 message=f"MISC attribute '{a}' not supposed to occur twice"
-            ).report()
+            ).report(state, args)
 
 
 
@@ -1787,14 +1786,14 @@ def validate_id_references(sentence):
                 Incident(
                     testid='invalid-head',
                     message=f"Invalid HEAD: '{cols[HEAD]}'."
-                ).report()
+                ).report(state, args)
                 ok = False
             if not (cols[HEAD] in ids or cols[HEAD] == '0'):
                 Incident(
                     testclass='Syntax',
                     testid='unknown-head',
                     message=f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
-                ).report()
+                ).report(state, args)
                 ok = False
         try:
             deps = deps_list(cols)
@@ -1803,7 +1802,7 @@ def validate_id_references(sentence):
             Incident(
                 testid='invalid-deps',
                 message=f"Failed to parse DEPS: '{cols[DEPS]}'."
-            ).report()
+            ).report(state, args)
             ok = False
             continue
         for head, deprel in deps:
@@ -1812,14 +1811,14 @@ def validate_id_references(sentence):
                 Incident(
                     testid='invalid-ehead',
                     message=f"Invalid enhanced head reference: '{head}'."
-                ).report()
+                ).report(state, args)
                 ok = False
             if not (head in ids or head == '0'):
                 Incident(
                     testclass='Enhanced',
                     testid='unknown-ehead',
                     message=f"Undefined enhanced head reference (no such ID): '{head}'."
-                ).report()
+                ).report(state, args)
                 ok = False
     return ok
 
@@ -1874,7 +1873,7 @@ def validate_tree(sentence):
                 lineno=node_line,
                 testid='head-self-loop',
                 message=f'HEAD == ID for {cols[ID]}'
-            ).report()
+            ).report(state, args)
             return False
         # Incrementally build the set of children of every node.
         children.setdefault(head, set()).add(id_)
@@ -1886,7 +1885,7 @@ def validate_tree(sentence):
             lineno=-1,
             testid='multiple-roots',
             message=f"Multiple root words: {children_0}"
-        ).report()
+        ).report(state, args)
         return False
     # Return None if there are any cycles. Otherwise we could not later ask
     # Udapi to built a data structure representing the tree.
@@ -1909,7 +1908,7 @@ def validate_tree(sentence):
             lineno=-1,
             testid='non-tree',
             message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
-        ).report()
+        ).report(state, args)
         return False
     return True
 
@@ -1936,12 +1935,12 @@ def validate_root(node, line):
             Incident(
                 testid='0-is-not-root',
                 message="DEPREL must be 'root' if HEAD is 0."
-            ).report()
+            ).report(state, args)
         if node.parent.ord != 0 and node.udeprel == 'root':
             Incident(
                 testid='root-is-not-0',
                 message="DEPREL cannot be 'root' if HEAD is not 0."
-            ).report()
+            ).report(state, args)
     # In the enhanced graph, test both regular and empty roots.
     for edep in node.deps:
         if edep['parent'].ord == 0 and lspec2ud(edep['deprel']) != 'root':
@@ -1949,13 +1948,13 @@ def validate_root(node, line):
                 testclass='Enhanced',
                 testid='enhanced-0-is-not-root',
                 message="Enhanced relation type must be 'root' if head is 0."
-            ).report()
+            ).report(state, args)
         if edep['parent'].ord != 0 and lspec2ud(edep['deprel']) == 'root':
             Incident(
                 testclass='Enhanced',
                 testid='enhanced-root-is-not-0',
                 message="Enhanced relation type cannot be 'root' if head is not 0."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -1988,7 +1987,7 @@ def validate_deps_all_or_none(sentence):
                 Incident(
                     testid='edeps-only-sometimes',
                     message=f"Enhanced graph must be empty because we saw empty DEPS on line {state.seen_tree_without_enhanced_graph}"
-                ).report()
+                ).report(state, args)
     else:
         if not state.seen_tree_without_enhanced_graph:
             state.seen_tree_without_enhanced_graph = state.sentence_line
@@ -1996,7 +1995,7 @@ def validate_deps_all_or_none(sentence):
                 Incident(
                     testid='edeps-only-sometimes',
                     message=f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
-                ).report()
+                ).report(state, args)
 
 
 
@@ -2058,7 +2057,7 @@ def validate_egraph_connected(nodes, linenos):
             testclass='Enhanced',
             testid='unconnected-egraph',
             message=f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
-        ).report()
+        ).report(state, args)
         return None
 
 
@@ -2102,7 +2101,7 @@ def validate_required_feature(feats, required_feature, required_value, incident)
             ok = False
     if not ok:
         if state.seen_morpho_feature:
-            incident.report()
+            incident.report(state, args)
         else:
             if not incident.testid in state.delayed_feature_errors:
                 state.delayed_feature_errors[incident.testid] = {'occurrences': []}
@@ -2139,12 +2138,12 @@ def validate_expected_features(node, lineno):
         Incident(
             testid='verbform-fin-without-mood',
             message=f"Finite verb '{formtl(node)}' lacks the 'Mood' feature"
-        ).report()
+        ).report(state, args)
     elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
         Incident(
             testid='mood-without-verbform-fin',
             message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
 
 
 
@@ -2186,7 +2185,7 @@ def validate_upos_vs_deprel(node, lineno):
             testclass='Warning',
             testid='fixed-without-extpos',
             message=f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
-        ).report()
+        ).report(state, args)
     # Certain relations are reserved for nominals and cannot be used for verbs.
     # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
     # Unfortunately, we cannot enforce this test because a word can be cited
@@ -2198,7 +2197,7 @@ def validate_upos_vs_deprel(node, lineno):
         Incident(
             testid='rel-upos-det',
             message=f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Nummod is for "number phrases" only. This could be interpreted as NUM only,
     # but some languages treat some cardinal numbers as NOUNs, and in
     # https://github.com/UniversalDependencies/docs/issues/596,
@@ -2207,7 +2206,7 @@ def validate_upos_vs_deprel(node, lineno):
         Incident(
             testid='rel-upos-nummod',
             message=f"'nummod' should be 'NUM' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
     # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
     # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
@@ -2218,25 +2217,25 @@ def validate_upos_vs_deprel(node, lineno):
         Incident(
             testid='rel-upos-advmod',
             message=f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
     if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
         Incident(
             testid='rel-upos-expl',
             message=f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Auxiliary verb/particle must be AUX.
     if deprel == 'aux' and not re.match(r"^(AUX)", upos):
         Incident(
             testid='rel-upos-aux',
             message=f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
     if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
         Incident(
             testid='rel-upos-cop',
             message=f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Case is normally an adposition, maybe particle.
     # However, there are also secondary adpositions and they may have the original POS tag:
     # NOUN: [cs] pomocí, prostřednictvím
@@ -2246,7 +2245,7 @@ def validate_upos_vs_deprel(node, lineno):
         Incident(
             testid='rel-upos-case',
             message=f"'case' should not be '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
     ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
     ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
@@ -2258,28 +2257,28 @@ def validate_upos_vs_deprel(node, lineno):
         Incident(
             testid='rel-upos-mark',
             message=f"'mark' should not be '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     # Cc is a conjunction, possibly an adverb or particle.
     if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
         Incident(
             testid='rel-upos-cc',
             message=f"'cc' should not be '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     if deprel == 'punct' and upos != 'PUNCT':
         Incident(
             testid='rel-upos-punct',
             message=f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
         Incident(
             testid='upos-rel-punct',
             message=f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{formtl(node)}')"
-        ).report()
+        ).report(state, args)
     if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
         Incident(
             testid='rel-upos-fixed',
             message=f"'fixed' should not be used for proper nouns ('{formtl(node)}')."
-        ).report()
+        ).report(state, args)
 
 
 
@@ -2312,14 +2311,14 @@ def validate_flat_foreign(node, lineno, linenos):
             nodeid=node.ord,
             testid='flat-foreign-upos-feats',
             message="The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        ).report()
+        ).report(state, args)
     if parent.upos != 'X' or str(parent.feats) != 'Foreign=Yes':
         Incident(
             lineno=linenos[str(parent.ord)],
             nodeid=parent.ord,
             testid='flat-foreign-upos-feats',
             message="The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-        ).report()
+        ).report(state, args)
 
 
 
@@ -2355,7 +2354,7 @@ def validate_left_to_right_relations(node, lineno):
                 testclass='Syntax',
                 testid=f"right-to-left-{node.udeprel}",
                 message=f"Parent of relation '{node.deprel}' must precede the child in the word order."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -2419,7 +2418,7 @@ def validate_single_subject(node, lineno):
             testid='too-many-subjects',
             message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'.",
             explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
-        ).report()
+        ).report(state, args)
 
 
 
@@ -2448,7 +2447,7 @@ def validate_single_object(node, lineno):
             testclass='Syntax',
             testid='too-many-objects',
             message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under one predicate."
-        ).report()
+        ).report(state, args)
 
 
 
@@ -2487,7 +2486,7 @@ def validate_orphan(node, lineno):
                 testclass='Warning',
                 testid='orphan-parent',
                 message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -2566,13 +2565,13 @@ def validate_functional_leaves(node, lineno, linenos):
                     nodeid=node.ord,
                     testid='leaf-mark-case',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 Incident(
                     nodeid=node.ord,
                     testid='leaf-aux-cop',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
             # People have identified various constructions where the restriction
             # on children of det dependents may have to be relaxed even if not
@@ -2612,19 +2611,19 @@ def validate_functional_leaves(node, lineno, linenos):
                     nodeid=node.ord,
                     testid='leaf-det',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                 Incident(
                     nodeid=node.ord,
                     testid='leaf-clf',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
                 Incident(
                     nodeid=node.ord,
                     testid='leaf-cc',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             # Fixed expressions should not be nested, i.e., no chains of fixed relations.
             # As they are supposed to represent functional elements, they should not have
             # other dependents either, with the possible exception of conj.
@@ -2638,14 +2637,14 @@ def validate_functional_leaves(node, lineno, linenos):
                     nodeid=node.ord,
                     testid='leaf-fixed',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             # Goeswith cannot have any children, not even another goeswith.
             elif pdeprel == 'goeswith':
                 Incident(
                     nodeid=node.ord,
                     testid='leaf-goeswith',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
             # Punctuation can exceptionally have other punct children if an exclamation
             # mark is in brackets or quotes. It cannot have other children.
             elif pdeprel == 'punct' and cdeprel != 'punct':
@@ -2653,7 +2652,7 @@ def validate_functional_leaves(node, lineno, linenos):
                     nodeid=node.ord,
                     testid='leaf-punct',
                     message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                ).report()
+                ).report(state, args)
 
 
 
@@ -2690,7 +2689,7 @@ def validate_fixed_span(node, lineno):
                 testclass='Warning',
                 testid='fixed-gap',
                 message=f"Gaps in fixed expression {str(fxordlist)} '{fxexpr}'"
-            ).report()
+            ).report(state, args)
 
 
 
@@ -2725,7 +2724,7 @@ def validate_goeswith_span(node, lineno):
                 nodeid=node.ord,
                 testid='goeswith-gap',
                 message=f"Gaps in goeswith group {str(gwordlist)} != {str(gwordrange)}."
-            ).report()
+            ).report(state, args)
         # Non-last node in a goeswith range must have a space after itself.
         nospaceafter = [x for x in gwlist[:-1] if x.misc['SpaceAfter'] == 'No']
         if nospaceafter:
@@ -2733,7 +2732,7 @@ def validate_goeswith_span(node, lineno):
                 nodeid=node.ord,
                 testid='goeswith-nospace',
                 message="'goeswith' cannot connect nodes that are not separated by whitespace."
-            ).report()
+            ).report(state, args)
         # This is not about the span of the interrupted word, but since we already
         # know that we are at the head of a goeswith word, let's do it here, too.
         # Every goeswith parent should also have Typo=Yes. However, this is not
@@ -2770,26 +2769,26 @@ def validate_goeswith_morphology_and_edeps(node, lineno):
                 nodeid=node.ord,
                 testid='goeswith-lemma',
                 message="The lemma of a 'goeswith'-connected word must be annotated only at the first part."
-            ).report()
+            ).report(state, args)
         if node.upos != 'X':
             Incident(
                 nodeid=node.ord,
                 testid='goeswith-upos',
                 message="The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
-            ).report()
+            ).report(state, args)
         if str(node.feats) != '_':
             Incident(
                 nodeid=node.ord,
                 testid='goeswith-feats',
                 message="The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
-            ).report()
+            ).report(state, args)
         if str(node.raw_deps) != '_' and str(node.raw_deps) != str(node.parent.ord)+':'+node.deprel:
             Incident(
                 nodeid=node.ord,
                 testclass='Enhanced',
                 testid='goeswith-edeps',
                 message="A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
-            ).report()
+            ).report(state, args)
 
 
 
@@ -2906,14 +2905,14 @@ def validate_projective_punctuation(node, lineno):
                 nodeid=node.ord,
                 testid='punct-causes-nonproj',
                 message=f"Punctuation must not cause non-projectivity of nodes {nonprojnodes}"
-            ).report()
+            ).report(state, args)
         gap = get_gap(node)
         if gap:
             Incident(
                 nodeid=node.ord,
                 testid='punct-is-nonproj',
                 message=f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
-            ).report()
+            ).report(state, args)
 
 
 
@@ -2985,7 +2984,7 @@ def validate_enhanced_orphan(node, line):
                     nodeid=node.ord,
                     testid='empty-node-after-eorphan',
                     message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
-                ).report()
+                ).report(state, args)
     udeprels = set([lspec2ud(edep['deprel']) for edep in node.deps])
     if 'orphan' in udeprels:
         if not state.seen_enhanced_orphan:
@@ -2996,7 +2995,7 @@ def validate_enhanced_orphan(node, line):
                 nodeid=node.ord,
                 testid='eorphan-after-empty-node',
                 message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
-            ).report()
+            ).report(state, args)
 
 
 
@@ -3048,14 +3047,14 @@ def validate_words_with_spaces(node, line, lang):
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
                         explanation=data.explain_tospace(lang)
-                    ).report()
+                    ).report(state, args)
             else:
                 Incident(
                     nodeid=node.ord,
                     testid='invalid-word-with-space',
                     message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
                     explanation=data.explain_tospace(lang)
-                ).report()
+                ).report(state, args)
 
 
 
@@ -3102,7 +3101,7 @@ def validate_features_level4(node, line, lang):
                     nodeid=node.ord,
                     testid='mwt-typo-repeated-at-word',
                     message="Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
-                ).report()
+                ).report(state, args)
             # In case of code switching, the current token may not be in the default language
             # and then its features are checked against a different feature set. An exception
             # is the feature Foreign, which always relates to the default language of the
@@ -3121,7 +3120,7 @@ def validate_features_level4(node, line, lang):
                         testid='feature-unknown',
                         message=f"Feature {f} is not documented for language [{effective_lang}] ('{formtl(node)}').",
                         explanation=data.explain_feats(effective_lang)
-                    ).report()
+                    ).report(state, args)
                 else:
                     lfrecord = effective_featset[f]
                     if lfrecord['permitted'] == 0:
@@ -3130,7 +3129,7 @@ def validate_features_level4(node, line, lang):
                             testid='feature-not-permitted',
                             message=f"Feature {f} is not permitted in language [{effective_lang}] ('{formtl(node)}').",
                             explanation=data.explain_feats(effective_lang)
-                        ).report()
+                        ).report(state, args)
                     else:
                         values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                         if not v in values:
@@ -3139,21 +3138,21 @@ def validate_features_level4(node, line, lang):
                                 testid='feature-value-unknown',
                                 message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
-                            ).report()
+                            ).report(state, args)
                         elif not node.upos in lfrecord['byupos']:
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-upos-not-permitted',
                                 message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
-                            ).report()
+                            ).report(state, args)
                         elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                             Incident(
                                 nodeid=node.ord,
                                 testid='feature-value-upos-not-permitted',
                                 message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
-                            ).report()
+                            ).report(state, args)
     if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
         state.mwt_typo_span_end = None
 
@@ -3210,7 +3209,7 @@ def validate_deprels(node, line, args):
                 testid='unknown-deprel',
                 message=f"Unknown DEPREL label: '{deprel}'",
                 explanation=data.explain_deprel(mainlang)
-            ).report()
+            ).report(state, args)
     # If there are enhanced dependencies, test their deprels, too.
     # We already know that the contents of DEPS is parsable (deps_list() was
     # first called from validate_id_references() and the head indices are OK).
@@ -3232,7 +3231,7 @@ def validate_deprels(node, line, args):
                     testid='unknown-edeprel',
                     message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
                     explanation=data.explain_edeprel(mainlang)
-                ).report()
+                ).report(state, args)
 
 
 
@@ -3271,7 +3270,7 @@ def validate_auxiliary_verbs(node, line, lang):
                 testid='aux-lemma',
                 message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
                 explanation=data.explain_aux(lang)
-            ).report()
+            ).report(state, args)
 
 
 
@@ -3304,7 +3303,7 @@ def validate_copula_lemmas(node, line, lang):
                 testid='cop-lemma',
                 message=f"'{node.lemma}' is not a copula in language [{lang}]",
                 explanation=data.explain_cop(lang)
-            ).report()
+            ).report(state, args)
 
 
 
@@ -3341,7 +3340,7 @@ def validate_misc_entity(comments, sentence):
                     Incident(
                         testid='global-entity-mismatch',
                         message=f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{state.global_entity_attribute_string}' on line {state.seen_global_entity}."
-                    ).report()
+                    ).report(state, args)
             else:
                 state.seen_global_entity = state.comment_start_line + iline
                 state.global_entity_attribute_string = global_entity_match.group(1)
@@ -3349,44 +3348,44 @@ def validate_misc_entity(comments, sentence):
                     Incident(
                         testid='spurious-global-entity',
                         message=f"Cannot parse global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                    ).report()
+                    ).report(state, args)
                 else:
                     global_entity_attributes = state.global_entity_attribute_string.split('-')
                     if not 'eid' in global_entity_attributes:
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'eid'."
-                        ).report()
+                        ).report(state, args)
                     elif global_entity_attributes[0] != 'eid':
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Attribute 'eid' must come first in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                        ).report()
+                        ).report(state, args)
                     if not 'etype' in global_entity_attributes:
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'etype'."
-                        ).report()
+                        ).report(state, args)
                     elif global_entity_attributes[1] != 'etype':
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Attribute 'etype' must come second in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                        ).report()
+                        ).report(state, args)
                     if not 'head' in global_entity_attributes:
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'head'."
-                        ).report()
+                        ).report(state, args)
                     elif global_entity_attributes[2] != 'head':
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Attribute 'head' must come third in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                        ).report()
+                        ).report(state, args)
                     if 'other' in global_entity_attributes and global_entity_attributes[3] != 'other':
                         Incident(
                             testid='spurious-global-entity',
                             message=f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                        ).report()
+                        ).report(state, args)
                     # Fill the global dictionary that maps attribute names to list indices.
                     i = 0
                     for a in global_entity_attributes:
@@ -3394,7 +3393,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='spurious-global-entity',
                                 message=f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                            ).report()
+                            ).report(state, args)
                         else:
                             state.entity_attribute_index[a] = i
                         i += 1
@@ -3424,37 +3423,37 @@ def validate_misc_entity(comments, sentence):
             Incident(
                 testid='entity-mwt',
                 message="Entity or coreference annotation must not occur at a multiword-token line."
-            ).report()
+            ).report(state, args)
             continue
         if len(entity)>1:
             Incident(
                 testid='multiple-entity-statements',
                 message=f"There can be at most one 'Entity=' statement in MISC but we have {str(misc)}."
-            ).report()
+            ).report(state, args)
             continue
         if len(bridge)>1:
             Incident(
                 testid='multiple-bridge-statements',
                 message=f"There can be at most one 'Bridge=' statement in MISC but we have {str(misc)}."
-            ).report()
+            ).report(state, args)
             continue
         if len(splitante)>1:
             Incident(
                 testid='multiple-splitante-statements',
                 message=f"There can be at most one 'SplitAnte=' statement in MISC but we have {str(misc)}."
-            ).report()
+            ).report(state, args)
             continue
         if len(bridge)>0 and len(entity)==0:
             Incident(
                 testid='bridge-without-entity',
                 message=f"The 'Bridge=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
-            ).report()
+            ).report(state, args)
             continue
         if len(splitante)>0 and len(entity)==0:
             Incident(
                 testid='splitante-without-entity',
                 message=f"The 'SplitAnte=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
-            ).report()
+            ).report(state, args)
             continue
         # There is at most one Entity (and only if it is there, there may be also one Bridge and/or one SplitAnte).
         if len(entity)>0:
@@ -3462,14 +3461,14 @@ def validate_misc_entity(comments, sentence):
                 Incident(
                     testid='entity-without-global-entity',
                     message="No global.Entity comment was found before the first 'Entity' in MISC."
-                ).report()
+                ).report(state, args)
                 continue
             match = re.match(r"^Entity=((?:\([^( )]+(?:-[^( )]+)*\)?|[^( )]+\))+)$", entity[0])
             if not match:
                 Incident(
                     testid='spurious-entity-statement',
                     message=f"Cannot parse the Entity statement '{entity[0]}'."
-                ).report()
+                ).report(state, args)
             else:
                 entity_string = match.group(1)
                 # We cannot check the rest if we cannot identify the 'eid' attribute.
@@ -3498,7 +3497,7 @@ def validate_misc_entity(comments, sentence):
                     Incident(
                         testid='internal-error',
                         message='INTERNAL ERROR'
-                    ).report()
+                    ).report(state, args)
                 # All 1 cases should precede all 0 cases.
                 # The 2 cases can be either before the first 1 case, or after the last 0 case.
                 seen0 = False
@@ -3518,7 +3517,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='too-many-entity-attributes',
                                 message=f"Entity '{e}' has {len(attributes)} attributes while only {state.entity_attribute_number} attributes are globally declared."
-                            ).report()
+                            ).report(state, args)
                         # The raw eid (bracket eid) may include an identification of a part of a discontinuous mention,
                         # as in 'e155[1/2]'. This is fine for matching opening and closing brackets
                         # because the closing bracket must contain it too. However, to identify the
@@ -3530,7 +3529,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='too-many-entity-attributes',
                                 message=f"Entity '{e}' has {len(attributes)} attributes while only eid is expected at the closing bracket."
-                            ).report()
+                            ).report(state, args)
                         beid = attributes[0]
                     eid = beid
                     ipart = 1
@@ -3547,18 +3546,18 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='spurious-entity-id',
                                 message=f"Discontinuous mention must have at least two parts but it has one in '{beid}'."
-                            ).report()
+                            ).report(state, args)
                         if ipart > npart:
                             Incident(
                                 testid='spurious-entity-id',
                                 message=f"Entity id '{beid}' of discontinuous mention says the current part is higher than total number of parts."
-                            ).report()
+                            ).report(state, args)
                     else:
                         if re.match(r"[\[\]]", beid):
                             Incident(
                                 testid='spurious-entity-id',
                                 message=f"Entity id '{beid}' contains square brackets but does not have the form used in discontinuous mentions."
-                            ).report()
+                            ).report(state, args)
 
                     #--------------------------------------------------------------------------------------------------------------------------------
                     # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
@@ -3592,19 +3591,19 @@ def validate_misc_entity(comments, sentence):
                                         Incident(
                                             testid='misplaced-mention-part',
                                             message=f"Unexpected part of discontinuous mention '{beid}': last part was '{discontinuous_mention['last_ipart']}/{discontinuous_mention['npart']}' on line {discontinuous_mention['last_part_line']}."
-                                        ).report()
+                                        ).report(state, args)
                                         # We will update last_ipart at closing bracket, i.e., after the current part has been entirely processed.
                                         # Otherwise nested discontinuous mentions might wrongly assess where they belong.
                                     elif attrstring_to_match != discontinuous_mention['attributes']:
                                         Incident(
                                             testid='mention-attribute-mismatch',
                                             message=f"Attribute mismatch of discontinuous mention: current part has '{attrstring_to_match}', first part '{discontinuous_mention['attributes']}' was at line {discontinuous_mention['first_part_line']}."
-                                        ).report()
+                                        ).report(state, args)
                                 else:
                                     Incident(
                                         testid='misplaced-mention-part',
                                         message=f"Unexpected part of discontinuous mention '{beid}': this is part {ipart} but we do not have information about the previous parts."
-                                    ).report()
+                                    ).report(state, args)
                                     discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
                                                             'first_part_line': state.sentence_line+iline,
                                                             'last_part_line': state.sentence_line+iline,
@@ -3616,7 +3615,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='entity-across-newdoc',
                                 message=f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {state.entity_ids_other_documents[eid]}, before the last newdoc."
-                            ).report()
+                            ).report(state, args)
                         elif not eid in state.entity_ids_this_document:
                             state.entity_ids_this_document[eid] = state.sentence_line+iline
                         etype = ''
@@ -3629,7 +3628,7 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='spurious-entity-type',
                                     message=f"Spurious entity type '{etype}'."
-                                ).report()
+                                ).report(state, args)
                         if 'identity' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['identity']+1:
                             identity = attributes[state.entity_attribute_index['identity']]
                         # Check the form of the head index now.
@@ -3641,7 +3640,7 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='spurious-mention-head',
                                     message=f"Entity head index '{attributes[state.entity_attribute_index['head']]}' must be a non-zero-starting integer."
-                                ).report()
+                                ).report(state, args)
                             else:
                                 head = int(attributes[state.entity_attribute_index['head']])
                         # If this is the first mention of the entity, remember the values
@@ -3654,13 +3653,13 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='entity-type-mismatch',
                                     message=f"Entity '{eid}' cannot have type '{etype}' that does not match '{state.entity_types[eid][0]}' from the first mention on line {state.entity_types[eid][2]}."
-                                ).report()
+                                ).report(state, args)
                             # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
                             if identity != state.entity_types[eid][1]:
                                 Incident(
                                     testid='entity-identity-mismatch',
                                     message=f"Entity '{eid}' cannot have identity '{identity}' that does not match '{state.entity_types[eid][1]}' from the first mention on line {state.entity_types[eid][2]}."
-                                ).report()
+                                ).report(state, args)
                         # Remember the line where (the current part of) the entity mention starts.
                         mention = {'beid': beid, 'line': state.sentence_line+iline,
                                    'span': [cols[ID]], 'text': cols[FORM],
@@ -3682,7 +3681,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='ill-nested-entities',
                                 message=f"Cannot close entity '{beid}' because there are no open entities."
-                            ).report()
+                            ).report(state, args)
                             return
                         else:
                             # If the closing bracket does not occur where expected, it is currently only a warning.
@@ -3694,7 +3693,7 @@ def validate_misc_entity(comments, sentence):
                                     testclass='Warning',
                                     testid='ill-nested-entities-warning',
                                     message=f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
-                                ).report()
+                                ).report(state, args)
                             # Try to find and close the entity whether or not it was well-nested.
                             for i in reversed(range(len(state.open_entity_mentions))):
                                 if state.open_entity_mentions[i]['beid'] == beid:
@@ -3709,7 +3708,7 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='ill-nested-entities',
                                     message=f"Cannot close entity '{beid}' because it was not found among open entities: {str(state.open_entity_mentions)}"
-                                ).report()
+                                ).report(state, args)
                                 return
                         # If this is a part of a discontinuous mention, update the information about the whole mention.
                         # We do this after reading the new part (and not when we see its opening bracket) so that nested
@@ -3728,7 +3727,7 @@ def validate_misc_entity(comments, sentence):
                                     testclass='Internal',
                                     testid='internal-error',
                                     message="INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in state.open_discontinuous_mentions."
-                                ).report()
+                                ).report(state, args)
                                 discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
                                                         'first_part_line': opening_line,
                                                         'last_part_line': opening_line,
@@ -3746,14 +3745,14 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='mention-head-out-of-range',
                                     message=f"Entity mention head was specified as {head} on line {opening_line} but the mention has only {mention_length} nodes."
-                                ).report()
+                                ).report(state, args)
                             # Check that no two mentions have identical spans (only if this is the last part of a mention).
                             ending_mention_key = str(opening_line)+str(mention_span)
                             if ending_mention_key in ending_mentions:
                                 Incident(
                                     testid='same-span-entity-mentions',
                                     message=f"Entity mentions '{ending_mentions[ending_mention_key]}' and '{beid}' from line {opening_line} have the same span {str(mention_span)}."
-                                ).report()
+                                ).report(state, args)
                             else:
                                 ending_mentions[ending_mention_key] = beid
                             # Remember the span of the current mention so that we can later check whether it crosses the span of another mention.
@@ -3769,7 +3768,7 @@ def validate_misc_entity(comments, sentence):
                                             Incident(
                                                 testid='crossing-mentions-same-entity',
                                                 message=f"Mentions of entity '{eid}' have crossing spans: {m} vs. {str(mention_span)}."
-                                            ).report()
+                                            ).report(state, args)
                                 else:
                                     state.entity_mention_spans[eid][sentid] = {}
                             else:
@@ -3792,12 +3791,12 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='spurious-entity-statement',
                                 message=f"If there are no closing entity brackets, single-node entity must follow all opening entity brackets in '{entity[0]}'."
-                            ).report()
+                            ).report(state, args)
                         if seen0 and seen2:
                             Incident(
                                 testid='spurious-entity-statement',
                                 message=f"Single-node entity must either precede all closing entity brackets or follow all opening entity brackets in '{entity[0]}'."
-                            ).report()
+                            ).report(state, args)
                         seen0 = True
                         seen2 = False
                         opening_bracket()
@@ -3806,7 +3805,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='spurious-entity-statement',
                                 message=f"If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '{entity[0]}'."
-                            ).report()
+                            ).report(state, args)
                         seen2 = True
                         opening_bracket()
                         closing_bracket()
@@ -3815,7 +3814,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='spurious-entity-statement',
                                 message=f"All closing entity brackets must precede all opening entity brackets in '{entity[0]}'."
-                            ).report()
+                            ).report(state, args)
                         seen1 = True
                         closing_bracket()
             # Now we are done with checking the 'Entity=' statement.
@@ -3826,7 +3825,7 @@ def validate_misc_entity(comments, sentence):
                     Incident(
                         testid='spurious-bridge-statement',
                         message=f"Cannot parse the Bridge statement '{bridge[0]}'."
-                    ).report()
+                    ).report(state, args)
                 else:
                     bridges = match.group(1).split(',')
                     # Hash src<tgt pairs and make sure they are not repeated.
@@ -3842,17 +3841,17 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='spurious-bridge-relation',
                                     message=f"Bridge must not point from an entity to itself: '{b}'."
-                                ).report()
+                                ).report(state, args)
                             if not tgteid in starting_mentions:
                                 Incident(
                                     testid='misplaced-bridge-statement',
                                     message=f"Bridge relation '{b}' must be annotated at the beginning of a mention of entity '{tgteid}'."
-                                ).report()
+                                ).report(state, args)
                             if bridgekey in srctgt:
                                 Incident(
                                     testid='repeated-bridge-relation',
                                     message=f"Bridge relation '{bridgekey}' must not be repeated in '{b}'."
-                                ).report()
+                                ).report(state, args)
                             else:
                                 srctgt[bridgekey] = True
                             # Check in the global dictionary whether this relation has been specified at another mention.
@@ -3861,7 +3860,7 @@ def validate_misc_entity(comments, sentence):
                                     Incident(
                                         testid='bridge-relation-mismatch',
                                         message=f"Bridge relation '{b}' type does not match '{state.entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {state.entity_bridge_relations[bridgekey]['line']}."
-                                    ).report()
+                                    ).report(state, args)
                             else:
                                 state.entity_bridge_relations[bridgekey] = {'relation': relation, 'line': state.sentence_line+iline}
             if len(splitante) > 0:
@@ -3870,7 +3869,7 @@ def validate_misc_entity(comments, sentence):
                     Incident(
                         testid='spurious-splitante-statement',
                         message=f"Cannot parse the SplitAnte statement '{splitante[0]}'."
-                    ).report()
+                    ).report(state, args)
                 else:
                     antecedents = match.group(1).split(',')
                     # Hash src<tgt pairs and make sure they are not repeated. Also remember the number of antecedents for each target.
@@ -3885,18 +3884,18 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='spurious-splitante-relation',
                                     message=f"SplitAnte must not point from an entity to itself: '{srceid}<{tgteid}'."
-                                ).report()
+                                ).report(state, args)
                             elif not tgteid in starting_mentions:
                                 Incident(
                                     testid='misplaced-splitante-statement',
                                     message=f"SplitAnte relation '{a}' must be annotated at the beginning of a mention of entity '{tgteid}'."
-                                ).report()
+                                ).report(state, args)
                             if srceid+'<'+tgteid in srctgt:
                                 str_antecedents = ','.join(antecedents)
                                 Incident(
                                     testid='repeated-splitante-relation',
                                     message=f"SplitAnte relation '{srceid}<{tgteid}' must not be repeated in '{str_antecedents}'."
-                                ).report()
+                                ).report(state, args)
                             else:
                                 srctgt[srceid+'<'+tgteid] = True
                             if tgteid in tgtante:
@@ -3909,7 +3908,7 @@ def validate_misc_entity(comments, sentence):
                             Incident(
                                 testid='only-one-split-antecedent',
                                 message=f"SplitAnte statement '{str_antecedents}' must specify at least two antecedents for entity '{tgteid}'."
-                            ).report()
+                            ).report(state, args)
                         # Check in the global dictionary whether this relation has been specified at another mention.
                         tgtante[tgteid].sort()
                         if tgteid in state.entity_split_antecedents:
@@ -3917,7 +3916,7 @@ def validate_misc_entity(comments, sentence):
                                 Incident(
                                     testid='split-antecedent-mismatch',
                                     message=f"Split antecedent of entity '{tgteid}' does not match '{state.entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {state.entity_split_antecedents[tgteid]['line']}."
-                                ).report()
+                                ).report(state, args)
                         else:
                             state.entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
         iline += 1
@@ -3925,14 +3924,14 @@ def validate_misc_entity(comments, sentence):
         Incident(
             testid='cross-sentence-mention',
             message=f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_entity_mentions)}."
-        ).report()
+        ).report(state, args)
         # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
         state.open_entity_mentions = []
     if len(state.open_discontinuous_mentions)>0:
         Incident(
             testid='cross-sentence-mention',
             message=f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_discontinuous_mentions)}."
-        ).report()
+        ).report(state, args)
         # Close the mentions forcibly. Otherwise one omission would cause the error messages to to explode because the words would be collected from the remainder of the file.
         state.open_discontinuous_mentions = {}
     # Since we only test mentions within one sentence at present, we do not have to carry all mention spans until the end of the corpus.
@@ -4059,7 +4058,7 @@ class Validator:
                 testclass='Enhanced',
                 testid='edeps-identical-to-basic-trees',
                 message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
-            ).report()
+            ).report(state, args)
 
 
 
@@ -4176,7 +4175,7 @@ def main():
             testclass='Internal',
             testid='exception',
             message="Exception caught!"
-        ).report()
+        ).report(state, args)
         # If the output is used in an HTML page, it must be properly escaped
         # because the traceback can contain e.g. "<module>". However, escaping
         # is beyond the goal of validation, which can be also run in a console.
