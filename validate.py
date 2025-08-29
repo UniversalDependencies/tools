@@ -4081,6 +4081,11 @@ def get_alt_language(node):
     return None
 
 
+#==============================================================================
+# Argument processing.
+#==============================================================================
+
+
 def build_argparse():
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
