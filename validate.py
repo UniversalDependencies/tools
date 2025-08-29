@@ -4081,10 +4081,7 @@ def get_alt_language(node):
     return None
 
 
-
-def main():
-    global state, args
-
+def build_argparse():
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
     io_group = opt_parser.add_argument_group("Input / output options")
@@ -4127,7 +4124,10 @@ def main():
     coref_group.add_argument('--coref',
                              action='store_true', default=False, dest='check_coref',
                              help='Test coreference and entity-related annotation in MISC.')
+    return opt_parser
 
+def parse_args():
+    opt_parser = build_argparse()
     args = opt_parser.parse_args() #Parsed command-line arguments
 
     # Level of validation
@@ -4141,6 +4141,12 @@ def main():
     # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
     if args.level < 4:
         args.lang = 'ud'
+    return args
+
+def main():
+    global state, args
+
+    args = parse_args()
 
     try:
         open_files = []
