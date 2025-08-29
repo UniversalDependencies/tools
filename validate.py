@@ -580,7 +580,6 @@ class CompiledRegexes:
 state = State()
 data = Data()
 crex = CompiledRegexes()
-conllu_reader = udapi.block.read.conllu.Conllu()
 
 
 
@@ -1958,11 +1957,6 @@ def validate_root(node, line):
                 message="Enhanced relation type cannot be 'root' if head is not 0."
             ).report()
 
-
-
-def build_tree_udapi(lines):
-    root = conllu_reader.read_tree_from_lines(lines)
-    return root
 
 
 
@@ -3952,114 +3946,120 @@ def validate_misc_entity(comments, sentence):
 # Main part.
 #==============================================================================
 
+class Validator:
+    def __init__(self):
+        self.conllu_reader = udapi.block.read.conllu.Conllu()
 
+    def build_tree_udapi(self, lines):
+        root = self.conllu_reader.read_tree_from_lines(lines)
+        return root
 
-def validate_file(inp, args):
-    """
-    The main entry point for all validation tests applied to one input file.
-    It reads sentences from the input stream one by one, each sentence is
-    immediately tested.
+    def validate_file(self, inp, args):
+        """
+        The main entry point for all validation tests applied to one input file.
+        It reads sentences from the input stream one by one, each sentence is
+        immediately tested.
 
-    Parameters
-    ----------
-    inp : open file handle
-        The CoNLL-U-formatted input stream.
-    args : object
-        Command-line options; we need .level and .lang.
-    """
-    for all_lines, comments, sentence in next_sentence(inp, args):
-        linenos = get_line_numbers_for_ids(sentence)
-        # The individual lines were validated already in next_sentence().
-        # What follows is tests that need to see the whole tree.
-        # Note that low-level errors such as wrong number of columns would be
-        # reported in next_sentence() but then the lines would be thrown away
-        # and no tree lines would be yielded—meaning that we will not encounter
-        # such a mess here.
-        idseqok = validate_id_sequence(sentence) # level 1
-        validate_token_ranges(sentence) # level 1
-        if args.level > 1:
-            idrefok = idseqok and validate_id_references(sentence) # level 2
-            if not idrefok:
-                continue
-            treeok = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-            if not treeok:
-                continue
-            # Tests of individual nodes that operate on pre-Udapi data structures.
-            # Some of them (bad feature format) may lead to skipping Udapi completely.
-            colssafe = True
-            line = state.sentence_line - 1
-            for cols in sentence:
-                line += 1
-                # Multiword tokens and empty nodes can or must have certain fields empty.
-                if is_multiword_token(cols):
-                    validate_mwt_empty_vals(cols, line)
-                if is_empty_node(cols):
-                    validate_empty_node_empty_vals(cols, line) # level 2
-                if is_word(cols) or is_empty_node(cols):
-                    validate_character_constraints(cols, line) # level 2
-                    validate_upos(cols, line) # level 2
-                    colssafe = colssafe and validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
-                validate_deps(cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
-            if not colssafe:
-                continue
-            # If we successfully passed all the tests above, it is probably
-            # safe to give the lines to Udapi and ask it to build the tree data
-            # structure for us.
-            tree = build_tree_udapi(all_lines)
-            validate_sent_id(comments, args.lang) # level 2
-            validate_text_meta(comments, sentence, args) # level 2
-            # Test that enhanced graphs exist either for all sentences or for
-            # none. As a side effect, get line numbers for all nodes including
-            # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
-            # These line numbers are returned in any case, even if there are no
-            # enhanced dependencies, hence we can rely on them even with basic
-            # trees.
-            validate_deps_all_or_none(sentence)
-            # Tests of individual nodes with Udapi.
-            nodes = tree.descendants_and_empty
-            for node in nodes:
-                line = linenos[str(node.ord)]
-                validate_deprels(node, line, args) # level 2 and 4
-                validate_root(node, line) # level 2: deprel root <=> head 0
+        Parameters
+        ----------
+        inp : open file handle
+            The CoNLL-U-formatted input stream.
+        args : object
+            Command-line options; we need .level and .lang.
+        """
+        for all_lines, comments, sentence in next_sentence(inp, args):
+            linenos = get_line_numbers_for_ids(sentence)
+            # The individual lines were validated already in next_sentence().
+            # What follows is tests that need to see the whole tree.
+            # Note that low-level errors such as wrong number of columns would be
+            # reported in next_sentence() but then the lines would be thrown away
+            # and no tree lines would be yielded—meaning that we will not encounter
+            # such a mess here.
+            idseqok = validate_id_sequence(sentence) # level 1
+            validate_token_ranges(sentence) # level 1
+            if args.level > 1:
+                idrefok = idseqok and validate_id_references(sentence) # level 2
+                if not idrefok:
+                    continue
+                treeok = validate_tree(sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+                if not treeok:
+                    continue
+                # Tests of individual nodes that operate on pre-Udapi data structures.
+                # Some of them (bad feature format) may lead to skipping Udapi completely.
+                colssafe = True
+                line = state.sentence_line - 1
+                for cols in sentence:
+                    line += 1
+                    # Multiword tokens and empty nodes can or must have certain fields empty.
+                    if is_multiword_token(cols):
+                        validate_mwt_empty_vals(cols, line)
+                    if is_empty_node(cols):
+                        validate_empty_node_empty_vals(cols, line) # level 2
+                    if is_word(cols) or is_empty_node(cols):
+                        validate_character_constraints(cols, line) # level 2
+                        validate_upos(cols, line) # level 2
+                        colssafe = colssafe and validate_features_level2(cols, line, args) # level 2 (level 4 tests will be called later)
+                    validate_deps(cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    validate_misc(cols, line) # level 2; must operate on pre-Udapi MISC
+                if not colssafe:
+                    continue
+                # If we successfully passed all the tests above, it is probably
+                # safe to give the lines to Udapi and ask it to build the tree data
+                # structure for us.
+                tree = self.build_tree_udapi(all_lines)
+                validate_sent_id(comments, args.lang) # level 2
+                validate_text_meta(comments, sentence, args) # level 2
+                # Test that enhanced graphs exist either for all sentences or for
+                # none. As a side effect, get line numbers for all nodes including
+                # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
+                # These line numbers are returned in any case, even if there are no
+                # enhanced dependencies, hence we can rely on them even with basic
+                # trees.
+                validate_deps_all_or_none(sentence)
+                # Tests of individual nodes with Udapi.
+                nodes = tree.descendants_and_empty
+                for node in nodes:
+                    line = linenos[str(node.ord)]
+                    validate_deprels(node, line, args) # level 2 and 4
+                    validate_root(node, line) # level 2: deprel root <=> head 0
+                    if args.level > 2:
+                        validate_enhanced_orphan(node, line) # level 3
+                        if args.level > 3:
+                            # To disallow words with spaces everywhere, use --lang ud.
+                            validate_words_with_spaces(node, line, args.lang) # level 4
+                            validate_features_level4(node, line, args.lang) # level 4
+                            if args.level > 4:
+                                validate_auxiliary_verbs(node, line, args.lang) # level 5
+                                validate_copula_lemmas(node, line, args.lang) # level 5
+                # Tests on whole trees and enhanced graphs.
                 if args.level > 2:
-                    validate_enhanced_orphan(node, line) # level 3
-                    if args.level > 3:
-                        # To disallow words with spaces everywhere, use --lang ud.
-                        validate_words_with_spaces(node, line, args.lang) # level 4
-                        validate_features_level4(node, line, args.lang) # level 4
-                        if args.level > 4:
-                            validate_auxiliary_verbs(node, line, args.lang) # level 5
-                            validate_copula_lemmas(node, line, args.lang) # level 5
-            # Tests on whole trees and enhanced graphs.
-            if args.level > 2:
-                validate_annotation(tree, linenos) # level 3
-                validate_egraph_connected(nodes, linenos)
-            if args.check_coref:
-                validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
-    validate_newlines(inp) # level 1
+                    validate_annotation(tree, linenos) # level 3
+                    validate_egraph_connected(nodes, linenos)
+                if args.check_coref:
+                    validate_misc_entity(comments, sentence) # optional for CorefUD treebanks
+        validate_newlines(inp) # level 1
 
 
 
-def validate_end(args):
-    """
-    Final tests after processing the entire treebank (possibly multiple files).
+    def validate_end(self, args):
+        """
+        Final tests after processing the entire treebank (possibly multiple files).
 
-    Parameters
-    ----------
-    args : object
-        Command-line options; we need .level and .lang.
-    """
-    # After reading the entire treebank (perhaps multiple files), check whether
-    # the DEPS annotation was not a mere copy of the basic trees.
-    global state
-    if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
-        Incident(
-            level=3,
-            testclass='Enhanced',
-            testid='edeps-identical-to-basic-trees',
-            message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
-        ).report()
+        Parameters
+        ----------
+        args : object
+            Command-line options; we need .level and .lang.
+        """
+        # After reading the entire treebank (perhaps multiple files), check whether
+        # the DEPS annotation was not a mere copy of the basic trees.
+        global state
+        if args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
+            Incident(
+                level=3,
+                testclass='Enhanced',
+                testid='edeps-identical-to-basic-trees',
+                message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
+            ).report()
 
 
 
@@ -4153,6 +4153,7 @@ def main():
 
     args = parse_args()
 
+    validator = Validator()
     try:
         open_files = []
         if args.input == []:
@@ -4167,8 +4168,8 @@ def main():
             else:
                 open_files.append(io.open(fname, 'r', encoding='utf-8'))
         for state.current_file_name, inp in zip(args.input, open_files):
-            validate_file(inp, args)
-        validate_end(args)
+            validator.validate_file(inp, args)
+        validator.validate_end(args)
     except:
         Incident(
             level=0,
