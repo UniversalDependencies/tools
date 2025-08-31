@@ -4246,6 +4246,32 @@ class Validator:
             ).report(state, self.args)
 
 
+    def validate_files(self, filenames):
+        try:
+            for fname in filenames:
+                state.current_file_name = fname
+                if fname == '-':
+                    # Set PYTHONIOENCODING=utf-8 before starting Python.
+                    # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
+                    # Otherwise ANSI will be read in Windows and
+                    # locale-dependent encoding will be used elsewhere.
+                    self.validate_file(sys.stdin)
+                else:
+                    with io.open(fname, 'r', encoding='utf-8') as inp:
+                        self.validate_file(inp)
+            self.validate_end()
+        except:
+            Incident(
+                state=state,
+                level=0,
+                testclass='Internal',
+                testid='exception',
+                message="Exception caught!"
+            ).report(state, self.args)
+            # If the output is used in an HTML page, it must be properly escaped
+            # because the traceback can contain e.g. "<module>". However, escaping
+            # is beyond the goal of validation, which can be also run in a console.
+            traceback.print_exc()
 
 def get_alt_language(node):
     """
@@ -4338,33 +4364,9 @@ def main():
     global state
 
     args = parse_args()
-
     validator = Validator(args)
-    try:
-        for fname in args.input:
-            state.current_file_name = fname
-            if fname == '-':
-                # Set PYTHONIOENCODING=utf-8 before starting Python.
-                # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
-                # Otherwise ANSI will be read in Windows and
-                # locale-dependent encoding will be used elsewhere.
-                validator.validate_file(sys.stdin)
-            else:
-                with io.open(fname, 'r', encoding='utf-8') as inp:
-                    validator.validate_file(inp)
-        validator.validate_end()
-    except:
-        Incident(
-            state=state,
-            level=0,
-            testclass='Internal',
-            testid='exception',
-            message="Exception caught!"
-        ).report(state, args)
-        # If the output is used in an HTML page, it must be properly escaped
-        # because the traceback can contain e.g. "<module>". However, escaping
-        # is beyond the goal of validation, which can be also run in a console.
-        traceback.print_exc()
+    validator.validate_files(args.input)
+
     # Summarize the warnings and errors.
     passed = True
     nerror = 0
