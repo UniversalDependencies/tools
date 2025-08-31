@@ -4341,18 +4341,17 @@ def main():
 
     validator = Validator(args)
     try:
-        open_files = []
         for fname in args.input:
+            state.current_file_name = fname
             if fname == '-':
                 # Set PYTHONIOENCODING=utf-8 before starting Python.
                 # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
                 # Otherwise ANSI will be read in Windows and
                 # locale-dependent encoding will be used elsewhere.
-                open_files.append(sys.stdin)
+                validator.validate_file(sys.stdin)
             else:
-                open_files.append(io.open(fname, 'r', encoding='utf-8'))
-        for state.current_file_name, inp in zip(args.input, open_files):
-            validator.validate_file(inp)
+                with io.open(fname, 'r', encoding='utf-8') as inp:
+                    validator.validate_file(inp)
         validator.validate_end()
     except:
         Incident(
