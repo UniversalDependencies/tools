@@ -4330,6 +4330,8 @@ def parse_args():
     # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
     if args.level < 4:
         args.lang = 'ud'
+    if args.input == []:
+        args.input.append('-')
     return args
 
 def main():
@@ -4340,8 +4342,6 @@ def main():
     validator = Validator(args)
     try:
         open_files = []
-        if args.input == []:
-            args.input.append('-')
         for fname in args.input:
             if fname == '-':
                 # Set PYTHONIOENCODING=utf-8 before starting Python.
