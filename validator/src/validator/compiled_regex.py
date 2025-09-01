@@ -8,13 +8,16 @@ matches the expression.
 
 import regex as re
 
-ws = re.compile(r"\s+")        # Whitespace(s)
+# Whitespace(s)
+ws = re.compile(r"\s+")
 
 # TODO: rename in 'two_ws'
-ws2 = re.compile(r"\s\s")      # Exactly two whitespaces
+# Exactly two whitespaces
+ws2 = re.compile(r"\s\s")
 
 # TODO: rename in 'integer'
-wordid = re.compile(r"[1-9][0-9]*")  # Integer
+# Integer
+wordid = re.compile(r"[1-9][0-9]*")
 
 # TODO: rename in 'integer_range'
 # Multiword token id: range of integers.
@@ -47,33 +50,45 @@ text = re.compile(r"#\s*text\s*=\s*(.*\S)")
 # It occurs once per document and it is optional (only CorefUD data).
 # The actual attribute declaration is bracketed so it can be captured in the match.
 # ! proposal for new regex: "# global\.Entity = (.+)"
+# TODO: write test
 global_entity = re.compile(r"#\s*global\.Entity\s*=\s*(.+)")
 
 # TODO: rename in 'uppercase_string'
 # UPOS tag.
 upos = re.compile(r"[A-Z]+")
 
-    #     # Feature=value pair.
-    #     # Feature name and feature value are bracketed so that each can be captured separately in the match.
-    #     self.featval = re.compile(r"([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)")
-    #     self.val = re.compile(r"[A-Z0-9][A-Za-z0-9]*")
-    #     # Basic parent reference (HEAD).
-    #     self.head = re.compile(r"(0|[1-9][0-9]*)")
-    #     # Enhanced parent reference (head).
-    #     self.ehead = re.compile(r"(0|[1-9][0-9]*)(\.[1-9][0-9]*)?")
-    #     # Basic dependency relation (including optional subtype).
-    #     self.deprel = re.compile(r"[a-z]+(:[a-z]+)?")
-    #     # Enhanced dependency relation (possibly with Unicode subtypes).
-    #     # Ll ... lowercase Unicode letters
-    #     # Lm ... modifier Unicode letters (e.g., superscript h)
-    #     # Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
-    #     # M .... combining diacritical marks
-    #     # Underscore is allowed between letters but not at beginning, end, or next to another underscore.
-    #     edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
-    #     # There must be always the universal part, consisting only of ASCII letters.
-    #     # There can be up to three additional, colon-separated parts: subtype, preposition and case.
-    #     # One of them, the preposition, may contain Unicode letters. We do not know which one it is
-    #     # (only if there are all four parts, we know it is the third one).
-    #     # ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
-    #     edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
-    #     self.edeprel = re.compile(edeprel_resrc)
+# Feature=value pair.
+# Feature name and feature value are bracketed so that each can be captured separately in the match.
+featval = re.compile(
+    r"([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)"
+    )
+val = re.compile(r"[A-Z0-9][A-Za-z0-9]*") 	# ! why do we need this?
+											# TODO: test?
+
+# Basic parent reference (HEAD).
+# TODO: rename in 'natural_number'
+head = re.compile(r"(0|[1-9][0-9]*)")
+
+# Enhanced parent reference (head).
+# TODO: rename in 'decimal_withzero'
+ehead = re.compile(r"(0|[1-9][0-9]*)(\.[1-9][0-9]*)?")
+
+# Basic dependency relation (including optional subtype).
+deprel = re.compile(r"[a-z]+(:[a-z]+)?")
+
+# TODO: write test
+# Enhanced dependency relation (possibly with Unicode subtypes).
+# Ll ... lowercase Unicode letters
+# Lm ... modifier Unicode letters (e.g., superscript h)
+# Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+# M .... combining diacritical marks
+# Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
+
+# There must be always the universal part, consisting only of ASCII letters.
+# There can be up to three additional, colon-separated parts: subtype, preposition and case.
+# One of them, the preposition, may contain Unicode letters. We do not know which one it is
+# (only if there are all four parts, we know it is the third one).
+# ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
+edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
+edeprel = re.compile(edeprel_resrc)

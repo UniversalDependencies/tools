@@ -1,32 +1,9 @@
 CLASSES
     builtins.object
-        CompiledRegexes
         Data
         Incident
         State
         Validator
-
-    TODO: mv to module; not necessarily class, add tests
-    class CompiledRegexes(builtins.object)
-     |  The CompiledRegexes class holds various regular expressions needed to
-     |  recognize individual elements of the CoNLL-U format, precompiled to speed
-     |  up parsing. Individual expressions are typically not enclosed in ^...$
-     |  because one can use re.fullmatch() if it is desired that the whole string
-     |  matches the expression.
-     |
-     |  Methods defined here:
-     |
-     |  __init__(self)
-     |      Initialize self.  See help(type(self)) for accurate signature.
-     |
-     |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
-     |
-     |  __dict__
-     |      dictionary for instance variables
-     |
-     |  __weakref__
-     |      list of weak references to the object
 
     WHAT: all the stuff you load from spec files
     TODO: find better name (UDspec?); divide into several modules
@@ -155,7 +132,7 @@ CLASSES
      |  default_testclass = 'Format'
      |
      |  default_testid = 'generic-error'
-    
+
     TODO: transform into data class
     class State(builtins.object)
      |  The State class holds various global data about where we are in the file
@@ -172,13 +149,13 @@ CLASSES
      |  Validator(args)
      |
      |  Methods defined here:
-     |  
+     |
      |  WHAT: init CoNLL-U reader
      |  __init__(self, args)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  build_tree_udapi(self, lines)
-     |  
+     |
      |  TODO: mv to module for tree ops?
      |  get_caused_nonprojectivities(self, node)
      |      Checks whether a node is in a gap of a nonprojective edge. Report true only
@@ -261,7 +238,7 @@ CLASSES
      |
      |  ACTUAL VALIDATION FUNCTIONS
      |  TODO: add returns
-     |  
+     |
      |  validate_annotation(self, state, tree, linenos)
      |      Checks universally valid consequences of the annotation guidelines. Looks
      |      at regular nodes and basic tree, not at enhanced graph (which is checked
@@ -776,7 +753,7 @@ CLASSES
      |
      |  ----------------------------------------------------------------------
      |  Static methods defined here:
-     |  
+     |
      |  TODO: mv to utils
      |  deps_list(cols)
      |      Parses the contents of the DEPS column and returns a list of incoming
@@ -854,7 +831,7 @@ FUNCTIONS
     main()
 
 TODO: move to utils module
-HELPER FUNCTIONS    
+HELPER FUNCTIONS
     formtl(node)
 
     get_alt_language(node)
