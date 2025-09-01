@@ -7,8 +7,8 @@ import os
 def setup_logging(logger):
 	load_dotenv()
 
-	log_file = os.getenv("LOG_FILE", "validate.log")
-	error_file = os.getenv("ERROR_FILE", "validate.err")
+	log_file = os.getenv("LOG_FILE", "logs/validate.log")
+	error_file = os.getenv("ERROR_FILE", "logs/validate.err")
 	log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
 	logger.setLevel(getattr(logging, log_level, logging.INFO))
@@ -28,3 +28,12 @@ def setup_logging(logger):
 
 	logger.addHandler(file_handler)
 	logger.addHandler(error_handler)
+
+
+def pprint(args):
+
+    ret_str = ""
+    for key, value in args.items():
+        ret_str += f"{key:40} - {str(value):80}\n"
+
+    return ret_str
