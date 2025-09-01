@@ -318,7 +318,7 @@ FUNCTIONS
         be reported as errors. In addition, if any such errors have already been
         encountered, they will be reported now.
 
-    get_alt_language(misc)
+    utils.get_alt_language(misc)
         Takes the value of the MISC column for a token and checks it for the
         attribute Lang=xxx. If present, it is interpreted as the code of the
         language in which the current token is. This is uselful for code switching,
@@ -408,7 +408,7 @@ FUNCTIONS
 
 DATA
     AUX = 11
-    COLCOUNT = 10
+    n_cols = 10
     COLNAMES = ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'D...
     COP = 12
     DEPREL = 7
