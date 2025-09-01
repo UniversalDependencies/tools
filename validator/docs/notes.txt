@@ -774,78 +774,6 @@ CLASSES
      |      lang : str
      |          Code of the main language of the corpus.
      |
-     |  ----------------------------------------------------------------------
-     |  Static methods defined here:
-     |  
-     |  TODO: mv to utils
-     |  deps_list(cols)
-     |      Parses the contents of the DEPS column and returns a list of incoming
-     |      enhanced dependencies. This is needed in early tests, before the sentence
-     |      has been fed to Udapi.
-     |
-     |      Parameters
-     |      ----------
-     |      cols : list
-     |          The values of the columns on the current node / token line.
-     |
-     |      Raises
-     |      ------
-     |      ValueError
-     |          If the contents of DEPS cannot be parsed. Note that this does not catch
-     |          all possible violations of the format, e.g., bad order of the relations
-     |          will not raise an exception.
-     |
-     |      Returns
-     |      -------
-     |      deps : list
-     |          Each list item is a two-member list, containing the parent index (head)
-     |          and the relation type (deprel).
-     |
-     |  features_present(state)
-     |      In general, the annotation of morphological features is optional, although
-     |      highly encouraged. However, if the treebank does have features, then certain
-     |      features become required. This function is called when the first morphological
-     |      feature is encountered. It remembers that from now on, missing features can
-     |      be reported as errors. In addition, if any such errors have already been
-     |      encountered, they will be reported now.
-     |
-     |  get_gap(node)
-     |      Returns the list of nodes between node and its parent that are not dominated
-     |      by the parent. If the list is not empty, the node is attached nonprojectively.
-     |
-     |      Note that the Udapi Node class does not have a method like this. It has
-     |      is_nonprojective(), which returns the boolean decision without showing the
-     |      nodes in the gap. There is also the function is_nonprojective_gap() but it,
-     |      too, does not deliver what we need.
-     |
-     |      Parameters
-     |      ----------
-     |      node : udapi.core.node.Node object
-     |          The tree node to be tested.
-     |
-     |      Returns
-     |      -------
-     |      gap : list of udapi.core.node.Node objects
-     |          The nodes in the gap of the current node's relation to its parent,
-     |          sorted by their ords (IDs).
-     |
-     | TODO: mv to utils
-     |  get_line_numbers_for_ids(state, sentence)
-     |      Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
-     |      For each mwt / node / word, gets the number of the line in the input
-     |      file where the mwt / node / word occurs. We will need this in other
-     |      functions to be able to report the line on which an error occurred.
-     |
-     |      Parameters
-     |      ----------
-     |      sentence : list
-     |          List of mwt / words / nodes, each represented as a list of columns.
-     |
-     |      Returns
-     |      -------
-     |      linenos : dict
-     |          Key: word ID (string, not int; decimal for empty nodes and range for
-     |          mwt lines). Value: 1-based index of the line in the file (int).
 
 FUNCTIONS
     TODO: ditch
@@ -853,31 +781,7 @@ FUNCTIONS
     parse_args()
     main()
 
-TODO: move to utils module
 HELPER FUNCTIONS    
-    formtl(node)
-
-    get_alt_language(node)
-        In code-switching analysis of foreign words, an attribute in the MISC column
-        will hold the code of the language of the current word. Certain tests will
-        then use language-specific lists from that language instead of the main
-        language of the document. This function returns the alternative language
-        code if present, otherwise it returns None.
-
-        Parameters
-        ----------
-        node : udapi.core.node.Node object
-            The node (word) whose language is being queried.
-
-    is_empty_node(cols)
-
-    is_multiword_token(cols)
-
-    is_whitespace(line)
-
-    is_word(cols)
-
-    lemmatl(node)
 
     lspec2ud(deprel)
 
@@ -888,7 +792,7 @@ HELPER FUNCTIONS
 WHAT: CoNLL-U spec
 TODO: convert into config + loader
 DATA
-    COLCOUNT = 10
+    n_cols = 10
     COLNAMES = ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'D...
     DEPREL = 7
     DEPS = 8

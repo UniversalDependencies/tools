@@ -15,7 +15,7 @@ import logging
 # as in Perl.
 import regex as re
 
-import logging_utils
+import validator.logging_utils as logging_utils
 
 import validator.validate_lib as VLib
 
