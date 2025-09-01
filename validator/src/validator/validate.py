@@ -1,7 +1,11 @@
 import sys
 import argparse
+import logging
+
 import validate_lib as VLib
 
+logger = logging.getLogger(__name__)
+logging_utils.setup_logging(logger)
 
 def _validate(args):
     validator = VLib.Validator(args)
