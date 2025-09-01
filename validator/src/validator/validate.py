@@ -1,7 +1,7 @@
 import sys
 import argparse
-import logging
 
+import logging
 import logging_utils
 
 import validator.validate_lib as VLib
