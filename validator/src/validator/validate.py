@@ -2,12 +2,15 @@ import sys
 import argparse
 import logging
 
-import validate_lib as VLib
+import logging_utils
+
+import validator.validate_lib as VLib
 
 logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
 
 def _validate(args):
+
     validator = VLib.Validator(args)
     state = validator.validate_files(args.input)
 
@@ -97,6 +100,8 @@ def main():
 	if "func" not in args:
 		opt_parser.print_usage()
 		exit()
+
+	logger.info("Arguments: \n%s", logging_utils.pprint(vars(args)))
 
 	args.func(args)
 
