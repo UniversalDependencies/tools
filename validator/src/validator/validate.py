@@ -7,6 +7,7 @@
 
 import sys
 import argparse
+
 import logging
 
 # According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
