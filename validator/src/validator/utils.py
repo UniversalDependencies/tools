@@ -74,7 +74,6 @@ ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC = range(COLCOUNT)
 COLNAMES = CONLLU_SPEC["columns"]
 
 
-
 def is_whitespace(line):
     return crex.ws.fullmatch(line)
 
