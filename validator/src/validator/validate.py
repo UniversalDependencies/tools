@@ -1,6 +1,6 @@
 import sys
 import argparse
-import validate_lib as VLib
+import validator.validate_lib as VLib
 
 
 def _validate(args):
