@@ -25,7 +25,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = ["dotenv", "regex", "unicodedata"]
+dependencies = ["dotenv",
+				"regex",
+				"unicodedata"]
 
 [tool.hatch.build]
 # Tell hatchling where your source code is

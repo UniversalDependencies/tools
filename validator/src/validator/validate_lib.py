@@ -1,15 +1,15 @@
-#! /usr/bin/env python3
-# Original code (2015) by Filip Ginter and Sampo Pyysalo.
-# DZ 2018-11-04: Porting the validator to Python 3.
-# DZ: Many subsequent changes. See the git history.
+# ! REMOVE #/usr/bin/env python3
+# ! REMOVE Original code (2015) by Filip Ginter and Sampo Pyysalo.
+# ! REMOVE DZ 2018-11-04: Porting the validator to Python 3.
+# ! REMOVE DZ: Many subsequent changes. See the git history.
 import sys
 import io
 import os.path
 import argparse
 import traceback
-# According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
-# the regex module has the same API as re but it can check Unicode character properties using \p{}
-# as in Perl.
+# ! REMOVE According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
+# ! REMOVE the regex module has the same API as re but it can check Unicode character properties using \p{}
+# ! REMOVE as in Perl.
 #import re
 import regex as re
 import unicodedata
