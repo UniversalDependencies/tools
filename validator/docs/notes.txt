@@ -1,0 +1,903 @@
+CLASSES
+    builtins.object
+        CompiledRegexes
+        Data
+        Incident
+        State
+        Validator
+
+    TODO: mv to module; not necessarily class, add tests
+    class CompiledRegexes(builtins.object)
+     |  The CompiledRegexes class holds various regular expressions needed to
+     |  recognize individual elements of the CoNLL-U format, precompiled to speed
+     |  up parsing. Individual expressions are typically not enclosed in ^...$
+     |  because one can use re.fullmatch() if it is desired that the whole string
+     |  matches the expression.
+     |
+     |  Methods defined here:
+     |
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |
+     |  __dict__
+     |      dictionary for instance variables
+     |
+     |  __weakref__
+     |      list of weak references to the object
+
+    WHAT: all the stuff you load from spec files
+    TODO: find better name (UDspec?); divide into several modules
+    class Data(builtins.object)
+     |  The Data class holds various dictionaries of tags, auxiliaries, regular
+     |  expressions etc. needed for detailed testing, especially for language-
+     |  specific constraints.
+     |
+     |  Methods defined here:
+     |
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |
+     |  TODO: mv to messages module
+     |  explain_aux(self, lcode)
+     |      Returns explanation message for auxiliaries of a particular language.
+     |      To be called after language-specific auxiliaries have been loaded.
+     |
+     |  explain_cop(self, lcode)
+     |      Returns explanation message for copulas of a particular language.
+     |      To be called after language-specific copulas have been loaded.
+     |
+     |  explain_deprel(self, lcode)
+     |      Returns explanation message for deprels of a particular language.
+     |      To be called after language-specific deprels have been loaded.
+     |
+     |  explain_edeprel(self, lcode)
+     |      Returns explanation message for edeprels of a particular language.
+     |      To be called after language-specific edeprels have been loaded.
+     |
+     |  explain_feats(self, lcode)
+     |      Returns explanation message for features of a particular language.
+     |      To be called after language-specific features have been loaded.
+     |
+     |  explain_tospace(self, lcode)
+     |      Returns explanation message for tokens with spaces of a particular language.
+     |      To be called after language-specific tokens with spaces have been loaded.
+     |
+     |  TODO: rn get -> load; mv to loaders module
+     |  get_aux_for_language(self, lcode)
+     |      An entry point for get_auxcop_for_language() that returns only the aux
+     |      list. It either takes the cached list (if available), or calls
+     |      get_auxcop_for_language().
+     |
+     |  get_auxcop_for_language(self, lcode)
+     |      Searches the previously loaded database of auxiliary/copula lemmas.
+     |      Returns the AUX and COP lists for a given language code. Also saves
+     |      the result in self so that next time it can be fetched quickly (once
+     |      we loaded the data, we do not expect them to change).
+     |
+     |  get_cop_for_language(self, lcode)
+     |      An entry point for get_auxcop_for_language() that returns only the cop
+     |      list. It either takes the cached list (if available), or calls
+     |      get_auxcop_for_language().
+     |
+     |  get_deprel_for_language(self, lcode)
+     |      Searches the previously loaded database of dependency relation labels.
+     |      Returns the set of permitted deprels for a given language code. Also
+     |      saves the result in self so that next time it can be fetched quickly
+     |      (once we loaded the data, we do not expect them to change).
+     |
+     |  get_edeprel_for_language(self, lcode)
+     |      Searches the previously loaded database of enhanced case markers.
+     |      Returns the set of permitted edeprels for a given language code. Also
+     |      saves the result in self so that next time it can be fetched quickly
+     |      (once we loaded the data, we do not expect them to change).
+     |
+     |  get_feats_for_language(self, lcode)
+     |      Searches the previously loaded database of feature-value-UPOS combinations.
+     |      Returns the data for a given language code, organized in dictionaries.
+     |      Returns an empty dict if there are no data for the given language code.
+     |
+     |  get_tospace_for_language(self, lcode)
+     |      Searches the previously loaded database of regular expressions describing
+     |      permitted tokens with spaces. Returns the expressions for a given language code.
+     |
+     |  load(self)
+     |      Loads the external validation data such as permitted feature-value
+     |      combinations, and stores them in self. The source JSON files are
+     |      supposed to be in the data subfolder of the folder where the script
+     |      lives.
+     |
+
+    WHAT: class for object describing specific errors
+    class Incident(builtins.object)
+     |  Incident(
+     |      state,
+     |      level=None,
+     |      testclass=None,
+     |      testid=None,
+     |      message=None,
+     |      lineno=None,
+     |      nodeid=None,
+     |      explanation=''
+     |  )
+     |
+     |  Instances of this class describe individual errors or warnings in the input
+     |  file.
+     |
+     |  Methods defined here:
+     |
+     |  __init__(
+     |      self,
+     |      state,
+     |      level=None,
+     |      testclass=None,
+     |      testid=None,
+     |      message=None,
+     |      lineno=None,
+     |      nodeid=None,
+     |      explanation=''
+     |  )
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |
+     |  report(self, state, args)
+     |
+     |  Data and other attributes defined here:
+     |
+     |  TODO: understand why these are not the default params for the class
+     |  default_level = 1
+     |
+     |  default_lineno = None
+     |
+     |  default_message = 'No error description provided.'
+     |
+     |  default_testclass = 'Format'
+     |
+     |  default_testid = 'generic-error'
+    
+    TODO: transform into data class
+    class State(builtins.object)
+     |  The State class holds various global data about where we are in the file
+     |  and what we have seen so far. Typically there will be just one instance of
+     |  this class.
+     |
+     |  Methods defined here:
+     |
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |
+
+    class Validator(builtins.object)
+     |  Validator(args)
+     |
+     |  Methods defined here:
+     |  
+     |  WHAT: init CoNLL-U reader
+     |  __init__(self, args)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  build_tree_udapi(self, lines)
+     |  
+     |  TODO: mv to module for tree ops?
+     |  get_caused_nonprojectivities(self, node)
+     |      Checks whether a node is in a gap of a nonprojective edge. Report true only
+     |      if the node's parent is not in the same gap. (We use this function to check
+     |      that a punctuation node does not cause nonprojectivity. But if it has been
+     |      dragged to the gap with a larger subtree, then we do not blame it.) This
+     |      extra condition makes this function different from node.is_nonprojective_gap();
+     |      another difference is that instead of just detecting the nonprojectivity,
+     |      we return the nonprojective nodes so we can report them.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |
+     |      Returns
+     |      -------
+     |      cross : list of udapi.core.node.Node objects
+     |          The nodes whose attachment is nonprojective because of the current node.
+     |
+     |  next_sentence(self, state, inp)
+     |      `inp` a file-like object yielding lines as unicode
+     |
+     |      This function does elementary checking of the input and yields one
+     |      sentence at a time from the input stream. The function guarantees
+     |      elementary integrity of its yields. Some lines may be skipped (e.g.,
+     |      extra empty lines or misplaced comments), and a whole sentence will be
+     |      skipped if one of its token lines has unexpected number of columns.
+     |
+     |      However, some low-level errors currently do not lead to excluding the
+     |      sentence from being yielded and put to subsequent tests. Specifically,
+     |      character constraints on individual fields are tested here but errors
+     |      are not considered fatal.
+     |
+     |      This function is a generator. The caller can call it in a 'for x in ...'
+     |      loop. In each iteration of the caller's loop, the generator will generate
+     |      the next sentence, that is, it will read the next sentence from the input
+     |      stream. (Technically, the function returns an object, and the object will
+     |      then read the sentences within the caller's loop.)
+     |
+     |  WHAT: entry points for validation
+     |  validate_files(self, filenames)
+     |
+     |  validate_file(self, state, inp)
+     |      The main entry point for all validation tests applied to one input file.
+     |      It reads sentences from the input stream one by one, each sentence is
+     |      immediately tested.
+     |
+     |      Parameters
+     |      ----------
+     |      inp : open file handle
+     |          The CoNLL-U-formatted input stream.
+     |     |
+     |  validate_tree(self, state, sentence)
+     |      Takes the list of non-comment lines (line = list of columns) describing
+     |      a sentence. Returns an array with line number corresponding to each tree
+     |      node. In case of fatal problems (missing HEAD etc.) returns None
+     |      (and reports the error, unless it is something that should have been
+     |      reported earlier).
+     |
+     |      We will assume that this function is called only if both ID and HEAD values
+     |      have been found valid for all tree nodes, including the sequence of IDs
+     |      and the references from HEAD to existing IDs.
+     |
+     |      This function originally served to build a data structure that would
+     |      describe the tree and make it accessible during subsequent tests. Now we
+     |      use the Udapi data structures instead but we still have to call this
+     |      function first because it will survive and report ill-formed input. In
+     |      such a case, the Udapi data structure will not be built and Udapi-based
+     |      tests will be skipped.
+     |
+     |      Parameters
+     |      ----------
+     |      sentence : list
+     |          Lines (arrays of columns): words, mwt tokens, empty nodes.
+     |
+     |      Returns
+     |      -------
+     |      ok : bool
+     |
+     |  ACTUAL VALIDATION FUNCTIONS
+     |  TODO: add returns
+     |  
+     |  validate_annotation(self, state, tree, linenos)
+     |      Checks universally valid consequences of the annotation guidelines. Looks
+     |      at regular nodes and basic tree, not at enhanced graph (which is checked
+     |      elsewhere).
+     |
+     |      Parameters
+     |      ----------
+     |      tree : udapi.core.root.Root object
+     |      linenos : dict
+     |          Key is node ID (string, not int or float!) Value is the 1-based index
+     |          of the line where the node occurs (int).
+     |
+     |  validate_auxiliary_verbs(self, state, node, line, lang)
+     |      Verifies that the UPOS tag AUX is used only with lemmas that are known to
+     |      act as auxiliary verbs or particles in the given language.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node to be validated.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |      lang : str
+     |          Code of the main language of the corpus.
+     |
+     |  validate_character_constraints(self, state, cols, line)
+     |      Checks general constraints on valid characters, e.g. that UPOS
+     |      only contains [A-Z].
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_copula_lemmas(self, state, node, line, lang)
+     |      Verifies that the relation cop is used only with lemmas that are known to
+     |      act as copulas in the given language.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node to be validated.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |      lang : str
+     |          Code of the main language of the corpus.
+     |
+     |  validate_deprels(self, state, node, line)
+     |      Checks that a dependency relation label is listed as approved in the given
+     |      language. As a language-specific test, this function generally belongs to
+     |      level 4, but it can be also used on levels 2 and 3, in which case it will
+     |      check only the main dependency type and ignore any subtypes.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node whose incoming relation will be validated.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_deps(self, state, cols, line)
+     |      Validates that DEPS is correctly formatted and that there are no
+     |      self-loops in DEPS (longer cycles are allowed in enhanced graphs but
+     |      self-loops are not).
+     |
+     |      This function must be run on raw DEPS before it is fed into Udapi because
+     |      it checks the order of relations, which is not guaranteed to be preserved
+     |      in Udapi. On the other hand, we assume that it is run after
+     |      validate_id_references() and only if DEPS is parsable and the head indices
+     |      in it are OK.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_deps_all_or_none(self, state, sentence)
+     |      Takes the list of non-comment lines (line = list of columns) describing
+     |      a sentence. Checks that enhanced dependencies are present if they were
+     |      present at another sentence, and absent if they were absent at another
+     |      sentence.
+     |
+     |  validate_egraph_connected(self, state, nodes, linenos)
+     |      Takes the list of nodes (including empty nodes). If there are enhanced
+     |      dependencies in DEPS, builds the enhanced graph and checks that it is
+     |      rooted and connected.
+     |
+     |      Parameters
+     |      ----------
+     |      nodes : list of udapi.core.node.Node objects
+     |          List of nodes in the sentence, including empty nodes, sorted by word
+     |          order.
+     |      linenos : dict
+     |          Indexed by node ID (string), contains the line number on which the node
+     |          occurs.
+     |
+     |  validate_empty_node_empty_vals(self, state, cols, line)
+     |      Checks that an empty node has _ empty values in HEAD and DEPREL. This is
+     |      required by UD guidelines but not necessarily by CoNLL-U, therefore
+     |      a level 2 test.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_end(self, state)
+     |      Final tests after processing the entire treebank (possibly multiple files).
+     |
+     |  validate_enhanced_orphan(self, state, node, line)
+     |      Checks universally valid consequences of the annotation guidelines in the
+     |      enhanced representation. Currently tests only phenomena specific to the
+     |      enhanced dependencies; however, we should also test things that are
+     |      required in the basic dependencies (such as left-to-right coordination),
+     |      unless it is obvious that in enhanced dependencies such things are legal.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node whose incoming relations will be validated. This function
+     |          operates on both regular and empty nodes. Make sure to call it for
+     |          empty nodes, too!
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_expected_features(self, state, node, lineno)
+     |      Certain features are expected to occur with certain UPOS or certain values
+     |      of other features. This function issues warnings instead of errors, as
+     |      features are in general optional and language-specific. Even the warnings
+     |      are issued only if the treebank has features. Note that the expectations
+     |      tested here are considered (more or less) universal. Checking that a given
+     |      feature-value pair is compatible with a particular UPOS is done using
+     |      language-specific lists at level 4.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_features_level2(self, state, cols, line)
+     |      Checks general constraints on feature-value format: Permitted characters in
+     |      feature name and value, features must be sorted alphabetically, features
+     |      cannot be repeated etc.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |      Returns
+     |      -------
+     |      safe : bool
+     |          There were no errors or the errors are not so severe that we should
+     |          refrain from loading the sentence into Udapi.
+     |
+     |  validate_features_level4(self, state, node, line, lang)
+     |      Checks that a feature-value pair is listed as approved. Feature lists are
+     |      language-specific. To disallow non-universal features, test on level 4 with
+     |      language 'ud'.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node to be validated.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |      lang : str
+     |          Code of the main language of the corpus.
+     |
+     |  validate_fixed_span(self, state, node, lineno)
+     |      Like with goeswith, the fixed relation should not in general skip words that
+     |      are not part of the fixed expression. Unlike goeswith however, there can be
+     |      an intervening punctuation symbol. Moreover, the rule that fixed expressions
+     |      cannot be discontiguous has been challenged with examples from Swedish and
+     |      Coptic, see https://github.com/UniversalDependencies/docs/issues/623.
+     |      Hence, the test was turned off 2019-04-13. I am re-activating it 2023-09-03
+     |      as just a warning.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_flat_foreign(self, state, node, lineno, linenos)
+     |      flat:foreign is an optional subtype of flat. It is used to connect two words
+     |      in a code-switched segment of foreign words if the annotators did not want
+     |      to provide the analysis according to the source language. If flat:foreign
+     |      is used, both the parent and the child should have the Foreign=Yes feature
+     |      and their UPOS tag should be X.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |      linenos : dict
+     |          Key is node ID (string, not int or float!) Value is the 1-based index
+     |          of the line where the node occurs (int).
+     |
+     |  validate_functional_leaves(self, state, node, lineno, linenos)
+     |      Most of the time, function-word nodes should be leaves. This function
+     |      checks for known exceptions and warns in the other cases.
+     |      (https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers)
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |      linenos : dict
+     |          Key is node ID (string, not int or float!) Value is the 1-based index
+     |          of the line where the node occurs (int).
+     |
+     |  validate_goeswith_morphology_and_edeps(self, state, node, lineno)
+     |      If a node has the 'goeswith' incoming relation, it is a non-first part of
+     |      a mistakenly interrupted word. The lemma, upos tag and morphological features
+     |      of the word should be annotated at the first part, not here.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_goeswith_span(self, state, node, lineno)
+     |      The relation 'goeswith' is used to connect word parts that are separated
+     |      by whitespace and should be one word instead. We assume that the relation
+     |      goes left-to-right, which is checked elsewhere. Here we check that the
+     |      nodes really were separated by whitespace. If there is another node in the
+     |      middle, it must be also attached via 'goeswith'. The parameter id refers to
+     |      the node whose goeswith children we test.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_id_references(self, state, sentence)
+     |      Verifies that HEAD and DEPS reference existing IDs. If this function does
+     |      not return True, most of the other tests should be skipped for the current
+     |      sentence (in particular anything that considers the tree structure).
+     |
+     |      Parameters
+     |      ----------
+     |      sentence : list
+     |          Lines (arrays of columns): words, mwt tokens, empty nodes.
+     |
+     |      Returns
+     |      -------
+     |      ok : bool
+     |
+     |  validate_id_sequence(self, state, sentence)
+     |      Validates that the ID sequence is correctly formed.
+     |      Besides reporting the errors, it also returns False to the caller so it can
+     |      avoid building a tree from corrupt IDs.
+     |
+     |      sentence ... array of arrays, each inner array contains columns of one line
+     |
+     |  validate_left_to_right_relations(self, state, node, lineno)
+     |      Certain UD relations must always go left-to-right (in the logical order,
+     |      meaning that parent precedes child, disregarding that some languages have
+     |      right-to-left writing systems).
+     |      Here we currently check the rule for the basic dependencies.
+     |      The same should also be tested for the enhanced dependencies!
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_misc(self, state, cols, line)
+     |      In general, the MISC column can contain almost anything. However, if there
+     |      is a vertical bar character, it is interpreted as the separator of two
+     |      MISC attributes, which may or may not have the form of attribute=value pair.
+     |      In general it is not forbidden that the same attribute appears several times
+     |      with different values, but this should not happen for selected attributes
+     |      that are described in the UD documentation.
+     |
+     |      This function must be run on raw MISC before it is fed into Udapi because
+     |      Udapi is not prepared for some of the less recommended usages of MISC.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_misc_entity(self, state, comments, sentence)
+     |      Optionally checks the well-formedness of the MISC attributes that pertain
+     |      to coreference and named entities.
+     |
+     |  validate_mwt_empty_vals(self, state, cols, line)
+     |      Checks that a multi-word token has _ empty values in all fields except MISC.
+     |      This is required by UD guidelines although it is not a problem in general,
+     |      therefore a level 2 test.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_newlines(self, state, inp)
+     |      Checks that the input file consistently uses linux-style newlines (LF only,
+     |      not CR LF like in Windows). To be run on the input file handle after the
+     |      whole input has been read.
+     |
+     |  validate_orphan(self, state, node, lineno)
+     |      The orphan relation is used to attach an unpromoted orphan to the promoted
+     |      orphan in gapping constructions. A common error is that the promoted orphan
+     |      gets the orphan relation too. The parent of orphan is typically attached
+     |      via a conj relation, although some other relations are plausible too.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_projective_punctuation(self, state, node, lineno)
+     |      Punctuation is not supposed to cause nonprojectivity or to be attached
+     |      nonprojectively.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_required_feature(
+     |      self,
+     |      state,
+     |      feats,
+     |      required_feature,
+     |      required_value,
+     |      incident
+     |  )
+     |      In general, the annotation of morphological features is optional, although
+     |      highly encouraged. However, if the treebank does have features, then certain
+     |      features become required. This function will check the presence of a feature
+     |      and if it is missing, an error will be reported only if at least one feature
+     |      has been already encountered. Otherwise the error will be remembered and it
+     |      may be reported afterwards if any feature is encountered later.
+     |
+     |      Parameters
+     |      ----------
+     |      feats : udapi.core.dualdict.DualDict object
+     |          The feature-value set to be tested whether they contain the required one.
+     |      required_feature : str
+     |          The name of the required feature.
+     |      required_value : str
+     |          The required value of the feature. Multivalues are not supported (they
+     |          are just a string value containing one or more commas). If
+     |          required_value is None or an empty string, it means that we require any
+     |          non-empty value of required_feature.
+     |      incident : Incident object
+     |          The message that should be printed if the error is confirmed.
+     |
+     |  validate_root(self, state, node, line)
+     |      Checks that DEPREL is "root" iff HEAD is 0.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node whose incoming relation will be validated. This function
+     |          operates on both regular and empty nodes. Make sure to call it for
+     |          empty nodes, too!
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_sent_id(self, state, comments, lcode)
+     |      Checks that sentence id exists, is well-formed and unique.
+     |
+     |  validate_single_object(self, state, node, lineno)
+     |      No predicate should have more than one direct object (number of indirect
+     |      objects is unlimited). Theoretically, ccomp should be understood as a
+     |      clausal equivalent of a direct object, but we do not have an indirect
+     |      equivalent, so it seems better to tolerate additional ccomp at present.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_single_subject(self, state, node, lineno)
+     |      No predicate should have more than one subject.
+     |      An xcomp dependent normally has no subject, but in some languages the
+     |      requirement may be weaker: it could have an overt subject if it is
+     |      correferential with a particular argument of the matrix verb. Hence we do
+     |      not check zero subjects of xcomp dependents at present.
+     |      Furthermore, in some situations we must allow multiple subjects. If a clause
+     |      acts as a nonverbal predicate of another clause, then we must attach two
+     |      subjects to the predicate of the inner clause: one is the predicate of the
+     |      inner clause, the other is the predicate of the outer clause. This could in
+     |      theory be recursive but in practice it isn't. As of UD 2.10, an amendment
+     |      of the guidelines says that the inner predicate of the predicate clause
+     |      should govern both subjects even if there is a copula (previously such
+     |      cases were an exception from the UD approach that copulas should not be
+     |      heads); however, the outer subjects should be attached as [nc]subj:outer.
+     |      See https://universaldependencies.org/changes.html#multiple-subjects.
+     |      See also issue 34 (https://github.com/UniversalDependencies/tools/issues/34).
+     |      Strictly speaking, :outer is optional because it is a subtype, and some
+     |      treebanks may want to avoid it. For example, in Coptic Scriptorium, there
+     |      is only one occurrence in dev, one in test, and none in train, so it would
+     |      be impossible to train a parser that gets it right. For that reason, it is
+     |      possible to replace the :outer subtype with Subject=Outer in MISC. The MISC
+     |      attribute is just a directive for the validator and no parser is expected
+     |      to predict it.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_text_meta(self, state, comments, tree)
+     |      Checks metadata other than sentence id, that is, document breaks, paragraph
+     |      breaks and sentence text (which is also compared to the sequence of the
+     |      forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+     |
+     |  validate_token_ranges(self, state, sentence)
+     |      Checks that the word ranges for multiword tokens are valid.
+     |
+     |      sentence ... array of arrays, each inner array contains columns of one line
+     |
+     |
+     |  validate_unicode_normalization(self, state, text)
+     |      Tests that letters composed of multiple Unicode characters (such as a base
+     |      letter plus combining diacritics) conform to NFC normalization (canonical
+     |      decomposition followed by canonical composition).
+     |
+     |      Parameters
+     |      ----------
+     |      text : str
+     |          The input line to be tested. If the line consists of TAB-separated
+     |          fields (token line), errors reports will specify the field where the
+     |          error occurred. Otherwise (comment line), the error report will not be
+     |          localized.
+     |
+     |  validate_upos(self, state, cols, line)
+     |      Checks that the UPOS field contains one of the 17 known tags.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |
+     |  validate_upos_vs_deprel(self, state, node, lineno)
+     |      For certain relations checks that the dependent word belongs to an expected
+     |      part-of-speech category. Occasionally we may have to check the children of
+     |      the node, too.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |      lineno : int
+     |          The 1-based index of the line where the node occurs.
+     |
+     |  validate_whitespace(self, state, cols)
+     |      Checks that columns are not empty and do not contain whitespace characters
+     |      except for patterns that could be allowed at level 4. Applies to all types
+     |      of TAB-containing lines: nodes / words, mwt ranges, empty nodes.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |
+     |  validate_words_with_spaces(self, state, node, line, lang)
+     |      Checks a single line for disallowed whitespace.
+     |      Here we assume that all language-independent whitespace-related tests have
+     |      already been done on level 1, so we only check for words with spaces that
+     |      are explicitly allowed in a given language.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The node to be validated.
+     |      line : int
+     |          Number of the line where the node occurs in the file.
+     |      lang : str
+     |          Code of the main language of the corpus.
+     |
+     |  ----------------------------------------------------------------------
+     |  Static methods defined here:
+     |  
+     |  TODO: mv to utils
+     |  deps_list(cols)
+     |      Parses the contents of the DEPS column and returns a list of incoming
+     |      enhanced dependencies. This is needed in early tests, before the sentence
+     |      has been fed to Udapi.
+     |
+     |      Parameters
+     |      ----------
+     |      cols : list
+     |          The values of the columns on the current node / token line.
+     |
+     |      Raises
+     |      ------
+     |      ValueError
+     |          If the contents of DEPS cannot be parsed. Note that this does not catch
+     |          all possible violations of the format, e.g., bad order of the relations
+     |          will not raise an exception.
+     |
+     |      Returns
+     |      -------
+     |      deps : list
+     |          Each list item is a two-member list, containing the parent index (head)
+     |          and the relation type (deprel).
+     |
+     |  features_present(state)
+     |      In general, the annotation of morphological features is optional, although
+     |      highly encouraged. However, if the treebank does have features, then certain
+     |      features become required. This function is called when the first morphological
+     |      feature is encountered. It remembers that from now on, missing features can
+     |      be reported as errors. In addition, if any such errors have already been
+     |      encountered, they will be reported now.
+     |
+     |  get_gap(node)
+     |      Returns the list of nodes between node and its parent that are not dominated
+     |      by the parent. If the list is not empty, the node is attached nonprojectively.
+     |
+     |      Note that the Udapi Node class does not have a method like this. It has
+     |      is_nonprojective(), which returns the boolean decision without showing the
+     |      nodes in the gap. There is also the function is_nonprojective_gap() but it,
+     |      too, does not deliver what we need.
+     |
+     |      Parameters
+     |      ----------
+     |      node : udapi.core.node.Node object
+     |          The tree node to be tested.
+     |
+     |      Returns
+     |      -------
+     |      gap : list of udapi.core.node.Node objects
+     |          The nodes in the gap of the current node's relation to its parent,
+     |          sorted by their ords (IDs).
+     |
+     | TODO: mv to utils
+     |  get_line_numbers_for_ids(state, sentence)
+     |      Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
+     |      For each mwt / node / word, gets the number of the line in the input
+     |      file where the mwt / node / word occurs. We will need this in other
+     |      functions to be able to report the line on which an error occurred.
+     |
+     |      Parameters
+     |      ----------
+     |      sentence : list
+     |          List of mwt / words / nodes, each represented as a list of columns.
+     |
+     |      Returns
+     |      -------
+     |      linenos : dict
+     |          Key: word ID (string, not int; decimal for empty nodes and range for
+     |          mwt lines). Value: 1-based index of the line in the file (int).
+
+FUNCTIONS
+    TODO: ditch
+    build_argparse()
+    parse_args()
+    main()
+
+TODO: move to utils module
+HELPER FUNCTIONS    
+    formtl(node)
+
+    get_alt_language(node)
+        In code-switching analysis of foreign words, an attribute in the MISC column
+        will hold the code of the language of the current word. Certain tests will
+        then use language-specific lists from that language instead of the main
+        language of the document. This function returns the alternative language
+        code if present, otherwise it returns None.
+
+        Parameters
+        ----------
+        node : udapi.core.node.Node object
+            The node (word) whose language is being queried.
+
+    is_empty_node(cols)
+
+    is_multiword_token(cols)
+
+    is_whitespace(line)
+
+    is_word(cols)
+
+    lemmatl(node)
+
+    lspec2ud(deprel)
+
+    parse_empty_node_id(cols)
+
+    shorten(string)
+
+WHAT: CoNLL-U spec
+TODO: convert into config + loader
+DATA
+    COLCOUNT = 10
+    COLNAMES = ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'D...
+    DEPREL = 7
+    DEPS = 8
+    FEATS = 5
+    FORM = 1
+    HEAD = 6
+    ID = 0
+    LEMMA = 2
+    MISC = 9
+    THISDIR = '/home/harisont/Repos/UniversalDependencies/tools/validator/...
+    UPOS = 3
+    XPOS = 4
