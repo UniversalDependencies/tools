@@ -1,3 +1,9 @@
+import yaml
+
+def load_conllu_spec(spec_path):
+    with open(spec_path) as spec_handle:
+        return yaml.safe_load(spec_handle)
+
 # import os
 # import json
 # import re
