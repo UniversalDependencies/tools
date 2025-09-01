@@ -73,7 +73,6 @@ COLCOUNT = len(CONLLU_SPEC["columns"])
 ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC = range(COLCOUNT)
 COLNAMES = CONLLU_SPEC["columns"]
 
-
 def is_whitespace(line):
     return crex.ws.fullmatch(line)
 
@@ -94,6 +93,7 @@ def parse_empty_node_id(cols):
 def shorten(string):
     return string if len(string) < 25 else string[:20]+'[...]'
 
+# ! proposal: rename to drop_subtype
 def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
