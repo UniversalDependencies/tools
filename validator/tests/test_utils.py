@@ -5,6 +5,7 @@ TEST_CASES_DIR = os.path.join(os.path.dirname(os.path.realpath(os.path.abspath(_
 
 def test_parse_empty_node_id():
     empty_node = ["1.2", "_", "_", "_", "_", "_", "_", "_", "_", "_"]
+    # TODO: update after removing assert in parse_empty_nodes_id
     assert parse_empty_node_id(empty_node) == ("1", "2")
 
 def test_shorten():
