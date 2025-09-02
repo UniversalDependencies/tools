@@ -328,9 +328,10 @@ class Incident:
 
 
 class Validator:
-    def __init__(self, args):
+    def __init__(self, args, specs):
         self.conllu_reader = udapi.block.read.conllu.Conllu()
         self.args = args
+        self.specs = specs
 
 
     def next_sentence(self, state, inp):

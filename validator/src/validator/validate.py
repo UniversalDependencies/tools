@@ -18,13 +18,16 @@ import regex as re
 import validator.logging_utils as logging_utils
 
 import validator.validate_lib as VLib
+import validator.specifications as specifications
 
 logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
 
 def _validate(args):
 
-    validator = VLib.Validator(args)
+    ud_specs = specifications.UDSpecs(args.data_folder)
+
+    validator = VLib.Validator(args, ud_specs)
     state = validator.validate_files(args.input)
 
     # Summarize the warnings and errors.
