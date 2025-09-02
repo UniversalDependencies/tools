@@ -726,7 +726,7 @@ class Validator:
         Incident.default_level = 1
         Incident.default_testclass = 'Format'
         Incident.default_lineno = None # use the most recently read line
-        covered = set()
+        #covered = set()
         for cols in sentence:
             if not utils.is_multiword_token(cols):
                 continue

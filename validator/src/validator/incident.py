@@ -47,11 +47,6 @@ class Incident:
         self.sentid = self.state.sentence_id
         self.nodeid = self.state.nodeid
 
-    def __bool__(self):
-        return False
-    
-    __nonzero__ = __bool__
-    
     # TODO: overwrite __str__ or __repr__
     def report(self, state, args):
         # Even if we should be quiet, at least count the error.
