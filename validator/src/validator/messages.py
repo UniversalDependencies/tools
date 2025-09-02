@@ -1,3 +1,5 @@
+import regex as re
+
 def explain_feats(spec, lcode):
     """
     Returns explanation message for features of a particular language.
