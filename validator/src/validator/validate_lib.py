@@ -21,6 +21,7 @@ import udapi.block.read.conllu
 import validator.compiled_regex as crex
 import validator.utils as utils
 import validator.messages as msg
+import validator.specifications as data
 
 
 
@@ -1097,13 +1098,12 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        global data
         if utils.is_empty_node(cols) and cols[UPOS] == '_':
             return
         # Just in case, we still match UPOS against the regular expression that
         # checks general character constraints. However, the list of UPOS, loaded
         # from a JSON file, should conform to the regular expression.
-        if not crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in data.upos:
+        if not crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in self.specs.upos:
             Incident(
                 state=state,
                 lineno=line,
@@ -2698,17 +2698,16 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = 'Format'
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
-        tospacedata = data.get_tospace_for_language(lang)
+        tospacedata = self.specs.get_tospace_for_language(lang)
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            tospacedata = data.get_tospace_for_language(altlang)
+            tospacedata = self.specs.get_tospace_for_language(altlang)
         for column in ('FORM', 'LEMMA'):
             word = node.form if column == 'FORM' else node.lemma
             # Is there whitespace in the word?
@@ -2751,7 +2750,6 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = 'Morpho'
@@ -2760,11 +2758,11 @@ class Validator:
         # List of permited features is language-specific.
         # The current token may be in a different language due to code switching.
         default_lang = lang
-        default_featset = featset = data.get_feats_for_language(lang)
+        default_featset = featset = self.specs.get_feats_for_language(lang)
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            featset = data.get_feats_for_language(altlang)
+            featset = self.specs.get_feats_for_language(altlang)
         for f in node.feats:
             values = node.feats[f].split(',')
             for v in values:
@@ -2855,7 +2853,6 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = 'Syntax'
@@ -2875,10 +2872,10 @@ class Validator:
         # The basic relation should be tested on regular nodes but not on empty nodes.
         if not node.is_empty():
             paltlang = utils.get_alt_language(node.parent)
-            main_deprelset = data.get_deprel_for_language(mainlang)
+            main_deprelset = self.specs.get_deprel_for_language(mainlang)
             alt_deprelset = set()
             if naltlang != None and naltlang != mainlang and naltlang == paltlang:
-                alt_deprelset = data.get_deprel_for_language(naltlang)
+                alt_deprelset = self.specs.get_deprel_for_language(naltlang)
             # Test only the universal part if testing at universal level.
             deprel = node.deprel
             if self.args.level < 4:
@@ -2898,8 +2895,8 @@ class Validator:
         # The order of enhanced dependencies was already checked in validate_deps().
         Incident.default_testclass = 'Enhanced'
         if str(node.deps) != '_':
-            main_edeprelset = data.get_edeprel_for_language(mainlang)
-            alt_edeprelset = data.get_edeprel_for_language(naltlang)
+            main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+            alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
             for edep in node.deps:
                 parent = edep['parent']
                 deprel = edep['deprel']
@@ -2938,12 +2935,11 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         if node.upos == 'AUX' and node.lemma != '_':
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
-            auxlist = data.get_aux_for_language(lang)
+            auxlist = self.specs.get_aux_for_language(lang)
             if not auxlist or not node.lemma in auxlist:
                 Incident(
                     state=state,
@@ -2972,12 +2968,11 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         if node.udeprel == 'cop' and node.lemma != '_':
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
-            coplist = data.get_cop_for_language(lang)
+            coplist = self.specs.get_cop_for_language(lang)
             if not coplist or not node.lemma in coplist:
                 Incident(
                     state=state,

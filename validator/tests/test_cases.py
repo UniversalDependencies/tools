@@ -1,6 +1,7 @@
 import os
 import argparse
 from validator import validate
+from validator.utils import THIS_DIR
 
 TEST_CASES_DIR = os.path.join(os.path.dirname(os.path.realpath(os.path.abspath(__file__))), "test-cases")
 CONFIG = {
@@ -10,6 +11,7 @@ CONFIG = {
     "check_tree_text": True,
     "check_space_after": True,
     "check_coref": False,
+    "data_folder": os.path.normpath(os.path.join(THIS_DIR,"../../../data"))
 }
 
 def general_test_cases(folder_name, expected_value, level=1):

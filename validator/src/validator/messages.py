@@ -1,13 +1,13 @@
 import regex as re
 
-def explain_feats(spec, lcode):
+def explain_feats(specs, lcode):
     """
     Returns explanation message for features of a particular language.
     To be called after language-specific features have been loaded.
 
     Parameters
     ----------
-    spec : UDSpecs object
+    specs : UDSpecs object
         The UD specification.
     lcode : str
         The language code.
@@ -17,15 +17,15 @@ def explain_feats(spec, lcode):
     name : str
         The explanation message for the features of the given language.
     """
-    if lcode in spec._explanation_feats:
-        return spec._explanation_feats[lcode]
-    featset = spec.get_feats_for_language(lcode)
+    if lcode in specs._explanation_feats:
+        return specs._explanation_feats[lcode]
+    featset = specs.get_feats_for_language(lcode)
     # Prepare a global message about permitted features and values. We will add
     # it to the first error message about an unknown feature. Note that this
     # global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
     msg = ''
-    if not lcode in spec.feats:
+    if not lcode in specs.feats:
         msg += f"No feature-value pairs have been permitted for language [{lcode}].\n"
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
@@ -49,17 +49,17 @@ def explain_feats(spec, lcode):
         msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
         msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
         msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
-    spec._explanation_feats[lcode] = msg
+    specs._explanation_feats[lcode] = msg
     return msg
 
-def explain_deprel(spec, lcode):
+def explain_deprel(specs, lcode):
     """
     Returns explanation message for deprels of a particular language.
     To be called after language-specific deprels have been loaded.
 
     Parameters
     ----------
-    spec : UDSpecs object
+    specs : UDSpecs object
         The UD specification.
     lcode : str
         The language code.
@@ -69,9 +69,9 @@ def explain_deprel(spec, lcode):
     name : str
         The explanation message for the deprels of the given language.
     """
-    if lcode in spec._explanation_deprel:
-        return spec._explanation_deprel[lcode]
-    deprelset = spec.get_deprel_for_language(lcode)
+    if lcode in specs._explanation_deprel:
+        return specs._explanation_deprel[lcode]
+    deprelset = specs.get_deprel_for_language(lcode)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
@@ -84,14 +84,14 @@ def explain_deprel(spec, lcode):
     else:
         # Identify dependency relations that are permitted in the current language.
         # If there are errors in documentation, identify the erroneous doc file.
-        # Note that spec.deprel[lcode] may not exist even though we have a non-empty
+        # Note that specs.deprel[lcode] may not exist even though we have a non-empty
         # set of relations, if lcode is 'ud'.
-        if lcode in spec.deprel:
-            for r in spec.deprel[lcode]:
+        if lcode in specs.deprel:
+            for r in specs.deprel[lcode]:
                 file = re.sub(r':', r'-', r)
                 if file == 'aux':
                     file = 'aux_'
-                for e in spec.deprel[lcode][r]['errors']:
+                for e in specs.deprel[lcode][r]['errors']:
                     msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
         sorted_documented_relations = sorted(deprelset)
         msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
@@ -101,17 +101,17 @@ def explain_deprel(spec, lcode):
         msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
         msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
         msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
-    spec._explanation_deprel[lcode] = msg
+    specs._explanation_deprel[lcode] = msg
     return msg
 
-def explain_edeprel(spec, lcode):
+def explain_edeprel(specs, lcode):
     """
     Returns explanation message for enhanced deprels of a particular language.
     To be called after language-specific enhanced deprels have been loaded.
 
     Parameters
     ----------
-    spec : UDSpecs object
+    specs : UDSpecs object
         The UD specification.
     lcode : str
         The language code.
@@ -121,9 +121,9 @@ def explain_edeprel(spec, lcode):
     name : str
         The explanation message for the enhanced deprels of the given language.
     """
-    if lcode in spec._explanation_edeprel:
-        return spec._explanation_edeprel[lcode]
-    edeprelset = spec.get_edeprel_for_language(lcode)
+    if lcode in specs._explanation_edeprel:
+        return specs._explanation_edeprel[lcode]
+    edeprelset = specs.get_edeprel_for_language(lcode)
     # Prepare a global message about permitted relation labels. We will add
     # it to the first error message about an unknown relation. Note that this
     # global information pertains to the default validation language and it
@@ -136,23 +136,23 @@ def explain_edeprel(spec, lcode):
     else:
         # Identify dependency relations that are permitted in the current language.
         # If there are errors in documentation, identify the erroneous doc file.
-        # Note that spec.deprel[lcode] may not exist even though we have a non-empty
+        # Note that specs.deprel[lcode] may not exist even though we have a non-empty
         # set of relations, if lcode is 'ud'.
         sorted_case_markers = sorted(edeprelset)
         msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
         msg += ', '.join(sorted_case_markers) + "\n"
         msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
-    spec._explanation_deprel[lcode] = msg
+    specs._explanation_deprel[lcode] = msg
     return msg
 
-def explain_aux(spec, lcode):
+def explain_aux(specs, lcode):
     """
     Returns explanation message for auxiliaries of a particular language.
     To be called after language-specific auxiliaries have been loaded.
 
     Parameters
     ----------
-    spec : UDSpecs object
+    specs : UDSpecs object
         The UD specification.
     lcode : str
         The language code.
@@ -162,9 +162,9 @@ def explain_aux(spec, lcode):
     name : str
         The explanation message for the auxiliaries of the given language.
     """
-    if lcode in spec._explanation_aux:
-        return spec._explanation_aux[lcode]
-    auxspec = spec.get_aux_for_language(lcode)
+    if lcode in specs._explanation_aux:
+        return specs._explanation_aux[lcode]
+    auxspec = specs.get_aux_for_language(lcode)
     # Prepare a global message about permitted auxiliary lemmas. We will add
     # it to the first error message about an unknown auxiliary. Note that this
     # global information pertains to the default validation language and it
@@ -178,17 +178,17 @@ def explain_aux(spec, lcode):
         msg += f"The following {len(auxspec)} auxiliaries are currently documented in language [{lcode}]:\n"
         msg += ', '.join(auxspec) + "\n"
         msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
-    spec._explanation_aux[lcode] = msg
+    specs._explanation_aux[lcode] = msg
     return msg
 
-def explain_cop(spec, lcode):
+def explain_cop(specs, lcode):
     """
     Returns explanation message for copulas of a particular language.
     To be called after language-specific copulas have been loaded.
 
     Parameters
     ----------
-    spec : UDSpecs object
+    specs : UDSpecs object
         The UD specification.
     lcode : str
         The language code.
@@ -198,9 +198,9 @@ def explain_cop(spec, lcode):
     name : str
         The explanation message for the copulas of the given language.
     """
-    if lcode in spec._explanation_cop:
-        return spec._explanation_cop[lcode]
-    copspec = spec.get_cop_for_language(lcode)
+    if lcode in specs._explanation_cop:
+        return specs._explanation_cop[lcode]
+    copspec = specs.get_cop_for_language(lcode)
     # Prepare a global message about permitted copula lemmas. We will add
     # it to the first error message about an unknown copula. Note that this
     # global information pertains to the default validation language and it
@@ -214,17 +214,17 @@ def explain_cop(spec, lcode):
         msg += f"The following {len(copspec)} copulas are currently documented in language [{lcode}]:\n"
         msg += ', '.join(copspec) + "\n"
         msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
-    spec._explanation_cop[lcode] = msg
+    specs._explanation_cop[lcode] = msg
     return msg
 
-def explain_tospace(spec, lcode):
+def explain_tospace(specs, lcode):
     """
     Returns explanation message for tokens with spaces of a particular language.
     To be called after language-specific tokens with spaces have been loaded.
 
     Parameters
     ----------
-    spec : UDSpecs object
+    specs : UDSpecs object
         The UD specification.
     lcode : str
         The language code.
@@ -234,21 +234,21 @@ def explain_tospace(spec, lcode):
     name : str
         The explanation message for the tokens with spaces of the given language.
     """
-    if lcode in spec._explanation_tospace:
-        return spec._explanation_tospace[lcode]
+    if lcode in specs._explanation_tospace:
+        return specs._explanation_tospace[lcode]
     # Prepare a global message about permitted features and values. We will add
     # it to the first error message about an unknown token with space. Note that
     # this global information pertains to the default validation language and it
     # should not be used with code-switched segments in alternative languages.
     msg = ''
-    if not lcode in spec.tospace:
+    if not lcode in specs.tospace:
         msg += f"No tokens with spaces have been permitted for language [{lcode}].\n"
         msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
     else:
         msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
-        msg += spec.tospace[lcode][0]
+        msg += specs.tospace[lcode][0]
         msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
-    spec._explanation_tospace[lcode] = msg
+    specs._explanation_tospace[lcode] = msg
     return msg
