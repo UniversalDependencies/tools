@@ -35,7 +35,7 @@ ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 
 
-
+# TODO: turn into data class
 class State:
     """
     The State class holds various global data about where we are in the file
@@ -51,26 +51,26 @@ class State:
         self.current_line = 0;
         # The line in the input file on which the current sentence starts,
         # including sentence-level comments.
-        self.comment_start_line = 0
+        self.comment_start_line = 0 # TODO: rename to someting about sentences
         # The line in the input file on which the current sentence starts
         # (the first node/token line, skipping comments).
         self.sentence_line = 0
         # The most recently read sentence id.
         self.sentence_id = None
         # Needed to check that no space after last word of sentence does not
-        # co-occur with new paragraph or document.
+        # co-occur with new paragraph or document. # TODO: smorfiare
         self.spaceafterno_in_effect = False
         # Error counter by error type. Key: error type; value: error count.
         # Incremented in Incident.report().
-        self.error_counter = {}
+        self.error_counter = {} # TODO: replace with len(something)
         # Set of detailed error explanations that have been printed so far.
         # Each explanation will be printed only once. Typically, an explanation
         # can be identified by test id + language code. Nevertheless, we put
         # the whole explanation to the set.
-        self.explanation_printed = set()
+        self.explanation_printed = set() # TODO: cestinare
         # Some feature-related errors can only be reported if the corpus
         # contains feature annotation because features are optional in general.
-        # Once we see the first feature, we can flush all accummulated
+        # Once we see the first feature, we can flush all accumulated
         # complaints about missing features.
         # Key: testid; value: dict with parameters of the error and the list of
         # its occurrences.
@@ -91,19 +91,21 @@ class State:
         self.seen_enhancement = None
         self.seen_empty_node = None
         self.seen_enhanced_orphan = None
-        # global.entity comment line is needed for Entity annotations in MISC.
-        self.seen_global_entity = None
+
         # If a multi-word token has Typo=Yes, its component words must not have
         # it. When we see Typo=Yes on a MWT line, we will remember the span of
         # the MWT here and will not allow Typo=Yes within that span (which is
         # checked in another function).
         self.mwt_typo_span_end = None
+
         #----------------------------------------------------------------------
         # Additional observations related to Entity annotation in MISC
         # (only needed when validating entities and coreference).
         #----------------------------------------------------------------------
         # Remember the global.entity attribute string to be able to check that
         # repeated declarations are identical.
+        # global.entity comment line is needed for Entity annotations in MISC.
+        self.seen_global_entity = None
         self.global_entity_attribute_string = None
         # The number of entity attributes will be derived from the attribute
         # string and will be used to check that an entity does not have extra
@@ -252,15 +254,17 @@ def get_tospace_for_language(self, lcode):
 
 
 
+# TODO: 2 classes, Error and Warning
 class Incident:
     """
     Instances of this class describe individual errors or warnings in the input
     file.
     """
+    # TODO: change class variable into
     # We can modify the class-level defaults before a batch of similar tests.
     # Then we do not have to repeat the shared parameters for each test.
     default_level = 1
-    default_testclass = 'Format'
+    default_testclass = 'Format' # TODO: enum?
     default_testid = 'generic-error'
     default_message = 'No error description provided.'
     default_lineno = None
@@ -270,6 +274,7 @@ class Incident:
         # Thematic area to which the incident belongs: Format, Meta, Morpho,
         # Syntax, Enhanced, Coref, Warning.
         self.testclass = self.default_testclass if testclass == None else testclass
+        # TODO: capire
         # Identifier of the test that lead to the incident. Short string.
         self.testid = self.default_testid if testid == None else testid
         # Verbose description of the error for the user. It does not have to be
@@ -278,6 +283,7 @@ class Incident:
         self.message = self.default_message if message == None else message
         # Additional more verbose information. To be printed with the first
         # incident of a given type.
+        # TODO: levare
         self.explanation = explanation
         # File name. The default is the file from which we are reading right
         # now ('-' if reading from STDIN).
@@ -288,13 +294,14 @@ class Incident:
         # of the sentence, and the error was found on one of the words of the
         # sentence.
         self.lineno = lineno if lineno != None else self.default_lineno if self.default_lineno != None else state.current_line
-        if self.lineno < 0:
+        if self.lineno < 0: # TODO: choose either -1 or None
             self.lineno = state.sentence_line
         # Current (most recently read) sentence id.
         self.sentid = state.sentence_id
         # ID of the node on which the error occurred (if it pertains to one node).
-        self.nodeid = nodeid
+        self.nodeid = nodeid # TODO: add to state
 
+    # TODO: overwrite __str__ or __repr__
     def report(self, state, args):
         # Even if we should be quiet, at least count the error.
         state.error_counter[self.testclass] = state.error_counter.get(self.testclass, 0)+1
@@ -330,6 +337,7 @@ class Incident:
 
 
 class Validator:
+    # TODO: only pass args that are actually useful
     def __init__(self, args, specs):
         self.conllu_reader = udapi.block.read.conllu.Conllu()
         self.args = args
@@ -362,6 +370,7 @@ class Validator:
         token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields
         corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
         state.comment_start_line = None
+
         for line_counter, line in enumerate(inp):
             state.current_line = line_counter+1
             Incident.default_level = 1
