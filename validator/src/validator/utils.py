@@ -54,7 +54,7 @@ def is_multiword_token(cols):
 
     Returns
     -------
-    name : bool
+    _ : Match|None
     """
     return crex.mwtid.fullmatch(cols[ID])
 
