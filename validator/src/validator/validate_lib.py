@@ -238,65 +238,6 @@ def get_cop_for_language(self, lcode):
     auxlist, coplist = self.get_auxcop_for_language(lcode)
     return coplist
 
-<<<<<<< HEAD
-    def get_cop_for_language(self, lcode):
-        """
-        An entry point for get_auxcop_for_language() that returns only the cop
-        list. It either takes the cached list (if available), or calls
-        get_auxcop_for_language().
-        """
-        if lcode in self.cached_cop_for_language:
-            return self.cached_cop_for_language[lcode]
-        auxlist, coplist = self.get_auxcop_for_language(lcode)
-        return coplist
-
-    def get_tospace_for_language(self, lcode):
-        """
-        Searches the previously loaded database of regular expressions describing
-        permitted tokens with spaces. Returns the expressions for a given language code.
-        """
-        # Do not crash if the user asks for an unknown language.
-        if not lcode in self.tospace:
-            return None
-        return self.tospace[lcode]
-
-    def load(self):
-        """
-        Loads the external validation data such as permitted feature-value
-        combinations, and stores them in self. The source JSON files are
-        supposed to be in the data subfolder of the folder where the script
-        lives.
-        """
-        with open(os.path.join(THISDIR, 'data', 'upos.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        upos_list = contents['upos']
-        self.upos = set(upos_list)
-        with open(os.path.join(THISDIR, 'data', 'feats.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.feats = contents['features']
-        with open(os.path.join(THISDIR, 'data', 'udeprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        udeprel_list = contents['udeprels']
-        self.udeprel = set(udeprel_list)
-        with open(os.path.join(THISDIR, 'data', 'deprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.deprel = contents['deprels']
-        with open(os.path.join(THISDIR, 'data', 'edeprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.edeprel = contents['edeprels']
-        with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.auxcop = contents['auxiliaries']
-        with open(os.path.join(THISDIR, 'data', 'tospace.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        # There is one or more regular expressions for each language in the file.
-        # If there are multiple expressions, combine them in one and compile it.
-        self.tospace = {}
-        for l in contents['expressions']:
-            combination = '('+'|'.join(sorted(list(contents['expressions'][l])))+')'
-            compilation = re.compile(combination)
-            self.tospace[l] = (combination, compilation)
-=======
 def get_tospace_for_language(self, lcode):
     """
     Searches the previously loaded database of regular expressions describing
@@ -306,7 +247,6 @@ def get_tospace_for_language(self, lcode):
     if not lcode in self.tospace:
         return None
     return self.tospace[lcode]
->>>>>>> ca3d51f58cb4d579f984d153307e09ee7a83a66e
 
 
 
