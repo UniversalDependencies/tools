@@ -93,6 +93,7 @@ def deps_list(cols):
     else:
         deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
     if any(hd for hd in deps if len(hd) != 2):
+        # ! should be an error/incident
         raise ValueError(f'malformed DEPS: {cols[DEPS]}')
     return deps
 
