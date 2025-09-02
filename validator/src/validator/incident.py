@@ -5,6 +5,7 @@ import os
 from validator.validate_lib import State
 
 class TestClass(Enum):
+    INTERNAL = 0
     FORMAT = 1
     MORPHO = 2
     SYNTAX = 3
@@ -19,7 +20,7 @@ class IncidentType(Enum):
 # TODO: make abstract
 @dataclass
 class Incident:
-    state: State
+    state: State = field(init=False)
     level: int = 1
     testclass: TestClass = TestClass.FORMAT
     testid: str = 'generic-error'
@@ -32,18 +33,20 @@ class Incident:
     lineno: int = -1 # ?
     # File name. The default is the file from which we are reading right
     # now ('-' if reading from STDIN).
-    filename: str = 'STDIN' 
+    filename: str = 'STDIN'
     # Current (most recently read) sentence id.
     sentid: str = None
     # ID of the node on which the error occurred (if it pertains to one node).
     nodeid: str = None
 
-    def __post_init__(self):
+    def set_state(self, state):
+
+        self.state = state
         self.lineno = max(self.state.current_line, self.state.sentence_line)
 
         if not self.state.current_file_name == '-':
             self.filename = os.path.basename(self.state.current_file_name)
-        
+
         self.sentid = self.state.sentence_id
         self.nodeid = self.state.nodeid
 
