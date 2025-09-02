@@ -343,7 +343,7 @@ class Validator:
         self.args = args
         self.specs = specs
 
-
+    # TODO: rename to next_block
     def next_sentence(self, state, inp):
         """
         `inp` a file-like object yielding lines as unicode
@@ -2599,7 +2599,7 @@ class Validator:
                 ).report(state, self.args)
 
 
-
+    # TODO: rename to something more meaningful
     def validate_annotation(self, state, tree, linenos):
         """
         Checks universally valid consequences of the annotation guidelines. Looks
@@ -3688,7 +3688,7 @@ class Validator:
 #==============================================================================
 # Main part.
 #==============================================================================
-
+    # TODO: put in utils or similar
     def build_tree_udapi(self, lines):
         root = self.conllu_reader.read_tree_from_lines(lines)
         return root
@@ -3714,6 +3714,7 @@ class Validator:
             # such a mess here.
             idseqok = self.validate_id_sequence(state, sentence) # level 1
             self.validate_token_ranges(state, sentence) # level 1
+            # TODO: config file so that levels are not checked here
             if self.args.level > 1:
                 idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
                 if not idrefok:
@@ -3725,14 +3726,14 @@ class Validator:
                 # Some of them (bad feature format) may lead to skipping Udapi completely.
                 colssafe = True
                 line = state.sentence_line - 1
-                for cols in sentence:
+                for cols in sentence: # TODO: cols->line
                     line += 1
                     # Multiword tokens and empty nodes can or must have certain fields empty.
                     if utils.is_multiword_token(cols):
                         self.validate_mwt_empty_vals(state, cols, line)
-                    if utils.is_empty_node(cols):
+                    if utils.is_empty_node(cols): # TODO: elif?
                         self.validate_empty_node_empty_vals(state, cols, line) # level 2
-                    if utils.is_word(cols) or utils.is_empty_node(cols):
+                    if utils.is_word(cols) or utils.is_empty_node(cols): # TODO: elif?
                         self.validate_character_constraints(state, cols, line) # level 2
                         self.validate_upos(state, cols, line) # level 2
                         colssafe = colssafe and self.validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
