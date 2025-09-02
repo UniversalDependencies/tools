@@ -135,6 +135,7 @@ class State:
         self.entity_split_antecedents = {}
         # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
         self.entity_mention_spans = {}
+        self.nodeid = None
 
 
 # TODO: understand what do these functions do
@@ -252,9 +253,6 @@ def get_tospace_for_language(self, lcode):
     return self.tospace[lcode]
 
 
-
-
-# TODO: 2 classes, Error and Warning
 class Incident:
     """
     Instances of this class describe individual errors or warnings in the input
