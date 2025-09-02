@@ -1,48 +1,11 @@
 CLASSES
     builtins.object
-        Data
         Incident
         State
         Validator
 
-    WHAT: all the stuff you load from spec files
-    TODO: find better name (UDspec?); divide into several modules
-    class Data(builtins.object)
-     |  The Data class holds various dictionaries of tags, auxiliaries, regular
-     |  expressions etc. needed for detailed testing, especially for language-
-     |  specific constraints.
-     |
-     |  Methods defined here:
-     |
-     |  __init__(self)
-     |      Initialize self.  See help(type(self)) for accurate signature.
-     |
-     |  TODO: mv to messages module
-     |  explain_aux(self, lcode)
-     |      Returns explanation message for auxiliaries of a particular language.
-     |      To be called after language-specific auxiliaries have been loaded.
-     |
-     |  explain_cop(self, lcode)
-     |      Returns explanation message for copulas of a particular language.
-     |      To be called after language-specific copulas have been loaded.
-     |
-     |  explain_deprel(self, lcode)
-     |      Returns explanation message for deprels of a particular language.
-     |      To be called after language-specific deprels have been loaded.
-     |
-     |  explain_edeprel(self, lcode)
-     |      Returns explanation message for edeprels of a particular language.
-     |      To be called after language-specific edeprels have been loaded.
-     |
-     |  explain_feats(self, lcode)
-     |      Returns explanation message for features of a particular language.
-     |      To be called after language-specific features have been loaded.
-     |
-     |  explain_tospace(self, lcode)
-     |      Returns explanation message for tokens with spaces of a particular language.
-     |      To be called after language-specific tokens with spaces have been loaded.
-     |
-     |  TODO: rn get -> load; mv to loaders module
+
+     |  TODO: find out where to put these functions, if needed
      |  get_aux_for_language(self, lcode)
      |      An entry point for get_auxcop_for_language() that returns only the aux
      |      list. It either takes the cached list (if available), or calls
@@ -79,13 +42,7 @@ CLASSES
      |  get_tospace_for_language(self, lcode)
      |      Searches the previously loaded database of regular expressions describing
      |      permitted tokens with spaces. Returns the expressions for a given language code.
-     |
-     |  load(self)
-     |      Loads the external validation data such as permitted feature-value
-     |      combinations, and stores them in self. The source JSON files are
-     |      supposed to be in the data subfolder of the folder where the script
-     |      lives.
-     |
+
 
     WHAT: class for object describing specific errors
     class Incident(builtins.object)
