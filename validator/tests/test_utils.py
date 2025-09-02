@@ -3,6 +3,11 @@ from udapi.core.node import Node
 
 TEST_CASES_DIR = os.path.join(os.path.dirname(os.path.realpath(os.path.abspath(__file__))), "test-cases")
 
+def test_parse_empty_node_id():
+    empty_node = ["1.2", "_", "_", "_", "_", "_", "_", "_", "_", "_"]
+    # TODO: update after removing assert in parse_empty_nodes_id
+    assert parse_empty_node_id(empty_node) == ("1", "2")
+
 def test_shorten():
     short_str = "This is a short string"
     long_str = "This is a string w more than twenty-five characters"

@@ -1,23 +1,9 @@
 CLASSES
     builtins.object
-        Data
         Incident
         State
         Validator
-
-    WHAT: all the stuff you load from spec files
-    TODO: find better name (UDspec?); divide into several modules
-    class Data(builtins.object)
-     |  The Data class holds various dictionaries of tags, auxiliaries, regular
-     |  expressions etc. needed for detailed testing, especially for language-
-     |  specific constraints.
-     |
-     |  Methods defined here:
-     |
-     |  __init__(self)
-     |      Initialize self.  See help(type(self)) for accurate signature.
-     |
-     |  TODO: rn get -> load; mv to loaders module
+     |  TODO: find out where to put these functions, if needed
      |  get_aux_for_language(self, lcode)
      |      An entry point for get_auxcop_for_language() that returns only the aux
      |      list. It either takes the cached list (if available), or calls
@@ -54,13 +40,7 @@ CLASSES
      |  get_tospace_for_language(self, lcode)
      |      Searches the previously loaded database of regular expressions describing
      |      permitted tokens with spaces. Returns the expressions for a given language code.
-     |
-     |  load(self)
-     |      Loads the external validation data such as permitted feature-value
-     |      combinations, and stores them in self. The source JSON files are
-     |      supposed to be in the data subfolder of the folder where the script
-     |      lives.
-     |
+
 
     WHAT: class for object describing specific errors
     class Incident(builtins.object)

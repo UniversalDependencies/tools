@@ -12,36 +12,155 @@ ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC = range(COLCOUNT)
 COLNAMES = CONLLU_SPEC["columns"]
 
 def is_whitespace(line):
+    """
+    Checks whether a given line of text consists exclusively of whitespace.
+
+    Parameters
+    ----------
+    line : str
+        A line of text.
+
+    Returns
+    -------
+    _ : bool
+    """
     return crex.ws.fullmatch(line)
 
 def is_word(cols):
+    """
+    Checks whether a CoNLL-U line represents a syntactic word by checking that
+    its ID field is an integer.
+
+    Parameters
+    ----------
+    cols : list
+        A CoNLL-U line, represented as a list of strings.
+
+    Returns
+    -------
+    _ : bool
+    """
     return crex.wordid.fullmatch(cols[ID])
 
 def is_multiword_token(cols):
+    """
+    Checks whether a CoNLL-U line represents a MWT by checking that its ID 
+    field is a range, e.g. "3-5".
+
+    Parameters
+    ----------
+    cols : list
+        A CoNLL-U line, represented as a list of strings.
+
+    Returns
+    -------
+    name : bool
+    """
     return crex.mwtid.fullmatch(cols[ID])
 
 def is_empty_node(cols):
+    """
+    Checks whether a CoNLL-U line represents an empty node by checking 
+    that its ID field is a floating-point number.
+
+    Parameters
+    ----------
+    cols : list
+        A CoNLL-U line, represented as a list of strings.
+
+    Returns
+    -------
+    _ : bool
+    """
     return crex.enodeid.fullmatch(cols[ID])
 
 def parse_empty_node_id(cols):
+    """
+    Parses the ID of an empty node into a 2-uple that separates it into its
+    integer and decimal part (e.g. "1.2" -> ("1", "2")).
+
+    Parameters
+    ----------
+    cols : list
+        A CoNLL-U line, represented as a list of strings.
+
+    Returns
+    -------
+    _ : tuple
+        A 2-uple of strings, e.g. ("1", "2").
+    """
     m = crex.enodeid.fullmatch(cols[ID])
+    # ! REMOVE/CHANGE
     assert m, 'parse_empty_node_id with non-empty node'
     return m.groups()
 
 def shorten(string):
+    """
+    Truncates a string to 25 characters.
+
+    Parameters
+    ----------
+    cols : str
+
+    Returns
+    -------
+    _ : str
+    """
     return string if len(string) < 25 else string[:20]+'[...]'
 
 # ! proposal: rename to drop_subtype
 def lspec2ud(deprel):
+    """
+    Drops the relation subtype from the given DEPREL (e.g. "nmod" -> "nmod"; 
+    "nmod:poss" -> "nmod").
+
+    Parameters
+    ----------
+    deprel : str
+        A DEPREL (possibly with subtypes, such as "nmod:poss").
+
+    Returns
+    -------
+    _ : str
+        A DEPREL without subtypes, such as "nmod".
+    """
     return deprel.split(':', 1)[0]
 
 def formtl(node):
+    """
+    Joins a node's form and transliteration together in a space-separated 
+    string, e.g. "ኧሁ 'ăhu".
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node
+        A word node.
+
+    Returns
+    -------
+    _ : str
+        A string in "FORM Translit" format, e.g. "ኧሁ 'ăhu".
+    """
     x = node.form
     if node.misc['Translit'] != '':
         x += ' ' + node.misc['Translit']
     return x
 
 def lemmatl(node):
+    """
+    Joins a node's lemma and its transliteration together in a space-separated 
+    string, e.g. "እኔ 'əne".
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node
+        A word node.
+
+    Returns
+    -------
+    _ : str
+        A string in "LEMMA LTranslit" format, e.g. "እኔ 'əne".
+    """
     x = node.lemma
     if node.misc['LTranslit'] != '':
         x += ' ' + node.misc['LTranslit']

@@ -106,6 +106,8 @@ def main():
 							action='store_true', default=False, dest='check_coref',
 							help='Test coreference and entity-related annotation in MISC.')
 
+	config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
+	config_group.add_argument('--data-folder', default="data")
 
 	opt_parser.set_defaults(func=_validate)
 	args = opt_parser.parse_args() #Parsed command-line arguments
