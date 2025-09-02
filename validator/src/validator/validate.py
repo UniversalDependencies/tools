@@ -7,6 +7,7 @@
 
 import sys
 import argparse
+import os
 
 import logging
 
@@ -19,6 +20,7 @@ import validator.logging_utils as logging_utils
 
 import validator.validate_lib as VLib
 import validator.specifications as specifications
+import validator.utils as utils
 
 logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
@@ -110,7 +112,7 @@ def main():
 							help='Test coreference and entity-related annotation in MISC.')
 
 	config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
-	config_group.add_argument('--data-folder', default="data")
+	config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
 
 	opt_parser.set_defaults(func=_validate)
 	args = opt_parser.parse_args() #Parsed command-line arguments

@@ -3,8 +3,6 @@ CLASSES
         Incident
         State
         Validator
-
-
      |  TODO: find out where to put these functions, if needed
      |  get_aux_for_language(self, lcode)
      |      An entry point for get_auxcop_for_language() that returns only the aux
