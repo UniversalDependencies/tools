@@ -50,38 +50,35 @@ class Incident:
         self.sentid = self.state.sentence_id
         self.nodeid = self.state.nodeid
 
-    def __bool__(self):
-        return False
-
-    __nonzero__ = __bool__
-
+    def __repr__(self):
+        return "INCIDENT"
     # TODO: overwrite __str__ or __repr__
-    def report(self, state, args):
-        # Even if we should be quiet, at least count the error.
-        state.error_counter[self.testclass] = state.error_counter.get(self.testclass, 0)+1
-        if args.quiet:
-            return
-        # Suppress error messages of a type of which we have seen too many.
-        if args.max_err > 0 and state.error_counter[self.testclass] > args.max_err:
-            if state.error_counter[self.testclass] == args.max_err + 1:
-                print(f'...suppressing further errors regarding {self.testclass}', file=sys.stderr)
-            return # suppressed
-        # If we are here, the error message should really be printed.
-        # Address of the incident.
-        address = f'Line {self.lineno} Sent {self.sentid}'
-        if self.nodeid:
-            address += f' Node {self.nodeid}'
-        # Insert file name if there are several input files.
-        if len(args.input) > 1:
-            address = f'File {self.filename} ' + address
-        # Classification of the incident.
-        levelclassid = f'L{self.level} {self.testclass} {self.testid}'
-        # Message (+ explanation, if this is the first error of its kind).
-        message = self.message
-        if self.explanation and self.explanation not in state.explanation_printed:
-            message += "\n\n" + self.explanation + "\n"
-            state.explanation_printed.add(self.explanation)
-        print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
+    # def report(self, state, args):
+    #     # Even if we should be quiet, at least count the error.
+    #     state.error_counter[self.testclass] = state.error_counter.get(self.testclass, 0)+1
+    #     if args.quiet:
+    #         return
+    #     # Suppress error messages of a type of which we have seen too many.
+    #     if args.max_err > 0 and state.error_counter[self.testclass] > args.max_err:
+    #         if state.error_counter[self.testclass] == args.max_err + 1:
+    #             print(f'...suppressing further errors regarding {self.testclass}', file=sys.stderr)
+    #         return # suppressed
+    #     # If we are here, the error message should really be printed.
+    #     # Address of the incident.
+    #     address = f'Line {self.lineno} Sent {self.sentid}'
+    #     if self.nodeid:
+    #         address += f' Node {self.nodeid}'
+    #     # Insert file name if there are several input files.
+    #     if len(args.input) > 1:
+    #         address = f'File {self.filename} ' + address
+    #     # Classification of the incident.
+    #     levelclassid = f'L{self.level} {self.testclass} {self.testid}'
+    #     # Message (+ explanation, if this is the first error of its kind).
+    #     message = self.message
+    #     if self.explanation and self.explanation not in state.explanation_printed:
+    #         message += "\n\n" + self.explanation + "\n"
+    #         state.explanation_printed.add(self.explanation)
+    #     print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
 
 
 @dataclass
@@ -89,7 +86,13 @@ class Error(Incident):
     def get_type(self):
         return IncidentType.ERROR
 
+    def __repr__(self):
+        return "ERROR"
+
 @dataclass
 class Warning(Incident):
     def get_type(self):
         return IncidentType.WARNING
+
+    def __repr__(self):
+        return "WARNING"

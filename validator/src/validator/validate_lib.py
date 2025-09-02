@@ -986,8 +986,8 @@ class Validator:
 # Level 2 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
 
-
-    def validate_mwt_empty_vals(self, state, cols, line):
+    #! rewritten
+    def OLD_validate_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
         This is required by UD guidelines although it is not a problem in general,
@@ -3728,7 +3728,7 @@ class Validator:
                     line += 1
                     # Multiword tokens and empty nodes can or must have certain fields empty.
                     if utils.is_multiword_token(cols):
-                        self.validate_mwt_empty_vals(state, cols, line)
+                        self.OLD_validate_mwt_empty_vals(state, cols, line)
                     if utils.is_empty_node(cols): # TODO: elif?
                         self.validate_empty_node_empty_vals(state, cols, line) # level 2
                     if utils.is_word(cols) or utils.is_empty_node(cols): # TODO: elif?
