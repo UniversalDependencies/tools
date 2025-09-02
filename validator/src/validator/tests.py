@@ -8,3 +8,6 @@ class Test:
 
     def __call__ (self, *args):
         return self.fun(*args)
+    fun: function
+
+validate_token_ranges = Test("TODO: ", token_ranges)
