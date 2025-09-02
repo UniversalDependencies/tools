@@ -4,6 +4,18 @@ def explain_feats(spec, lcode):
     """
     Returns explanation message for features of a particular language.
     To be called after language-specific features have been loaded.
+
+    Parameters
+    ----------
+    spec : UDSpecs object
+        The UD specification.
+    lcode : str
+        The language code.
+
+    Returns
+    -------
+    name : str
+        The explanation message for the features of the given language.
     """
     if lcode in spec._explanation_feats:
         return spec._explanation_feats[lcode]
@@ -44,6 +56,18 @@ def explain_deprel(spec, lcode):
     """
     Returns explanation message for deprels of a particular language.
     To be called after language-specific deprels have been loaded.
+
+    Parameters
+    ----------
+    spec : UDSpecs object
+        The UD specification.
+    lcode : str
+        The language code.
+
+    Returns
+    -------
+    name : str
+        The explanation message for the deprels of the given language.
     """
     if lcode in spec._explanation_deprel:
         return spec._explanation_deprel[lcode]
@@ -82,8 +106,20 @@ def explain_deprel(spec, lcode):
 
 def explain_edeprel(spec, lcode):
     """
-    Returns explanation message for edeprels of a particular language.
-    To be called after language-specific edeprels have been loaded.
+    Returns explanation message for enhanced deprels of a particular language.
+    To be called after language-specific enhanced deprels have been loaded.
+
+    Parameters
+    ----------
+    spec : UDSpecs object
+        The UD specification.
+    lcode : str
+        The language code.
+
+    Returns
+    -------
+    name : str
+        The explanation message for the enhanced deprels of the given language.
     """
     if lcode in spec._explanation_edeprel:
         return spec._explanation_edeprel[lcode]
@@ -113,6 +149,18 @@ def explain_aux(spec, lcode):
     """
     Returns explanation message for auxiliaries of a particular language.
     To be called after language-specific auxiliaries have been loaded.
+
+    Parameters
+    ----------
+    spec : UDSpecs object
+        The UD specification.
+    lcode : str
+        The language code.
+
+    Returns
+    -------
+    name : str
+        The explanation message for the auxiliaries of the given language.
     """
     if lcode in spec._explanation_aux:
         return spec._explanation_aux[lcode]
@@ -137,6 +185,18 @@ def explain_cop(spec, lcode):
     """
     Returns explanation message for copulas of a particular language.
     To be called after language-specific copulas have been loaded.
+
+    Parameters
+    ----------
+    spec : UDSpecs object
+        The UD specification.
+    lcode : str
+        The language code.
+
+    Returns
+    -------
+    name : str
+        The explanation message for the copulas of the given language.
     """
     if lcode in spec._explanation_cop:
         return spec._explanation_cop[lcode]
@@ -161,6 +221,18 @@ def explain_tospace(spec, lcode):
     """
     Returns explanation message for tokens with spaces of a particular language.
     To be called after language-specific tokens with spaces have been loaded.
+
+    Parameters
+    ----------
+    spec : UDSpecs object
+        The UD specification.
+    lcode : str
+        The language code.
+
+    Returns
+    -------
+    name : str
+        The explanation message for the tokens with spaces of the given language.
     """
     if lcode in spec._explanation_tospace:
         return spec._explanation_tospace[lcode]
