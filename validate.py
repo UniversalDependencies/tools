@@ -18,6 +18,7 @@ import json
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
 import validator.utils as utils
+import validator.messages as msg
 
 # The folder where this script resides.
 THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
@@ -292,187 +293,6 @@ class Data:
         if not lcode in self.tospace:
             return None
         return self.tospace[lcode]
-
-    def explain_feats(self, lcode):
-        """
-        Returns explanation message for features of a particular language.
-        To be called after language-specific features have been loaded.
-        """
-        if lcode in self._explanation_feats:
-            return self._explanation_feats[lcode]
-        featset = self.get_feats_for_language(lcode)
-        # Prepare a global message about permitted features and values. We will add
-        # it to the first error message about an unknown feature. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if not lcode in data.feats:
-            msg += f"No feature-value pairs have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
-        else:
-            # Identify feature values that are permitted in the current language.
-            for f in featset:
-                for e in featset[f]['errors']:
-                    msg += f"ERROR in _{lcode}/feat/{f}.md: {e}\n"
-            res = set()
-            for f in featset:
-                if featset[f]['permitted'] > 0:
-                    for v in featset[f]['uvalues']:
-                        res.add(f+'='+v)
-                    for v in featset[f]['lvalues']:
-                        res.add(f+'='+v)
-            sorted_documented_features = sorted(res)
-            msg += f"The following {len(sorted_documented_features)} feature values are currently permitted in language [{lcode}]:\n"
-            msg += ', '.join(sorted_documented_features) + "\n"
-            msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
-            msg += "have a language-specific documentation page in a prescribed format.\n"
-            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-            msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
-            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
-        self._explanation_feats[lcode] = msg
-        return msg
-
-    def explain_deprel(self, lcode):
-        """
-        Returns explanation message for deprels of a particular language.
-        To be called after language-specific deprels have been loaded.
-        """
-        if lcode in self._explanation_deprel:
-            return self._explanation_deprel[lcode]
-        deprelset = self.get_deprel_for_language(lcode)
-        # Prepare a global message about permitted relation labels. We will add
-        # it to the first error message about an unknown relation. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(deprelset) == 0:
-            msg += f"No dependency relation types have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n"
-        else:
-            # Identify dependency relations that are permitted in the current language.
-            # If there are errors in documentation, identify the erroneous doc file.
-            # Note that data.deprel[lcode] may not exist even though we have a non-empty
-            # set of relations, if lcode is 'ud'.
-            if lcode in data.deprel:
-                for r in data.deprel[lcode]:
-                    file = re.sub(r':', r'-', r)
-                    if file == 'aux':
-                        file = 'aux_'
-                    for e in data.deprel[lcode][r]['errors']:
-                        msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
-            sorted_documented_relations = sorted(deprelset)
-            msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
-            msg += ', '.join(sorted_documented_relations) + "\n"
-            msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
-            msg += "must have a language-specific documentation page in a prescribed format.\n"
-            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-            msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
-            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
-        self._explanation_deprel[lcode] = msg
-        return msg
-
-    def explain_edeprel(self, lcode):
-        """
-        Returns explanation message for edeprels of a particular language.
-        To be called after language-specific edeprels have been loaded.
-        """
-        if lcode in self._explanation_edeprel:
-            return self._explanation_edeprel[lcode]
-        edeprelset = self.get_edeprel_for_language(lcode)
-        # Prepare a global message about permitted relation labels. We will add
-        # it to the first error message about an unknown relation. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(edeprelset) == 0:
-            msg += f"No enhanced dependency relation types (case markers) have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n"
-        else:
-            # Identify dependency relations that are permitted in the current language.
-            # If there are errors in documentation, identify the erroneous doc file.
-            # Note that data.deprel[lcode] may not exist even though we have a non-empty
-            # set of relations, if lcode is 'ud'.
-            sorted_case_markers = sorted(edeprelset)
-            msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
-            msg += ', '.join(sorted_case_markers) + "\n"
-            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
-        self._explanation_deprel[lcode] = msg
-        return msg
-
-    def explain_aux(self, lcode):
-        """
-        Returns explanation message for auxiliaries of a particular language.
-        To be called after language-specific auxiliaries have been loaded.
-        """
-        if lcode in self._explanation_aux:
-            return self._explanation_aux[lcode]
-        auxdata = self.get_aux_for_language(lcode)
-        # Prepare a global message about permitted auxiliary lemmas. We will add
-        # it to the first error message about an unknown auxiliary. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(auxdata) == 0:
-            msg += f"No auxiliaries have been documented at the address below for language [{lcode}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{lcode}]:\n"
-            msg += ', '.join(auxdata) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
-        self._explanation_aux[lcode] = msg
-        return msg
-
-    def explain_cop(self, lcode):
-        """
-        Returns explanation message for copulas of a particular language.
-        To be called after language-specific copulas have been loaded.
-        """
-        if lcode in self._explanation_cop:
-            return self._explanation_cop[lcode]
-        copdata = self.get_cop_for_language(lcode)
-        # Prepare a global message about permitted copula lemmas. We will add
-        # it to the first error message about an unknown copula. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(copdata) == 0:
-            msg += f"No copulas have been documented at the address below for language [{lcode}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(copdata)} copulas are currently documented in language [{lcode}]:\n"
-            msg += ', '.join(copdata) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
-        self._explanation_cop[lcode] = msg
-        return msg
-
-    def explain_tospace(self, lcode):
-        """
-        Returns explanation message for tokens with spaces of a particular language.
-        To be called after language-specific tokens with spaces have been loaded.
-        """
-        if lcode in self._explanation_tospace:
-            return self._explanation_tospace[lcode]
-        # Prepare a global message about permitted features and values. We will add
-        # it to the first error message about an unknown token with space. Note that
-        # this global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if not lcode in self.tospace:
-            msg += f"No tokens with spaces have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
-        else:
-            msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
-            msg += self.tospace[lcode][0]
-            msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
-        self._explanation_tospace[lcode] = msg
-        return msg
 
     def load(self):
         """
@@ -3055,7 +2875,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                            explanation=data.explain_tospace(lang)
+                            explanation=msg.explain_tospace(lang)
                         ).report(state, self.args)
                 else:
                     Incident(
@@ -3063,7 +2883,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                        explanation=data.explain_tospace(lang)
+                        explanation=msg.explain_tospace(lang)
                     ).report(state, self.args)
 
 
@@ -3130,7 +2950,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='feature-unknown',
                             message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
-                            explanation=data.explain_feats(effective_lang)
+                            explanation=msg.explain_feats(effective_lang)
                         ).report(state, self.args)
                     else:
                         lfrecord = effective_featset[f]
@@ -3140,7 +2960,7 @@ class Validator:
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
                                 message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                explanation=data.explain_feats(effective_lang)
+                                explanation=msg.explain_feats(effective_lang)
                             ).report(state, self.args)
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
@@ -3150,7 +2970,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=data.explain_feats(effective_lang)
+                                    explanation=msg.explain_feats(effective_lang)
                                 ).report(state, self.args)
                             elif not node.upos in lfrecord['byupos']:
                                 Incident(
@@ -3158,7 +2978,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=data.explain_feats(effective_lang)
+                                    explanation=msg.explain_feats(effective_lang)
                                 ).report(state, self.args)
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                                 Incident(
@@ -3166,7 +2986,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=data.explain_feats(effective_lang)
+                                    explanation=msg.explain_feats(effective_lang)
                                 ).report(state, self.args)
         if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
             state.mwt_typo_span_end = None
@@ -3222,7 +3042,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
-                    explanation=data.explain_deprel(mainlang)
+                    explanation=msg.explain_deprel(mainlang)
                 ).report(state, self.args)
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
@@ -3245,7 +3065,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
-                        explanation=data.explain_edeprel(mainlang)
+                        explanation=msg.explain_edeprel(mainlang)
                     ).report(state, self.args)
 
 
@@ -3285,7 +3105,7 @@ class Validator:
                     testclass='Morpho',
                     testid='aux-lemma',
                     message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
-                    explanation=data.explain_aux(lang)
+                    explanation=msg.explain_aux(lang)
                 ).report(state, self.args)
 
 
@@ -3319,7 +3139,7 @@ class Validator:
                     testclass='Syntax',
                     testid='cop-lemma',
                     message=f"'{node.lemma}' is not a copula in language [{lang}]",
-                    explanation=data.explain_cop(lang)
+                    explanation=msg.explain_cop(lang)
                 ).report(state, self.args)
 
 
