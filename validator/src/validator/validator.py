@@ -19,11 +19,9 @@ def validate_token_ranges(sentence):
     covered = set()
     incidents = []
     for cols in sentence:
-        if not utils.is_multiword_token(cols):
+        if not "-" in cols[utils.ID]:
             continue
         m = crex.mwtid.fullmatch(cols[utils.ID])
-        # This should not happen. 
-        # The function utils.is_multiword_token() would then not return True.
         if not m: 
             incidents.append(Error(
                 testid="invalid-word-interval",
@@ -39,4 +37,4 @@ def validate_token_ranges(sentence):
                 testid='overlapping-word-intervals',
                 message=f'Range overlaps with others: {cols[utils.ID]}'))
         covered |= set(range(start, end+1))
-        return incidents
+    return incidents
