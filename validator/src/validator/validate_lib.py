@@ -1182,7 +1182,7 @@ class Validator:
 
 
 
-    def validate_misc(self, state, cols, line):
+    def OLD_validate_misc(self, state, cols, line):
         """
         In general, the MISC column can contain almost anything. However, if there
         is a vertical bar character, it is interpreted as the separator of two
@@ -3621,7 +3621,7 @@ class Validator:
                         self.OLD_validate_upos(state, cols, line) # level 2
                         colssafe = colssafe and self.OLD_validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
                     self.OLD_validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+                    self.OLD_validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
                     continue
                 # If we successfully passed all the tests above, it is probably

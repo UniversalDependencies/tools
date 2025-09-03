@@ -1,4 +1,8 @@
 # will contain validator class + all the smallish validation functions validate_xxx
+
+import collections
+import regex as re
+
 from validator.incident import Error, Warning, TestClass
 import validator.utils as utils
 import validator.compiled_regex as crex
@@ -369,6 +373,92 @@ def validate_deps(cols):
 				message=f"Self-loop in DEPS for '{cols[utils.ID]}'"
 			)
 		)
+
+	return ret
+
+
+def validate_misc(cols):
+	"""
+	In general, the MISC column can contain almost anything. However, if there
+	is a vertical bar character, it is interpreted as the separator of two
+	MISC attributes, which may or may not have the form of attribute=value pair.
+	In general it is not forbidden that the same attribute appears several times
+	with different values, but this should not happen for selected attributes
+	that are described in the UD documentation.
+
+	This function must be run on raw MISC before it is fed into Udapi because
+	Udapi is not prepared for some of the less recommended usages of MISC.
+
+	Parameters
+	----------
+	cols : list
+		The values of the columns on the current node / token line.
+	"""
+	# Incident.default_lineno = line
+	# Incident.default_level = 2
+	# Incident.default_testclass = 'Warning'
+
+	ret = []
+
+	if cols[utils.MISC] == '_':
+		return ret
+
+	misc = [ma.split('=', 1) for ma in cols[utils.MISC].split('|')] #! why not using a function in utils? Just like the one for features
+	mamap = collections.defaultdict(int)
+	for ma in misc:
+		if ma[0] == '':
+			if len(ma) == 1:
+				ret.append(
+					Warning(
+						level=2,
+						testid='empty-misc',
+						message="Empty attribute in MISC; possible misinterpreted vertical bar?"
+					)
+				)
+			else:
+				ret.append(
+					Warning(
+						level=2,
+						testid='empty-misc-key',
+						message=f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
+					)
+				)
+		# We do not warn about MISC items that do not contain '='.
+		# But the remaining error messages below assume that ma[1] exists.
+		if len(ma) == 1:
+			ma.append('')
+		if re.match(r"^\s", ma[0]) or \
+			re.match(r"\s$", ma[0]) or \
+			re.match(r"^\s", ma[1]) or \
+			re.search(r"\s$", ma[1]):
+			ret.append(
+				level=2,
+				testid='misc-extra-space',
+    			message=f"MISC attribute: leading or trailing extra space in '{'='.join(ma)}'."
+			)
+
+		if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
+			mamap[ma[0]] += 1
+		elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$", ma[0], re.IGNORECASE):
+			ret.append(
+				Warning(
+					level=2,
+					testid='misc-attr-typo',
+					message=f"Possible typo (case or spaces) in MISC attribute '{'='.join(ma)}'."
+				)
+
+			)
+
+	for ma in mamap:
+		if mamap[ma] > 1:
+			ret.append(
+				Error(
+					level=2,
+					testclass=TestClass.FORMAT,
+					testid='repeated-misc',
+					message=f"MISC attribute '{ma}' not supposed to occur twice"
+				)
+			)
 
 	return ret
 
