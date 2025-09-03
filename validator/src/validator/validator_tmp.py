@@ -514,6 +514,25 @@ def validate_deps_all_or_none(sentence, seen_enhanced_graph):
 				#! we should add something to this message in the engine where we have access to the state:
 				#  on line {state.seen_enhanced_graph}
 
+def validate_newlines(inp):
+	"""
+	Checks that the input file consistently uses linux-style newlines (LF only,
+	not CR LF like in Windows). To be run on the input file handle after the
+	whole input has been read.
+	"""
+
+	if inp.newlines and inp.newlines != '\n':
+		ret = Error(
+				level=1,
+				testclass=TestClass.FORMAT,
+				testid='non-unix-newline',
+				message='Only the unix-style LF line terminator is allowed.'
+			)
+		return [ret]
+
+	return []
+
+
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
 # 			# We must remember the span of the MWT and check it in validate_features_level4().

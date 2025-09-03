@@ -636,7 +636,7 @@ class Validator:
 
 
 
-    def validate_newlines(self, state, inp):
+    def OLD_validate_newlines(self, state, inp):
         """
         Checks that the input file consistently uses linux-style newlines (LF only,
         not CR LF like in Windows). To be run on the input file handle after the
@@ -3658,7 +3658,7 @@ class Validator:
                     self.validate_egraph_connected(state, nodes, linenos)
                 if self.args.check_coref:
                     self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
-        self.validate_newlines(state, inp) # level 1
+        self.OLD_validate_newlines(state, inp) # level 1
 
 
 
