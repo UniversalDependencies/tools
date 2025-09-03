@@ -462,6 +462,58 @@ def validate_misc(cols):
 
 	return ret
 
+# TODO: write tests
+def validate_deps_all_or_none(sentence, seen_enhanced_graph):
+	"""
+	Takes the list of non-comment lines (line = list of columns) describing
+	a sentence. Checks that enhanced dependencies are present if they were
+	present at another sentence, and absent if they were absent at another
+	sentence.
+	"""
+	ret = []
+	egraph_exists = False # enhanced deps are optional
+	for cols in sentence:
+		# if utils.is_multiword_token(cols):
+		# 	continue
+		if not utils.is_multiword_token(cols) and (utils.is_empty_node(cols) or cols[utils.DEPS] != '_'):
+			egraph_exists = True
+
+	# We are currently testing the existence of enhanced graphs separately for each sentence.
+	# However, we should not allow that one sentence has a connected egraph and another
+	# has no enhanced dependencies. Such inconsistency could come as a nasty surprise
+	# to the users.
+	# Incident.default_lineno = state.sentence_line
+	# Incident.default_level = 2
+	# Incident.default_testclass = 'Enhanced'
+	if egraph_exists:
+		if not seen_enhanced_graph:
+			# TODO: do elsewhere
+			# state.seen_enhanced_graph = state.sentence_line
+			ret.append(
+				Error(
+					testclass=TestClass.ENHANCED,
+					testid='edeps-only-sometimes',
+					message=f"Enhanced graph must be empty because we saw empty DEPS earlier."
+				)
+			)
+			#! we should add something to this message in the engine where we have access to the state:
+			#on line {state.seen_tree_without_enhanced_graph}
+
+	else:
+#		if not state.seen_tree_without_enhanced_graph:
+			# TODO: do elsewhere
+#  			state.seen_tree_without_enhanced_graph = state.sentence_line
+			if seen_enhanced_graph:
+				ret.append(
+					Error(
+						level=2,
+						testid='edeps-only-sometimes',
+						message=f"Enhanced graph cannot be empty because we saw non-empty DEPS earlier."
+					)
+				)
+				#! we should add something to this message in the engine where we have access to the state:
+				#  on line {state.seen_enhanced_graph}
+
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
 # 			# We must remember the span of the MWT and check it in validate_features_level4().

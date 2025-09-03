@@ -1489,7 +1489,7 @@ class Validator:
 
 
 
-    def validate_deps_all_or_none(self, state, sentence):
+    def OLD_validate_deps_all_or_none(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Checks that enhanced dependencies are present if they were
@@ -3636,7 +3636,7 @@ class Validator:
                 # These line numbers are returned in any case, even if there are no
                 # enhanced dependencies, hence we can rely on them even with basic
                 # trees.
-                self.validate_deps_all_or_none(state, sentence)
+                self.OLD_validate_deps_all_or_none(state, sentence)
                 # Tests of individual nodes with Udapi.
                 nodes = tree.descendants_and_empty
                 for node in nodes:
