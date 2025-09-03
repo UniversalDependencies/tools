@@ -13,7 +13,7 @@ def validate_token_ranges(sentence):
 
     Returns
     -------
-    _ : list
+    incidents : list
         A list of Incidents (empty if validation is successful). 
     """
     incidents = []
@@ -51,7 +51,7 @@ def validate_id_sequence(sentence):
 
     Returns
     -------
-    _ : list
+    incidents : list
         A list of Incidents (empty if validation is successful). 
     """
     incidents = []
@@ -149,7 +149,7 @@ def validate_id_references(sentence):
 
     Returns
     -------
-    _ : list
+    incidents : list
         A list of Incidents (empty if validation is successful). 
     """
     incidents = []
@@ -184,15 +184,93 @@ def validate_id_references(sentence):
             match = crex.ehead.fullmatch(head)
             if match is None:
                 incidents.append(Error(
-                    state=state,
                     testid='invalid-ehead',
                     message=f"Invalid enhanced head reference: '{head}'."
                 ))
             if not (head in ids or head == '0'):
                 incidents.append(Error(
-                    state=state,
                     testclass='Enhanced',
                     testid='unknown-ehead',
                     message=f"Undefined enhanced head reference (no such ID): '{head}'."
                 ))
+    return incidents
+
+def validate_tree(sentence, node_line, single_root):
+    """
+    Performs basic validation of the tree structure.
+
+    This function originally served to build a data structure that would
+    describe the tree and make it accessible during subsequent tests. Now we
+    use the Udapi data structures instead but we still have to call this
+    function first because it will survive and report ill-formed input. In
+    such a case, the Udapi data structure will not be built and Udapi-based
+    tests will be skipped.
+
+    This function should be called only if both ID and HEAD values have been
+    found valid for all tree nodes, including the sequence of IDs and the references from HEAD to existing IDs.
+
+    Parameters
+    ----------
+    sentence : list
+        A list of lists representing a sentence in tabular format.
+    node_line : int
+        A file-wide line counter.
+    single_root : bool
+        A flag indicating whether we should check that there is a single root.
+
+    Returns
+    -------
+    incidents : list
+        A list of Incidents (empty if validation is successful). 
+    """
+    # node_line = state.sentence_line - 1 TODO: this should be done by the engine
+    incidents = []
+    children = {} # int(node id) -> set of children
+    n_words = 0
+    for cols in sentence:
+        node_line += 1
+        if not utils.is_word(cols):
+            continue
+        n_words += 1
+        # ID and HEAD values have been validated before and this function would
+        # not be called if they were not OK. So we can now safely convert them
+        # to integers.
+        id_ = int(cols[utils.ID])
+        head = int(cols[utils.HEAD])
+        if head == id_:
+            incidents.append(Error(
+                lineno=node_line,
+                testid='head-self-loop',
+                message=f'HEAD == ID for {cols[utils.ID]}'
+            ))
+        # Incrementally build the set of children of every node.
+        children.setdefault(head, set()).add(id_)
+    word_ids = list(range(1, n_words+1))
+    # Check that there is just one node with the root relation.
+    children_0 = sorted(children.get(0, []))
+    if len(children_0) > 1 and single_root:
+        incidents.append(Error(
+            lineno=-1,
+            testid='multiple-roots',
+            message=f"Multiple root words: {children_0}"
+        ))
+    projection = set()
+    node_id = 0
+    nodes = list((node_id,))
+    while nodes:
+        node_id = nodes.pop()
+        children_id = sorted(children.get(node_id, []))
+        for child in children_id:
+            if child in projection:
+                continue # skip cycles
+            projection.add(child)
+            nodes.append(child)
+    unreachable = set(word_ids) - projection
+    if unreachable:
+        str_unreachable = ','.join(str(w) for w in sorted(unreachable))
+        incidents.append(Error(
+            lineno=-1,
+            testid='non-tree',
+            message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
+        ))
     return incidents
