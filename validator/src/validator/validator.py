@@ -1,3 +1,5 @@
+import regex as re
+
 import validator.utils as utils
 import validator.compiled_regex as crex
 from validator.incident import Error, Warning, TestClass
@@ -274,3 +276,228 @@ def validate_tree(sentence, node_line, single_root):
             message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
         ))
     return incidents
+
+def validate_sent_id(comments, lcode, known_sent_ids):
+    """
+    Checks that sentence id exists, is well-formed and unique.
+    
+    Parameters
+    ----------
+    comments : list
+        A list of comments, represented as strings.
+    lcode : str
+        TODO: https://github.com/UniversalDependencies/tools/issues/127
+    known_sent_ids : set
+        The set of previously encountered sentence IDs.
+
+    Returns
+    -------
+    incidents : list
+        A list of Incidents (empty if validation is successful). 
+    """
+    incidents = []
+    matched = []
+    for c in comments:
+        match = crex.sentid.fullmatch(c)
+        if match:
+            matched.append(match)
+        else:
+            if c.startswith('# sent_id') or c.startswith('#sent_id'):
+                incidents.append(Error(
+                    testclass=TestClass.METADATA,
+                    level=2,
+                    testid='invalid-sent-id',
+                    message=f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes."
+                ))
+    if not matched:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            testid='missing-sent-id',
+            message='Missing the sent_id attribute.'
+        ))
+    elif len(matched) > 1:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            testid='multiple-sent-id',
+            message='Multiple sent_id attributes.'
+        ))
+    else:
+        # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
+        # For that to happen, all three files should be tested at once.
+        sid = matched[0].group(1)
+        if sid in known_sent_ids:
+            incidents.append(Error(
+                testclass=TestClass.METADATA,
+                level=2,
+                testid='non-unique-sent-id',
+                message=f"Non-unique sent_id attribute '{sid}'."
+            ))
+        if sid.count('/') > 1 or (sid.count('/') == 1 and lcode != 'ud'):
+            incidents.append(Error(
+                testclass=TestClass.METADATA,
+                level=2,
+                testid='slash-in-sent-id',
+                message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
+            ))
+        #state.known_sent_ids.add(sid) # TODO: move this to the engine
+    return incidents
+
+def validate_text_meta(comments, tree, spaceafterno_in_effect):
+    """
+    Checks metadata other than sentence id, that is, document breaks, paragraph
+    breaks and sentence text (which is also compared to the sequence of the
+    forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+    """
+    incidents = []
+    newdoc_matched = []
+    newpar_matched = []
+    text_matched = []
+    for c in comments:
+        newdoc_match = crex.newdoc.fullmatch(c)
+        if newdoc_match:
+            newdoc_matched.append(newdoc_match)
+        newpar_match = crex.newpar.fullmatch(c)
+        if newpar_match:
+            newpar_matched.append(newpar_match)
+        text_match = crex.text.fullmatch(c)
+        if text_match:
+            text_matched.append(text_match)
+    if len(newdoc_matched) > 1:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            testid='multiple-newdoc',
+            message='Multiple newdoc attributes.'
+        ))
+    if len(newpar_matched) > 1:
+        incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+            testid='multiple-newpar',
+            message='Multiple newpar attributes.'
+        ))
+    if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
+        incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+            testid='spaceafter-newdocpar',
+            message='New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
+        ))
+    if not text_matched:
+        incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+            testid='missing-text',
+            message='Missing the text attribute.'
+        ))
+    elif len(text_matched) > 1:
+        incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+
+            testid='multiple-text',
+            message='Multiple text attributes.'
+        ))
+    else:
+        stext = text_matched[0].group(1)
+        if stext[-1].isspace():
+            incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+                testid='text-trailing-whitespace',
+                message='The text attribute must not end with whitespace.'
+            ))
+        # Validate the text against the SpaceAfter attribute in MISC.
+        skip_words = set()
+        mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
+        # We will sum state.sentence_line + iline, and state.sentence_line already points at
+        # the first token/node line after the sentence comments. Hence iline shall
+        # be 0 once we enter the cycle.
+        iline = -1
+        for cols in tree:
+            iline += 1
+            if 'NoSpaceAfter=Yes' in cols[utils.MISC]: # I leave this without the split("|") to catch all
+                incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+
+                    testid='nospaceafter-yes',
+                    message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
+                ))
+            if len([x for x in cols[utils.MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
+                incidents.append(Error(
+			        testclass=TestClass.METADATA,
+			        level=2,
+                    # TODO: lineno=state.sentence_line+iline, (engine)
+                    testid='spaceafter-value',
+                    message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
+                ))
+            if utils.is_empty_node(cols):
+                if 'SpaceAfter=No' in cols[utils.MISC]: # I leave this without the split("|") to catch all
+                    incidents.append(Error(
+			            testclass=TestClass.METADATA,
+			            level=2,
+                        # TODO: engine lineno=state.sentence_line+iline,
+                        testid='spaceafter-empty-node',
+                        message="'SpaceAfter=No' cannot occur with empty nodes."
+                    ))
+                continue
+            elif utils.is_multiword_token(cols):
+                beg, end = cols[utils.ID].split('-')
+                begi, endi = int(beg), int(end)
+                # If we see a multi-word token, add its words to an ignore-set – these will be skipped, and also checked for absence of SpaceAfter=No.
+                for i in range(begi, endi+1):
+                    skip_words.add(str(i))
+            elif cols[utils.ID] in skip_words:
+                if 'SpaceAfter=No' in cols[utils.MISC]:
+                    incidents.append(Error(
+			            testclass=TestClass.METADATA,
+			            level=2,
+                        # TODO: lineno=state.sentence_line+iline,
+                        testid='spaceafter-mwt-node',
+                        message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
+                    ))
+                continue
+            else:
+                # Err, I guess we have nothing to do here. :)
+                pass
+            # So now we have either a multi-word token or a word which is also a token in its entirety.
+            if not stext.startswith(cols[utils.FORM]):
+                if not mismatch_reported:
+                    extra_message = ''
+                    if len(stext) >= 1 and stext[0].isspace():
+                        extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
+                    incidents.append(Error(
+			            testclass=TestClass.METADATA,
+			            level=2,
+                        # TODO: lineno=state.sentence_line+iline,
+                        testid='text-form-mismatch',
+                        message=f"Mismatch between the text attribute and the FORM field. Form[{cols[utils.ID]}] is '{cols[utils.FORM]}' but text is '{stext[:len(cols[utils.FORM])+20]}...'"+extra_message
+                    ))
+                    mismatch_reported = 1
+            else:
+                stext = stext[len(cols[utils.FORM]):] # eat the form
+                # Remember if SpaceAfter=No applies to the last word of the sentence.
+                # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+                if 'SpaceAfter=No' in cols[utils.MISC].split("|"):
+                    spaceafterno_in_effect = True
+                else:
+                    spaceafterno_in_effect = False
+                    if (stext) and not stext[0].isspace():
+                        incidents.append(Error(
+			                testclass=TestClass.METADATA,
+			                level=2,
+                            # TODO: lineno=state.sentence_line+iline,
+                            testid='missing-spaceafter',
+                            message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[utils.ID]} because the text is '{utils.shorten(cols[utils.FORM]+stext)}'."
+                        ))
+                    stext = stext.lstrip()
+        if stext:
+            incidents.append(Error(
+			    testclass=TestClass.METADATA,
+			    level=2,
+                testid='text-extra-chars',
+                message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
+            ))
