@@ -906,7 +906,7 @@ class Validator:
 
 
 
-    def validate_empty_node_empty_vals(self, state, cols, line):
+    def OLD_validate_empty_node_empty_vals(self, state, cols, line):
         """
         Checks that an empty node has _ empty values in HEAD and DEPREL. This is
         required by UD guidelines but not necessarily by CoNLL-U, therefore
@@ -933,7 +933,7 @@ class Validator:
 
 
 
-    def validate_character_constraints(self, state, cols, line):
+    def OLD_validate_character_constraints(self, state, cols, line):
         """
         Checks general constraints on valid characters, e.g. that UPOS
         only contains [A-Z].
@@ -979,7 +979,7 @@ class Validator:
 
 
 
-    def validate_upos(self, state, cols, line):
+    def OLD_validate_upos(self, state, cols, line):
         """
         Checks that the UPOS field contains one of the 17 known tags.
 
@@ -1007,7 +1007,7 @@ class Validator:
 
 
 
-    def validate_features_level2(self, state, cols, line):
+    def OLD_validate_features_level2(self, state, cols, line):
         """
         Checks general constraints on feature-value format: Permitted characters in
         feature name and value, features must be sorted alphabetically, features
@@ -3615,11 +3615,11 @@ class Validator:
                     if utils.is_multiword_token(cols):
                         self.OLD_validate_mwt_empty_vals(state, cols, line)
                     if utils.is_empty_node(cols): # TODO: elif?
-                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
+                        self.OLD_validate_empty_node_empty_vals(state, cols, line) # level 2
                     if utils.is_word(cols) or utils.is_empty_node(cols): # TODO: elif?
-                        self.validate_character_constraints(state, cols, line) # level 2
-                        self.validate_upos(state, cols, line) # level 2
-                        colssafe = colssafe and self.validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
+                        self.OLD_validate_character_constraints(state, cols, line) # level 2
+                        self.OLD_validate_upos(state, cols, line) # level 2
+                        colssafe = colssafe and self.OLD_validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
                     self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                     self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
