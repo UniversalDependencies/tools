@@ -261,6 +261,117 @@ def validate_features_level2(cols):
 	# TODO: the engine has to know that 'invalid-feature' is a testid that prevents from further
 	return ret
 
+# TODO: write tests
+def validate_deps(cols):
+	"""
+	Validates that DEPS is correctly formatted and that there are no
+	self-loops in DEPS (longer cycles are allowed in enhanced graphs but
+	self-loops are not).
+
+	This function must be run on raw DEPS before it is fed into Udapi because
+	it checks the order of relations, which is not guaranteed to be preserved
+	in Udapi. On the other hand, we assume that it is run after
+	validate_id_references() and only if DEPS is parsable and the head indices
+	in it are OK.
+
+	Parameters
+	----------
+	cols : list
+		The values of the columns on the current node / token line.
+	"""
+
+	# TODO: the engine must assume that it is run after validate_id_references() and only if DEPS is parsable and the head indices in it are OK.
+
+	ret = []
+	if not (utils.is_word(cols) or utils.is_empty_node(cols)):
+		return ret
+
+	# TODO: move elsewhere
+	# Remember whether there is at least one difference between the basic
+	# tree and the enhanced graph in the entire dataset.
+	#if cols[utils.DEPS] != '_' and cols[utils.DEPS] != cols[utils.HEAD]+':'+cols[utils.DEPREL]:
+	#	state.seen_enhancement = line
+
+	# We already know that the contents of DEPS is parsable (deps_list() was
+	# first called from validate_id_references() and the head indices are OK).
+	deps = utils.deps_list(cols)
+	###!!! Float will not work if there are 10 empty nodes between the same two
+	###!!! regular nodes. '1.10' is not equivalent to '1.1'.
+	# ORIGINAL VERSION: heads = [float(h) for h, d in deps]
+
+	# NEW VERSION:
+	#! maybe do this only is [0-9]+.[1-9][0-9]+ is present somewhere?
+	heads = [h for h, _ in deps]
+	floating_len = []
+	for h in heads:
+		if "." in h:
+			floating_len.append(len(h))
+		else:
+			floating_len.append(0)
+	hacked_heads = [h+'00000001' for i, h in enumerate(heads) if floating_len[i]]
+	hacked_heads_sorted = sorted(zip(hacked_heads, floating_len), key= lambda x: float(x[0]))
+	hacked_heads_restored = []
+	for x, y in hacked_heads_sorted:
+		if y:
+			hacked_heads_sorted.append(x[:y])
+		else:
+			hacked_heads_sorted.append(x)
+
+	# if heads != sorted(heads): # sort strings keeping the integer-like ordering
+	if heads != hacked_heads_restored:
+		ret.append(
+			Error(
+				level=2,
+				testclass=TestClass.FORMAT,
+				testid='unsorted-deps',
+				message=f"DEPS not sorted by head index: '{cols[utils.DEPS]}'"
+			)
+		)
+	else:
+		lasth = None
+		lastd = None
+		for h, d in deps:
+			if h == lasth:
+				if d < lastd:
+					ret.append(
+						Error(
+							level=2,
+							testclass=TestClass.FORMAT,
+							testid='unsorted-deps-2',
+							message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[utils.DEPS]}'"
+						)
+					)
+				elif d == lastd:
+					ret.append(
+						Error(
+							level=2,
+							testclass=TestClass.FORMAT,
+							testid='unsorted-deps',
+							message=f"DEPS contain multiple instances of the same relation '{h}:{d}'"
+						)
+					)
+			lasth = h
+			lastd = d
+
+	try:
+		id_ = float(cols[utils.ID])
+	except ValueError:
+		# This error has been reported previously.
+		# TODO: check, before there was just a return
+		return ret
+
+	if id_ in heads:
+		ret.append(
+			Error(
+				level=2,
+				testclass=TestClass.ENHANCED,
+				testid='deps-self-loop',
+				message=f"Self-loop in DEPS for '{cols[utils.ID]}'"
+			)
+		)
+
+	return ret
+
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
 # 			# We must remember the span of the MWT and check it in validate_features_level4().

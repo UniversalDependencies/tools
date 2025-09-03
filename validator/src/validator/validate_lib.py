@@ -1108,7 +1108,7 @@ class Validator:
 
 
 
-    def validate_deps(self, state, cols, line):
+    def OLD_validate_deps(self, state, cols, line):
         """
         Validates that DEPS is correctly formatted and that there are no
         self-loops in DEPS (longer cycles are allowed in enhanced graphs but
@@ -3620,7 +3620,7 @@ class Validator:
                         self.OLD_validate_character_constraints(state, cols, line) # level 2
                         self.OLD_validate_upos(state, cols, line) # level 2
                         colssafe = colssafe and self.OLD_validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
-                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    self.OLD_validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                     self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
                     continue
