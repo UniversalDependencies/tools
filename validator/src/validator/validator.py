@@ -42,6 +42,7 @@ def validate_token_ranges(sentence):
 def validate_id_sequence(sentence):
     """
     Validates that the ID sequence is correctly formed.
+    If this function returns an nonempty list, subsequent tests should not be run.
 
     Parameters
     ----------
@@ -134,4 +135,64 @@ def validate_id_sequence(sentence):
                 message=f'Spurious token interval {b}-{e} (out of range)'
             ))
             continue
+    return incidents
+
+def validate_id_references(sentence):
+    """
+    Verifies that HEAD and DEPS reference existing IDs. If this function returns a nonempty list, most of the other tests should be skipped for the current
+    sentence (in particular anything that considers the tree structure).
+
+    Parameters
+    ----------
+    sentence : list
+        A list of lists representing a sentence in tabular format.
+
+    Returns
+    -------
+    _ : list
+        A list of Incidents (empty if validation is successful). 
+    """
+    incidents = []
+    word_tree = [cols for cols in sentence if utils.is_word(cols) or utils.is_empty_node(cols)]
+    ids = set([cols[utils.ID] for cols in word_tree])
+    for cols in word_tree:
+        # Test the basic HEAD only for non-empty nodes.
+        # We have checked elsewhere that it is empty for empty nodes.
+        if not utils.is_empty_node(cols):
+            match = crex.head.fullmatch(cols[utils.HEAD])
+            if match is None:
+                incidents.append(Error(
+                    testid='invalid-head',
+                    message=f"Invalid HEAD: '{cols[utils.HEAD]}'."
+                ))
+            if not (cols[utils.HEAD] in ids or cols[utils.HEAD] == '0'):
+                incidents.append(Error(
+                    testclass='Syntax',
+                    testid='unknown-head',
+                    message=f"Undefined HEAD (no such ID): '{cols[id.HEAD]}'."
+                ))
+        try:
+            deps = utils.deps_list(cols)
+        except ValueError:
+            # Similar errors have probably been reported earlier.
+            incidents.append(Error(
+                testid='invalid-deps',
+                message=f"Failed to parse DEPS: '{cols[utils.DEPS]}'."
+            ))
+            continue
+        for head, _ in deps:
+            match = crex.ehead.fullmatch(head)
+            if match is None:
+                incidents.append(Error(
+                    state=state,
+                    testid='invalid-ehead',
+                    message=f"Invalid enhanced head reference: '{head}'."
+                ))
+            if not (head in ids or head == '0'):
+                incidents.append(Error(
+                    state=state,
+                    testclass='Enhanced',
+                    testid='unknown-ehead',
+                    message=f"Undefined enhanced head reference (no such ID): '{head}'."
+                ))
     return incidents
