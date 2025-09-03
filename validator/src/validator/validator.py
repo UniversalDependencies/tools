@@ -167,7 +167,7 @@ def validate_id_references(sentence):
                 ))
             if not (cols[utils.HEAD] in ids or cols[utils.HEAD] == '0'):
                 incidents.append(Error(
-                    testclass='Syntax',
+                    testclass=TestClass.SYNTAX,
                     testid='unknown-head',
                     message=f"Undefined HEAD (no such ID): '{cols[id.HEAD]}'."
                 ))
@@ -189,7 +189,7 @@ def validate_id_references(sentence):
                 ))
             if not (head in ids or head == '0'):
                 incidents.append(Error(
-                    testclass='Enhanced',
+                    testclass=TestClass.ENHANCED,
                     testid='unknown-ehead',
                     message=f"Undefined enhanced head reference (no such ID): '{head}'."
                 ))
@@ -239,6 +239,7 @@ def validate_tree(sentence, node_line, single_root):
         head = int(cols[utils.HEAD])
         if head == id_:
             incidents.append(Error(
+                testclass=TestClass.SYNTAX,
                 lineno=node_line,
                 testid='head-self-loop',
                 message=f'HEAD == ID for {cols[utils.ID]}'
@@ -250,6 +251,7 @@ def validate_tree(sentence, node_line, single_root):
     children_0 = sorted(children.get(0, []))
     if len(children_0) > 1 and single_root:
         incidents.append(Error(
+            testclass=TestClass.SYNTAX,
             lineno=-1,
             testid='multiple-roots',
             message=f"Multiple root words: {children_0}"
@@ -269,6 +271,7 @@ def validate_tree(sentence, node_line, single_root):
     if unreachable:
         str_unreachable = ','.join(str(w) for w in sorted(unreachable))
         incidents.append(Error(
+            testclass=TestClass.SYNTAX,
             lineno=-1,
             testid='non-tree',
             message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
