@@ -2,7 +2,8 @@ import os
 import argparse
 from validator import validate
 from validator.utils import THIS_DIR
-from futils import TEST_CASES_DIR
+
+TEST_CASES_DIR = os.path.join(os.path.dirname(os.path.realpath(os.path.abspath(__file__))), "test-cases")
 
 CONFIG = {
     "quiet": False,
