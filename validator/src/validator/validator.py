@@ -116,7 +116,6 @@ def validate_id_sequence(sentence):
     wrdstrseq = ','.join(str(x) for x in words)
     if wrdstrseq != expstrseq:
         incidents.append(Error(
-            lineno=-1,
             testid='word-id-sequence',
             message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
         ))
@@ -252,7 +251,6 @@ def validate_tree(sentence, node_line, single_root):
     if len(children_0) > 1 and single_root:
         incidents.append(Error(
             testclass=TestClass.SYNTAX,
-            lineno=-1,
             testid='multiple-roots',
             message=f"Multiple root words: {children_0}"
         ))
@@ -272,7 +270,6 @@ def validate_tree(sentence, node_line, single_root):
         str_unreachable = ','.join(str(w) for w in sorted(unreachable))
         incidents.append(Error(
             testclass=TestClass.SYNTAX,
-            lineno=-1,
             testid='non-tree',
             message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
         ))
