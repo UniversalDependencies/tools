@@ -277,7 +277,7 @@ def validate_tree(sentence, node_line, single_root):
         ))
     return incidents
 
-def validate_sent_id(comments, lcode, known_sent_ids):
+def validate_sent_id(comments, allow_slash, known_sent_ids):
     """
     Checks that sentence id exists, is well-formed and unique.
     
@@ -285,8 +285,10 @@ def validate_sent_id(comments, lcode, known_sent_ids):
     ----------
     comments : list
         A list of comments, represented as strings.
-    lcode : str
-        TODO: https://github.com/UniversalDependencies/tools/issues/127
+    allow_slash : bool
+        Whether exactly one "/" character is allowed (this is reserved for 
+        parallel treebanks). This parameter replaces lcode, which was used to
+        allow slashes when equal to "ud".
     known_sent_ids : set
         The set of previously encountered sentence IDs.
 
@@ -334,7 +336,7 @@ def validate_sent_id(comments, lcode, known_sent_ids):
                 testid='non-unique-sent-id',
                 message=f"Non-unique sent_id attribute '{sid}'."
             ))
-        if sid.count('/') > 1 or (sid.count('/') == 1 and lcode != 'ud'):
+        if sid.count('/') > 1 or (sid.count('/') == 1 and allow_slash):
             incidents.append(Error(
                 testclass=TestClass.METADATA,
                 level=2,
