@@ -6,12 +6,13 @@ from validator.validate_lib import State
 
 class TestClass(Enum):
     INTERNAL = 0
-    FORMAT = 1
-    MORPHO = 2
-    SYNTAX = 3
-    ENHANCED = 4
-    COREF = 5
-    METADATA = 6
+    UNICODE = 1
+    FORMAT = 2
+    MORPHO = 3
+    SYNTAX = 4
+    ENHANCED = 5
+    COREF = 6
+    METADATA = 7
 
 class IncidentType(Enum):
     ERROR = 1
@@ -20,7 +21,7 @@ class IncidentType(Enum):
 # TODO: make abstract
 @dataclass
 class Incident:
-    state: State = field(init=False)
+    state: State = field(init=False) # TODO: check if this is actually necessary
     level: int = 1
     testclass: TestClass = TestClass.FORMAT
     testid: str = 'generic-error'
@@ -41,17 +42,18 @@ class Incident:
 
     def set_state(self, state):
 
-        self.state = state
-        self.lineno = max(self.state.current_line, self.state.sentence_line)
+        #self.state = state
+        self.lineno = state.current_line
 
-        if not self.state.current_file_name == '-':
-            self.filename = os.path.basename(self.state.current_file_name)
+        if not state.current_file_name == '-':
+            self.filename = os.path.basename(state.current_file_name)
+        return self # !
 
-        self.sentid = self.state.sentence_id
-        self.nodeid = self.state.nodeid
+        #self.sentid = self.state.sentence_id
+        #self.nodeid = self.state.nodeid
 
     def __repr__(self):
-        return "INCIDENT"
+        return self.testid
 
     # TODO: overwrite __str__ or __repr__
     # def report(self, state, args):
@@ -88,7 +90,7 @@ class Error(Incident):
         return IncidentType.ERROR
 
     def __repr__(self):
-        return "ERROR"
+        return "ERROR: {}".format(self.testid)
 
 @dataclass
 class Warning(Incident):
@@ -96,4 +98,4 @@ class Warning(Incident):
         return IncidentType.WARNING
 
     def __repr__(self):
-        return "WARNING"
+        return "WARNING: {}".format(self.testid)

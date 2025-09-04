@@ -42,9 +42,9 @@ class State:
     and what we have seen so far. Typically there will be just one instance of
     this class.
     """
-    def __init__(self):
+    def __init__(self, current_file_name):
         # Name of the current input file.
-        self.current_file_name = None
+        self.current_file_name = current_file_name
         # Current line in the input file, or, more precisely, the last line
         # read so far. Once we start looking at tree integrity, we may find
         # errors on previous lines as well.

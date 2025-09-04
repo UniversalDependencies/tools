@@ -1,4 +1,5 @@
 import os
+import regex as re
 
 from validator.loaders import load_conllu_spec
 
@@ -245,3 +246,13 @@ def get_line_numbers_for_ids(state, sentence):
         if is_word(cols):
             linenos[int(cols[ID])] = node_line
     return linenos
+
+def next_block(fin):
+    block = []
+    for counter, line in enumerate(fin):
+        block.append((counter, line))
+        if re.fullmatch(r"^\s*$", line):
+            yield block
+            block = []
+    if len(block): yield block
+    
