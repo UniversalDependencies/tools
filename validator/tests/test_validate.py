@@ -1,6 +1,6 @@
 import os
 
-from validator.validator_tmp import *
+from validator.validator import *
 from validator.specifications import UDSpecs
 from validator.utils import THIS_DIR
 
