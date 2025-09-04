@@ -636,7 +636,7 @@ class Validator:
 
 
 
-    def validate_newlines(self, state, inp):
+    def OLD_validate_newlines(self, state, inp):
         """
         Checks that the input file consistently uses linux-style newlines (LF only,
         not CR LF like in Windows). To be run on the input file handle after the
@@ -871,8 +871,8 @@ class Validator:
 # Level 2 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
 
-
-    def validate_mwt_empty_vals(self, state, cols, line):
+    #! rewritten
+    def OLD_validate_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
         This is required by UD guidelines although it is not a problem in general,
@@ -906,7 +906,7 @@ class Validator:
 
 
 
-    def validate_empty_node_empty_vals(self, state, cols, line):
+    def OLD_validate_empty_node_empty_vals(self, state, cols, line):
         """
         Checks that an empty node has _ empty values in HEAD and DEPREL. This is
         required by UD guidelines but not necessarily by CoNLL-U, therefore
@@ -933,7 +933,7 @@ class Validator:
 
 
 
-    def validate_character_constraints(self, state, cols, line):
+    def OLD_validate_character_constraints(self, state, cols, line):
         """
         Checks general constraints on valid characters, e.g. that UPOS
         only contains [A-Z].
@@ -979,7 +979,7 @@ class Validator:
 
 
 
-    def validate_upos(self, state, cols, line):
+    def OLD_validate_upos(self, state, cols, line):
         """
         Checks that the UPOS field contains one of the 17 known tags.
 
@@ -1007,7 +1007,7 @@ class Validator:
 
 
 
-    def validate_features_level2(self, state, cols, line):
+    def OLD_validate_features_level2(self, state, cols, line):
         """
         Checks general constraints on feature-value format: Permitted characters in
         feature name and value, features must be sorted alphabetically, features
@@ -1108,7 +1108,7 @@ class Validator:
 
 
 
-    def validate_deps(self, state, cols, line):
+    def OLD_validate_deps(self, state, cols, line):
         """
         Validates that DEPS is correctly formatted and that there are no
         self-loops in DEPS (longer cycles are allowed in enhanced graphs but
@@ -1182,7 +1182,7 @@ class Validator:
 
 
 
-    def validate_misc(self, state, cols, line):
+    def OLD_validate_misc(self, state, cols, line):
         """
         In general, the MISC column can contain almost anything. However, if there
         is a vertical bar character, it is interpreted as the separator of two
@@ -1489,7 +1489,7 @@ class Validator:
 
 
 
-    def validate_deps_all_or_none(self, state, sentence):
+    def OLD_validate_deps_all_or_none(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Checks that enhanced dependencies are present if they were
@@ -3613,15 +3613,15 @@ class Validator:
                     line += 1
                     # Multiword tokens and empty nodes can or must have certain fields empty.
                     if utils.is_multiword_token(cols):
-                        self.validate_mwt_empty_vals(state, cols, line)
+                        self.OLD_validate_mwt_empty_vals(state, cols, line)
                     if utils.is_empty_node(cols): # TODO: elif?
-                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
+                        self.OLD_validate_empty_node_empty_vals(state, cols, line) # level 2
                     if utils.is_word(cols) or utils.is_empty_node(cols): # TODO: elif?
-                        self.validate_character_constraints(state, cols, line) # level 2
-                        self.validate_upos(state, cols, line) # level 2
-                        colssafe = colssafe and self.validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
-                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+                        self.OLD_validate_character_constraints(state, cols, line) # level 2
+                        self.OLD_validate_upos(state, cols, line) # level 2
+                        colssafe = colssafe and self.OLD_validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
+                    self.OLD_validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    self.OLD_validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
                     continue
                 # If we successfully passed all the tests above, it is probably
@@ -3636,7 +3636,7 @@ class Validator:
                 # These line numbers are returned in any case, even if there are no
                 # enhanced dependencies, hence we can rely on them even with basic
                 # trees.
-                self.validate_deps_all_or_none(state, sentence)
+                self.OLD_validate_deps_all_or_none(state, sentence)
                 # Tests of individual nodes with Udapi.
                 nodes = tree.descendants_and_empty
                 for node in nodes:
@@ -3658,7 +3658,7 @@ class Validator:
                     self.validate_egraph_connected(state, nodes, linenos)
                 if self.args.check_coref:
                     self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
-        self.validate_newlines(state, inp) # level 1
+        self.OLD_validate_newlines(state, inp) # level 1
 
 
 
