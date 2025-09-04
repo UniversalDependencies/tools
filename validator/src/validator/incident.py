@@ -52,6 +52,7 @@ class Incident:
 
     def __repr__(self):
         return "INCIDENT"
+
     # TODO: overwrite __str__ or __repr__
     # def report(self, state, args):
     #     # Even if we should be quiet, at least count the error.
