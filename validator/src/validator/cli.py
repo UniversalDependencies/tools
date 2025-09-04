@@ -32,10 +32,9 @@ def _validate(args):
 
 	for incidents in vlib.validate(args.input):
 		if not incidents:
-			print("PASSED!")
-			input()
+			print(">>>>>>>>> PASSED!")
 		else:
-			print(incidents)
+			print(">>>>>>>>> FAILED:", incidents)
 
 	# Summarize the warnings and errors.
 	passed = True

@@ -250,7 +250,7 @@ def get_line_numbers_for_ids(state, sentence):
 def next_block(fin):
     block = []
     for counter, line in enumerate(fin):
-        block.append((counter, line))
+        block.append((counter, line.rstrip("\n\r")))
         if re.fullmatch(r"^\s*$", line):
             yield block
             block = []

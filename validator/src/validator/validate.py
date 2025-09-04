@@ -25,14 +25,18 @@ def validate(paths):
 def validate_file(path):
     state = State(current_file_name=os.path.basename(path))
     incidents = []
-    with open(path) as fin:
+    # newline='' necessary because otherwise non-unix newlines are 
+    # automagically converted to \n, see 
+    # https://docs.python.org/3/library/functions.html#open
+    with open(path,newline='') as fin:
         logger.info("opening file %s", path)
-        incidents.extend(check_newlines(fin))
         block = []
         for block in utils.next_block(fin):
             state.current_line = block[0][0]
             incidents.extend([err.set_state(state) for err in check_extra_empty_line(block)])
             
+            block = [(counter,line) for (counter,line) in block if line]
+
             for (counter,line) in block:
                 state.current_line = counter # TODO: +1 when printing
                 incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
@@ -52,6 +56,7 @@ def validate_file(path):
                 testid='missing-empty-line',
                 message='Missing empty line after the last sentence.'
                 ))
+        incidents.extend(check_newlines(fin))
     return incidents
             
 # TODO: docstring + check that test case for this exists
@@ -139,12 +144,12 @@ def check_misplaced_comment(block):
     incidents = []
     if len(block) > 1:
         max_comment = len(block)
-        min_token = 0
+        min_token = -1
         for (counter,line) in block:
             if line[0] == "#":
                 max_comment = counter
             else:
-                if counter < min_token:
+                if min_token == -1:
                     min_token = counter
 
         if max_comment >= min_token:
@@ -231,8 +236,7 @@ def check_unicode_normalization(text):
         incidents.append(Error(
             testclass=TestClass.UNICODE,
             testid='unicode-normalization',
-            message=testmessage,
-            explanation=f"This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
+            message=testmessage
         ))
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
