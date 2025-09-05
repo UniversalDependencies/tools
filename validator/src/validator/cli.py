@@ -21,6 +21,7 @@ import validator.logging_utils as logging_utils
 import validator.validate_lib as VLib
 import validator.specifications as specifications
 import validator.utils as utils
+import validator.output_utils as outils
 import validator.validate as vlib
 
 logger = logging.getLogger(__name__)
@@ -28,13 +29,19 @@ logging_utils.setup_logging(logger)
 
 def _validate(args):
 
+	output_format = args.format
+	output_destination = args.output_path
+	if output_destination == "-":
+		output_destination = sys.stdout
+	elif output_destination == "stderr":
+		output_destination = sys.stderr
+	else:
+		output_destination = open(output_destination, 'w')
+
 	ud_specs = specifications.UDSpecs(args.data_folder)
 
 	for incidents in vlib.validate(args.input):
-		if not incidents:
-			print(">>>>>>>>> PASSED!")
-		else:
-			print(">>>>>>>>> FAILED:", incidents)
+		outils.serialize_output(incidents, output_format, output_destination)
 
 	# Summarize the warnings and errors.
 	passed = True
@@ -116,6 +123,12 @@ def main():
 
 	config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
 	config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
+
+	output_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
+	output_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
+						help='Produce output in desired format')
+	output_format.add_argument('--output-path', default='-', type=str,
+							help="Output destination")
 
 	opt_parser.set_defaults(func=_validate)
 	args = opt_parser.parse_args() #Parsed command-line arguments
