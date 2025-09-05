@@ -78,8 +78,8 @@ def explain_deprel(specs, lcode):
     if len(deprelset) == 0:
         msg = (
             f"No dependency relation types have been permitted for language [{lcode}].\n"
-        	 "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-        	 "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n")
+             "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+             "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n")
     else:
         # Identify dependency relations that are permitted in the current language.
         # If there are errors in documentation, identify the erroneous doc file.
@@ -95,7 +95,7 @@ def explain_deprel(specs, lcode):
         sorted_documented_relations = sorted(deprelset)
         msg += (
             f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
-			f"{', '.join(sorted_documented_relations)}\n"
+            f"{', '.join(sorted_documented_relations)}\n"
              "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
              "must have a language-specific documentation page in a prescribed format.\n"
              "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
@@ -130,9 +130,9 @@ def explain_edeprel(specs, lcode):
     msg = ''
     if len(edeprelset) == 0:
         msg = (
-        	f"No enhanced dependency relation types (case markers) have been permitted for language [{lcode}].\n"
-        	 "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-        	 "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n")
+            f"No enhanced dependency relation types (case markers) have been permitted for language [{lcode}].\n"
+             "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+             "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n")
     else:
         # Identify dependency relations that are permitted in the current language.
         # If there are errors in documentation, identify the erroneous doc file.
@@ -141,8 +141,8 @@ def explain_edeprel(specs, lcode):
         sorted_case_markers = sorted(edeprelset)
         msg += (
             f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
-			f"{', '.join(sorted_case_markers)}\n"
-        	 "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n")
+            f"{', '.join(sorted_case_markers)}\n"
+             "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n")
     specs._explanation_deprel[lcode] = msg
     return msg
 
@@ -171,13 +171,13 @@ def explain_aux(specs, lcode):
     if len(auxspec) == 0:
         return (
             f"No auxiliaries have been documented at the address below for language [{lcode}].\n"
-        	f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n")
+            f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n")
     else:
         # Identify auxiliaries that are permitted in the current language.
         return (
-			f"The following {len(auxspec)} auxiliaries are currently documented in language [{lcode}]:\n"
-        	f"{', '.join(auxspec)}\n"
-        	f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n")
+            f"The following {len(auxspec)} auxiliaries are currently documented in language [{lcode}]:\n"
+            f"{', '.join(auxspec)}\n"
+            f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n")
 
 def explain_cop(specs, lcode):
     """
@@ -203,14 +203,14 @@ def explain_cop(specs, lcode):
     # should not be used with code-switched segments in alternative languages.
     if len(copspec) == 0:
         return (
-        	f"No copulas have been documented at the address below for language [{lcode}].\n"
-        	f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n")
+            f"No copulas have been documented at the address below for language [{lcode}].\n"
+            f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n")
     else:
         # Identify auxiliaries that are permitted in the current language.
         return (
-        	f"The following {len(copspec)} copulas are currently documented in language [{lcode}]:\n"
-        	f"{', '.join(copspec)}\n"
-        	f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n")
+            f"The following {len(copspec)} copulas are currently documented in language [{lcode}]:\n"
+            f"{', '.join(copspec)}\n"
+            f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n")
 
 def explain_tospace(specs, lcode):
     """
@@ -235,15 +235,15 @@ def explain_tospace(specs, lcode):
     # should not be used with code-switched segments in alternative languages.
     if not lcode in specs.tospace:
         return(
-        	f"No tokens with spaces have been permitted for language [{lcode}].\n"
-        	 "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-        	 "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n")
+            f"No tokens with spaces have been permitted for language [{lcode}].\n"
+             "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+             "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n")
     else:
         return (
-        	f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
-        	f"{specs.tospace[lcode][0]}\n"
-        	 "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-        	 "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n")
+            f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
+            f"{specs.tospace[lcode][0]}\n"
+             "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
+             "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n")
 
 def serialize_output(incidents, output_fhandle, explanations, lines_content):
 
