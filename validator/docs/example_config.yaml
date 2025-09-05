@@ -1,0 +1,22 @@
+file:
+  - check_newlines: 1
+
+block:
+  - check_extra_empty_line: 1
+  - check_misplaced_comment: 1
+  - check_invalid_lines: 1
+
+line:
+  - check_unicode_normalization: 1
+  - check_pseudo_empty_line: 1
+
+token_lines:
+  - check_columns_format: 1
+
+comment_lines:
+
+cols:
+
+tree:
+
+node:

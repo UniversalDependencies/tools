@@ -14,19 +14,82 @@ from validator.logging_utils import setup_logging
 logger = logging.getLogger(__name__)
 setup_logging(logger)
 
+def validate_cfg(paths, cfg_obj):
+    '''
+    Validates the input files.
+    '''
+    # TODO: complete docstring
+    print("@@@@@@@@@@@@@@@@@@@@@@@", paths)
+    for path in paths:
+        yield validate_file_cfg(path, cfg_obj)
+
+
+def run_tests(tests, parameters, incidents, state):
+    for check in tests:
+        for fun_name, fun_level in check.items():
+            fun = globals()[fun_name]
+            # TODO: run test only if no failed dependency is found
+            incidents.extend([err.set_state(state) for err in fun(parameters)])
+            # TODO else:
+            # TODO add warning
+
+
+def validate_file_cfg(path, cfg_obj):
+
+    # print("@@@@@@@@@@@@@@@@@@@@@@@@ HERE", path)
+    state = State(current_file_name=os.path.basename(path))
+    incidents = []
+    # newline='' necessary because otherwise non-unix newlines are
+    # automagically converted to \n, see
+    # https://docs.python.org/3/library/functions.html#open
+    with open(path,newline='') as fin:
+        logger.info("opening file %s", path)
+        block = []
+        for block in utils.next_block(fin):
+            state.current_line = block[0][0]
+
+            run_tests(cfg_obj['block'], block, incidents, state)
+
+            block = [(counter,line) for (counter,line) in block if line]
+
+            for (counter,line) in block:
+                state.current_line = counter # TODO: +1 when printing
+                run_tests(cfg_obj['line'], line, incidents, state)
+                # incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
+                # incidents.extend([err.set_state(state) for err in check_pseudo_empty_line(line)])
+
+            # incidents.extend([err.set_state(state) for err in check_misplaced_comment(block)])
+            # incidents.extend([err.set_state(state) for err in check_invalid_lines(block)])
+
+            comments = [(counter,line) for (counter,line) in block if line[0] == "#"]
+            tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
+            for (counter,line) in tokens:
+                state.current_line = counter
+                run_tests(cfg_obj['token_lines'], line, incidents, state)
+                # incidents.extend([err.set_state(state) for err in check_columns_format(line)])
+
+        if len(block) == 1 and not block[0][1]:
+            incidents.append(Error(
+                testid='missing-empty-line',
+                message='Missing empty line after the last sentence.'
+                ))
+
+        run_tests(cfg_obj['file'], fin, incidents, state)
+    return incidents
+
 def validate(paths):
     '''
-    Validates the input files.  
+    Validates the input files.
     '''
     # TODO: complete docstring
     for path in paths:
         yield validate_file(path)
-        
+
 def validate_file(path):
     state = State(current_file_name=os.path.basename(path))
     incidents = []
-    # newline='' necessary because otherwise non-unix newlines are 
-    # automagically converted to \n, see 
+    # newline='' necessary because otherwise non-unix newlines are
+    # automagically converted to \n, see
     # https://docs.python.org/3/library/functions.html#open
     with open(path,newline='') as fin:
         logger.info("opening file %s", path)
@@ -34,14 +97,14 @@ def validate_file(path):
         for block in utils.next_block(fin):
             state.current_line = block[0][0]
             incidents.extend([err.set_state(state) for err in check_extra_empty_line(block)])
-            
+
             block = [(counter,line) for (counter,line) in block if line]
 
             for (counter,line) in block:
                 state.current_line = counter # TODO: +1 when printing
                 incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
                 incidents.extend([err.set_state(state) for err in check_pseudo_empty_line(line)])
-            
+
             incidents.extend([err.set_state(state) for err in check_misplaced_comment(block)])
             incidents.extend([err.set_state(state) for err in check_invalid_lines(block)])
 
@@ -50,7 +113,7 @@ def validate_file(path):
             for (counter,line) in tokens:
                 state.current_line = counter
                 incidents.extend([err.set_state(state) for err in check_columns_format(line)])
-        
+
         if len(block) == 1 and not block[0][1]:
             incidents.append(Error(
                 testid='missing-empty-line',
@@ -58,20 +121,20 @@ def validate_file(path):
                 ))
         incidents.extend(check_newlines(fin))
     return incidents
-            
+
 # TODO: docstring + check that test case for this exists
 # checks for lines that are not empty, not comments and not tokens
 def check_invalid_lines(block):
     incidents = []
     for (_,line) in block:
-        if not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
+        if line and not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
             incidents.append(Error(
                 testid='invalid-line',
                 message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
             ))
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
-    
+
 
 # TODO: docstring + check that test case for this exists
 def check_columns_format(text):
@@ -146,11 +209,12 @@ def check_misplaced_comment(block):
         max_comment = len(block)
         min_token = -1
         for (counter,line) in block:
-            if line[0] == "#":
-                max_comment = counter
-            else:
-                if min_token == -1:
-                    min_token = counter
+            if line:
+                if line[0] == "#":
+                    max_comment = counter
+                else:
+                    if min_token == -1:
+                        min_token = counter
 
         if max_comment >= min_token:
             logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
@@ -201,7 +265,7 @@ def check_unicode_normalization(text):
         fields (token line), errors reports will specify the field where the
         error occurred. Otherwise (comment line), the error report will not be
         localized.
-    
+
     TODO: update logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
  return docstring
     """
@@ -770,7 +834,7 @@ def check_newlines(inp):
     Checks that the input file consistently uses linux-style newlines (LF only,
     not CR LF like in Windows). To be run on the input file handle after the
     whole input has been read.
-    
+
     This check is universal and not configurable.
     """
     incidents = []
@@ -807,7 +871,7 @@ def check_token_ranges(sentence):
     returns
     -------
     incidents : list
-        A list of Incidents (empty if validation is successful). 
+        A list of Incidents (empty if validation is successful).
     """
     incidents = []
     covered = set()
@@ -815,7 +879,7 @@ def check_token_ranges(sentence):
         if not "-" in cols[utils.ID]:
             continue
         m = crex.mwtid.fullmatch(cols[utils.ID])
-        if not m: 
+        if not m:
             incidents.append(Error(
                 testid="invalid-word-interval",
                 message=f"Spurious word interval definition: '{cols[utils.ID]}'."
@@ -823,7 +887,7 @@ def check_token_ranges(sentence):
             continue
         start, end = m.groups()
         start, end = int(start), int(end)
-        # Do not test if start >= end: 
+        # Do not test if start >= end:
         # This is tested in check_id_sequence().
         if covered & set(range(start, end+1)):
             incidents.append(Error(
@@ -848,7 +912,7 @@ def check_id_sequence(sentence):
     returns
     -------
     incidents : list
-        A list of Incidents (empty if validation is successful). 
+        A list of Incidents (empty if validation is successful).
     """
     incidents = []
     words=[]
@@ -935,8 +999,8 @@ def check_id_sequence(sentence):
 
 def check_id_references(sentence):
     """
-    Verifies that HEAD and DEPS reference existing IDs. If this function logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
- returns a nonempty list, most of the other tests should be skipped for the current
+    Verifies that HEAD and DEPS reference existing IDs. If this function
+    returns a nonempty list, most of the other tests should be skipped for the current
     sentence (in particular anything that considers the tree structure).
 
     Parameters
@@ -948,7 +1012,7 @@ def check_id_references(sentence):
     returns
     -------
     incidents : list
-        A list of Incidents (empty if validation is successful). 
+        A list of Incidents (empty if validation is successful).
     """
     incidents = []
     word_tree = [cols for cols in sentence if utils.is_word(cols) or utils.is_empty_node(cols)]
@@ -1021,7 +1085,7 @@ def check_tree(sentence, node_line, single_root):
     returns
     -------
     incidents : list
-        A list of Incidents (empty if validation is successful). 
+        A list of Incidents (empty if validation is successful).
     """
     # node_line = state.sentence_line - 1 TODO: this should be done by the engine
     incidents = []
@@ -1080,13 +1144,13 @@ def check_tree(sentence, node_line, single_root):
 def check_sent_id(comments, allow_slash, known_sent_ids):
     """
     Checks that sentence id exists, is well-formed and unique.
-    
+
     Parameters
     ----------
     comments : list
         A list of comments, represented as strings.
     allow_slash : bool
-        Whether exactly one "/" character is allowed (this is reserved for 
+        Whether exactly one "/" character is allowed (this is reserved for
         parallel treebanks). This parameter replaces lcode, which was used to
         allow slashes when equal to "ud".
     known_sent_ids : set
@@ -1096,7 +1160,7 @@ def check_sent_id(comments, allow_slash, known_sent_ids):
     returns
     -------
     incidents : list
-        A list of Incidents (empty if validation is successful). 
+        A list of Incidents (empty if validation is successful).
     """
     incidents = []
     matched = []

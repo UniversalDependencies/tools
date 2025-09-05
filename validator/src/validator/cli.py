@@ -8,6 +8,8 @@
 import sys
 import argparse
 import os
+import yaml
+import functools
 
 import logging
 
@@ -42,8 +44,14 @@ def _validate(args):
 		dest = open(dest, 'w')
 
 	ud_specs = specifications.UDSpecs(args.data_folder)
+	validation_fun = vlib.validate
 
-	for incidents in vlib.validate(args.input):
+	if args.config_file:
+		with open(args.config_file) as cfg_f:
+			cfg = yaml.safe_load(cfg_f)
+			validation_fun = functools.partial(vlib.validate_cfg, cfg_obj=cfg)
+	# print("@@@@@@@@@@@@@@@@@@@@@@@@", args.input)
+	for incidents in validation_fun(args.input):
 		if out_format == "json":
 			outils.dump_json(incidents, dest, explanations, lines_content)
 		else:
@@ -129,6 +137,8 @@ def main():
 
 	config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
 	config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
+	config_group.add_argument('--config-file', type=str)
+
 
 	out_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
 	out_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
