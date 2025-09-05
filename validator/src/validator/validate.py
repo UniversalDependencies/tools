@@ -28,7 +28,10 @@ def run_tests(tests, parameters, incidents, state):
     for check in tests:
         for fun_name, fun_level in check.items():
             fun = globals()[fun_name]
+            # TODO: run test only if no failed dependency is found
             incidents.extend([err.set_state(state) for err in fun(parameters)])
+            # TODO else:
+            # TODO add warning
 
 
 def validate_file_cfg(path, cfg_obj):
