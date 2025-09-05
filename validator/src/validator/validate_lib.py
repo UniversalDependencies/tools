@@ -227,7 +227,7 @@ class Validator:
         self.specs = specs
 
     # TODO: rename to next_block
-    def next_sentence(self, state, inp):
+    def OLD_next_sentence(self, state, inp):
         """
         `inp` a file-like object yielding lines as unicode
 
@@ -492,7 +492,7 @@ class Validator:
 
 
 
-    def validate_id_sequence(self, state, sentence):
+    def OLD_validate_id_sequence(self, state, sentence):
         """
         Validates that the ID sequence is correctly formed.
         Besides reporting the errors, it also returns False to the caller so it can
@@ -602,7 +602,7 @@ class Validator:
 
 
 
-    def validate_token_ranges(self, state, sentence):
+    def OLD_validate_token_ranges(self, state, sentence):
         """
         Checks that the word ranges for multiword tokens are valid.
 
@@ -1276,7 +1276,7 @@ class Validator:
 
 
 
-    def validate_id_references(self, state, sentence):
+    def OLD_validate_id_references(self, state, sentence):
         """
         Verifies that HEAD and DEPS reference existing IDs. If this function does
         not return True, most of the other tests should be skipped for the current
@@ -3587,7 +3587,7 @@ class Validator:
         inp : open file handle
             The CoNLL-U-formatted input stream.
         """
-        for all_lines, comments, sentence in self.next_sentence(state, inp):
+        for all_lines, comments, sentence in self.OLD_next_sentence(state, inp):
             linenos = utils.get_line_numbers_for_ids(state, sentence)
             # The individual lines were validated already in next_sentence().
             # What follows is tests that need to see the whole tree.
@@ -3595,11 +3595,11 @@ class Validator:
             # reported in next_sentence() but then the lines would be thrown away
             # and no tree lines would be yielded—meaning that we will not encounter
             # such a mess here.
-            idseqok = self.validate_id_sequence(state, sentence) # level 1
-            self.validate_token_ranges(state, sentence) # level 1
+            idseqok = self.OLD_validate_id_sequence(state, sentence) # level 1
+            self.OLD_validate_token_ranges(state, sentence) # level 1
             # TODO: config file so that levels are not checked here
             if self.args.level > 1:
-                idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
+                idrefok = idseqok and self.OLD_validate_id_references(state, sentence) # level 2
                 if not idrefok:
                     continue
                 treeok = self.validate_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
