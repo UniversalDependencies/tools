@@ -2,12 +2,9 @@ file:
   check_newlines:
     level: 1
 
-
 block:
   check_extra_empty_line:
     level: 1
-    depends_on:
-      - boh
   check_misplaced_comment:
     level: 1
   check_invalid_lines:
