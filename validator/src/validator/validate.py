@@ -999,8 +999,8 @@ def check_id_sequence(sentence):
 
 def check_id_references(sentence):
     """
-    Verifies that HEAD and DEPS reference existing IDs. If this function logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
- returns a nonempty list, most of the other tests should be skipped for the current
+    Verifies that HEAD and DEPS reference existing IDs. If this function
+    returns a nonempty list, most of the other tests should be skipped for the current
     sentence (in particular anything that considers the tree structure).
 
     Parameters
