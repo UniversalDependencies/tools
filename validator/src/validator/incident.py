@@ -14,6 +14,9 @@ class TestClass(Enum):
     COREF = 6
     METADATA = 7
 
+    def __str__(self):
+        return self.name
+
 class IncidentType(Enum):
     ERROR = 1
     WARNING = 0
