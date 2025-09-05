@@ -22,14 +22,22 @@ def validate_cfg(paths, cfg_obj):
     for path in paths:
         yield validate_file_cfg(path, cfg_obj)
 
-def run_checks(checks, parameters, incidents, state):
-    for check in checks:
-        for fun_name, fun_level in check.items():
-            fun = globals()[fun_name]
-            # TODO: run test only if no failed dependency is found
+
+def run_tests(tests, parameters, incidents, state):
+    for check, check_cfg in tests:
+        dependencies = []
+        if 'depends_on' in check_cfg:
+            dependencies = check_cfg['depends_on']
+        # for fun_name, fun_level in check.items():
+        #     print("@@@@@@@@@@@@@@@@@@@@@@@", fun_name)
+        #     print(fun_level)
+        #     input()
+        fun = globals()[check]
+        if all(err.testid not in dependencies for err in incidents):
             incidents.extend([err.set_state(state) for err in fun(parameters)])
             # TODO else:
             # TODO add warning
+
 
 def validate_file_cfg(path, cfg_obj):
     state = State(current_file_name=os.path.basename(path))
@@ -37,7 +45,7 @@ def validate_file_cfg(path, cfg_obj):
     # newline='' necessary because otherwise non-unix newlines are
     # automagically converted to \n, see
     # https://docs.python.org/3/library/functions.html#open
-    with open(path,newline='') as fin:
+    with open(path, newline='') as fin:
         logger.info("opening file %s", path)
         block = []
         for block in utils.next_block(fin):
@@ -62,6 +70,13 @@ def validate_file_cfg(path, cfg_obj):
                 state.current_line = counter
                 run_checks(cfg_obj['token_lines'], line, incidents, state)
                 # incidents.extend([err.set_state(state) for err in check_columns_format(line)])
+                run_tests(cfg_obj['token_lines'], line, incidents, state)
+
+            tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
+            for (counter,line) in tokens:
+                state.current_line = counter
+                run_tests(cfg_obj['cols'], line, incidents, state)
+
 
         if len(block) == 1 and not block[0][1]:
             incidents.append(Error(
@@ -891,15 +906,13 @@ def check_token_ranges(sentence):
 def check_id_sequence(sentence):
     """
     Validates that the ID sequence is correctly formed.
-    If this function logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
- returns an nonempty list, subsequent tests should not be run.
+    If this function returns an nonempty list, subsequent tests should not be run.
 
     Parameters
     ----------
     sentence : list
         A list of lists representing a sentence in tabular format.
 
-    logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     returns
     -------
     incidents : list

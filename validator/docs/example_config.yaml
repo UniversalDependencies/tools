@@ -1,21 +1,50 @@
 file:
-  - check_newlines: 1
+  check_newlines:
+    level: 1
+
 
 block:
-  - check_extra_empty_line: 1
-  - check_misplaced_comment: 1
-  - check_invalid_lines: 1
+  check_extra_empty_line:
+    level: 1
+    depends_on:
+      - boh
+  check_misplaced_comment:
+    level: 1
+  check_invalid_lines:
+    level: 1
 
 line:
-  - check_unicode_normalization: 1
-  - check_pseudo_empty_line: 1
+  check_unicode_normalization:
+    level: 1
+  check_pseudo_empty_line:
+    level: 1
 
 token_lines:
-  - check_columns_format: 1
+  check_columns_format:
+    level: 1
 
 comment_lines:
 
 cols:
+  check_id_sequence:
+    level: 1
+  check_token_ranges:
+    level: 1
+  check_tree:
+    level: 2
+    depends_on:
+      - invalid-word-id
+      - invalid-word-interval
+      - misplaced-word-interval
+      - misplaced-empty-node
+      - word-id-sequence
+      - reversed-word-interval
+      - word-interval-out
+      - invalid-head
+      - unknown-head
+      - invalid-deps
+      - invalid-ehead
+      - unknown-ehead
 
 tree:
 
