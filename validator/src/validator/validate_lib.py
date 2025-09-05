@@ -2731,7 +2731,7 @@ class Validator:
 
 
 
-    def validate_deprels(self, state, node, line):
+    def OLD_validate_deprels(self, state, node, line):
         """
         Checks that a dependency relation label is listed as approved in the given
         language. As a language-specific test, this function generally belongs to
@@ -3641,7 +3641,7 @@ class Validator:
                 nodes = tree.descendants_and_empty
                 for node in nodes:
                     line = linenos[str(node.ord)]
-                    self.validate_deprels(state, node, line) # level 2 and 4
+                    self.OLD_validate_deprels(state, node, line) # level 2 and 4
                     self.validate_root(state, node, line) # level 2: deprel root <=> head 0
                     if self.args.level > 2:
                         self.validate_enhanced_orphan(state, node, line) # level 3
