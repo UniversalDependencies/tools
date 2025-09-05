@@ -531,15 +531,12 @@ def validate_newlines(inp):
 	return []
 
 
-=======
->>>>>>> 02fa9e418a3e20c5363d9ed3285ab5285d97448e
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
 # 			# We must remember the span of the MWT and check it in validate_features_level4().
 # 			m = crex.mwtid.fullmatch(cols[ID])
 # 			state.mwt_typo_span_end = m.group(2)
 
-<<<<<<< HEAD
 def validate_token_ranges(sentence):
     """
     Checks that the word ranges for multiword tokens are valid.
