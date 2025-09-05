@@ -6,7 +6,8 @@
 			"testid": "trailing-whitespace",
 			"message": "short error description",
 			"sent_id": "3456",
-			"line_no": 1245
+			"line_no": 1245,
+			"line": "CONLL-U LINE CONTENT"
 		},
 		{
 			"level": 3,
