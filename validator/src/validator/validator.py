@@ -432,7 +432,7 @@ def validate_misc(cols):
 			ret.append(
 				level=2,
 				testid='misc-extra-space',
-    			message=f"MISC attribute: leading or trailing extra space in '{'='.join(ma)}'."
+				message=f"MISC attribute: leading or trailing extra space in '{'='.join(ma)}'."
 			)
 
 		if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
@@ -531,12 +531,15 @@ def validate_newlines(inp):
 	return []
 
 
+=======
+>>>>>>> 02fa9e418a3e20c5363d9ed3285ab5285d97448e
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
 # 			# We must remember the span of the MWT and check it in validate_features_level4().
 # 			m = crex.mwtid.fullmatch(cols[ID])
 # 			state.mwt_typo_span_end = m.group(2)
 
+<<<<<<< HEAD
 def validate_token_ranges(sentence):
     """
     Checks that the word ranges for multiword tokens are valid.
@@ -1036,3 +1039,186 @@ def validate_text_meta(comments, tree, spaceafterno_in_effect):
                 testid='text-extra-chars',
                 message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
             ))
+
+def check_deprels_level2(node, deprels, lcode):
+	"""
+	Checks that a dependency relation label is listed as approved in the given
+	language. As a language-specific test, this function generally belongs to
+	level 4, but it can be also used on levels 2 and 3, in which case it will
+	check only the main dependency type and ignore any subtypes.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node whose incoming relation will be validated.
+	deps: TODO
+	lcode: TODO
+	"""
+
+	# List of permited relations is language-specific.
+	# The current token may be in a different language due to code switching.
+	# Unlike with features and auxiliaries, with deprels it is less clear
+	# whether we want to switch the set of labels when the token belongs to
+	# another language. Especially with subtypes that are not so much language
+	# specific. For example, we may have allowed 'flat:name' for our language,
+	# the maintainers of the other language have not allowed it, and then we
+	# could not use it when the foreign language is active. (This actually
+	# happened in French GSD.) We will thus allow the union of the main and the
+	# alternative deprelset when both the parent and the child belong to the
+	# same alternative language. Otherwise, only the main deprelset is allowed.
+
+	incidents = []
+
+	naltlang = utils.get_alt_language(node)
+
+	# The basic relation should be tested on regular nodes but not on empty nodes.
+	if not node.is_empty():
+		paltlang = utils.get_alt_language(node.parent)
+
+  		# Test only the universal part if testing at universal level.
+		deprel = node.udeprel
+		check = False
+		if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+			check = True
+
+		if naltlang != None and naltlang != lcode and naltlang == paltlang:
+			if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+				check = True
+
+		if not check:
+	  		incidents.append(
+				Error(
+					level=2,
+					testclass=TestClass.SYNTAX,
+					testid='unknown-deprel',
+					message=f"Unknown DEPREL label: '{deprel}'"
+				)
+			)
+	# If there are enhanced dependencies, test their deprels, too.
+	# We already know that the contents of DEPS is parsable (deps_list() was
+	# first called from validate_id_references() and the head indices are OK).
+	# The order of enhanced dependencies was already checked in validate_deps().
+	# Incident.default_testclass = 'Enhanced'
+	if str(node.deps) != '_':
+		# main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+		# alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+		for edep in node.deps:
+			parent = edep['parent']
+			deprel = utils.lspec2ud(edep['deprel'])
+			paltlang = utils.get_alt_language(parent)
+
+			check = False
+			if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+				check = True
+
+			if naltlang != None and naltlang != lcode and naltlang == paltlang:
+				if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+					check = True
+
+			if not check:
+				incidents.append(
+					Error(
+						level=2,
+						testclass=TestClass.ENHANCED,
+						testid='unknown-edeprel',
+						message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+					)
+				)
+
+	return incidents
+
+def check_deprels_level4(node, deprels, lcode):
+	"""
+	Checks that a dependency relation label is listed as approved in the given
+	language. As a language-specific test, this function generally belongs to
+	level 4, but it can be also used on levels 2 and 3, in which case it will
+	check only the main dependency type and ignore any subtypes.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node whose incoming relation will be validated.
+	line : int
+		Number of the line where the node occurs in the file.
+	"""
+	# Incident.default_lineno = line
+	# Incident.default_level = 4
+	# Incident.default_testclass = 'Syntax'
+
+	# List of permited relations is language-specific.
+	# The current token may be in a different language due to code switching.
+	# Unlike with features and auxiliaries, with deprels it is less clear
+	# whether we want to switch the set of labels when the token belongs to
+	# another language. Especially with subtypes that are not so much language
+	# specific. For example, we may have allowed 'flat:name' for our language,
+	# the maintainers of the other language have not allowed it, and then we
+	# could not use it when the foreign language is active. (This actually
+	# happened in French GSD.) We will thus allow the union of the main and the
+	# alternative deprelset when both the parent and the child belong to the
+	# same alternative language. Otherwise, only the main deprelset is allowed.
+
+	incidents = []
+
+	naltlang = utils.get_alt_language(node)
+
+	# The basic relation should be tested on regular nodes but not on empty nodes.
+	if not node.is_empty():
+		paltlang = utils.get_alt_language(node.parent)
+
+  		# main_deprelset = self.specs.get_deprel_for_language(mainlang)
+		# alt_deprelset = set()
+		# if naltlang != None and naltlang != mainlang and naltlang == paltlang:
+			# alt_deprelset = self.specs.get_deprel_for_language(naltlang)
+
+  		# Test only the universal part if testing at universal level.
+		deprel = node.deprel
+
+		check = False
+		if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+			check = True
+
+		if naltlang != None and naltlang != lcode and naltlang == paltlang:
+			if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+				check = True
+
+		if not check:
+	  		incidents.append(
+				Error(
+					level=4,
+					testclass=TestClass.SYNTAX,
+					testid='unknown-deprel',
+					message=f"Unknown DEPREL label: '{deprel}'"
+				)
+			)
+	# If there are enhanced dependencies, test their deprels, too.
+	# We already know that the contents of DEPS is parsable (deps_list() was
+	# first called from validate_id_references() and the head indices are OK).
+	# The order of enhanced dependencies was already checked in validate_deps().
+	# Incident.default_testclass = 'Enhanced'
+	if str(node.deps) != '_':
+		# main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+		# alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+		for edep in node.deps:
+			parent = edep['parent']
+			deprel = edep['deprel']
+			paltlang = utils.get_alt_language(parent)
+
+			check = False
+			if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+				check = True
+
+			if naltlang != None and naltlang != lcode and naltlang == paltlang:
+				if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+					check = True
+
+			if not check:
+				incidents.append(
+					Error(
+						level=4,
+						testclass=TestClass.ENHANCED,
+						testid='unknown-edeprel',
+						message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+					)
+				)
+
+	return incidents
