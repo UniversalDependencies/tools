@@ -1,6 +1,6 @@
 import os
 import argparse
-from validator import validate
+from validator import cli
 from validator.utils import THIS_DIR
 
 TEST_CASES_DIR = os.path.join(os.path.dirname(os.path.realpath(os.path.abspath(__file__))), "test-cases")
@@ -25,7 +25,7 @@ def general_test_cases(folder_name, expected_value, level=1):
         else:
             CONFIG["lang"] = "ud"
         CONFIG["input"] = [case_path]
-        assert validate._validate(argparse.Namespace(**CONFIG)) == expected_value
+        assert cli._validate(argparse.Namespace(**CONFIG)) == expected_value
 
 def test_valid_cases():
     general_test_cases("valid", 0, level=2)
