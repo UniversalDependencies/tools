@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
 
 def _validate(args):
-
 	out_format = args.format
 	dest = args.dest
 	explanations = args.explanations
@@ -45,17 +44,18 @@ def _validate(args):
 
 	ud_specs = specifications.UDSpecs(args.data_folder)
 	validation_fun = vlib.validate
+	cfg = yaml.safe_load(open(args.config_file))
 
-	if args.config_file:
-		with open(args.config_file) as cfg_f:
-			cfg = yaml.safe_load(cfg_f)
-			validation_fun = functools.partial(vlib.validate_cfg, cfg_obj=cfg)
-	# print("@@@@@@@@@@@@@@@@@@@@@@@@", args.input)
-	for incidents in validation_fun(args.input):
+	for incidents in vlib.validate(args.input, cfg_obj=cfg):
 		if out_format == "json":
 			outils.dump_json(incidents, dest, explanations, lines_content)
 		else:
 			outils.serialize_output(incidents, dest, explanations, lines_content)
+
+		if len(incidents):
+			return 1
+		else:
+			return 0
 
 	# Summarize the warnings and errors.
 	passed = True

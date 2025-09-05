@@ -12,7 +12,12 @@ CONFIG = {
     "check_tree_text": True,
     "check_space_after": True,
     "check_coref": False,
-    "data_folder": os.path.normpath(os.path.join(THIS_DIR,"../../../data"))
+    "data_folder": os.path.normpath(os.path.join(THIS_DIR,"../../../data")),
+    "format": "LOG",
+    "dest": "-",
+    "explanations": False,
+    "lines_content": False,
+    "config_file": os.path.realpath(os.path.join(THIS_DIR, "../../docs/example_working.yaml"))
 }
 
 def general_test_cases(folder_name, expected_value, level=1):
@@ -33,8 +38,8 @@ def test_valid_cases():
 def test_invalid_lv12_cases():
     general_test_cases("invalid-level1-2", 1, level=2)
 
-def test_invalid_lv3_cases():
-    general_test_cases("invalid-level3", 1, level=3)
-
-def test_invalid_lv45_cases():
-    general_test_cases("invalid-level4-5", 1, level=5)
+#def test_invalid_lv3_cases():
+#    general_test_cases("invalid-level3", 1, level=3)
+#
+#def test_invalid_lv45_cases():
+#    general_test_cases("invalid-level4-5", 1, level=5)

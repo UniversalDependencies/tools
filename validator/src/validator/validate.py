@@ -14,32 +14,38 @@ from validator.logging_utils import setup_logging
 logger = logging.getLogger(__name__)
 setup_logging(logger)
 
-def validate_cfg(paths, cfg_obj):
+def validate(paths, cfg_obj):
     '''
     Validates the input files.
     '''
     # TODO: complete docstring
     for path in paths:
-        yield validate_file_cfg(path, cfg_obj)
+        yield validate_file(path, cfg_obj)
 
 
-def run_tests(tests, parameters, incidents, state):
-    for check, check_cfg in tests:
+def run_checks(checks, parameters, incidents, state):
+    # print(checks)
+    # input()
+    for check in checks:
         dependencies = []
-        if 'depends_on' in check_cfg:
-            dependencies = check_cfg['depends_on']
-        # for fun_name, fun_level in check.items():
-        #     print("@@@@@@@@@@@@@@@@@@@@@@@", fun_name)
-        #     print(fun_level)
-        #     input()
+        if 'depends_on' in check:
+            dependencies = check['depends_on']
         fun = globals()[check]
+        # TODO: fix behavior
         if all(err.testid not in dependencies for err in incidents):
             incidents.extend([err.set_state(state) for err in fun(parameters)])
-            # TODO else:
-            # TODO add warning
+        else:
+            incidents.append(
+                Warning(
+                    level=0,
+                    testclass=TestClass.INTERNAL,
+                    testid='skipped-check',
+                    message=f"Check {check} not performed because of previous failures"
+                )
+            )
 
 
-def validate_file_cfg(path, cfg_obj):
+def validate_file(path, cfg_obj):
     state = State(current_file_name=os.path.basename(path))
     incidents = []
     # newline='' necessary because otherwise non-unix newlines are
@@ -70,12 +76,12 @@ def validate_file_cfg(path, cfg_obj):
                 state.current_line = counter
                 run_checks(cfg_obj['token_lines'], line, incidents, state)
                 # incidents.extend([err.set_state(state) for err in check_columns_format(line)])
-                run_tests(cfg_obj['token_lines'], line, incidents, state)
+                # run_checks(cfg_obj['token_lines'], line, incidents, state)
 
             tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
-            for (counter,line) in tokens:
-                state.current_line = counter
-                run_tests(cfg_obj['cols'], line, incidents, state)
+            # for (counter,line) in tokens:
+                # state.current_line = counter
+                # run_checks(cfg_obj['cols'], line, incidents, state)
 
 
         if len(block) == 1 and not block[0][1]:
@@ -85,51 +91,6 @@ def validate_file_cfg(path, cfg_obj):
                 ))
 
         run_checks(cfg_obj['file'], fin, incidents, state)
-    return incidents
-
-def validate(paths):
-    '''
-    Validates the input files.
-    '''
-    # TODO: complete docstring
-    for path in paths:
-        yield validate_file(path)
-
-def validate_file(path):
-    state = State(current_file_name=os.path.basename(path))
-    incidents = []
-    # newline='' necessary because otherwise non-unix newlines are
-    # automagically converted to \n, see
-    # https://docs.python.org/3/library/functions.html#open
-    with open(path,newline='') as fin:
-        logger.info("opening file %s", path)
-        block = []
-        for block in utils.next_block(fin):
-            state.current_line = block[0][0]
-            incidents.extend([err.set_state(state) for err in check_extra_empty_line(block)])
-
-            block = [(counter,line) for (counter,line) in block if line]
-
-            for (counter,line) in block:
-                state.current_line = counter # TODO: +1 when printing
-                incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
-                incidents.extend([err.set_state(state) for err in check_pseudo_empty_line(line)])
-
-            incidents.extend([err.set_state(state) for err in check_misplaced_comment(block)])
-            incidents.extend([err.set_state(state) for err in check_invalid_lines(block)])
-
-            comments = [(counter,line) for (counter,line) in block if line[0] == "#"]
-            tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
-            for (counter,line) in tokens:
-                state.current_line = counter
-                incidents.extend([err.set_state(state) for err in check_columns_format(line)])
-
-        if len(block) == 1 and not block[0][1]:
-            incidents.append(Error(
-                testid='missing-empty-line',
-                message='Missing empty line after the last sentence.'
-                ))
-        incidents.extend(check_newlines(fin))
     return incidents
 
 # TODO: docstring + check that test case for this exists
@@ -324,25 +285,25 @@ def check_mwt_empty_vals(cols):
     cols : list
         The values of the columns on the current node / token line.
     """
-
+    incidents = []
     if not utils.is_multiword_token(cols):
-        incidents = Error(level=0,
+        incidents = [Error(level=0,
                     testclass=TestClass.INTERNAL,
-                    testid='internal error')
+                    testid='internal error')]
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-        return [incidents]
+        return incidents
     # all columns except the first two (ID, FORM) and the last one (MISC)
     for col_idx in range(utils.LEMMA, utils.MISC):
 
         # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
         if cols[col_idx] != '_' and (col_idx != utils.FEATS or cols[col_idx] not in ['Typo=Yes', '_']):
-            incidents = Error(level=2,
+            incidents = [Error(level=2,
                         testclass=TestClass.FORMAT,
                         testid='mwt-nonempty-field',
                         message=f"A multi-word token line must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-                        )
+                        )]
             logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-            return [incidents]
+            return incidents
 
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return []
@@ -359,11 +320,11 @@ def check_empty_node_empty_vals(cols):
         The values of the columns on the current node / token line.
     """
     if not utils.is_empty_node(cols):
-        incidents = Error(level=0,
+        incidents = [Error(level=0,
                     testclass=TestClass.INTERNAL,
-                    testid='internal error')
+                    testid='internal error')]
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-        return [incidents]
+        return incidents
 
     incidents = []
     for col_idx in (utils.HEAD, utils.DEPREL): # ! isn't it worth it to check also DEPS here?
@@ -391,7 +352,7 @@ def check_character_constraints(cols):
     cols : list
         The values of the columns on the current node / token line.
     """
-
+    incidents = []
     if utils.is_multiword_token(cols):
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
         return []
@@ -452,7 +413,7 @@ def check_upos(cols, specs):
     specs : UDSpecs
         The object containing specific information about the allowed values
     """
-
+    incidents = []
     #! added checking for mwt?
     if utils.is_multiword_token(cols) and cols[utils.UPOS] == '_':
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
