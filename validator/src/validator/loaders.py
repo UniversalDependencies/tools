@@ -35,6 +35,7 @@ def load_json_data(filename, key=None):
     else:
         return res
 
+
 def load_combinations(filename):
 
     res = {}
@@ -46,5 +47,3 @@ def load_combinations(filename):
         res[lang_code] = (combination, compiled_regex)
 
     return res
-
-

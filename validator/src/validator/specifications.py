@@ -44,28 +44,16 @@ class UDSpecs:
     tospace: Dict = field(init=False)
 
     def __post_init__(self):
-
         self.upos = loaders.load_json_data_set(os.path.join(self.data_folder, "upos.json"), "upos")
-
         self.feats = loaders.load_json_data(os.path.join(self.data_folder, "feats.json"), "features")
-
         self.udeprel = loaders.load_json_data_set(os.path.join(self.data_folder, "udeprels.json"), "udeprels") #! change to plural
-
         self.deprel = loaders.load_json_data_set(os.path.join(self.data_folder, "deprels.json"), "deprels") #! change to plural
-
         self.cached_deprel_for_language = {}
-
         self.edeprel = loaders.load_json_data(os.path.join(self.data_folder,"edeprels.json"), "edeprels")#! change to plural
-
         self.cached_edeprel_for_language =  {} 
-        
         self.auxcop = loaders.load_json_data(os.path.join(self.data_folder,"data.json"), "auxiliaries") #! change to plural
-        
         self.cached_aux_for_language = {}
-        
         self.cached_cop_for_language = {}
-
-
         self.tospace = loaders.load_combinations(os.path.join(self.data_folder,"tospace.json"))
 
     # TODO: understand what do these functions do
