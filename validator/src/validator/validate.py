@@ -19,19 +19,32 @@ def validate_cfg(paths, cfg_obj):
     Validates the input files.
     '''
     # TODO: complete docstring
-    print("@@@@@@@@@@@@@@@@@@@@@@@", paths)
+
     for path in paths:
         yield validate_file_cfg(path, cfg_obj)
 
 
 def run_tests(tests, parameters, incidents, state):
-    for check in tests:
-        for fun_name, fun_level in check.items():
-            fun = globals()[fun_name]
-            # TODO: run test only if no failed dependency is found
+    for check, check_cfg in tests:
+        dependencies = []
+        if 'depends_on' in check_cfg:
+            dependencies = check_cfg['depends_on']
+        # for fun_name, fun_level in check.items():
+        #     print("@@@@@@@@@@@@@@@@@@@@@@@", fun_name)
+        #     print(fun_level)
+        #     input()
+        fun = globals()[check]
+        if all(err.testid not in dependencies for err in incidents):
             incidents.extend([err.set_state(state) for err in fun(parameters)])
-            # TODO else:
-            # TODO add warning
+        else:
+            incidents.append(
+                Warning(
+                    level=0,
+                    testclass=TestClass.INTERNAL,
+                    testid=check,
+                    message=f"Test '{check}' skipped due to previous failures"
+                )
+            )
 
 
 def validate_file_cfg(path, cfg_obj):
@@ -42,7 +55,7 @@ def validate_file_cfg(path, cfg_obj):
     # newline='' necessary because otherwise non-unix newlines are
     # automagically converted to \n, see
     # https://docs.python.org/3/library/functions.html#open
-    with open(path,newline='') as fin:
+    with open(path, newline='') as fin:
         logger.info("opening file %s", path)
         block = []
         for block in utils.next_block(fin):
@@ -55,18 +68,18 @@ def validate_file_cfg(path, cfg_obj):
             for (counter,line) in block:
                 state.current_line = counter # TODO: +1 when printing
                 run_tests(cfg_obj['line'], line, incidents, state)
-                # incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
-                # incidents.extend([err.set_state(state) for err in check_pseudo_empty_line(line)])
-
-            # incidents.extend([err.set_state(state) for err in check_misplaced_comment(block)])
-            # incidents.extend([err.set_state(state) for err in check_invalid_lines(block)])
 
             comments = [(counter,line) for (counter,line) in block if line[0] == "#"]
             tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
             for (counter,line) in tokens:
                 state.current_line = counter
                 run_tests(cfg_obj['token_lines'], line, incidents, state)
-                # incidents.extend([err.set_state(state) for err in check_columns_format(line)])
+
+            tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
+            for (counter,line) in tokens:
+                state.current_line = counter
+                run_tests(cfg_obj['cols'], line, incidents, state)
+
 
         if len(block) == 1 and not block[0][1]:
             incidents.append(Error(
@@ -900,15 +913,13 @@ def check_token_ranges(sentence):
 def check_id_sequence(sentence):
     """
     Validates that the ID sequence is correctly formed.
-    If this function logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
- returns an nonempty list, subsequent tests should not be run.
+    If this function returns an nonempty list, subsequent tests should not be run.
 
     Parameters
     ----------
     sentence : list
         A list of lists representing a sentence in tabular format.
 
-    logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     returns
     -------
     incidents : list
