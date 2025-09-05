@@ -1,4 +1,5 @@
 import regex as re
+import json
 
 def explain_feats(specs, lcode):
     """
@@ -244,9 +245,30 @@ def explain_tospace(specs, lcode):
         	 "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
         	 "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n")
 
-def serialize_output(incidents, format, output_fhandle):
+def serialize_output(incidents, output_fhandle, explanations, lines_content):
 
-	if not incidents:
-		print(">>>>>>>>> PASSED!")
-	else:
-		print(">>>>>>>>> FAILED:", incidents)
+    if not incidents:
+        print(">>>>>>>>> PASSED!")
+    else:
+        print(">>>>>>>>> FAILED:", incidents)
+
+def dump_json(incidents, dest, explanations, lines_content):
+    json_dict = {}
+    for incident in incidents:
+        filename = incident.filename
+        if filename not in json_dict:
+            json_dict[filename] = []
+        incidict = {
+            "level": incident.level,
+            "testclass": str(incident.testclass),
+            "testid": incident.testid,
+            "message": incident.message,
+            "sentid": incident.sentid,
+            "lineno": incident.lineno
+        }
+        if explanations:
+            pass # TODO: extend incidict
+        if lines_content:
+            pass # TODO: extend incidict
+        json_dict[filename].append(incidict)
+        json.dump(json_dict, dest, indent=4)

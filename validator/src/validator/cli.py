@@ -29,19 +29,25 @@ logging_utils.setup_logging(logger)
 
 def _validate(args):
 
-	output_format = args.format
-	output_destination = args.output_path
-	if output_destination == "-":
-		output_destination = sys.stdout
-	elif output_destination == "stderr":
-		output_destination = sys.stderr
+	out_format = args.format
+	dest = args.dest
+	explanations = args.explanations
+	lines_content = args.lines_content
+
+	if dest == "-":
+		dest = sys.stdout
+	elif dest == "stderr":
+		dest = sys.stderr
 	else:
-		output_destination = open(output_destination, 'w')
+		dest = open(dest, 'w')
 
 	ud_specs = specifications.UDSpecs(args.data_folder)
 
 	for incidents in vlib.validate(args.input):
-		outils.serialize_output(incidents, output_format, output_destination)
+		if out_format == "json":
+			outils.dump_json(incidents, dest, explanations, lines_content)
+		else:
+			outils.serialize_output(incidents, dest, explanations, lines_content)
 
 	# Summarize the warnings and errors.
 	passed = True
@@ -124,11 +130,21 @@ def main():
 	config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
 	config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
 
-	output_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
-	output_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
+	out_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
+	out_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
 						help='Produce output in desired format')
-	output_format.add_argument('--output-path', default='-', type=str,
+	out_format.add_argument('--dest', default='-', type=str,
 							help="Output destination")
+	out_format.add_argument(
+		'--explanations', 
+		action='store_true', 
+		default=False, 
+		help="Include longer explanations.")
+	out_format.add_argument(
+		'--lines-content', # TODO: better names
+		action='store_true', 
+		default=False, 
+		help="Include the content of the errored lines in the output.")
 
 	opt_parser.set_defaults(func=_validate)
 	args = opt_parser.parse_args() #Parsed command-line arguments

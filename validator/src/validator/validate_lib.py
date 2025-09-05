@@ -20,7 +20,7 @@ import udapi.block.read.conllu
 
 import validator.compiled_regex as crex
 import validator.utils as utils
-import validator.messages as msg
+import validator.output_utils as outils
 import validator.specifications as data
 
 
@@ -2614,7 +2614,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                            explanation=msg.explain_tospace(lang)
+                            explanation=outils.explain_tospace(lang)
                         ).report(state, self.args)
                 else:
                     Incident(
@@ -2622,7 +2622,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                        explanation=msg.explain_tospace(lang)
+                        explanation=outils.explain_tospace(lang)
                     ).report(state, self.args)
 
 
@@ -2688,7 +2688,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='feature-unknown',
                             message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
-                            explanation=msg.explain_feats(effective_lang)
+                            explanation=outils.explain_feats(effective_lang)
                         ).report(state, self.args)
                     else:
                         lfrecord = effective_featset[f]
@@ -2698,7 +2698,7 @@ class Validator:
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
                                 message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                explanation=msg.explain_feats(effective_lang)
+                                explanation=outils.explain_feats(effective_lang)
                             ).report(state, self.args)
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
@@ -2708,7 +2708,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=msg.explain_feats(effective_lang)
+                                    explanation=outils.explain_feats(effective_lang)
                                 ).report(state, self.args)
                             elif not node.upos in lfrecord['byupos']:
                                 Incident(
@@ -2716,7 +2716,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=msg.explain_feats(effective_lang)
+                                    explanation=outils.explain_feats(effective_lang)
                                 ).report(state, self.args)
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                                 Incident(
@@ -2724,7 +2724,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=msg.explain_feats(effective_lang)
+                                    explanation=outils.explain_feats(effective_lang)
                                 ).report(state, self.args)
         if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
             state.mwt_typo_span_end = None
@@ -2779,7 +2779,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
-                    explanation=msg.explain_deprel(mainlang)
+                    explanation=outils.explain_deprel(mainlang)
                 ).report(state, self.args)
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
@@ -2802,7 +2802,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
-                        explanation=msg.explain_edeprel(mainlang)
+                        explanation=outils.explain_edeprel(mainlang)
                     ).report(state, self.args)
 
 
@@ -2841,7 +2841,7 @@ class Validator:
                     testclass='Morpho',
                     testid='aux-lemma',
                     message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
-                    explanation=msg.explain_aux(lang)
+                    explanation=outils.explain_aux(lang)
                 ).report(state, self.args)
 
 
@@ -2874,7 +2874,7 @@ class Validator:
                     testclass='Syntax',
                     testid='cop-lemma',
                     message=f"'{node.lemma}' is not a copula in language [{lang}]",
-                    explanation=msg.explain_cop(lang)
+                    explanation=outils.explain_cop(lang)
                 ).report(state, self.args)
 
 
