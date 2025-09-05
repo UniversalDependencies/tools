@@ -19,13 +19,11 @@ def validate_cfg(paths, cfg_obj):
     Validates the input files.
     '''
     # TODO: complete docstring
-    print("@@@@@@@@@@@@@@@@@@@@@@@", paths)
     for path in paths:
         yield validate_file_cfg(path, cfg_obj)
 
-
-def run_tests(tests, parameters, incidents, state):
-    for check in tests:
+def run_checks(checks, parameters, incidents, state):
+    for check in checks:
         for fun_name, fun_level in check.items():
             fun = globals()[fun_name]
             # TODO: run test only if no failed dependency is found
@@ -33,10 +31,7 @@ def run_tests(tests, parameters, incidents, state):
             # TODO else:
             # TODO add warning
 
-
 def validate_file_cfg(path, cfg_obj):
-
-    # print("@@@@@@@@@@@@@@@@@@@@@@@@ HERE", path)
     state = State(current_file_name=os.path.basename(path))
     incidents = []
     # newline='' necessary because otherwise non-unix newlines are
@@ -48,13 +43,13 @@ def validate_file_cfg(path, cfg_obj):
         for block in utils.next_block(fin):
             state.current_line = block[0][0]
 
-            run_tests(cfg_obj['block'], block, incidents, state)
+            run_checks(cfg_obj['block'], block, incidents, state)
 
             block = [(counter,line) for (counter,line) in block if line]
 
             for (counter,line) in block:
                 state.current_line = counter # TODO: +1 when printing
-                run_tests(cfg_obj['line'], line, incidents, state)
+                run_checks(cfg_obj['line'], line, incidents, state)
                 # incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
                 # incidents.extend([err.set_state(state) for err in check_pseudo_empty_line(line)])
 
@@ -65,7 +60,7 @@ def validate_file_cfg(path, cfg_obj):
             tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
             for (counter,line) in tokens:
                 state.current_line = counter
-                run_tests(cfg_obj['token_lines'], line, incidents, state)
+                run_checks(cfg_obj['token_lines'], line, incidents, state)
                 # incidents.extend([err.set_state(state) for err in check_columns_format(line)])
 
         if len(block) == 1 and not block[0][1]:
@@ -74,7 +69,7 @@ def validate_file_cfg(path, cfg_obj):
                 message='Missing empty line after the last sentence.'
                 ))
 
-        run_tests(cfg_obj['file'], fin, incidents, state)
+        run_checks(cfg_obj['file'], fin, incidents, state)
     return incidents
 
 def validate(paths):
@@ -134,7 +129,6 @@ def check_invalid_lines(block):
             ))
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
-
 
 # TODO: docstring + check that test case for this exists
 def check_columns_format(text):
@@ -200,7 +194,6 @@ def check_columns_format(text):
         # ! so?
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
-
 
 # TODO: docstring + check that test case for this exists
 def check_misplaced_comment(block):
@@ -323,7 +316,6 @@ def check_mwt_empty_vals(cols):
                     testid='internal error')
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
         return [incidents]
-
     # all columns except the first two (ID, FORM) and the last one (MISC)
     for col_idx in range(utils.LEMMA, utils.MISC):
 
@@ -339,7 +331,6 @@ def check_mwt_empty_vals(cols):
 
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return []
-
 
 def check_empty_node_empty_vals(cols):
     """
@@ -435,7 +426,7 @@ def check_character_constraints(cols):
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
 
-def check_upos(cols, Fspecs):
+def check_upos(cols, specs):
     """
     Checks that the UPOS field contains one of the 17 known tags.
 
@@ -443,7 +434,7 @@ def check_upos(cols, Fspecs):
     ----------
     cols : list
         The values of the columns on the current node / token line.
-    Fspecs : UDSpecs
+    specs : UDSpecs
         The object containing specific information about the allowed values
     """
 
@@ -460,7 +451,7 @@ def check_upos(cols, Fspecs):
     # checks general character constraints. However, the list of UPOS, loaded
     # from a JSON file, should conform to the regular expression.
     incidents = []
-    if not crex.upos.fullmatch(cols[utils.UPOS]) or cols[utils.UPOS] not in Fspecs.upos:
+    if not crex.upos.fullmatch(cols[utils.UPOS]) or cols[utils.UPOS] not in specs.upos:
         incidents.append(
             Error(
                   level=2,
@@ -1369,3 +1360,186 @@ def check_text_meta(comments, tree, spaceafterno_in_effect):
                 testid='text-extra-chars',
                 message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
             ))
+
+def check_deprels_level2(node, deprels, lcode):
+	"""
+	Checks that a dependency relation label is listed as approved in the given
+	language. As a language-specific test, this function generally belongs to
+	level 4, but it can be also used on levels 2 and 3, in which case it will
+	check only the main dependency type and ignore any subtypes.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node whose incoming relation will be validated.
+	deps: TODO
+	lcode: TODO
+	"""
+
+	# List of permited relations is language-specific.
+	# The current token may be in a different language due to code switching.
+	# Unlike with features and auxiliaries, with deprels it is less clear
+	# whether we want to switch the set of labels when the token belongs to
+	# another language. Especially with subtypes that are not so much language
+	# specific. For example, we may have allowed 'flat:name' for our language,
+	# the maintainers of the other language have not allowed it, and then we
+	# could not use it when the foreign language is active. (This actually
+	# happened in French GSD.) We will thus allow the union of the main and the
+	# alternative deprelset when both the parent and the child belong to the
+	# same alternative language. Otherwise, only the main deprelset is allowed.
+
+	incidents = []
+
+	naltlang = utils.get_alt_language(node)
+
+	# The basic relation should be tested on regular nodes but not on empty nodes.
+	if not node.is_empty():
+		paltlang = utils.get_alt_language(node.parent)
+
+  		# Test only the universal part if testing at universal level.
+		deprel = node.udeprel
+		check = False
+		if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+			check = True
+
+		if naltlang != None and naltlang != lcode and naltlang == paltlang:
+			if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+				check = True
+
+		if not check:
+	  		incidents.append(
+				Error(
+					level=2,
+					testclass=TestClass.SYNTAX,
+					testid='unknown-deprel',
+					message=f"Unknown DEPREL label: '{deprel}'"
+				)
+			)
+	# If there are enhanced dependencies, test their deprels, too.
+	# We already know that the contents of DEPS is parsable (deps_list() was
+	# first called from validate_id_references() and the head indices are OK).
+	# The order of enhanced dependencies was already checked in validate_deps().
+	# Incident.default_testclass = 'Enhanced'
+	if str(node.deps) != '_':
+		# main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+		# alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+		for edep in node.deps:
+			parent = edep['parent']
+			deprel = utils.lspec2ud(edep['deprel'])
+			paltlang = utils.get_alt_language(parent)
+
+			check = False
+			if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+				check = True
+
+			if naltlang != None and naltlang != lcode and naltlang == paltlang:
+				if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+					check = True
+
+			if not check:
+				incidents.append(
+					Error(
+						level=2,
+						testclass=TestClass.ENHANCED,
+						testid='unknown-edeprel',
+						message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+					)
+				)
+
+	return incidents
+
+def check_deprels_level4(node, deprels, lcode):
+	"""
+	Checks that a dependency relation label is listed as approved in the given
+	language. As a language-specific test, this function generally belongs to
+	level 4, but it can be also used on levels 2 and 3, in which case it will
+	check only the main dependency type and ignore any subtypes.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node whose incoming relation will be validated.
+	line : int
+		Number of the line where the node occurs in the file.
+	"""
+	# Incident.default_lineno = line
+	# Incident.default_level = 4
+	# Incident.default_testclass = 'Syntax'
+
+	# List of permited relations is language-specific.
+	# The current token may be in a different language due to code switching.
+	# Unlike with features and auxiliaries, with deprels it is less clear
+	# whether we want to switch the set of labels when the token belongs to
+	# another language. Especially with subtypes that are not so much language
+	# specific. For example, we may have allowed 'flat:name' for our language,
+	# the maintainers of the other language have not allowed it, and then we
+	# could not use it when the foreign language is active. (This actually
+	# happened in French GSD.) We will thus allow the union of the main and the
+	# alternative deprelset when both the parent and the child belong to the
+	# same alternative language. Otherwise, only the main deprelset is allowed.
+
+	incidents = []
+
+	naltlang = utils.get_alt_language(node)
+
+	# The basic relation should be tested on regular nodes but not on empty nodes.
+	if not node.is_empty():
+		paltlang = utils.get_alt_language(node.parent)
+
+  		# main_deprelset = self.specs.get_deprel_for_language(mainlang)
+		# alt_deprelset = set()
+		# if naltlang != None and naltlang != mainlang and naltlang == paltlang:
+			# alt_deprelset = self.specs.get_deprel_for_language(naltlang)
+
+  		# Test only the universal part if testing at universal level.
+		deprel = node.deprel
+
+		check = False
+		if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+			check = True
+
+		if naltlang != None and naltlang != lcode and naltlang == paltlang:
+			if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+				check = True
+
+		if not check:
+	  		incidents.append(
+				Error(
+					level=4,
+					testclass=TestClass.SYNTAX,
+					testid='unknown-deprel',
+					message=f"Unknown DEPREL label: '{deprel}'"
+				)
+			)
+	# If there are enhanced dependencies, test their deprels, too.
+	# We already know that the contents of DEPS is parsable (deps_list() was
+	# first called from validate_id_references() and the head indices are OK).
+	# The order of enhanced dependencies was already checked in validate_deps().
+	# Incident.default_testclass = 'Enhanced'
+	if str(node.deps) != '_':
+		# main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+		# alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+		for edep in node.deps:
+			parent = edep['parent']
+			deprel = edep['deprel']
+			paltlang = utils.get_alt_language(parent)
+
+			check = False
+			if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+				check = True
+
+			if naltlang != None and naltlang != lcode and naltlang == paltlang:
+				if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+					check = True
+
+			if not check:
+				incidents.append(
+					Error(
+						level=4,
+						testclass=TestClass.ENHANCED,
+						testid='unknown-edeprel',
+						message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+					)
+				)
+
+	return incidents
