@@ -1,3 +1,5 @@
+# TODO: turn into JSON
+
 import regex as re
 
 def explain_feats(specs, lcode):
