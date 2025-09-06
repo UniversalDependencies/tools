@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.envs.static]
+dev-mode = true
+dev-mode-dirs = ["."]
+
+[project]
+name = "validator"
+version = "0.0.1"
+authors = [
+	{ name="Filip Ginter"},
+	{ name="Sampo Pyysalo"},
+	{ name="Daniel Zeman", email="zeman@ufal.mff.cuni.cz"},
+	{ name="Arianna Masciolini", email="arianna.masciolini@gu.se"},
+	{ name="Ludovica Pannitto", email="ellepannitto@gmail.com"},
+	{ name="John Bauer", email="horatio@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = ["dotenv",
+				"regex",
+				"unicodedata"]
+
+[tool.hatch.build]
+# Tell hatchling where your source code is
+sources = ["src"]
+
+[project.scripts]
+validate = "validator.validate:main"
+
