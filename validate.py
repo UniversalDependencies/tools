@@ -1637,8 +1637,7 @@ class Validator:
 
 
 
-    @staticmethod
-    def features_present(state):
+    def features_present(self, state):
         """
         In general, the annotation of morphological features is optional, although
         highly encouraged. However, if the treebank does have features, then certain
@@ -1651,7 +1650,7 @@ class Validator:
             state.seen_morpho_feature = state.current_line
             for testid in state.delayed_feature_errors:
                 for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                    occurrence.report(state, self.args)
+                    occurrence['incident'].report(state, self.args)
 
 
 
@@ -4376,4 +4375,3 @@ def main():
 if __name__=="__main__":
     errcode = main()
     sys.exit(errcode)
-
