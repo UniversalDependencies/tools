@@ -1680,3 +1680,112 @@ def check_words_with_spaces(node, lang, specs):
 					message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
 				))
 	return incidents
+
+def validate_features_level4(node, lang, specs, mwt_typo_span_end):
+	"""
+	Checks that a feature-value pair is listed as approved. Feature lists are
+	language 'ud'. # ?
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node to be validated.
+	lang : str
+		Code of the main language of the corpus.
+	specs : UDSpecs
+		The object containing specific information about the allowed values
+	mwt_typo_span_end : TODO: add type and description
+	
+	returns
+	-------
+	incidents : list
+		A list of Incidents (empty if validation is successful).
+	"""
+	incidents = []
+	if str(node.feats) == '_':
+		return True
+	# List of permitted features is language-specific.
+	# The current token may be in a different language due to code switching.
+	default_lang = lang
+	default_featset = featset = specs.get_feats_for_language(lang)
+	altlang = utils.get_alt_language(node)
+	if altlang:
+		lang = altlang
+		featset = specs.get_feats_for_language(altlang)
+	for f in node.feats:
+		values = node.feats[f].split(',')
+		for v in values:
+			# Level 2 tested character properties and canonical order but not that the f-v pair is known.
+			# Level 4 also checks whether the feature value is on the list.
+			# If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
+			# The feature Typo=Yes is the only feature allowed on a multi-word token line.
+			# If it occurs there, it cannot be duplicated on the lines of the component words.
+			if f == 'Typo' and mwt_typo_span_end and node.ord <= mwt_typo_span_end:
+				incidents.append(Error(
+					level=4,
+					testclass=TestClass.MORPHO,
+					nodeid=node.ord,
+					testid='mwt-typo-repeated-at-word',
+					message="Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
+				))
+			# In case of code switching, the current token may not be in the default language
+			# and then its features are checked against a different feature set. An exception
+			# is the feature Foreign, which always relates to the default language of the
+			# corpus (but Foreign=Yes should probably be allowed for all UPOS categories in
+			# all languages).
+			effective_featset = featset
+			effective_lang = lang
+			if f == 'Foreign':
+				# Revert to the default.
+				effective_featset = default_featset
+				effective_lang = default_lang
+			if effective_featset is not None:
+				if f not in effective_featset:
+					incidents.append(Error(
+					level=4,
+					testclass=TestClass.MORPHO,
+						nodeid=node.ord,
+						testid='feature-unknown',
+						message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
+					))
+				else:
+					lfrecord = effective_featset[f]
+					if lfrecord['permitted'] == 0:
+						incidents.append(Error(
+							level=4,
+							testclass=TestClass.MORPHO,
+							nodeid=node.ord,
+							testid='feature-not-permitted',
+							message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
+						)s)
+					else:
+						values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
+						if not v in values:
+							incidents.append(Error(
+								level=4,
+								testclass=TestClass.MORPHO,
+								nodeid=node.ord,
+								testid='feature-value-unknown',
+								message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
+							))
+						elif not node.upos in lfrecord['byupos']:
+							incidents.append(Error(
+								level=4,
+								testclass=TestClass.MORPHO,
+								nodeid=node.ord,
+								testid='feature-upos-not-permitted',
+								message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
+							))
+						elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
+							incidents.append(Error(
+								level=4,
+								testclass=TestClass.MORPHO,
+								nodeid=node.ord,
+								testid='feature-value-upos-not-permitted',
+								message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
+							))
+	# TODO: (outside of this function)
+	#if mwt_typo_span_end and int(mwt_typo_span_end) <= int(node.ord):
+	#	state.mwt_typo_span_end = None
+	
+	return incidents
