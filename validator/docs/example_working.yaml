@@ -1,0 +1,29 @@
+file:
+  check_newlines:
+    level: 1
+
+block:
+  check_extra_empty_line:
+    level: 1
+  check_misplaced_comment:
+    level: 1
+  check_invalid_lines:
+    level: 1
+
+line:
+  check_unicode_normalization:
+    level: 1
+  check_pseudo_empty_line:
+    level: 1
+
+token_lines:
+  check_columns_format:
+    level: 1
+
+comment_lines:
+
+cols:
+
+tree:
+
+node:

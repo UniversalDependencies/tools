@@ -1,15 +1,15 @@
-#! /usr/bin/env python3
-# Original code (2015) by Filip Ginter and Sampo Pyysalo.
-# DZ 2018-11-04: Porting the validator to Python 3.
-# DZ: Many subsequent changes. See the git history.
+# ! REMOVE #/usr/bin/env python3
+# ! REMOVE Original code (2015) by Filip Ginter and Sampo Pyysalo.
+# ! REMOVE DZ 2018-11-04: Porting the validator to Python 3.
+# ! REMOVE DZ: Many subsequent changes. See the git history.
 import sys
 import io
 import os.path
 import argparse
 import traceback
-# According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
-# the regex module has the same API as re but it can check Unicode character properties using \p{}
-# as in Perl.
+# ! REMOVE According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
+# ! REMOVE the regex module has the same API as re but it can check Unicode character properties using \p{}
+# ! REMOVE as in Perl.
 #import re
 import regex as re
 import unicodedata
@@ -17,11 +17,17 @@ import json
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
+
+import validator.compiled_regex as crex
 import validator.utils as utils
-import validator.messages as msg
+import validator.output_utils as outils
+import validator.specifications as data
+
+
 
 # The folder where this script resides.
-THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
+# ! OLD THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
+THISDIR=os.path.join(os.path.dirname(os.path.realpath(os.path.abspath(__file__))), "../../..")
 
 # Constants for the column indices
 COLCOUNT=10
@@ -29,42 +35,42 @@ ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 
 
-
+# TODO: turn into data class
 class State:
     """
     The State class holds various global data about where we are in the file
     and what we have seen so far. Typically there will be just one instance of
     this class.
     """
-    def __init__(self):
+    def __init__(self, current_file_name):
         # Name of the current input file.
-        self.current_file_name = None
+        self.current_file_name = current_file_name
         # Current line in the input file, or, more precisely, the last line
         # read so far. Once we start looking at tree integrity, we may find
         # errors on previous lines as well.
         self.current_line = 0;
         # The line in the input file on which the current sentence starts,
         # including sentence-level comments.
-        self.comment_start_line = 0
+        self.comment_start_line = 0 # TODO: rename to someting about sentences
         # The line in the input file on which the current sentence starts
         # (the first node/token line, skipping comments).
         self.sentence_line = 0
         # The most recently read sentence id.
         self.sentence_id = None
         # Needed to check that no space after last word of sentence does not
-        # co-occur with new paragraph or document.
+        # co-occur with new paragraph or document. # TODO: smorfiare
         self.spaceafterno_in_effect = False
         # Error counter by error type. Key: error type; value: error count.
         # Incremented in Incident.report().
-        self.error_counter = {}
+        self.error_counter = {} # TODO: replace with len(something)
         # Set of detailed error explanations that have been printed so far.
         # Each explanation will be printed only once. Typically, an explanation
         # can be identified by test id + language code. Nevertheless, we put
         # the whole explanation to the set.
-        self.explanation_printed = set()
+        self.explanation_printed = set() # TODO: cestinare
         # Some feature-related errors can only be reported if the corpus
         # contains feature annotation because features are optional in general.
-        # Once we see the first feature, we can flush all accummulated
+        # Once we see the first feature, we can flush all accumulated
         # complaints about missing features.
         # Key: testid; value: dict with parameters of the error and the list of
         # its occurrences.
@@ -85,19 +91,21 @@ class State:
         self.seen_enhancement = None
         self.seen_empty_node = None
         self.seen_enhanced_orphan = None
-        # global.entity comment line is needed for Entity annotations in MISC.
-        self.seen_global_entity = None
+
         # If a multi-word token has Typo=Yes, its component words must not have
         # it. When we see Typo=Yes on a MWT line, we will remember the span of
         # the MWT here and will not allow Typo=Yes within that span (which is
         # checked in another function).
         self.mwt_typo_span_end = None
+
         #----------------------------------------------------------------------
         # Additional observations related to Entity annotation in MISC
         # (only needed when validating entities and coreference).
         #----------------------------------------------------------------------
         # Remember the global.entity attribute string to be able to check that
         # repeated declarations are identical.
+        # global.entity comment line is needed for Entity annotations in MISC.
+        self.seen_global_entity = None
         self.global_entity_attribute_string = None
         # The number of entity attributes will be derived from the attribute
         # string and will be used to check that an entity does not have extra
@@ -127,223 +135,19 @@ class State:
         self.entity_split_antecedents = {}
         # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
         self.entity_mention_spans = {}
+        self.nodeid = None
 
-
-
-class Data:
-    """
-    The Data class holds various dictionaries of tags, auxiliaries, regular
-    expressions etc. needed for detailed testing, especially for language-
-    specific constraints.
-    """
-    def __init__(self):
-        # Universal part of speech tags in the UPOS column. Just a set.
-        # For consistency, they are also read from a file. But these tags do
-        # not change, so they could be even hard-coded here.
-        self.upos = set()
-        # Morphological features in the FEATS column.
-        # Key: language code; value: feature-value-UPOS data from feats.json.
-        self.feats = {}
-        # Universal dependency relation types (without subtypes) in the DEPREL
-        # column. For consistency, they are also read from a file. but these
-        # labels do not change, so they could be even hard-coded here.
-        self.udeprel = set()
-        # Dependency relation types in the DEPREL column.
-        # Key: language code; value: deprel data from deprels.json.
-        # Cached processed version: key: language code; value: set of deprels.
-        self.deprel = {}
-        self.cached_deprel_for_language = {}
-        # Enhanced dependency relation types in the DEPS column.
-        # Key: language code; value: edeprel data from edeprels.json.
-        # Cached processed version: key: language code; value: set of edeprels.
-        self.edeprel = {}
-        self.cached_edeprel_for_language = {}
-        # Auxiliary (and copula) lemmas in the LEMMA column.
-        # Key: language code; value: auxiliary/copula data from data.json.
-        # Cached processed versions: key: language code; value: list of lemmas.
-        self.auxcop = {}
-        self.cached_aux_for_language = {}
-        self.cached_cop_for_language = {}
-        # Tokens with spaces in the FORM and LEMMA columns.
-        # Key: language code; value: data from tospace.json.
-        self.tospace = {}
-        # Load language-specific data from external JSON files.
-        self.load()
-        # For each of the language-specific lists, we can generate an
-        # explanation for the user in case they use something that is not on
-        # the list. The explanation will be printed only once but the explain
-        # function may be called thousand times, so let us cache the output to
-        # reduce the time waste a little.
-        self._explanation_feats = {}
-        self._explanation_deprel = {}
-        self._explanation_edeprel = {}
-        self._explanation_aux = {}
-        self._explanation_cop = {}
-        self._explanation_tospace = {}
-
-    def get_feats_for_language(self, lcode):
-        """
-        Searches the previously loaded database of feature-value-UPOS combinations.
-        Returns the data for a given language code, organized in dictionaries.
-        Returns an empty dict if there are no data for the given language code.
-        """
-        ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
-        ###!!! regardless of language-specific documentation.
-        # Do not crash if the user asks for an unknown language.
-        if not lcode in self.feats:
-            return {}
-        return self.feats[lcode]
-
-    def get_deprel_for_language(self, lcode):
-        """
-        Searches the previously loaded database of dependency relation labels.
-        Returns the set of permitted deprels for a given language code. Also
-        saves the result in self so that next time it can be fetched quickly
-        (once we loaded the data, we do not expect them to change).
-        """
-        if lcode in self.cached_deprel_for_language:
-            return self.cached_deprel_for_language[lcode]
-        deprelset = set()
-        # If lcode is 'ud', we should permit all universal dependency relations,
-        # regardless of language-specific documentation.
-        if lcode == 'ud':
-            deprelset = self.udeprel
-        elif lcode in self.deprel:
-            for r in self.deprel[lcode]:
-                if self.deprel[lcode][r]['permitted'] > 0:
-                    deprelset.add(r)
-        self.cached_deprel_for_language[lcode] = deprelset
-        return deprelset
-
-    def get_edeprel_for_language(self, lcode):
-        """
-        Searches the previously loaded database of enhanced case markers.
-        Returns the set of permitted edeprels for a given language code. Also
-        saves the result in self so that next time it can be fetched quickly
-        (once we loaded the data, we do not expect them to change).
-        """
-        if lcode in self.cached_edeprel_for_language:
-            return self.cached_edeprel_for_language[lcode]
-        basic_deprels = self.get_deprel_for_language(lcode)
-        edeprelset = basic_deprels | {'ref'}
-        for bdeprel in basic_deprels:
-            if re.match(r"^[nc]subj(:|$)", bdeprel):
-                edeprelset.add(bdeprel+':xsubj')
-        if lcode in self.edeprel:
-            for c in self.edeprel[lcode]:
-                for deprel in self.edeprel[lcode][c]['extends']:
-                    for bdeprel in basic_deprels:
-                        if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
-                            edeprelset.add(bdeprel+':'+c)
-        self.cached_edeprel_for_language[lcode] = edeprelset
-        return edeprelset
-
-    def get_auxcop_for_language(self, lcode):
-        """
-        Searches the previously loaded database of auxiliary/copula lemmas.
-        Returns the AUX and COP lists for a given language code. Also saves
-        the result in self so that next time it can be fetched quickly (once
-        we loaded the data, we do not expect them to change).
-        """
-        if lcode in self.cached_aux_for_language and lcode in self.cached_cop_for_language:
-            return self.cached_aux_for_language[lcode], self.cached_cop_for_language[lcode]
-        # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
-        # If any of the functions of the lemma is cop.*, it counts as a copula.
-        auxlist = []
-        coplist = []
-        lemmalist = self.auxcop.get(lcode, {}).keys()
-        auxlist = [x for x in lemmalist
-                   if len([y for y in self.auxcop[lcode][x]['functions']
-                    if y['function'] != 'cop.PRON']) > 0]
-        coplist = [x for x in lemmalist
-                   if len([y for y in self.auxcop[lcode][x]['functions']
-                    if re.match(r"^cop\.", y['function'])]) > 0]
-        self.cached_aux_for_language[lcode] = auxlist
-        self.cached_cop_for_language[lcode] = coplist
-        return auxlist, coplist
-
-    def get_aux_for_language(self, lcode):
-        """
-        An entry point for get_auxcop_for_language() that returns only the aux
-        list. It either takes the cached list (if available), or calls
-        get_auxcop_for_language().
-        """
-        if lcode in self.cached_aux_for_language:
-            return self.cached_aux_for_language[lcode]
-        auxlist, coplist = self.get_auxcop_for_language(lcode)
-        return auxlist
-
-    def get_cop_for_language(self, lcode):
-        """
-        An entry point for get_auxcop_for_language() that returns only the cop
-        list. It either takes the cached list (if available), or calls
-        get_auxcop_for_language().
-        """
-        if lcode in self.cached_cop_for_language:
-            return self.cached_cop_for_language[lcode]
-        auxlist, coplist = self.get_auxcop_for_language(lcode)
-        return coplist
-
-    def get_tospace_for_language(self, lcode):
-        """
-        Searches the previously loaded database of regular expressions describing
-        permitted tokens with spaces. Returns the expressions for a given language code.
-        """
-        # Do not crash if the user asks for an unknown language.
-        if not lcode in self.tospace:
-            return None
-        return self.tospace[lcode]
-
-    def load(self):
-        """
-        Loads the external validation data such as permitted feature-value
-        combinations, and stores them in self. The source JSON files are
-        supposed to be in the data subfolder of the folder where the script
-        lives.
-        """
-        with open(os.path.join(THISDIR, 'data', 'upos.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        upos_list = contents['upos']
-        self.upos = set(upos_list)
-        with open(os.path.join(THISDIR, 'data', 'feats.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.feats = contents['features']
-        with open(os.path.join(THISDIR, 'data', 'udeprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        udeprel_list = contents['udeprels']
-        self.udeprel = set(udeprel_list)
-        with open(os.path.join(THISDIR, 'data', 'deprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.deprel = contents['deprels']
-        with open(os.path.join(THISDIR, 'data', 'edeprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.edeprel = contents['edeprels']
-        with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.auxcop = contents['auxiliaries']
-        with open(os.path.join(THISDIR, 'data', 'tospace.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        # There is one or more regular expressions for each language in the file.
-        # If there are multiple expressions, combine them in one and compile it.
-        self.tospace = {}
-        for l in contents['expressions']:
-            combination = '('+'|'.join(sorted(list(contents['expressions'][l])))+')'
-            compilation = re.compile(combination)
-            self.tospace[l] = (combination, compilation)
-
-
-# Global variables:
-data = Data()
 
 class Incident:
     """
     Instances of this class describe individual errors or warnings in the input
     file.
     """
+    # TODO: change class variable into
     # We can modify the class-level defaults before a batch of similar tests.
     # Then we do not have to repeat the shared parameters for each test.
     default_level = 1
-    default_testclass = 'Format'
+    default_testclass = 'Format' # TODO: enum?
     default_testid = 'generic-error'
     default_message = 'No error description provided.'
     default_lineno = None
@@ -353,6 +157,7 @@ class Incident:
         # Thematic area to which the incident belongs: Format, Meta, Morpho,
         # Syntax, Enhanced, Coref, Warning.
         self.testclass = self.default_testclass if testclass == None else testclass
+        # TODO: capire
         # Identifier of the test that lead to the incident. Short string.
         self.testid = self.default_testid if testid == None else testid
         # Verbose description of the error for the user. It does not have to be
@@ -361,6 +166,7 @@ class Incident:
         self.message = self.default_message if message == None else message
         # Additional more verbose information. To be printed with the first
         # incident of a given type.
+        # TODO: levare
         self.explanation = explanation
         # File name. The default is the file from which we are reading right
         # now ('-' if reading from STDIN).
@@ -371,13 +177,14 @@ class Incident:
         # of the sentence, and the error was found on one of the words of the
         # sentence.
         self.lineno = lineno if lineno != None else self.default_lineno if self.default_lineno != None else state.current_line
-        if self.lineno < 0:
+        if self.lineno < 0: # TODO: choose either -1 or None
             self.lineno = state.sentence_line
         # Current (most recently read) sentence id.
         self.sentid = state.sentence_id
         # ID of the node on which the error occurred (if it pertains to one node).
-        self.nodeid = nodeid
+        self.nodeid = nodeid # TODO: add to state
 
+    # TODO: overwrite __str__ or __repr__
     def report(self, state, args):
         # Even if we should be quiet, at least count the error.
         state.error_counter[self.testclass] = state.error_counter.get(self.testclass, 0)+1
@@ -413,12 +220,14 @@ class Incident:
 
 
 class Validator:
-    def __init__(self, args):
+    # TODO: only pass args that are actually useful
+    def __init__(self, args, specs):
         self.conllu_reader = udapi.block.read.conllu.Conllu()
         self.args = args
+        self.specs = specs
 
-
-    def next_sentence(self, state, inp):
+    # TODO: rename to next_block
+    def OLD_next_sentence(self, state, inp):
         """
         `inp` a file-like object yielding lines as unicode
 
@@ -444,6 +253,7 @@ class Validator:
         token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields
         corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
         state.comment_start_line = None
+
         for line_counter, line in enumerate(inp):
             state.current_line = line_counter+1
             Incident.default_level = 1
@@ -489,7 +299,7 @@ class Validator:
                 # everything that looks like a sentence id and use it in the error messages.
                 # Line numbers themselves may not be sufficient if we are reading multiple
                 # files from a pipe.
-                match = utils.crex.sentid.fullmatch(line)
+                match = crex.sentid.fullmatch(line)
                 if match:
                     state.sentence_id = match.group(1)
                 if not token_lines_fields: # before sentence
@@ -542,39 +352,6 @@ class Validator:
                 ).report(state, self.args)
                 if not corrupted:
                     yield all_lines, comment_lines, token_lines_fields
-
-
-
-    @staticmethod
-    def get_line_numbers_for_ids(state, sentence):
-        """
-        Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
-        For each mwt / node / word, gets the number of the line in the input
-        file where the mwt / node / word occurs. We will need this in other
-        functions to be able to report the line on which an error occurred.
-
-        Parameters
-        ----------
-        sentence : list
-            List of mwt / words / nodes, each represented as a list of columns.
-
-        Returns
-        -------
-        linenos : dict
-            Key: word ID (string, not int; decimal for empty nodes and range for
-            mwt lines). Value: 1-based index of the line in the file (int).
-        """
-        linenos = {}
-        node_line = state.sentence_line - 1
-        for cols in sentence:
-            node_line += 1
-            linenos[cols[ID]] = node_line
-            # For normal words, add them also under integer keys, just in case
-            # we later forget to convert node.ord to string. But we cannot do the
-            # same for empty nodes and multiword tokens.
-            if utils.is_word(cols):
-                linenos[int(cols[ID])] = node_line
-        return linenos
 
 
 
@@ -674,7 +451,7 @@ class Validator:
                         message=f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
                     ).report(state, self.args)
                 # Must never contain two consecutive whitespace characters
-                if utils.crex.ws2.search(cols[col_idx]):
+                if crex.ws2.search(cols[col_idx]):
                     Incident(
                         state=state,
                         testid='repeated-whitespace',
@@ -686,7 +463,7 @@ class Validator:
             for col_idx in (FORM, LEMMA):
                 if col_idx >= len(cols):
                     break # this has been already reported in next_sentence()
-                if utils.crex.ws.search(cols[col_idx]):
+                if crex.ws.search(cols[col_idx]):
                     Incident(
                         state=state,
                         testid='invalid-whitespace-mwt',
@@ -696,7 +473,7 @@ class Validator:
         for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
             if col_idx >= len(cols):
                 break # this has been already reported in next_sentence()
-            if utils.crex.ws.search(cols[col_idx]):
+            if crex.ws.search(cols[col_idx]):
                 Incident(
                     state=state,
                     testid='invalid-whitespace',
@@ -715,7 +492,7 @@ class Validator:
 
 
 
-    def validate_id_sequence(self, state, sentence):
+    def OLD_validate_id_sequence(self, state, sentence):
         """
         Validates that the ID sequence is correctly formed.
         Besides reporting the errors, it also returns False to the caller so it can
@@ -750,7 +527,7 @@ class Validator:
                 if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
                     tokens.append((t_id, t_id)) # nope - let's make a default interval for it
             elif utils.is_multiword_token(cols):
-                match = utils.crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
+                match = crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
                 if not match: # This should not happen. The function utils.is_multiword_token() would then not return True.
                     Incident(
                         state=state,
@@ -770,7 +547,7 @@ class Validator:
                     continue
                 tokens.append((beg, end))
             elif utils.is_empty_node(cols):
-                word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
+                word_id, empty_id = (int(i) for i in utils.parse_empty_node_id(cols))
                 if word_id != current_word_id or empty_id != next_empty_id:
                     Incident(
                         state=state,
@@ -825,7 +602,7 @@ class Validator:
 
 
 
-    def validate_token_ranges(self, state, sentence):
+    def OLD_validate_token_ranges(self, state, sentence):
         """
         Checks that the word ranges for multiword tokens are valid.
 
@@ -838,7 +615,7 @@ class Validator:
         for cols in sentence:
             if not utils.is_multiword_token(cols):
                 continue
-            m = utils.crex.mwtid.fullmatch(cols[ID])
+            m = crex.mwtid.fullmatch(cols[ID])
             if not m: # This should not happen. The function utils.is_multiword_token() would then not return True.
                 Incident(
                     state=state,
@@ -859,7 +636,7 @@ class Validator:
 
 
 
-    def validate_newlines(self, state, inp):
+    def OLD_validate_newlines(self, state, inp):
         """
         Checks that the input file consistently uses linux-style newlines (LF only,
         not CR LF like in Windows). To be run on the input file handle after the
@@ -901,7 +678,7 @@ class Validator:
         Incident.default_lineno = -1 # use the first line after the comments
         matched = []
         for c in comments:
-            match = utils.crex.sentid.fullmatch(c)
+            match = crex.sentid.fullmatch(c)
             if match:
                 matched.append(match)
             else:
@@ -956,13 +733,13 @@ class Validator:
         newpar_matched = []
         text_matched = []
         for c in comments:
-            newdoc_match = utils.crex.newdoc.fullmatch(c)
+            newdoc_match = crex.newdoc.fullmatch(c)
             if newdoc_match:
                 newdoc_matched.append(newdoc_match)
-            newpar_match = utils.crex.newpar.fullmatch(c)
+            newpar_match = crex.newpar.fullmatch(c)
             if newpar_match:
                 newpar_matched.append(newpar_match)
-            text_match = utils.crex.text.fullmatch(c)
+            text_match = crex.text.fullmatch(c)
             if text_match:
                 text_matched.append(text_match)
         if len(newdoc_matched) > 1:
@@ -1078,7 +855,7 @@ class Validator:
                                 state=state,
                                 lineno=state.sentence_line+iline,
                                 testid='missing-spaceafter',
-                                message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
+                                message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{utils.shorten(cols[FORM]+stext)}'."
                             ).report(state, self.args)
                         stext = stext.lstrip()
             if stext:
@@ -1094,44 +871,8 @@ class Validator:
 # Level 2 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
 
-
-
-    @staticmethod
-    def deps_list(cols):
-        """
-        Parses the contents of the DEPS column and returns a list of incoming
-        enhanced dependencies. This is needed in early tests, before the sentence
-        has been fed to Udapi.
-
-        Parameters
-        ----------
-        cols : list
-            The values of the columns on the current node / token line.
-
-        Raises
-        ------
-        ValueError
-            If the contents of DEPS cannot be parsed. Note that this does not catch
-            all possible violations of the format, e.g., bad order of the relations
-            will not raise an exception.
-
-        Returns
-        -------
-        deps : list
-            Each list item is a two-member list, containing the parent index (head)
-            and the relation type (deprel).
-        """
-        if cols[DEPS] == '_':
-            deps = []
-        else:
-            deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
-        if any(hd for hd in deps if len(hd) != 2):
-            raise ValueError(f'malformed DEPS: {cols[DEPS]}')
-        return deps
-
-
-
-    def validate_mwt_empty_vals(self, state, cols, line):
+    #! rewritten
+    def OLD_validate_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
         This is required by UD guidelines although it is not a problem in general,
@@ -1150,7 +891,7 @@ class Validator:
             if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
                 # If a multi-word token has Typo=Yes, its component words must not have it.
                 # We must remember the span of the MWT and check it in validate_features_level4().
-                m = utils.crex.mwtid.fullmatch(cols[ID])
+                m = crex.mwtid.fullmatch(cols[ID])
                 state.mwt_typo_span_end = m.group(2)
             elif cols[col_idx] != '_':
                 Incident(
@@ -1165,7 +906,7 @@ class Validator:
 
 
 
-    def validate_empty_node_empty_vals(self, state, cols, line):
+    def OLD_validate_empty_node_empty_vals(self, state, cols, line):
         """
         Checks that an empty node has _ empty values in HEAD and DEPREL. This is
         required by UD guidelines but not necessarily by CoNLL-U, therefore
@@ -1192,7 +933,7 @@ class Validator:
 
 
 
-    def validate_character_constraints(self, state, cols, line):
+    def OLD_validate_character_constraints(self, state, cols, line):
         """
         Checks general constraints on valid characters, e.g. that UPOS
         only contains [A-Z].
@@ -1208,9 +949,9 @@ class Validator:
         Incident.default_lineno = line
         if utils.is_multiword_token(cols):
             return
-        # Do not test the regular expression utils.crex.upos here. We will test UPOS
+        # Do not test the regular expression crex.upos here. We will test UPOS
         # directly against the list of known tags. That is a level 2 test, too.
-        if not (utils.crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
+        if not (crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
             Incident(
                 state=state,
                 testclass='Syntax',
@@ -1218,7 +959,7 @@ class Validator:
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
             ).report(state, self.args)
         try:
-            self.deps_list(cols)
+            utils.deps_list(cols)
         except ValueError:
             Incident(
                 state=state,
@@ -1227,8 +968,8 @@ class Validator:
                 message=f"Failed to parse DEPS: '{cols[DEPS]}'."
             ).report(state, self.args)
             return
-        if any(deprel for head, deprel in self.deps_list(cols)
-            if not utils.crex.edeprel.fullmatch(deprel)):
+        if any(deprel for head, deprel in utils.deps_list(cols)
+            if not crex.edeprel.fullmatch(deprel)):
                 Incident(
                     state=state,
                     testclass='Enhanced',
@@ -1238,7 +979,7 @@ class Validator:
 
 
 
-    def validate_upos(self, state, cols, line):
+    def OLD_validate_upos(self, state, cols, line):
         """
         Checks that the UPOS field contains one of the 17 known tags.
 
@@ -1249,13 +990,12 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        global data
         if utils.is_empty_node(cols) and cols[UPOS] == '_':
             return
         # Just in case, we still match UPOS against the regular expression that
         # checks general character constraints. However, the list of UPOS, loaded
         # from a JSON file, should conform to the regular expression.
-        if not utils.crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in data.upos:
+        if not crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in self.specs.upos:
             Incident(
                 state=state,
                 lineno=line,
@@ -1267,7 +1007,7 @@ class Validator:
 
 
 
-    def validate_features_level2(self, state, cols, line):
+    def OLD_validate_features_level2(self, state, cols, line):
         """
         Checks general constraints on feature-value format: Permitted characters in
         feature name and value, features must be sorted alphabetically, features
@@ -1306,7 +1046,7 @@ class Validator:
         # can skip the more fragile tests.
         safe = True
         for f in feat_list:
-            match = utils.crex.featval.fullmatch(f)
+            match = crex.featval.fullmatch(f)
             if match is None:
                 Incident(
                     state=state,
@@ -1333,7 +1073,7 @@ class Validator:
                         message=f"If a feature has multiple values, these must be sorted: '{f}'"
                     ).report(state, self.args)
                 for v in values:
-                    if not utils.crex.val.fullmatch(v):
+                    if not crex.val.fullmatch(v):
                         Incident(
                             state=state,
                             testid='invalid-feature-value',
@@ -1350,7 +1090,8 @@ class Validator:
 
 
 
-    def features_present(self, state):
+    @staticmethod
+    def features_present(state):
         """
         In general, the annotation of morphological features is optional, although
         highly encouraged. However, if the treebank does have features, then certain
@@ -1363,11 +1104,11 @@ class Validator:
             state.seen_morpho_feature = state.current_line
             for testid in state.delayed_feature_errors:
                 for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                    occurrence['incident'].report(state, self.args)
+                    occurrence.report(state, self.args)
 
 
 
-    def validate_deps(self, state, cols, line):
+    def OLD_validate_deps(self, state, cols, line):
         """
         Validates that DEPS is correctly formatted and that there are no
         self-loops in DEPS (longer cycles are allowed in enhanced graphs but
@@ -1397,7 +1138,7 @@ class Validator:
             state.seen_enhancement = line
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from validate_id_references() and the head indices are OK).
-        deps = self.deps_list(cols)
+        deps = utils.deps_list(cols)
         ###!!! Float will not work if there are 10 empty nodes between the same two
         ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
         heads = [float(h) for h, d in deps]
@@ -1441,7 +1182,7 @@ class Validator:
 
 
 
-    def validate_misc(self, state, cols, line):
+    def OLD_validate_misc(self, state, cols, line):
         """
         In general, the MISC column can contain almost anything. However, if there
         is a vertical bar character, it is interpreted as the separator of two
@@ -1535,7 +1276,7 @@ class Validator:
 
 
 
-    def validate_id_references(self, state, sentence):
+    def OLD_validate_id_references(self, state, sentence):
         """
         Verifies that HEAD and DEPS reference existing IDs. If this function does
         not return True, most of the other tests should be skipped for the current
@@ -1559,7 +1300,7 @@ class Validator:
             # Test the basic HEAD only for non-empty nodes.
             # We have checked elsewhere that it is empty for empty nodes.
             if not utils.is_empty_node(cols):
-                match = utils.crex.head.fullmatch(cols[HEAD])
+                match = crex.head.fullmatch(cols[HEAD])
                 if match is None:
                     Incident(
                         state=state,
@@ -1576,7 +1317,7 @@ class Validator:
                     ).report(state, self.args)
                     ok = False
             try:
-                deps = self.deps_list(cols)
+                deps = utils.deps_list(cols)
             except ValueError:
                 # Similar errors have probably been reported earlier.
                 Incident(
@@ -1587,7 +1328,7 @@ class Validator:
                 ok = False
                 continue
             for head, deprel in deps:
-                match = utils.crex.ehead.fullmatch(head)
+                match = crex.ehead.fullmatch(head)
                 if match is None:
                     Incident(
                         state=state,
@@ -1730,14 +1471,14 @@ class Validator:
                 ).report(state, self.args)
         # In the enhanced graph, test both regular and empty roots.
         for edep in node.deps:
-            if edep['parent'].ord == 0 and lspec2ud(edep['deprel']) != 'root':
+            if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
                 Incident(
                     state=state,
                     testclass='Enhanced',
                     testid='enhanced-0-is-not-root',
                     message="Enhanced relation type must be 'root' if head is 0."
                 ).report(state, self.args)
-            if edep['parent'].ord != 0 and lspec2ud(edep['deprel']) == 'root':
+            if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
                 Incident(
                     state=state,
                     testclass='Enhanced',
@@ -1748,7 +1489,7 @@ class Validator:
 
 
 
-    def validate_deps_all_or_none(self, state, sentence):
+    def OLD_validate_deps_all_or_none(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Checks that enhanced dependencies are present if they were
@@ -2143,7 +1884,7 @@ class Validator:
             The 1-based index of the line where the node occurs.
         """
         # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
-        if node.udeprel in ['conj', 'fixed', 'flat', 'goeswith', 'appos']:
+        if re.match(r"^(conj|fixed|flat|goeswith|appos)", node.deprel):
             ichild = node.ord
             iparent = node.parent.ord
             if ichild < iparent:
@@ -2317,7 +2058,7 @@ class Validator:
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         deprel = node.udeprel
-        if deprel in ['case', 'mark', 'cc', 'aux', 'cop', 'det', 'clf', 'fixed', 'goeswith', 'punct']:
+        if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
             idparent = node.ord
             pdeprel = deprel
             pfeats = node.feats
@@ -2741,7 +2482,7 @@ class Validator:
                 ).report(state, self.args)
 
 
-
+    # TODO: rename to something more meaningful
     def validate_annotation(self, state, tree, linenos):
         """
         Checks universally valid consequences of the annotation guidelines. Looks
@@ -2811,7 +2552,7 @@ class Validator:
                         testid='empty-node-after-eorphan',
                         message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
                     ).report(state, self.args)
-        udeprels = set([lspec2ud(edep['deprel']) for edep in node.deps])
+        udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
         if 'orphan' in udeprels:
             if not state.seen_enhanced_orphan:
                 state.seen_enhanced_orphan = line
@@ -2849,21 +2590,20 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = 'Format'
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
-        tospacedata = data.get_tospace_for_language(lang)
+        tospacedata = self.specs.get_tospace_for_language(lang)
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            tospacedata = data.get_tospace_for_language(altlang)
+            tospacedata = self.specs.get_tospace_for_language(altlang)
         for column in ('FORM', 'LEMMA'):
             word = node.form if column == 'FORM' else node.lemma
             # Is there whitespace in the word?
-            if utils.crex.ws.search(word):
+            if crex.ws.search(word):
                 # Whitespace found. Does the word pass the regular expression that defines permitted words with spaces in this language?
                 if tospacedata:
                     # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
@@ -2874,7 +2614,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                            explanation=msg.explain_tospace(lang)
+                            explanation=outils.explain_tospace(lang)
                         ).report(state, self.args)
                 else:
                     Incident(
@@ -2882,7 +2622,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                        explanation=msg.explain_tospace(lang)
+                        explanation=outils.explain_tospace(lang)
                     ).report(state, self.args)
 
 
@@ -2902,7 +2642,6 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = 'Morpho'
@@ -2911,11 +2650,11 @@ class Validator:
         # List of permited features is language-specific.
         # The current token may be in a different language due to code switching.
         default_lang = lang
-        default_featset = featset = data.get_feats_for_language(lang)
+        default_featset = featset = self.specs.get_feats_for_language(lang)
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            featset = data.get_feats_for_language(altlang)
+            featset = self.specs.get_feats_for_language(altlang)
         for f in node.feats:
             values = node.feats[f].split(',')
             for v in values:
@@ -2949,7 +2688,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='feature-unknown',
                             message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
-                            explanation=msg.explain_feats(effective_lang)
+                            explanation=outils.explain_feats(effective_lang)
                         ).report(state, self.args)
                     else:
                         lfrecord = effective_featset[f]
@@ -2959,7 +2698,7 @@ class Validator:
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
                                 message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                explanation=msg.explain_feats(effective_lang)
+                                explanation=outils.explain_feats(effective_lang)
                             ).report(state, self.args)
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
@@ -2969,7 +2708,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=msg.explain_feats(effective_lang)
+                                    explanation=outils.explain_feats(effective_lang)
                                 ).report(state, self.args)
                             elif not node.upos in lfrecord['byupos']:
                                 Incident(
@@ -2977,7 +2716,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=msg.explain_feats(effective_lang)
+                                    explanation=outils.explain_feats(effective_lang)
                                 ).report(state, self.args)
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                                 Incident(
@@ -2985,14 +2724,14 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=msg.explain_feats(effective_lang)
+                                    explanation=outils.explain_feats(effective_lang)
                                 ).report(state, self.args)
         if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
             state.mwt_typo_span_end = None
 
 
 
-    def validate_deprels(self, state, node, line):
+    def OLD_validate_deprels(self, state, node, line):
         """
         Checks that a dependency relation label is listed as approved in the given
         language. As a language-specific test, this function generally belongs to
@@ -3006,7 +2745,6 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = 'Syntax'
@@ -3026,10 +2764,10 @@ class Validator:
         # The basic relation should be tested on regular nodes but not on empty nodes.
         if not node.is_empty():
             paltlang = utils.get_alt_language(node.parent)
-            main_deprelset = data.get_deprel_for_language(mainlang)
+            main_deprelset = self.specs.get_deprel_for_language(mainlang)
             alt_deprelset = set()
             if naltlang != None and naltlang != mainlang and naltlang == paltlang:
-                alt_deprelset = data.get_deprel_for_language(naltlang)
+                alt_deprelset = self.specs.get_deprel_for_language(naltlang)
             # Test only the universal part if testing at universal level.
             deprel = node.deprel
             if self.args.level < 4:
@@ -3041,7 +2779,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
-                    explanation=msg.explain_deprel(mainlang)
+                    explanation=outils.explain_deprel(mainlang)
                 ).report(state, self.args)
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
@@ -3049,14 +2787,14 @@ class Validator:
         # The order of enhanced dependencies was already checked in validate_deps().
         Incident.default_testclass = 'Enhanced'
         if str(node.deps) != '_':
-            main_edeprelset = data.get_edeprel_for_language(mainlang)
-            alt_edeprelset = data.get_edeprel_for_language(naltlang)
+            main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+            alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
             for edep in node.deps:
                 parent = edep['parent']
                 deprel = edep['deprel']
                 paltlang = utils.get_alt_language(parent)
                 if self.args.level < 4:
-                    deprel = lspec2ud(deprel)
+                    deprel = utils.lspec2ud(deprel)
                     Incident.default_level = 2
                 if not (deprel in main_edeprelset or naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
                     Incident(
@@ -3064,7 +2802,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
-                        explanation=msg.explain_edeprel(mainlang)
+                        explanation=outils.explain_edeprel(mainlang)
                     ).report(state, self.args)
 
 
@@ -3089,12 +2827,11 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         if node.upos == 'AUX' and node.lemma != '_':
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
-            auxlist = data.get_aux_for_language(lang)
+            auxlist = self.specs.get_aux_for_language(lang)
             if not auxlist or not node.lemma in auxlist:
                 Incident(
                     state=state,
@@ -3104,7 +2841,7 @@ class Validator:
                     testclass='Morpho',
                     testid='aux-lemma',
                     message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
-                    explanation=msg.explain_aux(lang)
+                    explanation=outils.explain_aux(lang)
                 ).report(state, self.args)
 
 
@@ -3123,12 +2860,11 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         if node.udeprel == 'cop' and node.lemma != '_':
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
-            coplist = data.get_cop_for_language(lang)
+            coplist = self.specs.get_cop_for_language(lang)
             if not coplist or not node.lemma in coplist:
                 Incident(
                     state=state,
@@ -3138,7 +2874,7 @@ class Validator:
                     testclass='Syntax',
                     testid='cop-lemma',
                     message=f"'{node.lemma}' is not a copula in language [{lang}]",
-                    explanation=msg.explain_cop(lang)
+                    explanation=outils.explain_cop(lang)
                 ).report(state, self.args)
 
 
@@ -3162,9 +2898,9 @@ class Validator:
         sentid = ''
         for c in comments:
             Incident.default_lineno = state.comment_start_line+iline
-            global_entity_match = utils.crex.global_entity.fullmatch(c)
-            newdoc_match = utils.crex.newdoc.fullmatch(c)
-            sentid_match = utils.crex.sentid.fullmatch(c)
+            global_entity_match = crex.global_entity.fullmatch(c)
+            newdoc_match = crex.newdoc.fullmatch(c)
+            sentid_match = crex.sentid.fullmatch(c)
             if global_entity_match:
                 # As a global declaration, global.Entity is expected only once per file.
                 # However, we may be processing multiple files or people may have created
@@ -3835,7 +3571,7 @@ class Validator:
 #==============================================================================
 # Main part.
 #==============================================================================
-
+    # TODO: put in utils or similar
     def build_tree_udapi(self, lines):
         root = self.conllu_reader.read_tree_from_lines(lines)
         return root
@@ -3851,18 +3587,19 @@ class Validator:
         inp : open file handle
             The CoNLL-U-formatted input stream.
         """
-        for all_lines, comments, sentence in self.next_sentence(state, inp):
-            linenos = self.get_line_numbers_for_ids(state, sentence)
+        for all_lines, comments, sentence in self.OLD_next_sentence(state, inp):
+            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # The individual lines were validated already in next_sentence().
             # What follows is tests that need to see the whole tree.
             # Note that low-level errors such as wrong number of columns would be
             # reported in next_sentence() but then the lines would be thrown away
             # and no tree lines would be yielded—meaning that we will not encounter
             # such a mess here.
-            idseqok = self.validate_id_sequence(state, sentence) # level 1
-            self.validate_token_ranges(state, sentence) # level 1
+            idseqok = self.OLD_validate_id_sequence(state, sentence) # level 1
+            self.OLD_validate_token_ranges(state, sentence) # level 1
+            # TODO: config file so that levels are not checked here
             if self.args.level > 1:
-                idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
+                idrefok = idseqok and self.OLD_validate_id_references(state, sentence) # level 2
                 if not idrefok:
                     continue
                 treeok = self.validate_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
@@ -3872,19 +3609,19 @@ class Validator:
                 # Some of them (bad feature format) may lead to skipping Udapi completely.
                 colssafe = True
                 line = state.sentence_line - 1
-                for cols in sentence:
+                for cols in sentence: # TODO: cols->line
                     line += 1
                     # Multiword tokens and empty nodes can or must have certain fields empty.
                     if utils.is_multiword_token(cols):
-                        self.validate_mwt_empty_vals(state, cols, line)
-                    if utils.is_empty_node(cols):
-                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
-                    if utils.is_word(cols) or utils.is_empty_node(cols):
-                        self.validate_character_constraints(state, cols, line) # level 2
-                        self.validate_upos(state, cols, line) # level 2
-                        colssafe = colssafe and self.validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
-                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+                        self.OLD_validate_mwt_empty_vals(state, cols, line)
+                    if utils.is_empty_node(cols): # TODO: elif?
+                        self.OLD_validate_empty_node_empty_vals(state, cols, line) # level 2
+                    if utils.is_word(cols) or utils.is_empty_node(cols): # TODO: elif?
+                        self.OLD_validate_character_constraints(state, cols, line) # level 2
+                        self.OLD_validate_upos(state, cols, line) # level 2
+                        colssafe = colssafe and self.OLD_validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
+                    self.OLD_validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    self.OLD_validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
                     continue
                 # If we successfully passed all the tests above, it is probably
@@ -3899,12 +3636,12 @@ class Validator:
                 # These line numbers are returned in any case, even if there are no
                 # enhanced dependencies, hence we can rely on them even with basic
                 # trees.
-                self.validate_deps_all_or_none(state, sentence)
+                self.OLD_validate_deps_all_or_none(state, sentence)
                 # Tests of individual nodes with Udapi.
                 nodes = tree.descendants_and_empty
                 for node in nodes:
                     line = linenos[str(node.ord)]
-                    self.validate_deprels(state, node, line) # level 2 and 4
+                    self.OLD_validate_deprels(state, node, line) # level 2 and 4
                     self.validate_root(state, node, line) # level 2: deprel root <=> head 0
                     if self.args.level > 2:
                         self.validate_enhanced_orphan(state, node, line) # level 3
@@ -3921,7 +3658,7 @@ class Validator:
                     self.validate_egraph_connected(state, nodes, linenos)
                 if self.args.check_coref:
                     self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
-        self.validate_newlines(state, inp) # level 1
+        self.OLD_validate_newlines(state, inp) # level 1
 
 
 
@@ -3969,6 +3706,7 @@ class Validator:
             # is beyond the goal of validation, which can be also run in a console.
             traceback.print_exc()
         return state
+
 
 #==============================================================================
 # Argument processing.
@@ -4070,3 +3808,4 @@ def main():
 if __name__=="__main__":
     errcode = main()
     sys.exit(errcode)
+
