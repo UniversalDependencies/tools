@@ -1672,7 +1672,7 @@ def check_words_with_spaces(node, lang, specs):
 						message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
 					))
 			else:
-				incidents.append(Incident(
+				incidents.append(Error(
 					level=4,
 					testclass=TestClass.FORMAT,
 					nodeid=node.ord,
