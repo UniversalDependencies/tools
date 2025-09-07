@@ -1623,3 +1623,60 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 				message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
 			))
 	return incidents
+
+def check_words_with_spaces(node, lcode, specs):
+	"""
+	Checks a single line for disallowed whitespace.
+	Here we assume that all language-independent whitespace-related tests have
+	already been done on level 1, so we only check for words with spaces that
+	are explicitly allowed in a given language.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node to be validated.
+	line : int
+		Number of the line where the node occurs in the file.
+	lcode : str
+		Code of the main language of the corpus.
+	specs : UDSpecs
+		The object containing specific information about the allowed values
+	
+	returns
+	-------
+	incidents : list
+		A list of Incidents (empty if validation is successful).
+	"""
+	incidents = []
+	# List of permitted words with spaces is language-specific.
+	# The current token may be in a different language due to code switching.
+	tospacedata = specs.get_tospace_for_language(lang)
+	altlang = utils.get_alt_language(node)
+	if altlang:
+		lang = altlang
+		tospacedata = specs.get_tospace_for_language(altlang)
+	for column in ('FORM', 'LEMMA'):
+		word = node.form if column == 'FORM' else node.lemma
+		# Is there whitespace in the word?
+		if crex.ws.search(word):
+			# Whitespace found. Does the word pass the regular expression that defines permitted words with spaces in this language?
+			if tospacedata:
+				# For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
+				string_to_test = re.sub(r'\xA0', ' ', word)
+				if not tospacedata[1].fullmatch(string_to_test):
+					incidents.append(Error(
+						level=4,
+						testclass=TestClass.FORMAT,
+						nodeid=node.ord,
+						testid='invalid-word-with-space',
+						message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
+					))
+			else:
+				incidents.append(Incident(
+					level=4,
+					testclass=TestClass.FORMAT,
+					nodeid=node.ord,
+					testid='invalid-word-with-space',
+					message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
+				))
+	return incidents
