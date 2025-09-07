@@ -1567,3 +1567,55 @@ def check_root(node):
 				message="Enhanced relation type cannot be 'root' if head is not 0."
 			))
 	return incidents
+
+def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
+	"""
+	Checks universally valid consequences of the annotation guidelines in the
+	enhanced representation. Currently tests only phenomena specific to the
+	enhanced dependencies; however, we should also test things that are
+	required in the basic dependencies (such as left-to-right coordination),
+	unless it is obvious that in enhanced dependencies such things are legal.
+	
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node whose incoming relations will be validated. This function
+		operates on both regular and empty nodes. Make sure to call it for
+		empty nodes, too!
+	line : int
+		Number of the line where the node occurs in the file.
+	"""
+	incidents = []
+	# Enhanced dependencies should not contain the orphan relation.
+	# However, all types of enhancements are optional and orphans are excluded
+	# only if this treebank addresses gapping. We do not know it until we see
+	# the first empty node.
+	if str(node.deps) == '_':
+		return
+	if node.is_empty():
+		if not seen_empty_node:
+			#TODO: outside of this function: state.seen_empty_node = line
+			# Empty node itself is not an error. Report it only for the first time
+			# and only if an orphan occurred before it.
+			if seen_enhanced_orphan:
+				incidents.append(Error(
+					level=3,
+					testclass=TestClass.ENHANCED,
+					nodeid=node.ord,
+					testid='empty-node-after-eorphan',
+					message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
+				))
+	udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
+	if 'orphan' in udeprels:
+		if not seen_enhanced_orphan:
+			pass
+			# TODO: outside of this function: state.seen_enhanced_orphan = line
+		# If we have seen an empty node, then the orphan is an error.
+		if seen_empty_node:
+			incidents.append(Error(
+				level=3,
+				testclass=TestClass.ENHANCED,
+				nodeid=node.ord,
+				testid='eorphan-after-empty-node',
+				message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
+			))
