@@ -1025,7 +1025,7 @@ def check_id_references(sentence):
 
 def check_tree(sentence, node_line, single_root):
     """
-    Performs basic validation of the tree structure.
+    Performs basic validation of the tree structure (without UDApi).
 
     This function originally served to build a data structure that would
     describe the tree and make it accessible during subsequent tests. Now we
@@ -1517,3 +1517,52 @@ def check_deprels_level4(node, deprels, lcode):
 				)
 
 	return incidents
+
+def check_root(node):
+    """
+    Checks that DEPREL is "root" iff HEAD is 0.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose incoming relation will be validated. This function
+        operates on both regular and empty nodes. Make sure to call it for
+        empty nodes, too!
+    
+    returns
+    -------
+    incidents : list
+        A list of Incidents (empty if validation is successful).
+    """
+    incidents = []
+    if not node.is_empty():
+        if node.parent.ord == 0 and node.udeprel != 'root':
+            incidents.append(Error(
+                level=2,
+                testclass=TestClass.SYNTAX,
+                testid='0-is-not-root',
+                message="DEPREL must be 'root' if HEAD is 0."
+            ))
+        if node.parent.ord != 0 and node.udeprel == 'root':
+            incidents.append(Error(
+                level=2,
+                testclass=TestClass.SYNTAX,
+                testid='root-is-not-0',
+                message="DEPREL cannot be 'root' if HEAD is not 0."
+            ))
+    # In the enhanced graph, test both regular and empty roots.
+    for edep in node.deps:
+        if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
+            incidents.append(Error(
+                level=2,
+                testclass=TestClass.SYNTAX,
+                testid='enhanced-0-is-not-root',
+                message="Enhanced relation type must be 'root' if head is 0."
+            ))
+        if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
+            incidents.append(Error(
+                level=2,
+                testclass=TestClass.SYNTAX,
+                testid='enhanced-root-is-not-0',
+                message="Enhanced relation type cannot be 'root' if head is not 0."
+            ))
