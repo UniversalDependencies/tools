@@ -1381,7 +1381,7 @@ def check_deprels_level2(node, deprels, lcode):
 				check = True
 
 		if not check:
-	  		incidents.append(
+			incidents.append(
 				Error(
 					level=2,
 					testclass=TestClass.SYNTAX,
