@@ -1582,8 +1582,11 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 		The node whose incoming relations will be validated. This function
 		operates on both regular and empty nodes. Make sure to call it for
 		empty nodes, too!
-	line : int
-		Number of the line where the node occurs in the file.
+
+	returns
+	-------
+	incidents : list
+		A list of Incidents (empty if validation is successful).
 	"""
 	incidents = []
 	# Enhanced dependencies should not contain the orphan relation.
