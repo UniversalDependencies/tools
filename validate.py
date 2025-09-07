@@ -2430,7 +2430,7 @@ class Validator:
             The 1-based index of the line where the node occurs.
         """
         # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
-        if re.match(r"^(conj|fixed|flat|goeswith|appos)", node.deprel):
+        if node.udeprel in ['conj', 'fixed', 'flat', 'goeswith', 'appos']:
             ichild = node.ord
             iparent = node.parent.ord
             if ichild < iparent:
@@ -2604,7 +2604,7 @@ class Validator:
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         deprel = node.udeprel
-        if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
+        if deprel in ['case', 'mark', 'cc', 'aux', 'cop', 'det', 'clf', 'fixed', 'goeswith', 'punct']:
             idparent = node.ord
             pdeprel = deprel
             pfeats = node.feats
