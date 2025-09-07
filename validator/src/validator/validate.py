@@ -1116,7 +1116,7 @@ def check_sent_id(comments, allow_slash, known_sent_ids):
 		A list of comments, represented as strings.
 	allow_slash : bool
 		Whether exactly one "/" character is allowed (this is reserved for
-		parallel treebanks). This parameter replaces lcode, which was used to
+		parallel treebanks). This parameter replaces lang, which was used to
 		allow slashes when equal to "ud".
 	known_sent_ids : set
 		The set of previously encountered sentence IDs.
@@ -1335,7 +1335,7 @@ def check_text_meta(comments, tree, spaceafterno_in_effect):
 				message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
 			))
 
-def check_deprels_level2(node, deprels, lcode):
+def check_deprels_level2(node, deprels, lang):
 	"""
 	Checks that a dependency relation label is listed as approved in the given
 	language. As a language-specific test, this function generally belongs to
@@ -1347,7 +1347,7 @@ def check_deprels_level2(node, deprels, lcode):
 	node : udapi.core.node.Node object
 		The node whose incoming relation will be validated.
 	deps: TODO
-	lcode: TODO
+	lang: TODO
 	"""
 
 	# List of permited relations is language-specific.
@@ -1373,11 +1373,11 @@ def check_deprels_level2(node, deprels, lcode):
 		  # Test only the universal part if testing at universal level.
 		deprel = node.udeprel
 		check = False
-		if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+		if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
 			check = True
 
-		if naltlang != None and naltlang != lcode and naltlang == paltlang:
-			if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+		if naltlang != None and naltlang != lang and naltlang == paltlang:
+			if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
 				check = True
 
 		if not check:
@@ -1403,11 +1403,11 @@ def check_deprels_level2(node, deprels, lcode):
 			paltlang = utils.get_alt_language(parent)
 
 			check = False
-			if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+			if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
 				check = True
 
-			if naltlang != None and naltlang != lcode and naltlang == paltlang:
-				if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+			if naltlang != None and naltlang != lang and naltlang == paltlang:
+				if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
 					check = True
 
 			if not check:
@@ -1422,7 +1422,7 @@ def check_deprels_level2(node, deprels, lcode):
 
 	return incidents
 
-def check_deprels_level4(node, deprels, lcode):
+def check_deprels_level4(node, deprels, lang):
 	"""
 	Checks that a dependency relation label is listed as approved in the given
 	language. As a language-specific test, this function generally belongs to
@@ -1469,11 +1469,11 @@ def check_deprels_level4(node, deprels, lcode):
 		deprel = node.deprel
 
 		check = False
-		if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+		if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
 			check = True
 
-		if naltlang != None and naltlang != lcode and naltlang == paltlang:
-			if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+		if naltlang != None and naltlang != lang and naltlang == paltlang:
+			if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
 				check = True
 
 		if not check:
@@ -1499,11 +1499,11 @@ def check_deprels_level4(node, deprels, lcode):
 			paltlang = utils.get_alt_language(parent)
 
 			check = False
-			if deprel in deprels[lcode] and deprels[lcode][deprel]["permitted"]:
+			if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
 				check = True
 
-			if naltlang != None and naltlang != lcode and naltlang == paltlang:
-				if deprel in deprels[naltlang] and deprels[lcode][naltlang]["permitted"]:
+			if naltlang != None and naltlang != lang and naltlang == paltlang:
+				if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
 					check = True
 
 			if not check:
@@ -1624,7 +1624,7 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 			))
 	return incidents
 
-def check_words_with_spaces(node, lcode, specs):
+def check_words_with_spaces(node, lang, specs):
 	"""
 	Checks a single line for disallowed whitespace.
 	Here we assume that all language-independent whitespace-related tests have
@@ -1637,7 +1637,7 @@ def check_words_with_spaces(node, lcode, specs):
 		The node to be validated.
 	line : int
 		Number of the line where the node occurs in the file.
-	lcode : str
+	lang : str
 		Code of the main language of the corpus.
 	specs : UDSpecs
 		The object containing specific information about the allowed values
