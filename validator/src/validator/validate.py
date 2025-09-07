@@ -1619,3 +1619,4 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 				testid='eorphan-after-empty-node',
 				message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
 			))
+	return incidents
