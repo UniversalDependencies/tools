@@ -5,7 +5,7 @@ import unicodedata
 import logging
 import inspect
 
-from validator.incident import Error, Warning, TestClass
+from validator.incident import Error, Warning, TestClass, IncidentType
 import validator.utils as utils
 import validator.compiled_regex as crex
 from validator.validate_lib import State
@@ -1861,4 +1861,126 @@ def validate_copula_lemmas(node, lang, specs):
 				testid='cop-lemma',
 				message=f"'{node.lemma}' is not a copula in language [{lang}]",
 			))
+	return incidents
+
+# ! proposal: remove entirely and put in tree block of the validator, or at 
+# least rename to check_universal_guidelines (this function simply groups a 
+# few checks together, and the tree section of the engine kinda does the same
+# thing), not to mention that removing this function spares us passing line
+# numbers around
+def validate_annotation(tree, linenos):
+	"""
+	Checks universally valid consequences of the annotation guidelines. Looks
+	at regular nodes and basic tree, not at enhanced graph (which is checked
+	elsewhere).
+	
+	Parameters
+	----------
+	tree : udapi.core.root.Root object
+	linenos : dict
+		Key is node ID (string, not int or float!) Value is the 1-based index
+		of the line where the node occurs (int).
+
+	returns
+	-------
+	incidents : list
+		A list of Incidents (empty if validation is successful).
+	"""
+	incidents = []
+	nodes = tree.descendants
+	for node in nodes:
+		lineno = linenos[str(node.ord)]
+		incidents.extend(validate_expected_features(node, lineno))
+		#incidents.extend(validate_upos_vs_deprel(node, lineno))
+		#incidents.extend(validate_flat_foreign(node, lineno, linenos))
+		#incidents.extend(validate_left_to_right_relations(node, lineno))
+		#incidents.extend(validate_single_subject(node, lineno))
+		#incidents.extend(validate_single_object(node, lineno))
+		#incidents.extend(validate_orphan(node, lineno))
+		#incidents.extend(validate_functional_leaves(node, lineno, linenos))
+		#incidents.extend(validate_fixed_span(node, lineno))
+		#incidents.extend(validate_goeswith_span(node, lineno))
+		#incidents.extend(validate_goeswith_morphology_and_edeps(node, lineno))
+		#incidents.extend(validate_projective_punctuation(node, lineno))
+	incidents = []
+
+def validate_expected_features(node, seen_morpho_feature, delayed_feature_errors):
+	"""
+	Certain features are expected to occur with certain UPOS or certain values
+	of other features. This function issues warnings instead of errors, as
+	features are in general optional and language-specific. Even the warnings
+	are issued only if the treebank has features. Note that the expectations
+	tested here are considered (more or less) universal. Checking that a given
+	feature-value pair is compatible with a particular UPOS is done using
+	language-specific lists at level 4.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The tree node to be tested.
+	lineno : int
+		The 1-based index of the line where the node occurs.
+	"""
+	incidents = []
+	# TODO:
+	if node.upos in ['PRON', 'DET']:
+		incidents.extend(validate_required_feature(
+			node, 'PronType', None, 
+			seen_morpho_feature, delayed_feature_errors, 
+			IncidentType.ERROR, TestClass.MORPHO, 'pron-det-without-prontype'
+			))
+	if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
+		incidents.append(Warning(
+			level=3,
+			# ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
+			testclass=TestClass.MORPHO,
+			testid='verbform-fin-without-mood',
+			message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
+		))
+	elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
+		incidents.append(Warning(
+			level=3,
+			# ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
+			testclass=TestClass.MORPHO, 
+			testid='mood-without-verbform-fin',
+			message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
+		))
+	
+def validate_required_feature(node, required_feature, required_value, seen_morpho_feature, delayed_feature_errors, incident_type, testclass, testid):
+	"""
+	In general, the annotation of morphological features is optional, although
+	highly encouraged. However, if the treebank does have features, then certain
+	features become required. This function will check the presence of a feature
+	and if it is missing, an error will be reported only if at least one feature
+	has been already encountered. Otherwise the error will be remembered and it
+	may be reported afterwards if any feature is encountered later.
+	
+	Parameters
+	----------
+	node : TODO: update
+	required_feature : str
+		The name of the required feature.
+	required_value : str
+		The required value of the feature. Multivalues are not supported (they
+		are just a string value containing one or more commas). If
+		required_value is None or an empty string, it means that we require any
+		non-empty value of required_feature.
+	TODO: update
+	"""
+	incidents = []
+	feats = node.feats
+	if required_value:
+		if feats[required_feature] != required_value or feats[required_feature] == '':
+			if seen_morpho_feature:
+				incidents.append(Error if incident_type == IncidentType.ERROR else Warning(
+					level=3,
+					testclass=testclass,
+					testid=testid,
+					message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
+			))
+			# TODO: outside of this function
+			#else:
+			#	if not testid in delayed_feature_errors:
+			#		state.delayed_feature_errors[incident.testid] = {'occurrences': []}
+			#	state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 	return incidents
