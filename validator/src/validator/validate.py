@@ -1757,7 +1757,7 @@ def validate_features_level4(node, lang, specs, mwt_typo_span_end):
 							nodeid=node.ord,
 							testid='feature-not-permitted',
 							message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
-						)s)
+						))
 					else:
 						values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
 						if not v in values:
@@ -1788,4 +1788,77 @@ def validate_features_level4(node, lang, specs, mwt_typo_span_end):
 	#if mwt_typo_span_end and int(mwt_typo_span_end) <= int(node.ord):
 	#	state.mwt_typo_span_end = None
 	
+	return incidents
+
+# ! proposal: rename to validate_auxiliaries, since some ar particles as per
+# the docstring below
+def validate_auxiliary_verbs(node, lang, specs):
+	"""
+	Verifies that the UPOS tag AUX is used only with lemmas that are known to
+	act as auxiliary verbs or particles in the given language.
+
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node to be validated.
+	lang : str
+		Code of the main language of the corpus.
+	specs : UDSpecs
+		The object containing specific information about the allowed values
+
+	returns
+	-------
+	incidents : list
+		A list of Incidents (empty if validation is successful).
+	"""
+	incidents = []
+	if node.upos == 'AUX' and node.lemma != '_':
+		altlang = utils.get_alt_language(node)
+		if altlang:
+			lang = altlang
+		auxlist = specs.get_aux_for_language(lang)
+		if not auxlist or not node.lemma in auxlist:
+			incidents.append(Error(
+				nodeid=node.ord,
+				level=5,
+				testclass=TestClass.MORPHO,
+				testid='aux-lemma',
+				message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
+			))
+	return incidents
+
+def validate_copula_lemmas(node, lang, specs):
+	"""
+	Verifies that the relation cop is used only with lemmas that are known to
+	act as copulas in the given language.
+
+	Parameters
+	----------
+	node : udapi.core.node.Node object
+		The node to be validated.
+	lang : str
+		Code of the main language of the corpus.
+	specs : UDSpecs
+		The object containing specific information about the allowed values
+
+	returns
+	-------
+	incidents : list
+		A list of Incidents (empty if validation is successful).
+	"""
+	incidents = []
+	if node.udeprel == 'cop' and node.lemma != '_':
+		altlang = utils.get_alt_language(node)
+		if altlang:
+			lang = altlang
+		coplist = specs.get_cop_for_language(lang)
+		if not coplist or not node.lemma in coplist:
+			incidents.append(Error(
+				nodeid=node.ord,
+				level=5,
+				testclass=TestClass.SYNTAX,
+				testid='cop-lemma',
+				message=f"'{node.lemma}' is not a copula in language [{lang}]",
+			))
 	return incidents
