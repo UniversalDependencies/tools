@@ -72,6 +72,10 @@ class State:
         # Remember all sentence ids seen in all input files (presumably one
         # corpus). We need it to check that each id is unique.
         self.known_sent_ids = set()
+        # Similarly, parallel ids should be unique in a corpus. (If multiple
+        # sentences are equivalents of the same virtual sentence in the
+        # parallel collection, they should be distinguished with 'altN'.)
+        self.known_parallel_ids = set()
         #----------------------------------------------------------------------
         # Various things that we may have seen earlier in the corpus. The value
         # is None if we have not seen it, otherwise it is the line number of
@@ -541,6 +545,8 @@ class CompiledRegexes:
         self.newpar = re.compile(r"#\s*newpar(?:\s+(\S+))?")
         # Sentence id comment line. The actual id is bracketed.
         self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
+        # Parallel sentence id comment line. The actual id as well as its predefined parts are bracketed.
+        self.parallelid = re.compile(r"#\s*parallel_id\s*=\s*(([a-z]+)/([-0-9a-z]+)(?:/(alt[0-9]+|part[0-9]+|alt[0-9]+part[0-9]+))?)")
         # Sentence text comment line. The actual text is bracketed.
         self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
         # Global entity comment is a declaration of entity attributes in MISC.
@@ -1230,6 +1236,49 @@ class Validator:
                     message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
                 ).report()
             state.known_sent_ids.add(sid)
+
+
+
+    def validate_parallel_id(self, state, comments):
+        """
+        The parallel_id sentence-level comment is used after sent_id of
+        sentences that are parallel translations of sentences in other
+        treebanks. Like sent_id, it must be well-formed and unique. Unlike
+        sent_id, it is optional. Sentences that do not have it are not
+        parallel.
+        """
+        Incident.default_level = 2
+        Incident.default_testclass = 'Metadata'
+        Incident.default_lineno = -1 # use the first line after the comments
+        matched = []
+        for c in comments:
+            match = crex.parallelid.fullmatch(c)
+            if match:
+                matched.append(match)
+            else:
+                if c.startswith('# parallel_id') or c.startswith('#parallel_id'):
+                    Incident(
+                        state=state, args=self.args,
+                        testid='invalid-parallel-id',
+                        message=f"Spurious parallel_id line: '{c}' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[0-9]+' and/or 'part[0-9]+' may follow."
+                    ).report()
+        if len(matched) > 1:
+            Incident(
+                state=state, args=self.args,
+                testid='multiple-parallel-id',
+                message='Multiple parallel_id attributes.'
+            ).report()
+        elif matched:
+            # Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
+            # For that to happen, all three files should be tested at once.
+            pid = matched[0].group(1)
+            if pid in state.known_parallel_ids:
+                Incident(
+                    state=state, args=self.args,
+                    testid='non-unique-parallel-id',
+                    message=f"Non-unique parallel_id attribute '{pid}'."
+                ).report()
+            state.known_parallel_ids.add(pid)
 
 
 
@@ -4182,6 +4231,7 @@ class Validator:
                 # structure for us.
                 tree = self.build_tree_udapi(all_lines)
                 self.validate_sent_id(state, comments, self.args.lang) # level 2
+                self.validate_parallel_id(state, comments) # level 2
                 self.validate_text_meta(state, comments, sentence) # level 2
                 # Test that enhanced graphs exist either for all sentences or for
                 # none. As a side effect, get line numbers for all nodes including
