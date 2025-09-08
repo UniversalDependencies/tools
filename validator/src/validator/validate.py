@@ -962,7 +962,6 @@ def check_id_references(sentence):
 	sentence : list
 		A list of lists representing a sentence in tabular format.
 
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	returns
 	-------
 	incidents : list
@@ -1035,7 +1034,6 @@ def check_tree(sentence, node_line, single_root):
 	single_root : bool
 		A flag indicating whether we should check that there is a single root.
 
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	returns
 	-------
 	incidents : list
@@ -1110,7 +1108,6 @@ def check_sent_id(comments, allow_slash, known_sent_ids):
 	known_sent_ids : set
 		The set of previously encountered sentence IDs.
 
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	returns
 	-------
 	incidents : list
@@ -1218,7 +1215,6 @@ def check_text_meta(comments, tree, spaceafterno_in_effect):
 		incidents.append(Error(
 			testclass=TestClass.METADATA,
 			level=2,
-
 			testid='multiple-text',
 			message='Multiple text attributes.'
 		))
@@ -1226,8 +1222,8 @@ def check_text_meta(comments, tree, spaceafterno_in_effect):
 		stext = text_matched[0].group(1)
 		if stext[-1].isspace():
 			incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
+				testclass=TestClass.METADATA,
+				level=2,
 				testid='text-trailing-whitespace',
 				message='The text attribute must not end with whitespace.'
 			))
@@ -1242,13 +1238,13 @@ def check_text_meta(comments, tree, spaceafterno_in_effect):
 			iline += 1
 			if 'NoSpaceAfter=Yes' in cols[utils.MISC]: # I leave this without the split("|") to catch all
 				incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-
+					testclass=TestClass.METADATA,
+					level=2,
 					testid='nospaceafter-yes',
 					message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
 				))
 			if len([x for x in cols[utils.MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
+				#! I don't get this
 				incidents.append(Error(
 					testclass=TestClass.METADATA,
 					level=2,
@@ -1323,6 +1319,7 @@ def check_text_meta(comments, tree, spaceafterno_in_effect):
 				testid='text-extra-chars',
 				message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
 			))
+	return incidents
 
 def check_deprels_level2(node, deprels, lang):
 	"""
@@ -1335,7 +1332,7 @@ def check_deprels_level2(node, deprels, lang):
 	----------
 	node : udapi.core.node.Node object
 		The node whose incoming relation will be validated.
-	deps: TODO
+	deprels: TODO
 	lang: TODO
 	"""
 
@@ -1382,7 +1379,6 @@ def check_deprels_level2(node, deprels, lang):
 	# We already know that the contents of DEPS is parsable (deps_list() was
 	# first called from validate_id_references() and the head indices are OK).
 	# The order of enhanced dependencies was already checked in validate_deps().
-	# Incident.default_testclass = 'Enhanced'
 	if str(node.deps) != '_':
 		# main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
 		# alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
@@ -1425,9 +1421,6 @@ def check_deprels_level4(node, deprels, lang):
 	line : int
 		Number of the line where the node occurs in the file.
 	"""
-	# Incident.default_lineno = line
-	# Incident.default_level = 4
-	# Incident.default_testclass = 'Syntax'
 
 	# List of permited relations is language-specific.
 	# The current token may be in a different language due to code switching.
@@ -1595,7 +1588,7 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 					testclass=TestClass.ENHANCED,
 					nodeid=node.ord,
 					testid='empty-node-after-eorphan',
-					message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
+					message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {seen_enhanced_orphan}"
 				))
 	udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
 	if 'orphan' in udeprels:
@@ -1609,7 +1602,7 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 				testclass=TestClass.ENHANCED,
 				nodeid=node.ord,
 				testid='eorphan-after-empty-node',
-				message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
+				message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {seen_empty_node}"
 			))
 	return incidents
 
@@ -1624,8 +1617,6 @@ def check_words_with_spaces(node, lang, specs):
 	----------
 	node : udapi.core.node.Node object
 		The node to be validated.
-	line : int
-		Number of the line where the node occurs in the file.
 	lang : str
 		Code of the main language of the corpus.
 	specs : UDSpecs
@@ -1670,7 +1661,7 @@ def check_words_with_spaces(node, lang, specs):
 				))
 	return incidents
 
-def validate_features_level4(node, lang, specs, mwt_typo_span_end):
+def check_features_level4(node, lang, specs, mwt_typo_span_end):
 	"""
 	Checks that a feature-value pair is listed as approved. Feature lists are
 	language 'ud'. # ?
@@ -1692,7 +1683,7 @@ def validate_features_level4(node, lang, specs, mwt_typo_span_end):
 	"""
 	incidents = []
 	if str(node.feats) == '_':
-		return True
+		return incidents
 	# List of permitted features is language-specific.
 	# The current token may be in a different language due to code switching.
 	default_lang = lang
@@ -1780,10 +1771,10 @@ def validate_features_level4(node, lang, specs, mwt_typo_span_end):
 	return incidents
 
 # ! proposal: rename to validate_auxiliaries, since some ar particles as per
-# the docstring below
-def validate_auxiliary_verbs(node, lang, specs):
+# ! the docstring below
+def check_auxiliary_verbs(node, lang, specs):
 	"""
-	Verifies that the UPOS tag AUX is used only with lemmas that are known to
+	Checks that the UPOS tag AUX is used only with lemmas that are known to
 	act as auxiliary verbs or particles in the given language.
 
 
@@ -1817,9 +1808,9 @@ def validate_auxiliary_verbs(node, lang, specs):
 			))
 	return incidents
 
-def validate_copula_lemmas(node, lang, specs):
+def check_copula_lemmas(node, lang, specs):
 	"""
-	Verifies that the relation cop is used only with lemmas that are known to
+	Check that the relation cop is used only with lemmas that are known to
 	act as copulas in the given language.
 
 	Parameters
@@ -1853,10 +1844,10 @@ def validate_copula_lemmas(node, lang, specs):
 	return incidents
 
 # ! proposal: remove entirely and put in tree block of the validator, or at
-# least rename to check_universal_guidelines (this function simply groups a
-# few checks together, and the tree section of the engine kinda does the same
-# thing), not to mention that removing this function spares us passing line
-# numbers around
+# ! least rename to check_universal_guidelines (this function simply groups a
+# ! few checks together, and the tree section of the engine kinda does the same
+# ! thing), not to mention that removing this function spares us passing line
+# ! numbers around
 def validate_annotation(tree, linenos):
 	"""
 	Checks universally valid consequences of the annotation guidelines. Looks
@@ -1879,7 +1870,7 @@ def validate_annotation(tree, linenos):
 	nodes = tree.descendants
 	for node in nodes:
 		lineno = linenos[str(node.ord)]
-		incidents.extend(validate_expected_features(node, lineno))
+		incidents.extend(check_expected_features(node, lineno))
 		#incidents.extend(validate_upos_vs_deprel(node, lineno))
 		#incidents.extend(validate_flat_foreign(node, lineno, linenos))
 		#incidents.extend(validate_left_to_right_relations(node, lineno))
@@ -1893,7 +1884,7 @@ def validate_annotation(tree, linenos):
 		#incidents.extend(validate_projective_punctuation(node, lineno))
 	incidents = []
 
-def validate_expected_features(node, seen_morpho_feature, delayed_feature_errors):
+def check_expected_features(node, seen_morpho_feature, delayed_feature_errors):
 	"""
 	Certain features are expected to occur with certain UPOS or certain values
 	of other features. This function issues warnings instead of errors, as
@@ -1907,8 +1898,6 @@ def validate_expected_features(node, seen_morpho_feature, delayed_feature_errors
 	----------
 	node : udapi.core.node.Node object
 		The tree node to be tested.
-	lineno : int
-		The 1-based index of the line where the node occurs.
 	"""
 	incidents = []
 	# TODO:
@@ -1973,3 +1962,5 @@ def validate_required_feature(node, required_feature, required_value, seen_morph
 			#		state.delayed_feature_errors[incident.testid] = {'occurrences': []}
 			#	state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 	return incidents
+
+

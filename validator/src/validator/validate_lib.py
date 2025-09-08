@@ -1346,7 +1346,6 @@ class Validator:
         return ok
 
 
-
     def validate_tree(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
@@ -1438,7 +1437,6 @@ class Validator:
         return True
 
 
-
     def validate_root(self, state, node, line):
         """
         Checks that DEPREL is "root" iff HEAD is 0.
@@ -1486,8 +1484,6 @@ class Validator:
                 ).report(state, self.args)
 
 
-
-
     def OLD_validate_deps_all_or_none(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
@@ -1526,7 +1522,6 @@ class Validator:
                         testid='edeps-only-sometimes',
                         message=f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
                     ).report(state, self.args)
-
 
 
     def validate_egraph_connected(self, state, nodes, linenos):
