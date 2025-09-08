@@ -97,7 +97,7 @@ def validate_file(path, cfg_obj):
 # checks for lines that are not empty, not comments and not tokens
 def check_invalid_lines(block):
 	incidents = []
-	for (_,line) in block:
+	for (_,line) in block: # TODO: refactor as line-level check
 		if line and not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
 			incidents.append(Error(
 				testid='invalid-line',
@@ -234,9 +234,7 @@ def check_unicode_normalization(text):
 		fields (token line), errors reports will specify the field where the
 		error occurred. Otherwise (comment line), the error report will not be
 		localized.
-
-	TODO: update logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
- return docstring
+		TODO: update return docstring
 	"""
 	incidents = []
 	normalized_text = unicodedata.normalize('NFC', text)
@@ -265,6 +263,7 @@ def check_unicode_normalization(text):
 			testmessage = f"Unicode not normalized: {utils.COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
 		else:
 			testmessage = f"Unicode not normalized: character[{firstj}] is {inpfirst}, should be {nfcfirst}."
+		# TODO: what did this do?
 		explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
 		incidents.append(Error(
 			testclass=TestClass.UNICODE,
@@ -286,27 +285,27 @@ def check_mwt_empty_vals(cols):
 		The values of the columns on the current node / token line.
 	"""
 	incidents = []
+	#! fix: is this a dependency?
 	if not utils.is_multiword_token(cols):
 		incidents = [Error(level=0,
 					testclass=TestClass.INTERNAL,
-					testid='internal error')]
+					testid='internal-error')]
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 	# all columns except the first two (ID, FORM) and the last one (MISC)
 	for col_idx in range(utils.LEMMA, utils.MISC):
-
 		# Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
 		if cols[col_idx] != '_' and (col_idx != utils.FEATS or cols[col_idx] not in ['Typo=Yes', '_']):
-			incidents = [Error(level=2,
+			incidents.append(
+    				Error(level=2,
 						testclass=TestClass.FORMAT,
 						testid='mwt-nonempty-field',
 						message=f"A multi-word token line must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-						)]
-			logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-			return incidents
+					)
+			)
 
 	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-	return []
+	return incidents
 
 def check_empty_node_empty_vals(cols):
 	"""
@@ -322,13 +321,14 @@ def check_empty_node_empty_vals(cols):
 	if not utils.is_empty_node(cols):
 		incidents = [Error(level=0,
 					testclass=TestClass.INTERNAL,
-					testid='internal error')]
+					testid='internal-error')]
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 
 	incidents = []
-	for col_idx in (utils.HEAD, utils.DEPREL): # ! isn't it worth it to check also DEPS here?
+	for col_idx in (utils.HEAD, utils.DEPREL):
 		if cols[col_idx]!= '_':
+			# TODO: is this testid ok?
 			incidents.append(
 					Error(
 					level=2,
@@ -355,16 +355,15 @@ def check_character_constraints(cols):
 	incidents = []
 	if utils.is_multiword_token(cols):
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		return []
+		return incidents
 
 	# Do not test the regular expression crex.upos here. We will test UPOS
 	# directly against the list of known tags. That is a level 2 test, too.
 
 	if utils.is_empty_node(cols) and cols[utils.DEPREL] == '_':
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		return []
+		return incidents
 
-	incidents = []
 	if not crex.deprel.fullmatch(cols[utils.DEPREL]):
 		incidents.append(
 			Error(
@@ -417,20 +416,19 @@ def check_upos(cols, specs):
 	#! added checking for mwt?
 	if utils.is_multiword_token(cols) and cols[utils.UPOS] == '_':
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		return []
+		return incidents
 
 	if utils.is_empty_node(cols) and cols[utils.UPOS] == '_':
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		return []
+		return incidents
 
 	# Just in case, we still match UPOS against the regular expression that
 	# checks general character constraints. However, the list of UPOS, loaded
 	# from a JSON file, should conform to the regular expression.
-	incidents = []
 	if not crex.upos.fullmatch(cols[utils.UPOS]) or cols[utils.UPOS] not in specs.upos:
 		incidents.append(
 			Error(
-				  level=2,
+				level=2,
 				testclass=TestClass.MORPHO,
 				testid='unknown-upos',
 				message=f"Unknown UPOS tag: '{cols[utils.UPOS]}'."
@@ -457,7 +455,6 @@ def check_features_level2(cols):
 
 	feats = cols[utils.FEATS]
 	if feats == '_':
-		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 
 	# self.features_present(state) # TODO: do elsewhere
@@ -582,7 +579,7 @@ def check_deps(cols):
 	# ORIGINAL VERSION: heads = [float(h) for h, d in deps]
 
 	# NEW VERSION:
-	#! maybe do this only is [0-9]+.[1-9][0-9]+ is present somewhere?
+	#! maybe do this only if [0-9]+.[1-9][0-9]+ is present somewhere?
 	heads = [h for h, _ in deps]
 	floating_len = []
 	for h in heads:
@@ -640,7 +637,6 @@ def check_deps(cols):
 	except ValueError:
 		# This error has been reported previously.
 		# TODO: check, before there was just a return
-		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 
 	if id_ in heads:
@@ -674,14 +670,10 @@ def check_misc(cols):
 	cols : list
 		The values of the columns on the current node / token line.
 	"""
-	# Incident.default_lineno = line
-	# Incident.default_level = 2
-	# Incident.default_testclass = 'Warning'
 
 	incidents = []
 
 	if cols[utils.MISC] == '_':
-		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 
 	misc = [ma.split('=', 1) for ma in cols[utils.MISC].split('|')] #! why not using a function in utils? Just like the one for features
@@ -712,10 +704,11 @@ def check_misc(cols):
 			re.match(r"\s$", ma[0]) or \
 			re.match(r"^\s", ma[1]) or \
 			re.search(r"\s$", ma[1]):
-			incidents.append(
+			incidents.append(Error(
 				level=2,
 				testid='misc-extra-space',
 				message=f"MISC attribute: leading or trailing extra space in '{'='.join(ma)}'."
+			)
 			)
 
 		if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
@@ -764,9 +757,6 @@ def check_deps_all_or_none(sentence, seen_enhanced_graph):
 	# However, we should not allow that one sentence has a connected egraph and another
 	# has no enhanced dependencies. Such inconsistency could come as a nasty surprise
 	# to the users.
-	# Incident.default_lineno = state.sentence_line
-	# Incident.default_level = 2
-	# Incident.default_testclass = 'Enhanced'
 	if egraph_exists:
 		if not seen_enhanced_graph:
 			# TODO: do elsewhere
@@ -796,6 +786,8 @@ def check_deps_all_or_none(sentence, seen_enhanced_graph):
 				#! we should add something to this message in the engine where we have access to the state:
 				#  on line {state.seen_enhanced_graph}
 
+	return incidents
+
 def check_newlines(inp):
 	"""
 	Checks that the input file consistently uses linux-style newlines (LF only,
@@ -812,8 +804,6 @@ def check_newlines(inp):
 				testid='non-unix-newline',
 				message='Only the unix-style LF line terminator is allowed.'
 			))
-		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		return incidents
 
 	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	return incidents
@@ -834,7 +824,6 @@ def check_token_ranges(sentence):
 	sentence : list
 		A list of lists representing a sentence in tabular format.
 
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	returns
 	-------
 	incidents : list
@@ -1528,7 +1517,7 @@ def check_root(node):
 		The node whose incoming relation will be validated. This function
 		operates on both regular and empty nodes. Make sure to call it for
 		empty nodes, too!
-	
+
 	returns
 	-------
 	incidents : list
@@ -1575,7 +1564,7 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
 	enhanced dependencies; however, we should also test things that are
 	required in the basic dependencies (such as left-to-right coordination),
 	unless it is obvious that in enhanced dependencies such things are legal.
-	
+
 	Parameters
 	----------
 	node : udapi.core.node.Node object
@@ -1641,7 +1630,7 @@ def check_words_with_spaces(node, lang, specs):
 		Code of the main language of the corpus.
 	specs : UDSpecs
 		The object containing specific information about the allowed values
-	
+
 	returns
 	-------
 	incidents : list
@@ -1695,7 +1684,7 @@ def validate_features_level4(node, lang, specs, mwt_typo_span_end):
 	specs : UDSpecs
 		The object containing specific information about the allowed values
 	mwt_typo_span_end : TODO: add type and description
-	
+
 	returns
 	-------
 	incidents : list
@@ -1787,7 +1776,7 @@ def validate_features_level4(node, lang, specs, mwt_typo_span_end):
 	# TODO: (outside of this function)
 	#if mwt_typo_span_end and int(mwt_typo_span_end) <= int(node.ord):
 	#	state.mwt_typo_span_end = None
-	
+
 	return incidents
 
 # ! proposal: rename to validate_auxiliaries, since some ar particles as per
@@ -1863,8 +1852,8 @@ def validate_copula_lemmas(node, lang, specs):
 			))
 	return incidents
 
-# ! proposal: remove entirely and put in tree block of the validator, or at 
-# least rename to check_universal_guidelines (this function simply groups a 
+# ! proposal: remove entirely and put in tree block of the validator, or at
+# least rename to check_universal_guidelines (this function simply groups a
 # few checks together, and the tree section of the engine kinda does the same
 # thing), not to mention that removing this function spares us passing line
 # numbers around
@@ -1873,7 +1862,7 @@ def validate_annotation(tree, linenos):
 	Checks universally valid consequences of the annotation guidelines. Looks
 	at regular nodes and basic tree, not at enhanced graph (which is checked
 	elsewhere).
-	
+
 	Parameters
 	----------
 	tree : udapi.core.root.Root object
@@ -1925,8 +1914,8 @@ def validate_expected_features(node, seen_morpho_feature, delayed_feature_errors
 	# TODO:
 	if node.upos in ['PRON', 'DET']:
 		incidents.extend(validate_required_feature(
-			node, 'PronType', None, 
-			seen_morpho_feature, delayed_feature_errors, 
+			node, 'PronType', None,
+			seen_morpho_feature, delayed_feature_errors,
 			IncidentType.ERROR, TestClass.MORPHO, 'pron-det-without-prontype'
 			))
 	if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
@@ -1941,11 +1930,11 @@ def validate_expected_features(node, seen_morpho_feature, delayed_feature_errors
 		incidents.append(Warning(
 			level=3,
 			# ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
-			testclass=TestClass.MORPHO, 
+			testclass=TestClass.MORPHO,
 			testid='mood-without-verbform-fin',
 			message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
 		))
-	
+
 def validate_required_feature(node, required_feature, required_value, seen_morpho_feature, delayed_feature_errors, incident_type, testclass, testid):
 	"""
 	In general, the annotation of morphological features is optional, although
@@ -1954,7 +1943,7 @@ def validate_required_feature(node, required_feature, required_value, seen_morph
 	and if it is missing, an error will be reported only if at least one feature
 	has been already encountered. Otherwise the error will be remembered and it
 	may be reported afterwards if any feature is encountered later.
-	
+
 	Parameters
 	----------
 	node : TODO: update

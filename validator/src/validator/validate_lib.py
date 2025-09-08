@@ -871,7 +871,6 @@ class Validator:
 # Level 2 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
 
-    #! rewritten
     def OLD_validate_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
