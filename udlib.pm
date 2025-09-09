@@ -1059,8 +1059,35 @@ sub check_files_data
     my $metadata = read_readme($folder, '..');
     if(defined($metadata) && $metadata->{Lemmas} eq 'not available' && $stats->{nlemma} > 0)
     {
+        $ok = 0;
         push(@{$errors}, "[L0 Repo metadata] $folder: README says lemmas not available but there are $stats->{nlemma} non-empty lemmas in the data\n");
         $$n_errors++;
+    }
+    # If metadata say Parallel: xxx, there should be at least one sentence with
+    # parallel_id = xxx/... Conversely, any corpus mentioned in parallel_ids
+    # should also be listed in metadata.
+    if(defined($metadata) && $metadata->{Parallel} ne '' && $metadata->{Parallel} ne 'no')
+    {
+        my @pcorp_readme = split(/\s+/, $metadata->{Parallel});
+        my @pcorp_data = keys(%{$stats->{nparallel}});
+        foreach my $pc (@pcorp_data)
+        {
+            if($stats->{nparallel}{$pc} > 0 && !grep {$_ eq $pc} (@pcorp_readme))
+            {
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo metadata] $folder: README does not indicate the treebank is part of '$pc' parallel corpus but there are $stats->{nparallel}{$pc} sentences with parallel_id referring to '$pc'.\n");
+                $$n_errors++;
+            }
+        }
+        foreach my $pc (@pcorp_readme)
+        {
+            if(!exists($stats->{nparallel}{$pc}) || $stats->{nparallel}{$pc} == 0)
+            {
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo metadata] $folder: README says the treebank is part of '$pc' parallel corpus but there are no sentences with corresponding parallel_id.\n");
+                $$n_errors++;
+            }
+        }
     }
     return $ok;
 }
@@ -1604,7 +1631,9 @@ sub collect_statistics_about_ud_treebank
         'nfus'   => 0,
         'nword'  => 0,
         'nabstr' => 0,
-        'nlemma' => 0
+        'nlemma' => 0,
+        # parallel sentences grouped by parallel corpora
+        'nparallel' => {}
     };
     foreach my $file (@files)
     {
@@ -1627,9 +1656,16 @@ sub collect_statistics_about_ud_file
     my $nword = 0;
     my $nabstr = 0;
     my $nlemma = 0;
+    my $nparallel = {};
     open(CONLLU, $file_path) or confess("Cannot read file $file_path: $!");
     while(<CONLLU>)
     {
+        # One comment line is interesting for the info we collect: parallel_id.
+        if(m/^\#\s*parallel_id\s*=\s*([a-z]+)/)
+        {
+            my $pid = $1;
+            $nparallel->{$pid}++;
+        }
         # Skip comment lines.
         next if(m/^\#/);
         # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
@@ -1674,7 +1710,8 @@ sub collect_statistics_about_ud_file
         'nfus'   => $nfus,
         'nword'  => $nword,
         'nabstr' => $nabstr,
-        'nlemma' => $nlemma
+        'nlemma' => $nlemma,
+        'nparallel' => $nparallel
     };
     return $stats;
 }
@@ -1694,6 +1731,10 @@ sub add_statistics
     foreach my $key (qw(nsent ntok nfus nword nabstr nlemma))
     {
         $tgt->{$key} += $src->{$key};
+    }
+    foreach my $key (keys(%{$src->{nparallel}}))
+    {
+        $tgt->{nparallel}{$key} += $src->{nparallel}{$key};
     }
     return $tgt;
 }
