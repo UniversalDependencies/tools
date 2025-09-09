@@ -13,6 +13,7 @@ use udlib;
 my @folders = udlib::list_ud_folders(); # in the current folder
 foreach my $folder (@folders)
 {
+    print("$folder\n");
     # Get the most recent revision of the folder.
     chdir($folder) or die("Cannot change to folder '$folder': $!");
     system('git pull --no-edit');
@@ -22,6 +23,7 @@ foreach my $folder (@folders)
     {
         # No Parallel metadata found. Insert the default, Parallel: no.
         my $filename = (-f "$folder/README.txt") ? "$folder/README.txt" : "$folder/README.md";
+        print(" ----------------------> going to add Parallel to $filename\n");
         my $contents;
         open(my $in, $filename) or die("Cannot read '$filename': $!");
         while(<$in>)
@@ -41,4 +43,9 @@ foreach my $folder (@folders)
         system("git commit -a -m 'Added Parallel to README.' ; git push");
         chdir('..');
     }
+    else
+    {
+        print("README already contains Parallel: $metadata->{Parallel}\n");
+    }
+    print("\n");
 }
