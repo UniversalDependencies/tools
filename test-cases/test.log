@@ -48,7 +48,7 @@ Morpho errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\empty-field.conllu 
-[Line 4 Sent empty-field]: [L1 Format empty-column] Empty value in column FORM.
+[Line 4 Sent empty-field]: [L1 Format empty-column] Empty value in column FORM: ''.
 [Line 4 Sent empty-field]: [L2 Metadata missing-text] Missing the text attribute.
 Format errors: 1
 Metadata errors: 1
@@ -56,7 +56,7 @@ Metadata errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\empty-head.conllu 
-[Line 4 Sent empty-head]: [L1 Format empty-column] Empty value in column HEAD.
+[Line 4 Sent empty-head]: [L1 Format empty-column] Empty value in column HEAD: ''.
 [Line 5 Sent empty-head]: [L2 Format invalid-head] Invalid HEAD: ''.
 [Line 5 Sent empty-head]: [L2 Syntax unknown-head] Undefined HEAD (no such ID): ''.
 Format errors: 2
@@ -383,13 +383,24 @@ Syntax errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\rel-upos.conllu 
+[Line 8 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning verbform-fin-without-mood] Finite verb 'loste' lacks the 'Mood' feature
 [Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning fixed-without-extpos] Fixed expression '5 2/3' does not have the 'ExtPos' feature
 [Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Syntax rel-upos-det] 'det' should be 'DET' or 'PRON' but it is 'NUM' ('5')
+[Line 14 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning pron-det-without-prontype] The word '2/3' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 42 Sent CP891-2]: [L3 Syntax rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('X')
 [Line 52 Sent CP891-2]: [L3 Syntax rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('VIII')
 [Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning fixed-without-extpos] Fixed expression 'Fir des' does not have the 'ExtPos' feature
 [Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Syntax rel-upos-advmod] 'advmod' should be 'ADV' but it is 'ADP' ('Fir')
+[Line 64 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning pron-det-without-prontype] The word 'des' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 66 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning pron-det-without-prontype] The word ''a' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 72 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning pron-det-without-prontype] The word ''a' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 84 Sent 646]: [L3 Warning verbform-fin-without-mood] Finite verb 'liket' lacks the 'Mood' feature
 [Line 85 Sent 646]: [L3 Syntax rel-upos-expl] 'expl' should normally be 'PRON' but it is 'ADV' ('der')
+[Line 93 Sent 646]: [L3 Warning pron-det-without-prontype] The word 'guon' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 98 Sent 646]: [L3 Warning verbform-fin-without-mood] Finite verb 'hawwe' lacks the 'Mood' feature
+[Line 98 Sent 646 Node 16]: [L3 Syntax too-many-objects] Multiple direct objects [12, 13] ('skaaimerken', 'ien') under one predicate.
+[Line 102 Sent 646]: [L3 Warning pron-det-without-prontype] The word 'de' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 110 Sent rel-upos-aux]: [L3 Warning pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 111 Sent rel-upos-aux]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'VERB' ('have')
 [Line 139 Sent 003966]: [L3 Syntax rel-upos-cop] 'cop' should be 'AUX' or 'PRON'/'DET' but it is 'VERB' ('vere')
 [Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 Warning fixed-without-extpos] Fixed expression 'Tot i' does not have the 'ExtPos' feature
@@ -405,9 +416,12 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
 [Line 246 Sent 14356]: [L3 Warning fixed-without-extpos] Fixed expression 'mag-Laos SEA Games' does not have the 'ExtPos' feature
 [Line 247 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('SEA').
 [Line 248 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('Games').
-Syntax errors: 14
-Warnings: 8
-*** FAILED *** with 14 errors
+[Line 253 Sent 14356]: [L3 Warning pron-det-without-prontype] The word 'ang' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 266 Sent 14356]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('pinakinggan')
+...suppressing further errors regarding Warning
+Syntax errors: 15
+Warnings: 21
+*** FAILED *** with 15 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\right-to-left.conllu 
@@ -416,12 +430,17 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
 [Line 13 Sent 13147 Node 7]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
 [Line 30 Sent ASCA.YEAR0738.001.002 Node 5]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
 [Line 31 Sent ASCA.YEAR0738.001.002 Node 6]: [L3 Syntax right-to-left-appos] Parent of relation 'appos' must precede the child in the word order.
+[Line 42 Sent P334676]: [L3 Warning pron-det-without-prontype] The word 'ša' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 47 Sent P334676]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('šupur')
 [Line 48 Sent P334676 Node 10]: [L3 Syntax right-to-left-fixed] Parent of relation 'fixed' must precede the child in the word order.
+[Line 49 Sent P334676]: [L3 Warning pron-det-without-prontype] The word 'b\u0113t' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 49 Sent P334676]: [L3 Warning fixed-without-extpos] Fixed expression 'b\u0113t ina' does not have the 'ExtPos' feature
+[Line 51 Sent P334676]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('ihri\u1e6d\u016bni')
+[Line 55 Sent P334676]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('luka\u1e6d\u1e6diru')
 [Line 65 Sent goeswith Node 1]: [L3 Syntax right-to-left-goeswith] Parent of relation 'goeswith' must precede the child in the word order.
-[Line 66 Sent goeswith Node 2]: [L3 Syntax goeswith-gap] Gaps in goeswith group [Node<goeswith#1, with>, Node<goeswith#2, in>] != [].
+[Line 66 Sent goeswith Node 2]: [L3 Syntax goeswith-gap] Gaps in goeswith group [1, 2] != [].
 Syntax errors: 8
-Warnings: 1
+Warnings: 6
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
@@ -437,7 +456,7 @@ Syntax errors: 1
 LEVEL 4-5 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
-[Line 9 Sent n01001011 Node 1]: [L4 Morpho feature-unknown] Feature NonExistent is not documented for language [cs].
+[Line 9 Sent n01001011 Node 1]: [L4 Morpho feature-unknown] Feature NonExistent is not documented for language [cs] ('„').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -448,8 +467,8 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 10 Sent n01001011 Node 2]: [L4 Morpho feature-value-unknown] Value Ine is not documented for feature Case in language [cs].
-[Line 12 Sent n01001011 Node 4]: [L4 Morpho feature-upos-not-permitted] Feature PronType is not permitted with UPOS NOUN in language [cs].
+[Line 10 Sent n01001011 Node 2]: [L4 Morpho feature-value-unknown] Value Ine is not documented for feature Case in language [cs] ('V').
+[Line 12 Sent n01001011 Node 4]: [L4 Morpho feature-upos-not-permitted] Feature PronType is not permitted with UPOS NOUN in language [cs] ('procesu').
 Morpho errors: 3
 *** FAILED *** with 3 errors
  
@@ -469,6 +488,8 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\maximal-empty-node.conllu 
+[Line 4 Sent maximal-empty-node]: [L3 Warning pron-det-without-prontype] The word 'This' is tagged 'PRON' but it lacks the 'PronType' feature
+Warnings: 1
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -481,6 +502,9 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\te
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\tanl.conllu 
+[Line 12 Sent tanl2]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 19 Sent tanl3]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+Warnings: 2
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 

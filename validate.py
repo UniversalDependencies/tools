@@ -947,61 +947,56 @@ class Validator:
         Incident.default_testclass = 'Format'
         Incident.default_lineno = None # use the most recently read line
         # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
-        for col_idx in range(COLCOUNT):
-            # Must never be empty
-            if not cols[col_idx]:
-                Incident(
-                    state=state, args=self.args,
-                    testid='empty-column',
-                    message=f'Empty value in column {COLNAMES[col_idx]}.'
-                ).report()
-            else:
-                # Must never have leading/trailing whitespace
-                if cols[col_idx][0].isspace():
-                    Incident(
-                        state=state, args=self.args,
-                        testid='leading-whitespace',
-                        message=f'Leading whitespace not allowed in column {COLNAMES[col_idx]}.'
-                    ).report()
-                if cols[col_idx][-1].isspace():
-                    Incident(
-                        state=state, args=self.args,
-                        testid='trailing-whitespace',
-                        message=f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
-                    ).report()
-                # Must never contain two consecutive whitespace characters
-                if crex.ws2.search(cols[col_idx]):
-                    Incident(
-                        state=state, args=self.args,
-                        testid='repeated-whitespace',
-                        message=f'Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}.'
-                    ).report()
         # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
         # If it contains a space, it does not make sense to treat it as a MWT.
-        if is_multiword_token(cols):
-            for col_idx in (FORM, LEMMA):
-                if col_idx >= len(cols):
-                    break # this has been already reported in next_sentence()
-                if crex.ws.search(cols[col_idx]):
-                    Incident(
-                        state=state, args=self.args,
-                        testid='invalid-whitespace-mwt',
-                        message=f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
-                    ).report()
-        # These columns must not have whitespace.
-        for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
+        ismwt = is_multiword_token(cols)
+        for col_idx in range(COLCOUNT):
             if col_idx >= len(cols):
                 break # this has been already reported in next_sentence()
-            if crex.ws.search(cols[col_idx]):
+            if ismwt and col_idx in (FORM, LEMMA) and crex.ws.search(cols[col_idx]):
+                Incident(
+                    state=state, args=self.args,
+                    testid='invalid-whitespace-mwt',
+                    message=f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not a single surface token."
+                ).report()
+            # These columns must not have whitespace.
+            elif col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS) and crex.ws.search(cols[col_idx]):
                 Incident(
                     state=state, args=self.args,
                     testid='invalid-whitespace',
                     message=f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
                 ).report()
-        # We should also check the ID format (e.g., '1' is good, '01' is wrong).
-        # Although it is checking just a single column, we will do it in
-        # validate_id_sequence() because that function has the power to block
-        # further tests, which could choke up on this.
+            # Only perform the following tests if we have not found and reported a space above.
+            else:
+                # Must never be empty
+                if not cols[col_idx]:
+                    Incident(
+                        state=state, args=self.args,
+                        testid='empty-column',
+                        message=f"Empty value in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
+                    ).report()
+                else:
+                    # Must never have leading/trailing/repeated whitespace.
+                    # This will be only reported for columns that allow whitespace in general.
+                    if cols[col_idx][0].isspace():
+                        Incident(
+                            state=state, args=self.args,
+                            testid='leading-whitespace',
+                            message=f"Leading whitespace not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
+                        ).report()
+                    if cols[col_idx][-1].isspace():
+                        Incident(
+                            state=state, args=self.args,
+                            testid='trailing-whitespace',
+                            message=f"Trailing whitespace not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
+                        ).report()
+                    # Must never contain two consecutive whitespace characters
+                    if crex.ws2.search(cols[col_idx]):
+                        Incident(
+                            state=state, args=self.args,
+                            testid='repeated-whitespace',
+                            message=f"Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
+                        ).report()
 
 
 
@@ -4221,7 +4216,7 @@ class Validator:
                     if is_word(cols) or is_empty_node(cols):
                         self.validate_character_constraints(state, cols, line) # level 2
                         self.validate_upos(state, cols, line) # level 2
-                        colssafe = colssafe and self.validate_features_level2(state, cols, line) # level 2 (level 4 tests will be called later)
+                        colssafe = self.validate_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
                     self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                     self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
