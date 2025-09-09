@@ -5,7 +5,7 @@ import unicodedata
 import logging
 import inspect
 
-from typing import List
+from typing import List, Tuple
 
 from validator.incident import Incident, Error, Warning, TestClass, IncidentType
 import validator.utils as utils
@@ -55,20 +55,27 @@ def run_checks(checks, parameters, incidents, state):
 
 def validate_file(path, cfg_obj):
 
-	# print(cfg_obj)
-	# input()
 	state = State(current_file_name=os.path.basename(path))
 	incidents = []
+
 	# newline='' necessary because otherwise non-unix newlines are
 	# automagically converted to \n, see
 	# https://docs.python.org/3/library/functions.html#open
 	with open(path, newline='') as fin:
 
-		logger.info("opening file %s", path)
+		logger.info("Opening file %s", path)
+
 		block = []
+
 		for block in utils.next_block(fin):
 
 			state.current_line = block[0][0]
+			comments = [(counter,line) for (counter,line) in block if line and line[0] == "#"]
+			tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
+			for (counter, line) in comments:
+				match = crex.sentid.fullmatch(line)
+				if match:
+					state.sentence_id = match.group(1)
 
 			if cfg_obj['block']:
 				run_checks(cfg_obj['block'], block, incidents, state)
@@ -77,13 +84,10 @@ def validate_file(path, cfg_obj):
 
 			if cfg_obj['line']:
 				for (counter,line) in block:
-					current_incidents = []
-					state.current_line = counter # TODO: +1 when printing
+					state.current_line = counter
 					run_checks(cfg_obj['line'], line, incidents, state)
 
 
-		# 	comments = [(counter,line) for (counter,line) in block if line[0] == "#"]
-		# 	tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
 		# 	for (counter,line) in tokens:
 		# 		state.current_line = counter
 		# 		run_checks(cfg_obj['token_lines'], line, incidents, state)
@@ -209,14 +213,14 @@ def check_columns_format(line:str) -> List[Incident]:
 				incidents.append(Error(
 					testclass=TestClass.FORMAT,
 					testid='leading-whitespace',
-					message=f'Leading whitespace not allowed in column {utils.COLNAMES[col_idx]}.'
+					message=f"Leading whitespace not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
 				))
 
 			if cols[col_idx][-1].isspace():
 				incidents.append(Error(
 					testclass=TestClass.FORMAT,
 					testid='trailing-whitespace',
-					message=f'Trailing whitespace not allowed in column {utils.COLNAMES[col_idx]}.'
+					message=f"Trailing whitespace not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
 				))
 				logger.debug("Found 'trailing-whitespace' error for line: '%s'.", line)
 
@@ -263,9 +267,31 @@ def check_columns_format(line:str) -> List[Incident]:
 
 	return incidents
 
-# TODO: docstring + check that test case for this exists
-def check_misplaced_comment(block):
+#* DONE
+def check_misplaced_comment(block: List[str]) -> List[Incident]:
+	'''check_misplaced_comment checks that comments (i.e., lines starting with '#') always precede
+    tokens (i.e., lines starting with digits)
+
+	Parameters
+	----------
+	block : List[str]
+		The input lines to be tested.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	misplaced-comment
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/misplaced-comment.conllu
+	'''
 	incidents = []
+
 	if len(block) > 1:
 		max_comment = len(block)
 		min_token = -1
@@ -278,13 +304,15 @@ def check_misplaced_comment(block):
 						min_token = counter
 
 		if max_comment >= min_token:
-			logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-			incidents.append(Error(
+			error = Error(
 				testclass=TestClass.FORMAT,
 				testid='misplaced-comment',
-				message='Spurious comment line. Comments are only allo  wed before a sentence.'
-				))
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+				message='Spurious comment line. Comments are only allowed before a sentence.'
+			)
+			error.lineno =+ max_comment
+			incidents.append(error)
+			logger.debug("Found 'misplaced-comment' in block starting with line: '%s'.", block[0][1])
+
 	return incidents
 
 # TODO: docstring + check that test case for this exists
