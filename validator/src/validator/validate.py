@@ -26,16 +26,19 @@ def validate(paths, cfg_obj):
 
 
 def run_checks(checks, parameters, incidents, state):
-	# print(checks)
-	# input()
+	# print(parameters)
+	current_incidents = []
+
 	for check in checks:
+		# print(check, current_incidents)
+		# input()
 		dependencies = []
 		if 'depends_on' in check:
 			dependencies = check['depends_on']
 		fun = globals()[check]
 		# TODO: fix behavior
-		if all(err.testid not in dependencies for err in incidents):
-			incidents.extend([err.set_state(state) for err in fun(parameters)])
+		if all(err.testid not in dependencies for err in current_incidents):
+			current_incidents.extend([err.set_state(state) for err in fun(parameters)])
 		else:
 			incidents.append(
 				Warning(
@@ -45,54 +48,60 @@ def run_checks(checks, parameters, incidents, state):
 					message=f"Check {check} not performed because of previous failures"
 				)
 			)
+	# print(current_incidents)
+	incidents.extend(current_incidents)
+	# print(incidents)
 
 
 def validate_file(path, cfg_obj):
+
+	# print(cfg_obj)
+	# input()
 	state = State(current_file_name=os.path.basename(path))
 	incidents = []
 	# newline='' necessary because otherwise non-unix newlines are
 	# automagically converted to \n, see
 	# https://docs.python.org/3/library/functions.html#open
 	with open(path, newline='') as fin:
+
 		logger.info("opening file %s", path)
 		block = []
 		for block in utils.next_block(fin):
+
 			state.current_line = block[0][0]
 
-			run_checks(cfg_obj['block'], block, incidents, state)
+			if cfg_obj['block']:
+				run_checks(cfg_obj['block'], block, incidents, state)
 
 			block = [(counter,line) for (counter,line) in block if line]
 
-			for (counter,line) in block:
-				state.current_line = counter # TODO: +1 when printing
-				run_checks(cfg_obj['line'], line, incidents, state)
-				# incidents.extend([err.set_state(state) for err in check_unicode_normalization(line)])
-				# incidents.extend([err.set_state(state) for err in check_pseudo_empty_line(line)])
-
-			# incidents.extend([err.set_state(state) for err in check_misplaced_comment(block)])
-			# incidents.extend([err.set_state(state) for err in check_invalid_lines(block)])
-
-			comments = [(counter,line) for (counter,line) in block if line[0] == "#"]
-			tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
-			for (counter,line) in tokens:
-				state.current_line = counter
-				run_checks(cfg_obj['token_lines'], line, incidents, state)
-				# incidents.extend([err.set_state(state) for err in check_columns_format(line)])
-				# run_checks(cfg_obj['token_lines'], line, incidents, state)
-
-			tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
-			# for (counter,line) in tokens:
-				# state.current_line = counter
-				# run_checks(cfg_obj['cols'], line, incidents, state)
+			if cfg_obj['line']:
+				for (counter,line) in block:
+					current_incidents = []
+					state.current_line = counter # TODO: +1 when printing
+					run_checks(cfg_obj['line'], line, incidents, state)
 
 
-		if len(block) == 1 and not block[0][1]:
-			incidents.append(Error(
-				testid='missing-empty-line',
-				message='Missing empty line after the last sentence.'
-				))
+		# 	comments = [(counter,line) for (counter,line) in block if line[0] == "#"]
+		# 	tokens = [(counter,line) for (counter,line) in block if line[0].isdigit()]
+		# 	for (counter,line) in tokens:
+		# 		state.current_line = counter
+		# 		run_checks(cfg_obj['token_lines'], line, incidents, state)
 
-		run_checks(cfg_obj['file'], fin, incidents, state)
+		# 	tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
+		# 	# for (counter,line) in tokens:
+		# 		# state.current_line = counter
+		# 		# run_checks(cfg_obj['cols'], line, incidents, state)
+
+
+		# if len(block) == 1 and not block[0][1]:
+		# 	incidents.append(Error(
+		# 		testid='missing-empty-line',
+		# 		message='Missing empty line after the last sentence.'
+		# 		))
+
+		# run_checks(cfg_obj['file'], fin, incidents, state)
+
 	return incidents
 
 #* DONE
@@ -380,7 +389,7 @@ def check_mwt_empty_vals(cols):
 		# Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
 		if cols[col_idx] != '_' and (col_idx != utils.FEATS or cols[col_idx] not in ['Typo=Yes', '_']):
 			incidents.append(
-    				Error(level=2,
+					Error(level=2,
 						testclass=TestClass.FORMAT,
 						testid='mwt-nonempty-field',
 						message=f"A multi-word token line must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
