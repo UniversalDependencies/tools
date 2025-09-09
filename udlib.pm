@@ -302,6 +302,7 @@ sub get_ud_files_and_codes
 #Data available since: UD v1.0
 #License: CC BY-NC-SA 3.0
 #Includes text: yes
+#Parallel: no
 #Genre: news
 #Lemmas: converted from manual
 #UPOS: converted from manual
@@ -323,7 +324,7 @@ sub read_readme
     binmode(README, ':utf8');
     my %metadata;
     my @attributes = ('Data available since', 'License', 'Genre', 'Contributors',
-        'Includes text', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact');
+        'Includes text', 'Parallel', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact');
     my $attributes_re = join('|', @attributes);
     my $current_section_heading = '';
     my $current_section_text = '';
