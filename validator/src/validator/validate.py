@@ -5,7 +5,9 @@ import unicodedata
 import logging
 import inspect
 
-from validator.incident import Error, Warning, TestClass, IncidentType
+from typing import List
+
+from validator.incident import Incident, Error, Warning, TestClass, IncidentType
 import validator.utils as utils
 import validator.compiled_regex as crex
 from validator.validate_lib import State
@@ -93,82 +95,163 @@ def validate_file(path, cfg_obj):
 		run_checks(cfg_obj['file'], fin, incidents, state)
 	return incidents
 
-# TODO: docstring + check that test case for this exists
-# checks for lines that are not empty, not comments and not tokens
-def check_invalid_lines(block):
+#* DONE
+def check_invalid_lines(line:str) -> List[Incident]:
+	'''
+	check_invalid_lines checks for lines that are not empty, not comments and not tokens.
+
+	Empty lines are checked against the utils.is_whitespace() function.
+	Tokens are identified by the first character of the line being a digit.
+	Comments are identified by the first character of the line being a '#'.
+
+	Parameters
+	----------
+	line : str
+		The input line to be tested.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	invalid-line
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/invalid-lines.conllu
+	'''
+
 	incidents = []
-	for (_,line) in block: # TODO: refactor as line-level check
-		if line and not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
-			incidents.append(Error(
-				testid='invalid-line',
-				message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
-			))
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+	if line and not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
+		incidents.append(Error(
+			testid='invalid-line',
+			message=(f"Spurious line: '{line}'. "
+					"All non-empty lines should start with a digit or the # character. "
+					"The line will be excluded from further tests.")
+		))
+		logger.debug("Found 'invalid-line' error for line: '%s'", line)
 	return incidents
 
-# TODO: docstring + check that test case for this exists
-def check_columns_format(text):
+#* DONE
+def check_columns_format(line:str) -> List[Incident]:
+	'''check_columns_format checks that the line is made up by the right number of columns.
+	Moreover, it checks that no column is empty, no leader or trailing spaces are present
+	and that no whitespace is present in fields, except if for FORM and LEMMA if the token
+	is not a multiword. In case of multiword, whitespaces are not allowed in any field.
+
+	Parameters
+	----------
+	line : str
+		The input line to be tested.
+		Tests are only performed if the line is a token (i.e., line starts with a digit)
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	number-of-columns, empty-column, leading-whitespace, trailing-whitespace,
+	repeated-whitespace, invalid-whitespace-mwt, invalid-whitespace
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/columns-format.conllu
+
+	Depends-on
+	----------
+	To be run only if no
+	- 'invalid-line'
+	errors are found on the same line.
+	'''
+
 	incidents = []
-	cols = text.split("\t")
+
+	# the function is only defined on potential tokens
+	if not line[0].isdigit():
+		return incidents
+
+	cols = line.split("\t")
 	if not len(cols) == utils.COLCOUNT:
 		incidents.append(Error(
 			testid='number-of-columns',
-			message=f'The line has {len(cols)} columns but {utils.COLCOUNT} are expected. The line will be excluded from further tests.'
+			message=(f"The line has {len(cols)} columns but {utils.COLCOUNT} are expected. "
+					"The line will be excluded from further tests.")
 		))
-	else:
-		for col_idx in range(utils.COLCOUNT):
-			# Must never be empty
-			if not cols[col_idx]:
+		logger.debug("Found 'number-of-columns' error for line: '%s'. EXIT", line)
+		return incidents
+
+	for col_idx in range(utils.COLCOUNT):
+
+		# Must never be empty
+		if not cols[col_idx]:
+			incidents.append(Error(
+				testid='empty-column',
+				message=f'Empty value in column {utils.COLNAMES[col_idx]}.'
+			))
+			logger.debug("Found 'empty-columns' error for line: '%s'.", line)
+		else:
+
+			# Must never have leading/trailing whitespace
+			if cols[col_idx][0].isspace():
 				incidents.append(Error(
-					testid='empty-column',
-					message=f'Empty value in column {utils.COLNAMES[col_idx]}.'
+					testclass=TestClass.FORMAT,
+					testid='leading-whitespace',
+					message=f'Leading whitespace not allowed in column {utils.COLNAMES[col_idx]}.'
 				))
-			else:
-				# Must never have leading/trailing whitespace
-				# ! what if a column only contains a whitespace character?
-				if cols[col_idx][0].isspace():
-					incidents.append(Error(
-						testclass=TestClass.FORMAT,
-						testid='leading-whitespace',
-						message=f'Leading whitespace not allowed in column {utils.COLNAMES[col_idx]}.'
-					))
-				if cols[col_idx][-1].isspace():
-					incidents.append(Error(
-						testclass=TestClass.FORMAT,
-						testid='trailing-whitespace',
-						message=f'Trailing whitespace not allowed in column {utils.COLNAMES[col_idx]}.'
-					))
-				# Must never contain two consecutive whitespace characters
-				if crex.ws2.search(cols[col_idx]):
-					incidents.append(Error(
-						testclass=TestClass.FORMAT,
-						testid='repeated-whitespace',
-						message=f'Two or more consecutive whitespace characters not allowed in column {utils.COLNAMES[col_idx]}.'
-					))
-		# Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
-		# If it contains a space, it does not make sense to treat it as a MWT.
-		if utils.is_multiword_token(cols):
-			for col_idx in (utils.FORM, utils.LEMMA):
-				if crex.ws.search(cols[col_idx]):
-					incidents.append(Error(
-						testclass=TestClass.FORMAT,
-						testid='invalid-whitespace-mwt',
-						message=f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not one surface token."
-					))
-		# These columns must not have whitespace.
-		for col_idx in (utils.ID, utils.UPOS, utils.XPOS, utils.FEATS, utils.HEAD, utils.DEPREL, utils.DEPS):
+
+			if cols[col_idx][-1].isspace():
+				incidents.append(Error(
+					testclass=TestClass.FORMAT,
+					testid='trailing-whitespace',
+					message=f'Trailing whitespace not allowed in column {utils.COLNAMES[col_idx]}.'
+				))
+				logger.debug("Found 'trailing-whitespace' error for line: '%s'.", line)
+
+			# Must never contain two consecutive whitespace characters
+			if crex.ws2.search(cols[col_idx]):
+				incidents.append(Error(
+					testclass=TestClass.FORMAT,
+					testid='repeated-whitespace',
+					message=("Two or more consecutive whitespace characters not allowed "
+							f"in column {utils.COLNAMES[col_idx]}.")
+				))
+				logger.debug("Found 'repeated-whitespace' error for line: '%s'.", line)
+
+	# Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
+	# If it contains a space, it does not make sense to treat it as a MWT.
+	if utils.is_multiword_token(cols):
+		for col_idx in (utils.FORM, utils.LEMMA):
 			if crex.ws.search(cols[col_idx]):
 				incidents.append(Error(
 					testclass=TestClass.FORMAT,
-					testid='invalid-whitespace',
-					message=f"White space not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
-				))
-		# We should also check the ID format (e.g., '1' is good, '01' is wrong).
-		# Although it is checking just a single column, we will do it in
-		# validate_id_sequence() because that function has the power to block
-		# further tests, which could choke up on this.
-		# ! so?
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+					testid='invalid-whitespace-mwt',
+					message=(f"White space not allowed in multi-word token '{cols[col_idx]}'. "
+							"If it contains a space, it is not one surface token.")
+					))
+				logger.debug("Found 'invalid-whitespace-mwt' error for line: '%s'.", line)
+
+	# These columns must not have whitespace.
+	for col_idx in (utils.ID, utils.UPOS, utils.XPOS, utils.FEATS, utils.HEAD, utils.DEPREL, utils.DEPS):
+		# if crex.ws.search(cols[col_idx]):
+		if crex.ws.search(cols[col_idx].strip()):
+			incidents.append(Error(
+				testclass=TestClass.FORMAT,
+				testid='invalid-whitespace',
+				message=f"White space not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
+			))
+			logger.debug("Found 'invalid-whitespace' error for line: '%s'.", line)
+
+	# ! Comment from previous validator
+	# ?: get rid of this comment
+	# We should also check the ID format (e.g., '1' is good, '01' is wrong).
+	# Although it is checking just a single column, we will do it in
+	# validate_id_sequence() because that function has the power to block
+	# further tests, which could choke up on this.
+
 	return incidents
 
 # TODO: docstring + check that test case for this exists
