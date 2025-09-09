@@ -56,7 +56,8 @@ class Incident:
         #self.nodeid = self.state.nodeid
 
     def __repr__(self):
-        return self.testid
+        out_str = f"[Line {self.lineno} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
+        return out_str
 
     # TODO: overwrite __str__ or __repr__
     # def report(self, state, args):
@@ -93,7 +94,8 @@ class Error(Incident):
         return IncidentType.ERROR
 
     def __repr__(self):
-        return "ERROR: {}".format(self.testid)
+        out_str = f"[Line {self.lineno+1} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
+        return out_str
 
 @dataclass
 class Warning(Incident):
@@ -101,4 +103,5 @@ class Warning(Incident):
         return IncidentType.WARNING
 
     def __repr__(self):
-        return "WARNING: {}".format(self.testid)
+        out_str = f"[Line {self.lineno+1} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
+        return out_str
