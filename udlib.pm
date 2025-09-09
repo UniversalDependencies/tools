@@ -1374,6 +1374,32 @@ sub check_metadata
         push(@{$errors}, "[L0 Repo readme-first-release] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
         $$n_errors++;
     }
+    if($metadata->{Parallel} !~ m/\w/)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Missing info whether the treebank is parallel.\n");
+        $$n_errors++;
+    }
+    else
+    {
+        my @parallel = split(/\s+/, $metadata->{Parallel});
+        my $n = scalar(@parallel);
+        my $no = scalar(grep {$_ eq 'no'} (@parallel));
+        if($no && $n > 1)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Parallel: no cannot be combined with other values: '$metadata->{Parallel}'\n");
+            $$n_errors++;
+        }
+        my @unknown_parallel = grep {!m/^(cairo|tuecl|lines|set)$/} (@parallel);
+        if(scalar(@unknown_parallel) > 0)
+        {
+            $ok = 0;
+            my $up = join(' ', sort(@unknown_parallel));
+            push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Unknown parallel treebank: '$up'\n");
+            $$n_errors++;
+        }
+    }
     if($metadata->{Genre} !~ m/\w/)
     {
         $ok = 0;
