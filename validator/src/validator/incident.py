@@ -34,7 +34,7 @@ class Incident:
     # during instantiation, as the most recently read line is the last line
     # of the sentence, and the error was found on one of the words of the
     # sentence.
-    lineno: int = -1 # ?
+    lineno: int = 0 # ?
     # File name. The default is the file from which we are reading right
     # now ('-' if reading from STDIN).
     filename: str = 'STDIN'
@@ -46,7 +46,8 @@ class Incident:
     def set_state(self, state):
 
         #self.state = state
-        self.lineno = state.current_line
+        self.lineno += state.current_line
+        self.sentid = state.sentence_id
 
         if not state.current_file_name == '-':
             self.filename = os.path.basename(state.current_file_name)
