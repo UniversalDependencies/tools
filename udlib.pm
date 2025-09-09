@@ -1385,19 +1385,25 @@ sub check_metadata
         my @parallel = split(/\s+/, $metadata->{Parallel});
         my $n = scalar(@parallel);
         my $no = scalar(grep {$_ eq 'no'} (@parallel));
-        if($no && $n > 1)
+        if($no)
         {
-            $ok = 0;
-            push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Parallel: no cannot be combined with other values: '$metadata->{Parallel}'\n");
-            $$n_errors++;
+            if($n > 1)
+            {
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Parallel: no cannot be combined with other values: '$metadata->{Parallel}'\n");
+                $$n_errors++;
+            }
         }
-        my @unknown_parallel = grep {!m/^(cairo|tuecl|lines|set)$/} (@parallel);
-        if(scalar(@unknown_parallel) > 0)
+        else
         {
-            $ok = 0;
-            my $up = join(' ', sort(@unknown_parallel));
-            push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Unknown parallel treebank: '$up'\n");
-            $$n_errors++;
+            my @unknown_parallel = grep {!m/^(cairo|tuecl|lines|set)$/} (@parallel);
+            if(scalar(@unknown_parallel) > 0)
+            {
+                $ok = 0;
+                my $up = join(' ', sort(@unknown_parallel));
+                push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Unknown parallel treebank: '$up'\n");
+                $$n_errors++;
+            }
         }
     }
     if($metadata->{Genre} !~ m/\w/)
