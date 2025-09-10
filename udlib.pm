@@ -1423,7 +1423,7 @@ sub check_metadata
         }
         else
         {
-            my @unknown_parallel = grep {!m/^(cairo|pud|tuecl|lines|set)$/} (@parallel);
+            my @unknown_parallel = grep {!m/^(cairo|pud|tuecl|partut|lines|set|hk|atis|bible|zhgsd|jagsd)$/} (@parallel);
             if(scalar(@unknown_parallel) > 0)
             {
                 $ok = 0;
