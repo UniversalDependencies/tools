@@ -26,12 +26,12 @@ def validate(paths, cfg_obj):
 
 
 def run_checks(checks, parameters, incidents, state):
-	# print(parameters)
+	print(parameters)
 	current_incidents = []
 
 	for check in checks:
-		# print(check, current_incidents)
-		# input()
+		print(check, current_incidents)
+		input()
 		dependencies = []
 		if 'depends_on' in check:
 			dependencies = check['depends_on']
@@ -315,29 +315,73 @@ def check_misplaced_comment(block: List[str]) -> List[Incident]:
 
 	return incidents
 
-# TODO: docstring + check that test case for this exists
-def check_extra_empty_line(block):
+#* DONE
+def check_extra_empty_line(block: List[str]) -> List[Incident]:
+	'''check_extra_empty_line checks that exactly one empty line is present after every sentence
+
+	Parameters
+	----------
+	block : List[str]
+		The input lines to be tested.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	extra-empty-line
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/extra-empty-line.conllu
+	'''
+
 	incidents = []
-	if len(block) == 1 and utils.is_whitespace(block[0][1]):
+	if len(block) == 1 and (utils.is_whitespace(block[0][1]) or len(block[0][1])==0):
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		incidents.append(Error(
+		error = Error(
 			testclass=TestClass.FORMAT,
 			testid='extra-empty-line',
 			message='Spurious empty line. Only one empty line is expected after every sentence.'
-		))
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+		)
+		incidents.append(error)
+		logger.debug("Found empty line")
+
 	return incidents
 
-# TODO: docstring + check that test case for this exists
-def check_pseudo_empty_line(text):
+#* DONE
+def check_pseudo_empty_line(line:str) -> List[Incident]:
+	'''check_pseudo_empty_line checks whether a line that appears empty contains whitespaces.
+
+	Parameters
+	----------
+	line : str
+		The input line to be tested.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	pseudo-empty-line
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/pseudo-empty-line.conllu
+	'''
 	incidents = []
-	if utils.is_whitespace(text):
-		incidents.append(Error(
+	if utils.is_whitespace(line):
+		error = Error(
 					testclass=TestClass.FORMAT,
 					testid='pseudo-empty-line',
 					message='Spurious line that appears empty but is not; there are whitespace characters.'
-				))
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+				)
+		incidents.append(error)
+		logger.debug("Found 'pseudo-empty-line'")
 	return incidents
 
 # TODO: docstring + check that test case for this exists
