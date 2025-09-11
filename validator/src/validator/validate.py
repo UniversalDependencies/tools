@@ -5,7 +5,7 @@ import unicodedata
 import logging
 import inspect
 
-from typing import List, Tuple
+from typing import List, Tuple, TextIO
 
 from validator.incident import Incident, Error, Warning, TestClass, IncidentType
 import validator.utils as utils
@@ -26,32 +26,30 @@ def validate(paths, cfg_obj):
 
 
 def run_checks(checks, parameters, incidents, state):
-	# print(parameters)
+
 	current_incidents = []
 
-	for check in checks:
-		# print(check, current_incidents)
-		# input()
+	for check, check_info in checks.items():
+
 		dependencies = []
-		if 'depends_on' in check:
-			dependencies = check['depends_on']
+		if 'depends_on' in check_info:
+			dependencies = check_info['depends_on']
+
 		fun = globals()[check]
-		# TODO: fix behavior
-		if all(err.testid not in dependencies for err in current_incidents):
+		if not any(err.testid in dependencies for err in current_incidents):
 			current_incidents.extend([err.set_state(state) for err in fun(parameters)])
 		else:
-			incidents.append(
-				Warning(
-					level=0,
-					testclass=TestClass.INTERNAL,
-					testid='skipped-check',
-					message=f"Check {check} not performed because of previous failures"
-				)
-			)
-	# print(current_incidents)
-	incidents.extend(current_incidents)
-	# print(incidents)
+			pass
+			# incidents.append(
+			# 	Warning(
+			# 		level=0,
+			# 		testclass=TestClass.INTERNAL,
+			# 		testid='skipped-check',
+			# 		message=f"Check {check} not performed because of previous failures",
+			# 	)
+			# )
 
+	incidents.extend(current_incidents)
 
 def validate_file(path, cfg_obj):
 
@@ -87,26 +85,32 @@ def validate_file(path, cfg_obj):
 			if cfg_obj['line']:
 				for (counter,line) in block:
 					state.current_line = counter
-					run_checks(cfg_obj['line'], line, incidents, state)
+					run_checks(cfg_obj['line'], (counter, line), incidents, state)
 
 
 			# for (counter,line) in tokens:
 				# state.current_line = counter
 				# run_checks(cfg_obj['token_lines'], line, incidents, state)
 
+			# state.current_line = block[0][0] # TODO: FIND MORE ELEGANT SOLUTION
 			tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
+
+			if cfg_obj['tokens_cols']:
+				run_checks(cfg_obj['tokens_cols'], tokens, incidents, state)
+
 			for (counter,line) in tokens:
 				state.current_line = counter
-				run_checks(cfg_obj['cols'], line, incidents, state)
+				run_checks(cfg_obj['cols'], (counter, line), incidents, state)
 
 
-		# if len(block) == 1 and not block[0][1]:
-		# 	incidents.append(Error(
-		# 		testid='missing-empty-line',
-		# 		message='Missing empty line after the last sentence.'
-		# 		))
+		if len(block) == 1 and not block[0][1]:
+			incidents.append(Error(
+				testid='missing-empty-line',
+				message='Missing empty line after the last sentence.'
+				))
 
-		# run_checks(cfg_obj['file'], fin, incidents, state)
+		if 'file' in cfg_obj:
+			run_checks(cfg_obj['file'], fin, incidents, state)
 
 	return incidents
 
@@ -116,7 +120,7 @@ def validate_file(path, cfg_obj):
 #==============================================================================
 
 #* DONE
-def check_invalid_lines(line:str) -> List[Incident]:
+def check_invalid_lines(line:Tuple[int, str]) -> List[Incident]:
 	'''
 	check_invalid_lines checks for lines that are not empty, not comments and not tokens.
 
@@ -126,7 +130,7 @@ def check_invalid_lines(line:str) -> List[Incident]:
 
 	Parameters
 	----------
-	line : str
+	line : Tuple[int, str]
 		The input line to be tested.
 
 	Returns
@@ -142,20 +146,21 @@ def check_invalid_lines(line:str) -> List[Incident]:
 	--------------
 	test-cases/invalid-functions/invalid-lines.conllu
 	'''
-
+	lineno, line = line
 	incidents = []
 	if line and not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
 		incidents.append(Error(
 			testid='invalid-line',
 			message=(f"Spurious line: '{line}'. "
 					"All non-empty lines should start with a digit or the # character. "
-					"The line will be excluded from further tests.")
+					"The line will be excluded from further tests."),
+			lineno=lineno
 		))
 		logger.debug("'invalid-line' error triggered by line '%s'", line)
 	return incidents
 
 #* DONE
-def check_columns_format(line:str) -> List[Incident]:
+def check_columns_format(line:Tuple[int, str]) -> List[Incident]:
 	'''check_columns_format checks that the line is made up by the right number of columns.
 	Moreover, it checks that no column is empty, no leader or trailing spaces are present
 	and that no whitespace is present in fields, except if for FORM and LEMMA if the token
@@ -163,7 +168,7 @@ def check_columns_format(line:str) -> List[Incident]:
 
 	Parameters
 	----------
-	line : str
+	line : Tuple[int, str]
 		The input line to be tested.
 		Tests are only performed if the line is a token (i.e., line starts with a digit)
 
@@ -187,7 +192,7 @@ def check_columns_format(line:str) -> List[Incident]:
 	- 'invalid-line'
 	errors are found on the same line.
 	'''
-
+	lineno, line = line
 	incidents = []
 
 	# the function is only defined on potential tokens
@@ -277,13 +282,13 @@ def check_columns_format(line:str) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_misplaced_comment(block: List[str]) -> List[Incident]:
+def check_misplaced_comment(block: List[Tuple[int, str]]) -> List[Incident]:
 	'''check_misplaced_comment checks that comments (i.e., lines starting with '#') always precede
-    tokens (i.e., lines starting with digits)
+	tokens (i.e., lines starting with digits)
 
 	Parameters
 	----------
-	block : List[str]
+	block : List[Tuple[int, str]]
 		The input lines to be tested.
 
 	Returns
@@ -304,10 +309,12 @@ def check_misplaced_comment(block: List[str]) -> List[Incident]:
 	if len(block) > 1:
 		max_comment = len(block)
 		min_token = -1
-		for (counter,line) in block:
+		error_lineno = 0
+		for (counter, (lineno, line)) in enumerate(block):
 			if line:
 				if line[0] == "#":
 					max_comment = counter
+					error_lineno = lineno
 				else:
 					if min_token == -1:
 						min_token = counter
@@ -316,21 +323,21 @@ def check_misplaced_comment(block: List[str]) -> List[Incident]:
 			error = Error(
 				testclass=TestClass.FORMAT,
 				testid='misplaced-comment',
-				message='Spurious comment line. Comments are only allowed before a sentence.'
+				message='Spurious comment line. Comments are only allowed before a sentence.',
+				lineno=error_lineno
 			)
-			error.lineno =+ max_comment
 			incidents.append(error)
 			logger.debug("'misplaced-comment' error triggered by line: '%s'.", block[max_comment][1])
 
 	return incidents
 
 #* DONE
-def check_extra_empty_line(block: List[str]) -> List[Incident]:
+def check_extra_empty_line(block: List[Tuple[int, str]]) -> List[Incident]:
 	'''check_extra_empty_line checks that exactly one empty line is present after every sentence
 
 	Parameters
 	----------
-	block : List[str]
+	block : List[Tuple[int, str]]
 		The input lines to be tested.
 
 	Returns
@@ -353,7 +360,8 @@ def check_extra_empty_line(block: List[str]) -> List[Incident]:
 		error = Error(
 			testclass=TestClass.FORMAT,
 			testid='extra-empty-line',
-			message='Spurious empty line. Only one empty line is expected after every sentence.'
+			message='Spurious empty line. Only one empty line is expected after every sentence.',
+			lineno=block[0][0]
 		)
 		incidents.append(error)
 		logger.debug("'extra-empty-line' triggered by line '%s'", block[0][1])
@@ -361,12 +369,12 @@ def check_extra_empty_line(block: List[str]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_pseudo_empty_line(line:str) -> List[Incident]:
+def check_pseudo_empty_line(line:Tuple[int, str]) -> List[Incident]:
 	'''check_pseudo_empty_line checks whether a line that appears empty contains whitespaces.
 
 	Parameters
 	----------
-	line : str
+	line : Tuple[int, str]
 		The input line to be tested.
 
 	Returns
@@ -382,26 +390,27 @@ def check_pseudo_empty_line(line:str) -> List[Incident]:
 	--------------
 	test-cases/invalid-functions/pseudo-empty-line.conllu
 	'''
+	lineno, line = line
 	incidents = []
 	if utils.is_whitespace(line):
-		error = Error(
-					testclass=TestClass.FORMAT,
+		error = Error(testclass=TestClass.FORMAT,
 					testid='pseudo-empty-line',
-					message='Spurious line that appears empty but is not; there are whitespace characters.'
-				)
+					message=("Spurious line that appears empty but is not; "
+					"there are whitespace characters."),
+					lineno=lineno)
 		incidents.append(error)
 		logger.debug("'pseudo-empty-line' triggered by line '%s'", line)
 	return incidents
 
 #* DONE
-def check_unicode_normalization(line:str) -> List[Incident]:
+def check_unicode_normalization(line:Tuple[int, str]) -> List[Incident]:
 	'''check_unicode_normalization checks that letters composed of multiple Unicode characters
 	(such as a base letter plus combining diacritics) conform to NFC normalization (canonical
 	decomposition followed by canonical composition).
 
 	Parameters
 	----------
-	text : str
+	text : Tuple[int, str]
 		The input line to be tested. If the line consists of TAB-separated
 		fields (token line), errors reports will specify the field where the
 		error occurred. Otherwise (comment line), the error report will not be
@@ -420,7 +429,7 @@ def check_unicode_normalization(line:str) -> List[Incident]:
 	--------------
 	test-cases/invalid-functions/unicode-normalization.conllu
 	'''
-
+	lineno, line = line
 	incidents = []
 	normalized_text = unicodedata.normalize('NFC', line)
 	if line != normalized_text:
@@ -457,9 +466,238 @@ def check_unicode_normalization(line:str) -> List[Incident]:
 		incidents.append(Error(
 			testclass=TestClass.UNICODE,
 			testid='unicode-normalization',
-			message=testmessage
+			message=testmessage,
+			lineno=lineno
 		))
 		logger.debug("'unicode-normalization' error triggered by line '%s'", line)
+
+	return incidents
+
+#? one if to check
+def check_id_sequence(sentence: List[Tuple[int, List[str]]]) -> List[Incident]:
+	'''check_id_sequence checks that the ID sequence is correctly formed.
+	If this function returns an nonempty list, subsequent tests should not be run.
+
+	Parameters
+	----------
+	sentence : List[Tuple[int, List[str]]]
+		A list of lists representing a sentence in tabular format.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	invalid-word-id, invalid-word-interval?, misplaced-word-interval, misplaced-empty-node,
+	word-id-sequence, reversed-word-interval, word-interval-out
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/invalid-word-id.conllu
+	test-cases/invalid-functions/misplaced-empty-node.conllu
+	test-cases/invalid-functions/misplaced-empty-node-2.conllu
+	test-cases/invalid-functions/misplaced-word-interval.conllu
+	test-cases/invalid-functions/word-id-sequence.conllu
+	test-cases/invalid-functions/word-id-sequence-2.conllu
+	test-cases/invalid-functions/reversed-word-interval.conllu
+	'''
+	incidents = []
+
+	words=[]
+	tokens=[]
+	current_word_id, next_empty_id = 0, 1
+	for col_no, cols in sentence:
+		# Check for the format of the ID value. (ID must not be empty.)
+		if not (utils.is_word(cols) or utils.is_empty_node(cols) or utils.is_multiword_token(cols)):
+			error = Error(
+				testid='invalid-word-id',
+				message=f"Unexpected ID format '{cols[utils.ID]}'.",
+				lineno=col_no
+			)
+			incidents.append(error)
+			logger.debug("'invalid-word-id' error triggered by line '%s'", '\t'.join(cols))
+			continue
+		if not utils.is_empty_node(cols):
+			next_empty_id = 1    # reset sequence
+		if utils.is_word(cols):
+
+			t_id = int(cols[utils.ID])
+			current_word_id = t_id
+			words.append(t_id)
+			# Not covered by the previous interval?
+			if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
+				tokens.append((t_id, t_id)) # nope - let's make a default interval for it
+
+		# ! looks like a duplicate of check_id_sequence
+		elif utils.is_multiword_token(cols):
+			match = utils.is_multiword_token(cols)
+			#! This cannot not happen. The function utils.is_multiword_token() would then not return True.
+			# if not match:
+			# 	error = Error(
+			# 		testid='invalid-word-interval',
+			# 		message=f"Spurious word interval definition: '{cols[utils.ID]}'."
+			# 	)
+			# 	error.lineno += counter
+			# 	incidents.append(error)
+			# 	logger.debug("'invalid-word-interval' error triggered by line '%s'", '\t'.join(cols))
+			# 	continue
+			beg, end = int(match.group(1)), int(match.group(2))
+			if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
+				error = Error(
+					testid='misplaced-word-interval',
+					message='Multiword range not before its first word.',
+					lineno=col_no
+				)
+				incidents.append(error)
+				logger.debug("'misplaced-word-interval' error triggered by line '%s'", '\t'.join(cols))
+				continue
+			tokens.append((beg, end))
+		elif utils.is_empty_node(cols):
+			word_id, empty_id = (int(i) for i in utils.parse_empty_node_id(cols))
+			if word_id != current_word_id or empty_id != next_empty_id:
+				incidents.append(Error(
+					testid='misplaced-empty-node',
+					message=f'Empty node id {cols[utils.ID]}, expected {current_word_id}.{next_empty_id}',
+					lineno=col_no
+				))
+				logger.debug("'misplaced-empty-node' error triggered by line '%s'", '\t'.join(cols))
+			next_empty_id += 1
+			# Interaction of multiword tokens and empty nodes if there is an empty
+			# node between the first word of a multiword token and the previous word:
+			# This sequence is correct: 4 4.1 5-6 5 6
+			# This sequence is wrong:   4 5-6 4.1 5 6
+			if word_id == current_word_id and tokens and word_id < tokens[-1][0]:
+				incidents.append(Error(
+					testid='misplaced-empty-node',
+					message=(f"Empty node id {cols[utils.ID]} must occur before multiword token "
+							f"{tokens[-1][0]}-{tokens[-1][1]}."),
+					lineno=col_no
+				))
+				logger.debug("'misplaced-empty-node' error triggered by line '%s'", '\t'.join(cols))
+	# Now let's do some basic sanity checks on the sequences.
+	# Expected sequence of word IDs is 1, 2, ...
+	expstrseq = ','.join(str(x) for x in range(1, len(words) + 1))
+	wrdstrseq = ','.join(str(x) for x in words)
+	if wrdstrseq != expstrseq:
+		incidents.append(Error(
+			testid='word-id-sequence',
+			message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'.",
+			lineno=sentence[0][0]
+		))
+		logger.debug("'word-id-sequence' error triggered by sequence '%s'", wrdstrseq)
+
+	# Check elementary sanity of word intervals.
+	# Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
+	for (b, e) in tokens:
+		#? how can this be triggered?
+		if e < b: # end before beginning
+			incidents.append(Error(
+				testid='reversed-word-interval',
+				message=f'Spurious token interval {b}-{e}',
+				lineno=sentence[0][0]
+			))
+			logger.debug("'reversed-word-interval' error triggered by sequence '%s-%s'", b, e)
+			continue
+		if b < 1 or e > len(words): # out of range
+			incidents.append(Error(
+				testid='word-interval-out',
+				message=f'Spurious token interval {b}-{e} (out of range)',
+				lineno=sentence[0][0]
+			))
+			logger.debug("'word-interval-out' error triggered by sequence '%s-%s'", b, e)
+			continue
+
+	return incidents
+
+#* DONE
+def check_token_ranges(sentence: List[Tuple[int, List[str]]]) -> List[Incident]:
+	'''check_token_ranges checks that the word ranges for multiword tokens are valid.
+
+	Parameters
+	----------
+	sentence : List[Tuple[int, List[str]]]
+		A list of lists representing a sentence in tabular format.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	invalid-word-interval, overlapping-word-intervals
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/invalid-word-id.conllu
+	test-cases/invalid-functions/overlapping-word-interval.conllu
+	'''
+
+	incidents = []
+	covered = set()
+	for col_no, cols in sentence:
+		if not "-" in cols[utils.ID]:
+			continue
+		m = crex.mwtid.fullmatch(cols[utils.ID])
+		if not m:
+			incidents.append(Error(
+				testid="invalid-word-interval",
+				message=f"Spurious word interval definition: '{cols[utils.ID]}'.",
+				lineno=col_no
+			))
+			logger.debug("'invalid-word-interval' error triggered by line '%s'",cols)
+			continue
+		start, end = m.groups()
+		start, end = int(start), int(end)
+		# Do not test if start >= end:
+		# This is tested in check_id_sequence().
+		if covered & set(range(start, end+1)):
+			incidents.append(Error(
+				testid='overlapping-word-intervals',
+				message=f'Range overlaps with others: {cols[utils.ID]}',
+				lineno=col_no))
+			logger.debug("'overlapping-word-intervals' error triggered by line '%s'",cols)
+		covered |= set(range(start, end+1))
+	return incidents
+
+#* DONE
+def check_newlines(inp: TextIO) -> List[Incident]:
+	'''check_newlines checks that the input file consistently uses linux-style newlines
+	(LF only, not CR LF like in Windows). To be run on the input file handle after the
+	whole input has been read.
+	This check is universal and not configurable.
+
+	Parameters
+	----------
+	inp : TextIO
+		File handler that is being read.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	non-unix-newline
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/non-unix-newline.conllu
+
+	'''
+
+	incidents = []
+	if inp.newlines and inp.newlines != '\n':
+		incidents.append(Error(
+				level=1,
+				testclass=TestClass.FORMAT,
+				testid='non-unix-newline',
+				message='Only the unix-style LF line terminator is allowed.'
+			))
+		logger.debug("'non-unix-newlines' error triggered")
 
 	return incidents
 
@@ -471,7 +709,7 @@ def check_unicode_normalization(line:str) -> List[Incident]:
 #==============================================================================
 
 #* DONE
-def check_mwt_empty_vals(cols: List[str]) -> List[Incident]:
+def check_mwt_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
 	'''check_mwt_empty_vals checks that a multi-word token has _ empty values
 	in all fields except MISC.
 	This is required by UD guidelines although it is not a problem in general,
@@ -479,7 +717,7 @@ def check_mwt_empty_vals(cols: List[str]) -> List[Incident]:
 
 	Parameters
 	----------
-	cols : List[str]
+	cols : Tuple[int,List[str]])
 		The values of the columns on the current node / token line.
 
 	Returns
@@ -495,7 +733,7 @@ def check_mwt_empty_vals(cols: List[str]) -> List[Incident]:
 	--------------
 	test-cases/invalid-functions/mwt-non-empty-field.conllu
 	'''
-
+	lineno, cols = cols
 
 	incidents = []
 
@@ -516,7 +754,8 @@ def check_mwt_empty_vals(cols: List[str]) -> List[Incident]:
 					Error(level=2,
 						testclass=TestClass.FORMAT,
 						testid='mwt-nonempty-field',
-						message=f"A multi-word token line must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
+						message=f"A multi-word token line must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'.",
+						lineno=lineno
 					)
 			)
 			logger.debug("'mwt-nonempty-field' triggered by column '%s'", utils.COLNAMES[col_idx])
@@ -524,14 +763,14 @@ def check_mwt_empty_vals(cols: List[str]) -> List[Incident]:
 	return incidents
 
 #? change testid
-def check_empty_node_empty_vals(cols: List[str]) -> List[Incident]:
+def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
 	'''check_empty_node_empty_vals checks that an empty node has _ empty values in HEAD and DEPREL.
 	This is required by UD guidelines but not necessarily by CoNLL-U, therefore
 	a level 2 test.
 
 	Parameters
 	----------
-	cols : List[str]
+	cols : Tuple[int,List[str]]
 		The values of the columns on the current node / token line.
 
 	Returns
@@ -547,6 +786,7 @@ def check_empty_node_empty_vals(cols: List[str]) -> List[Incident]:
 	--------------
 	test-cases/invalid-functions/mwt-non-empty-field.conllu #?
 	'''
+	lineno, cols = cols
 	incidents = []
 
 	if not utils.is_empty_node(cols):
@@ -564,7 +804,8 @@ def check_empty_node_empty_vals(cols: List[str]) -> List[Incident]:
 					testclass=TestClass.FORMAT,
 					testid='mwt-nonempty-field',
 					message=(f"An empty node must have '_' in the column {utils.COLNAMES[col_idx]}. "
-							f"Now: '{cols[col_idx]}'.")
+							f"Now: '{cols[col_idx]}'."),
+					lineno=lineno
 			))
 		logger.debug("'mwt-nonempty-field' triggered by column '%s'", utils.COLNAMES[col_idx])
 
@@ -1018,26 +1259,6 @@ def check_deps_all_or_none(sentence, seen_enhanced_graph):
 
 	return incidents
 
-def check_newlines(inp):
-	"""
-	Checks that the input file consistently uses linux-style newlines (LF only,
-	not CR LF like in Windows). To be run on the input file handle after the
-	whole input has been read.
-
-	This check is universal and not configurable.
-	"""
-	incidents = []
-	if inp.newlines and inp.newlines != '\n':
-		incidents.append(Error(
-				level=1,
-				testclass=TestClass.FORMAT,
-				testid='non-unix-newline',
-				message='Only the unix-style LF line terminator is allowed.'
-			))
-
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-	return incidents
-
 
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
@@ -1045,141 +1266,8 @@ def check_newlines(inp):
 # 			m = crex.mwtid.fullmatch(cols[ID])
 # 			state.mwt_typo_span_end = m.group(2)
 
-def check_token_ranges(sentence):
-	"""
-	Checks that the word ranges for multiword tokens are valid.
 
-	Parameters
-	----------
-	sentence : list
-		A list of lists representing a sentence in tabular format.
 
-	returns
-	-------
-	incidents : list
-		A list of Incidents (empty if validation is successful).
-	"""
-	incidents = []
-	covered = set()
-	for cols in sentence:
-		if not "-" in cols[utils.ID]:
-			continue
-		m = crex.mwtid.fullmatch(cols[utils.ID])
-		if not m:
-			incidents.append(Error(
-				testid="invalid-word-interval",
-				message=f"Spurious word interval definition: '{cols[utils.ID]}'."
-			))
-			continue
-		start, end = m.groups()
-		start, end = int(start), int(end)
-		# Do not test if start >= end:
-		# This is tested in check_id_sequence().
-		if covered & set(range(start, end+1)):
-			incidents.append(Error(
-				testid='overlapping-word-intervals',
-				message=f'Range overlaps with others: {cols[utils.ID]}'))
-		covered |= set(range(start, end+1))
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-	return incidents
-
-def check_id_sequence(sentence):
-	"""
-	Validates that the ID sequence is correctly formed.
-	If this function returns an nonempty list, subsequent tests should not be run.
-
-	Parameters
-	----------
-	sentence : list
-		A list of lists representing a sentence in tabular format.
-
-	returns
-	-------
-	incidents : list
-		A list of Incidents (empty if validation is successful).
-	"""
-	incidents = []
-	words=[]
-	tokens=[]
-	current_word_id, next_empty_id = 0, 1
-	for cols in sentence:
-		# Check for the format of the ID value. (ID must not be empty.)
-		if not (utils.is_word(cols) or utils.is_empty_node(cols) or utils.is_multiword_token(cols)):
-			incidents.append(Error(
-				testid='invalid-word-id',
-				message=f"Unexpected ID format '{cols[utils.ID]}'."
-			))
-			continue
-		if not utils.is_empty_node(cols):
-			next_empty_id = 1    # reset sequence
-		if utils.is_word(cols):
-			t_id = int(cols[utils.ID])
-			current_word_id = t_id
-			words.append(t_id)
-			# Not covered by the previous interval?
-			if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
-				tokens.append((t_id, t_id)) # nope - let's make a default interval for it
-
-		# ! looks like a duplicate of check_id_sequence
-		elif utils.is_multiword_token(cols):
-			match = crex.mwtid.fullmatch(cols[utils.ID]) # Check the interval against the regex
-			if not match: # This should not happen. The function utils.is_multiword_token() would then not return True.
-				incidents.append(Error(
-					testid='invalid-word-interval',
-					message=f"Spurious word interval definition: '{cols[utils.ID]}'."
-				))
-				continue
-			beg, end = int(match.group(1)), int(match.group(2))
-			if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
-				incidents.append(Error(
-					testid='misplaced-word-interval',
-					message='Multiword range not before its first word.'
-				))
-				continue
-			tokens.append((beg, end))
-		elif utils.is_empty_node(cols):
-			word_id, empty_id = (int(i) for i in utils.parse_empty_node_id(cols))
-			if word_id != current_word_id or empty_id != next_empty_id:
-				incidents.append(Error(
-					testid='misplaced-empty-node',
-					message=f'Empty node id {cols[utils.ID]}, expected {current_word_id}.{next_empty_id}'
-				))
-			next_empty_id += 1
-			# Interaction of multiword tokens and empty nodes if there is an empty
-			# node between the first word of a multiword token and the previous word:
-			# This sequence is correct: 4 4.1 5-6 5 6
-			# This sequence is wrong:   4 5-6 4.1 5 6
-			if word_id == current_word_id and tokens and word_id < tokens[-1][0]:
-				incidents.append(Error(
-					testid='misplaced-empty-node',
-					message=f"Empty node id {cols[utils.ID]} must occur before multiword token {tokens[-1][0]}-{tokens[-1][1]}."
-				))
-	# Now let's do some basic sanity checks on the sequences.
-	# Expected sequence of word IDs is 1, 2, ...
-	expstrseq = ','.join(str(x) for x in range(1, len(words) + 1))
-	wrdstrseq = ','.join(str(x) for x in words)
-	if wrdstrseq != expstrseq:
-		incidents.append(Error(
-			testid='word-id-sequence',
-			message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
-		))
-	# Check elementary sanity of word intervals.
-	# Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
-	for (b, e) in tokens:
-		if e < b: # end before beginning
-			incidents.append(Error(
-				testid='reversed-word-interval',
-				message=f'Spurious token interval {b}-{e}'
-			))
-			continue
-		if b < 1 or e > len(words): # out of range
-			incidents.append(Error(
-				testid='word-interval-out',
-				message=f'Spurious token interval {b}-{e} (out of range)'
-			))
-			continue
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-	return incidents
 
 def check_id_references(sentence):
 	"""

@@ -46,7 +46,7 @@ class Incident:
     def set_state(self, state):
 
         #self.state = state
-        self.lineno += state.current_line
+        # self.lineno += state.current_line
         self.sentid = state.sentence_id
 
         if not state.current_file_name == '-':

@@ -1,4 +1,6 @@
 file:
+  check_newlines:
+    level: 1
 
 block:
   check_extra_empty_line:
@@ -29,6 +31,13 @@ cols:
   check_empty_node_empty_vals:
     level: 2
 
+tokens_cols:
+  check_id_sequence:
+    level: 1
+  check_token_ranges:
+    level: 1
+    depends_on:
+      - invalid-word-id
 
 tree:
 

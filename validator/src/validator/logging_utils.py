@@ -2,12 +2,13 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
+CONSOLE_FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s()]  %(message)s"
 
 def setup_logging(logger):
 
 	log_file = os.getenv("LOG_FILE", "logs/validate.log")
 	error_file = os.getenv("ERROR_FILE", "logs/validate.err")
-	
+
 	log_level = os.getenv("LOG_LEVEL", "DEBUG").upper()
 	logger.setLevel(getattr(logging, log_level, logging.DEBUG))
 
@@ -19,6 +20,7 @@ def setup_logging(logger):
 
 	console_handler = logging.StreamHandler()
 	console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+	console_handler.setFormatter(logging.Formatter(CONSOLE_FORMAT))
 	console_handler.setLevel(logging.DEBUG)
 
 	logger.addHandler(console_handler)

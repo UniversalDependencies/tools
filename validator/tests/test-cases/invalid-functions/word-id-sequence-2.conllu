@@ -1,0 +1,6 @@
+# sent_id = nonsequential-id
+# text = valid PUNCT
+# not valid: IDs must be sequential integers (1, 2, ...)
+2	valid	valid	NOUN	SP	_	0	root	_	_
+1	PUNCT	.	PUNCT	FS	_	1	punct	_	_
+

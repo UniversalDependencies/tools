@@ -45,7 +45,7 @@ def is_word(cols):
 
 def is_multiword_token(cols):
     """
-    Checks whether a CoNLL-U line represents a MWT by checking that its ID 
+    Checks whether a CoNLL-U line represents a MWT by checking that its ID
     field is a range, e.g. "3-5".
 
     Parameters
@@ -61,7 +61,7 @@ def is_multiword_token(cols):
 
 def is_empty_node(cols):
     """
-    Checks whether a CoNLL-U line represents an empty node by checking 
+    Checks whether a CoNLL-U line represents an empty node by checking
     that its ID field is a floating-point number.
 
     Parameters
@@ -112,7 +112,7 @@ def shorten(string):
 # ! proposal: rename to drop_subtype
 def lspec2ud(deprel):
     """
-    Drops the relation subtype from the given DEPREL (e.g. "nmod" -> "nmod"; 
+    Drops the relation subtype from the given DEPREL (e.g. "nmod" -> "nmod";
     "nmod:poss" -> "nmod").
 
     Parameters
@@ -129,7 +129,7 @@ def lspec2ud(deprel):
 
 def formtl(node):
     """
-    Joins a node's form and transliteration together in a space-separated 
+    Joins a node's form and transliteration together in a space-separated
     string, e.g. "ኧሁ 'ăhu".
 
     Parameters
@@ -149,7 +149,7 @@ def formtl(node):
 
 def lemmatl(node):
     """
-    Joins a node's lemma and its transliteration together in a space-separated 
+    Joins a node's lemma and its transliteration together in a space-separated
     string, e.g. "እኔ 'əne".
 
     Parameters
@@ -255,4 +255,3 @@ def next_block(fin):
             yield block
             block = []
     if len(block): yield block
-    

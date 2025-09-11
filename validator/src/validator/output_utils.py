@@ -247,10 +247,14 @@ def explain_tospace(specs, lcode):
 
 def serialize_output(incidents, output_fhandle, explanations, lines_content):
 
+    for incident in incidents:
+        print(incident)
+
+
     if not incidents:
-        print(">>>>>>>>> PASSED!")
+        print("*** PASSED ***")
     else:
-        print(">>>>>>>>> FAILED:", incidents)
+        print(f"*** FAILED *** with {len(incidents)} error(s)")
 
 def dump_json(incidents, dest, explanations, lines_content):
     json_dict = {}
