@@ -4040,6 +4040,9 @@
 "umo": {
 
 },
+"unk": {
+
+},
 "ur": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdpType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Post"], "unused_uvalues": [], "unused_lvalues": ["Circ", "Prep", "Voc"], "evalues": [], "byupos": {"ADP": {"Post": 27078}, "ADV": {"Post": 389}}},
