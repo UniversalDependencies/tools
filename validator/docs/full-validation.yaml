@@ -1,0 +1,35 @@
+file:
+
+block:
+  check_extra_empty_line:
+    level: 1
+  check_misplaced_comment:
+    level: 1
+
+line:
+  check_invalid_lines:
+    level: 1
+  check_columns_format:
+    level: 1
+    depends_on:
+      - invalid-line
+  check_pseudo_empty_line:
+    level: 1
+  check_unicode_normalization:
+    level: 1
+
+
+token_lines:
+
+comment_lines:
+
+cols:
+  check_mwt_empty_vals:
+    level: 2
+  check_empty_node_empty_vals:
+    level: 2
+
+
+tree:
+
+node:

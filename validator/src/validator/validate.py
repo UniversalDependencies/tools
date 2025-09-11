@@ -26,12 +26,12 @@ def validate(paths, cfg_obj):
 
 
 def run_checks(checks, parameters, incidents, state):
-	print(parameters)
+	# print(parameters)
 	current_incidents = []
 
 	for check in checks:
-		print(check, current_incidents)
-		input()
+		# print(check, current_incidents)
+		# input()
 		dependencies = []
 		if 'depends_on' in check:
 			dependencies = check['depends_on']
@@ -72,6 +72,8 @@ def validate_file(path, cfg_obj):
 			state.current_line = block[0][0]
 			comments = [(counter,line) for (counter,line) in block if line and line[0] == "#"]
 			tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
+			# print(tokens)
+			# input()
 			for (counter, line) in comments:
 				match = crex.sentid.fullmatch(line)
 				if match:
@@ -88,14 +90,14 @@ def validate_file(path, cfg_obj):
 					run_checks(cfg_obj['line'], line, incidents, state)
 
 
-		# 	for (counter,line) in tokens:
-		# 		state.current_line = counter
-		# 		run_checks(cfg_obj['token_lines'], line, incidents, state)
+			# for (counter,line) in tokens:
+				# state.current_line = counter
+				# run_checks(cfg_obj['token_lines'], line, incidents, state)
 
-		# 	tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
-		# 	# for (counter,line) in tokens:
-		# 		# state.current_line = counter
-		# 		# run_checks(cfg_obj['cols'], line, incidents, state)
+			tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
+			for (counter,line) in tokens:
+				state.current_line = counter
+				run_checks(cfg_obj['cols'], line, incidents, state)
 
 
 		# if len(block) == 1 and not block[0][1]:
@@ -107,6 +109,11 @@ def validate_file(path, cfg_obj):
 		# run_checks(cfg_obj['file'], fin, incidents, state)
 
 	return incidents
+
+
+#==============================================================================
+# Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
+#==============================================================================
 
 #* DONE
 def check_invalid_lines(line:str) -> List[Incident]:
@@ -144,7 +151,7 @@ def check_invalid_lines(line:str) -> List[Incident]:
 					"All non-empty lines should start with a digit or the # character. "
 					"The line will be excluded from further tests.")
 		))
-		logger.debug("Found 'invalid-line' error for line: '%s'", line)
+		logger.debug("'invalid-line' error triggered by line '%s'", line)
 	return incidents
 
 #* DONE
@@ -194,7 +201,8 @@ def check_columns_format(line:str) -> List[Incident]:
 			message=(f"The line has {len(cols)} columns but {utils.COLCOUNT} are expected. "
 					"The line will be excluded from further tests.")
 		))
-		logger.debug("Found 'number-of-columns' error for line: '%s'. EXIT", line)
+		logger.debug("'number-of-columns' triggered by line '%s'.", line)
+		logger.debug("No other checks performed")
 		return incidents
 
 	for col_idx in range(utils.COLCOUNT):
@@ -205,7 +213,7 @@ def check_columns_format(line:str) -> List[Incident]:
 				testid='empty-column',
 				message=f'Empty value in column {utils.COLNAMES[col_idx]}.'
 			))
-			logger.debug("Found 'empty-columns' error for line: '%s'.", line)
+			logger.debug("'empty-columns' error triggered by column '%s'.", utils.COLNAMES[col_idx])
 		else:
 
 			# Must never have leading/trailing whitespace
@@ -215,6 +223,7 @@ def check_columns_format(line:str) -> List[Incident]:
 					testid='leading-whitespace',
 					message=f"Leading whitespace not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
 				))
+				logger.debug("'leading-whitespace' error triggered by column '%s'.", utils.COLNAMES[col_idx])
 
 			if cols[col_idx][-1].isspace():
 				incidents.append(Error(
@@ -222,7 +231,7 @@ def check_columns_format(line:str) -> List[Incident]:
 					testid='trailing-whitespace',
 					message=f"Trailing whitespace not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
 				))
-				logger.debug("Found 'trailing-whitespace' error for line: '%s'.", line)
+				logger.debug("'trailing-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
 
 			# Must never contain two consecutive whitespace characters
 			if crex.ws2.search(cols[col_idx]):
@@ -232,7 +241,7 @@ def check_columns_format(line:str) -> List[Incident]:
 					message=("Two or more consecutive whitespace characters not allowed "
 							f"in column {utils.COLNAMES[col_idx]}.")
 				))
-				logger.debug("Found 'repeated-whitespace' error for line: '%s'.", line)
+				logger.debug("'repeated-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
 
 	# Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
 	# If it contains a space, it does not make sense to treat it as a MWT.
@@ -245,7 +254,7 @@ def check_columns_format(line:str) -> List[Incident]:
 					message=(f"White space not allowed in multi-word token '{cols[col_idx]}'. "
 							"If it contains a space, it is not one surface token.")
 					))
-				logger.debug("Found 'invalid-whitespace-mwt' error for line: '%s'.", line)
+				logger.debug("'invalid-whitespace-mwt' triggered by column '%s'.", utils.COLNAMES[col_idx])
 
 	# These columns must not have whitespace.
 	for col_idx in (utils.ID, utils.UPOS, utils.XPOS, utils.FEATS, utils.HEAD, utils.DEPREL, utils.DEPS):
@@ -256,7 +265,7 @@ def check_columns_format(line:str) -> List[Incident]:
 				testid='invalid-whitespace',
 				message=f"White space not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
 			))
-			logger.debug("Found 'invalid-whitespace' error for line: '%s'.", line)
+			logger.debug("'invalid-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
 
 	# ! Comment from previous validator
 	# ?: get rid of this comment
@@ -311,7 +320,7 @@ def check_misplaced_comment(block: List[str]) -> List[Incident]:
 			)
 			error.lineno =+ max_comment
 			incidents.append(error)
-			logger.debug("Found 'misplaced-comment' in block starting with line: '%s'.", block[0][1])
+			logger.debug("'misplaced-comment' error triggered by line: '%s'.", block[max_comment][1])
 
 	return incidents
 
@@ -347,7 +356,7 @@ def check_extra_empty_line(block: List[str]) -> List[Incident]:
 			message='Spurious empty line. Only one empty line is expected after every sentence.'
 		)
 		incidents.append(error)
-		logger.debug("Found empty line")
+		logger.debug("'extra-empty-line' triggered by line '%s'", block[0][1])
 
 	return incidents
 
@@ -381,14 +390,13 @@ def check_pseudo_empty_line(line:str) -> List[Incident]:
 					message='Spurious line that appears empty but is not; there are whitespace characters.'
 				)
 		incidents.append(error)
-		logger.debug("Found 'pseudo-empty-line'")
+		logger.debug("'pseudo-empty-line' triggered by line '%s'", line)
 	return incidents
 
-# TODO: docstring + check that test case for this exists
-def check_unicode_normalization(text):
-	"""
-	Tests that letters composed of multiple Unicode characters (such as a base
-	letter plus combining diacritics) conform to NFC normalization (canonical
+#* DONE
+def check_unicode_normalization(line:str) -> List[Incident]:
+	'''check_unicode_normalization checks that letters composed of multiple Unicode characters
+	(such as a base letter plus combining diacritics) conform to NFC normalization (canonical
 	decomposition followed by canonical composition).
 
 	Parameters
@@ -398,19 +406,33 @@ def check_unicode_normalization(text):
 		fields (token line), errors reports will specify the field where the
 		error occurred. Otherwise (comment line), the error report will not be
 		localized.
-		TODO: update return docstring
-	"""
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	unicode-normalization
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/unicode-normalization.conllu
+	'''
+
 	incidents = []
-	normalized_text = unicodedata.normalize('NFC', text)
-	if text != normalized_text:
+	normalized_text = unicodedata.normalize('NFC', line)
+	if line != normalized_text:
 		# Find the first unmatched character and include it in the report.
 		firsti = -1
 		firstj = -1
 		inpfirst = ''
 		inpsecond = ''
 		nfcfirst = ''
-		tcols = text.split("\t")
+		tcols = line.split("\t")
 		ncols = normalized_text.split("\t")
+
 		for i in range(len(tcols)):
 			for j in range(len(tcols[i])):
 				if tcols[i][j] != ncols[i][j]:
@@ -427,37 +449,67 @@ def check_unicode_normalization(text):
 			testmessage = f"Unicode not normalized: {utils.COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
 		else:
 			testmessage = f"Unicode not normalized: character[{firstj}] is {inpfirst}, should be {nfcfirst}."
-		# TODO: what did this do?
-		explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
+
+		#TODO: WHAT TO DO WITH THIS?
+		# explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
+		# This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
+
 		incidents.append(Error(
 			testclass=TestClass.UNICODE,
 			testid='unicode-normalization',
 			message=testmessage
 		))
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+		logger.debug("'unicode-normalization' error triggered by line '%s'", line)
+
 	return incidents
 
-def check_mwt_empty_vals(cols):
-	"""
-	Checks that a multi-word token has _ empty values in all fields except MISC.
+#==============================================================================
+# Level 2 tests. Tree structure, universal tags and deprels. Note that any
+# well-formed Feature=Value pair is allowed (because it could be language-
+# specific) and any word form or lemma can contain spaces (because language-
+# specific guidelines may permit it).
+#==============================================================================
+
+#* DONE
+def check_mwt_empty_vals(cols: List[str]) -> List[Incident]:
+	'''check_mwt_empty_vals checks that a multi-word token has _ empty values
+	in all fields except MISC.
 	This is required by UD guidelines although it is not a problem in general,
 	therefore a level 2 test.
 
 	Parameters
 	----------
-	cols : list
+	cols : List[str]
 		The values of the columns on the current node / token line.
-	"""
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	mwt-nonempty-field
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/mwt-non-empty-field.conllu
+	'''
+
+
 	incidents = []
-	#! fix: is this a dependency?
+
 	if not utils.is_multiword_token(cols):
-		incidents = [Error(level=0,
-					testclass=TestClass.INTERNAL,
-					testid='internal-error')]
-		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
+		# incidents = [Error(level=0,
+		# 			testclass=TestClass.INTERNAL,
+		# 			testid='internal-error')]
+		# logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+		# return incidents
+
 	# all columns except the first two (ID, FORM) and the last one (MISC)
 	for col_idx in range(utils.LEMMA, utils.MISC):
+
 		# Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
 		if cols[col_idx] != '_' and (col_idx != utils.FEATS or cols[col_idx] not in ['Typo=Yes', '_']):
 			incidents.append(
@@ -467,41 +519,55 @@ def check_mwt_empty_vals(cols):
 						message=f"A multi-word token line must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
 					)
 			)
+			logger.debug("'mwt-nonempty-field' triggered by column '%s'", utils.COLNAMES[col_idx])
 
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	return incidents
 
-def check_empty_node_empty_vals(cols):
-	"""
-	Checks that an empty node has _ empty values in HEAD and DEPREL. This is
-	required by UD guidelines but not necessarily by CoNLL-U, therefore
+#? change testid
+def check_empty_node_empty_vals(cols: List[str]) -> List[Incident]:
+	'''check_empty_node_empty_vals checks that an empty node has _ empty values in HEAD and DEPREL.
+	This is required by UD guidelines but not necessarily by CoNLL-U, therefore
 	a level 2 test.
 
 	Parameters
 	----------
-	cols : list
+	cols : List[str]
 		The values of the columns on the current node / token line.
-	"""
-	if not utils.is_empty_node(cols):
-		incidents = [Error(level=0,
-					testclass=TestClass.INTERNAL,
-					testid='internal-error')]
-		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-		return incidents
 
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	mwt-nonempty-field #?
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/mwt-non-empty-field.conllu #?
+	'''
 	incidents = []
+
+	if not utils.is_empty_node(cols):
+		return incidents
+		# incidents = [Error(level=0,
+		# 			testclass=TestClass.INTERNAL,
+		# 			testid='internal-error')]
+		# logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+
 	for col_idx in (utils.HEAD, utils.DEPREL):
 		if cols[col_idx]!= '_':
-			# TODO: is this testid ok?
-			incidents.append(
-					Error(
+			#? check testid
+			incidents.append(Error(
 					level=2,
 					testclass=TestClass.FORMAT,
 					testid='mwt-nonempty-field',
-					message=f"An empty node must have '_' in the column {utils.COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-					)
-			)
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+					message=(f"An empty node must have '_' in the column {utils.COLNAMES[col_idx]}. "
+							f"Now: '{cols[col_idx]}'.")
+			))
+		logger.debug("'mwt-nonempty-field' triggered by column '%s'", utils.COLNAMES[col_idx])
+
 	return incidents
 
 #! proposal: rename into check_deps_deprel_contraints, or also check UPOS format (not value)
