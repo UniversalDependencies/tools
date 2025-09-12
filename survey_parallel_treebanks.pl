@@ -59,7 +59,7 @@ foreach my $collection (@collections)
     foreach my $treebank (@treebanks)
     {
         my $nsent_with_altpart = $collections{$collection}{$treebank}{nsent};
-        my $nsent_core = scalar(keys(%{$collections{$collection}{sentences}}));
+        my $nsent_core = scalar(keys(%{$collections{$collection}{$treebank}{sentences}}));
         my $naltpart_extra = $nsent_with_altpart-$nsent_core;
         print("\t$treebank ($nsent_core sentences");
         if($naltpart_extra)
