@@ -26,12 +26,27 @@ foreach my $folder (@folders)
         $collections{$collection}{$folder}{nsent} = 0 if(!defined($collections{$collection}{$folder}{nsent}));
     }
     # Read the data and count the parallel sentences.
-    my $record = udlib::get_ud_files_and_codes($folder, $udpath);
-    my $stats = udlib::collect_statistics_about_ud_treebank("$udpath/$folder", $record->{ltcode});
-    @parallel = sort(keys(%{$stats->{nparallel}}));
-    foreach my $collection (@parallel)
+    # We need more details than those provided by udlib::collect_statistics_about_ud_treebank().
+    opendir(DIR, "$udpath/$folder") or die("Cannot read folder '$udpath/$folder': $!");
+    my @files = grep {m/\.conllu$/} (readdir(DIR));
+    closedir(DIR);
+    foreach my $file (@files)
     {
-        $collections{$collection}{$folder}{nsent} += $stats->{nparallel}{$collection};
+        open(my $fh, "$udpath/$folder/$file") or die("Cannot read '$udpath/$folder/$file': $!");
+        while(<$fh>)
+        {
+            chomp;
+            if(m/^\#\s*parallel_id\s*=\s*([a-z]+)\/([-0-9a-z]+)(?:\/(?:alt([0-9]+))?(?:part([0-9]+))?)?/)
+            {
+                my $colid = $1;
+                my $sntid = $2;
+                my $alt = $3; # undef or positive integer
+                my $part = $4; # undef or positive integer
+                $collections{$colid}{$folder}{sentences}{$sntid}++;
+                $collections{$colid}{$folder}{nsent}++; # number of sentences including alternative and partial translations
+            }
+        }
+        close($fh);
     }
 }
 my @collections = sort(keys(%collections));
@@ -43,6 +58,14 @@ foreach my $collection (@collections)
     print("$collection ($n treebanks)\n");
     foreach my $treebank (@treebanks)
     {
-        print("\t$treebank ($collections{$collection}{$treebank}{nsent} sentences)\n");
+        my $nsent_with_altpart = $collections{$collection}{$treebank}{nsent};
+        my $nsent_core = scalar(keys(%{$collections{$collection}{sentences}}));
+        my $naltpart_extra = $nsent_with_altpart-$nsent_core;
+        print("\t$treebank ($nsent_core sentences");
+        if($naltpart_extra)
+        {
+            print(" with $naltpart_extra additional alternative or partial translations");
+        }
+        print(")\n");
     }
 }
