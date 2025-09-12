@@ -24,6 +24,8 @@ line:
 token_lines:
 
 comment_lines:
+  check_sent_id:
+    level: 2
 
 cols:
   check_mwt_empty_vals:

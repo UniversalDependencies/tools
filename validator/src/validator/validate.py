@@ -5,7 +5,7 @@ import unicodedata
 import logging
 import inspect
 
-from typing import List, Tuple, TextIO
+from typing import List, Tuple, TextIO, Set
 
 from validator.incident import Incident, Error, Warning, TestClass, IncidentType
 import validator.utils as utils
@@ -37,7 +37,7 @@ def run_checks(checks, parameters, incidents, state):
 
 		fun = globals()[check]
 		if not any(err.testid in dependencies for err in current_incidents):
-			current_incidents.extend([err.set_state(state) for err in fun(parameters)])
+			current_incidents.extend([err.set_state(state) for err in fun(**parameters)])
 		else:
 			pass
 			# incidents.append(
@@ -62,31 +62,41 @@ def validate_file(path, cfg_obj):
 	with open(path, newline='') as fin:
 
 		logger.info("Opening file %s", path)
-
 		block = []
-
 		for block in utils.next_block(fin):
-
-			state.current_line = block[0][0]
+			# state.current_line = block[0][0]
 			comments = [(counter,line) for (counter,line) in block if line and line[0] == "#"]
 			tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
-			# print(tokens)
-			# input()
+
 			for (counter, line) in comments:
 				match = crex.sentid.fullmatch(line)
 				if match:
 					state.sentence_id = match.group(1)
+					state.known_sent_ids.add(match.group(1))
 
 			if cfg_obj['block']:
-				run_checks(cfg_obj['block'], block, incidents, state)
+				params = {
+					"block": block,
+					"useless_param": True
+				}
+				run_checks(cfg_obj['block'], params, incidents, state)
 
 			block = [(counter,line) for (counter,line) in block if line]
-
 			if cfg_obj['line']:
 				for (counter,line) in block:
-					state.current_line = counter
-					run_checks(cfg_obj['line'], (counter, line), incidents, state)
+					params = {
+						"line": (counter, line)
+					}
+					# state.current_line = counter
+					run_checks(cfg_obj['line'], params, incidents, state)
 
+			if 'comment_lines' in cfg_obj:
+				params = {
+					"comments" : comments,
+					"allow_slash": True,
+					"known_sent_ids": set()
+				}
+				run_checks(cfg_obj['comment_lines'], params, incidents, state)
 
 			# for (counter,line) in tokens:
 				# state.current_line = counter
@@ -96,11 +106,17 @@ def validate_file(path, cfg_obj):
 			tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
 
 			if cfg_obj['tokens_cols']:
-				run_checks(cfg_obj['tokens_cols'], tokens, incidents, state)
+				params = {
+					"sentence": tokens
+				}
+				run_checks(cfg_obj['tokens_cols'], params, incidents, state)
 
 			for (counter,line) in tokens:
-				state.current_line = counter
-				run_checks(cfg_obj['cols'], (counter, line), incidents, state)
+				params = {
+					"cols": (counter, line)
+				}
+				# state.current_line = counter
+				run_checks(cfg_obj['cols'], params, incidents, state)
 
 
 		if len(block) == 1 and not block[0][1]:
@@ -110,7 +126,10 @@ def validate_file(path, cfg_obj):
 				))
 
 		if 'file' in cfg_obj:
-			run_checks(cfg_obj['file'], fin, incidents, state)
+			params = {
+				"inp": fin
+			}
+			run_checks(cfg_obj['file'], params, incidents, state)
 
 	return incidents
 
@@ -120,7 +139,7 @@ def validate_file(path, cfg_obj):
 #==============================================================================
 
 #* DONE
-def check_invalid_lines(line:Tuple[int, str]) -> List[Incident]:
+def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
 	'''
 	check_invalid_lines checks for lines that are not empty, not comments and not tokens.
 
@@ -160,7 +179,7 @@ def check_invalid_lines(line:Tuple[int, str]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_columns_format(line:Tuple[int, str]) -> List[Incident]:
+def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
 	'''check_columns_format checks that the line is made up by the right number of columns.
 	Moreover, it checks that no column is empty, no leader or trailing spaces are present
 	and that no whitespace is present in fields, except if for FORM and LEMMA if the token
@@ -282,7 +301,7 @@ def check_columns_format(line:Tuple[int, str]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_misplaced_comment(block: List[Tuple[int, str]]) -> List[Incident]:
+def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]:
 	'''check_misplaced_comment checks that comments (i.e., lines starting with '#') always precede
 	tokens (i.e., lines starting with digits)
 
@@ -332,7 +351,7 @@ def check_misplaced_comment(block: List[Tuple[int, str]]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_extra_empty_line(block: List[Tuple[int, str]]) -> List[Incident]:
+def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
 	'''check_extra_empty_line checks that exactly one empty line is present after every sentence
 
 	Parameters
@@ -369,7 +388,7 @@ def check_extra_empty_line(block: List[Tuple[int, str]]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_pseudo_empty_line(line:Tuple[int, str]) -> List[Incident]:
+def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
 	'''check_pseudo_empty_line checks whether a line that appears empty contains whitespaces.
 
 	Parameters
@@ -403,7 +422,7 @@ def check_pseudo_empty_line(line:Tuple[int, str]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_unicode_normalization(line:Tuple[int, str]) -> List[Incident]:
+def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
 	'''check_unicode_normalization checks that letters composed of multiple Unicode characters
 	(such as a base letter plus combining diacritics) conform to NFC normalization (canonical
 	decomposition followed by canonical composition).
@@ -474,7 +493,7 @@ def check_unicode_normalization(line:Tuple[int, str]) -> List[Incident]:
 	return incidents
 
 #? one if to check
-def check_id_sequence(sentence: List[Tuple[int, List[str]]]) -> List[Incident]:
+def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incident]:
 	'''check_id_sequence checks that the ID sequence is correctly formed.
 	If this function returns an nonempty list, subsequent tests should not be run.
 
@@ -612,7 +631,7 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_token_ranges(sentence: List[Tuple[int, List[str]]]) -> List[Incident]:
+def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incident]:
 	'''check_token_ranges checks that the word ranges for multiword tokens are valid.
 
 	Parameters
@@ -663,7 +682,7 @@ def check_token_ranges(sentence: List[Tuple[int, List[str]]]) -> List[Incident]:
 	return incidents
 
 #* DONE
-def check_newlines(inp: TextIO) -> List[Incident]:
+def check_newlines(inp: TextIO, **_) -> List[Incident]:
 	'''check_newlines checks that the input file consistently uses linux-style newlines
 	(LF only, not CR LF like in Windows). To be run on the input file handle after the
 	whole input has been read.
@@ -686,7 +705,6 @@ def check_newlines(inp: TextIO) -> List[Incident]:
 	Reference-test
 	--------------
 	test-cases/invalid-functions/non-unix-newline.conllu
-
 	'''
 
 	incidents = []
@@ -708,8 +726,106 @@ def check_newlines(inp: TextIO) -> List[Incident]:
 # specific guidelines may permit it).
 #==============================================================================
 
+def check_sent_id(comments: List[Tuple[int, str]],
+                allow_slash: bool,
+                known_sent_ids: Set,
+                **_) -> List[Incident]:
+	'''check_sent_id checks that sentence id exists, is well-formed and unique.
+
+	Parameters
+	----------
+	comments : List[Tuple[int, str]]
+		A list of comments, represented as strings.
+	allow_slash : bool
+		Whether exactly one "/" character is allowed (this is reserved for
+		parallel treebanks). This parameter replaces lang, which was used to
+		allow slashes when equal to "ud".
+	known_sent_ids : Set
+		The set of previously encountered sentence IDs.
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	invalid-sent-id, missing-sent-id, multiple-sent-id, non-unique-sent-id, slash-in-sent-id
+
+	Reference-test
+	--------------
+	test-cases/invalid-functions/multiple-sent-id.conllu
+	'''
+
+	incidents = []
+	matched = []
+	firstmatch = -1
+	for lineno, c in comments:
+		match = crex.sentid.fullmatch(c)
+		if match:
+			matched.append(match)
+			firstmatch = lineno
+		else:
+			if c.startswith('# sent_id') or c.startswith('#sent_id'):
+			# if 'sent_id' in c:
+				incidents.append(Error(
+					testclass=TestClass.METADATA,
+					level=2,
+					testid='invalid-sent-id',
+					message=(f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' "
+            				"where xxxxx is not whitespace. Forward slash reserved for special purposes."),
+					lineno = lineno
+				))
+				logger.debug("'invalid-sent-id' triggered by line '%s'", c)
+
+	if not matched:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			testid='missing-sent-id',
+			message='Missing the sent_id attribute.',
+			lineno=comments[0][0]
+		))
+		logger.debug("'missing-sent-id' triggered by comments '%s'", '\n'.join([c for _, c in comments]))
+	elif len(matched) > 1:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			testid='multiple-sent-id',
+			message='Multiple sent_id attributes.',
+			lineno=comments[0][0]
+		))
+		logger.debug("'multiple-sent-id' triggered by comments '%s'", '\n'.join([c for _, c in comments]))
+	else:
+		# Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
+		# For that to happen, all three files should be tested at once.
+		sid = matched[0].group(1)
+		if sid in known_sent_ids:
+			incidents.append(Error(
+				testclass=TestClass.METADATA,
+				level=2,
+				testid='non-unique-sent-id',
+				message=f"Non-unique sent_id attribute '{sid}'.",
+				lineno=firstmatch
+			))
+			logger.debug("'non-unique-sent-id' triggered by sid '%s'", sid)
+
+		if sid.count('/') > 1 or (sid.count('/') == 1 and allow_slash):
+			incidents.append(Error(
+				testclass=TestClass.METADATA,
+				level=2,
+				testid='slash-in-sent-id',
+				message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'",
+				lineno=firstmatch
+			))
+			logger.debug("'slash-in-sent-id' triggered by sid '%s'", sid)
+		#state.known_sent_ids.add(sid) # TODO: move this to the engine
+	return incidents
+
+
 #* DONE
-def check_mwt_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
+def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
+
 	'''check_mwt_empty_vals checks that a multi-word token has _ empty values
 	in all fields except MISC.
 	This is required by UD guidelines although it is not a problem in general,
@@ -1411,75 +1527,6 @@ def check_tree(sentence, node_line, single_root):
 	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 	return incidents
 
-def check_sent_id(comments, allow_slash, known_sent_ids):
-	"""
-	Checks that sentence id exists, is well-formed and unique.
-
-	Parameters
-	----------
-	comments : list
-		A list of comments, represented as strings.
-	allow_slash : bool
-		Whether exactly one "/" character is allowed (this is reserved for
-		parallel treebanks). This parameter replaces lang, which was used to
-		allow slashes when equal to "ud".
-	known_sent_ids : set
-		The set of previously encountered sentence IDs.
-
-	returns
-	-------
-	incidents : list
-		A list of Incidents (empty if validation is successful).
-	"""
-	incidents = []
-	matched = []
-	for c in comments:
-		match = crex.sentid.fullmatch(c)
-		if match:
-			matched.append(match)
-		else:
-			if c.startswith('# sent_id') or c.startswith('#sent_id'):
-				incidents.append(Error(
-					testclass=TestClass.METADATA,
-					level=2,
-					testid='invalid-sent-id',
-					message=f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes."
-				))
-	if not matched:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='missing-sent-id',
-			message='Missing the sent_id attribute.'
-		))
-	elif len(matched) > 1:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='multiple-sent-id',
-			message='Multiple sent_id attributes.'
-		))
-	else:
-		# Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
-		# For that to happen, all three files should be tested at once.
-		sid = matched[0].group(1)
-		if sid in known_sent_ids:
-			incidents.append(Error(
-				testclass=TestClass.METADATA,
-				level=2,
-				testid='non-unique-sent-id',
-				message=f"Non-unique sent_id attribute '{sid}'."
-			))
-		if sid.count('/') > 1 or (sid.count('/') == 1 and allow_slash):
-			incidents.append(Error(
-				testclass=TestClass.METADATA,
-				level=2,
-				testid='slash-in-sent-id',
-				message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
-			))
-		#state.known_sent_ids.add(sid) # TODO: move this to the engine
-	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-	return incidents
 
 def check_text_meta(comments, tree, spaceafterno_in_effect):
 	"""
