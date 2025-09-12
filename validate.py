@@ -76,6 +76,8 @@ class State:
         # sentences are equivalents of the same virtual sentence in the
         # parallel collection, they should be distinguished with 'altN'.)
         self.known_parallel_ids = set()
+        self.parallel_id_lastalt = {}
+        self.parallel_id_lastpart = {}
         #----------------------------------------------------------------------
         # Various things that we may have seen earlier in the corpus. The value
         # is None if we have not seen it, otherwise it is the line number of
@@ -546,7 +548,7 @@ class CompiledRegexes:
         # Sentence id comment line. The actual id is bracketed.
         self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
         # Parallel sentence id comment line. The actual id as well as its predefined parts are bracketed.
-        self.parallelid = re.compile(r"#\s*parallel_id\s*=\s*(([a-z]+)/([-0-9a-z]+)(?:/(alt[0-9]+|part[0-9]+|alt[0-9]+part[0-9]+))?)")
+        self.parallelid = re.compile(r"#\s*parallel_id\s*=\s*(([a-z]+)/([-0-9a-z]+)(?:/(alt[1-9][0-9]*|part[1-9][0-9]*|alt[1-9][0-9]*part[1-9][0-9]*))?)")
         # Sentence text comment line. The actual text is bracketed.
         self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
         # Global entity comment is a declaration of entity attributes in MISC.
@@ -1255,7 +1257,7 @@ class Validator:
                     Incident(
                         state=state, args=self.args,
                         testid='invalid-parallel-id',
-                        message=f"Spurious parallel_id line: '{c}' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[0-9]+' and/or 'part[0-9]+' may follow."
+                        message=f"Spurious parallel_id line: '{c}' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow."
                     ).report()
         if len(matched) > 1:
             Incident(
@@ -1273,6 +1275,46 @@ class Validator:
                     testid='non-unique-parallel-id',
                     message=f"Non-unique parallel_id attribute '{pid}'."
                 ).report()
+            else:
+                # Additional tests when pid has altN or partN.
+                # Do them only if the whole pid is unique.
+                sid = matched[0].group(2) + '/' + matched[0].group(3)
+                alt = None
+                part = None
+                altpart = matched[0].group(4)
+                if altpart:
+                    apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
+                    if apmatch:
+                        alt = apmatch.group(1)
+                        part = apmatch.group(2)
+                if sid in state.parallel_id_lastalt:
+                    if state.parallel_id_lastalt[sid] == None and alt != None or state.parallel_id_lastalt[sid] != None and alt == None:
+                        Incident(
+                            state=state, args=self.args,
+                            testid='parallel-id-alt',
+                            message=f"Some instances of parallel sentence '{sid}' have the 'alt' suffix while others do not."
+                        ).report()
+                    elif alt != None and alt != state.parallel_id_lastalt[sid] + 1:
+                        Incident(
+                            state=state, args=self.args,
+                            testid='parallel-id-alt',
+                            message=f"The alt suffix of parallel sentence '{sid}' should be {state.parallel_id_lastalt[sid]}+1 but it is {alt}."
+                        ).report()
+                state.parallel_id_lastalt[sid] = alt
+                if sid in state.parallel_id_lastpart:
+                    if state.parallel_id_lastpart[sid] == None and part != None or state.parallel_id_lastpart[sid] != None and part == None:
+                        Incident(
+                            state=state, args=self.args,
+                            testid='parallel-id-part',
+                            message=f"Some instances of parallel sentence '{sid}' have the 'part' suffix while others do not."
+                        ).report()
+                    elif part != None and part != state.parallel_id_lastpart[sid] + 1:
+                        Incident(
+                            state=state, args=self.args,
+                            testid='parallel-id-part',
+                            message=f"The part suffix of parallel sentence '{sid}' should be {state.parallel_id_lastpart[sid]}+1 but it is {part}."
+                        ).report()
+                state.parallel_id_lastpart[sid] = part
             state.known_parallel_ids.add(pid)
 
 
