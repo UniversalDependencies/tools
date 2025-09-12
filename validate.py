@@ -1285,8 +1285,8 @@ class Validator:
                 if altpart:
                     apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
                     if apmatch:
-                        alt = apmatch.group(1)
-                        part = apmatch.group(2)
+                        alt = int(apmatch.group(1))
+                        part = int(apmatch.group(2))
                 if sid in state.parallel_id_lastalt:
                     if state.parallel_id_lastalt[sid] == None and alt != None or state.parallel_id_lastalt[sid] != None and alt == None:
                         Incident(
