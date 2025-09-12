@@ -51,7 +51,6 @@ foreach my $folder (@folders)
         open(my $out, ">$f") or die("Cannot write '$f': $!");
         print $out $contents;
         close($out);
-        die;
     }
     system("git commit -a -m 'Added Parallel to README.' ; git push");
     chdir('..');
