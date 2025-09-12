@@ -1889,10 +1889,10 @@ class Validator:
                     testid='misc-extra-space',
                     message=f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
                 ).report()
-            if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
+            if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv|Ref)$", ma[0]):
                 mamap.setdefault(ma[0], 0)
                 mamap[ma[0]] = mamap[ma[0]] + 1
-            elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$", ma[0], re.IGNORECASE):
+            elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv|ref)\s*$", ma[0], re.IGNORECASE):
                 Incident(
                     state=state, args=self.args,
                     testid='misc-attr-typo',
