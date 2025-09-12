@@ -72,7 +72,7 @@ def validate_file(path, cfg_obj):
 				match = crex.sentid.fullmatch(line)
 				if match:
 					state.sentence_id = match.group(1)
-					state.known_sent_ids.add(match.group(1))
+
 
 			if cfg_obj['block']:
 				params = {
@@ -94,7 +94,7 @@ def validate_file(path, cfg_obj):
 				params = {
 					"comments" : comments,
 					"allow_slash": True,
-					"known_sent_ids": set()
+					"known_sent_ids": state.known_sent_ids
 				}
 				run_checks(cfg_obj['comment_lines'], params, incidents, state)
 
@@ -115,8 +115,9 @@ def validate_file(path, cfg_obj):
 				params = {
 					"cols": (counter, line)
 				}
-				# state.current_line = counter
 				run_checks(cfg_obj['cols'], params, incidents, state)
+
+			state.known_sent_ids.add(state.sentence_id)
 
 
 		if len(block) == 1 and not block[0][1]:
@@ -726,6 +727,7 @@ def check_newlines(inp: TextIO, **_) -> List[Incident]:
 # specific guidelines may permit it).
 #==============================================================================
 
+#* DONE
 def check_sent_id(comments: List[Tuple[int, str]],
                 allow_slash: bool,
                 known_sent_ids: Set,
@@ -819,9 +821,7 @@ def check_sent_id(comments: List[Tuple[int, str]],
 				lineno=firstmatch
 			))
 			logger.debug("'slash-in-sent-id' triggered by sid '%s'", sid)
-		#state.known_sent_ids.add(sid) # TODO: move this to the engine
 	return incidents
-
 
 #* DONE
 def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
