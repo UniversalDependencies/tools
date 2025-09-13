@@ -377,7 +377,7 @@ Enhanced errors: 2
 LEVEL 3 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\non-proj.conllu 
-[Line 6 Sent non-proj Node 3]: [L3 Syntax punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [Node<non-proj#2, B>]
+[Line 6 Sent non-proj Node 3]: [L3 Syntax punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [2]
 Syntax errors: 1
 *** FAILED *** with 1 errors
  

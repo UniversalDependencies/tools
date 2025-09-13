@@ -3083,7 +3083,7 @@ class Validator:
         gap = []
         if rangebetween:
             gap = [n for n in node.root.descendants if n.ord in rangebetween and not n in node.parent.descendants]
-        return gap
+        return sorted(gap)
 
 
 
@@ -3105,19 +3105,21 @@ class Validator:
         if node.udeprel == 'punct':
             nonprojnodes = self.get_caused_nonprojectivities(node)
             if nonprojnodes:
+                nonprojids = [x.ord for x in nonprojnodes]
                 Incident(
                     state=state, args=self.args,
                     nodeid=node.ord,
                     testid='punct-causes-nonproj',
-                    message=f"Punctuation must not cause non-projectivity of nodes {nonprojnodes}"
+                    message=f"Punctuation must not cause non-projectivity of nodes {nonprojids}"
                 ).report()
-            gap = self.get_gap(node)
-            if gap:
+            gapnodes = self.get_gap(node)
+            if gapnodes:
+                gapids = [x.ord for x in gapnodes]
                 Incident(
                     state=state, args=self.args,
                     nodeid=node.ord,
                     testid='punct-is-nonproj',
-                    message=f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
+                    message=f"Punctuation must not be attached non-projectively over nodes {gapids}"
                 ).report()
 
 
