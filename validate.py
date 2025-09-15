@@ -58,7 +58,7 @@ class State:
         # Error counter by error type. Key: error type; value: error count.
         # Incremented in Incident.report().
         self.error_counter = {}
-        # Lists of errors for each type, up to --max_err
+        # Lists of errors for each type, up to --max_store
         # Key: error type; value: a list of the errors
         self.error_tracker = defaultdict(list)
         # Set of detailed error explanations that have been printed so far.
@@ -643,7 +643,7 @@ class Incident:
     def report(self):
         # Even if we should be quiet, at least count the error.
         self.state.error_counter[self.testclass] = self.state.error_counter.get(self.testclass, 0)+1
-        if self.args.max_err <= 0 or len(self.state.error_tracker[self.testclass]) < self.args.max_err:
+        if self.args.max_store <= 0 or len(self.state.error_tracker[self.testclass]) < self.args.max_store:
             self.state.error_tracker[self.testclass].append(self)
         if self.args.quiet:
             return
@@ -4394,6 +4394,10 @@ def build_argparse():
     io_group.add_argument('--max-err',
                           action="store", type=int, default=20,
                           help="""How many errors to output before exiting? 0 for all.
+                          Default: %(default)d.""")
+    io_group.add_argument('--max-store',
+                          action="store", type=int, default=20,
+                          help="""How many errors to save when collecting errors. 0 for all.
                           Default: %(default)d.""")
     io_group.add_argument('input',
                           nargs='*',
