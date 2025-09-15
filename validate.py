@@ -711,9 +711,10 @@ def lemmatl(node):
 
 
 class Validator:
-    def __init__(self, args):
-        self.conllu_reader = udapi.block.read.conllu.Conllu()
+    def __init__(self, args=None):
+        args = parse_args(args)
         self.args = args
+        self.conllu_reader = udapi.block.read.conllu.Conllu()
 
 
     def next_sentence(self, state, inp):
@@ -4421,9 +4422,9 @@ def build_argparse():
                              help='Test coreference and entity-related annotation in MISC.')
     return opt_parser
 
-def parse_args():
+def parse_args(args=None):
     opt_parser = build_argparse()
-    args = opt_parser.parse_args() #Parsed command-line arguments
+    args = opt_parser.parse_args(args=args) #Parsed command-line arguments
 
     # Level of validation
     if args.level < 1:
@@ -4441,8 +4442,8 @@ def parse_args():
     return args
 
 def main():
-    args = parse_args()
-    validator = Validator(args)
+    validator = Validator()
+    args = validator.args
     state = validator.validate_files(args.input)
 
     # Summarize the warnings and errors.
