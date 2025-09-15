@@ -7,6 +7,7 @@ import io
 import os.path
 import argparse
 import traceback
+from collections import defaultdict
 # According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
 # the regex module has the same API as re but it can check Unicode character properties using \p{}
 # as in Perl.
@@ -57,6 +58,9 @@ class State:
         # Error counter by error type. Key: error type; value: error count.
         # Incremented in Incident.report().
         self.error_counter = {}
+        # Lists of errors for each type, up to --max_err
+        # Key: error type; value: a list of the errors
+        self.error_tracker = defaultdict(list)
         # Set of detailed error explanations that have been printed so far.
         # Each explanation will be printed only once. Typically, an explanation
         # can be identified by test id + language code. Nevertheless, we put
@@ -639,6 +643,8 @@ class Incident:
     def report(self):
         # Even if we should be quiet, at least count the error.
         self.state.error_counter[self.testclass] = self.state.error_counter.get(self.testclass, 0)+1
+        if self.args.max_err <= 0 or len(self.state.error_tracker[self.testclass]) < self.args.max_err:
+            self.state.error_tracker[self.testclass].append(self)
         if self.args.quiet:
             return
         # Suppress error messages of a type of which we have seen too many.
