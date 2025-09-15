@@ -3165,6 +3165,9 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Ger", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Ger": 1, "Inf": 1, "Part": 1}, "VERB": {"Conv": 1, "Fin": 1, "Ger": 1, "Inf": 1, "Part": 1}}, "lastchanged": "2021-09-25-18-54-42", "lastchanger": "aryamanarora"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Cau", "Mid", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 1, "Cau": 1, "Mid": 1, "Pass": 1}, "AUX": {"Act": 1, "Cau": 1, "Mid": 1, "Pass": 1}, "NOUN": {"Act": 1, "Cau": 1, "Mid": 1, "Pass": 1}, "VERB": {"Act": 1, "Cau": 1, "Mid": 1, "Pass": 1}}, "lastchanged": "2021-09-25-18-55-28", "lastchanger": "aryamanarora"}
 },
+"pro": {
+
+},
 "prx": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
