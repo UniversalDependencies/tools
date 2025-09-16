@@ -5,16 +5,27 @@ import unicodedata
 import logging
 import inspect
 
-from typing import List, Tuple, TextIO, Set
+from typing import List, Tuple, TextIO, Set, Any, Dict
+from dataclasses import dataclass, field
 
 from validator.incident import Incident, Error, Warning, TestClass, IncidentType
 import validator.utils as utils
 import validator.compiled_regex as crex
-from validator.validate_lib import State
+# from validator.validate_lib import State
 from validator.logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 setup_logging(logger)
+
+@dataclass
+class State:
+	current_file_name:str
+	sentence_id:str = ''
+	parallel_id:str = ''
+	known_sent_ids:Set = field(default_factory=set)
+	known_parallel_ids:Set = field(default_factory=set)
+	parallel_id_lastalt: Dict = field(default=collections.defaultdict(None))
+	parallel_id_lastalt: Dict = field(default=collections.defaultdict(None))
 
 def validate(paths, cfg_obj):
 	'''
@@ -23,7 +34,6 @@ def validate(paths, cfg_obj):
 	# TODO: complete docstring
 	for path in paths:
 		yield validate_file(path, cfg_obj)
-
 
 def run_checks(checks, parameters, incidents, state):
 
@@ -69,9 +79,9 @@ def validate_file(path, cfg_obj):
 			tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
 
 			for (counter, line) in comments:
-				match = crex.sentid.fullmatch(line)
-				if match:
-					state.sentence_id = match.group(1)
+				match_sentid = crex.sentid.fullmatch(line)
+				if match_sentid:
+					state.sentence_id = match_sentid.group(1)
 
 
 			if cfg_obj['block']:
@@ -94,7 +104,8 @@ def validate_file(path, cfg_obj):
 				params = {
 					"comments" : comments,
 					"allow_slash": True,
-					"known_sent_ids": state.known_sent_ids
+					"known_sent_ids": state.known_sent_ids,
+					"state": state
 				}
 				run_checks(cfg_obj['comment_lines'], params, incidents, state)
 
@@ -116,9 +127,6 @@ def validate_file(path, cfg_obj):
 					"cols": (counter, line)
 				}
 				run_checks(cfg_obj['cols'], params, incidents, state)
-
-			state.known_sent_ids.add(state.sentence_id)
-
 
 		if len(block) == 1 and not block[0][1]:
 			incidents.append(Error(
@@ -729,9 +737,10 @@ def check_newlines(inp: TextIO, **_) -> List[Incident]:
 
 #* DONE
 def check_sent_id(comments: List[Tuple[int, str]],
-                allow_slash: bool,
-                known_sent_ids: Set,
-                **_) -> List[Incident]:
+				allow_slash: bool,
+				known_sent_ids: Set,
+				state:State = None,
+				**_) -> List[Incident]:
 	'''check_sent_id checks that sentence id exists, is well-formed and unique.
 
 	Parameters
@@ -744,6 +753,8 @@ def check_sent_id(comments: List[Tuple[int, str]],
 		allow slashes when equal to "ud".
 	known_sent_ids : Set
 		The set of previously encountered sentence IDs.
+	state : State, optional
+		The object where known_sent_ids are stored and updated, by default None
 
 	Returns
 	-------
@@ -775,7 +786,7 @@ def check_sent_id(comments: List[Tuple[int, str]],
 					level=2,
 					testid='invalid-sent-id',
 					message=(f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' "
-            				"where xxxxx is not whitespace. Forward slash reserved for special purposes."),
+						"where xxxxx is not whitespace. Forward slash reserved for special purposes."),
 					lineno = lineno
 				))
 				logger.debug("'invalid-sent-id' triggered by line '%s'", c)
@@ -821,6 +832,361 @@ def check_sent_id(comments: List[Tuple[int, str]],
 				lineno=firstmatch
 			))
 			logger.debug("'slash-in-sent-id' triggered by sid '%s'", sid)
+
+	if state:
+		state.known_sent_ids.add(sid)
+	return incidents
+
+#! needs checking and testing, I don't think it works
+def check_parallel_id(comments: List[Tuple[int, str]],
+					known_parallel_ids: Set,
+					parallel_id_lastalt: Any, #TODO: define type
+					parallel_id_lastpart: Any, #TODO: define type
+					state: State=None,
+					**_ ) -> List[Incident]:
+	'''check_parallel_id checks that parallel_id sentence-level comment
+	is used after sent_id of sentences that are parallel translations of sentences in other
+	treebanks. Like sent_id, it must be well-formed and unique. Unlike
+	sent_id, it is optional. Sentences that do not have it are not
+	parallel.
+
+	Parameters
+	----------
+	comments : List[Tuple[int, str]]
+		_description_
+	known_parallel_ids : Set
+		_description_
+	parallel_id_lastalt : Any
+		_description_
+	state : State, optional
+		The object where known_sent_ids are stored and updated, by default None
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+
+	Test-ids
+	--------
+	invalid-parallel-id, multiple-parallel-id, non-unique-parallel-id, parallel-id-alt,
+	parallel-id-part
+
+	Reference-test
+	--------------
+	TODO
+	'''
+
+	incidents = []
+	matched = []
+	for lineno, c in comments:
+		match = crex.parallelid.fullmatch(c)
+		if match:
+			matched.append((lineno, match))
+		else:
+			if c.startswith('# parallel_id') or c.startswith('#parallel_id'):
+				error = Error(
+					level=2,
+					testclass=TestClass.METADATA,
+					lineno=lineno,
+					testid='invalid-parallel-id',
+					message=(f"Spurious parallel_id line: '{c}' should look like "
+							"'# parallel_id = corpus/sentence' where corpus is [a-z]+ "
+							"and sentence is [-0-9a-z]. "
+							"Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.")
+				)
+				incidents.append(error)
+
+	if len(matched) > 1:
+		incidents.append(Error(
+			level=2,
+			testclass=TestClass.METADATA,
+			testid='multiple-parallel-id',
+			lineno=matched[1][0], # error on second parallel_id found
+			message="Multiple parallel_id attributes."
+		))
+	elif matched:
+		lineno, match = matched[0]
+		# Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
+		# For that to happen, all three files should be tested at once.
+		pid = match.group(1)
+		if pid in known_parallel_ids:
+			incidents.append(Error(
+				level=2,
+				testclass=TestClass.METADATA,
+				testid='non-unique-parallel-id',
+				lineno=lineno,
+				message=f"Non-unique parallel_id attribute '{pid}'."
+			))
+		else:
+			# Additional tests when pid has altN or partN.
+			# Do them only if the whole pid is unique.
+			sid = match.group(2) + '/' + match.group(3)
+			alt = None
+			part = None
+			altpart = match.group(4)
+			if altpart:
+				apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
+				if apmatch:
+					alt = apmatch.group(1)
+					part = apmatch.group(2)
+					if alt:
+						alt = int(alt)
+					if part:
+						part = int(part)
+			if sid in parallel_id_lastalt:
+				# TODO: add parentheses to make precedence explicit
+				if parallel_id_lastalt[sid] == None and \
+					alt != None or \
+					parallel_id_lastalt[sid] != None and alt == None:
+
+					incidents.append(Error(
+						level=2,
+						testid='parallel-id-alt',
+						testclass=TestClass.METADATA,
+						message=(f"Some instances of parallel sentence '{sid}' have the 'alt' "
+								"suffix while others do not.")
+					))
+				elif alt != None and alt != parallel_id_lastalt[sid] + 1:
+					incidents.append(Error(
+						level=2,
+						testid='parallel-id-alt',
+						testclass=TestClass.METADATA,
+						message=(f"The alt suffix of parallel sentence '{sid}' should be"
+								f"{parallel_id_lastalt[sid]}+1 but it is {alt}.")
+					))
+
+			parallel_id_lastalt[sid] = alt
+			if state:
+				state.parallel_id_lastalt[sid] = alt
+
+			if sid in parallel_id_lastpart:
+				#TODO: add parentheses to make precedence explicit
+				if parallel_id_lastpart[sid] == None and part != None or \
+					parallel_id_lastpart[sid] != None and part == None:
+					incidents.append(Error(
+						testid='parallel-id-part',
+						level=2,
+						testclass=TestClass.METADATA,
+						message=(f"Some instances of parallel sentence '{sid}' have the 'part' "
+								"suffix while others do not.")
+					))
+
+				elif part != None and part != parallel_id_lastpart[sid] + 1:
+					incidents.append(Error(
+						testid='parallel-id-part',
+						level=2,
+						testclass=TestClass.METADATA,
+						message=(f"The part suffix of parallel sentence '{sid}' should be "
+								f"{parallel_id_lastpart[sid]}+1 but it is {part}.")
+					))
+			parallel_id_lastpart[sid] = part
+			if state:
+				state.parallel_id_lastpart[sid] = part
+	if state:
+		state.known_parallel_ids.add(pid)
+	return incidents
+
+#! needs checking and testing
+def check_text_meta(comments: List[Tuple[int, str]],
+					sentence: List[Tuple[int, List[str]]],
+					spaceafterno_in_effect:bool,
+    				state :State=None,
+        			**_) -> List[Incident]:
+	'''check_text_meta checks metadata other than sentence id, that is, document breaks,
+	paragraph breaks and sentence text (which is also compared to the sequence of the
+	forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+
+	Parameters
+	----------
+	comments : List[Tuple[int, str]]
+		A list of comments, represented as strings.
+	sentence : List[Tuple[int, List[str]]]
+		A list of lists representing a sentence in tabular format.
+	spaceafterno_in_effect : bool
+		_description_
+
+	Returns
+	-------
+	List[Incident]
+		A list of Incidents (empty if validation is successful).
+	'''
+
+	incidents = []
+
+	firstline = 0
+	newdoc_matched = []
+	newpar_matched = []
+	text_matched = []
+	for lineno, c in comments:
+		newdoc_match = crex.newdoc.fullmatch(c)
+		if newdoc_match:
+			newdoc_matched.append((lineno, newdoc_match))
+		newpar_match = crex.newpar.fullmatch(c)
+		if newpar_match:
+			newpar_matched.append((lineno, newpar_match))
+		text_match = crex.text.fullmatch(c)
+		if text_match:
+			text_matched.append((lineno, text_match))
+
+		if firstline == 0:
+			firstline = lineno
+
+	if len(newdoc_matched) > 1:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			lineno=newdoc_matched[1][0],
+			testid='multiple-newdoc',
+			message='Multiple newdoc attributes.'
+		))
+	if len(newpar_matched) > 1:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			lineno=newpar_matched[1][0],
+			testid='multiple-newpar',
+			message='Multiple newpar attributes.'
+		))
+
+	if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			lineno=firstline,
+			testid='spaceafter-newdocpar',
+			message=("New document or paragraph starts when the last token of the previous "
+					"sentence says SpaceAfter=No.")
+		))
+
+	if not text_matched:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			lineno=firstline,
+			testid='missing-text',
+			message='Missing the text attribute.'
+		))
+	elif len(text_matched) > 1:
+		incidents.append(Error(
+			testclass=TestClass.METADATA,
+			level=2,
+			lineno=text_match[1][0],
+			testid='multiple-text',
+			message='Multiple text attributes.'
+		))
+	else:
+		lineno, text_matched = text_matched[0]
+		stext = text_matched.group(1)
+		if stext[-1].isspace():
+			incidents.append(Error(
+				testclass=TestClass.METADATA,
+				level=2,
+				lineno=lineno,
+				testid='text-trailing-whitespace',
+				message='The text attribute must not end with whitespace.'
+			))
+
+		# Validate the text against the SpaceAfter attribute in MISC.
+		skip_words = set()
+		mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
+
+		for lineno, cols in sentence:
+			if 'NoSpaceAfter=Yes' in cols[utils.MISC]: # I leave this without the split("|") to catch all
+				incidents.append(Error(
+					testclass=TestClass.METADATA,
+					level=2,
+					lineno=lineno,
+					testid='nospaceafter-yes',
+					message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
+				))
+			misc_attributes_spaceafter = [x for x in cols[utils.MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']
+			if len(misc_attributes_spaceafter) > 0:
+				incidents.append(Error(
+					testclass=TestClass.METADATA,
+					level=2,
+					lineno=lineno,
+					testid='spaceafter-value',
+					message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
+				))
+
+			#? can we change the order of these conditions and avoid the 'continue'?
+			if utils.is_empty_node(cols):
+				if 'SpaceAfter=No' in cols[utils.MISC]: # I leave this without the split("|") to catch all
+					incidents.append(Error(
+						testclass=TestClass.METADATA,
+						level=2,
+						lineno=lineno,
+						testid='spaceafter-empty-node',
+						message="'SpaceAfter=No' cannot occur with empty nodes."
+					))
+				continue
+			elif utils.is_multiword_token(cols):
+				beg, end = cols[utils.ID].split('-')
+				begi, endi = int(beg), int(end)
+				# If we see a multi-word token, add its words to an ignore-set
+				# these will be skipped, and also checked for absence of SpaceAfter=No.
+				for i in range(begi, endi+1):
+					skip_words.add(str(i))
+			elif cols[utils.ID] in skip_words:
+				if 'SpaceAfter=No' in cols[utils.MISC]:
+					incidents.append(Error(
+						testclass=TestClass.METADATA,
+						level=2,
+						lineno=lineno,
+						testid='spaceafter-mwt-node',
+						message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
+					))
+				continue
+			# else:
+				# Err, I guess we have nothing to do here. :)
+				# pass
+
+			# So now we have either a multi-word token or a word which is also a token in its entirety.
+			if not stext.startswith(cols[utils.FORM]):
+				if not mismatch_reported:
+					extra_message = ''
+					if len(stext) >= 1 and stext[0].isspace():
+						extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
+					incidents.append(Error(
+						testclass=TestClass.METADATA,
+						level=2,
+						lineno = lineno,
+						testid='text-form-mismatch',
+						message=(f"Mismatch between the text attribute and the FORM field. "
+								f"Form[{cols[utils.ID]}] is '{cols[utils.FORM]}' but text is "
+								f"'{stext[:len(cols[utils.FORM])+20]}...'"+extra_message)
+					))
+					mismatch_reported = 1
+			else:
+				stext = stext[len(cols[utils.FORM]):] # eat the form
+				# Remember if SpaceAfter=No applies to the last word of the sentence.
+				# This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+				#? do we need to do it for every word? Maybe just the last one
+				if 'SpaceAfter=No' in cols[utils.MISC].split("|"):
+					if state:
+						state.spaceafterno_in_effect = True
+				else:
+					if state:
+						state.spaceafterno_in_effect = False
+					if (stext) and not stext[0].isspace():
+						incidents.append(Error(
+							testclass=TestClass.METADATA,
+							level=2,
+							lineno=lineno,
+							testid='missing-spaceafter',
+							message=(f"'SpaceAfter=No' is missing in the MISC field of node "
+									f"{cols[utils.ID]} because the text is '{utils.shorten(cols[utils.FORM]+stext)}'.")
+						))
+					stext = stext.lstrip()
+		if stext:
+			incidents.append(Error(
+				testclass=TestClass.METADATA,
+				level=2,
+				lineno=lineno,
+				testid='text-extra-chars',
+				message=(f"Extra characters at the end of the text attribute, "
+						f"not accounted for in the FORM fields: '{stext}'")
+			))
 	return incidents
 
 #* DONE
@@ -1525,165 +1891,6 @@ def check_tree(sentence, node_line, single_root):
 			message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
 		))
 	logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-	return incidents
-
-
-def check_text_meta(comments, tree, spaceafterno_in_effect):
-	"""
-	Checks metadata other than sentence id, that is, document breaks, paragraph
-	breaks and sentence text (which is also compared to the sequence of the
-	forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
-	"""
-	incidents = []
-	newdoc_matched = []
-	newpar_matched = []
-	text_matched = []
-	for c in comments:
-		newdoc_match = crex.newdoc.fullmatch(c)
-		if newdoc_match:
-			newdoc_matched.append(newdoc_match)
-		newpar_match = crex.newpar.fullmatch(c)
-		if newpar_match:
-			newpar_matched.append(newpar_match)
-		text_match = crex.text.fullmatch(c)
-		if text_match:
-			text_matched.append(text_match)
-	if len(newdoc_matched) > 1:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='multiple-newdoc',
-			message='Multiple newdoc attributes.'
-		))
-	if len(newpar_matched) > 1:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='multiple-newpar',
-			message='Multiple newpar attributes.'
-		))
-	if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='spaceafter-newdocpar',
-			message='New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
-		))
-	if not text_matched:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='missing-text',
-			message='Missing the text attribute.'
-		))
-	elif len(text_matched) > 1:
-		incidents.append(Error(
-			testclass=TestClass.METADATA,
-			level=2,
-			testid='multiple-text',
-			message='Multiple text attributes.'
-		))
-	else:
-		stext = text_matched[0].group(1)
-		if stext[-1].isspace():
-			incidents.append(Error(
-				testclass=TestClass.METADATA,
-				level=2,
-				testid='text-trailing-whitespace',
-				message='The text attribute must not end with whitespace.'
-			))
-		# Validate the text against the SpaceAfter attribute in MISC.
-		skip_words = set()
-		mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
-		# We will sum state.sentence_line + iline, and state.sentence_line already points at
-		# the first token/node line after the sentence comments. Hence iline shall
-		# be 0 once we enter the cycle.
-		iline = -1
-		for cols in tree:
-			iline += 1
-			if 'NoSpaceAfter=Yes' in cols[utils.MISC]: # I leave this without the split("|") to catch all
-				incidents.append(Error(
-					testclass=TestClass.METADATA,
-					level=2,
-					testid='nospaceafter-yes',
-					message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-				))
-			if len([x for x in cols[utils.MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
-				#! I don't get this
-				incidents.append(Error(
-					testclass=TestClass.METADATA,
-					level=2,
-					# TODO: lineno=state.sentence_line+iline, (engine)
-					testid='spaceafter-value',
-					message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
-				))
-			if utils.is_empty_node(cols):
-				if 'SpaceAfter=No' in cols[utils.MISC]: # I leave this without the split("|") to catch all
-					incidents.append(Error(
-						testclass=TestClass.METADATA,
-						level=2,
-						# TODO: engine lineno=state.sentence_line+iline,
-						testid='spaceafter-empty-node',
-						message="'SpaceAfter=No' cannot occur with empty nodes."
-					))
-				continue
-			elif utils.is_multiword_token(cols):
-				beg, end = cols[utils.ID].split('-')
-				begi, endi = int(beg), int(end)
-				# If we see a multi-word token, add its words to an ignore-set – these will be skipped, and also checked for absence of SpaceAfter=No.
-				for i in range(begi, endi+1):
-					skip_words.add(str(i))
-			elif cols[utils.ID] in skip_words:
-				if 'SpaceAfter=No' in cols[utils.MISC]:
-					incidents.append(Error(
-						testclass=TestClass.METADATA,
-						level=2,
-						# TODO: lineno=state.sentence_line+iline,
-						testid='spaceafter-mwt-node',
-						message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-					))
-				continue
-			else:
-				# Err, I guess we have nothing to do here. :)
-				pass
-			# So now we have either a multi-word token or a word which is also a token in its entirety.
-			if not stext.startswith(cols[utils.FORM]):
-				if not mismatch_reported:
-					extra_message = ''
-					if len(stext) >= 1 and stext[0].isspace():
-						extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
-					incidents.append(Error(
-						testclass=TestClass.METADATA,
-						level=2,
-						# TODO: lineno=state.sentence_line+iline,
-						testid='text-form-mismatch',
-						message=f"Mismatch between the text attribute and the FORM field. Form[{cols[utils.ID]}] is '{cols[utils.FORM]}' but text is '{stext[:len(cols[utils.FORM])+20]}...'"+extra_message
-					))
-					mismatch_reported = 1
-			else:
-				stext = stext[len(cols[utils.FORM]):] # eat the form
-				# Remember if SpaceAfter=No applies to the last word of the sentence.
-				# This is not prohibited in general but it is prohibited at the end of a paragraph or document.
-				if 'SpaceAfter=No' in cols[utils.MISC].split("|"):
-					spaceafterno_in_effect = True
-				else:
-					spaceafterno_in_effect = False
-					if (stext) and not stext[0].isspace():
-						incidents.append(Error(
-							testclass=TestClass.METADATA,
-							level=2,
-							# TODO: lineno=state.sentence_line+iline,
-							testid='missing-spaceafter',
-							message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[utils.ID]} because the text is '{utils.shorten(cols[utils.FORM]+stext)}'."
-						))
-					stext = stext.lstrip()
-		if stext:
-			incidents.append(Error(
-				testclass=TestClass.METADATA,
-				level=2,
-				testid='text-extra-chars',
-				message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
-			))
 	return incidents
 
 def check_deprels_level2(node, deprels, lang):

@@ -42,6 +42,10 @@ newpar = re.compile(r"#\s*newpar(?:\s+(\S+))?")
 # ! proposal for new regex: "# sent_id = (\S+)"
 sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
 
+# Parallel sentence id comment line. The actual id as well as its predefined parts are bracketed.
+# TODO: add test
+parallelid = re.compile(r"#\s*parallel_id\s*=\s*(([a-z]+)/([-0-9a-z]+)(?:/(alt[1-9][0-9]*|part[1-9][0-9]*|alt[1-9][0-9]*part[1-9][0-9]*))?)")
+
 # Sentence text comment line. The actual text is bracketed.
 # ! proposal for new regex: "# text = (.*\S)"
 text = re.compile(r"#\s*text\s*=\s*(.*\S)")
