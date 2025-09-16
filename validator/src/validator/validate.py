@@ -24,8 +24,8 @@ class State:
 	parallel_id:str = ''
 	known_sent_ids:Set = field(default_factory=set)
 	known_parallel_ids:Set = field(default_factory=set)
-	parallel_id_lastalt: Dict = field(default=collections.defaultdict(None))
-	parallel_id_lastalt: Dict = field(default=collections.defaultdict(None))
+	parallel_id_lastalt: collections.defaultdict[None] = field(default_factory=lambda: collections.defaultdict(None))
+	parallel_id_lastalt: collections.defaultdict[None] = field(default_factory=lambda: collections.defaultdict(None))
 
 def validate(paths, cfg_obj):
 	'''
@@ -833,8 +833,8 @@ def check_sent_id(comments: List[Tuple[int, str]],
 			))
 			logger.debug("'slash-in-sent-id' triggered by sid '%s'", sid)
 
-	if state:
-		state.known_sent_ids.add(sid)
+		if state:
+			state.known_sent_ids.add(sid)
 	return incidents
 
 #! needs checking and testing, I don't think it works
