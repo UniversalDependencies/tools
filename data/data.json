@@ -1850,6 +1850,7 @@
 "yi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Marnta [yintayu].", "exampleen": "I was cold.", "comment": "Oates, 1988"}], "status": "documented", "lastchanged": "2020-11-08-12-44-09", "lastchanger": "dan-zeman"}
 },
 "zza": {
+"ameyene": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and the infinitive form of the main verb", "deficient": "", "example": "[Yeno] vatene.", "exampleen": "It is being said.", "comment": ""}], "status": "documented", "lastchanged": "2025-09-18-14-39-47", "lastchanger": "rahonalab"},
 "bîyene": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "O malim [bî]", "exampleen": "He was a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2025-09-18-14-36-29", "lastchanger": "rahonalab"}
 }
 }}
