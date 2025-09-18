@@ -4436,6 +4436,7 @@
 },
 "zza": {
 "Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Anim"], "lvalues": [], "unused_uvalues": ["Hum", "Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Anim": 1}}, "lastchanged": "2025-09-18-14-43-40", "lastchanger": "rahonalab"},
-"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Prog": 1}, "VERB": {"Imp": 1, "Perf": 1}}, "lastchanged": "2025-09-18-14-45-35", "lastchanger": "rahonalab"}
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Prog": 1}, "VERB": {"Imp": 1, "Perf": 1}}, "lastchanged": "2025-09-18-14-45-35", "lastchanger": "rahonalab"},
+"Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Abs", "Acc", "Erg", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Ess", "Gen", "Ill", "Ine", "Ins", "Lat", "Loc", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Acc": 1, "Nom": 1}, "DET": {"Acc": 1, "Nom": 1}, "NOUN": {"Abs": 1, "Acc": 1, "Erg": 1, "Nom": 1}, "PRON": {"Abs": 1, "Acc": 1, "Erg": 1, "Nom": 1}, "PROPN": {"Abs": 1, "Acc": 1, "Erg": 1, "Nom": 1}}, "lastchanged": "2025-09-18-14-54-19", "lastchanger": "rahonalab"}
 }
 }}
