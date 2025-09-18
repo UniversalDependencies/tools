@@ -4435,6 +4435,6 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "zza": {
-
+"Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Anim"], "lvalues": [], "unused_uvalues": ["Hum", "Inan", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Anim": 1}}, "lastchanged": "2025-09-18-14-43-40", "lastchanger": "rahonalab"}
 }
 }}
