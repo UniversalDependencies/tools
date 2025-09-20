@@ -1,53 +1,53 @@
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\ambiguous-feature.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\ambiguous-feature.conllu 
 [Line 4 Sent ambiguous-feature]: [L2 Morpho invalid-feature] Spurious morphological feature: 'A=B=C'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\cyclic-deps.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\cyclic-deps.conllu 
 [Line 4 Sent cyclic-deps]: [L2 Syntax non-tree] Non-tree structure. Words 2,3 are not reachable from the root 0.
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\deprel-not-empty-in-empty.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\deprel-not-empty-in-empty.conllu 
 [Line 5 Sent deprel-not-empty-in-empty]: [L2 Format mwt-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'orphan'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\dos-newlines.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\dos-newlines.conllu 
 [Line 23 Sent dos-newlines3]: [L1 Format non-unix-newline] Only the unix-style LF line terminator is allowed.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\duplicate-feature.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-feature.conllu 
 [Line 4 Sent duplicate-feature]: [L2 Morpho repeated-feature] Repeated features are disallowed: 'Gen=M|Gen=M'.
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\duplicate-id.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-id.conllu 
 [Line 4 Sent duplicate-id]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,1'. Expected '1,2'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\duplicate-layered-feature.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-layered-feature.conllu 
 [Line 4 Sent duplicate-layered-feature]: [L2 Morpho repeated-feature] Repeated features are disallowed: 'Number=Sing|Number[psor]=Plur|Number[psor]=Sing'.
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\duplicate-value.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-value.conllu 
 [Line 4 Sent duplicate-value]: [L2 Morpho repeated-feature-value] Repeated feature values are disallowed: 'Gen=M,M'
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\empty-field.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-field.conllu 
 [Line 4 Sent empty-field]: [L1 Format empty-column] Empty value in column FORM: ''.
 [Line 4 Sent empty-field]: [L2 Metadata missing-text] Missing the text attribute.
 Format errors: 1
@@ -55,7 +55,7 @@ Metadata errors: 1
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\empty-head.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-head.conllu 
 [Line 4 Sent empty-head]: [L1 Format empty-column] Empty value in column HEAD: ''.
 [Line 5 Sent empty-head]: [L2 Format invalid-head] Invalid HEAD: ''.
 [Line 5 Sent empty-head]: [L2 Syntax unknown-head] Undefined HEAD (no such ID): ''.
@@ -64,19 +64,19 @@ Syntax errors: 1
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\empty-sentence.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-sentence.conllu 
 [Line 3 Sent None]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\extra-empty-line.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\extra-empty-line.conllu 
 [Line 6 Sent extra-empty-line1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\extra-field.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\extra-field.conllu 
 [Line 4 Sent extra-field]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
 [Line 5 Sent extra-field]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 [Line 5 Sent extra-field]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
@@ -84,225 +84,225 @@ Format errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\head-0-deprel-not-root.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-0-deprel-not-root.conllu 
 [Line 4 Sent head-0-deprel-not-root]: [L2 Syntax 0-is-not-root] DEPREL must be 'root' if HEAD is 0.
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\head-not-0-deprel-root.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-not-0-deprel-root.conllu 
 [Line 5 Sent head-not-0-deprel-root]: [L2 Syntax root-is-not-0] DEPREL cannot be 'root' if HEAD is not 0.
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\head-not-empty-in-empty.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-not-empty-in-empty.conllu 
 [Line 5 Sent head-not-empty-in-empty]: [L2 Format mwt-nonempty-field] An empty node must have '_' in the column HEAD. Now: '1'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\id-starting-from-2.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\id-starting-from-2.conllu 
 [Line 9 Sent id-starting-from-2b]: [L1 Format word-id-sequence] Words do not form a sequence. Got '2'. Expected '1'.
 [Line 10 Sent id-starting-from-2b]: [L1 Format word-interval-out] Spurious token interval 2-2 (out of range)
 Format errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\id-with-extra-0.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\id-with-extra-0.conllu 
 [Line 5 Sent id-with-extra-0]: [L1 Format invalid-word-id] Unexpected ID format '01'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\invalid-deps-id.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-id.conllu 
 [Line 6 Sent invalid-deps-id]: [L2 Enhanced unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
 Enhanced errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\invalid-deps-order.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-order.conllu 
 [Line 4 Sent invalid-deps-order]: [L2 Format unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\invalid-deps-syntax.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-syntax.conllu 
 [Line 6 Sent invalid-deps-syntax]: [L2 Format invalid-deps] Failed to parse DEPS: '2'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\invalid-head.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-head.conllu 
 [Line 6 Sent invalid-head]: [L2 Syntax unknown-head] Undefined HEAD (no such ID): '3'.
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\invalid-range-format.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-range-format.conllu 
 [Line 11 Sent invalid-range-format]: [L1 Format invalid-word-id] Unexpected ID format '2-X'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\invalid-range.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-range.conllu 
 [Line 11 Sent invalid-range]: [L1 Format reversed-word-interval] Spurious token interval 2-1
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-feature-in-empty.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-feature-in-empty.conllu 
 [Line 5 Sent lowercase-feature-in-empty]: [L2 Morpho invalid-feature] Spurious morphological feature: 'tense=Pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-feature-value-in-empty.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-feature-value-in-empty.conllu 
 [Line 5 Sent lowercase-feature-value-in-empty]: [L2 Morpho invalid-feature] Spurious morphological feature: 'Tense=pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-feature.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-feature.conllu 
 [Line 5 Sent lowercase-feature]: [L2 Morpho invalid-feature] Spurious morphological feature: 'lower=Nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-postag-in-empty.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-postag-in-empty.conllu 
 [Line 5 Sent lowercase-postag-in-empty]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'verb'.
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-postag.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-postag.conllu 
 [Line 4 Sent lowercase-postag]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'noun'.
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\lowercase-value.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-value.conllu 
 [Line 5 Sent lowercase-value]: [L2 Morpho invalid-feature] Spurious morphological feature: 'Lower=nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\malformed_deps.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\malformed_deps.conllu 
 [Line 15 Sent malformed_deps2]: [L2 Format invalid-deps] Failed to parse DEPS: 'xxx'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\misindexed-empty-node.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misindexed-empty-node.conllu 
 [Line 7 Sent misindexed-empty-node]: [L1 Format misplaced-empty-node] Empty node id 2.2, expected 1.1
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\misordered-feature.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-feature.conllu 
 [Line 5 Sent misordered-feature]: [L2 Morpho unsorted-features] Morphological features must be sorted: 'XB=True|Xa=True'.
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\misordered-layered-feature.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-layered-feature.conllu 
 [Line 5 Sent misordered-layered-feature]: [L2 Morpho unsorted-features] Morphological features must be sorted: 'Number[psor]=Plur|Number=Sing'.
 Morpho errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\misordered-multiword.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-multiword.conllu 
 [Line 12 Sent misordered-multiword]: [L1 Format misplaced-word-interval] Multiword range not before its first word.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\misplaced-comment-end.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-comment-end.conllu 
 [Line 12 Sent misplaced-comment-end]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\misplaced-comment-mid.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-comment-mid.conllu 
 [Line 6 Sent misplaced-comment-mid]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\missing-final-line.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\missing-final-line.conllu 
 [Line 4 Sent missing-final-line]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\missing-space-after.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\missing-space-after.conllu 
 [Line 4 Sent missing-space-after]: [L2 Metadata missing-spaceafter] 'SpaceAfter=No' is missing in the MISC field of node 1 because the text is 'Dog.'.
 Metadata errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\multiple-sent_id.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\multiple-sent_id.conllu 
 [Line 19 Sent tanl2]: [L2 Metadata multiple-sent-id] Multiple sent_id attributes.
 Metadata errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\multiword-with-pos.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\multiword-with-pos.conllu 
 [Line 6 Sent multiword-with-pos]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\no-sent_id.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\no-sent_id.conllu 
 [Line 8 Sent tanl1]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
 Metadata errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\nonsequential-empty-node-id.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nonsequential-empty-node-id.conllu 
 [Line 7 Sent nonsequential-empty-node-id]: [L1 Format misplaced-empty-node] Empty node id 1.2, expected 1.1
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\nonsequential-id.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nonsequential-id.conllu 
 [Line 4 Sent nonsequential-id]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
 [Line 6 Sent nonsequential-id]: [L1 Format word-interval-out] Spurious token interval 3-3 (out of range)
 Format errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\overlapping-multiword.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\overlapping-multiword.conllu 
 [Line 12 Sent overlapping-multiword]: [L1 Format overlapping-word-intervals] Range overlaps with others: 3-4
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\seemingly-empty-line.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\seemingly-empty-line.conllu 
 [Line 5 Sent 1]: [L1 Format pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\self-cycle-deps.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\self-cycle-deps.conllu 
 [Line 5 Sent self-cycle-deps]: [L2 Enhanced deps-self-loop] Self-loop in DEPS for '2'
 Enhanced errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\self-cycle-head.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\self-cycle-head.conllu 
 [Line 5 Sent self-cycle-head]: [L2 Syntax head-self-loop] HEAD == ID for 2
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\space-in-field.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\space-in-field.conllu 
 [Line 4 Sent space-in-field]: [L1 Format invalid-whitespace] White space not allowed in column XPOS: 'this is not valid'.
 Format errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\tanl-broken.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\tanl-broken.conllu 
 [Line 6 Sent tanl-broken1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 [Line 8 Sent tanl-broken1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 [Line 11 Sent tanl-broken2]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
@@ -318,7 +318,7 @@ Morpho errors: 5
 *** FAILED *** with 10 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\token_with_cols_filled.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\token_with_cols_filled.conllu 
 [Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
 [Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
 [Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
@@ -326,7 +326,7 @@ Format errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\trailing-tab.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\trailing-tab.conllu 
 [Line 4 Sent trailing-tab]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
 [Line 5 Sent trailing-tab]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
 [Line 5 Sent trailing-tab]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
@@ -334,7 +334,7 @@ Format errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\unnormalized-unicode.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\unnormalized-unicode.conllu 
 [Line 3 Sent None]: [L1 Unicode unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
 
 This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
@@ -344,7 +344,7 @@ Unicode errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\uppercase-deprel.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\uppercase-deprel.conllu 
 [Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
 [Line 5 Sent uppercase-deprel Node 2]: [L2 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
 
@@ -361,7 +361,7 @@ Syntax errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
 [Line 5 Sent uppercase-deps-deprel]: [L2 Enhanced invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
 [Line 5 Sent uppercase-deps-deprel Node 2]: [L2 Enhanced unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
 
@@ -376,13 +376,13 @@ Enhanced errors: 2
 -------------------------------------------------------------------------------- 
 LEVEL 3 TESTS 
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\non-proj.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\non-proj.conllu 
 [Line 6 Sent non-proj Node 3]: [L3 Syntax punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [2]
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\rel-upos.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\rel-upos.conllu 
 [Line 8 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning verbform-fin-without-mood] Finite verb 'loste' lacks the 'Mood' feature
 [Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning fixed-without-extpos] Fixed expression '5 2/3' does not have the 'ExtPos' feature
 [Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Syntax rel-upos-det] 'det' should be 'DET' or 'PRON' but it is 'NUM' ('5')
@@ -424,7 +424,7 @@ Warnings: 21
 *** FAILED *** with 15 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\right-to-left.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\right-to-left.conllu 
 [Line 9 Sent 13147 Node 3]: [L3 Syntax right-to-left-conj] Parent of relation 'conj' must precede the child in the word order.
 [Line 11 Sent 13147 Node 5]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
 [Line 13 Sent 13147 Node 7]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
@@ -444,7 +444,7 @@ Warnings: 6
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level3\too-many-subjects.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-subjects.conllu 
 [Line 17 Sent dev-6 Node 12]: [L3 Syntax too-many-subjects] Multiple subjects [2, 11] ('situacións', 'persoas') not subtyped as ':outer'.
 
 Outer subjects are allowed if a clause acts as the predicate of another clause.
@@ -455,7 +455,7 @@ Syntax errors: 1
 -------------------------------------------------------------------------------- 
 LEVEL 4-5 TESTS 
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
 [Line 9 Sent n01001011 Node 1]: [L4 Morpho feature-unknown] Feature NonExistent is not documented for language [cs] ('„').
 
 The following 95 feature values are currently permitted in language [cs]:
@@ -475,39 +475,39 @@ Morpho errors: 3
 -------------------------------------------------------------------------------- 
 THE FOLLOWING FILES SHOULD BE VALID 
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\empty-file.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\empty-file.conllu 
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\empty-nodes.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\empty-nodes.conllu 
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\layered-features.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\layered-features.conllu 
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\maximal-empty-node.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\maximal-empty-node.conllu 
 [Line 4 Sent maximal-empty-node]: [L3 Warning pron-det-without-prontype] The word 'This' is tagged 'PRON' but it lacks the 'PronType' feature
 Warnings: 1
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\minimal-empty-node.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\minimal-empty-node.conllu 
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\multiple-features.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\multiple-features.conllu 
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\tanl.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\tanl.conllu 
 [Line 12 Sent tanl2]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 19 Sent tanl3]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 Warnings: 2
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\test-cases\valid\whitespace.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\whitespace.conllu 
 *** PASSED ***
  
