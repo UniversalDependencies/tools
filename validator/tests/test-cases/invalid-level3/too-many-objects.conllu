@@ -1,0 +1,10 @@
+# Invalid because node 3 has two objects: nodes 2 and 4.
+# source = bg_btb dev
+# sent_id = penchev-s66
+# text = Ще те питам нещо.
+1	Ще	ще	AUX	Tx	_	3	aux	_	_
+2	те	аз	PRON	Ppetas2	Case=Acc|Number=Sing|Person=2|PronType=Prs	3	obj	_	_
+3	питам	питам-(се)	VERB	Vpitf-r1s	Aspect=Imp|Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	_
+4	нещо	някой	PRON	Pfe-os-ni	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|PronType=Ind	3	obj	_	SpaceAfter=No
+5	.	.	PUNCT	punct	_	3	punct	_	_
+

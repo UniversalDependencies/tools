@@ -2646,6 +2646,46 @@ class Validator:
 
 
 
+    def validate_nmod_obl(self, state, node, lineno):
+        """
+        The difference between nmod and obl is that the former modifies a
+        nominal while the latter modifies a predicate of a clause. Typically
+        the parent of nmod will be NOUN, PROPN or PRON; the parent of obl is
+        usually a VERB, sometimes ADJ or ADV. However, nominals can also be
+        predicates and then they may take obl dependents:
+            I am the leader of the group (nmod)
+            I am the leader on Mondays (obl)
+        This function tries to detect at least some cases where the nominal
+        is not a predicate and thus cannot take obl dependents.
+
+        Parameters
+        ----------
+        node : udapi.core.node.Node object
+            The tree node to be tested.
+        lineno : int
+            The 1-based index of the line where the node occurs.
+        """
+        if node.udeprel == 'obl' and node.parent.upos in ['NOUN', 'PROPN', 'PRON']:
+            # If the parent itself has certain deprels, we know that it is just
+            # a nominal and not a predicate. This will reveal some erroneous
+            # obliques but not all, because we will not recognize some non-
+            # predicative nominals, and even for the predicative ones, some
+            # dependents might be better analyzed as nmod.
+            if node.parent.udeprel in ['nsubj', 'obj', 'iobj', 'obl', 'vocative', 'dislocated', 'expl', 'nmod']:
+                # For the moment (2025-09-20), I am making this a warning only.
+                # But I suppose that it will became an error in the future.
+                Incident(
+                    state=state, args=self.args,
+                    lineno=lineno,
+                    nodeid=node.ord,
+                    level=3,
+                    testclass='Warning',#'Syntax',
+                    testid='obl-should-be-nmod',
+                    message=f"The parent of 'obl' (node [{node.parent.ord} '{formtl(node.parent)}']) should not be a nominal (unless it is a nominal predicate)."
+                ).report()
+
+
+
     def validate_orphan(self, state, node, lineno):
         """
         The orphan relation is used to attach an unpromoted orphan to the promoted
@@ -3153,6 +3193,7 @@ class Validator:
             self.validate_left_to_right_relations(state, node, lineno)
             self.validate_single_subject(state, node, lineno)
             self.validate_single_object(state, node, lineno)
+            self.validate_nmod_obl(state, node, lineno)
             self.validate_orphan(state, node, lineno)
             self.validate_functional_leaves(state, node, lineno, linenos)
             self.validate_fixed_span(state, node, lineno)

@@ -1,0 +1,9 @@
+# Nodes 2 and 4 are nominals but node 2 is also a predicate, hence the relation obl is plausible (it is not required to be nmod).
+# sent_id = valid-obl
+# text = Budu ředitelem od pondělí.
+1	Budu	být	AUX	_	_	2	cop	_	_
+2	ředitelem	ředitel	NOUN	_	_	0	root	_	_
+3	od	od	ADP	_	_	4	case	_	_
+4	pondělí	pondělí	NOUN	_	_	2	obl	_	SpaceAfter=No
+5	.	.	PUNCT	punct	_	2	punct	_	_
+

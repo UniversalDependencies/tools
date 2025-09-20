@@ -413,6 +413,12 @@ Enhanced errors: 2
 -------------------------------------------------------------------------------- 
 LEVEL 3 TESTS 
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\nmod-obl.conllu 
+[Line 6 Sent invalid-obl Node 3]: [L3 Warning obl-should-be-nmod] The parent of 'obl' (node [2 'øeditele']) should not be a nominal (unless it is a nominal predicate).
+Warnings: 1
+*** PASSED ***
+ 
+-------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\non-proj.conllu 
 [Line 6 Sent non-proj Node 3]: [L3 Syntax punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [2]
 Syntax errors: 1
@@ -479,6 +485,12 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 Syntax errors: 8
 Warnings: 6
 *** FAILED *** with 8 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-objects.conllu 
+[Line 7 Sent penchev-s66 Node 3]: [L3 Syntax too-many-objects] Multiple direct objects [2, 4] ('\u0442\u0435', '\u043d\u0435\u0449\u043e') under one predicate.
+Syntax errors: 1
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-subjects.conllu 
@@ -814,6 +826,10 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\multiple-features.conllu 
+*** PASSED ***
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\nmod-obl.conllu 
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
