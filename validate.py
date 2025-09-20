@@ -2681,7 +2681,7 @@ class Validator:
                     level=3,
                     testclass='Warning',#'Syntax',
                     testid='obl-should-be-nmod',
-                    message=f"The parent of 'obl' (node [{node.parent.ord} '{formtl(node.parent)}']) should not be a nominal (unless it is a nominal predicate)."
+                    message=f"The parent (node [{node.parent.ord}] '{formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'."
                 ).report()
 
 

@@ -414,7 +414,7 @@ Enhanced errors: 2
 LEVEL 3 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\nmod-obl.conllu 
-[Line 6 Sent invalid-obl Node 3]: [L3 Warning obl-should-be-nmod] The parent of 'obl' (node [2 'øeditele']) should not be a nominal (unless it is a nominal predicate).
+[Line 6 Sent invalid-obl Node 3]: [L3 Warning obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
 Warnings: 1
 *** PASSED ***
  
