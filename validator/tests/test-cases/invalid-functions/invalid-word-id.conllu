@@ -1,0 +1,5 @@
+# not valid: word IDs must be integers 1, 2, 3, ...
+# text = nonvalid
+# sent_id = id-with-extra-0
+01	nonvalid	nonvalid	NOUN	_	_	0	root	_	_
+

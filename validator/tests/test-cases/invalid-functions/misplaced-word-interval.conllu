@@ -1,0 +1,12 @@
+# not valid: multiword tokens must appear before the first word in their
+# range
+# sent_id = misordered-multiword
+# text = I have haven't a clue PUNCT
+1	I	I	PRON	PRN	Num=Sing|Per=1	2	nsubj	_	_
+2	have	have	VERB	VB	Tens=Pres	0	root	_	_
+2-3	haven't	_	_	_	_	_	_	_	_
+3	not	not	ADV	RB	_	2	aux	_	_
+4	a	a	DET	DT	_	5	det	_	_
+5	clue	clue	NOUN	NN	Num=Sing	2	obj	_	_
+6	PUNCT	.	PUNCT	PUNCT	_	2	punct	_	_
+

@@ -1,0 +1,11 @@
+# not valid: (first-last) multiword ranges must have first <= last
+# sent_id = invalid-range
+# text = I haven't have not a clue PUNCT
+1	I	I	PRON	PRN	Num=Sing|Per=1	2	nsubj	_	_
+2-1	haven't	_	_	_	_	_	_	_	_
+2	have	have	VERB	VB	Tens=Pres	0	root	_	_
+3	not	not	ADV	RB	_	2	aux	_	_
+4	a	a	DET	DT	_	5	det	_	_
+5	clue	clue	NOUN	NN	Num=Sing	2	obj	_	_
+6	PUNCT	.	PUNCT	PUNCT	_	2	punct	_	_
+

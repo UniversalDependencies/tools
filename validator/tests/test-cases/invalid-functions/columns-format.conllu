@@ -1,0 +1,24 @@
+# errors = number-of-columns, empty-column, leading-whitespace, trailing-whitespace, repeated-whitespace, invalid-whitespace-mwt, invalid-whitespace
+# sent_id = tanl1
+# text = LONDRA .
+1	LONDRA	Londra	NOUN	SP	_	0	root	_	_	X
+2	.	.	PUNCT	FS	_	1	punct	_	_
+
+# sent_id = tanl2
+# text = Gas dalla statua .
+# this is comment
+1	Gas	gas	NOUN	S	Gender=Masc|Number=Sing	0	root	_	_
+2-3	da lla	_	_	_	_	_	_	_	_
+2	da	da	ADP		_	4	case	_	_
+3	la	la	DET	RD	Gender=Fem|Number=Sing|PronType=Art	4	det	_	_
+4	statua	statua	NOUN	S	Gender=Fem|Number=Sing	1	nmod	_	_
+ 5	.	.	PUNCT	 FS	_	1	punct	_	_
+
+# sent_id = tanl3
+# text = Evacuata la Tate Gallery .
+1	Evacuata	evacuare	VERB 	V	 Gender=Fem|Number=Sing	0	root	_	_
+2	la	il	DE T	RD	Gender=Fem|Number=Sing|PronType=Art	3	det	_	_
+3	Tate	Tate	PROPN	SP	_	1	nsubj	_	_
+4	Gallery	Gallery	PROPN	SP	_	3	flat	_	_
+5	.	.	PUNCT	FS	_	1	punct	_	_
+
