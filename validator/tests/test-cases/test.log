@@ -318,10 +318,12 @@ Metadata errors: 2
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\parallel-id.conllu 
 [Line 6 Sent cairo-1]: [L2 Metadata invalid-parallel-id] Spurious parallel_id line: '# parallel_id would be cairo/1 but we messed up this line.' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.
 [Line 18 Sent cairo-2]: [L2 Metadata multiple-parallel-id] Multiple parallel_id attributes.
+[Line 28 Sent cairo-3.2]: [L2 Metadata parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 1 but it is 2.
 [Line 41 Sent cairo-3.1]: [L2 Metadata parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 2+1 but it is 1.
-[Line 106 Sent cairo-7]: [L2 Metadata non-unique-parallel-id] Non-unique parallel_id attribute 'cairo/5'.
-Metadata errors: 4
-*** FAILED *** with 4 errors
+[Line 56 Sent cairo-4.1]: [L2 Metadata parallel-id-alt] Some instances of parallel sentence 'cairo/3' have the 'alt' suffix while others do not.
+[Line 107 Sent cairo-7]: [L2 Metadata non-unique-parallel-id] Non-unique parallel_id attribute 'cairo/5'.
+Metadata errors: 6
+*** FAILED *** with 6 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\seemingly-empty-line.conllu 

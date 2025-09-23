@@ -47,8 +47,9 @@
 7	denedi	dene	VERB	_	Aspect=Perf|Evident=Fh|Mood=Ind|Number=Sing|Person=3|Tense=Past	0	root	_	SpaceAfter=No
 8	.	.	PUNCT	_	_	7	punct	_	_
 
+# Invalid parallel_id cairo/3 without alt, as there are other instances of cairo/3 with alt.
 # sent_id = cairo-4.1
-# parallel_id = cairo/4/alt1
+# parallel_id = cairo/3
 # text = Sen gitmek istiyor musun?
 # text[en] = Do you want to go?
 # note = "musun" may need to be split.
@@ -59,7 +60,7 @@
 5	?	?	PUNCT	_	_	3	punct	_	_
 
 # sent_id = cairo-4.2
-# parallel_id = cairo/4/alt2
+# parallel_id = cairo/4
 # text = Gitmek istiyor musun?
 # text[en] = Do you want to go?
 1	Gitmek	git	VERB	_	Case=Nom|Number=Sing|VerbForm=Vnoun	2	xcomp	_	_

@@ -1309,6 +1309,12 @@ class Validator:
                             testid='parallel-id-alt',
                             message=f"The alt suffix of parallel sentence '{sid}' should be {state.parallel_id_lastalt[sid]}+1 but it is {alt}."
                         ).report()
+                elif alt != None and alt != 1:
+                    Incident(
+                        state=state, args=self.args,
+                        testid='parallel-id-alt',
+                        message=f"The alt suffix of parallel sentence '{sid}' should be 1 but it is {alt}."
+                    ).report()
                 state.parallel_id_lastalt[sid] = alt
                 if sid in state.parallel_id_lastpart:
                     if state.parallel_id_lastpart[sid] == None and part != None or state.parallel_id_lastpart[sid] != None and part == None:
@@ -1323,6 +1329,12 @@ class Validator:
                             testid='parallel-id-part',
                             message=f"The part suffix of parallel sentence '{sid}' should be {state.parallel_id_lastpart[sid]}+1 but it is {part}."
                         ).report()
+                elif part != None and part != 1:
+                    Incident(
+                        state=state, args=self.args,
+                        testid='parallel-id-part',
+                        message=f"The part suffix of parallel sentence '{sid}' should be 1 but it is {part}."
+                    ).report()
                 state.parallel_id_lastpart[sid] = part
             state.known_parallel_ids.add(pid)
 
