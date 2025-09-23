@@ -655,8 +655,6 @@ class Incident:
         # If we are here, the error message should really be printed.
         # Address of the incident.
         address = f'Line {self.lineno} Sent {self.sentid}'
-        if self.nodeid:
-            address += f' Node {self.nodeid}'
         # Insert file name if there are several input files.
         if len(self.args.input) > 1:
             address = f'File {self.filename} ' + address
