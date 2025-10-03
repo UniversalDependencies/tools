@@ -2325,7 +2325,10 @@ class Validator:
                 testid='verbform-fin-without-mood',
                 message=f"Finite verb '{formtl(node)}' lacks the 'Mood' feature"
             ).report()
-        elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
+        # We have to exclude AUX from the following test because they could be
+        # nonverbal and Mood could be their lexical feature
+        # (see https://github.com/UniversalDependencies/docs/issues/1147).
+        elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin' and not (node.upos == 'AUX' and node.feats['VerbForm'] == ''):
             Incident(
                 state=state, args=self.args,
                 testid='mood-without-verbform-fin',
