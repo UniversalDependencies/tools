@@ -12509,6 +12509,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-09-18-15-34-30", "lastchanger": "rahonalab"},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-09-18-15-36-02", "lastchanger": "rahonalab"},
+"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-08-15-35-23", "lastchanger": "rahonalab"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
