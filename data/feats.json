@@ -3501,6 +3501,9 @@
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Cop"], "unused_uvalues": [], "unused_lvalues": ["Aux", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {"PART": {"Cop": 1}, "VERB": {"Cop": 1}}, "lastchanged": "2022-10-28-12-06-20", "lastchanger": "bguil"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 1, "Pass": 1}}, "lastchanged": "2024-04-24-13-46-49", "lastchanger": "bguil"}
 },
+"scn": {
+
+},
 "sd": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Imp": 1, "Perf": 1}, "VERB": {"Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2025-05-06-22-42-47", "lastchanger": "AngledLuffa"},
