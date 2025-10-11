@@ -533,6 +533,12 @@ Morpho errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level4-5\yrl_complin-mwt-typo-yes.conllu 
+[Line 27 Sent Hartt1938:0:0:515-1]: [L4 Morpho mwt-typo-repeated-at-word] Feature Typo cannot occur at word [6] if it already occurred at the corresponding multiword token [6-7].
+Morpho errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
 TESTS BY LUDOVICA AND ARIANNA 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\columns-format-minimal.conllu 

@@ -97,11 +97,6 @@ class State:
         self.seen_enhanced_orphan = None
         # global.entity comment line is needed for Entity annotations in MISC.
         self.seen_global_entity = None
-        # If a multi-word token has Typo=Yes, its component words must not have
-        # it. When we see Typo=Yes on a MWT line, we will remember the span of
-        # the MWT here and will not allow Typo=Yes within that span (which is
-        # checked in another function).
-        self.mwt_typo_span_end = None
         #----------------------------------------------------------------------
         # Additional observations related to Entity annotation in MISC
         # (only needed when validating entities and coreference).
@@ -1545,10 +1540,7 @@ class Validator:
         for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
             # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
             if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
-                # If a multi-word token has Typo=Yes, its component words must not have it.
-                # We must remember the span of the MWT and check it in validate_features_level4().
-                m = crex.mwtid.fullmatch(cols[ID])
-                state.mwt_typo_span_end = m.group(2)
+                pass
             elif cols[col_idx] != '_':
                 Incident(
                     state=state, args=self.args,
@@ -3367,13 +3359,15 @@ class Validator:
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
                 # The feature Typo=Yes is the only feature allowed on a multi-word token line.
                 # If it occurs there, it cannot be duplicated on the lines of the component words.
-                if f == 'Typo' and state.mwt_typo_span_end and node.ord <= state.mwt_typo_span_end:
-                    Incident(
-                        state=state, args=self.args,
-                        nodeid=node.ord,
-                        testid='mwt-typo-repeated-at-word',
-                        message="Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
-                    ).report()
+                if node.multiword_token:
+                    mwt = node.multiword_token
+                    if mwt.feats['Typo'] == 'Yes' and f == 'Typo':
+                        Incident(
+                            state=state, args=self.args,
+                            nodeid=node.ord,
+                            testid='mwt-typo-repeated-at-word',
+                            message=f"Feature Typo cannot occur at word [{node.ord}] if it already occurred at the corresponding multiword token [{mwt.ord_range}]."
+                        ).report()
                 # In case of code switching, the current token may not be in the default language
                 # and then its features are checked against a different feature set. An exception
                 # is the feature Foreign, which always relates to the default language of the
@@ -3430,8 +3424,6 @@ class Validator:
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
                                     explanation=data.explain_feats(effective_lang)
                                 ).report()
-        if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
-            state.mwt_typo_span_end = None
 
 
 

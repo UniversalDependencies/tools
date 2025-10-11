@@ -23,11 +23,18 @@ for %%f in ("%SCRIPT_DIR%invalid-level3\*.conllu") do (
 @echo -------------------------------------------------------------------------------- 1>&2
 @echo --------------------------------------------------------------------------------
 @echo LEVEL 4-5 TESTS 1>&2
-for %%f in ("%SCRIPT_DIR%invalid-level4-5\*.conllu") do (
+for %%f in ("%SCRIPT_DIR%invalid-level4-5\cs_*.conllu") do (
     @echo -------------------------------------------------------------------------------- 1>&2
     @echo %%f
     @echo Processing file: %%f 1>&2
     python %SCRIPT_DIR%..\..\..\validate.py --level 5 --lang cs "%%f"
+    @echo. 1>&2
+)
+for %%f in ("%SCRIPT_DIR%invalid-level4-5\yrl_*.conllu") do (
+    @echo -------------------------------------------------------------------------------- 1>&2
+    @echo %%f
+    @echo Processing file: %%f 1>&2
+    python %SCRIPT_DIR%..\..\..\validate.py --level 5 --lang yrl "%%f"
     @echo. 1>&2
 )
 @echo -------------------------------------------------------------------------------- 1>&2
