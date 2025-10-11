@@ -3359,9 +3359,9 @@ class Validator:
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
                 # The feature Typo=Yes is the only feature allowed on a multi-word token line.
                 # If it occurs there, it cannot be duplicated on the lines of the component words.
-                if node.multiword_token:
+                if f == 'Typo' and node.multiword_token:
                     mwt = node.multiword_token
-                    if mwt.feats['Typo'] == 'Yes' and f == 'Typo':
+                    if mwt.feats['Typo'] == 'Yes':
                         Incident(
                             state=state, args=self.args,
                             nodeid=node.ord,
