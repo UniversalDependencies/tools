@@ -784,6 +784,7 @@
 },
 "ctn": {
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ext", "Loc", "Met", "Mod", "Qua"], "evalues": [], "byupos": {}},
+"Animacy": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hum", "Nhum"], "lvalues": [], "unused_uvalues": ["Anim", "Inan"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Nhum": 1}, "NUM": {"Hum": 1, "Nhum": 1}}, "lastchanged": "2025-10-12-13-13-18", "lastchanger": "kiratul"},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Perf"], "unused_lvalues": ["ComplImp", "ComplPerf", "ComplPerfv", "Perfv"], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abs", "Cau", "Com", "Erg", "Loc", "Per"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Clusivity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Ex", "In"], "unused_lvalues": [], "evalues": [], "byupos": {}},
