@@ -1990,6 +1990,7 @@
 "advcl:sim": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-12-15-27-32", "lastchanger": "kiratul"},
 "advmod:nmlz": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod:nmlz": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
