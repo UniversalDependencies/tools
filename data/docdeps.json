@@ -43,7 +43,7 @@
 "cop": ["acl", "acl:relcl", "advcl", "advmod", "amod", "appos", "aux", "case", "cc", "ccomp", "compound", "conj", "cop", "csubj", "dep", "det", "discourse", "dislocated", "fixed", "flat", "iobj", "mark", "nmod", "nmod:unmarked", "nsubj", "nummod", "obj", "obl", "obl:unmarked", "orphan", "parataxis", "punct", "root", "vocative", "xcomp", "advcl:relcl", "advmod:emph", "advmod:lmod", "aux:pass", "cc:preconj", "clf", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "csubj:outer", "csubj:pass", "det:numgov", "det:nummod", "det:poss", "expl", "expl:impers", "expl:pass", "expl:pv", "flat:foreign", "flat:name", "goeswith", "list", "nmod:poss", "nmod:tmod", "nsubj:outer", "nsubj:pass", "nummod:gov", "obl:agent", "obl:arg", "obl:lmod", "obl:tmod", "reparandum"],
 "cpg": ["aux:q", "acl", "acl:relcl", "advcl", "advcl:relcl", "advmod", "advmod:emph", "advmod:lmod", "amod", "appos", "aux", "aux:pass", "case", "cc", "cc:preconj", "ccomp", "clf", "compound", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "conj", "cop", "csubj", "csubj:outer", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "det:poss", "discourse", "dislocated", "expl", "expl:impers", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "flat:name", "goeswith", "iobj", "list", "mark", "nmod", "nmod:poss", "nmod:tmod", "nsubj", "nsubj:outer", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "obl:lmod", "obl:tmod", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "cs": ["acl", "acl:relcl", "advcl", "advcl:pred", "advmod", "advmod:emph", "amod", "appos", "aux", "aux:pass", "case", "cc", "ccomp", "compound", "conj", "cop", "csubj", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "discourse", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "goeswith", "iobj", "list", "mark", "nmod", "nsubj", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp", "advcl:relcl", "advmod:lmod", "cc:preconj", "clf", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "csubj:outer", "det:poss", "dislocated", "expl", "expl:impers", "flat:name", "nmod:poss", "nmod:tmod", "nsubj:outer", "obl:lmod", "obl:tmod"],
-"ctn": ["acl", "acl:relcl", "advcl", "advcl:relcl", "advmod", "advmod:emph", "advmod:lmod", "amod", "appos", "aux", "aux:pass", "case", "cc", "cc:preconj", "ccomp", "clf", "compound", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "conj", "cop", "csubj", "csubj:outer", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "det:poss", "discourse", "dislocated", "expl", "expl:impers", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "flat:name", "goeswith", "iobj", "list", "mark", "nmod", "nmod:poss", "nmod:tmod", "nsubj", "nsubj:outer", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "obl:lmod", "obl:tmod", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
+"ctn": ["acl:nmlz", "advcl:cntf", "advcl:coord", "advcl:desid", "advcl:emph", "advcl:purp", "advcl:sim", "advmod:cop", "advmod:nmlz", "amod:nmlz", "det:nmlz", "flat:num", "nmod:nmlz", "obj:caus", "acl", "acl:relcl", "advcl", "advcl:relcl", "advmod", "advmod:emph", "advmod:lmod", "amod", "appos", "aux", "aux:pass", "case", "cc", "cc:preconj", "ccomp", "clf", "compound", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "conj", "cop", "csubj", "csubj:outer", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "det:poss", "discourse", "dislocated", "expl", "expl:impers", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "flat:name", "goeswith", "iobj", "list", "mark", "nmod", "nmod:poss", "nmod:tmod", "nsubj", "nsubj:outer", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "obl:lmod", "obl:tmod", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "cu": ["advcl:cmp", "acl", "acl:relcl", "advcl", "advcl:relcl", "advmod", "advmod:emph", "advmod:lmod", "amod", "appos", "aux", "aux:pass", "case", "cc", "cc:preconj", "ccomp", "clf", "compound", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "conj", "cop", "csubj", "csubj:outer", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "det:poss", "discourse", "dislocated", "expl", "expl:impers", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "flat:name", "goeswith", "iobj", "list", "mark", "nmod", "nmod:poss", "nmod:tmod", "nsubj", "nsubj:outer", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "obl:lmod", "obl:tmod", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "cux": ["acl", "acl:relcl", "advcl", "advcl:relcl", "advmod", "advmod:emph", "advmod:lmod", "amod", "appos", "aux", "aux:pass", "case", "cc", "cc:preconj", "ccomp", "clf", "compound", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "conj", "cop", "csubj", "csubj:outer", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "det:poss", "discourse", "dislocated", "expl", "expl:impers", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "flat:name", "goeswith", "iobj", "list", "mark", "nmod", "nmod:poss", "nmod:tmod", "nsubj", "nsubj:outer", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:agent", "obl:arg", "obl:lmod", "obl:tmod", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
 "cy": ["case:pred", "nmod:agent", "nmod:redup", "obl:agent", "acl", "acl:relcl", "advcl", "advcl:relcl", "advmod", "advmod:emph", "advmod:lmod", "amod", "appos", "aux", "aux:pass", "case", "cc", "cc:preconj", "ccomp", "clf", "compound", "compound:lvc", "compound:prt", "compound:redup", "compound:svc", "conj", "cop", "csubj", "csubj:outer", "csubj:pass", "dep", "det", "det:numgov", "det:nummod", "det:poss", "discourse", "dislocated", "expl", "expl:impers", "expl:pass", "expl:pv", "fixed", "flat", "flat:foreign", "flat:name", "goeswith", "iobj", "list", "mark", "nmod", "nmod:poss", "nmod:tmod", "nsubj", "nsubj:outer", "nsubj:pass", "nummod", "nummod:gov", "obj", "obl", "obl:arg", "obl:lmod", "obl:tmod", "orphan", "parataxis", "punct", "reparandum", "root", "vocative", "xcomp"],
@@ -611,20 +611,20 @@
 "xcomp": {"type": "universal", "errors": []}
 },
 "ctn": {
-"acl:nmlz": {"type": "local", "errors": ["No examples found for relation 'acl:nmlz'."]},
-"advcl:cntf": {"type": "local", "errors": ["No examples found for relation 'advcl:cntf'."]},
-"advcl:coord": {"type": "local", "errors": ["No examples found for relation 'advcl:coord'."]},
-"advcl:desid": {"type": "local", "errors": ["No examples found for relation 'advcl:desid'."]},
-"advcl:emph": {"type": "local", "errors": ["No examples found for relation 'advcl:emph'."]},
-"advcl:purp": {"type": "local", "errors": ["No examples found for relation 'advcl:purp'."]},
-"advcl:sim": {"type": "local", "errors": ["No examples found for relation 'advcl:sim'."]},
-"advmod:cop": {"type": "local", "errors": ["No examples found for relation 'advmod:cop'."]},
-"advmod:nmlz": {"type": "local", "errors": ["No examples found for relation 'advmod:nmlz'."]},
-"amod:nmlz": {"type": "local", "errors": ["No examples found for relation 'amod:nmlz'."]},
-"det:nmlz": {"type": "local", "errors": ["No examples found for relation 'det:nmlz'."]},
-"falt:num": {"type": "", "errors": ["Relation 'falt:num' is not a subtype of any approved main type.", "No examples found for relation 'falt:num'."]},
-"nmod:nmlz": {"type": "local", "errors": ["No examples found for relation 'nmod:nmlz'."]},
-"obj:caus": {"type": "local", "errors": ["No examples found for relation 'obj:caus'."]}
+"acl:nmlz": {"type": "local", "errors": []},
+"advcl:cntf": {"type": "local", "errors": []},
+"advcl:coord": {"type": "local", "errors": []},
+"advcl:desid": {"type": "local", "errors": []},
+"advcl:emph": {"type": "local", "errors": []},
+"advcl:purp": {"type": "local", "errors": []},
+"advcl:sim": {"type": "local", "errors": []},
+"advmod:cop": {"type": "local", "errors": []},
+"advmod:nmlz": {"type": "local", "errors": []},
+"amod:nmlz": {"type": "local", "errors": []},
+"det:nmlz": {"type": "local", "errors": []},
+"flat:num": {"type": "local", "errors": []},
+"nmod:nmlz": {"type": "local", "errors": []},
+"obj:caus": {"type": "local", "errors": []}
 },
 "cu": {
 "advcl:cmp": {"type": "local", "errors": []}
