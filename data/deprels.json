@@ -2025,6 +2025,7 @@
 "nmod:nmlz": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-12-15-33-05", "lastchanger": "kiratul"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-12-15-33-12", "lastchanger": "kiratul"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:caus": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
