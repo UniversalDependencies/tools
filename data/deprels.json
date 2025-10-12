@@ -1980,6 +1980,7 @@
 "ctn": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:nmlz": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-12-15-27-05", "lastchanger": "kiratul"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:cntf": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:coord": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
