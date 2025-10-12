@@ -790,6 +790,7 @@
 "Clusivity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Ex", "In"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Clusivity[p]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ex", "In"], "evalues": [], "byupos": {}},
 "ConvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cntf", "Coord", "Purp"], "evalues": [], "byupos": {}},
+"InfStruct": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Foc", "Top", "Uniq"], "evalues": [], "byupos": {}},
 "Mood": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Ind", "Sub"], "unused_lvalues": ["Con", "ConImp", "ConOptSub", "ConSub", "OptSub"], "evalues": [], "byupos": {}},
 "Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dual", "Plur", "Sing"], "unused_lvalues": ["Nsing"], "evalues": [], "byupos": {}},
 "Number[p]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Dual", "Nsing", "Plur", "Sing"], "evalues": [], "byupos": {}},
