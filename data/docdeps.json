@@ -610,6 +610,22 @@
 "vocative": {"type": "universal", "errors": []},
 "xcomp": {"type": "universal", "errors": []}
 },
+"ctn": {
+"acl:nmlz": {"type": "local", "errors": ["No examples found for relation 'acl:nmlz'."]},
+"advcl:cntf": {"type": "local", "errors": ["No examples found for relation 'advcl:cntf'."]},
+"advcl:coord": {"type": "local", "errors": ["No examples found for relation 'advcl:coord'."]},
+"advcl:desid": {"type": "local", "errors": ["No examples found for relation 'advcl:desid'."]},
+"advcl:emph": {"type": "local", "errors": ["No examples found for relation 'advcl:emph'."]},
+"advcl:purp": {"type": "local", "errors": ["No examples found for relation 'advcl:purp'."]},
+"advcl:sim": {"type": "local", "errors": ["No examples found for relation 'advcl:sim'."]},
+"advmod:cop": {"type": "local", "errors": ["No examples found for relation 'advmod:cop'."]},
+"advmod:nmlz": {"type": "local", "errors": ["No examples found for relation 'advmod:nmlz'."]},
+"amod:nmlz": {"type": "local", "errors": ["No examples found for relation 'amod:nmlz'."]},
+"det:nmlz": {"type": "local", "errors": ["No examples found for relation 'det:nmlz'."]},
+"falt:num": {"type": "", "errors": ["Relation 'falt:num' is not a subtype of any approved main type.", "No examples found for relation 'falt:num'."]},
+"nmod:nmlz": {"type": "local", "errors": ["No examples found for relation 'nmod:nmlz'."]},
+"obj:caus": {"type": "local", "errors": ["No examples found for relation 'obj:caus'."]}
+},
 "cu": {
 "advcl:cmp": {"type": "local", "errors": []}
 },

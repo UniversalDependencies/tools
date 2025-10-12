@@ -783,7 +783,17 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 1, "Pass": 1}, "AUX": {"Act": 1}, "NOUN": {"Act": 1, "Pass": 1}, "VERB": {"Act": 1}}, "lastchanged": "2023-05-06-16-35-02", "lastchanger": "dan-zeman"}
 },
 "ctn": {
-
+"AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ext", "Loc", "Met", "Mod", "Qua"], "evalues": [], "byupos": {}},
+"Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Perf"], "unused_lvalues": ["ComplImp", "ComplPerf", "ComplPerfv", "Perfv"], "evalues": [], "byupos": {}},
+"Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Abs", "Cau", "Com", "Erg", "Loc", "Per"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Clusivity": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Ex", "In"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"ConvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cntf", "Coord", "Purp"], "evalues": [], "byupos": {}},
+"Mood": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Unrecognized level 3 heading '### <a name=\"ConImp\">`ConImp `</a>: conative imperative'.", "Unrecognized level 3 heading '### <a name=\"ConOptSub\">`ConOptSub `</a>: conative optative subjunctive'.", "Unrecognized level 3 heading '### <a name=\"ConSub\">`ConSub `</a>: conative subjunctive'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dual", "Plur", "Sing"], "unused_lvalues": ["Nsing"], "evalues": [], "byupos": {}},
+"Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Reach": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Access", "Remote"], "evalues": [], "byupos": {}},
+"Red": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Act", "Cau", "Rcp"], "unused_lvalues": ["CauRcp", "CauRefl", "Refl"], "evalues": [], "byupos": {}}
 },
 "cu": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
