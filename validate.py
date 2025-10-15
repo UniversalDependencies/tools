@@ -690,12 +690,42 @@ def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
 def formtl(node):
+    """
+    Returns the word form of a node, possibly accompanied by its
+    transliteration (if available in the MISC column).
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose form we want to get.
+
+    Returns
+    -------
+    x : str
+        The form and translit, space-separated. Only form if translit
+        not available.
+    """
     x = node.form
     if node.misc['Translit'] != '':
         x += ' ' + node.misc['Translit']
     return x
 
 def lemmatl(node):
+    """
+    Returns the lemma of a node, possibly accompanied by its transliteration
+    (if available in the MISC column).
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose form we want to get.
+
+    Returns
+    -------
+    x : str
+        The lemma and translit, space-separated. Only form if translit not
+        available.
+    """
     x = node.lemma
     if node.misc['LTranslit'] != '':
         x += ' ' + node.misc['LTranslit']
@@ -2615,7 +2645,7 @@ class Validator:
                 level=3,
                 testclass='Syntax',
                 testid='too-many-subjects',
-                message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'.",
+                message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{formtl(node)}' not subtyped as ':outer'.",
                 explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
             ).report()
 
@@ -2646,7 +2676,7 @@ class Validator:
                 level=3,
                 testclass='Syntax',
                 testid='too-many-objects',
-                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under one predicate."
+                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{formtl(node)}'."
             ).report()
 
 

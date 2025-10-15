@@ -452,7 +452,7 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 85 Sent 646]: [L3 Syntax rel-upos-expl] 'expl' should normally be 'PRON' but it is 'ADV' ('der')
 [Line 93 Sent 646]: [L3 Warning pron-det-without-prontype] The word 'guon' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 98 Sent 646]: [L3 Warning verbform-fin-without-mood] Finite verb 'hawwe' lacks the 'Mood' feature
-[Line 98 Sent 646]: [L3 Syntax too-many-objects] Multiple direct objects [12, 13] ('skaaimerken', 'ien') under one predicate.
+[Line 98 Sent 646]: [L3 Syntax too-many-objects] Multiple direct objects [12, 13] ('skaaimerken', 'ien') under the predicate 'hawwe'.
 [Line 102 Sent 646]: [L3 Warning pron-det-without-prontype] The word 'de' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 110 Sent rel-upos-aux]: [L3 Warning pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 111 Sent rel-upos-aux]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'VERB' ('have')
@@ -499,13 +499,13 @@ Warnings: 6
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-objects.conllu 
-[Line 7 Sent penchev-s66]: [L3 Syntax too-many-objects] Multiple direct objects [2, 4] ('\u0442\u0435', '\u043d\u0435\u0449\u043e') under one predicate.
+[Line 7 Sent penchev-s66]: [L3 Syntax too-many-objects] Multiple direct objects [2, 4] ('\u0442\u0435', '\u043d\u0435\u0449\u043e') under the predicate '\u043f\u0438\u0442\u0430\u043c'.
 Syntax errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-subjects.conllu 
-[Line 17 Sent dev-6]: [L3 Syntax too-many-subjects] Multiple subjects [2, 11] ('situacións', 'persoas') not subtyped as ':outer'.
+[Line 17 Sent dev-6]: [L3 Syntax too-many-subjects] Multiple subjects [2, 11] ('situacións', 'persoas') under the predicate 'viven' not subtyped as ':outer'.
 
 Outer subjects are allowed if a clause acts as the predicate of another clause.
 
