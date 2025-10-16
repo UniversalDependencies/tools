@@ -12280,6 +12280,7 @@
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-23-28-59", "lastchanger": "shoowadoo"},
+"flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-23-29-32", "lastchanger": "shoowadoo"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
