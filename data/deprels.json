@@ -4572,6 +4572,7 @@
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat:dist": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"flat:frac": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-10-06-10-13-14", "lastchanger": "myavrum"},
 "flat:range": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
