@@ -1745,6 +1745,7 @@
 },
 "yi": {
 "האָבן": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "איך [האָב] געשפּילט", "exampleen": "I have played", "comment": "ikh hob geshpilt"}], "status": "documented", "lastchanged": "2025-10-16-23-46-19", "lastchanger": "shoowadoo"},
+"זאָלן": {"functions": [{"function": "Mood=Nec", "rule": "combination of the modal verb and an infinitive", "deficient": "", "example": "מע [זאָל] און מע מוז שאַפֿן גוטע ליטעראַטור אױף ייִדיש!", "exampleen": "One should and one must create good literature in Yiddish!", "comment": "me zol un me muz shafn gute literatur oyf yidish!"}], "status": "documented", "lastchanged": "2025-10-17-00-00-29", "lastchanger": "shoowadoo"},
 "זײַן": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ער [איז] אַ ייִד", "exampleen": "He is a Jew", "comment": "er iz a yid"}], "status": "documented", "lastchanged": "2025-10-16-23-47-03", "lastchanger": "shoowadoo"}
 },
 "yo": {
