@@ -1744,6 +1744,7 @@
 "fuiom": {"functions": [{"function": "Aspect=Perf", "rule": "auxiliary combinied with a past participle", "deficient": "", "example": "inuk ukar pihaz [fust]", "exampleen": "then the mount will have been purified", "comment": ""}], "status": "documented", "lastchanged": "2022-04-26-10-35-31", "lastchanger": "MathieuDehouck"}
 },
 "yi": {
+"האָבן": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "איך [האָב] געשפּילט", "exampleen": "I have played", "comment": "ikh hob geshpilt"}], "status": "documented", "lastchanged": "2025-10-16-23-46-19", "lastchanger": "shoowadoo"},
 "זײַן": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ער [איז] אַ ייִד", "exampleen": "He is a Jew", "comment": ""}], "status": "documented", "lastchanged": "2025-10-16-23-13-18", "lastchanger": "shoowadoo"}
 },
 "yo": {
