@@ -12270,6 +12270,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-23-32-36", "lastchanger": "shoowadoo"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-23-28-17", "lastchanger": "shoowadoo"},
