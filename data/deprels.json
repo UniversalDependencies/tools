@@ -4585,7 +4585,7 @@
 "nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:caus": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"nsubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-18-10-44-24", "lastchanger": "myavrum"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
