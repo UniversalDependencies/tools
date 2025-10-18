@@ -15,7 +15,7 @@ dependency relations in order to check that they are valid, too.
 The script runs under Python 3 and needs the third-party module **regex** and **udapi**
 (at least version 0.5.0; and udapi has its own dependencies, **colorama** and **termcolor**).
 If you do not have the required modules, install them like this:
-`pip install --user regex`.
+`pip install -r requirements.txt`.
 
 NOTE: Depending on the configuration of your system, it is possible that both Python 2 and 3 are
 installed; then you may have to run `python3` instead of `python`, and `pip3` instead of `pip`.
