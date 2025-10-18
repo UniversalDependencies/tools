@@ -12,8 +12,8 @@ Reads a CoNLL-U file and verifies that it complies with the UD specification. It
 the language code and there must exist corresponding lists of treebank-specific features and
 dependency relations in order to check that they are valid, too.
 
-The script runs under Python 3 and needs the third-party module **regex** and **udapi**.
-(And udapi has its own dependencies, **colorama** and **termcolor**.)
+The script runs under Python 3 and needs the third-party module **regex** and **udapi**
+(at least version 0.5.0; and udapi has its own dependencies, **colorama** and **termcolor**).
 If you do not have the required modules, install them like this:
 `pip install --user regex`.
 
