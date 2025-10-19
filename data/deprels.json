@@ -5081,6 +5081,7 @@
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nmod:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nmod:iobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
