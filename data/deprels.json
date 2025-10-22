@@ -7043,7 +7043,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:cmp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nmod:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-22-08-26-06", "lastchanger": "rueter"},
 "nmod:comp": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "nmod:gobj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod:gsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
