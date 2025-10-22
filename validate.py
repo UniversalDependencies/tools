@@ -2350,12 +2350,13 @@ class Validator:
         # We have to exclude AUX from the following test because they could be
         # nonverbal and Mood could be their lexical feature
         # (see https://github.com/UniversalDependencies/docs/issues/1147).
-        elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin' and not (node.upos == 'AUX' and node.feats['VerbForm'] == ''):
-            Incident(
-                state=state, args=self.args,
-                testid='mood-without-verbform-fin',
-                message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{formtl(node)}')"
-            ).report()
+        # Update: Lithuanian seems to need Mood=Nec with participles. Turning the test off.
+        #elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin' and not (node.upos == 'AUX' and node.feats['VerbForm'] == ''):
+        #    Incident(
+        #        state=state, args=self.args,
+        #        testid='mood-without-verbform-fin',
+        #        message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{formtl(node)}')"
+        #    ).report()
 
 
 
