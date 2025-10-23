@@ -3535,7 +3535,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 1, "Pass": 1}}, "lastchanged": "2024-04-24-13-46-49", "lastchanger": "bguil"}
 },
 "scn": {
-
+"Gender": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fem", "Masc"], "lvalues": [], "unused_uvalues": ["Com", "Neut"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Fem": 1, "Masc": 1}, "DET": {"Fem": 1, "Masc": 1}, "NOUN": {"Fem": 1, "Masc": 1}, "PRON": {"Fem": 1, "Masc": 1}, "VERB": {"Fem": 1, "Masc": 1}}, "lastchanged": "2025-10-23-15-21-44", "lastchanger": "SabrinaDali"}
 },
 "sd": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
