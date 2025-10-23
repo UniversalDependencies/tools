@@ -1426,6 +1426,7 @@
 "duviri": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and an infinitive verb", "deficient": "", "example": "cci [duvia] diri", "exampleen": "he [had to] tell him", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-10-56", "lastchanger": "SabrinaDali"},
 "essiri": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "chistu [era] stranu", "exampleen": "this [was] weird", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-01-44", "lastchanger": "SabrinaDali"},
 "putiri": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and an infinitive verb", "deficient": "", "example": "[putimu] jiri", "exampleen": "we [can] go", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-14-15", "lastchanger": "SabrinaDali"},
+"stari": {"functions": [{"function": "Aspect=Prog", "rule": "combination of the auxiliary verb and a gerund verb", "deficient": "", "example": "ti [staju] parrannu", "exampleen": "I'm talking to you", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-21-53", "lastchanger": "SabrinaDali"},
 "vuliri": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and an infinitive verb", "deficient": "", "example": "lu [vosi] vìdiri", "exampleen": "he [wanted] to see it", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-16-08", "lastchanger": "SabrinaDali"}
 },
 "sd": {
