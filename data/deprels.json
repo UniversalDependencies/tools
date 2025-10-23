@@ -9788,7 +9788,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-23-18-45-35", "lastchanger": "SabrinaDali"},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
