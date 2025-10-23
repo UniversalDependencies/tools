@@ -1422,6 +1422,9 @@
 "суох": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "negative existential copula", "example": "Уҥуоҕа [суох] уонна эмис эт бу баар", "exampleen": "This is boneless and fat meat", "comment": ""}], "status": "documented", "lastchanged": "2022-05-01-10-32-51", "lastchanger": "tatiana-merz"},
 "э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "an event variable e- can only be attached to immediate past or remote past", "example": "кини быраас [этэ]", "exampleen": "he/she/it was a doctor", "comment": ""}], "status": "documented", "lastchanged": "2021-10-27-11-45-38", "lastchanger": "tatiana-merz"}
 },
+"scn": {
+"essiri": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "chistu [era] stranu", "exampleen": "this [was] weird", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-01-44", "lastchanger": "SabrinaDali"}
+},
 "sd": {
 "آهي": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "وڏن جو ادب ڪرڻ هڪ سٺو عمل [آهي].", "exampleen": "It [is] a good practice to read the literature of elders.", "comment": ""}], "status": "documented", "lastchanged": "2023-07-25-15-44-16", "lastchanger": "dan-zeman"},
 "سگهي": {"functions": [{"function": "Mood=Pot", "rule": "in conjunction with a main verb, often a Conv verb", "deficient": "", "example": "گيج لڙهي وڃڻ ڪري واڌو پاڻي جي ماپ نه ٿي [سگهي]", "exampleen": "The additional water could not be measured due to the gauge being tilted", "comment": "has inflections for number, passive, pronominal suffix, and infinitive forms"}], "status": "documented", "lastchanged": "2025-05-01-21-04-09", "lastchanger": "AngledLuffa"}
