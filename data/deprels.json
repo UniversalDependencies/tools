@@ -2037,7 +2037,7 @@
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp:desid": {"type": "local", "doc": "local", "permitted": 0, "errors": []}
+"xcomp:desid": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-24-10-12-29", "lastchanger": "kiratul"}
 },
 "cu": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
