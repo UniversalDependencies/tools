@@ -8709,6 +8709,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-10-30-22-26-00", "lastchanger": "Jankus1994"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-26-20-50-50", "lastchanger": "Jankus1994"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
