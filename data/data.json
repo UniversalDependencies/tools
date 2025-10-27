@@ -573,7 +573,8 @@
 },
 "ha": {
 "ne": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with other subjects than feminine singular", "example": "XXX [ne].", "exampleen": "XXX", "comment": "to be deleted"}], "status": "documented", "lastchanged": "2024-04-29-20-54-24", "lastchanger": "B-CARON"},
-"neː": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Identifying copula", "example": "ƙanèntà [neː]", "exampleen": "he is her younger brother", "comment": "Marks Gender and Number, and subordination in Northern dialects"}], "status": "documented", "lastchanged": "2025-10-27-11-43-03", "lastchanger": "B-CARON"}
+"neː": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Identifying copula", "example": "ƙanèntà [neː]", "exampleen": "he is her younger brother", "comment": "Marks Gender and Number, and subordination in Northern dialects"}], "status": "documented", "lastchanged": "2025-10-27-11-43-03", "lastchanger": "B-CARON"},
+"nàː": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Quality or Location predicator", "example": "wânnan [sunàː] dà sarkiː naːsù", "exampleen": "those [have] their own chief", "comment": "Has dialectal and distributional variants"}], "status": "documented", "lastchanged": "2025-10-27-11-54-46", "lastchanger": "B-CARON"}
 },
 "hbo": {
 "היה": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "הוא [היה] איש", "exampleen": "he was a man", "comment": ""}], "status": "documented", "lastchanged": "2021-12-21-03-25-52", "lastchanger": "mr-martian"}
