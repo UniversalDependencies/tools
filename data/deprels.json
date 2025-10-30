@@ -9796,7 +9796,7 @@
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-31-00-16-49", "lastchanger": "SabrinaDali"},
-"ccomp:reported": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"ccomp:reported": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-31-00-40-33", "lastchanger": "SabrinaDali"},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
