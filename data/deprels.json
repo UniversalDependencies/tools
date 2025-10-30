@@ -12294,6 +12294,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-23-18-40", "lastchanger": "shoowadoo"},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-23-19-03", "lastchanger": "shoowadoo"},
+"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-30-17-48-37", "lastchanger": "shoowadoo"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
