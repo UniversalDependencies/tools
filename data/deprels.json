@@ -9804,7 +9804,7 @@
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-23-18-45-35", "lastchanger": "SabrinaDali"},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-23-18-53-51", "lastchanger": "SabrinaDali"},
+"det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-23-18-53-51", "lastchanger": "SabrinaDali"},
 "det:predet": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-30-23-50-35", "lastchanger": "SabrinaDali"},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
