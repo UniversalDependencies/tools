@@ -50,7 +50,7 @@
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-08-20-17-22-36", "lastchanger": "paulmeurer"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"iobj:cs": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"iobj:cs": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-30-20-25-33", "lastchanger": "paulm"},
 "iobj:pred": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
