@@ -13,7 +13,7 @@ use udlib;
 my @folders = udlib::list_ud_folders(); # in the current folder
 foreach my $folder (@folders)
 {
-    next unless($folder =~ m/-PUD$/);
+    next unless($folder =~ m/-PUDLUW$/);
     print("$folder\n");
     # Get the most recent revision of the folder.
     chdir($folder) or die("Cannot change to folder '$folder': $!");
