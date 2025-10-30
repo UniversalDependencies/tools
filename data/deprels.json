@@ -62,7 +62,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:cs": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
-"obj:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obj:lo": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-10-30-20-25-56", "lastchanger": "paulm"},
 "obj:po": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:ro": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
