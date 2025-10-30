@@ -51,7 +51,7 @@
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj:cs": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-30-20-25-33", "lastchanger": "paulm"},
-"iobj:lo": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"iobj:lo": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-30-20-34-56", "lastchanger": "paulm"},
 "iobj:po": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "iobj:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "iobj:pred": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
