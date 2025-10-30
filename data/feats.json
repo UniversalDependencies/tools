@@ -3036,7 +3036,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 46, "Pass": 1}, "NOUN": {"Act": 1}, "VERB": {"Act": 189, "Pass": 13}, "X": {"Act": 1}}}
 },
 "or": {
-"NumType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Card"], "lvalues": [], "unused_uvalues": ["Dist", "Frac", "Mult", "Ord", "Range", "Sets"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Card": 1}, "NUM": {"Card": 1}}, "lastchanged": "2025-10-30-16-40-16", "lastchanger": "shashwatup9k"}
+"NumType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Card"], "lvalues": [], "unused_uvalues": ["Dist", "Frac", "Mult", "Ord", "Range", "Sets"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Card": 1}, "NUM": {"Card": 1}}, "lastchanged": "2025-10-30-16-40-20", "lastchanger": "shashwatup9k"}
 },
 "orv": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADV": {"Yes": 1}, "DET": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "VERB": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2024-02-13-10-25-14", "lastchanger": "olesar"},
