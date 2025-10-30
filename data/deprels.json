@@ -65,7 +65,7 @@
 "obj:lo": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-10-30-20-25-56", "lastchanger": "paulm"},
 "obj:po": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-10-30-20-26-17", "lastchanger": "paulm"},
 "obj:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-10-30-20-26-34", "lastchanger": "paulm"},
-"obj:ro": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"obj:ro": {"type": "local", "doc": "local", "permitted": 0, "errors": [], "lastchanged": "2025-10-30-20-26-55", "lastchanger": "paulm"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
