@@ -1731,6 +1731,7 @@
 },
 "wuu": {
 "之": {"functions": [{"function": "Mood=Pot", "rule": "Used after the verb to mark completion of an action.", "deficient": "", "example": "侬拼[之]命", "exampleen": "You risked your life.", "comment": ""}], "status": "documented", "lastchanged": "2025-10-30-20-19-17", "lastchanger": "q1zhen"},
+"伐": {"functions": [{"function": "neg", "rule": "General negator used before verbs or auxiliaries", "deficient": "", "example": "吾[伐]陪侬", "exampleen": "I won’t accompany you", "comment": ""}], "status": "documented", "lastchanged": "2025-10-31-01-06-09", "lastchanger": "q1zhen"},
 "侨会": {"functions": [{"function": "Aspect=Perf", "rule": "not available", "deficient": "", "example": "[侨会]", "exampleen": "not available", "comment": "This is a typo and should be removed"}], "status": "documented", "lastchanged": "2025-10-30-21-18-33", "lastchanger": "q1zhen"},
 "侪会": {"functions": [{"function": "Mood=Pot", "rule": "Used before the main verb to express habitual ability or certainty.", "deficient": "", "example": "侮辣啊里吾[侰会]寻到侮呕！", "exampleen": "Wherever you are, I will always find you.", "comment": ""}], "status": "documented", "lastchanged": "2025-10-30-20-03-39", "lastchanger": "q1zhen"},
 "勒": {"functions": [{"function": "Aspect=Perf", "rule": "Used after the main verb to mark a completed action (perfect aspect)", "deficient": "", "example": "你上号[勒]哪能伐我啊？", "exampleen": "You have logged in; why don't you pay attention to me?", "comment": ""}], "status": "documented", "lastchanged": "2025-10-30-20-12-24", "lastchanger": "q1zhen"},
