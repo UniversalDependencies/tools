@@ -2341,6 +2341,8 @@ class Validator:
                 testid='pron-det-without-prontype',
                 message=f"The word '{formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
             ))
+        # See https://github.com/UniversalDependencies/docs/issues/1155 for
+        # complaints about this warning.
         if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
             Incident(
                 state=state, args=self.args,
