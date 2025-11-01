@@ -573,6 +573,7 @@
 "she": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[She] dooinney-ooasle va'n ayr echey.", "exampleen": "His father was a gentleman.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-44-33", "lastchanger": "dan-zeman"}
 },
 "ha": {
+"yak": {"functions": [{"function": "Aspect=Perf", "rule": "Combinatio of subject marker, Aspect and Subordination", "deficient": "", "example": "shiː [yac] ciː sù", "exampleen": "HE ate them", "comment": "Used here in the subordinate part of a cleft sentence."}], "status": "documented", "lastchanged": "2025-11-01-12-06-54", "lastchanger": "CARON-B"},
 "yaː": {"functions": [{"function": "Aspect=Perf", "rule": "Combination of subject marker and Aspect morpheme", "deficient": "", "example": "[naː] mânceː", "exampleen": "I have forgotten", "comment": ""}], "status": "documented", "lastchanged": "2025-11-01-11-59-29", "lastchanger": "CARON-B"}
 },
 "hbo": {
