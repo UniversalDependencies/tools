@@ -612,6 +612,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 618, "Inf": 24, "Part": 68}, "VERB": {"Fin": 290, "Inf": 389, "Part": 366}}}
 },
+"brh": {
+
+},
 "bxr": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Imp": 7, "Perf": 4, "Prog": 3}, "VERB": {"Hab": 21, "Imp": 42, "Perf": 34, "Prog": 9}}},
