@@ -8633,6 +8633,7 @@
 },
 "pra": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-11-04-17-13-01", "lastchanger": "dan-zeman"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-11-04-17-12-19", "lastchanger": "dan-zeman"},
