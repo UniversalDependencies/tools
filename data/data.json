@@ -1443,6 +1443,9 @@
 "суох": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "negative existential copula", "example": "Уҥуоҕа [суох] уонна эмис эт бу баар", "exampleen": "This is boneless and fat meat", "comment": ""}], "status": "documented", "lastchanged": "2022-05-01-10-32-51", "lastchanger": "tatiana-merz"},
 "э": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "an event variable e- can only be attached to immediate past or remote past", "example": "кини быраас [этэ]", "exampleen": "he/she/it was a doctor", "comment": ""}], "status": "documented", "lastchanged": "2021-10-27-11-45-38", "lastchanger": "tatiana-merz"}
 },
+"say": {
+"nə": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Identity and Focus Copula", "example": "[nə] núː môp kámʃi ?", "exampleen": "Who is stronger than his friends?", "comment": ""}], "status": "documented", "lastchanged": "2025-11-04-14-49-57", "lastchanger": "CARON-B"}
+},
 "scn": {
 "aviri": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a past participle", "deficient": "", "example": "nun [aju] rinisciutu", "exampleen": "I didn't succeed", "comment": ""}, {"function": "Mood=Nec", "rule": "use of the auxiliary verb followed by the particle a and an infinitive verb", "deficient": "", "example": "[avianu] a partiri", "exampleen": "they had to leave", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-41-14", "lastchanger": "SabrinaDali"},
 "duviri": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and an infinitive verb", "deficient": "", "example": "cci [duvia] diri", "exampleen": "he [had to] tell him", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-10-56", "lastchanger": "SabrinaDali"},
