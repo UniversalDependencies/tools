@@ -88,8 +88,9 @@ my $languages_from_yaml = udlib::get_language_hash();
 opendir(DIR, '.') or die('Cannot read the contents of the working folder');
 my @folders = sort(grep {-d $_ && m/^UD_[A-Z]/} (readdir(DIR)));
 closedir(DIR);
-my $validhash = get_validation_results();
+my ($validhash, $retiredhash) = get_validation_results();
 my %valid = %{$validhash};
+my %invalid_retired = %{$retiredhash};
 my $n_folders_with_data = 0;
 my $n_errors = 0;
 my %languages_with_data;
@@ -103,7 +104,8 @@ my %stats;
 my @nongit_folders; # folder is not a git repository
 my @empty_folders; # does not contain data
 my @future_folders; # scheduled for a future release (and we did not ask to include future data in the report)
-my @invalid_folders; # at least one .conllu file does not pass validation
+my @invalid_folders; # at least one .conllu file does not pass validation and the treebank is not retired
+my @retired_folders; # the treebank was retired and it is not valid again
 my @released_folders;
 
 # Get mappings between language names, language codes, folder names, ltcodes,
@@ -158,7 +160,14 @@ foreach my $folder (@known_folders)
     }
     if(!$valid{$folder})
     {
-        push(@invalid_folders, $folder);
+        if($invalid_retired{$folder})
+        {
+            push(@retired_folders, $folder);
+        }
+        else
+        {
+            push(@invalid_folders, $folder);
+        }
         chdir('..') or die("Cannot return to the upper folder");
         next;
     }
@@ -268,6 +277,10 @@ if(scalar(@future_folders) > 0)
 if(scalar(@invalid_folders) > 0)
 {
     print(scalar(@invalid_folders), " folders ignored because at least one file does not pass validation: ", join(', ', @invalid_folders), "\n\n");
+}
+if(scalar(@retired_folders) > 0)
+{
+    print(scalar(@retired_folders), " folders ignored because they are retired (and not and valid again): ", join(', ', @retired_folders), "\n\n");
 }
 # Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
 print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");
@@ -434,6 +447,7 @@ sub get_folder_codes_and_names
 sub get_validation_results
 {
     my %valid;
+    my %invalid_retired;
     # After we used this script to select the treebanks automatically,
     # we typically freeze the list in an external file called
     # released_treebanks.txt (see https://universaldependencies.org/release_checklist_task_force.html#determining-which-treebanks-will-be-released).
@@ -450,8 +464,14 @@ sub get_validation_results
         {
             $valid{$1}++;
         }
+        # Among the invalid treebanks, create a separate list of those that are
+        # retired, so that it is easier to check the lists by eye-balling.
+        elsif($line =~ m/^(UD_.+): (RETIRED) /)
+        {
+            $invalid_retired{$1}++;
+        }
     }
-    return \%valid;
+    return \%valid, \%invalid_retired;
 }
 
 
