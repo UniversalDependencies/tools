@@ -5403,7 +5403,7 @@
 "obl:dat": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-11-11-20-41-33", "lastchanger": "hiwasan"},
-"punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-11-11-20-42-33", "lastchanger": "hiwasan"},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
