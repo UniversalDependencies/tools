@@ -425,9 +425,9 @@ Enhanced errors: 2
 LEVEL 3 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\nmod-obl.conllu 
-[Line 6 Sent invalid-obl]: [L3 Warning obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
-Warnings: 1
-*** PASSED ***
+[Line 6 Sent invalid-obl]: [L3 Syntax obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
+Syntax errors: 1
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\non-proj.conllu 
@@ -471,10 +471,9 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 247 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('SEA').
 [Line 248 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('Games').
 [Line 253 Sent 14356]: [L3 Warning pron-det-without-prontype] The word 'ang' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 266 Sent 14356]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('pinakinggan')
-...suppressing further errors regarding Warning
+[Line 271 Sent 14356]: [L3 Warning pron-det-without-prontype] The word 'mga' is tagged 'DET' but it lacks the 'PronType' feature
 Syntax errors: 15
-Warnings: 21
+Warnings: 20
 *** FAILED *** with 15 errors
  
 -------------------------------------------------------------------------------- 
@@ -485,16 +484,13 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 30 Sent ASCA.YEAR0738.001.002]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
 [Line 31 Sent ASCA.YEAR0738.001.002]: [L3 Syntax right-to-left-appos] Parent of relation 'appos' must precede the child in the word order.
 [Line 42 Sent P334676]: [L3 Warning pron-det-without-prontype] The word 'ša' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 47 Sent P334676]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('šupur')
 [Line 48 Sent P334676]: [L3 Syntax right-to-left-fixed] Parent of relation 'fixed' must precede the child in the word order.
 [Line 49 Sent P334676]: [L3 Warning pron-det-without-prontype] The word 'b\u0113t' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 49 Sent P334676]: [L3 Warning fixed-without-extpos] Fixed expression 'b\u0113t ina' does not have the 'ExtPos' feature
-[Line 51 Sent P334676]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('ihri\u1e6d\u016bni')
-[Line 55 Sent P334676]: [L3 Warning mood-without-verbform-fin] Non-empty 'Mood' feature at a word that is not finite verb ('luka\u1e6d\u1e6diru')
 [Line 65 Sent goeswith]: [L3 Syntax right-to-left-goeswith] Parent of relation 'goeswith' must precede the child in the word order.
 [Line 66 Sent goeswith]: [L3 Syntax goeswith-gap] Gaps in goeswith group [1, 2] != [].
 Syntax errors: 8
-Warnings: 6
+Warnings: 3
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
