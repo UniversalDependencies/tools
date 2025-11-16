@@ -1581,12 +1581,24 @@ sub check_documentation
         # So the file exists but does it really contain anything useful?
         # Some people just create an almost empty file without bothering to put the contents there.
         my $doc;
+        my $instructions_still_there = 0;
         open(IDX, $indexpath);
         while(<IDX>)
         {
             $doc .= $_;
+            if(m/\*\*Instruction\*\*:/)
+            {
+                $instructions_still_there = 1;
+            }
         }
         close(IDX);
+        # The instructions that are in the template should be removed before the final documentation is ready.
+        if($instructions_still_there)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: The one-page documentation summary of language '$lcode' still contains the instructions from the template. They should be removed.\n");
+            $$n_errors++;
+        }
         # Czech documentation has over 16000 B.
         # Swedish documentation has over 4500 B.
         # Yoruba is probably incomplete but it still has over 3500 B.
