@@ -740,24 +740,43 @@ def lemmatl(node):
 
 
 class Validator:
-    def __init__(self, args=None):
+    def __init__(self, lang=None, level=None, args=None):
         """
         Initialization of the Validator class.
 
         Parameters
         ----------
+        lang : str
+            ISO code of the main language of the data to be validated.
+            If not provided separately, it will be searched for in args.
+            If not provided in args either, default is 'ud' (no lang-spec tests).
+        level : int
+            Validation level ranging from 1 to 5.
+            If not provided separately, it will be searched for in args.
+            If not provided in args either, default is 5 (all UD tests).
         args : argparse.Namespace, optional
             Parsed commandline arguments, if any. The default is None.
             Validator itself needs the following arguments:
                 - level (1-5, level of tests to be applied)
                 - lang (code of the main language of the treebank).
-                - single_root (require single root? Obsolete - all treebanks should have it)
-                - coref (test also coreference annotation in MISC)
+                - check_coref (test also coreference annotation in MISC)
             Other arguments have to be passed to the Incident class whenever
             an incident (error or warning) is recorded.
         """
         if not args:
             args = argparse.Namespace()
+        if not lang:
+            if args.lang:
+                lang = args.lang
+            else:
+                lang = 'ud'
+        if not level:
+            if args.level:
+                level = args.level
+            else:
+                level = 5
+        self.lang = lang
+        self.level = level
         self.args = args
         self.conllu_reader = udapi.block.read.conllu.Conllu()
 
@@ -2098,7 +2117,7 @@ class Validator:
         word_ids = list(range(1, n_words+1))
         # Check that there is just one node with the root relation.
         children_0 = sorted(children.get(0, []))
-        if len(children_0) > 1 and self.args.single_root:
+        if len(children_0) > 1:
             Incident(
                 state=state, args=self.args,
                 lineno=-1,
@@ -3505,7 +3524,7 @@ class Validator:
         # happened in French GSD.) We will thus allow the union of the main and the
         # alternative deprelset when both the parent and the child belong to the
         # same alternative language. Otherwise, only the main deprelset is allowed.
-        mainlang = self.args.lang
+        mainlang = self.lang
         naltlang = get_alt_language(node)
         # The basic relation should be tested on regular nodes but not on empty nodes.
         if not node.is_empty():
@@ -3516,7 +3535,7 @@ class Validator:
                 alt_deprelset = data.get_deprel_for_language(naltlang)
             # Test only the universal part if testing at universal level.
             deprel = node.deprel
-            if self.args.level < 4:
+            if self.level < 4:
                 deprel = node.udeprel
                 Incident.default_level = 2
             if deprel not in main_deprelset and deprel not in alt_deprelset:
@@ -3539,7 +3558,7 @@ class Validator:
                 parent = edep['parent']
                 deprel = edep['deprel']
                 paltlang = get_alt_language(parent)
-                if self.args.level < 4:
+                if self.level < 4:
                     deprel = lspec2ud(deprel)
                     Incident.default_level = 2
                 if not (deprel in main_edeprelset or naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
@@ -4345,7 +4364,7 @@ class Validator:
             # such a mess here.
             idseqok = self.validate_id_sequence(state, sentence) # level 1
             self.validate_token_ranges(state, sentence) # level 1
-            if self.args.level > 1:
+            if self.level > 1:
                 idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
                 if not idrefok:
                     continue
@@ -4375,7 +4394,7 @@ class Validator:
                 # safe to give the lines to Udapi and ask it to build the tree data
                 # structure for us.
                 tree = self.build_tree_udapi(all_lines)
-                self.validate_sent_id(state, comments, self.args.lang) # level 2
+                self.validate_sent_id(state, comments, self.lang) # level 2
                 self.validate_parallel_id(state, comments) # level 2
                 self.validate_text_meta(state, comments, sentence) # level 2
                 # Test that enhanced graphs exist either for all sentences or for
@@ -4391,17 +4410,17 @@ class Validator:
                     line = linenos[str(node.ord)]
                     self.validate_deprels(state, node, line) # level 2 and 4
                     self.validate_root(state, node, line) # level 2: deprel root <=> head 0
-                    if self.args.level > 2:
+                    if self.level > 2:
                         self.validate_enhanced_orphan(state, node, line) # level 3
-                        if self.args.level > 3:
+                        if self.level > 3:
                             # To disallow words with spaces everywhere, use --lang ud.
-                            self.validate_words_with_spaces(state, node, line, self.args.lang) # level 4
-                            self.validate_features_level4(state, node, line, self.args.lang) # level 4
-                            if self.args.level > 4:
-                                self.validate_auxiliary_verbs(state, node, line, self.args.lang) # level 5
-                                self.validate_copula_lemmas(state, node, line, self.args.lang) # level 5
+                            self.validate_words_with_spaces(state, node, line, self.lang) # level 4
+                            self.validate_features_level4(state, node, line, self.lang) # level 4
+                            if self.level > 4:
+                                self.validate_auxiliary_verbs(state, node, line, self.lang) # level 5
+                                self.validate_copula_lemmas(state, node, line, self.lang) # level 5
                 # Tests on whole trees and enhanced graphs.
-                if self.args.level > 2:
+                if self.level > 2:
                     self.validate_annotation(state, tree, linenos) # level 3
                     self.validate_egraph_connected(state, nodes, linenos)
                 if self.args.check_coref:
@@ -4416,7 +4435,7 @@ class Validator:
         """
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
-        if self.args.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
+        if self.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
             Incident(
                 state=state, args=self.args,
                 level=3,
@@ -4513,13 +4532,6 @@ def build_argparse():
                             Level 4: Language-specific labels.
                             Level 5: Language-specific contents.""")
 
-    tree_group = opt_parser.add_argument_group("Tree constraints",
-                                               "Options for checking the validity of the tree.")
-    tree_group.add_argument("--multiple-roots",
-                            action="store_false", default=True, dest="single_root",
-                            help="""Allow trees with several root words
-                            (single root required by default).""")
-
     coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
                                                 "Options for checking coreference and entity annotation.")
     coref_group.add_argument('--coref',
@@ -4564,7 +4576,7 @@ def parse_args(args=None):
 
 def main():
     args = parse_args()
-    validator = Validator(args)
+    validator = Validator(lang=args.lang, level=args.level, args=args)
     state = validator.validate_files(args.input)
 
     # Summarize the warnings and errors.
