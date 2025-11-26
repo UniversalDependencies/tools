@@ -740,7 +740,7 @@ def lemmatl(node):
 
 
 class Validator:
-    def __init__(self, lang=None, level=None, args=None):
+    def __init__(self, lang=None, level=None, check_coref=None, args=None):
         """
         Initialization of the Validator class.
 
@@ -754,14 +754,17 @@ class Validator:
             Validation level ranging from 1 to 5.
             If not provided separately, it will be searched for in args.
             If not provided in args either, default is 5 (all UD tests).
+        check_coref: bool
+            Should the optional coreference-related tests be performed?
+            If not provided separately, it will be searched for in args.
+            The default value is False.
         args : argparse.Namespace, optional
             Parsed commandline arguments, if any. The default is None.
-            Validator itself needs the following arguments:
-                - level (1-5, level of tests to be applied)
-                - lang (code of the main language of the treebank).
-                - check_coref (test also coreference annotation in MISC)
-            Other arguments have to be passed to the Incident class whenever
-            an incident (error or warning) is recorded.
+            Validator itself does not need to search this namespace unless one
+            of its own arguments (lang, level... see above) is not provided
+            directly to the constructor. However, there may be other arguments
+            that have to be passed to the Incident class whenever an incident
+            (error or warning) is recorded by the Validator.
         """
         if not args:
             args = argparse.Namespace()
@@ -775,8 +778,14 @@ class Validator:
                 level = args.level
             else:
                 level = 5
+        if check_coref == None:
+            if args.check_coref != None:
+                check_coref = args.check_coref
+            else:
+                check_coref = False
         self.lang = lang
         self.level = level
+        self.check_coref = check_coref
         self.args = args
         self.conllu_reader = udapi.block.read.conllu.Conllu()
 
@@ -4423,7 +4432,7 @@ class Validator:
                 if self.level > 2:
                     self.validate_annotation(state, tree, linenos) # level 3
                     self.validate_egraph_connected(state, nodes, linenos)
-                if self.args.check_coref:
+                if self.check_coref:
                     self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
         self.validate_newlines(state, inp) # level 1
 
