@@ -768,19 +768,23 @@ class Validator:
         """
         if not args:
             args = argparse.Namespace()
+        # Since we allow args that were not created by our ArgumentParser,
+        # we must be prepared that some attributes do not exist. It will be
+        # thus safer to access them as a dictionary.
+        args_dict = vars(args)
         if not lang:
-            if args.lang:
-                lang = args.lang
+            if 'lang' in args_dict and args_dict['lang'] != None:
+                lang = args_dict['lang']
             else:
                 lang = 'ud'
         if not level:
-            if args.level:
-                level = args.level
+            if 'level' in args_dict and args_dict['level'] != None:
+                level = args_dict['level']
             else:
                 level = 5
         if check_coref == None:
-            if args.check_coref != None:
-                check_coref = args.check_coref
+            if 'check_coref' in args_dict and args_dict['check_coref'] != None:
+                check_coref = args_dict['check_coref']
             else:
                 check_coref = False
         self.lang = lang
