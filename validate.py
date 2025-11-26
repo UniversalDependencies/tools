@@ -741,7 +741,23 @@ def lemmatl(node):
 
 class Validator:
     def __init__(self, args=None):
-        args = parse_args(args)
+        """
+        Initialization of the Validator class.
+
+        Parameters
+        ----------
+        args : argparse.Namespace, optional
+            Parsed commandline arguments, if any. The default is None.
+            Validator itself needs the following arguments:
+                - level (1-5, level of tests to be applied)
+                - lang (code of the main language of the treebank).
+                - single_root (require single root? Obsolete - all treebanks should have it)
+                - coref (test also coreference annotation in MISC)
+            Other arguments have to be passed to the Incident class whenever
+            an incident (error or warning) is recorded.
+        """
+        if not args:
+            args = argparse.Namespace()
         self.args = args
         self.conllu_reader = udapi.block.read.conllu.Conllu()
 
@@ -4512,15 +4528,31 @@ def build_argparse():
     return opt_parser
 
 def parse_args(args=None):
-    opt_parser = build_argparse()
-    args = opt_parser.parse_args(args=args) #Parsed command-line arguments
+    """
+    Creates an instance of the ArgumentParser and parses the command line
+    arguments.
 
-    # Level of validation
+    Parameters
+    ----------
+    args : list of strings, optional
+        If not supplied, the argument parser will read sys.args instead.
+        Otherwise the caller can supply list such as ['--lang', 'en'].
+
+    Returns
+    -------
+    args : argparse.Namespace
+        Values of individual arguments can be accessed as object properties
+        (using the dot notation). It is possible to convert it to a dict by
+        calling vars(args).
+    """
+    opt_parser = build_argparse()
+    args = opt_parser.parse_args(args=args)
+    # Level of validation.
     if args.level < 1:
         print(f'Option --level must not be less than 1; changing from {args.level} to 1',
               file=sys.stderr)
         args.level = 1
-    # No language-specific tests for levels 1-3
+    # No language-specific tests for levels 1-3.
     # Anyways, any Feature=Value pair should be allowed at level 3 (because it may be language-specific),
     # and any word form or lemma can contain spaces (because language-specific guidelines may allow it).
     # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
@@ -4531,8 +4563,8 @@ def parse_args(args=None):
     return args
 
 def main():
-    validator = Validator()
-    args = validator.args
+    args = parse_args()
+    validator = Validator(args)
     state = validator.validate_files(args.input)
 
     # Summarize the warnings and errors.
