@@ -18,6 +18,7 @@ import json
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
+import validator.src.validator.utils as utils
 
 
 
