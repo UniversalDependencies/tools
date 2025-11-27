@@ -18,6 +18,14 @@ from validator.src.validator.validate import Validator
 
 
 def build_argparse():
+    """
+    Builds the argument parser for the validation script.
+
+    Returns
+    -------
+    opt_parser : argparse.ArgumentParser
+        The parser object. Call its method parse_args().
+    """
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
     io_group = opt_parser.add_argument_group("Input / output options")
@@ -58,6 +66,7 @@ def build_argparse():
                              action='store_true', default=False, dest='check_coref',
                              help='Test coreference and entity-related annotation in MISC.')
     return opt_parser
+
 
 def parse_args(args=None):
     """
