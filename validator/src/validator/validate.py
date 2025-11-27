@@ -21,9 +21,6 @@ import udapi.block.read.conllu
 
 
 
-# The folder where this script resides.
-THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
-
 # Constants for the column indices
 COLCOUNT=10
 ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
@@ -141,7 +138,13 @@ class Data:
     expressions etc. needed for detailed testing, especially for language-
     specific constraints.
     """
-    def __init__(self):
+    def __init__(self, datapath=None):
+        if datapath:
+            self.datapath = datapath
+        else:
+            # The folder where this script resides.
+            THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
+            self.datapath = os.path.join(THISDIR, '..', '..', '..', 'data')
         # Universal part of speech tags in the UPOS column. Just a set.
         # For consistency, they are also read from a file. But these tags do
         # not change, so they could be even hard-coded here.
@@ -487,27 +490,27 @@ class Data:
         supposed to be in the data subfolder of the folder where the script
         lives.
         """
-        with open(os.path.join(THISDIR, 'data', 'upos.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'upos.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         upos_list = contents['upos']
         self.upos = set(upos_list)
-        with open(os.path.join(THISDIR, 'data', 'feats.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'feats.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.feats = contents['features']
-        with open(os.path.join(THISDIR, 'data', 'udeprels.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'udeprels.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         udeprel_list = contents['udeprels']
         self.udeprel = set(udeprel_list)
-        with open(os.path.join(THISDIR, 'data', 'deprels.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'deprels.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.deprel = contents['deprels']
-        with open(os.path.join(THISDIR, 'data', 'edeprels.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'edeprels.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.edeprel = contents['edeprels']
-        with open(os.path.join(THISDIR, 'data', 'data.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'data.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         self.auxcop = contents['auxiliaries']
-        with open(os.path.join(THISDIR, 'data', 'tospace.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.datapath, 'tospace.json'), 'r', encoding='utf-8') as f:
             contents = json.load(f)
         # There is one or more regular expressions for each language in the file.
         # If there are multiple expressions, combine them in one and compile it.

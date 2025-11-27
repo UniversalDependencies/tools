@@ -18,6 +18,11 @@ import json
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
+# Import the Validator class from the package subfolder regardless whether it
+# is installed as a package.
+# caution: path[0] is reserved for script path (or '' in REPL)
+#sys.path.insert(1, 'validator/src/validator')
+from validator.src.validator.validate import Validator
 
 
 
@@ -739,7 +744,7 @@ def lemmatl(node):
 
 
 
-class Validator:
+class Validator_turned_off:
     def __init__(self, lang=None, level=None, check_coref=None, args=None):
         """
         Initialization of the Validator class.
