@@ -3259,7 +3259,7 @@ class Validator:
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
         tospacedata = data.get_tospace_for_language(lang)
-        altlang = get_alt_language(node)
+        altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
             tospacedata = data.get_tospace_for_language(altlang)
@@ -3315,7 +3315,7 @@ class Validator:
         # The current token may be in a different language due to code switching.
         default_lang = lang
         default_featset = featset = data.get_feats_for_language(lang)
-        altlang = get_alt_language(node)
+        altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
             featset = data.get_feats_for_language(altlang)
@@ -3425,10 +3425,10 @@ class Validator:
         # alternative deprelset when both the parent and the child belong to the
         # same alternative language. Otherwise, only the main deprelset is allowed.
         mainlang = self.lang
-        naltlang = get_alt_language(node)
+        naltlang = utils.get_alt_language(node)
         # The basic relation should be tested on regular nodes but not on empty nodes.
         if not node.is_empty():
-            paltlang = get_alt_language(node.parent)
+            paltlang = utils.get_alt_language(node.parent)
             main_deprelset = data.get_deprel_for_language(mainlang)
             alt_deprelset = set()
             if naltlang != None and naltlang != mainlang and naltlang == paltlang:
@@ -3457,7 +3457,7 @@ class Validator:
             for edep in node.deps:
                 parent = edep['parent']
                 deprel = edep['deprel']
-                paltlang = get_alt_language(parent)
+                paltlang = utils.get_alt_language(parent)
                 if self.level < 4:
                     deprel = utils.lspec2ud(deprel)
                     Incident.default_level = 2
@@ -3494,7 +3494,7 @@ class Validator:
         """
         global data
         if node.upos == 'AUX' and node.lemma != '_':
-            altlang = get_alt_language(node)
+            altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
             auxlist = data.get_aux_for_language(lang)
@@ -3528,7 +3528,7 @@ class Validator:
         """
         global data
         if node.udeprel == 'cop' and node.lemma != '_':
-            altlang = get_alt_language(node)
+            altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
             coplist = data.get_cop_for_language(lang)
@@ -4373,23 +4373,6 @@ class Validator:
             # is beyond the goal of validation, which can be also run in a console.
             traceback.print_exc()
         return state
-
-def get_alt_language(node):
-    """
-    In code-switching analysis of foreign words, an attribute in the MISC column
-    will hold the code of the language of the current word. Certain tests will
-    then use language-specific lists from that language instead of the main
-    language of the document. This function returns the alternative language
-    code if present, otherwise it returns None.
-
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The node (word) whose language is being queried.
-    """
-    if node.misc['Lang'] != '':
-        return node.misc['Lang']
-    return None
 
 
 #==============================================================================
