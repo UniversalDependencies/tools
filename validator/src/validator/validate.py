@@ -151,9 +151,15 @@ class Data:
         if datapath:
             self.datapath = datapath
         else:
-            # The folder where this script resides.
-            THISDIR=os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
+            # The folder where this module resides.
+            THISDIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
+            # If this module was imported directly from the root folder of the
+            # tools repository, the data folder should be a first-level subfolder
+            # there. Otherwise, the module is taken from installed udtools and
+            # the data is a subfolder here.
             self.datapath = os.path.join(THISDIR, '..', '..', '..', 'data')
+            if not os.path.exists(self.datapath):
+                self.datapath = os.path.join(THISDIR, 'data')
         # Universal part of speech tags in the UPOS column. Just a set.
         # For consistency, they are also read from a file. But these tags do
         # not change, so they could be even hard-coded here.
