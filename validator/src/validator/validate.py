@@ -18,7 +18,14 @@ import json
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
-import validator.src.validator.utils as utils
+# Allow using this module from the root folder of tools even if it is not
+# installed as a package: use the relative path validator/src/validator for
+# submodules. If the path is not available, try the standard qualification,
+# assuming that the user wants to use it as an installed package.
+try:
+    import validator.src.validator.utils as utils
+except ModuleNotFoundError:
+    import validator.utils as utils
 
 
 
@@ -668,75 +675,6 @@ class Incident:
 
 
 
-# Support functions.
-
-def is_whitespace(line):
-    return crex.ws.fullmatch(line)
-
-def is_word(cols):
-    return crex.wordid.fullmatch(cols[ID])
-
-def is_multiword_token(cols):
-    return crex.mwtid.fullmatch(cols[ID])
-
-def is_empty_node(cols):
-    return crex.enodeid.fullmatch(cols[ID])
-
-def parse_empty_node_id(cols):
-    m = crex.enodeid.fullmatch(cols[ID])
-    assert m, 'parse_empty_node_id with non-empty node'
-    return m.groups()
-
-def shorten(string):
-    return string if len(string) < 25 else string[:20]+'[...]'
-
-def lspec2ud(deprel):
-    return deprel.split(':', 1)[0]
-
-def formtl(node):
-    """
-    Returns the word form of a node, possibly accompanied by its
-    transliteration (if available in the MISC column).
-
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The node whose form we want to get.
-
-    Returns
-    -------
-    x : str
-        The form and translit, space-separated. Only form if translit
-        not available.
-    """
-    x = node.form
-    if node.misc['Translit'] != '':
-        x += ' ' + node.misc['Translit']
-    return x
-
-def lemmatl(node):
-    """
-    Returns the lemma of a node, possibly accompanied by its transliteration
-    (if available in the MISC column).
-
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The node whose form we want to get.
-
-    Returns
-    -------
-    x : str
-        The lemma and translit, space-separated. Only form if translit not
-        available.
-    """
-    x = node.lemma
-    if node.misc['LTranslit'] != '':
-        x += ' ' + node.misc['LTranslit']
-    return x
-
-
-
 #==============================================================================
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
@@ -843,7 +781,7 @@ class Validator:
                 state.comment_start_line = state.current_line
             line = line.rstrip("\n")
             self.validate_unicode_normalization(state, line)
-            if is_whitespace(line):
+            if utils.is_whitespace(line):
                 Incident(
                     state=state, config=self.incfg,
                     testid='pseudo-empty-line',
@@ -962,7 +900,7 @@ class Validator:
             # For normal words, add them also under integer keys, just in case
             # we later forget to convert node.ord to string. But we cannot do the
             # same for empty nodes and multiword tokens.
-            if is_word(cols):
+            if utils.is_word(cols):
                 linenos[int(cols[ID])] = node_line
         return linenos
 
@@ -1043,7 +981,7 @@ class Validator:
         # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
         # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
         # If it contains a space, it does not make sense to treat it as a MWT.
-        ismwt = is_multiword_token(cols)
+        ismwt = utils.is_multiword_token(cols)
         for col_idx in range(COLCOUNT):
             if col_idx >= len(cols):
                 break # this has been already reported in next_sentence()
@@ -1117,7 +1055,7 @@ class Validator:
         current_word_id, next_empty_id = 0, 1
         for cols in sentence:
             # Check for the format of the ID value. (ID must not be empty.)
-            if not (is_word(cols) or is_empty_node(cols) or is_multiword_token(cols)):
+            if not (utils.is_word(cols) or utils.is_empty_node(cols) or utils.is_multiword_token(cols)):
                 Incident(
                     state=state, config=self.incfg,
                     testid='invalid-word-id',
@@ -1125,18 +1063,18 @@ class Validator:
                 ).report()
                 ok = False
                 continue
-            if not is_empty_node(cols):
+            if not utils.is_empty_node(cols):
                 next_empty_id = 1    # reset sequence
-            if is_word(cols):
+            if utils.is_word(cols):
                 t_id = int(cols[ID])
                 current_word_id = t_id
                 words.append(t_id)
                 # Not covered by the previous interval?
                 if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
                     tokens.append((t_id, t_id)) # nope - let's make a default interval for it
-            elif is_multiword_token(cols):
+            elif utils.is_multiword_token(cols):
                 match = crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
-                if not match: # This should not happen. The function is_multiword_token() would then not return True.
+                if not match: # This should not happen. The function utils.is_multiword_token() would then not return True.
                     Incident(
                         state=state, config=self.incfg,
                         testid='invalid-word-interval',
@@ -1154,8 +1092,8 @@ class Validator:
                     ok = False
                     continue
                 tokens.append((beg, end))
-            elif is_empty_node(cols):
-                word_id, empty_id = (int(i) for i in parse_empty_node_id(cols))
+            elif utils.is_empty_node(cols):
+                word_id, empty_id = (int(i) for i in utils.parse_empty_node_id(cols))
                 if word_id != current_word_id or empty_id != next_empty_id:
                     Incident(
                         state=state, config=self.incfg,
@@ -1221,10 +1159,10 @@ class Validator:
         Incident.default_lineno = None # use the most recently read line
         covered = set()
         for cols in sentence:
-            if not is_multiword_token(cols):
+            if not utils.is_multiword_token(cols):
                 continue
             m = crex.mwtid.fullmatch(cols[ID])
-            if not m: # This should not happen. The function is_multiword_token() would then not return True.
+            if not m: # This should not happen. The function utils.is_multiword_token() would then not return True.
                 Incident(
                     state=state, config=self.incfg,
                     testid='invalid-word-interval',
@@ -1509,7 +1447,7 @@ class Validator:
                         testid='spaceafter-value',
                         message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
                     ).report()
-                if is_empty_node(cols):
+                if utils.is_empty_node(cols):
                     if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                         Incident(
                             state=state, config=self.incfg,
@@ -1518,7 +1456,7 @@ class Validator:
                             message="'SpaceAfter=No' cannot occur with empty nodes."
                         ).report()
                     continue
-                elif is_multiword_token(cols):
+                elif utils.is_multiword_token(cols):
                     beg, end = cols[ID].split('-')
                     begi, endi = int(beg), int(end)
                     # If we see a multi-word token, add its words to an ignore-set – these will be skipped, and also checked for absence of SpaceAfter=No.
@@ -1562,7 +1500,7 @@ class Validator:
                                 state=state, config=self.incfg,
                                 lineno=state.sentence_line+iline,
                                 testid='missing-spaceafter',
-                                message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{shorten(cols[FORM]+stext)}'."
+                                message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{utils.shorten(cols[FORM]+stext)}'."
                             ).report()
                         stext = stext.lstrip()
             if stext:
@@ -1628,7 +1566,7 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        assert is_multiword_token(cols), 'internal error'
+        assert utils.is_multiword_token(cols), 'internal error'
         for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
             # Exception: The feature Typo=Yes may occur in FEATS of a multi-word token.
             if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
@@ -1659,7 +1597,7 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        assert is_empty_node(cols), 'internal error'
+        assert utils.is_empty_node(cols), 'internal error'
         for col_idx in (HEAD, DEPREL):
             if cols[col_idx]!= '_':
                 Incident(
@@ -1687,11 +1625,11 @@ class Validator:
         """
         Incident.default_level = 2
         Incident.default_lineno = line
-        if is_multiword_token(cols):
+        if utils.is_multiword_token(cols):
             return
         # Do not test the regular expression crex.upos here. We will test UPOS
         # directly against the list of known tags. That is a level 2 test, too.
-        if not (crex.deprel.fullmatch(cols[DEPREL]) or (is_empty_node(cols) and cols[DEPREL] == '_')):
+        if not (crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
             Incident(
                 state=state, config=self.incfg,
                 testclass='Syntax',
@@ -1731,7 +1669,7 @@ class Validator:
             Number of the line where the node occurs in the file.
         """
         global data
-        if is_empty_node(cols) and cols[UPOS] == '_':
+        if utils.is_empty_node(cols) and cols[UPOS] == '_':
             return
         # Just in case, we still match UPOS against the regular expression that
         # checks general character constraints. However, the list of UPOS, loaded
@@ -1870,7 +1808,7 @@ class Validator:
         Incident.default_lineno = line
         Incident.default_level = 2
         Incident.default_testclass = 'Format'
-        if not (is_word(cols) or is_empty_node(cols)):
+        if not (utils.is_word(cols) or utils.is_empty_node(cols)):
             return
         # Remember whether there is at least one difference between the basic
         # tree and the enhanced graph in the entire dataset.
@@ -2034,12 +1972,12 @@ class Validator:
         ok = True
         Incident.default_level = 2
         Incident.default_testclass = 'Format'
-        word_tree = [cols for cols in sentence if is_word(cols) or is_empty_node(cols)]
+        word_tree = [cols for cols in sentence if utils.is_word(cols) or utils.is_empty_node(cols)]
         ids = set([cols[ID] for cols in word_tree])
         for cols in word_tree:
             # Test the basic HEAD only for non-empty nodes.
             # We have checked elsewhere that it is empty for empty nodes.
-            if not is_empty_node(cols):
+            if not utils.is_empty_node(cols):
                 match = crex.head.fullmatch(cols[HEAD])
                 if match is None:
                     Incident(
@@ -2123,7 +2061,7 @@ class Validator:
         n_words = 0
         for cols in sentence:
             node_line += 1
-            if not is_word(cols):
+            if not utils.is_word(cols):
                 continue
             n_words += 1
             # ID and HEAD values have been validated before and this function would
@@ -2211,14 +2149,14 @@ class Validator:
                 ).report()
         # In the enhanced graph, test both regular and empty roots.
         for edep in node.deps:
-            if edep['parent'].ord == 0 and lspec2ud(edep['deprel']) != 'root':
+            if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
                 Incident(
                     state=state, config=self.incfg,
                     testclass='Enhanced',
                     testid='enhanced-0-is-not-root',
                     message="Enhanced relation type must be 'root' if head is 0."
                 ).report()
-            if edep['parent'].ord != 0 and lspec2ud(edep['deprel']) == 'root':
+            if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
                 Incident(
                     state=state, config=self.incfg,
                     testclass='Enhanced',
@@ -2238,9 +2176,9 @@ class Validator:
         """
         egraph_exists = False # enhanced deps are optional
         for cols in sentence:
-            if is_multiword_token(cols):
+            if utils.is_multiword_token(cols):
                 continue
-            if is_empty_node(cols) or cols[DEPS] != '_':
+            if utils.is_empty_node(cols) or cols[DEPS] != '_':
                 egraph_exists = True
         # We are currently testing the existence of enhanced graphs separately for each sentence.
         # However, we should not allow that one sentence has a connected egraph and another
@@ -2401,7 +2339,7 @@ class Validator:
             self.validate_required_feature(state, node.feats, 'PronType', None, Incident(
                 state=state, config=self.incfg,
                 testid='pron-det-without-prontype',
-                message=f"The word '{formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
+                message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
             ))
         # See https://github.com/UniversalDependencies/docs/issues/1155 for
         # complaints about this warning.
@@ -2409,7 +2347,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 testid='verbform-fin-without-mood',
-                message=f"Finite verb '{formtl(node)}' lacks the 'Mood' feature"
+                message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
             ).report()
         # We have to exclude AUX from the following test because they could be
         # nonverbal and Mood could be their lexical feature
@@ -2419,7 +2357,7 @@ class Validator:
         #    Incident(
         #        state=state, config=self.incfg,
         #        testid='mood-without-verbform-fin',
-        #        message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{formtl(node)}')"
+        #        message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
         #    ).report()
 
 
@@ -2475,7 +2413,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-det',
-                message=f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Nummod is for "number phrases" only. This could be interpreted as NUM only,
         # but some languages treat some cardinal numbers as NOUNs, and in
@@ -2485,7 +2423,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-nummod',
-                message=f"'nummod' should be 'NUM' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'nummod' should be 'NUM' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
         # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
@@ -2497,28 +2435,28 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-advmod',
-                message=f"'advmod' should be 'ADV' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'advmod' should be 'ADV' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
         if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-expl',
-                message=f"'expl' should normally be 'PRON' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'expl' should normally be 'PRON' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Auxiliary verb/particle must be AUX.
         if deprel == 'aux' and not re.match(r"^(AUX)", upos):
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-aux',
-                message=f"'aux' should be 'AUX' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'aux' should be 'AUX' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
         if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-cop',
-                message=f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Case is normally an adposition, maybe particle.
         # However, there are also secondary adpositions and they may have the original POS tag:
@@ -2529,7 +2467,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-case',
-                message=f"'case' should not be '{upos}' ('{formtl(node)}')"
+                message=f"'case' should not be '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
         ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
@@ -2542,32 +2480,32 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-mark',
-                message=f"'mark' should not be '{upos}' ('{formtl(node)}')"
+                message=f"'mark' should not be '{upos}' ('{utils.formtl(node)}')"
             ).report()
         # Cc is a conjunction, possibly an adverb or particle.
         if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-cc',
-                message=f"'cc' should not be '{upos}' ('{formtl(node)}')"
+                message=f"'cc' should not be '{upos}' ('{utils.formtl(node)}')"
             ).report()
         if deprel == 'punct' and upos != 'PUNCT':
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-punct',
-                message=f"'punct' must be 'PUNCT' but it is '{upos}' ('{formtl(node)}')"
+                message=f"'punct' must be 'PUNCT' but it is '{upos}' ('{utils.formtl(node)}')"
             ).report()
         if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
             Incident(
                 state=state, config=self.incfg,
                 testid='upos-rel-punct',
-                message=f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{formtl(node)}')"
+                message=f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{utils.formtl(node)}')"
             ).report()
         if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
             Incident(
                 state=state, config=self.incfg,
                 testid='rel-upos-fixed',
-                message=f"'fixed' should not be used for proper nouns ('{formtl(node)}')."
+                message=f"'fixed' should not be used for proper nouns ('{utils.formtl(node)}')."
             ).report()
 
 
@@ -2701,7 +2639,7 @@ class Validator:
 
         subjects = [x for x in node.children if is_inner_subject(x)]
         subject_ids = [x.ord for x in subjects]
-        subject_forms = [formtl(x) for x in subjects]
+        subject_forms = [utils.formtl(x) for x in subjects]
         if len(subjects) > 1:
             Incident(
                 state=state, config=self.incfg,
@@ -2710,7 +2648,7 @@ class Validator:
                 level=3,
                 testclass='Syntax',
                 testid='too-many-subjects',
-                message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{formtl(node)}' not subtyped as ':outer'.",
+                message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{utils.formtl(node)}' not subtyped as ':outer'.",
                 explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
             ).report()
 
@@ -2732,7 +2670,7 @@ class Validator:
         """
         objects = [x for x in node.children if x.udeprel == 'obj']
         object_ids = [x.ord for x in objects]
-        object_forms = [formtl(x) for x in objects]
+        object_forms = [utils.formtl(x) for x in objects]
         if len(objects) > 1:
             Incident(
                 state=state, config=self.incfg,
@@ -2741,7 +2679,7 @@ class Validator:
                 level=3,
                 testclass='Syntax',
                 testid='too-many-objects',
-                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{formtl(node)}'."
+                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{utils.formtl(node)}'."
             ).report()
 
 
@@ -2781,7 +2719,7 @@ class Validator:
                     level=3,
                     testclass='Syntax',
                     testid='obl-should-be-nmod',
-                    message=f"The parent (node [{node.parent.ord}] '{formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'."
+                    message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'."
                 ).report()
 
 
@@ -3341,7 +3279,7 @@ class Validator:
                         testid='empty-node-after-eorphan',
                         message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
                     ).report()
-        udeprels = set([lspec2ud(edep['deprel']) for edep in node.deps])
+        udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
         if 'orphan' in udeprels:
             if not state.seen_enhanced_orphan:
                 state.seen_enhanced_orphan = line
@@ -3480,7 +3418,7 @@ class Validator:
                             state=state, config=self.incfg,
                             nodeid=node.ord,
                             testid='feature-unknown',
-                            message=f"Feature {f} is not documented for language [{effective_lang}] ('{formtl(node)}').",
+                            message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
                             explanation=data.explain_feats(effective_lang)
                         ).report()
                     else:
@@ -3490,7 +3428,7 @@ class Validator:
                                 state=state, config=self.incfg,
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
-                                message=f"Feature {f} is not permitted in language [{effective_lang}] ('{formtl(node)}').",
+                                message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
                                 explanation=data.explain_feats(effective_lang)
                             ).report()
                         else:
@@ -3500,7 +3438,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
-                                    message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{formtl(node)}').",
+                                    message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=data.explain_feats(effective_lang)
                                 ).report()
                             elif not node.upos in lfrecord['byupos']:
@@ -3508,7 +3446,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
-                                    message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
+                                    message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=data.explain_feats(effective_lang)
                                 ).report()
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
@@ -3516,7 +3454,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
-                                    message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{formtl(node)}').",
+                                    message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=data.explain_feats(effective_lang)
                                 ).report()
 
@@ -3586,7 +3524,7 @@ class Validator:
                 deprel = edep['deprel']
                 paltlang = get_alt_language(parent)
                 if self.level < 4:
-                    deprel = lspec2ud(deprel)
+                    deprel = utils.lspec2ud(deprel)
                     Incident.default_level = 2
                 if not (deprel in main_edeprelset or naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
                     Incident(
@@ -3633,7 +3571,7 @@ class Validator:
                     level=5,
                     testclass='Morpho',
                     testid='aux-lemma',
-                    message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
+                    message=f"'{utils.lemmatl(node)}' is not an auxiliary in language [{lang}]",
                     explanation=data.explain_aux(lang)
                 ).report()
 
@@ -3667,7 +3605,7 @@ class Validator:
                     level=5,
                     testclass='Syntax',
                     testid='cop-lemma',
-                    message=f"'{node.lemma}' is not a copula in language [{lang}]",
+                    message=f"'{utils.lemmatl(node)}' is not a copula in language [{lang}]",
                     explanation=data.explain_cop(lang)
                 ).report()
 
@@ -3785,7 +3723,7 @@ class Validator:
             Incident.default_lineno = state.sentence_line+iline
             # Add the current word to all currently open mentions. We will use it in error messages.
             # Do this for regular and empty nodes but not for multi-word-token lines.
-            if not is_multiword_token(cols):
+            if not utils.is_multiword_token(cols):
                 for m in state.open_entity_mentions:
                     m['span'].append(cols[ID])
                     m['text'] += ' '+cols[FORM]
@@ -3794,7 +3732,7 @@ class Validator:
             entity = [x for x in misc if re.match(r"^Entity=", x)]
             bridge = [x for x in misc if re.match(r"^Bridge=", x)]
             splitante = [x for x in misc if re.match(r"^SplitAnte=", x)]
-            if is_multiword_token(cols) and (len(entity)>0 or len(bridge)>0 or len(splitante)>0):
+            if utils.is_multiword_token(cols) and (len(entity)>0 or len(bridge)>0 or len(splitante)>0):
                 Incident(
                     state=state, config=self.incfg,
                     testid='entity-mwt',
@@ -4405,11 +4343,11 @@ class Validator:
                 for cols in sentence:
                     line += 1
                     # Multiword tokens and empty nodes can or must have certain fields empty.
-                    if is_multiword_token(cols):
+                    if utils.is_multiword_token(cols):
                         self.validate_mwt_empty_vals(state, cols, line)
-                    if is_empty_node(cols):
+                    if utils.is_empty_node(cols):
                         self.validate_empty_node_empty_vals(state, cols, line) # level 2
-                    if is_word(cols) or is_empty_node(cols):
+                    if utils.is_word(cols) or utils.is_empty_node(cols):
                         self.validate_character_constraints(state, cols, line) # level 2
                         self.validate_upos(state, cols, line) # level 2
                         colssafe = self.validate_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
