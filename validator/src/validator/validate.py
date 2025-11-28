@@ -21,11 +21,12 @@ import udapi.block.read.conllu
 # Allow using this module from the root folder of tools even if it is not
 # installed as a package: use the relative path validator/src/validator for
 # submodules. If the path is not available, try the standard qualification,
-# assuming that the user wants to use it as an installed package.
+# assuming that the user has installed udtools from PyPI and then called
+# from udtools import Validator.
 try:
     import validator.src.validator.utils as utils
 except ModuleNotFoundError:
-    import validator.utils as utils
+    import udtools.utils as utils
 
 
 
