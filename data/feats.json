@@ -2572,6 +2572,9 @@
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part", "Sup", "Vnoun"], "lvalues": ["NomAg"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Gdv", "Ger"], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Part": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "NomAg": 1, "Part": 1, "Sup": 1, "Vnoun": 1}}, "lastchanged": "2023-04-26-14-45-12", "lastchanger": "rueter"},
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Aux"], "unused_uvalues": [], "unused_lvalues": ["Cop", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {"ADV": {"Aux": 1}, "AUX": {"Aux": 1}}, "lastchanged": "2023-04-21-23-07-58", "lastchanger": "rueter"}
 },
+"mg": {
+
+},
 "mga": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
