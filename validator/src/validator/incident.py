@@ -13,7 +13,7 @@ class TestClass(Enum):
     ENHANCED = 5
     COREF = 6
     METADATA = 7
-    WARNING = 8 ###!!! this will be removed when we start using the IncidentType below
+    WARNING = 8 ###!!! temporarily needed because downstream scripts expect it on output
 
     def __str__(self):
         return self.name
@@ -75,16 +75,17 @@ class Incident:
         self.nodeid = nodeid
 
     def report(self):
+        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
         # Even if we should be quiet, at least count the error.
-        self.state.error_counter[self.testclass] = self.state.error_counter.get(self.testclass, 0)+1
-        if not 'max_store' in self.config or self.config['max_store'] <= 0 or len(self.state.error_tracker[self.testclass]) < self.config['max_store']:
-            self.state.error_tracker[self.testclass].append(self)
+        self.state.error_counter[testclass_to_report] = self.state.error_counter.get(testclass_to_report, 0)+1
+        if not 'max_store' in self.config or self.config['max_store'] <= 0 or len(self.state.error_tracker[testclass_to_report]) < self.config['max_store']:
+            self.state.error_tracker[testclass_to_report].append(self)
         if 'quiet' in self.config and self.config['quiet']:
             return
         # Suppress error messages of a type of which we have seen too many.
-        if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[self.testclass] > self.config['max_err']:
-            if self.state.error_counter[self.testclass] == self.config['max_err'] + 1:
-                print(f'...suppressing further errors regarding {self.testclass}', file=sys.stderr)
+        if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[testclass_to_report] > self.config['max_err']:
+            if self.state.error_counter[testclass_to_report] == self.config['max_err'] + 1:
+                print(f'...suppressing further errors regarding {testclass_to_report}', file=sys.stderr)
             return # suppressed
         # If we are here, the error message should really be printed.
         # Address of the incident.
@@ -93,7 +94,7 @@ class Incident:
         if 'n_files' in self.config and self.config['n_files'] > 1:
             address = f'File {self.filename} ' + address
         # Classification of the incident.
-        levelclassid = f'L{self.level} {self.testclass} {self.testid}'
+        levelclassid = f'L{self.level} {testclass_to_report} {self.testid}'
         # Message (+ explanation, if this is the first error of its kind).
         message = self.message
         if self.explanation and self.explanation not in self.state.explanation_printed:

@@ -1750,7 +1750,7 @@ class Validator:
         """
         Incident.default_lineno = line
         Incident.default_level = 2
-        Incident.default_testclass = TestClass.WARNING
+        Incident.default_testclass = TestClass.FORMAT
         if cols[MISC] == '_':
             return
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
@@ -1758,13 +1758,13 @@ class Validator:
         for ma in misc:
             if ma[0] == '':
                 if len(ma) == 1:
-                    Error(
+                    Warning(
                         state=state, config=self.incfg,
                         testid='empty-misc',
                         message="Empty attribute in MISC; possible misinterpreted vertical bar?"
                     ).report()
                 else:
-                    Error(
+                    Warning(
                         state=state, config=self.incfg,
                         testid='empty-misc-key',
                         message=f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
@@ -1774,25 +1774,25 @@ class Validator:
             if len(ma) == 1:
                 ma.append('')
             if re.match(r"^\s", ma[0]):
-                Error(
+                Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
                 ).report()
             elif re.search(r"\s$", ma[0]):
-                Error(
+                Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
                 ).report()
             elif re.match(r"^\s", ma[1]):
-                Error(
+                Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
                 ).report()
             elif re.search(r"\s$", ma[1]):
-                Error(
+                Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
@@ -1801,7 +1801,7 @@ class Validator:
                 mamap.setdefault(ma[0], 0)
                 mamap[ma[0]] = mamap[ma[0]] + 1
             elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv|ref)\s*$", ma[0], re.IGNORECASE):
-                Error(
+                Warning(
                     state=state, config=self.incfg,
                     testid='misc-attr-typo',
                     message=f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
@@ -2203,9 +2203,9 @@ class Validator:
         """
         Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = TestClass.WARNING
+        Incident.default_testclass = TestClass.MORPHO
         if node.upos in ['PRON', 'DET']:
-            self.validate_required_feature(state, node.feats, 'PronType', None, Error(
+            self.validate_required_feature(state, node.feats, 'PronType', None, Warning(
                 state=state, config=self.incfg,
                 testid='pron-det-without-prontype',
                 message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
@@ -2213,7 +2213,7 @@ class Validator:
         # See https://github.com/UniversalDependencies/docs/issues/1155 for
         # complaints about this warning.
         if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
-            Error(
+            Warning(
                 state=state, config=self.incfg,
                 testid='verbform-fin-without-mood',
                 message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
@@ -2223,7 +2223,7 @@ class Validator:
         # (see https://github.com/UniversalDependencies/docs/issues/1147).
         # Update: Lithuanian seems to need Mood=Nec with participles. Turning the test off.
         #elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin' and not (node.upos == 'AUX' and node.feats['VerbForm'] == ''):
-        #    Error(
+        #    Warning(
         #        state=state, config=self.incfg,
         #        testid='mood-without-verbform-fin',
         #        message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
@@ -2265,9 +2265,8 @@ class Validator:
         if 'fixed' in childrels and not node.feats['ExtPos']:
             fixed_forms = [node.form] + [x.form for x in node.children if x.udeprel == 'fixed']
             str_fixed_forms = ' '.join(fixed_forms)
-            Incident(
+            Warning(
                 state=state, config=self.incfg,
-                testclass=TestClass.WARNING,
                 testid='fixed-without-extpos',
                 message=f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
             ).report()
@@ -2398,12 +2397,12 @@ class Validator:
             of the line where the node occurs (int).
         """
         Incident.default_level = 3
-        Incident.default_testclass = TestClass.WARNING # or Morpho
+        Incident.default_testclass = TestClass.MORPHO
         if node.deprel != 'flat:foreign':
             return
         parent = node.parent
         if node.upos != 'X' or str(node.feats) != 'Foreign=Yes':
-            Error(
+            Warning(
                 state=state, config=self.incfg,
                 lineno=lineno,
                 nodeid=node.ord,
@@ -2411,7 +2410,7 @@ class Validator:
                 message="The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
             ).report()
         if parent.upos != 'X' or str(parent.feats) != 'Foreign=Yes':
-            Error(
+            Warning(
                 state=state, config=self.incfg,
                 lineno=linenos[str(parent.ord)],
                 nodeid=parent.ord,
@@ -2621,12 +2620,12 @@ class Validator:
             # the parent of orphan may receive many other relations. See issue 635
             # for details and a Latin example.
             if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", node.parent.udeprel):
-                Incident(
+                Warning(
                     state=state, config=self.incfg,
                     lineno=lineno,
                     nodeid=node.ord,
                     level=3,
-                    testclass=TestClass.WARNING,
+                    testclass=TestClass.SYNTAX,
                     testid='orphan-parent',
                     message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
                 ).report()
@@ -2833,12 +2832,12 @@ class Validator:
             if fxgap:
                 fxordlist = [n.ord for n in fxlist]
                 fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
-                Incident(
+                Warning(
                     state=state, config=self.incfg,
                     lineno=lineno,
                     nodeid=node.ord,
                     level=3,
-                    testclass=TestClass.WARNING,
+                    testclass=TestClass.SYNTAX,
                     testid='fixed-gap',
                     message=f"Gaps in fixed expression {str(fxordlist)} '{fxexpr}'"
                 ).report()
@@ -3894,9 +3893,9 @@ class Validator:
                                 ###!!! Note that this will not catch ill-nested mentions whose only intersection is one node. The bracketing will
                                 ###!!! not be a problem in such cases because one mention will be closed first, then the other will be opened.
                                 if beid != state.open_entity_mentions[-1]['beid']:
-                                    Incident(
+                                    Warning(
                                         state=state, config=self.incfg,
-                                        testclass=TestClass.WARNING,
+                                        testclass=TestClass.COREF,
                                         testid='ill-nested-entities-warning',
                                         message=f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
                                     ).report()
