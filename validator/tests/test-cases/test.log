@@ -1,400 +1,400 @@
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\ambiguous-feature.conllu 
-[Line 4 Sent ambiguous-feature]: [L2 Morpho invalid-feature] Spurious morphological feature: 'A=B=C'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-Morpho errors: 1
+[Line 4 Sent ambiguous-feature]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'A=B=C'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\cyclic-deps.conllu 
-[Line 4 Sent cyclic-deps]: [L2 Syntax non-tree] Non-tree structure. Words 2,3 are not reachable from the root 0.
-Syntax errors: 1
+[Line 4 Sent cyclic-deps]: [L2 SYNTAX non-tree] Non-tree structure. Words 2,3 are not reachable from the root 0.
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\deprel-not-empty-in-empty.conllu 
-[Line 5 Sent deprel-not-empty-in-empty]: [L2 Format mwt-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'orphan'.
-Format errors: 1
+[Line 5 Sent deprel-not-empty-in-empty]: [L2 FORMAT mwt-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'orphan'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\dos-newlines.conllu 
-[Line 23 Sent dos-newlines3]: [L1 Format non-unix-newline] Only the unix-style LF line terminator is allowed.
-Format errors: 1
+[Line 23 Sent dos-newlines3]: [L1 FORMAT non-unix-newline] Only the unix-style LF line terminator is allowed.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-feature.conllu 
-[Line 4 Sent duplicate-feature]: [L2 Morpho repeated-feature] Repeated features are disallowed: 'Gen=M|Gen=M'.
-Morpho errors: 1
+[Line 4 Sent duplicate-feature]: [L2 MORPHO repeated-feature] Repeated features are disallowed: 'Gen=M|Gen=M'.
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-id.conllu 
-[Line 4 Sent duplicate-id]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,1'. Expected '1,2'.
-Format errors: 1
+[Line 4 Sent duplicate-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,1'. Expected '1,2'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-layered-feature.conllu 
-[Line 4 Sent duplicate-layered-feature]: [L2 Morpho repeated-feature] Repeated features are disallowed: 'Number=Sing|Number[psor]=Plur|Number[psor]=Sing'.
-Morpho errors: 1
+[Line 4 Sent duplicate-layered-feature]: [L2 MORPHO repeated-feature] Repeated features are disallowed: 'Number=Sing|Number[psor]=Plur|Number[psor]=Sing'.
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\duplicate-value.conllu 
-[Line 4 Sent duplicate-value]: [L2 Morpho repeated-feature-value] Repeated feature values are disallowed: 'Gen=M,M'
-Morpho errors: 1
+[Line 4 Sent duplicate-value]: [L2 MORPHO repeated-feature-value] Repeated feature values are disallowed: 'Gen=M,M'
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-field.conllu 
-[Line 4 Sent empty-field]: [L1 Format empty-column] Empty value in column FORM: ''.
-[Line 4 Sent empty-field]: [L2 Metadata missing-text] Missing the text attribute.
-Format errors: 1
-Metadata errors: 1
+[Line 4 Sent empty-field]: [L1 FORMAT empty-column] Empty value in column FORM: ''.
+[Line 4 Sent empty-field]: [L2 METADATA missing-text] Missing the text attribute.
+FORMAT errors: 1
+METADATA errors: 1
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-head.conllu 
-[Line 4 Sent empty-head]: [L1 Format empty-column] Empty value in column HEAD: ''.
-[Line 5 Sent empty-head]: [L2 Format invalid-head] Invalid HEAD: ''.
-[Line 5 Sent empty-head]: [L2 Syntax unknown-head] Undefined HEAD (no such ID): ''.
-Format errors: 2
-Syntax errors: 1
+[Line 4 Sent empty-head]: [L1 FORMAT empty-column] Empty value in column HEAD: ''.
+[Line 5 Sent empty-head]: [L2 FORMAT invalid-head] Invalid HEAD: ''.
+[Line 5 Sent empty-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): ''.
+FORMAT errors: 2
+SYNTAX errors: 1
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-sentence.conllu 
-[Line 3 Sent None]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-Format errors: 1
+[Line 3 Sent None]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\extra-empty-line.conllu 
-[Line 6 Sent extra-empty-line1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-Format errors: 1
+[Line 6 Sent extra-empty-line1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\extra-field.conllu 
-[Line 4 Sent extra-field]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
-[Line 5 Sent extra-field]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 5 Sent extra-field]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-Format errors: 3
+[Line 4 Sent extra-field]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
+[Line 5 Sent extra-field]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 5 Sent extra-field]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+FORMAT errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-0-deprel-not-root.conllu 
-[Line 4 Sent head-0-deprel-not-root]: [L2 Syntax 0-is-not-root] DEPREL must be 'root' if HEAD is 0.
-Syntax errors: 1
+[Line 4 Sent head-0-deprel-not-root]: [L2 SYNTAX 0-is-not-root] DEPREL must be 'root' if HEAD is 0.
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-not-0-deprel-root.conllu 
-[Line 5 Sent head-not-0-deprel-root]: [L2 Syntax root-is-not-0] DEPREL cannot be 'root' if HEAD is not 0.
-Syntax errors: 1
+[Line 5 Sent head-not-0-deprel-root]: [L2 SYNTAX root-is-not-0] DEPREL cannot be 'root' if HEAD is not 0.
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-not-empty-in-empty.conllu 
-[Line 5 Sent head-not-empty-in-empty]: [L2 Format mwt-nonempty-field] An empty node must have '_' in the column HEAD. Now: '1'.
-Format errors: 1
+[Line 5 Sent head-not-empty-in-empty]: [L2 FORMAT mwt-nonempty-field] An empty node must have '_' in the column HEAD. Now: '1'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\id-starting-from-2.conllu 
-[Line 9 Sent id-starting-from-2b]: [L1 Format word-id-sequence] Words do not form a sequence. Got '2'. Expected '1'.
-[Line 10 Sent id-starting-from-2b]: [L1 Format word-interval-out] Spurious token interval 2-2 (out of range)
-Format errors: 2
+[Line 9 Sent id-starting-from-2b]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '2'. Expected '1'.
+[Line 10 Sent id-starting-from-2b]: [L1 FORMAT word-interval-out] Spurious token interval 2-2 (out of range)
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\id-with-extra-0.conllu 
-[Line 5 Sent id-with-extra-0]: [L1 Format invalid-word-id] Unexpected ID format '01'.
-Format errors: 1
+[Line 5 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-id.conllu 
-[Line 6 Sent invalid-deps-id]: [L2 Enhanced unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
-Enhanced errors: 1
+[Line 6 Sent invalid-deps-id]: [L2 ENHANCED unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
+ENHANCED errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-order.conllu 
-[Line 4 Sent invalid-deps-order]: [L2 Format unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'
-Format errors: 1
+[Line 4 Sent invalid-deps-order]: [L2 FORMAT unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-syntax.conllu 
-[Line 6 Sent invalid-deps-syntax]: [L2 Format invalid-deps] Failed to parse DEPS: '2'.
-Format errors: 1
+[Line 6 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-head.conllu 
-[Line 6 Sent invalid-head]: [L2 Syntax unknown-head] Undefined HEAD (no such ID): '3'.
-Syntax errors: 1
+[Line 6 Sent invalid-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): '3'.
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-range-format.conllu 
-[Line 11 Sent invalid-range-format]: [L1 Format invalid-word-id] Unexpected ID format '2-X'.
-Format errors: 1
+[Line 11 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-range.conllu 
-[Line 11 Sent invalid-range]: [L1 Format reversed-word-interval] Spurious token interval 2-1
-Format errors: 1
+[Line 11 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-feature-in-empty.conllu 
-[Line 5 Sent lowercase-feature-in-empty]: [L2 Morpho invalid-feature] Spurious morphological feature: 'tense=Pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-Morpho errors: 1
+[Line 5 Sent lowercase-feature-in-empty]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'tense=Pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-feature-value-in-empty.conllu 
-[Line 5 Sent lowercase-feature-value-in-empty]: [L2 Morpho invalid-feature] Spurious morphological feature: 'Tense=pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-Morpho errors: 1
+[Line 5 Sent lowercase-feature-value-in-empty]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'Tense=pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-feature.conllu 
-[Line 5 Sent lowercase-feature]: [L2 Morpho invalid-feature] Spurious morphological feature: 'lower=Nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-Morpho errors: 1
+[Line 5 Sent lowercase-feature]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'lower=Nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-postag-in-empty.conllu 
-[Line 5 Sent lowercase-postag-in-empty]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'verb'.
-Morpho errors: 1
+[Line 5 Sent lowercase-postag-in-empty]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'verb'.
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-postag.conllu 
-[Line 4 Sent lowercase-postag]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'noun'.
-Morpho errors: 1
+[Line 4 Sent lowercase-postag]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'noun'.
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\lowercase-value.conllu 
-[Line 5 Sent lowercase-value]: [L2 Morpho invalid-feature] Spurious morphological feature: 'Lower=nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-Morpho errors: 1
+[Line 5 Sent lowercase-value]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'Lower=nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\malformed_deps.conllu 
-[Line 15 Sent malformed_deps2]: [L2 Format invalid-deps] Failed to parse DEPS: 'xxx'.
-Format errors: 1
+[Line 15 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misindexed-empty-node.conllu 
-[Line 7 Sent misindexed-empty-node]: [L1 Format misplaced-empty-node] Empty node id 2.2, expected 1.1
-Format errors: 1
+[Line 7 Sent misindexed-empty-node]: [L1 FORMAT misplaced-empty-node] Empty node id 2.2, expected 1.1
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-feature.conllu 
-[Line 5 Sent misordered-feature]: [L2 Morpho unsorted-features] Morphological features must be sorted: 'XB=True|Xa=True'.
-Morpho errors: 1
+[Line 5 Sent misordered-feature]: [L2 MORPHO unsorted-features] Morphological features must be sorted: 'XB=True|Xa=True'.
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-layered-feature.conllu 
-[Line 5 Sent misordered-layered-feature]: [L2 Morpho unsorted-features] Morphological features must be sorted: 'Number[psor]=Plur|Number=Sing'.
-Morpho errors: 1
+[Line 5 Sent misordered-layered-feature]: [L2 MORPHO unsorted-features] Morphological features must be sorted: 'Number[psor]=Plur|Number=Sing'.
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-multiword.conllu 
-[Line 12 Sent misordered-multiword]: [L1 Format misplaced-word-interval] Multiword range not before its first word.
-Format errors: 1
+[Line 12 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-comment-end.conllu 
-[Line 12 Sent misplaced-comment-end]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-Format errors: 1
+[Line 12 Sent misplaced-comment-end]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-comment-mid.conllu 
-[Line 6 Sent misplaced-comment-mid]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-Format errors: 1
+[Line 6 Sent misplaced-comment-mid]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-range.conllu 
-[Line 10 Sent invalid-range-format]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
-[Line 10 Sent invalid-range-format]: [L1 Format misplaced-word-interval] Multiword range not before its first word.
-Format errors: 2
+[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 10 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\missing-final-line.conllu 
-[Line 4 Sent missing-final-line]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
-Format errors: 1
+[Line 4 Sent missing-final-line]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\missing-space-after.conllu 
-[Line 4 Sent missing-space-after]: [L2 Metadata missing-spaceafter] 'SpaceAfter=No' is missing in the MISC field of node 1 because the text is 'Dog.'.
-Metadata errors: 1
+[Line 4 Sent missing-space-after]: [L2 METADATA missing-spaceafter] 'SpaceAfter=No' is missing in the MISC field of node 1 because the text is 'Dog.'.
+METADATA errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\multiple-sent_id.conllu 
-[Line 19 Sent tanl2]: [L2 Metadata multiple-sent-id] Multiple sent_id attributes.
-Metadata errors: 1
+[Line 19 Sent tanl2]: [L2 METADATA multiple-sent-id] Multiple sent_id attributes.
+METADATA errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\multiple_roots.conllu 
-[Line 3 Sent multiple-0]: [L2 Syntax multiple-roots] Multiple root words: [1, 2]
-Syntax errors: 1
+[Line 3 Sent multiple-0]: [L2 SYNTAX multiple-roots] Multiple root words: [1, 2]
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\multiword-with-pos.conllu 
-[Line 6 Sent multiword-with-pos]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
-Format errors: 1
+[Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nan-id.conllu 
-[Line 9 Sent id-starting-from-2b]: [L1 Format invalid-line] Spurious line: 'a	valid	valid	NOUN	SP	_	0	root	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 10 Sent id-starting-from-2b]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 10 Sent id-starting-from-2b]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-Format errors: 3
+[Line 9 Sent id-starting-from-2b]: [L1 FORMAT invalid-line] Spurious line: 'a	valid	valid	NOUN	SP	_	0	root	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
+[Line 10 Sent id-starting-from-2b]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 10 Sent id-starting-from-2b]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+FORMAT errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\no-sent_id.conllu 
-[Line 8 Sent tanl1]: [L2 Metadata missing-sent-id] Missing the sent_id attribute.
-Metadata errors: 1
+[Line 8 Sent tanl1]: [L2 METADATA missing-sent-id] Missing the sent_id attribute.
+METADATA errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nonsequential-empty-node-id.conllu 
-[Line 7 Sent nonsequential-empty-node-id]: [L1 Format misplaced-empty-node] Empty node id 1.2, expected 1.1
-Format errors: 1
+[Line 7 Sent nonsequential-empty-node-id]: [L1 FORMAT misplaced-empty-node] Empty node id 1.2, expected 1.1
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nonsequential-id.conllu 
-[Line 4 Sent nonsequential-id]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
-[Line 6 Sent nonsequential-id]: [L1 Format word-interval-out] Spurious token interval 3-3 (out of range)
-Format errors: 2
+[Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
+[Line 6 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\out-of-bounds-range.conllu 
-[Line 10 Sent invalid-range-format]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
-[Line 10 Sent invalid-range-format]: [L1 Format misplaced-word-interval] Multiword range not before its first word.
-Format errors: 2
+[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 10 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\overlapping-multiword.conllu 
-[Line 12 Sent overlapping-multiword]: [L1 Format overlapping-word-intervals] Range overlaps with others: 3-4
-Format errors: 1
+[Line 12 Sent overlapping-multiword]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\overlapping-range.conllu 
-[Line 12 Sent invalid-range-format]: [L1 Format overlapping-word-intervals] Range overlaps with others: 3-4
-[Line 7 Sent invalid-range-format]: [L2 Metadata text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[3-4] is 'nota' but text is 'have not a clue PUNCT...'
-[Line 4 Sent invalid-range-format]: [L2 Metadata text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'have not a clue PUNCT'
-Format errors: 1
-Metadata errors: 2
+[Line 12 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
+[Line 7 Sent invalid-range-format]: [L2 METADATA text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[3-4] is 'nota' but text is 'have not a clue PUNCT...'
+[Line 4 Sent invalid-range-format]: [L2 METADATA text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'have not a clue PUNCT'
+FORMAT errors: 1
+METADATA errors: 2
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\parallel-id.conllu 
-[Line 6 Sent cairo-1]: [L2 Metadata invalid-parallel-id] Spurious parallel_id line: '# parallel_id would be cairo/1 but we messed up this line.' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.
-[Line 18 Sent cairo-2]: [L2 Metadata multiple-parallel-id] Multiple parallel_id attributes.
-[Line 28 Sent cairo-3.2]: [L2 Metadata parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 1 but it is 2.
-[Line 41 Sent cairo-3.1]: [L2 Metadata parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 2+1 but it is 1.
-[Line 56 Sent cairo-4.1]: [L2 Metadata parallel-id-alt] Some instances of parallel sentence 'cairo/3' have the 'alt' suffix while others do not.
-[Line 107 Sent cairo-7]: [L2 Metadata non-unique-parallel-id] Non-unique parallel_id attribute 'cairo/5'.
-Metadata errors: 6
+[Line 6 Sent cairo-1]: [L2 METADATA invalid-parallel-id] Spurious parallel_id line: '# parallel_id would be cairo/1 but we messed up this line.' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.
+[Line 18 Sent cairo-2]: [L2 METADATA multiple-parallel-id] Multiple parallel_id attributes.
+[Line 28 Sent cairo-3.2]: [L2 METADATA parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 1 but it is 2.
+[Line 41 Sent cairo-3.1]: [L2 METADATA parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 2+1 but it is 1.
+[Line 56 Sent cairo-4.1]: [L2 METADATA parallel-id-alt] Some instances of parallel sentence 'cairo/3' have the 'alt' suffix while others do not.
+[Line 107 Sent cairo-7]: [L2 METADATA non-unique-parallel-id] Non-unique parallel_id attribute 'cairo/5'.
+METADATA errors: 6
 *** FAILED *** with 6 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\seemingly-empty-line.conllu 
-[Line 5 Sent 1]: [L1 Format pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
-Format errors: 1
+[Line 5 Sent 1]: [L1 FORMAT pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\self-cycle-deps.conllu 
-[Line 5 Sent self-cycle-deps]: [L2 Enhanced deps-self-loop] Self-loop in DEPS for '2'
-Enhanced errors: 1
+[Line 5 Sent self-cycle-deps]: [L2 ENHANCED deps-self-loop] Self-loop in DEPS for '2'
+ENHANCED errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\self-cycle-head.conllu 
-[Line 5 Sent self-cycle-head]: [L2 Syntax head-self-loop] HEAD == ID for 2
-Syntax errors: 1
+[Line 5 Sent self-cycle-head]: [L2 SYNTAX head-self-loop] HEAD == ID for 2
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\space-in-field.conllu 
-[Line 4 Sent space-in-field]: [L1 Format invalid-whitespace] White space not allowed in column XPOS: 'this is not valid'.
-Format errors: 1
+[Line 4 Sent space-in-field]: [L1 FORMAT invalid-whitespace] White space not allowed in column XPOS: 'this is not valid'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\tanl-broken.conllu 
-[Line 6 Sent tanl-broken1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 8 Sent tanl-broken1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 11 Sent tanl-broken2]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
-[Line 17 Sent tanl-broken2]: [L1 Format word-interval-out] Spurious token interval 6-6 (out of range)
-[Line 24 Sent tanl-broken3]: [L1 Format missing-empty-line] Missing empty line after the last sentence.
-[Line 20 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 20 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'mod=p'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 20 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 21 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 21 Sent tanl-broken3]: [L2 Morpho invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-Format errors: 5
-Morpho errors: 5
+[Line 6 Sent tanl-broken1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 8 Sent tanl-broken1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 11 Sent tanl-broken2]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
+[Line 17 Sent tanl-broken2]: [L1 FORMAT word-interval-out] Spurious token interval 6-6 (out of range)
+[Line 24 Sent tanl-broken3]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+[Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'mod=p'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+[Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+[Line 21 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+[Line 21 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+FORMAT errors: 5
+MORPHO errors: 5
 *** FAILED *** with 10 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\token_with_cols_filled.conllu 
-[Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
-[Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
-[Line 6 Sent token-with-cols-filled]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
-Format errors: 3
+[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
+[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
+[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
+FORMAT errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\trailing-tab.conllu 
-[Line 4 Sent trailing-tab]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
-[Line 5 Sent trailing-tab]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 5 Sent trailing-tab]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-Format errors: 3
+[Line 4 Sent trailing-tab]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
+[Line 5 Sent trailing-tab]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 5 Sent trailing-tab]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+FORMAT errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\unnormalized-unicode.conllu 
-[Line 3 Sent None]: [L1 Unicode unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+[Line 3 Sent None]: [L1 UNICODE unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
 
 This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
 
-[Line 8 Sent 1]: [L1 Unicode unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
-Unicode errors: 2
+[Line 8 Sent 1]: [L1 UNICODE unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+UNICODE errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\uppercase-deprel.conllu 
-[Line 5 Sent uppercase-deprel]: [L2 Syntax invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
-[Line 5 Sent uppercase-deprel]: [L2 Syntax unknown-deprel] Unknown DEPREL label: 'Punct'
+[Line 5 Sent uppercase-deprel]: [L2 SYNTAX invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
+[Line 5 Sent uppercase-deprel]: [L2 SYNTAX unknown-deprel] Unknown DEPREL label: 'Punct'
 
 The following 37 relations are currently permitted in language [ud]:
 acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nummod, obj, obl, orphan, parataxis, punct, reparandum, root, vocative, xcomp
@@ -405,114 +405,114 @@ Documented dependency relations can be specifically turned on/off for each langu
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.
 
 
-Syntax errors: 2
+SYNTAX errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
-[Line 5 Sent uppercase-deps-deprel]: [L2 Enhanced invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
-[Line 5 Sent uppercase-deps-deprel]: [L2 Enhanced unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
+[Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
+[Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
 
 The following 40 enhanced relations are currently permitted in language [ud]:
 acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, csubj:xsubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nsubj:xsubj, nummod, obj, obl, orphan, parataxis, punct, ref, reparandum, root, vocative, xcomp
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.
 
 
-Enhanced errors: 2
+ENHANCED errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 LEVEL 3 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\nmod-obl.conllu 
-[Line 6 Sent invalid-obl]: [L3 Syntax obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
-Syntax errors: 1
+[Line 6 Sent invalid-obl]: [L3 SYNTAX obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\non-proj.conllu 
-[Line 6 Sent non-proj]: [L3 Syntax punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [2]
-Syntax errors: 1
+[Line 6 Sent non-proj]: [L3 SYNTAX punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [2]
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\rel-upos.conllu 
-[Line 8 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning verbform-fin-without-mood] Finite verb 'loste' lacks the 'Mood' feature
-[Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning fixed-without-extpos] Fixed expression '5 2/3' does not have the 'ExtPos' feature
-[Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Syntax rel-upos-det] 'det' should be 'DET' or 'PRON' but it is 'NUM' ('5')
-[Line 14 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 Warning pron-det-without-prontype] The word '2/3' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 42 Sent CP891-2]: [L3 Syntax rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('X')
-[Line 52 Sent CP891-2]: [L3 Syntax rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('VIII')
-[Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning fixed-without-extpos] Fixed expression 'Fir des' does not have the 'ExtPos' feature
-[Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Syntax rel-upos-advmod] 'advmod' should be 'ADV' but it is 'ADP' ('Fir')
-[Line 64 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning pron-det-without-prontype] The word 'des' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 66 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning pron-det-without-prontype] The word ''a' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 72 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 Warning pron-det-without-prontype] The word ''a' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 84 Sent 646]: [L3 Warning verbform-fin-without-mood] Finite verb 'liket' lacks the 'Mood' feature
-[Line 85 Sent 646]: [L3 Syntax rel-upos-expl] 'expl' should normally be 'PRON' but it is 'ADV' ('der')
-[Line 93 Sent 646]: [L3 Warning pron-det-without-prontype] The word 'guon' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 98 Sent 646]: [L3 Warning verbform-fin-without-mood] Finite verb 'hawwe' lacks the 'Mood' feature
-[Line 98 Sent 646]: [L3 Syntax too-many-objects] Multiple direct objects [12, 13] ('skaaimerken', 'ien') under the predicate 'hawwe'.
-[Line 102 Sent 646]: [L3 Warning pron-det-without-prontype] The word 'de' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 110 Sent rel-upos-aux]: [L3 Warning pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 111 Sent rel-upos-aux]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'VERB' ('have')
-[Line 139 Sent 003966]: [L3 Syntax rel-upos-cop] 'cop' should be 'AUX' or 'PRON'/'DET' but it is 'VERB' ('vere')
-[Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 Warning fixed-without-extpos] Fixed expression 'Tot i' does not have the 'ExtPos' feature
-[Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 Syntax rel-upos-case] 'case' should not be 'PRON' ('Tot')
-[Line 159 Sent news.hr-s112]: [L3 Warning fixed-without-extpos] Fixed expression 'kao što' does not have the 'ExtPos' feature
-[Line 173 Sent news.hr-s112]: [L3 Warning fixed-without-extpos] Fixed expression 'obzirom da' does not have the 'ExtPos' feature
-[Line 173 Sent news.hr-s112]: [L3 Syntax rel-upos-mark] 'mark' should not be 'NOUN' ('obzirom')
-[Line 176 Sent news.hr-s112]: [L3 Warning fixed-without-extpos] Fixed expression 'kao i' does not have the 'ExtPos' feature
-[Line 206 Sent 2509]: [L3 Warning fixed-without-extpos] Fixed expression 'maraon le' does not have the 'ExtPos' feature
-[Line 206 Sent 2509]: [L3 Syntax rel-upos-cc] 'cc' should not be 'NOUN' ('maraon')
-[Line 233 Sent punct]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is 'obj' ('Mary')
-[Line 234 Sent punct]: [L3 Syntax rel-upos-punct] 'punct' must be 'PUNCT' but it is 'PROPN' ('.')
-[Line 246 Sent 14356]: [L3 Warning fixed-without-extpos] Fixed expression 'mag-Laos SEA Games' does not have the 'ExtPos' feature
-[Line 247 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('SEA').
-[Line 248 Sent 14356]: [L3 Syntax rel-upos-fixed] 'fixed' should not be used for proper nouns ('Games').
-[Line 253 Sent 14356]: [L3 Warning pron-det-without-prontype] The word 'ang' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 271 Sent 14356]: [L3 Warning pron-det-without-prontype] The word 'mga' is tagged 'DET' but it lacks the 'PronType' feature
-Syntax errors: 15
+[Line 8 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 WARNING verbform-fin-without-mood] Finite verb 'loste' lacks the 'Mood' feature
+[Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 WARNING fixed-without-extpos] Fixed expression '5 2/3' does not have the 'ExtPos' feature
+[Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 SYNTAX rel-upos-det] 'det' should be 'DET' or 'PRON' but it is 'NUM' ('5')
+[Line 14 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 WARNING pron-det-without-prontype] The word '2/3' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 42 Sent CP891-2]: [L3 SYNTAX rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('X')
+[Line 52 Sent CP891-2]: [L3 SYNTAX rel-upos-nummod] 'nummod' should be 'NUM' but it is 'PROPN' ('VIII')
+[Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 WARNING fixed-without-extpos] Fixed expression 'Fir des' does not have the 'ExtPos' feature
+[Line 63 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 SYNTAX rel-upos-advmod] 'advmod' should be 'ADV' but it is 'ADP' ('Fir')
+[Line 64 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 WARNING pron-det-without-prontype] The word 'des' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 66 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 WARNING pron-det-without-prontype] The word ''a' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 72 Sent wikisample_Boarische-Grammatik-Konjunktiona_71]: [L3 WARNING pron-det-without-prontype] The word ''a' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 84 Sent 646]: [L3 WARNING verbform-fin-without-mood] Finite verb 'liket' lacks the 'Mood' feature
+[Line 85 Sent 646]: [L3 SYNTAX rel-upos-expl] 'expl' should normally be 'PRON' but it is 'ADV' ('der')
+[Line 93 Sent 646]: [L3 WARNING pron-det-without-prontype] The word 'guon' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 98 Sent 646]: [L3 WARNING verbform-fin-without-mood] Finite verb 'hawwe' lacks the 'Mood' feature
+[Line 98 Sent 646]: [L3 SYNTAX too-many-objects] Multiple direct objects [12, 13] ('skaaimerken', 'ien') under the predicate 'hawwe'.
+[Line 102 Sent 646]: [L3 WARNING pron-det-without-prontype] The word 'de' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 110 Sent rel-upos-aux]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 111 Sent rel-upos-aux]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'VERB' ('have')
+[Line 139 Sent 003966]: [L3 SYNTAX rel-upos-cop] 'cop' should be 'AUX' or 'PRON'/'DET' but it is 'VERB' ('vere')
+[Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 WARNING fixed-without-extpos] Fixed expression 'Tot i' does not have the 'ExtPos' feature
+[Line 145 Sent CESS-CAT-A-20000925-15876-s8]: [L3 SYNTAX rel-upos-case] 'case' should not be 'PRON' ('Tot')
+[Line 159 Sent news.hr-s112]: [L3 WARNING fixed-without-extpos] Fixed expression 'kao što' does not have the 'ExtPos' feature
+[Line 173 Sent news.hr-s112]: [L3 WARNING fixed-without-extpos] Fixed expression 'obzirom da' does not have the 'ExtPos' feature
+[Line 173 Sent news.hr-s112]: [L3 SYNTAX rel-upos-mark] 'mark' should not be 'NOUN' ('obzirom')
+[Line 176 Sent news.hr-s112]: [L3 WARNING fixed-without-extpos] Fixed expression 'kao i' does not have the 'ExtPos' feature
+[Line 206 Sent 2509]: [L3 WARNING fixed-without-extpos] Fixed expression 'maraon le' does not have the 'ExtPos' feature
+[Line 206 Sent 2509]: [L3 SYNTAX rel-upos-cc] 'cc' should not be 'NOUN' ('maraon')
+[Line 233 Sent punct]: [L3 SYNTAX upos-rel-punct] 'PUNCT' must be 'punct' but it is 'obj' ('Mary')
+[Line 234 Sent punct]: [L3 SYNTAX rel-upos-punct] 'punct' must be 'PUNCT' but it is 'PROPN' ('.')
+[Line 246 Sent 14356]: [L3 WARNING fixed-without-extpos] Fixed expression 'mag-Laos SEA Games' does not have the 'ExtPos' feature
+[Line 247 Sent 14356]: [L3 SYNTAX rel-upos-fixed] 'fixed' should not be used for proper nouns ('SEA').
+[Line 248 Sent 14356]: [L3 SYNTAX rel-upos-fixed] 'fixed' should not be used for proper nouns ('Games').
+[Line 253 Sent 14356]: [L3 WARNING pron-det-without-prontype] The word 'ang' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 271 Sent 14356]: [L3 WARNING pron-det-without-prontype] The word 'mga' is tagged 'DET' but it lacks the 'PronType' feature
+SYNTAX errors: 15
 Warnings: 20
 *** FAILED *** with 15 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\right-to-left.conllu 
-[Line 9 Sent 13147]: [L3 Syntax right-to-left-conj] Parent of relation 'conj' must precede the child in the word order.
-[Line 11 Sent 13147]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
-[Line 13 Sent 13147]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
-[Line 30 Sent ASCA.YEAR0738.001.002]: [L3 Syntax right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
-[Line 31 Sent ASCA.YEAR0738.001.002]: [L3 Syntax right-to-left-appos] Parent of relation 'appos' must precede the child in the word order.
-[Line 42 Sent P334676]: [L3 Warning pron-det-without-prontype] The word 'ša' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 48 Sent P334676]: [L3 Syntax right-to-left-fixed] Parent of relation 'fixed' must precede the child in the word order.
-[Line 49 Sent P334676]: [L3 Warning pron-det-without-prontype] The word 'b\u0113t' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 49 Sent P334676]: [L3 Warning fixed-without-extpos] Fixed expression 'b\u0113t ina' does not have the 'ExtPos' feature
-[Line 65 Sent goeswith]: [L3 Syntax right-to-left-goeswith] Parent of relation 'goeswith' must precede the child in the word order.
-[Line 66 Sent goeswith]: [L3 Syntax goeswith-gap] Gaps in goeswith group [1, 2] != [].
-Syntax errors: 8
+[Line 9 Sent 13147]: [L3 SYNTAX right-to-left-conj] Parent of relation 'conj' must precede the child in the word order.
+[Line 11 Sent 13147]: [L3 SYNTAX right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
+[Line 13 Sent 13147]: [L3 SYNTAX right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
+[Line 30 Sent ASCA.YEAR0738.001.002]: [L3 SYNTAX right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
+[Line 31 Sent ASCA.YEAR0738.001.002]: [L3 SYNTAX right-to-left-appos] Parent of relation 'appos' must precede the child in the word order.
+[Line 42 Sent P334676]: [L3 WARNING pron-det-without-prontype] The word 'ša' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 48 Sent P334676]: [L3 SYNTAX right-to-left-fixed] Parent of relation 'fixed' must precede the child in the word order.
+[Line 49 Sent P334676]: [L3 WARNING pron-det-without-prontype] The word 'b\u0113t' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 49 Sent P334676]: [L3 WARNING fixed-without-extpos] Fixed expression 'b\u0113t ina' does not have the 'ExtPos' feature
+[Line 65 Sent goeswith]: [L3 SYNTAX right-to-left-goeswith] Parent of relation 'goeswith' must precede the child in the word order.
+[Line 66 Sent goeswith]: [L3 SYNTAX goeswith-gap] Gaps in goeswith group [1, 2] != [].
+SYNTAX errors: 8
 Warnings: 3
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-objects.conllu 
-[Line 7 Sent penchev-s66]: [L3 Syntax too-many-objects] Multiple direct objects [2, 4] ('\u0442\u0435', '\u043d\u0435\u0449\u043e') under the predicate '\u043f\u0438\u0442\u0430\u043c'.
-Syntax errors: 1
+[Line 7 Sent penchev-s66]: [L3 SYNTAX too-many-objects] Multiple direct objects [2, 4] ('\u0442\u0435', '\u043d\u0435\u0449\u043e') under the predicate '\u043f\u0438\u0442\u0430\u043c'.
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level3\too-many-subjects.conllu 
-[Line 17 Sent dev-6]: [L3 Syntax too-many-subjects] Multiple subjects [2, 11] ('situacións', 'persoas') under the predicate 'viven' not subtyped as ':outer'.
+[Line 17 Sent dev-6]: [L3 SYNTAX too-many-subjects] Multiple subjects [2, 11] ('situacións', 'persoas') under the predicate 'viven' not subtyped as ':outer'.
 
 Outer subjects are allowed if a clause acts as the predicate of another clause.
 
-Syntax errors: 1
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 LEVEL 4-5 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
-[Line 9 Sent n01001011]: [L4 Morpho feature-unknown] Feature NonExistent is not documented for language [cs] ('„').
+[Line 9 Sent n01001011]: [L4 MORPHO feature-unknown] Feature NonExistent is not documented for language [cs] ('„').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -523,25 +523,25 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 10 Sent n01001011]: [L4 Morpho feature-value-unknown] Value Ine is not documented for feature Case in language [cs] ('V').
-[Line 12 Sent n01001011]: [L4 Morpho feature-upos-not-permitted] Feature PronType is not permitted with UPOS NOUN in language [cs] ('procesu').
-Morpho errors: 3
+[Line 10 Sent n01001011]: [L4 MORPHO feature-value-unknown] Value Ine is not documented for feature Case in language [cs] ('V').
+[Line 12 Sent n01001011]: [L4 MORPHO feature-upos-not-permitted] Feature PronType is not permitted with UPOS NOUN in language [cs] ('procesu').
+MORPHO errors: 3
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level4-5\yrl_complin-mwt-typo-yes.conllu 
-[Line 27 Sent Hartt1938:0:0:515-1]: [L4 Morpho mwt-typo-repeated-at-word] Feature Typo cannot occur at word [6] if it already occurred at the corresponding multiword token [6-7].
-Morpho errors: 1
+[Line 27 Sent Hartt1938:0:0:515-1]: [L4 MORPHO mwt-typo-repeated-at-word] Feature Typo cannot occur at word [6] if it already occurred at the corresponding multiword token [6-7].
+MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 TESTS BY LUDOVICA AND ARIANNA 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\columns-format-minimal.conllu 
-[Line 3 Sent tanl1]: [L1 Format leading-whitespace] Leading whitespace not allowed in column LEMMA: ' Lon dra'.
-[Line 4 Sent tanl1]: [L1 Format invalid-whitespace] White space not allowed in column DEPREL: ' punct'.
-[Line 4 Sent tanl1]: [L2 Syntax invalid-deprel] Invalid DEPREL value ' punct'. Only lowercase English letters or a colon are expected.
-[Line 3 Sent tanl1]: [L4 Format invalid-word-with-space] ' Lon dra' in column LEMMA is not on the list of exceptions allowed to contain whitespace.
+[Line 3 Sent tanl1]: [L1 FORMAT leading-whitespace] Leading whitespace not allowed in column LEMMA: ' Lon dra'.
+[Line 4 Sent tanl1]: [L1 FORMAT invalid-whitespace] White space not allowed in column DEPREL: ' punct'.
+[Line 4 Sent tanl1]: [L2 SYNTAX invalid-deprel] Invalid DEPREL value ' punct'. Only lowercase English letters or a colon are expected.
+[Line 3 Sent tanl1]: [L4 FORMAT invalid-word-with-space] ' Lon dra' in column LEMMA is not on the list of exceptions allowed to contain whitespace.
 
 Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [cs]:
 ([0-9]+( [0-9]+)+(,[0-9]+)?)
@@ -549,7 +549,7 @@ Others can be permitted at the address below (if the language has an ISO code an
 https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl
 
 
-[Line 4 Sent tanl1]: [L4 Syntax unknown-deprel] Unknown DEPREL label: ' punct'
+[Line 4 Sent tanl1]: [L4 SYNTAX unknown-deprel] Unknown DEPREL label: ' punct'
 
 The following 53 relations are currently permitted in language [cs]:
 acl, acl:relcl, advcl, advcl:pred, advcl:relcl, advmod, advmod:emph, amod, appos, aux, aux:pass, case, cc, ccomp, clf, compound, conj, cop, csubj, csubj:pass, dep, det, det:numgov, det:nummod, det:poss, discourse, dislocated, expl, expl:pass, expl:pv, fixed, flat, flat:foreign, goeswith, iobj, list, mark, nmod, nsubj, nsubj:pass, nummod, nummod:gov, obj, obl, obl:agent, obl:arg, orphan, parataxis, punct, reparandum, root, vocative, xcomp
@@ -560,20 +560,20 @@ Documented dependency relations can be specifically turned on/off for each langu
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.
 
 
-[Line 4 Sent tanl1]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is ' punct' ('.')
-Format errors: 3
-Syntax errors: 3
+[Line 4 Sent tanl1]: [L3 SYNTAX upos-rel-punct] 'PUNCT' must be 'punct' but it is ' punct' ('.')
+FORMAT errors: 3
+SYNTAX errors: 3
 *** FAILED *** with 6 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\columns-format.conllu 
-[Line 4 Sent tanl1]: [L1 Format number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
-[Line 11 Sent tanl2]: [L1 Format invalid-whitespace-mwt] White space not allowed in multi-word token 'da lla'. If it contains a space, it is not a single surface token.
-[Line 12 Sent tanl2]: [L1 Format empty-column] Empty value in column XPOS: ''.
-[Line 15 Sent tanl2]: [L1 Format invalid-line] Spurious line: ' 5	.	.	PUNCT	 FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 11 Sent tanl2]: [L2 Metadata text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[2-3] is 'da lla' but text is 'dalla statua ....'
-[Line 10 Sent tanl2]: [L2 Metadata text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'dalla statua .'
-[Line 13 Sent tanl2]: [L4 Morpho feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
+[Line 4 Sent tanl1]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
+[Line 11 Sent tanl2]: [L1 FORMAT invalid-whitespace-mwt] White space not allowed in multi-word token 'da lla'. If it contains a space, it is not a single surface token.
+[Line 12 Sent tanl2]: [L1 FORMAT empty-column] Empty value in column XPOS: ''.
+[Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	 FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
+[Line 11 Sent tanl2]: [L2 METADATA text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[2-3] is 'da lla' but text is 'dalla statua ....'
+[Line 10 Sent tanl2]: [L2 METADATA text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'dalla statua .'
+[Line 13 Sent tanl2]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -584,29 +584,29 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 19 Sent tanl3]: [L1 Format invalid-whitespace] White space not allowed in column UPOS: 'VERB '.
-[Line 19 Sent tanl3]: [L1 Format invalid-whitespace] White space not allowed in column FEATS: ' Gender=Fem|Number=Sing'.
-[Line 20 Sent tanl3]: [L1 Format invalid-whitespace] White space not allowed in column UPOS: 'DE T'.
-[Line 19 Sent tanl3]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'VERB '.
-[Line 19 Sent tanl3]: [L2 Morpho invalid-feature] Spurious morphological feature: ' Gender=Fem'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 20 Sent tanl3]: [L2 Morpho unknown-upos] Unknown UPOS tag: 'DE T'.
-Format errors: 7
-Metadata errors: 2
-Morpho errors: 4
+[Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column UPOS: 'VERB '.
+[Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column FEATS: ' Gender=Fem|Number=Sing'.
+[Line 20 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column UPOS: 'DE T'.
+[Line 19 Sent tanl3]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'VERB '.
+[Line 19 Sent tanl3]: [L2 MORPHO invalid-feature] Spurious morphological feature: ' Gender=Fem'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
+[Line 20 Sent tanl3]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'DE T'.
+FORMAT errors: 7
+MORPHO errors: 4
+METADATA errors: 2
 *** FAILED *** with 13 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\extra-empty-line.conllu 
-[Line 6 Sent extra-empty-line1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 7 Sent extra-empty-line1]: [L1 Format extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-Format errors: 2
+[Line 6 Sent extra-empty-line1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 7 Sent extra-empty-line1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-line.conllu 
-[Line 5 Sent tanl1]: [L1 Format invalid-line] Spurious line: '-	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 15 Sent tanl2]: [L1 Format invalid-line] Spurious line: ' 5	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 13 Sent tanl2]: [L4 Morpho feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
+[Line 5 Sent tanl1]: [L1 FORMAT invalid-line] Spurious line: '-	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
+[Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
+[Line 13 Sent tanl2]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -617,27 +617,27 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 20 Sent tanl3]: [L4 Morpho feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
-Format errors: 2
-Morpho errors: 2
+[Line 20 Sent tanl3]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
+FORMAT errors: 2
+MORPHO errors: 2
 *** FAILED *** with 4 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-word-id.conllu 
-[Line 5 Sent id-with-extra-0]: [L1 Format invalid-word-id] Unexpected ID format '01'.
-Format errors: 1
+[Line 5 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-word-interval.conllu 
-[Line 11 Sent invalid-range-format]: [L1 Format invalid-word-id] Unexpected ID format '2-X'.
-Format errors: 1
+[Line 11 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-comment.conllu 
-[Line 4 Sent tanl1]: [L1 Format misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-[Line 13 Sent tanl2]: [L4 Morpho feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
+[Line 4 Sent tanl1]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+[Line 13 Sent tanl2]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -648,53 +648,53 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 20 Sent tanl3]: [L4 Morpho feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
-Format errors: 1
-Morpho errors: 2
+[Line 20 Sent tanl3]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
+FORMAT errors: 1
+MORPHO errors: 2
 *** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-empty-node-2.conllu 
-[Line 13 Sent misordered-empty]: [L1 Format misplaced-empty-node] Empty node id 1.1 must occur before multiword token 2-3.
-Format errors: 1
+[Line 13 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1 must occur before multiword token 2-3.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-empty-node.conllu 
-[Line 12 Sent misordered-empty]: [L1 Format misplaced-empty-node] Empty node id 1.1, expected 2.1
-Format errors: 1
+[Line 12 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1, expected 2.1
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-word-interval.conllu 
-[Line 12 Sent misordered-multiword]: [L1 Format misplaced-word-interval] Multiword range not before its first word.
-Format errors: 1
+[Line 12 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\multiple-sent-id.conllu 
-[Line 4 Sent tanl1]: [L3 Syntax upos-rel-punct] 'PUNCT' must be 'punct' but it is 'case' ('.')
-[Line 11 Sent tanl2]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 19 Sent tanl2]: [L2 Metadata multiple-sent-id] Multiple sent_id attributes.
-[Line 20 Sent tanl2]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 21 Sent tanl2]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
-Metadata errors: 1
-Syntax errors: 1
+[Line 4 Sent tanl1]: [L3 SYNTAX upos-rel-punct] 'PUNCT' must be 'punct' but it is 'case' ('.')
+[Line 11 Sent tanl2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 19 Sent tanl2]: [L2 METADATA multiple-sent-id] Multiple sent_id attributes.
+[Line 20 Sent tanl2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 21 Sent tanl2]: [L3 WARNING fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
+SYNTAX errors: 1
+METADATA errors: 1
 Warnings: 3
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\mwt-nonempty-2.conllu 
-[Line 5 Sent empty-node]: [L2 Format mwt-nonempty-field] An empty node must have '_' in the column HEAD. Now: '2'.
-[Line 5 Sent empty-node]: [L2 Format mwt-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'dep'.
-Format errors: 2
+[Line 5 Sent empty-node]: [L2 FORMAT mwt-nonempty-field] An empty node must have '_' in the column HEAD. Now: '2'.
+[Line 5 Sent empty-node]: [L2 FORMAT mwt-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'dep'.
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\mwt-nonempty-field.conllu 
-[Line 6 Sent multiword-with-pos]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
-[Line 6 Sent multiword-with-pos]: [L2 Format mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '1'.
-[Line 5 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('I').
+[Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
+[Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '1'.
+[Line 5 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('I').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -705,21 +705,21 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 5 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Per is not documented for language [cs] ('I').
-[Line 7 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Tens is not documented for language [cs] ('have').
-[Line 10 Sent multiword-with-pos]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('clue').
-[Line 5 Sent multiword-with-pos]: [L3 Warning pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 8 Sent multiword-with-pos]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
-[Line 9 Sent multiword-with-pos]: [L3 Warning pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
-Format errors: 2
-Morpho errors: 4
-Syntax errors: 1
+[Line 5 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Per is not documented for language [cs] ('I').
+[Line 7 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Tens is not documented for language [cs] ('have').
+[Line 10 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('clue').
+[Line 5 Sent multiword-with-pos]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 8 Sent multiword-with-pos]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
+[Line 9 Sent multiword-with-pos]: [L3 WARNING pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
+FORMAT errors: 2
+MORPHO errors: 4
+SYNTAX errors: 1
 Warnings: 2
 *** FAILED *** with 7 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\non-unix-newline.conllu 
-[Line 9 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [cs] ('Gas').
+[Line 9 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('Gas').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -730,31 +730,31 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 9 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('Gas').
-[Line 12 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [cs] ('la').
-[Line 12 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('la').
-[Line 13 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [cs] ('statua').
-[Line 13 Sent dos-newlines2]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('statua').
-[Line 12 Sent dos-newlines2]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 18 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [cs] ('Evacuata').
-[Line 18 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Mod is not documented for language [cs] ('Evacuata').
-[Line 18 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('Evacuata').
-[Line 19 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Gen is not documented for language [cs] ('la').
-[Line 19 Sent dos-newlines3]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('la').
-[Line 19 Sent dos-newlines3]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 20 Sent dos-newlines3]: [L3 Warning fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
-[Line 23 Sent dos-newlines3]: [L1 Format non-unix-newline] Only the unix-style LF line terminator is allowed.
-Format errors: 1
-Morpho errors: 11
+[Line 9 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('Gas').
+[Line 12 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('la').
+[Line 12 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('la').
+[Line 13 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('statua').
+[Line 13 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('statua').
+[Line 12 Sent dos-newlines2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 18 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('Evacuata').
+[Line 18 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Mod is not documented for language [cs] ('Evacuata').
+[Line 18 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('Evacuata').
+[Line 19 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('la').
+[Line 19 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('la').
+[Line 19 Sent dos-newlines3]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 20 Sent dos-newlines3]: [L3 WARNING fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
+[Line 23 Sent dos-newlines3]: [L1 FORMAT non-unix-newline] Only the unix-style LF line terminator is allowed.
+FORMAT errors: 1
+MORPHO errors: 11
 Warnings: 3
 *** FAILED *** with 12 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\overlapping-word-interval.conllu 
-[Line 12 Sent invalid-range-format]: [L1 Format overlapping-word-intervals] Range overlaps with others: 3-4
-[Line 7 Sent invalid-range-format]: [L2 Metadata text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[3-4] is 'nota' but text is 'have not a clue PUNCT...'
-[Line 4 Sent invalid-range-format]: [L2 Metadata text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'have not a clue PUNCT'
-[Line 4 Sent invalid-range-format]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('I').
+[Line 12 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
+[Line 7 Sent invalid-range-format]: [L2 METADATA text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[3-4] is 'nota' but text is 'have not a clue PUNCT...'
+[Line 4 Sent invalid-range-format]: [L2 METADATA text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'have not a clue PUNCT'
+[Line 4 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('I').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -765,52 +765,52 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 4 Sent invalid-range-format]: [L4 Morpho feature-unknown] Feature Per is not documented for language [cs] ('I').
-[Line 6 Sent invalid-range-format]: [L4 Morpho feature-unknown] Feature Tens is not documented for language [cs] ('have').
-[Line 10 Sent invalid-range-format]: [L4 Morpho feature-unknown] Feature Num is not documented for language [cs] ('clue').
-[Line 4 Sent invalid-range-format]: [L3 Warning pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 8 Sent invalid-range-format]: [L3 Syntax rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
-[Line 9 Sent invalid-range-format]: [L3 Warning pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
-Format errors: 1
-Metadata errors: 2
-Morpho errors: 4
-Syntax errors: 1
+[Line 4 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Per is not documented for language [cs] ('I').
+[Line 6 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Tens is not documented for language [cs] ('have').
+[Line 10 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('clue').
+[Line 4 Sent invalid-range-format]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 8 Sent invalid-range-format]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
+[Line 9 Sent invalid-range-format]: [L3 WARNING pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
+FORMAT errors: 1
+MORPHO errors: 4
+SYNTAX errors: 1
+METADATA errors: 2
 Warnings: 2
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\pseudo-empty-line.conllu 
-[Line 5 Sent extra-empty-line1]: [L1 Format pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
-Format errors: 1
+[Line 5 Sent extra-empty-line1]: [L1 FORMAT pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\reversed-word-interval.conllu 
-[Line 11 Sent invalid-range]: [L1 Format reversed-word-interval] Spurious token interval 2-1
-Format errors: 1
+[Line 11 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\unicode-normalization.conllu 
-[Line 3 Sent None]: [L1 Unicode unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+[Line 3 Sent None]: [L1 UNICODE unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
 
 This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
 
-[Line 8 Sent 1]: [L1 Unicode unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
-Unicode errors: 2
+[Line 8 Sent 1]: [L1 UNICODE unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+UNICODE errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\word-id-sequence-2.conllu 
-[Line 4 Sent nonsequential-id]: [L1 Format word-id-sequence] Words do not form a sequence. Got '2,1'. Expected '1,2'.
-Format errors: 1
+[Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '2,1'. Expected '1,2'.
+FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\word-id-sequence.conllu 
-[Line 4 Sent nonsequential-id]: [L1 Format word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
-[Line 6 Sent nonsequential-id]: [L1 Format word-interval-out] Spurious token interval 3-3 (out of range)
-Format errors: 2
+[Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
+[Line 6 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
+FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
@@ -829,7 +829,7 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\maximal-empty-node.conllu 
-[Line 4 Sent maximal-empty-node]: [L3 Warning pron-det-without-prontype] The word 'This' is tagged 'PRON' but it lacks the 'PronType' feature
+[Line 4 Sent maximal-empty-node]: [L3 WARNING pron-det-without-prontype] The word 'This' is tagged 'PRON' but it lacks the 'PronType' feature
 Warnings: 1
 *** PASSED ***
  
@@ -847,8 +847,8 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\valid\tanl.conllu 
-[Line 12 Sent tanl2]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 19 Sent tanl3]: [L3 Warning pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 12 Sent tanl2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
+[Line 19 Sent tanl3]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 Warnings: 2
 *** PASSED ***
  

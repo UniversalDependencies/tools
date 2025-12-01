@@ -25,10 +25,10 @@ import udapi.block.read.conllu
 # from udtools import Validator.
 try:
     import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Incident
+    from validator.src.validator.incident import Incident, TestClass
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident
+    from udtools.incident import Incident, TestClass
 
 
 
@@ -644,7 +644,7 @@ class Validator:
         for line_counter, line in enumerate(inp):
             state.current_line = line_counter+1
             Incident.default_level = 1
-            Incident.default_testclass = 'Format'
+            Incident.default_testclass = TestClass.FORMAT
             Incident.default_lineno = None # use the most recently read line
             if not state.comment_start_line:
                 state.comment_start_line = state.current_line
@@ -825,7 +825,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 level=1,
-                testclass='Unicode',
+                testclass=TestClass.UNICODE,
                 testid='unicode-normalization',
                 message=testmessage,
                 explanation=f"This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
@@ -845,7 +845,7 @@ class Validator:
             The values of the columns on the current node / token line.
         """
         Incident.default_level = 1
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         Incident.default_lineno = None # use the most recently read line
         # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
         # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
@@ -917,7 +917,7 @@ class Validator:
         """
         ok = True
         Incident.default_level = 1
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         Incident.default_lineno = None # use the most recently read line
         words=[]
         tokens=[]
@@ -1024,7 +1024,7 @@ class Validator:
         sentence ... array of arrays, each inner array contains columns of one line
         """
         Incident.default_level = 1
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         Incident.default_lineno = None # use the most recently read line
         covered = set()
         for cols in sentence:
@@ -1061,7 +1061,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 level=1,
-                testclass='Format',
+                testclass=TestClass.FORMAT,
                 lineno=state.current_line,
                 testid='non-unix-newline',
                 message='Only the unix-style LF line terminator is allowed.'
@@ -1089,7 +1089,7 @@ class Validator:
         Checks that sentence id exists, is well-formed and unique.
         """
         Incident.default_level = 2
-        Incident.default_testclass = 'Metadata'
+        Incident.default_testclass = TestClass.METADATA
         Incident.default_lineno = -1 # use the first line after the comments
         matched = []
         for c in comments:
@@ -1144,7 +1144,7 @@ class Validator:
         parallel.
         """
         Incident.default_level = 2
-        Incident.default_testclass = 'Metadata'
+        Incident.default_testclass = TestClass.METADATA
         Incident.default_lineno = -1 # use the first line after the comments
         matched = []
         for c in comments:
@@ -1241,7 +1241,7 @@ class Validator:
         forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
         """
         Incident.default_level = 2
-        Incident.default_testclass = 'Metadata'
+        Incident.default_testclass = TestClass.METADATA
         Incident.default_lineno = -1 # use the first line after the comments
         newdoc_matched = []
         newpar_matched = []
@@ -1445,7 +1445,7 @@ class Validator:
                     state=state, config=self.incfg,
                     lineno=line,
                     level=2,
-                    testclass='Format',
+                    testclass=TestClass.FORMAT,
                     testid='mwt-nonempty-field',
                     message=f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
                 ).report()
@@ -1473,7 +1473,7 @@ class Validator:
                     state=state, config=self.incfg,
                     lineno=line,
                     level=2,
-                    testclass='Format',
+                    testclass=TestClass.FORMAT,
                     testid='mwt-nonempty-field',
                     message=f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
                 ).report()
@@ -1501,7 +1501,7 @@ class Validator:
         if not (utils.crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
             Incident(
                 state=state, config=self.incfg,
-                testclass='Syntax',
+                testclass=TestClass.SYNTAX,
                 testid='invalid-deprel',
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
             ).report()
@@ -1510,7 +1510,7 @@ class Validator:
         except ValueError:
             Incident(
                 state=state, config=self.incfg,
-                testclass='Enhanced',
+                testclass=TestClass.ENHANCED,
                 testid='invalid-deps',
                 message=f"Failed to parse DEPS: '{cols[DEPS]}'."
             ).report()
@@ -1519,7 +1519,7 @@ class Validator:
             if not utils.crex.edeprel.fullmatch(deprel)):
                 Incident(
                     state=state, config=self.incfg,
-                    testclass='Enhanced',
+                    testclass=TestClass.ENHANCED,
                     testid='invalid-edeprel',
                     message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
                 ).report()
@@ -1548,7 +1548,7 @@ class Validator:
                 state=state, config=self.incfg,
                 lineno=line,
                 level=2,
-                testclass='Morpho',
+                testclass=TestClass.MORPHO,
                 testid='unknown-upos',
                 message=f"Unknown UPOS tag: '{cols[UPOS]}'."
             ).report()
@@ -1576,7 +1576,7 @@ class Validator:
         """
         Incident.default_lineno = line
         Incident.default_level = 2
-        Incident.default_testclass = 'Morpho'
+        Incident.default_testclass = TestClass.MORPHO
         feats = cols[FEATS]
         if feats == '_':
             return True
@@ -1676,7 +1676,7 @@ class Validator:
         """
         Incident.default_lineno = line
         Incident.default_level = 2
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         if not (utils.is_word(cols) or utils.is_empty_node(cols)):
             return
         # Remember whether there is at least one difference between the basic
@@ -1722,7 +1722,7 @@ class Validator:
         if id_ in heads:
             Incident(
                 state=state, config=self.incfg,
-                testclass='Enhanced',
+                testclass=TestClass.ENHANCED,
                 testid='deps-self-loop',
                 message=f"Self-loop in DEPS for '{cols[ID]}'"
             ).report()
@@ -1750,7 +1750,7 @@ class Validator:
         """
         Incident.default_lineno = line
         Incident.default_level = 2
-        Incident.default_testclass = 'Warning'
+        Incident.default_testclass = TestClass.WARNING
         if cols[MISC] == '_':
             return
         misc = [ma.split('=', 1) for ma in cols[MISC].split('|')]
@@ -1810,7 +1810,7 @@ class Validator:
             if mamap[a] > 1:
                 Incident(
                     state=state, config=self.incfg,
-                    testclass='Format', # this one is real error
+                    testclass=TestClass.FORMAT, # this one is real error
                     testid='repeated-misc',
                     message=f"MISC attribute '{a}' not supposed to occur twice"
                 ).report()
@@ -1840,7 +1840,7 @@ class Validator:
         """
         ok = True
         Incident.default_level = 2
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         word_tree = [cols for cols in sentence if utils.is_word(cols) or utils.is_empty_node(cols)]
         ids = set([cols[ID] for cols in word_tree])
         for cols in word_tree:
@@ -1858,7 +1858,7 @@ class Validator:
                 if not (cols[HEAD] in ids or cols[HEAD] == '0'):
                     Incident(
                         state=state, config=self.incfg,
-                        testclass='Syntax',
+                        testclass=TestClass.SYNTAX,
                         testid='unknown-head',
                         message=f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
                     ).report()
@@ -1886,7 +1886,7 @@ class Validator:
                 if not (head in ids or head == '0'):
                     Incident(
                         state=state, config=self.incfg,
-                        testclass='Enhanced',
+                        testclass=TestClass.ENHANCED,
                         testid='unknown-ehead',
                         message=f"Undefined enhanced head reference (no such ID): '{head}'."
                     ).report()
@@ -1924,7 +1924,7 @@ class Validator:
         ok : bool
         """
         Incident.default_level = 2
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         node_line = state.sentence_line - 1
         children = {} # int(node id) -> set of children
         n_words = 0
@@ -2002,7 +2002,7 @@ class Validator:
         """
         Incident.default_lineno = line
         Incident.default_level = 2
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         if not node.is_empty():
             if node.parent.ord == 0 and node.udeprel != 'root':
                 Incident(
@@ -2021,14 +2021,14 @@ class Validator:
             if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
                 Incident(
                     state=state, config=self.incfg,
-                    testclass='Enhanced',
+                    testclass=TestClass.ENHANCED,
                     testid='enhanced-0-is-not-root',
                     message="Enhanced relation type must be 'root' if head is 0."
                 ).report()
             if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
                 Incident(
                     state=state, config=self.incfg,
-                    testclass='Enhanced',
+                    testclass=TestClass.ENHANCED,
                     testid='enhanced-root-is-not-0',
                     message="Enhanced relation type cannot be 'root' if head is not 0."
                 ).report()
@@ -2055,7 +2055,7 @@ class Validator:
         # to the users.
         Incident.default_lineno = state.sentence_line
         Incident.default_level = 2
-        Incident.default_testclass = 'Enhanced'
+        Incident.default_testclass = TestClass.ENHANCED
         if egraph_exists:
             if not state.seen_enhanced_graph:
                 state.seen_enhanced_graph = state.sentence_line
@@ -2132,7 +2132,7 @@ class Validator:
                 state=state, config=self.incfg,
                 lineno=linenos[sur[0]],
                 level=2,
-                testclass='Enhanced',
+                testclass=TestClass.ENHANCED,
                 testid='unconnected-egraph',
                 message=f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
             ).report()
@@ -2203,7 +2203,7 @@ class Validator:
         """
         Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = 'Warning'
+        Incident.default_testclass = TestClass.WARNING
         if node.upos in ['PRON', 'DET']:
             self.validate_required_feature(state, node.feats, 'PronType', None, Incident(
                 state=state, config=self.incfg,
@@ -2246,7 +2246,7 @@ class Validator:
         """
         Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         # Occasionally a word may be marked by the feature ExtPos as acting as
         # a part of speech different from its usual one (which is given in UPOS).
         # Typical examples are words that head fixed multiword expressions (the
@@ -2267,7 +2267,7 @@ class Validator:
             str_fixed_forms = ' '.join(fixed_forms)
             Incident(
                 state=state, config=self.incfg,
-                testclass='Warning',
+                testclass=TestClass.WARNING,
                 testid='fixed-without-extpos',
                 message=f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
             ).report()
@@ -2398,7 +2398,7 @@ class Validator:
             of the line where the node occurs (int).
         """
         Incident.default_level = 3
-        Incident.default_testclass = 'Warning' # or Morpho
+        Incident.default_testclass = TestClass.WARNING # or Morpho
         if node.deprel != 'flat:foreign':
             return
         parent = node.parent
@@ -2451,7 +2451,7 @@ class Validator:
                     lineno=lineno,
                     nodeid=node.ord,
                     level=3,
-                    testclass='Syntax',
+                    testclass=TestClass.SYNTAX,
                     testid=f"right-to-left-{node.udeprel}",
                     message=f"Parent of relation '{node.deprel}' must precede the child in the word order."
                 ).report()
@@ -2515,7 +2515,7 @@ class Validator:
                 lineno=lineno,
                 nodeid=node.ord,
                 level=3,
-                testclass='Syntax',
+                testclass=TestClass.SYNTAX,
                 testid='too-many-subjects',
                 message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{utils.formtl(node)}' not subtyped as ':outer'.",
                 explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
@@ -2546,7 +2546,7 @@ class Validator:
                 lineno=lineno,
                 nodeid=node.ord,
                 level=3,
-                testclass='Syntax',
+                testclass=TestClass.SYNTAX,
                 testid='too-many-objects',
                 message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{utils.formtl(node)}'."
             ).report()
@@ -2586,7 +2586,7 @@ class Validator:
                     lineno=lineno,
                     nodeid=node.ord,
                     level=3,
-                    testclass='Syntax',
+                    testclass=TestClass.SYNTAX,
                     testid='obl-should-be-nmod',
                     message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'."
                 ).report()
@@ -2626,7 +2626,7 @@ class Validator:
                     lineno=lineno,
                     nodeid=node.ord,
                     level=3,
-                    testclass='Warning',
+                    testclass=TestClass.WARNING,
                     testid='orphan-parent',
                     message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
                 ).report()
@@ -2659,7 +2659,7 @@ class Validator:
                 idchild = child.ord
                 Incident.default_lineno = linenos[str(idchild)]
                 Incident.default_level = 3
-                Incident.default_testclass = 'Syntax'
+                Incident.default_testclass = TestClass.SYNTAX
                 cdeprel = child.udeprel
                 # The guidelines explicitly say that negation can modify any function word
                 # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
@@ -2838,7 +2838,7 @@ class Validator:
                     lineno=lineno,
                     nodeid=node.ord,
                     level=3,
-                    testclass='Warning',
+                    testclass=TestClass.WARNING,
                     testid='fixed-gap',
                     message=f"Gaps in fixed expression {str(fxordlist)} '{fxexpr}'"
                 ).report()
@@ -2862,7 +2862,7 @@ class Validator:
         """
         Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         gwchildren = [c for c in node.children if c.udeprel == 'goeswith']
         if gwchildren:
             gwlist = sorted([node] + gwchildren)
@@ -2893,7 +2893,7 @@ class Validator:
             incident = Incident(
                 state=state, config=self.incfg,
                 nodeid=node.ord,
-                testclass='Morpho',
+                testclass=TestClass.MORPHO,
                 testid='goeswith-missing-typo',
                 message="Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
             )
@@ -2916,7 +2916,7 @@ class Validator:
         """
         Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = 'Morpho'
+        Incident.default_testclass = TestClass.MORPHO
         if node.udeprel == 'goeswith':
             if node.lemma != '_':
                 Incident(
@@ -2943,7 +2943,7 @@ class Validator:
                 Incident(
                     state=state, config=self.incfg,
                     nodeid=node.ord,
-                    testclass='Enhanced',
+                    testclass=TestClass.ENHANCED,
                     testid='goeswith-edeps',
                     message="A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
                 ).report()
@@ -3055,7 +3055,7 @@ class Validator:
         """
         Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         if node.udeprel == 'punct':
             nonprojnodes = self.get_caused_nonprojectivities(node)
             if nonprojnodes:
@@ -3129,7 +3129,7 @@ class Validator:
         """
         Incident.default_lineno = line
         Incident.default_level = 3
-        Incident.default_testclass = 'Enhanced'
+        Incident.default_testclass = TestClass.ENHANCED
         # Enhanced dependencies should not contain the orphan relation.
         # However, all types of enhancements are optional and orphans are excluded
         # only if this treebank addresses gapping. We do not know it until we see
@@ -3189,7 +3189,7 @@ class Validator:
         global data
         Incident.default_lineno = line
         Incident.default_level = 4
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
         tospacedata = data.get_tospace_for_language(lang)
@@ -3242,7 +3242,7 @@ class Validator:
         global data
         Incident.default_lineno = line
         Incident.default_level = 4
-        Incident.default_testclass = 'Morpho'
+        Incident.default_testclass = TestClass.MORPHO
         if str(node.feats) == '_':
             return True
         # List of permited features is language-specific.
@@ -3346,7 +3346,7 @@ class Validator:
         global data
         Incident.default_lineno = line
         Incident.default_level = 4
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         # List of permited relations is language-specific.
         # The current token may be in a different language due to code switching.
         # Unlike with features and auxiliaries, with deprels it is less clear
@@ -3384,7 +3384,7 @@ class Validator:
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from validate_id_references() and the head indices are OK).
         # The order of enhanced dependencies was already checked in validate_deps().
-        Incident.default_testclass = 'Enhanced'
+        Incident.default_testclass = TestClass.ENHANCED
         if str(node.deps) != '_':
             main_edeprelset = data.get_edeprel_for_language(mainlang)
             alt_edeprelset = data.get_edeprel_for_language(naltlang)
@@ -3438,7 +3438,7 @@ class Validator:
                     lineno=line,
                     nodeid=node.ord,
                     level=5,
-                    testclass='Morpho',
+                    testclass=TestClass.MORPHO,
                     testid='aux-lemma',
                     message=f"'{utils.lemmatl(node)}' is not an auxiliary in language [{lang}]",
                     explanation=data.explain_aux(lang)
@@ -3472,7 +3472,7 @@ class Validator:
                     lineno=line,
                     nodeid=node.ord,
                     level=5,
-                    testclass='Syntax',
+                    testclass=TestClass.SYNTAX,
                     testid='cop-lemma',
                     message=f"'{utils.lemmatl(node)}' is not a copula in language [{lang}]",
                     explanation=data.explain_cop(lang)
@@ -3494,7 +3494,7 @@ class Validator:
         to coreference and named entities.
         """
         Incident.default_level = 6
-        Incident.default_testclass = 'Coref'
+        Incident.default_testclass = TestClass.COREF
         iline = 0
         sentid = ''
         for c in comments:
@@ -3896,7 +3896,7 @@ class Validator:
                                 if beid != state.open_entity_mentions[-1]['beid']:
                                     Incident(
                                         state=state, config=self.incfg,
-                                        testclass='Warning',
+                                        testclass=TestClass.WARNING,
                                         testid='ill-nested-entities-warning',
                                         message=f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
                                     ).report()
@@ -3932,7 +3932,7 @@ class Validator:
                                     # This should have been taken care of at the opening bracket.
                                     Incident(
                                         state=state, config=self.incfg,
-                                        testclass='Internal',
+                                        testclass=TestClass.INTERNAL,
                                         testid='internal-error',
                                         message="INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in state.open_discontinuous_mentions."
                                     ).report()
@@ -4273,7 +4273,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 level=3,
-                testclass='Enhanced',
+                testclass=TestClass.ENHANCED,
                 testid='edeps-identical-to-basic-trees',
                 message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
             ).report()
@@ -4298,7 +4298,7 @@ class Validator:
             Incident(
                 state=state, config=self.incfg,
                 level=0,
-                testclass='Internal',
+                testclass=TestClass.INTERNAL,
                 testid='exception',
                 message="Exception caught!"
             ).report()
@@ -4391,20 +4391,27 @@ def parse_args(args=None):
         args.input.append('-')
     return args
 
+
+
+#==============================================================================
+# The main function.
+#==============================================================================
+
+
+
 def main():
     args = parse_args()
     validator = Validator(lang=args.lang, level=args.level, args=args)
     state = validator.validate_files(args.input)
-
     # Summarize the warnings and errors.
     passed = True
     nerror = 0
     if state.error_counter:
         for k, v in sorted(state.error_counter.items()):
-            if k == 'Warning':
+            if k == TestClass.WARNING:
                 errors = 'Warnings'
             else:
-                errors = k+' errors'
+                errors = str(k)+' errors'
                 nerror += v
                 passed = False
             if not args.quiet:

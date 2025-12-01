@@ -13,10 +13,13 @@ class TestClass(Enum):
     ENHANCED = 5
     COREF = 6
     METADATA = 7
+    WARNING = 8 ###!!! this will be removed when we start using the IncidentType below
 
     def __str__(self):
         return self.name
 
+    def __lt__(self, other):
+        return self.value < other.value
 
 
 class IncidentType(Enum):
