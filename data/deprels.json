@@ -6192,7 +6192,7 @@
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nummod:gov": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
-"obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
