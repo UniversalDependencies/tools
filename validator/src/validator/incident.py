@@ -1,5 +1,27 @@
 import sys
 import os
+from enum import Enum
+
+
+
+class TestClass(Enum):
+    INTERNAL = 0
+    UNICODE = 1
+    FORMAT = 2
+    MORPHO = 3
+    SYNTAX = 4
+    ENHANCED = 5
+    COREF = 6
+    METADATA = 7
+
+    def __str__(self):
+        return self.name
+
+
+
+class IncidentType(Enum):
+    ERROR = 1
+    WARNING = 0
 
 
 
@@ -11,7 +33,7 @@ class Incident:
     # We can modify the class-level defaults before a batch of similar tests.
     # Then we do not have to repeat the shared parameters for each test.
     default_level = 1
-    default_testclass = 'Format'
+    default_testclass = TestClass.FORMAT
     default_testid = 'generic-error'
     default_message = 'No error description provided.'
     default_lineno = None
