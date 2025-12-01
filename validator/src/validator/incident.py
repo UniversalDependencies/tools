@@ -100,3 +100,23 @@ class Incident:
             message += "\n\n" + self.explanation + "\n"
             self.state.explanation_printed.add(self.explanation)
         print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
+
+
+
+class Error(Incident):
+    def get_type(self):
+        return IncidentType.ERROR
+
+    def __repr__(self):
+        out_str = f"[Line {self.lineno+1} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
+        return out_str
+
+
+
+class Warning(Incident):
+    def get_type(self):
+        return IncidentType.WARNING
+
+    def __repr__(self):
+        out_str = f"[Line {self.lineno+1} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
+        return out_str
