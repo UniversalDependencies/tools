@@ -241,7 +241,25 @@ class Validator:
                                 self.check_copula_lemmas(state, node, line, self.lang) # level 5
                 # Tests on whole trees and enhanced graphs.
                 if self.level > 2:
-                    self.check_annotation(state, tree, linenos) # level 3
+                    # Level 3 check universally valid consequences of annotation
+                    # guidelines. Look at regular nodes and basic tree, not at
+                    # enhanced graph (which is checked later).
+                    basic_nodes = tree.descendants
+                    for node in basic_nodes:
+                        lineno = linenos[str(node.ord)]
+                        self.check_expected_features(state, node, lineno)
+                        self.check_upos_vs_deprel(state, node, lineno)
+                        self.check_flat_foreign(state, node, lineno, linenos)
+                        self.check_left_to_right_relations(state, node, lineno)
+                        self.check_single_subject(state, node, lineno)
+                        self.check_single_object(state, node, lineno)
+                        self.check_nmod_obl(state, node, lineno)
+                        self.check_orphan(state, node, lineno)
+                        self.check_functional_leaves(state, node, lineno, linenos)
+                        self.check_fixed_span(state, node, lineno)
+                        self.check_goeswith_span(state, node, lineno)
+                        self.check_goeswith_morphology_and_edeps(state, node, lineno)
+                        self.check_projective_punctuation(state, node, lineno)
                     self.check_egraph_connected(state, nodes, linenos)
                 if self.check_coref:
                     self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
@@ -2665,38 +2683,6 @@ class Validator:
                     testid='punct-is-nonproj',
                     message=f"Punctuation must not be attached non-projectively over nodes {gapids}"
                 ).report()
-
-
-
-    def check_annotation(self, state, tree, linenos):
-        """
-        Checks universally valid consequences of the annotation guidelines. Looks
-        at regular nodes and basic tree, not at enhanced graph (which is checked
-        elsewhere).
-
-        Parameters
-        ----------
-        tree : udapi.core.root.Root object
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
-        """
-        nodes = tree.descendants
-        for node in nodes:
-            lineno = linenos[str(node.ord)]
-            self.check_expected_features(state, node, lineno)
-            self.check_upos_vs_deprel(state, node, lineno)
-            self.check_flat_foreign(state, node, lineno, linenos)
-            self.check_left_to_right_relations(state, node, lineno)
-            self.check_single_subject(state, node, lineno)
-            self.check_single_object(state, node, lineno)
-            self.check_nmod_obl(state, node, lineno)
-            self.check_orphan(state, node, lineno)
-            self.check_functional_leaves(state, node, lineno, linenos)
-            self.check_fixed_span(state, node, lineno)
-            self.check_goeswith_span(state, node, lineno)
-            self.check_goeswith_morphology_and_edeps(state, node, lineno)
-            self.check_projective_punctuation(state, node, lineno)
 
 
 
