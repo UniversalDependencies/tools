@@ -108,6 +108,148 @@ class Validator:
 
 
 #==============================================================================
+# Entry points.
+#==============================================================================
+
+
+    def validate_files(self, filenames):
+        state = State()
+        try:
+            for fname in filenames:
+                state.current_file_name = fname
+                if fname == '-':
+                    # Set PYTHONIOENCODING=utf-8 before starting Python.
+                    # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
+                    # Otherwise ANSI will be read in Windows and
+                    # locale-dependent encoding will be used elsewhere.
+                    self.validate_file(state, sys.stdin)
+                else:
+                    with io.open(fname, 'r', encoding='utf-8') as inp:
+                        self.validate_file(state, inp)
+            self.validate_end(state)
+        except:
+            Error(
+                state=state, config=self.incfg,
+                level=0,
+                testclass=TestClass.INTERNAL,
+                testid='exception',
+                message="Exception caught!"
+            ).report()
+            # If the output is used in an HTML page, it must be properly escaped
+            # because the traceback can contain e.g. "<module>". However, escaping
+            # is beyond the goal of validation, which can be also run in a console.
+            traceback.print_exc()
+        return state
+
+
+    def validate_file(self, state, inp):
+        """
+        The main entry point for all validation tests applied to one input file.
+        It reads sentences from the input stream one by one, each sentence is
+        immediately tested.
+
+        Parameters
+        ----------
+        inp : open file handle
+            The CoNLL-U-formatted input stream.
+        """
+        for all_lines, comments, sentence in self.next_sentence(state, inp):
+            linenos = utils.get_line_numbers_for_ids(state, sentence)
+            # The individual lines were validated already in next_sentence().
+            # What follows is tests that need to see the whole tree.
+            # Note that low-level errors such as wrong number of columns would be
+            # reported in next_sentence() but then the lines would be thrown away
+            # and no tree lines would be yielded—meaning that we will not encounter
+            # such a mess here.
+            idseqok = self.validate_id_sequence(state, sentence) # level 1
+            self.validate_token_ranges(state, sentence) # level 1
+            if self.level > 1:
+                idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
+                if not idrefok:
+                    continue
+                treeok = self.validate_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+                if not treeok:
+                    continue
+                # Tests of individual nodes that operate on pre-Udapi data structures.
+                # Some of them (bad feature format) may lead to skipping Udapi completely.
+                colssafe = True
+                line = state.sentence_line - 1
+                for cols in sentence:
+                    line += 1
+                    # Multiword tokens and empty nodes can or must have certain fields empty.
+                    if utils.is_multiword_token(cols):
+                        self.validate_mwt_empty_vals(state, cols, line)
+                    if utils.is_empty_node(cols):
+                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
+                    if utils.is_word(cols) or utils.is_empty_node(cols):
+                        self.validate_character_constraints(state, cols, line) # level 2
+                        self.validate_upos(state, cols, line) # level 2
+                        colssafe = self.validate_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
+                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+                if not colssafe:
+                    continue
+                # If we successfully passed all the tests above, it is probably
+                # safe to give the lines to Udapi and ask it to build the tree data
+                # structure for us.
+                tree = self.build_tree_udapi(all_lines)
+                self.validate_sent_id(state, comments, self.lang) # level 2
+                self.validate_parallel_id(state, comments) # level 2
+                self.validate_text_meta(state, comments, sentence) # level 2
+                # Test that enhanced graphs exist either for all sentences or for
+                # none. As a side effect, get line numbers for all nodes including
+                # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
+                # These line numbers are returned in any case, even if there are no
+                # enhanced dependencies, hence we can rely on them even with basic
+                # trees.
+                self.validate_deps_all_or_none(state, sentence)
+                # Tests of individual nodes with Udapi.
+                nodes = tree.descendants_and_empty
+                for node in nodes:
+                    line = linenos[str(node.ord)]
+                    self.validate_deprels(state, node, line) # level 2 and 4
+                    self.validate_root(state, node, line) # level 2: deprel root <=> head 0
+                    if self.level > 2:
+                        self.validate_enhanced_orphan(state, node, line) # level 3
+                        if self.level > 3:
+                            # To disallow words with spaces everywhere, use --lang ud.
+                            self.validate_words_with_spaces(state, node, line, self.lang) # level 4
+                            self.validate_features_level4(state, node, line, self.lang) # level 4
+                            if self.level > 4:
+                                self.validate_auxiliary_verbs(state, node, line, self.lang) # level 5
+                                self.validate_copula_lemmas(state, node, line, self.lang) # level 5
+                # Tests on whole trees and enhanced graphs.
+                if self.level > 2:
+                    self.validate_annotation(state, tree, linenos) # level 3
+                    self.validate_egraph_connected(state, nodes, linenos)
+                if self.check_coref:
+                    self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
+        self.validate_newlines(state, inp) # level 1
+
+
+    def build_tree_udapi(self, lines):
+        root = self.conllu_reader.read_tree_from_lines(lines)
+        return root
+
+
+    def validate_end(self, state):
+        """
+        Final tests after processing the entire treebank (possibly multiple files).
+        """
+        # After reading the entire treebank (perhaps multiple files), check whether
+        # the DEPS annotation was not a mere copy of the basic trees.
+        if self.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
+            Error(
+                state=state, config=self.incfg,
+                level=3,
+                testclass=TestClass.ENHANCED,
+                testid='edeps-identical-to-basic-trees',
+                message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
+            ).report()
+
+
+
+#==============================================================================
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
 
@@ -3623,144 +3765,3 @@ class Validator:
         for eid in state.entity_mention_spans:
             if sentid in state.entity_mention_spans[eid]:
                 state.entity_mention_spans[eid].pop(sentid)
-
-
-
-#==============================================================================
-# Main part.
-#==============================================================================
-
-    def build_tree_udapi(self, lines):
-        root = self.conllu_reader.read_tree_from_lines(lines)
-        return root
-
-    def validate_file(self, state, inp):
-        """
-        The main entry point for all validation tests applied to one input file.
-        It reads sentences from the input stream one by one, each sentence is
-        immediately tested.
-
-        Parameters
-        ----------
-        inp : open file handle
-            The CoNLL-U-formatted input stream.
-        """
-        for all_lines, comments, sentence in self.next_sentence(state, inp):
-            linenos = utils.get_line_numbers_for_ids(state, sentence)
-            # The individual lines were validated already in next_sentence().
-            # What follows is tests that need to see the whole tree.
-            # Note that low-level errors such as wrong number of columns would be
-            # reported in next_sentence() but then the lines would be thrown away
-            # and no tree lines would be yielded—meaning that we will not encounter
-            # such a mess here.
-            idseqok = self.validate_id_sequence(state, sentence) # level 1
-            self.validate_token_ranges(state, sentence) # level 1
-            if self.level > 1:
-                idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
-                if not idrefok:
-                    continue
-                treeok = self.validate_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-                if not treeok:
-                    continue
-                # Tests of individual nodes that operate on pre-Udapi data structures.
-                # Some of them (bad feature format) may lead to skipping Udapi completely.
-                colssafe = True
-                line = state.sentence_line - 1
-                for cols in sentence:
-                    line += 1
-                    # Multiword tokens and empty nodes can or must have certain fields empty.
-                    if utils.is_multiword_token(cols):
-                        self.validate_mwt_empty_vals(state, cols, line)
-                    if utils.is_empty_node(cols):
-                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
-                    if utils.is_word(cols) or utils.is_empty_node(cols):
-                        self.validate_character_constraints(state, cols, line) # level 2
-                        self.validate_upos(state, cols, line) # level 2
-                        colssafe = self.validate_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
-                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
-                if not colssafe:
-                    continue
-                # If we successfully passed all the tests above, it is probably
-                # safe to give the lines to Udapi and ask it to build the tree data
-                # structure for us.
-                tree = self.build_tree_udapi(all_lines)
-                self.validate_sent_id(state, comments, self.lang) # level 2
-                self.validate_parallel_id(state, comments) # level 2
-                self.validate_text_meta(state, comments, sentence) # level 2
-                # Test that enhanced graphs exist either for all sentences or for
-                # none. As a side effect, get line numbers for all nodes including
-                # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
-                # These line numbers are returned in any case, even if there are no
-                # enhanced dependencies, hence we can rely on them even with basic
-                # trees.
-                self.validate_deps_all_or_none(state, sentence)
-                # Tests of individual nodes with Udapi.
-                nodes = tree.descendants_and_empty
-                for node in nodes:
-                    line = linenos[str(node.ord)]
-                    self.validate_deprels(state, node, line) # level 2 and 4
-                    self.validate_root(state, node, line) # level 2: deprel root <=> head 0
-                    if self.level > 2:
-                        self.validate_enhanced_orphan(state, node, line) # level 3
-                        if self.level > 3:
-                            # To disallow words with spaces everywhere, use --lang ud.
-                            self.validate_words_with_spaces(state, node, line, self.lang) # level 4
-                            self.validate_features_level4(state, node, line, self.lang) # level 4
-                            if self.level > 4:
-                                self.validate_auxiliary_verbs(state, node, line, self.lang) # level 5
-                                self.validate_copula_lemmas(state, node, line, self.lang) # level 5
-                # Tests on whole trees and enhanced graphs.
-                if self.level > 2:
-                    self.validate_annotation(state, tree, linenos) # level 3
-                    self.validate_egraph_connected(state, nodes, linenos)
-                if self.check_coref:
-                    self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
-        self.validate_newlines(state, inp) # level 1
-
-
-
-    def validate_end(self, state):
-        """
-        Final tests after processing the entire treebank (possibly multiple files).
-        """
-        # After reading the entire treebank (perhaps multiple files), check whether
-        # the DEPS annotation was not a mere copy of the basic trees.
-        if self.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
-            Error(
-                state=state, config=self.incfg,
-                level=3,
-                testclass=TestClass.ENHANCED,
-                testid='edeps-identical-to-basic-trees',
-                message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
-            ).report()
-
-
-    def validate_files(self, filenames):
-        state = State()
-        try:
-            for fname in filenames:
-                state.current_file_name = fname
-                if fname == '-':
-                    # Set PYTHONIOENCODING=utf-8 before starting Python.
-                    # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
-                    # Otherwise ANSI will be read in Windows and
-                    # locale-dependent encoding will be used elsewhere.
-                    self.validate_file(state, sys.stdin)
-                else:
-                    with io.open(fname, 'r', encoding='utf-8') as inp:
-                        self.validate_file(state, inp)
-            self.validate_end(state)
-        except:
-            Error(
-                state=state, config=self.incfg,
-                level=0,
-                testclass=TestClass.INTERNAL,
-                testid='exception',
-                message="Exception caught!"
-            ).report()
-            # If the output is used in an HTML page, it must be properly escaped
-            # because the traceback can contain e.g. "<module>". However, escaping
-            # is beyond the goal of validation, which can be also run in a console.
-            traceback.print_exc()
-        return state
