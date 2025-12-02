@@ -136,17 +136,8 @@ class Validator:
         """
         state = State()
         try:
-            for fname in filenames:
-                state.current_file_name = fname
-                if fname == '-':
-                    # Set PYTHONIOENCODING=utf-8 before starting Python.
-                    # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
-                    # Otherwise ANSI will be read in Windows and
-                    # locale-dependent encoding will be used elsewhere.
-                    self.validate_file(state, sys.stdin)
-                else:
-                    with io.open(fname, 'r', encoding='utf-8') as inp:
-                        self.validate_file(state, inp)
+            for filename in filenames:
+                self.validate_file(state, filename)
             self.validate_end(state)
         except:
             Error(
@@ -163,7 +154,31 @@ class Validator:
         return state
 
 
-    def validate_file(self, state, inp):
+    def validate_file(self, state, filename):
+        """
+        An envelope around validate_file_handle(). Opens a file or uses STDIN,
+        then calls validate_file_handle() on it.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        filename : str
+            Name of the file to be read and validated. '-' means STDIN.
+        """
+        state.current_file_name = filename
+        if filename == '-':
+            # Set PYTHONIOENCODING=utf-8 before starting Python.
+            # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
+            # Otherwise ANSI will be read in Windows and
+            # locale-dependent encoding will be used elsewhere.
+            self.validate_file_handle(state, sys.stdin)
+        else:
+            with io.open(filename, 'r', encoding='utf-8') as inp:
+                self.validate_file_handle(state, inp)
+
+
+    def validate_file_handle(self, state, inp):
         """
         The main entry point for all validation tests applied to one input file.
         It reads sentences from the input stream one by one, each sentence is
@@ -171,6 +186,8 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         inp : open file handle
             The CoNLL-U-formatted input stream.
         """
