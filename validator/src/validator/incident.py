@@ -1,5 +1,29 @@
 import sys
 import os
+from enum import Enum
+
+
+
+class TestClass(Enum):
+    INTERNAL = 0
+    UNICODE = 1
+    FORMAT = 2
+    MORPHO = 3
+    SYNTAX = 4
+    ENHANCED = 5
+    COREF = 6
+    METADATA = 7
+
+    def __str__(self):
+        return self.name
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+
+class IncidentType(Enum):
+    ERROR = 1
+    WARNING = 0
 
 
 
@@ -11,7 +35,7 @@ class Incident:
     # We can modify the class-level defaults before a batch of similar tests.
     # Then we do not have to repeat the shared parameters for each test.
     default_level = 1
-    default_testclass = 'Format'
+    default_testclass = TestClass.FORMAT
     default_testid = 'generic-error'
     default_message = 'No error description provided.'
     default_lineno = None
@@ -49,18 +73,28 @@ class Incident:
         # ID of the node on which the error occurred (if it pertains to one node).
         self.nodeid = nodeid
 
-    def report(self):
-        # Even if we should be quiet, at least count the error.
-        self.state.error_counter[self.testclass] = self.state.error_counter.get(self.testclass, 0)+1
-        if not 'max_store' in self.config or self.config['max_store'] <= 0 or len(self.state.error_tracker[self.testclass]) < self.config['max_store']:
-            self.state.error_tracker[self.testclass].append(self)
-        if 'quiet' in self.config and self.config['quiet']:
-            return
-        # Suppress error messages of a type of which we have seen too many.
-        if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[self.testclass] > self.config['max_err']:
-            if self.state.error_counter[self.testclass] == self.config['max_err'] + 1:
-                print(f'...suppressing further errors regarding {self.testclass}', file=sys.stderr)
-            return # suppressed
+    def _count_me(self):
+        self.state.error_counter[self.get_type()][self.testclass] += 1
+        # Return 0 if we are not over max_err.
+        # Return 1 if we just crossed max_err (meaning we may want to print an explanation).
+        # Return 2 if we exceeded max_err by more than 1.
+        if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[self.get_type()][self.testclass] > self.config['max_err']:
+            if self.state.error_counter[self.get_type()][self.testclass] == self.config['max_err'] + 1:
+                return 1
+            else:
+                return 2
+        else:
+            return 0
+
+    def _store_me(self):
+        # self.state.error_tracker is a defaultdict of defaultdicts of lists.
+        # The first level is indexed by ERROR/WARNING, the second by TestClass.
+        mylist = self.state.error_tracker[self.get_type()][self.testclass]
+        if 'max_store' in self.config and self.config['max_store'] > 0 and len(mylist) >= self.config['max_store']:
+            return # we cannot store more incidents of this type and class
+        mylist.append(self)
+
+    def __str__(self):
         # If we are here, the error message should really be printed.
         # Address of the incident.
         address = f'Line {self.lineno} Sent {self.sentid}'
@@ -68,10 +102,39 @@ class Incident:
         if 'n_files' in self.config and self.config['n_files'] > 1:
             address = f'File {self.filename} ' + address
         # Classification of the incident.
-        levelclassid = f'L{self.level} {self.testclass} {self.testid}'
+        levelclassid = f'L{self.level} {self.testclass_to_report()} {self.testid}'
         # Message (+ explanation, if this is the first error of its kind).
         message = self.message
         if self.explanation and self.explanation not in self.state.explanation_printed:
             message += "\n\n" + self.explanation + "\n"
             self.state.explanation_printed.add(self.explanation)
-        print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
+        return f'[{address}]: [{levelclassid}] {message}'
+
+    def report(self):
+        # Even if we should be quiet, at least count the error.
+        too_many = self._count_me()
+        self._store_me()
+        if 'quiet' in self.config and self.config['quiet']:
+            return
+        # Suppress error messages of a type of which we have seen too many.
+        if too_many > 0:
+            if too_many == 1:
+                print(f'...suppressing further errors regarding {self.testclass_to_report()}', file=sys.stderr)
+            return # suppressed
+        print(str(self), file=sys.stderr)
+
+
+
+class Error(Incident):
+    def get_type(self):
+        return IncidentType.ERROR
+    def testclass_to_report(self):
+        return str(self.testclass)
+
+
+
+class Warning(Incident):
+    def get_type(self):
+        return IncidentType.WARNING
+    def testclass_to_report(self):
+        return 'WARNING'

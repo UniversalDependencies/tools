@@ -9,6 +9,7 @@ import argparse
 # caution: path[0] is reserved for script path (or '' in REPL)
 #sys.path.insert(1, 'validator/src/validator')
 from validator.src.validator.validate import Validator
+from validator.src.validator.incident import IncidentType, TestClass
 
 
 
@@ -119,15 +120,16 @@ def main():
     passed = True
     nerror = 0
     if state.error_counter:
-        for k, v in sorted(state.error_counter.items()):
-            if k == 'Warning':
-                errors = 'Warnings'
-            else:
-                errors = k+' errors'
-                nerror += v
-                passed = False
+        nwarning = 0
+        for k, v in state.error_counter[IncidentType.WARNING].items():
+            nwarning += v
+        if not args.quiet and nwarning > 0:
+            print(f'Warnings: {nwarning}', file=sys.stderr)
+        for k, v in sorted(state.error_counter[IncidentType.ERROR].items()):
+            nerror += v
+            passed = False
             if not args.quiet:
-                print(f'{errors}: {v}', file=sys.stderr)
+                print(f'{str(k)} errors: {v}', file=sys.stderr)
     # Print the final verdict and exit.
     if passed:
         if not args.quiet:
