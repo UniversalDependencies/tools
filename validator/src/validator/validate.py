@@ -192,95 +192,121 @@ class Validator:
             The CoNLL-U-formatted input stream.
         """
         for all_lines, comments, sentence in self.next_sentence(state, inp):
-            linenos = utils.get_line_numbers_for_ids(state, sentence)
-            # The individual lines were validated already in next_sentence().
-            # What follows is tests that need to see the whole tree.
-            # Note that low-level errors such as wrong number of columns would be
-            # reported in next_sentence() but then the lines would be thrown away
-            # and no tree lines would be yielded—meaning that we will not encounter
-            # such a mess here.
-            idseqok = self.check_id_sequence(state, sentence) # level 1
-            self.check_token_ranges(state, sentence) # level 1
-            if self.level > 1:
-                idrefok = idseqok and self.check_id_references(state, sentence) # level 2
-                if not idrefok:
-                    continue
-                treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-                if not treeok:
-                    continue
-                # Tests of individual nodes that operate on pre-Udapi data structures.
-                # Some of them (bad feature format) may lead to skipping Udapi completely.
-                colssafe = True
-                line = state.sentence_line - 1
-                for cols in sentence:
-                    line += 1
-                    # Multiword tokens and empty nodes can or must have certain fields empty.
-                    if utils.is_multiword_token(cols):
-                        self.check_mwt_empty_vals(state, cols, line)
-                    if utils.is_empty_node(cols):
-                        self.check_empty_node_empty_vals(state, cols, line) # level 2
-                    if utils.is_word(cols) or utils.is_empty_node(cols):
-                        self.check_character_constraints(state, cols, line) # level 2
-                        self.check_upos(state, cols, line) # level 2
-                        colssafe = self.check_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
-                    self.check_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.check_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
-                if not colssafe:
-                    continue
-                # If we successfully passed all the tests above, it is probably
-                # safe to give the lines to Udapi and ask it to build the tree data
-                # structure for us.
-                tree = self.build_tree_udapi(all_lines)
-                self.check_sent_id(state, comments, self.lang) # level 2
-                self.check_parallel_id(state, comments) # level 2
-                self.check_text_meta(state, comments, sentence) # level 2
-                # Test that enhanced graphs exist either for all sentences or for
-                # none. As a side effect, get line numbers for all nodes including
-                # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
-                # These line numbers are returned in any case, even if there are no
-                # enhanced dependencies, hence we can rely on them even with basic
-                # trees.
-                self.check_deps_all_or_none(state, sentence)
-                # Tests of individual nodes with Udapi.
-                nodes = tree.descendants_and_empty
-                for node in nodes:
-                    line = linenos[str(node.ord)]
-                    self.check_deprels(state, node, line) # level 2 and 4
-                    self.check_root(state, node, line) # level 2: deprel root <=> head 0
-                    if self.level > 2:
-                        self.check_enhanced_orphan(state, node, line) # level 3
-                        if self.level > 3:
-                            # To disallow words with spaces everywhere, use --lang ud.
-                            self.check_words_with_spaces(state, node, line, self.lang) # level 4
-                            self.check_features_level4(state, node, line, self.lang) # level 4
-                            if self.level > 4:
-                                self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
-                                self.check_copula_lemmas(state, node, line, self.lang) # level 5
-                # Tests on whole trees and enhanced graphs.
-                if self.level > 2:
-                    # Level 3 check universally valid consequences of annotation
-                    # guidelines. Look at regular nodes and basic tree, not at
-                    # enhanced graph (which is checked later).
-                    basic_nodes = tree.descendants
-                    for node in basic_nodes:
-                        lineno = linenos[str(node.ord)]
-                        self.check_expected_features(state, node, lineno)
-                        self.check_upos_vs_deprel(state, node, lineno)
-                        self.check_flat_foreign(state, node, lineno, linenos)
-                        self.check_left_to_right_relations(state, node, lineno)
-                        self.check_single_subject(state, node, lineno)
-                        self.check_single_object(state, node, lineno)
-                        self.check_nmod_obl(state, node, lineno)
-                        self.check_orphan(state, node, lineno)
-                        self.check_functional_leaves(state, node, lineno, linenos)
-                        self.check_fixed_span(state, node, lineno)
-                        self.check_goeswith_span(state, node, lineno)
-                        self.check_goeswith_morphology_and_edeps(state, node, lineno)
-                        self.check_projective_punctuation(state, node, lineno)
-                    self.check_egraph_connected(state, nodes, linenos)
-                if self.check_coref:
-                    self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
+            self.validate_sentence(state, all_lines, comments, sentence)
         self.check_newlines(state, inp) # level 1
+
+
+    def validate_sentence(self, state, all_lines, comments, sentence):
+        """
+        Entry point for all validation tests applied to one sentence. It can
+        be called from annotation tools to check the sentence once annotated.
+        Note that validate_file_handle() calls it after it was able to
+        recognize a sequence of lines that constitute a sentence; some low-
+        level errors may occur while recognizing the sentence.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        all_lines : list
+            List of lines in the sentence (comments and tokens), minus final
+            empty line, minus newline characters (and minus spurious lines
+            that are neither comment lines nor token lines).
+        comments : list
+            List of comment lines to go with the current sentence; initial part
+            of all_lines.
+        sentence : list(list)
+            List of token/word lines of the current sentence, converted from
+            tab-separated string to list of fields.
+        """
+        linenos = utils.get_line_numbers_for_ids(state, sentence)
+        # The individual lines were validated already in next_sentence().
+        # What follows is tests that need to see the whole tree.
+        # Note that low-level errors such as wrong number of columns would be
+        # reported in next_sentence() but then the lines would be thrown away
+        # and no tree lines would be yielded—meaning that we will not encounter
+        # such a mess here.
+        idseqok = self.check_id_sequence(state, sentence) # level 1
+        self.check_token_ranges(state, sentence) # level 1
+        if self.level > 1:
+            idrefok = idseqok and self.check_id_references(state, sentence) # level 2
+            if not idrefok:
+                return
+            treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+            if not treeok:
+                return
+            # Tests of individual nodes that operate on pre-Udapi data structures.
+            # Some of them (bad feature format) may lead to skipping Udapi completely.
+            colssafe = True
+            line = state.sentence_line - 1
+            for cols in sentence:
+                line += 1
+                # Multiword tokens and empty nodes can or must have certain fields empty.
+                if utils.is_multiword_token(cols):
+                    self.check_mwt_empty_vals(state, cols, line)
+                if utils.is_empty_node(cols):
+                    self.check_empty_node_empty_vals(state, cols, line) # level 2
+                if utils.is_word(cols) or utils.is_empty_node(cols):
+                    self.check_character_constraints(state, cols, line) # level 2
+                    self.check_upos(state, cols, line) # level 2
+                    colssafe = self.check_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
+                self.check_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                self.check_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+            if not colssafe:
+                return
+            # If we successfully passed all the tests above, it is probably
+            # safe to give the lines to Udapi and ask it to build the tree data
+            # structure for us.
+            tree = self.build_tree_udapi(all_lines)
+            self.check_sent_id(state, comments, self.lang) # level 2
+            self.check_parallel_id(state, comments) # level 2
+            self.check_text_meta(state, comments, sentence) # level 2
+            # Test that enhanced graphs exist either for all sentences or for
+            # none. As a side effect, get line numbers for all nodes including
+            # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
+            # These line numbers are returned in any case, even if there are no
+            # enhanced dependencies, hence we can rely on them even with basic
+            # trees.
+            self.check_deps_all_or_none(state, sentence)
+            # Tests of individual nodes with Udapi.
+            nodes = tree.descendants_and_empty
+            for node in nodes:
+                line = linenos[str(node.ord)]
+                self.check_deprels(state, node, line) # level 2 and 4
+                self.check_root(state, node, line) # level 2: deprel root <=> head 0
+                if self.level > 2:
+                    self.check_enhanced_orphan(state, node, line) # level 3
+                    if self.level > 3:
+                        # To disallow words with spaces everywhere, use --lang ud.
+                        self.check_words_with_spaces(state, node, line, self.lang) # level 4
+                        self.check_features_level4(state, node, line, self.lang) # level 4
+                        if self.level > 4:
+                            self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
+                            self.check_copula_lemmas(state, node, line, self.lang) # level 5
+            # Tests on whole trees and enhanced graphs.
+            if self.level > 2:
+                # Level 3 check universally valid consequences of annotation
+                # guidelines. Look at regular nodes and basic tree, not at
+                # enhanced graph (which is checked later).
+                basic_nodes = tree.descendants
+                for node in basic_nodes:
+                    lineno = linenos[str(node.ord)]
+                    self.check_expected_features(state, node, lineno)
+                    self.check_upos_vs_deprel(state, node, lineno)
+                    self.check_flat_foreign(state, node, lineno, linenos)
+                    self.check_left_to_right_relations(state, node, lineno)
+                    self.check_single_subject(state, node, lineno)
+                    self.check_single_object(state, node, lineno)
+                    self.check_nmod_obl(state, node, lineno)
+                    self.check_orphan(state, node, lineno)
+                    self.check_functional_leaves(state, node, lineno, linenos)
+                    self.check_fixed_span(state, node, lineno)
+                    self.check_goeswith_span(state, node, lineno)
+                    self.check_goeswith_morphology_and_edeps(state, node, lineno)
+                    self.check_projective_punctuation(state, node, lineno)
+                self.check_egraph_connected(state, nodes, linenos)
+            if self.check_coref:
+                self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
 
 
     def build_tree_udapi(self, lines):
