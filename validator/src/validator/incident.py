@@ -13,7 +13,6 @@ class TestClass(Enum):
     ENHANCED = 5
     COREF = 6
     METADATA = 7
-    WARNING = 8 ###!!! temporarily needed because downstream scripts expect it on output
 
     def __str__(self):
         return self.name
@@ -96,7 +95,6 @@ class Incident:
         mylist.append(self)
 
     def __str__(self):
-        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
         # If we are here, the error message should really be printed.
         # Address of the incident.
         address = f'Line {self.lineno} Sent {self.sentid}'
@@ -104,7 +102,7 @@ class Incident:
         if 'n_files' in self.config and self.config['n_files'] > 1:
             address = f'File {self.filename} ' + address
         # Classification of the incident.
-        levelclassid = f'L{self.level} {testclass_to_report} {self.testid}'
+        levelclassid = f'L{self.level} {self.testclass_to_report()} {self.testid}'
         # Message (+ explanation, if this is the first error of its kind).
         message = self.message
         if self.explanation and self.explanation not in self.state.explanation_printed:
@@ -113,7 +111,6 @@ class Incident:
         return f'[{address}]: [{levelclassid}] {message}'
 
     def report(self):
-        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
         # Even if we should be quiet, at least count the error.
         too_many = self._count_me()
         self._store_me()
@@ -122,7 +119,7 @@ class Incident:
         # Suppress error messages of a type of which we have seen too many.
         if too_many > 0:
             if too_many == 1:
-                print(f'...suppressing further errors regarding {testclass_to_report}', file=sys.stderr)
+                print(f'...suppressing further errors regarding {self.testclass_to_report()}', file=sys.stderr)
             return # suppressed
         print(str(self), file=sys.stderr)
 
@@ -131,9 +128,13 @@ class Incident:
 class Error(Incident):
     def get_type(self):
         return IncidentType.ERROR
+    def testclass_to_report(self):
+        return str(self.testclass)
 
 
 
 class Warning(Incident):
     def get_type(self):
         return IncidentType.WARNING
+    def testclass_to_report(self):
+        return 'WARNING'
