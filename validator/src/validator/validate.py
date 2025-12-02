@@ -113,6 +113,27 @@ class Validator:
 
 
     def validate_files(self, filenames):
+        """
+        The main entry point, takes a list of filenames that constitute
+        the treebank to be validated. Note that there are tests that consider
+        data from the whole treebank across file boundaries, for example the
+        uniqueness of sentence ids. Unlike other validation methods, this one
+        creates a State object (holding the state of validation) and returns
+        it. The other validation methods take the state from the caller and
+        use it (read from it and write to it).
+
+        Parameters
+        ----------
+        filenames : list(str)
+            List of paths (filenames) to open and validate together. Filename
+            '-' will be interpreted as STDIN.
+
+        Returns
+        -------
+        state : udtools.state.State
+            The resulting state of the validation. May contain the overview
+            of all encountered incidents (errors or warnings) if requested.
+        """
         state = State()
         try:
             for fname in filenames:
