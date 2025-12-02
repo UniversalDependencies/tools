@@ -161,13 +161,13 @@ class Validator:
             # reported in next_sentence() but then the lines would be thrown away
             # and no tree lines would be yielded—meaning that we will not encounter
             # such a mess here.
-            idseqok = self.validate_id_sequence(state, sentence) # level 1
-            self.validate_token_ranges(state, sentence) # level 1
+            idseqok = self.check_id_sequence(state, sentence) # level 1
+            self.check_token_ranges(state, sentence) # level 1
             if self.level > 1:
-                idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
+                idrefok = idseqok and self.check_id_references(state, sentence) # level 2
                 if not idrefok:
                     continue
-                treeok = self.validate_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+                treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
                 if not treeok:
                     continue
                 # Tests of individual nodes that operate on pre-Udapi data structures.
@@ -178,53 +178,53 @@ class Validator:
                     line += 1
                     # Multiword tokens and empty nodes can or must have certain fields empty.
                     if utils.is_multiword_token(cols):
-                        self.validate_mwt_empty_vals(state, cols, line)
+                        self.check_mwt_empty_vals(state, cols, line)
                     if utils.is_empty_node(cols):
-                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
+                        self.check_empty_node_empty_vals(state, cols, line) # level 2
                     if utils.is_word(cols) or utils.is_empty_node(cols):
-                        self.validate_character_constraints(state, cols, line) # level 2
-                        self.validate_upos(state, cols, line) # level 2
-                        colssafe = self.validate_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
-                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+                        self.check_character_constraints(state, cols, line) # level 2
+                        self.check_upos(state, cols, line) # level 2
+                        colssafe = self.check_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
+                    self.check_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    self.check_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
                 if not colssafe:
                     continue
                 # If we successfully passed all the tests above, it is probably
                 # safe to give the lines to Udapi and ask it to build the tree data
                 # structure for us.
                 tree = self.build_tree_udapi(all_lines)
-                self.validate_sent_id(state, comments, self.lang) # level 2
-                self.validate_parallel_id(state, comments) # level 2
-                self.validate_text_meta(state, comments, sentence) # level 2
+                self.check_sent_id(state, comments, self.lang) # level 2
+                self.check_parallel_id(state, comments) # level 2
+                self.check_text_meta(state, comments, sentence) # level 2
                 # Test that enhanced graphs exist either for all sentences or for
                 # none. As a side effect, get line numbers for all nodes including
                 # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
                 # These line numbers are returned in any case, even if there are no
                 # enhanced dependencies, hence we can rely on them even with basic
                 # trees.
-                self.validate_deps_all_or_none(state, sentence)
+                self.check_deps_all_or_none(state, sentence)
                 # Tests of individual nodes with Udapi.
                 nodes = tree.descendants_and_empty
                 for node in nodes:
                     line = linenos[str(node.ord)]
-                    self.validate_deprels(state, node, line) # level 2 and 4
-                    self.validate_root(state, node, line) # level 2: deprel root <=> head 0
+                    self.check_deprels(state, node, line) # level 2 and 4
+                    self.check_root(state, node, line) # level 2: deprel root <=> head 0
                     if self.level > 2:
-                        self.validate_enhanced_orphan(state, node, line) # level 3
+                        self.check_enhanced_orphan(state, node, line) # level 3
                         if self.level > 3:
                             # To disallow words with spaces everywhere, use --lang ud.
-                            self.validate_words_with_spaces(state, node, line, self.lang) # level 4
-                            self.validate_features_level4(state, node, line, self.lang) # level 4
+                            self.check_words_with_spaces(state, node, line, self.lang) # level 4
+                            self.check_features_level4(state, node, line, self.lang) # level 4
                             if self.level > 4:
-                                self.validate_auxiliary_verbs(state, node, line, self.lang) # level 5
-                                self.validate_copula_lemmas(state, node, line, self.lang) # level 5
+                                self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
+                                self.check_copula_lemmas(state, node, line, self.lang) # level 5
                 # Tests on whole trees and enhanced graphs.
                 if self.level > 2:
-                    self.validate_annotation(state, tree, linenos) # level 3
-                    self.validate_egraph_connected(state, nodes, linenos)
+                    self.check_annotation(state, tree, linenos) # level 3
+                    self.check_egraph_connected(state, nodes, linenos)
                 if self.check_coref:
-                    self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
-        self.validate_newlines(state, inp) # level 1
+                    self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
+        self.check_newlines(state, inp) # level 1
 
 
     def build_tree_udapi(self, lines):
@@ -288,7 +288,7 @@ class Validator:
             if not state.comment_start_line:
                 state.comment_start_line = state.current_line
             line = line.rstrip("\n")
-            self.validate_unicode_normalization(state, line)
+            self.check_unicode_normalization(state, line)
             if utils.is_whitespace(line):
                 Error(
                     state=state, config=self.incfg,
@@ -348,7 +348,7 @@ class Validator:
                     all_lines.append(line)
                     token_lines_fields.append(cols)
                     # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
-                    self.validate_whitespace(state, cols)
+                    self.check_whitespace(state, cols)
                 else:
                     Error(
                         state=state, config=self.incfg,
@@ -387,7 +387,7 @@ class Validator:
 
 
 
-    def validate_unicode_normalization(self, state, text):
+    def check_unicode_normalization(self, state, text):
         """
         Tests that letters composed of multiple Unicode characters (such as a base
         letter plus combining diacritics) conform to NFC normalization (canonical
@@ -439,7 +439,7 @@ class Validator:
 
 
 
-    def validate_whitespace(self, state, cols):
+    def check_whitespace(self, state, cols):
         """
         Checks that columns are not empty and do not contain whitespace characters
         except for patterns that could be allowed at level 4. Applies to all types
@@ -513,7 +513,7 @@ class Validator:
 
 
 
-    def validate_id_sequence(self, state, sentence):
+    def check_id_sequence(self, state, sentence):
         """
         Validates that the ID sequence is correctly formed.
         Besides reporting the errors, it also returns False to the caller so it can
@@ -623,7 +623,7 @@ class Validator:
 
 
 
-    def validate_token_ranges(self, state, sentence):
+    def check_token_ranges(self, state, sentence):
         """
         Checks that the word ranges for multiword tokens are valid.
 
@@ -646,7 +646,7 @@ class Validator:
                 continue
             start, end = m.groups()
             start, end = int(start), int(end)
-            # Do not test if start >= end: This was already tested above in validate_id_sequence().
+            # Do not test if start >= end: This was already tested above in check_id_sequence().
             if covered & set(range(start, end+1)):
                 Error(
                     state=state, config=self.incfg,
@@ -657,7 +657,7 @@ class Validator:
 
 
 
-    def validate_newlines(self, state, inp):
+    def check_newlines(self, state, inp):
         """
         Checks that the input file consistently uses linux-style newlines (LF only,
         not CR LF like in Windows). To be run on the input file handle after the
@@ -690,7 +690,7 @@ class Validator:
 
 
 
-    def validate_sent_id(self, state, comments, lcode):
+    def check_sent_id(self, state, comments, lcode):
         """
         Checks that sentence id exists, is well-formed and unique.
         """
@@ -741,7 +741,7 @@ class Validator:
 
 
 
-    def validate_parallel_id(self, state, comments):
+    def check_parallel_id(self, state, comments):
         """
         The parallel_id sentence-level comment is used after sent_id of
         sentences that are parallel translations of sentences in other
@@ -840,7 +840,7 @@ class Validator:
 
 
 
-    def validate_text_meta(self, state, comments, tree):
+    def check_text_meta(self, state, comments, tree):
         """
         Checks metadata other than sentence id, that is, document breaks, paragraph
         breaks and sentence text (which is also compared to the sequence of the
@@ -993,7 +993,7 @@ class Validator:
 
 
 
-    def validate_mwt_empty_vals(self, state, cols, line):
+    def check_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
         This is required by UD guidelines although it is not a problem in general,
@@ -1024,7 +1024,7 @@ class Validator:
 
 
 
-    def validate_empty_node_empty_vals(self, state, cols, line):
+    def check_empty_node_empty_vals(self, state, cols, line):
         """
         Checks that an empty node has _ empty values in HEAD and DEPREL. This is
         required by UD guidelines but not necessarily by CoNLL-U, therefore
@@ -1051,7 +1051,7 @@ class Validator:
 
 
 
-    def validate_character_constraints(self, state, cols, line):
+    def check_character_constraints(self, state, cols, line):
         """
         Checks general constraints on valid characters, e.g. that UPOS
         only contains [A-Z].
@@ -1097,7 +1097,7 @@ class Validator:
 
 
 
-    def validate_upos(self, state, cols, line):
+    def check_upos(self, state, cols, line):
         """
         Checks that the UPOS field contains one of the 17 known tags.
 
@@ -1125,7 +1125,7 @@ class Validator:
 
 
 
-    def validate_features_level2(self, state, cols, line):
+    def check_features_level2(self, state, cols, line):
         """
         Checks general constraints on feature-value format: Permitted characters in
         feature name and value, features must be sorted alphabetically, features
@@ -1225,7 +1225,7 @@ class Validator:
 
 
 
-    def validate_deps(self, state, cols, line):
+    def check_deps(self, state, cols, line):
         """
         Validates that DEPS is correctly formatted and that there are no
         self-loops in DEPS (longer cycles are allowed in enhanced graphs but
@@ -1234,7 +1234,7 @@ class Validator:
         This function must be run on raw DEPS before it is fed into Udapi because
         it checks the order of relations, which is not guaranteed to be preserved
         in Udapi. On the other hand, we assume that it is run after
-        validate_id_references() and only if DEPS is parsable and the head indices
+        check_id_references() and only if DEPS is parsable and the head indices
         in it are OK.
 
         Parameters
@@ -1254,7 +1254,7 @@ class Validator:
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
             state.seen_enhancement = line
         # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from validate_id_references() and the head indices are OK).
+        # first called from check_id_references() and the head indices are OK).
         deps = utils.deps_list(cols)
         ###!!! Float will not work if there are 10 empty nodes between the same two
         ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
@@ -1299,7 +1299,7 @@ class Validator:
 
 
 
-    def validate_misc(self, state, cols, line):
+    def check_misc(self, state, cols, line):
         """
         In general, the MISC column can contain almost anything. However, if there
         is a vertical bar character, it is interpreted as the separator of two
@@ -1393,7 +1393,7 @@ class Validator:
 
 
 
-    def validate_id_references(self, state, sentence):
+    def check_id_references(self, state, sentence):
         """
         Verifies that HEAD and DEPS reference existing IDs. If this function does
         not return True, most of the other tests should be skipped for the current
@@ -1465,7 +1465,7 @@ class Validator:
 
 
 
-    def validate_tree(self, state, sentence):
+    def check_tree(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Returns an array with line number corresponding to each tree
@@ -1557,7 +1557,7 @@ class Validator:
 
 
 
-    def validate_root(self, state, node, line):
+    def check_root(self, state, node, line):
         """
         Checks that DEPREL is "root" iff HEAD is 0.
 
@@ -1606,7 +1606,7 @@ class Validator:
 
 
 
-    def validate_deps_all_or_none(self, state, sentence):
+    def check_deps_all_or_none(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Checks that enhanced dependencies are present if they were
@@ -1647,7 +1647,7 @@ class Validator:
 
 
 
-    def validate_egraph_connected(self, state, nodes, linenos):
+    def check_egraph_connected(self, state, nodes, linenos):
         """
         Takes the list of nodes (including empty nodes). If there are enhanced
         dependencies in DEPS, builds the enhanced graph and checks that it is
@@ -1715,7 +1715,7 @@ class Validator:
 #==============================================================================
 
 
-    def validate_required_feature(self, state, feats, required_feature, required_value, incident):
+    def check_required_feature(self, state, feats, required_feature, required_value, incident):
         """
         In general, the annotation of morphological features is optional, although
         highly encouraged. However, if the treebank does have features, then certain
@@ -1754,7 +1754,7 @@ class Validator:
                 state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 
 
-    def validate_expected_features(self, state, node, lineno):
+    def check_expected_features(self, state, node, lineno):
         """
         Certain features are expected to occur with certain UPOS or certain values
         of other features. This function issues warnings instead of errors, as
@@ -1775,7 +1775,7 @@ class Validator:
         Incident.default_level = 3
         Incident.default_testclass = TestClass.MORPHO
         if node.upos in ['PRON', 'DET']:
-            self.validate_required_feature(state, node.feats, 'PronType', None, Warning(
+            self.check_required_feature(state, node.feats, 'PronType', None, Warning(
                 state=state, config=self.incfg,
                 testid='pron-det-without-prontype',
                 message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
@@ -1801,7 +1801,7 @@ class Validator:
 
 
 
-    def validate_upos_vs_deprel(self, state, node, lineno):
+    def check_upos_vs_deprel(self, state, node, lineno):
         """
         For certain relations checks that the dependent word belongs to an expected
         part-of-speech category. Occasionally we may have to check the children of
@@ -1948,7 +1948,7 @@ class Validator:
 
 
 
-    def validate_flat_foreign(self, state, node, lineno, linenos):
+    def check_flat_foreign(self, state, node, lineno, linenos):
         """
         flat:foreign is an optional subtype of flat. It is used to connect two words
         in a code-switched segment of foreign words if the annotators did not want
@@ -1990,7 +1990,7 @@ class Validator:
 
 
 
-    def validate_left_to_right_relations(self, state, node, lineno):
+    def check_left_to_right_relations(self, state, node, lineno):
         """
         Certain UD relations must always go left-to-right (in the logical order,
         meaning that parent precedes child, disregarding that some languages have
@@ -2027,7 +2027,7 @@ class Validator:
 
 
 
-    def validate_single_subject(self, state, node, lineno):
+    def check_single_subject(self, state, node, lineno):
         """
         No predicate should have more than one subject.
         An xcomp dependent normally has no subject, but in some languages the
@@ -2092,7 +2092,7 @@ class Validator:
 
 
 
-    def validate_single_object(self, state, node, lineno):
+    def check_single_object(self, state, node, lineno):
         """
         No predicate should have more than one direct object (number of indirect
         objects is unlimited). Theoretically, ccomp should be understood as a
@@ -2122,7 +2122,7 @@ class Validator:
 
 
 
-    def validate_nmod_obl(self, state, node, lineno):
+    def check_nmod_obl(self, state, node, lineno):
         """
         The difference between nmod and obl is that the former modifies a
         nominal while the latter modifies a predicate of a clause. Typically
@@ -2162,7 +2162,7 @@ class Validator:
 
 
 
-    def validate_orphan(self, state, node, lineno):
+    def check_orphan(self, state, node, lineno):
         """
         The orphan relation is used to attach an unpromoted orphan to the promoted
         orphan in gapping constructions. A common error is that the promoted orphan
@@ -2202,7 +2202,7 @@ class Validator:
 
 
 
-    def validate_functional_leaves(self, state, node, lineno, linenos):
+    def check_functional_leaves(self, state, node, lineno, linenos):
         """
         Most of the time, function-word nodes should be leaves. This function
         checks for known exceptions and warns in the other cases.
@@ -2376,7 +2376,7 @@ class Validator:
 
 
 
-    def validate_fixed_span(self, state, node, lineno):
+    def check_fixed_span(self, state, node, lineno):
         """
         Like with goeswith, the fixed relation should not in general skip words that
         are not part of the fixed expression. Unlike goeswith however, there can be
@@ -2413,7 +2413,7 @@ class Validator:
                 ).report()
 
 
-    def validate_goeswith_span(self, state, node, lineno):
+    def check_goeswith_span(self, state, node, lineno):
         """
         The relation 'goeswith' is used to connect word parts that are separated
         by whitespace and should be one word instead. We assume that the relation
@@ -2466,11 +2466,11 @@ class Validator:
                 testid='goeswith-missing-typo',
                 message="Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
             )
-            self.validate_required_feature(state, node.feats, 'Typo', 'Yes', incident)
+            self.check_required_feature(state, node.feats, 'Typo', 'Yes', incident)
 
 
 
-    def validate_goeswith_morphology_and_edeps(self, state, node, lineno):
+    def check_goeswith_morphology_and_edeps(self, state, node, lineno):
         """
         If a node has the 'goeswith' incoming relation, it is a non-first part of
         a mistakenly interrupted word. The lemma, upos tag and morphological features
@@ -2610,7 +2610,7 @@ class Validator:
 
 
 
-    def validate_projective_punctuation(self, state, node, lineno):
+    def check_projective_punctuation(self, state, node, lineno):
         """
         Punctuation is not supposed to cause nonprojectivity or to be attached
         nonprojectively.
@@ -2647,7 +2647,7 @@ class Validator:
 
 
 
-    def validate_annotation(self, state, tree, linenos):
+    def check_annotation(self, state, tree, linenos):
         """
         Checks universally valid consequences of the annotation guidelines. Looks
         at regular nodes and basic tree, not at enhanced graph (which is checked
@@ -2663,23 +2663,23 @@ class Validator:
         nodes = tree.descendants
         for node in nodes:
             lineno = linenos[str(node.ord)]
-            self.validate_expected_features(state, node, lineno)
-            self.validate_upos_vs_deprel(state, node, lineno)
-            self.validate_flat_foreign(state, node, lineno, linenos)
-            self.validate_left_to_right_relations(state, node, lineno)
-            self.validate_single_subject(state, node, lineno)
-            self.validate_single_object(state, node, lineno)
-            self.validate_nmod_obl(state, node, lineno)
-            self.validate_orphan(state, node, lineno)
-            self.validate_functional_leaves(state, node, lineno, linenos)
-            self.validate_fixed_span(state, node, lineno)
-            self.validate_goeswith_span(state, node, lineno)
-            self.validate_goeswith_morphology_and_edeps(state, node, lineno)
-            self.validate_projective_punctuation(state, node, lineno)
+            self.check_expected_features(state, node, lineno)
+            self.check_upos_vs_deprel(state, node, lineno)
+            self.check_flat_foreign(state, node, lineno, linenos)
+            self.check_left_to_right_relations(state, node, lineno)
+            self.check_single_subject(state, node, lineno)
+            self.check_single_object(state, node, lineno)
+            self.check_nmod_obl(state, node, lineno)
+            self.check_orphan(state, node, lineno)
+            self.check_functional_leaves(state, node, lineno, linenos)
+            self.check_fixed_span(state, node, lineno)
+            self.check_goeswith_span(state, node, lineno)
+            self.check_goeswith_morphology_and_edeps(state, node, lineno)
+            self.check_projective_punctuation(state, node, lineno)
 
 
 
-    def validate_enhanced_orphan(self, state, node, line):
+    def check_enhanced_orphan(self, state, node, line):
         """
         Checks universally valid consequences of the annotation guidelines in the
         enhanced representation. Currently tests only phenomena specific to the
@@ -2739,7 +2739,7 @@ class Validator:
 
 
 
-    def validate_words_with_spaces(self, state, node, line, lang):
+    def check_words_with_spaces(self, state, node, line, lang):
         """
         Checks a single line for disallowed whitespace.
         Here we assume that all language-independent whitespace-related tests have
@@ -2792,7 +2792,7 @@ class Validator:
 
 
 
-    def validate_features_level4(self, state, node, line, lang):
+    def check_features_level4(self, state, node, line, lang):
         """
         Checks that a feature-value pair is listed as approved. Feature lists are
         language-specific. To disallow non-universal features, test on level 4 with
@@ -2896,7 +2896,7 @@ class Validator:
 
 
 
-    def validate_deprels(self, state, node, line):
+    def check_deprels(self, state, node, line):
         """
         Checks that a dependency relation label is listed as approved in the given
         language. As a language-specific test, this function generally belongs to
@@ -2948,8 +2948,8 @@ class Validator:
                 ).report()
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from validate_id_references() and the head indices are OK).
-        # The order of enhanced dependencies was already checked in validate_deps().
+        # first called from check_id_references() and the head indices are OK).
+        # The order of enhanced dependencies was already checked in check_deps().
         Incident.default_testclass = TestClass.ENHANCED
         if str(node.deps) != '_':
             main_edeprelset = self.data.get_edeprel_for_language(mainlang)
@@ -2978,7 +2978,7 @@ class Validator:
 
 
 
-    def validate_auxiliary_verbs(self, state, node, line, lang):
+    def check_auxiliary_verbs(self, state, node, line, lang):
         """
         Verifies that the UPOS tag AUX is used only with lemmas that are known to
         act as auxiliary verbs or particles in the given language.
@@ -3011,7 +3011,7 @@ class Validator:
 
 
 
-    def validate_copula_lemmas(self, state, node, line, lang):
+    def check_copula_lemmas(self, state, node, line, lang):
         """
         Verifies that the relation cop is used only with lemmas that are known to
         act as copulas in the given language.
@@ -3052,7 +3052,7 @@ class Validator:
 
 
 
-    def validate_misc_entity(self, state, comments, sentence):
+    def check_misc_entity(self, state, comments, sentence):
         """
         Optionally checks the well-formedness of the MISC attributes that pertain
         to coreference and named entities.
