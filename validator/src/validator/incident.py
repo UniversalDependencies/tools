@@ -99,7 +99,7 @@ class Incident:
         # Address of the incident.
         address = f'Line {self.lineno} Sent {self.sentid}'
         # Insert file name if there are several input files.
-        if 'n_files' in self.config and self.config['n_files'] > 1:
+        if 'report_filename' in self.config and self.config['report_filename']:
             address = f'File {self.filename} ' + address
         # Classification of the incident.
         levelclassid = f'L{self.level} {self.testclass_to_report()} {self.testid}'

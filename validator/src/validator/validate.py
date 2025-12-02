@@ -101,8 +101,8 @@ class Validator:
             self.incfg['max_err'] = args_dict['max_err']
         if 'max_store' in args_dict:
             self.incfg['max_store'] = args_dict['max_store']
-        if 'input' in args_dict:
-            self.incfg['n_files'] = len(args_dict['input'])
+        if 'input' in args_dict and len(args_dict['input']) > 1:
+            self.incfg['report_filename'] = True
         self.conllu_reader = udapi.block.read.conllu.Conllu()
 
 
