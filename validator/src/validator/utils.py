@@ -162,6 +162,38 @@ def get_alt_language(node):
         return node.misc['Lang']
     return None
 
+def deps_list(cols):
+    """
+    Parses the contents of the DEPS column and returns a list of incoming
+    enhanced dependencies. This is needed in early tests, before the sentence
+    has been fed to Udapi.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+
+    Raises
+    ------
+    ValueError
+        If the contents of DEPS cannot be parsed. Note that this does not catch
+        all possible violations of the format, e.g., bad order of the relations
+        will not raise an exception.
+
+    Returns
+    -------
+    deps : list
+        Each list item is a two-member list, containing the parent index (head)
+        and the relation type (deprel).
+    """
+    if cols[DEPS] == '_':
+        deps = []
+    else:
+        deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
+    if any(hd for hd in deps if len(hd) != 2):
+        raise ValueError(f'malformed DEPS: {cols[DEPS]}')
+    return deps
+
 def get_line_numbers_for_ids(state, sentence):
     """
     Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).

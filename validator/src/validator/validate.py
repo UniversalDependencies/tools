@@ -993,41 +993,6 @@ class Validator:
 
 
 
-    @staticmethod
-    def deps_list(cols):
-        """
-        Parses the contents of the DEPS column and returns a list of incoming
-        enhanced dependencies. This is needed in early tests, before the sentence
-        has been fed to Udapi.
-
-        Parameters
-        ----------
-        cols : list
-            The values of the columns on the current node / token line.
-
-        Raises
-        ------
-        ValueError
-            If the contents of DEPS cannot be parsed. Note that this does not catch
-            all possible violations of the format, e.g., bad order of the relations
-            will not raise an exception.
-
-        Returns
-        -------
-        deps : list
-            Each list item is a two-member list, containing the parent index (head)
-            and the relation type (deprel).
-        """
-        if cols[DEPS] == '_':
-            deps = []
-        else:
-            deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
-        if any(hd for hd in deps if len(hd) != 2):
-            raise ValueError(f'malformed DEPS: {cols[DEPS]}')
-        return deps
-
-
-
     def validate_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
@@ -1112,7 +1077,7 @@ class Validator:
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
             ).report()
         try:
-            self.deps_list(cols)
+            utils.deps_list(cols)
         except ValueError:
             Error(
                 state=state, config=self.incfg,
@@ -1121,7 +1086,7 @@ class Validator:
                 message=f"Failed to parse DEPS: '{cols[DEPS]}'."
             ).report()
             return
-        if any(deprel for head, deprel in self.deps_list(cols)
+        if any(deprel for head, deprel in utils.deps_list(cols)
             if not utils.crex.edeprel.fullmatch(deprel)):
                 Error(
                     state=state, config=self.incfg,
@@ -1290,7 +1255,7 @@ class Validator:
             state.seen_enhancement = line
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from validate_id_references() and the head indices are OK).
-        deps = self.deps_list(cols)
+        deps = utils.deps_list(cols)
         ###!!! Float will not work if there are 10 empty nodes between the same two
         ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
         heads = [float(h) for h, d in deps]
@@ -1469,7 +1434,7 @@ class Validator:
                     ).report()
                     ok = False
             try:
-                deps = self.deps_list(cols)
+                deps = utils.deps_list(cols)
             except ValueError:
                 # Similar errors have probably been reported earlier.
                 Error(
