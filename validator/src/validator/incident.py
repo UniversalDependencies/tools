@@ -75,13 +75,12 @@ class Incident:
         self.nodeid = nodeid
 
     def _count_me(self):
-        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
-        self.state.error_counter[testclass_to_report] = self.state.error_counter.get(testclass_to_report, 0)+1
+        self.state.error_counter[self.get_type()][self.testclass] += 1
         # Return 0 if we are not over max_err.
         # Return 1 if we just crossed max_err (meaning we may want to print an explanation).
         # Return 2 if we exceeded max_err by more than 1.
-        if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[testclass_to_report] > self.config['max_err']:
-            if self.state.error_counter[testclass_to_report] == self.config['max_err'] + 1:
+        if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[self.get_type()][self.testclass] > self.config['max_err']:
+            if self.state.error_counter[self.get_type()][self.testclass] == self.config['max_err'] + 1:
                 return 1
             else:
                 return 2
@@ -89,9 +88,12 @@ class Incident:
             return 0
 
     def _store_me(self):
-        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
-        if not 'max_store' in self.config or self.config['max_store'] <= 0 or len(self.state.error_tracker[testclass_to_report]) < self.config['max_store']:
-            self.state.error_tracker[testclass_to_report].append(self)
+        # self.state.error_tracker is a defaultdict of defaultdicts of lists.
+        # The first level is indexed by ERROR/WARNING, the second by TestClass.
+        mylist = self.state.error_tracker[self.get_type()][self.testclass]
+        if 'max_store' in self.config and self.config['max_store'] > 0 and len(mylist) >= self.config['max_store']:
+            return # we cannot store more incidents of this type and class
+        mylist.append(self)
 
     def __str__(self):
         testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass

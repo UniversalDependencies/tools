@@ -472,8 +472,8 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 248 Sent 14356]: [L3 SYNTAX rel-upos-fixed] 'fixed' should not be used for proper nouns ('Games').
 [Line 253 Sent 14356]: [L3 WARNING pron-det-without-prontype] The word 'ang' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 271 Sent 14356]: [L3 WARNING pron-det-without-prontype] The word 'mga' is tagged 'DET' but it lacks the 'PronType' feature
-SYNTAX errors: 15
 Warnings: 20
+SYNTAX errors: 15
 *** FAILED *** with 15 errors
  
 -------------------------------------------------------------------------------- 
@@ -489,8 +489,8 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 49 Sent P334676]: [L3 WARNING fixed-without-extpos] Fixed expression 'b\u0113t ina' does not have the 'ExtPos' feature
 [Line 65 Sent goeswith]: [L3 SYNTAX right-to-left-goeswith] Parent of relation 'goeswith' must precede the child in the word order.
 [Line 66 Sent goeswith]: [L3 SYNTAX goeswith-gap] Gaps in goeswith group [1, 2] != [].
-SYNTAX errors: 8
 Warnings: 3
+SYNTAX errors: 8
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
@@ -678,9 +678,9 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 19 Sent tanl2]: [L2 METADATA multiple-sent-id] Multiple sent_id attributes.
 [Line 20 Sent tanl2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 21 Sent tanl2]: [L3 WARNING fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
+Warnings: 3
 SYNTAX errors: 1
 METADATA errors: 1
-Warnings: 3
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
@@ -711,10 +711,10 @@ See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_fea
 [Line 5 Sent multiword-with-pos]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 8 Sent multiword-with-pos]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 [Line 9 Sent multiword-with-pos]: [L3 WARNING pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
+Warnings: 2
 FORMAT errors: 2
 MORPHO errors: 4
 SYNTAX errors: 1
-Warnings: 2
 *** FAILED *** with 7 errors
  
 -------------------------------------------------------------------------------- 
@@ -744,9 +744,9 @@ See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_fea
 [Line 19 Sent dos-newlines3]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 20 Sent dos-newlines3]: [L3 WARNING fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
 [Line 23 Sent dos-newlines3]: [L1 FORMAT non-unix-newline] Only the unix-style LF line terminator is allowed.
+Warnings: 3
 FORMAT errors: 1
 MORPHO errors: 11
-Warnings: 3
 *** FAILED *** with 12 errors
  
 -------------------------------------------------------------------------------- 
@@ -771,11 +771,11 @@ See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_fea
 [Line 4 Sent invalid-range-format]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 8 Sent invalid-range-format]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 [Line 9 Sent invalid-range-format]: [L3 WARNING pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
+Warnings: 2
 FORMAT errors: 1
 MORPHO errors: 4
 SYNTAX errors: 1
 METADATA errors: 2
-Warnings: 2
 *** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 

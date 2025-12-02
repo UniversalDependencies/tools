@@ -25,7 +25,7 @@ import udapi.block.read.conllu
 # from udtools import Validator.
 try:
     import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Incident, Error, Warning, TestClass
+    from validator.src.validator.incident import Incident, Error, Warning, IncidentType, TestClass
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Incident, TestClass
@@ -63,12 +63,12 @@ class State:
         # Needed to check that no space after last word of sentence does not
         # co-occur with new paragraph or document.
         self.spaceafterno_in_effect = False
-        # Error counter by error type. Key: error type; value: error count.
-        # Incremented in Incident.report().
-        self.error_counter = {}
-        # Lists of errors for each type, up to --max_store
-        # Key: error type; value: a list of the errors
-        self.error_tracker = defaultdict(list)
+        # Incident counter by type. Key: incident type, test class; value: incident count
+        # Incremented in Incident.report(), even if reporting is off or over --max_err.
+        self.error_counter = defaultdict(lambda: defaultdict(int))
+        # Lists of incidents for each type, up to --max_store
+        # Key: incident type, test class; value: a list of the incidents
+        self.error_tracker = defaultdict(lambda: defaultdict(list))
         # Set of detailed error explanations that have been printed so far.
         # Each explanation will be printed only once. Typically, an explanation
         # can be identified by test id + language code. Nevertheless, we put
@@ -4406,15 +4406,16 @@ def main():
     passed = True
     nerror = 0
     if state.error_counter:
-        for k, v in sorted(state.error_counter.items()):
-            if k == TestClass.WARNING:
-                errors = 'Warnings'
-            else:
-                errors = str(k)+' errors'
-                nerror += v
-                passed = False
+        nwarning = 0
+        for k, v in state.error_counter[IncidentType.WARNING].items():
+            nwarning += v
+        if not args.quiet and nwarning > 0:
+            print(f'Warnings: {nwarning}', file=sys.stderr)
+        for k, v in sorted(state.error_counter[IncidentType.ERROR].items()):
+            nerror += v
+            passed = False
             if not args.quiet:
-                print(f'{errors}: {v}', file=sys.stderr)
+                print(f'{str(k)} errors: {v}', file=sys.stderr)
     # Print the final verdict and exit.
     if passed:
         if not args.quiet:
