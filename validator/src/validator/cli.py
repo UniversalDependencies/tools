@@ -2,15 +2,12 @@
 # Original code (2015) by Filip Ginter and Sampo Pyysalo.
 # DZ 2018-11-04: Porting the validator to Python 3.
 # DZ: Many subsequent changes. See the git history.
+# 2025-08-31: Refactoring by @AngledLuffa
+# 2025-09: Refactoring by @harisont and @ellepannitto
 import sys
 import argparse
-# Import the Validator class from the package subfolder regardless whether it
-# is installed as a package.
-# caution: path[0] is reserved for script path (or '' in REPL)
-#sys.path.insert(1, 'validator/src/validator')
-from validator.src.validator.validate import Validator
-from validator.src.validator.incident import IncidentType
-
+from udtools.validate import Validator
+from udtools.incident import IncidentType
 
 
 #==============================================================================
@@ -19,14 +16,6 @@ from validator.src.validator.incident import IncidentType
 
 
 def build_argparse():
-    """
-    Builds the argument parser for the validation script.
-
-    Returns
-    -------
-    opt_parser : argparse.ArgumentParser
-        The parser object. Call its method parse_args().
-    """
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
     io_group = opt_parser.add_argument_group("Input / output options")
@@ -67,7 +56,6 @@ def build_argparse():
                              action='store_true', default=False, dest='check_coref',
                              help='Test coreference and entity-related annotation in MISC.')
     return opt_parser
-
 
 def parse_args(args=None):
     """
