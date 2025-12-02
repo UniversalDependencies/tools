@@ -74,19 +74,27 @@ class Incident:
         # ID of the node on which the error occurred (if it pertains to one node).
         self.nodeid = nodeid
 
-    def report(self):
+    def _count_me(self):
         testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
-        # Even if we should be quiet, at least count the error.
         self.state.error_counter[testclass_to_report] = self.state.error_counter.get(testclass_to_report, 0)+1
-        if not 'max_store' in self.config or self.config['max_store'] <= 0 or len(self.state.error_tracker[testclass_to_report]) < self.config['max_store']:
-            self.state.error_tracker[testclass_to_report].append(self)
-        if 'quiet' in self.config and self.config['quiet']:
-            return
-        # Suppress error messages of a type of which we have seen too many.
+        # Return 0 if we are not over max_err.
+        # Return 1 if we just crossed max_err (meaning we may want to print an explanation).
+        # Return 2 if we exceeded max_err by more than 1.
         if 'max_err' in self.config and self.config['max_err'] > 0 and self.state.error_counter[testclass_to_report] > self.config['max_err']:
             if self.state.error_counter[testclass_to_report] == self.config['max_err'] + 1:
-                print(f'...suppressing further errors regarding {testclass_to_report}', file=sys.stderr)
-            return # suppressed
+                return 1
+            else:
+                return 2
+        else:
+            return 0
+
+    def _store_me(self):
+        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
+        if not 'max_store' in self.config or self.config['max_store'] <= 0 or len(self.state.error_tracker[testclass_to_report]) < self.config['max_store']:
+            self.state.error_tracker[testclass_to_report].append(self)
+
+    def __str__(self):
+        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
         # If we are here, the error message should really be printed.
         # Address of the incident.
         address = f'Line {self.lineno} Sent {self.sentid}'
@@ -100,7 +108,21 @@ class Incident:
         if self.explanation and self.explanation not in self.state.explanation_printed:
             message += "\n\n" + self.explanation + "\n"
             self.state.explanation_printed.add(self.explanation)
-        print(f'[{address}]: [{levelclassid}] {message}', file=sys.stderr)
+        return f'[{address}]: [{levelclassid}] {message}'
+
+    def report(self):
+        testclass_to_report = TestClass.WARNING if self.get_type() == IncidentType.WARNING else self.testclass
+        # Even if we should be quiet, at least count the error.
+        too_many = self._count_me()
+        self._store_me()
+        if 'quiet' in self.config and self.config['quiet']:
+            return
+        # Suppress error messages of a type of which we have seen too many.
+        if too_many > 0:
+            if too_many == 1:
+                print(f'...suppressing further errors regarding {testclass_to_report}', file=sys.stderr)
+            return # suppressed
+        print(str(self), file=sys.stderr)
 
 
 
@@ -108,16 +130,8 @@ class Error(Incident):
     def get_type(self):
         return IncidentType.ERROR
 
-    def __repr__(self):
-        out_str = f"[Line {self.lineno+1} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
-        return out_str
-
 
 
 class Warning(Incident):
     def get_type(self):
         return IncidentType.WARNING
-
-    def __repr__(self):
-        out_str = f"[Line {self.lineno+1} Sent {self.sentid}]: [L{self.level} {self.testclass} {self.testid}] {self.message}"
-        return out_str
