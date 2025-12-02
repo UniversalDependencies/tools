@@ -239,39 +239,6 @@ class Validator:
 
 
 
-    @staticmethod
-    def get_line_numbers_for_ids(state, sentence):
-        """
-        Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
-        For each mwt / node / word, gets the number of the line in the input
-        file where the mwt / node / word occurs. We will need this in other
-        functions to be able to report the line on which an error occurred.
-
-        Parameters
-        ----------
-        sentence : list
-            List of mwt / words / nodes, each represented as a list of columns.
-
-        Returns
-        -------
-        linenos : dict
-            Key: word ID (string, not int; decimal for empty nodes and range for
-            mwt lines). Value: 1-based index of the line in the file (int).
-        """
-        linenos = {}
-        node_line = state.sentence_line - 1
-        for cols in sentence:
-            node_line += 1
-            linenos[cols[ID]] = node_line
-            # For normal words, add them also under integer keys, just in case
-            # we later forget to convert node.ord to string. But we cannot do the
-            # same for empty nodes and multiword tokens.
-            if utils.is_word(cols):
-                linenos[int(cols[ID])] = node_line
-        return linenos
-
-
-
 #------------------------------------------------------------------------------
 # Level 1 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
@@ -3679,7 +3646,7 @@ class Validator:
             The CoNLL-U-formatted input stream.
         """
         for all_lines, comments, sentence in self.next_sentence(state, inp):
-            linenos = self.get_line_numbers_for_ids(state, sentence)
+            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # The individual lines were validated already in next_sentence().
             # What follows is tests that need to see the whole tree.
             # Note that low-level errors such as wrong number of columns would be
