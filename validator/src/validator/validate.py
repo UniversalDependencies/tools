@@ -4,17 +4,14 @@
 # DZ: Many subsequent changes. See the git history.
 import sys
 import io
-import os.path
 import argparse
 import traceback
-from collections import defaultdict
 # According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
 # the regex module has the same API as re but it can check Unicode character properties using \p{}
 # as in Perl.
 #import re
 import regex as re
 import unicodedata
-import json
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
@@ -25,10 +22,14 @@ import udapi.block.read.conllu
 # from udtools import Validator.
 try:
     import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Incident, Error, Warning, IncidentType, TestClass
+    from validator.src.validator.incident import Incident, Error, Warning, TestClass
+    from validator.src.validator.state import State
+    import validator.src.validator.data as data
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident, Error, Warning, IncidentType, TestClass
+    from udtools.incident import Incident, Error, Warning, TestClass
+    from udtools.state import State
+    import udtools.data as data
 
 
 
@@ -36,511 +37,6 @@ except ModuleNotFoundError:
 COLCOUNT=10
 ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC=range(COLCOUNT)
 COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
-
-
-
-class State:
-    """
-    The State class holds various global data about where we are in the file
-    and what we have seen so far. Typically there will be just one instance of
-    this class.
-    """
-    def __init__(self):
-        # Name of the current input file.
-        self.current_file_name = None
-        # Current line in the input file, or, more precisely, the last line
-        # read so far. Once we start looking at tree integrity, we may find
-        # errors on previous lines as well.
-        self.current_line = 0;
-        # The line in the input file on which the current sentence starts,
-        # including sentence-level comments.
-        self.comment_start_line = 0
-        # The line in the input file on which the current sentence starts
-        # (the first node/token line, skipping comments).
-        self.sentence_line = 0
-        # The most recently read sentence id.
-        self.sentence_id = None
-        # Needed to check that no space after last word of sentence does not
-        # co-occur with new paragraph or document.
-        self.spaceafterno_in_effect = False
-        # Incident counter by type. Key: incident type, test class; value: incident count
-        # Incremented in Incident.report(), even if reporting is off or over --max_err.
-        self.error_counter = defaultdict(lambda: defaultdict(int))
-        # Lists of incidents for each type, up to --max_store
-        # Key: incident type, test class; value: a list of the incidents
-        self.error_tracker = defaultdict(lambda: defaultdict(list))
-        # Set of detailed error explanations that have been printed so far.
-        # Each explanation will be printed only once. Typically, an explanation
-        # can be identified by test id + language code. Nevertheless, we put
-        # the whole explanation to the set.
-        self.explanation_printed = set()
-        # Some feature-related errors can only be reported if the corpus
-        # contains feature annotation because features are optional in general.
-        # Once we see the first feature, we can flush all accummulated
-        # complaints about missing features.
-        # Key: testid; value: dict with parameters of the error and the list of
-        # its occurrences.
-        self.delayed_feature_errors = {}
-        # Remember all sentence ids seen in all input files (presumably one
-        # corpus). We need it to check that each id is unique.
-        self.known_sent_ids = set()
-        # Similarly, parallel ids should be unique in a corpus. (If multiple
-        # sentences are equivalents of the same virtual sentence in the
-        # parallel collection, they should be distinguished with 'altN'.)
-        self.known_parallel_ids = set()
-        self.parallel_id_lastalt = {}
-        self.parallel_id_lastpart = {}
-        #----------------------------------------------------------------------
-        # Various things that we may have seen earlier in the corpus. The value
-        # is None if we have not seen it, otherwise it is the line number of
-        # the first occurrence.
-        #----------------------------------------------------------------------
-        self.seen_morpho_feature = None
-        self.seen_enhanced_graph = None
-        self.seen_tree_without_enhanced_graph = None
-        # Any difference between non-empty DEPS and HEAD:DEPREL.
-        # (Because we can see many enhanced graphs but no real enhancements.)
-        self.seen_enhancement = None
-        self.seen_empty_node = None
-        self.seen_enhanced_orphan = None
-        # global.entity comment line is needed for Entity annotations in MISC.
-        self.seen_global_entity = None
-        #----------------------------------------------------------------------
-        # Additional observations related to Entity annotation in MISC
-        # (only needed when validating entities and coreference).
-        #----------------------------------------------------------------------
-        # Remember the global.entity attribute string to be able to check that
-        # repeated declarations are identical.
-        self.global_entity_attribute_string = None
-        # The number of entity attributes will be derived from the attribute
-        # string and will be used to check that an entity does not have extra
-        # attributes.
-        self.entity_attribute_number = 0
-        # Key: entity attribute name; value: the index of the attribute in the
-        # entity attribute list.
-        self.entity_attribute_index = {}
-        # Key: entity (cluster) id; value: tuple: (type of the entity, identity
-        # (Wikipedia etc.), line of the first mention)).
-        self.entity_types = {}
-        # Indices of known entity ids in this and other documents.
-        # (Otherwise, if we only needed to know that an entity is known, we
-        # could use self.entity_types above.)
-        self.entity_ids_this_document = {}
-        self.entity_ids_other_documents = {}
-        # List of currently open entity mentions. Items are dictionaries with
-        # entity mention information.
-        self.open_entity_mentions = []
-        # For each entity that has currently open discontinuous mention,
-        # describe the last part of the mention. Key: entity id; value is dict,
-        # its keys: last_ipart, npart, line.
-        self.open_discontinuous_mentions = {}
-        # Key: srceid<tgteid pair; value: type of the entity (may be empty).
-        self.entity_bridge_relations = {}
-        # Key: tgteid; value: sorted list of srceids, serialized to string.
-        self.entity_split_antecedents = {}
-        # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
-        self.entity_mention_spans = {}
-
-
-
-class Data:
-    """
-    The Data class holds various dictionaries of tags, auxiliaries, regular
-    expressions etc. needed for detailed testing, especially for language-
-    specific constraints.
-    """
-    def __init__(self, datapath=None):
-        if datapath:
-            self.datapath = datapath
-        else:
-            # The folder where this module resides.
-            THISDIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
-            # If this module was imported directly from the root folder of the
-            # tools repository, the data folder should be a first-level subfolder
-            # there. Otherwise, the module is taken from installed udtools and
-            # the data is a subfolder here.
-            self.datapath = os.path.join(THISDIR, '..', '..', '..', 'data')
-            if not os.path.exists(self.datapath):
-                self.datapath = os.path.join(THISDIR, 'data')
-        # Universal part of speech tags in the UPOS column. Just a set.
-        # For consistency, they are also read from a file. But these tags do
-        # not change, so they could be even hard-coded here.
-        self.upos = set()
-        # Morphological features in the FEATS column.
-        # Key: language code; value: feature-value-UPOS data from feats.json.
-        self.feats = {}
-        # Universal dependency relation types (without subtypes) in the DEPREL
-        # column. For consistency, they are also read from a file. but these
-        # labels do not change, so they could be even hard-coded here.
-        self.udeprel = set()
-        # Dependency relation types in the DEPREL column.
-        # Key: language code; value: deprel data from deprels.json.
-        # Cached processed version: key: language code; value: set of deprels.
-        self.deprel = {}
-        self.cached_deprel_for_language = {}
-        # Enhanced dependency relation types in the DEPS column.
-        # Key: language code; value: edeprel data from edeprels.json.
-        # Cached processed version: key: language code; value: set of edeprels.
-        self.edeprel = {}
-        self.cached_edeprel_for_language = {}
-        # Auxiliary (and copula) lemmas in the LEMMA column.
-        # Key: language code; value: auxiliary/copula data from data.json.
-        # Cached processed versions: key: language code; value: list of lemmas.
-        self.auxcop = {}
-        self.cached_aux_for_language = {}
-        self.cached_cop_for_language = {}
-        # Tokens with spaces in the FORM and LEMMA columns.
-        # Key: language code; value: data from tospace.json.
-        self.tospace = {}
-        # Load language-specific data from external JSON files.
-        self.load()
-        # For each of the language-specific lists, we can generate an
-        # explanation for the user in case they use something that is not on
-        # the list. The explanation will be printed only once but the explain
-        # function may be called thousand times, so let us cache the output to
-        # reduce the time waste a little.
-        self._explanation_feats = {}
-        self._explanation_deprel = {}
-        self._explanation_edeprel = {}
-        self._explanation_aux = {}
-        self._explanation_cop = {}
-        self._explanation_tospace = {}
-
-    def get_feats_for_language(self, lcode):
-        """
-        Searches the previously loaded database of feature-value-UPOS combinations.
-        Returns the data for a given language code, organized in dictionaries.
-        Returns an empty dict if there are no data for the given language code.
-        """
-        ###!!! If lcode is 'ud', we should permit all universal feature-value pairs,
-        ###!!! regardless of language-specific documentation.
-        # Do not crash if the user asks for an unknown language.
-        if not lcode in self.feats:
-            return {}
-        return self.feats[lcode]
-
-    def get_deprel_for_language(self, lcode):
-        """
-        Searches the previously loaded database of dependency relation labels.
-        Returns the set of permitted deprels for a given language code. Also
-        saves the result in self so that next time it can be fetched quickly
-        (once we loaded the data, we do not expect them to change).
-        """
-        if lcode in self.cached_deprel_for_language:
-            return self.cached_deprel_for_language[lcode]
-        deprelset = set()
-        # If lcode is 'ud', we should permit all universal dependency relations,
-        # regardless of language-specific documentation.
-        if lcode == 'ud':
-            deprelset = self.udeprel
-        elif lcode in self.deprel:
-            for r in self.deprel[lcode]:
-                if self.deprel[lcode][r]['permitted'] > 0:
-                    deprelset.add(r)
-        self.cached_deprel_for_language[lcode] = deprelset
-        return deprelset
-
-    def get_edeprel_for_language(self, lcode):
-        """
-        Searches the previously loaded database of enhanced case markers.
-        Returns the set of permitted edeprels for a given language code. Also
-        saves the result in self so that next time it can be fetched quickly
-        (once we loaded the data, we do not expect them to change).
-        """
-        if lcode in self.cached_edeprel_for_language:
-            return self.cached_edeprel_for_language[lcode]
-        basic_deprels = self.get_deprel_for_language(lcode)
-        edeprelset = basic_deprels | {'ref'}
-        for bdeprel in basic_deprels:
-            if re.match(r"^[nc]subj(:|$)", bdeprel):
-                edeprelset.add(bdeprel+':xsubj')
-        if lcode in self.edeprel:
-            for c in self.edeprel[lcode]:
-                for deprel in self.edeprel[lcode][c]['extends']:
-                    for bdeprel in basic_deprels:
-                        if bdeprel == deprel or re.match(r"^"+deprel+':', bdeprel):
-                            edeprelset.add(bdeprel+':'+c)
-        self.cached_edeprel_for_language[lcode] = edeprelset
-        return edeprelset
-
-    def get_auxcop_for_language(self, lcode):
-        """
-        Searches the previously loaded database of auxiliary/copula lemmas.
-        Returns the AUX and COP lists for a given language code. Also saves
-        the result in self so that next time it can be fetched quickly (once
-        we loaded the data, we do not expect them to change).
-        """
-        if lcode in self.cached_aux_for_language and lcode in self.cached_cop_for_language:
-            return self.cached_aux_for_language[lcode], self.cached_cop_for_language[lcode]
-        # If any of the functions of the lemma is other than cop.PRON, it counts as an auxiliary.
-        # If any of the functions of the lemma is cop.*, it counts as a copula.
-        auxlist = []
-        coplist = []
-        lemmalist = self.auxcop.get(lcode, {}).keys()
-        auxlist = [x for x in lemmalist
-                   if len([y for y in self.auxcop[lcode][x]['functions']
-                    if y['function'] != 'cop.PRON']) > 0]
-        coplist = [x for x in lemmalist
-                   if len([y for y in self.auxcop[lcode][x]['functions']
-                    if re.match(r"^cop\.", y['function'])]) > 0]
-        self.cached_aux_for_language[lcode] = auxlist
-        self.cached_cop_for_language[lcode] = coplist
-        return auxlist, coplist
-
-    def get_aux_for_language(self, lcode):
-        """
-        An entry point for get_auxcop_for_language() that returns only the aux
-        list. It either takes the cached list (if available), or calls
-        get_auxcop_for_language().
-        """
-        if lcode in self.cached_aux_for_language:
-            return self.cached_aux_for_language[lcode]
-        auxlist, coplist = self.get_auxcop_for_language(lcode)
-        return auxlist
-
-    def get_cop_for_language(self, lcode):
-        """
-        An entry point for get_auxcop_for_language() that returns only the cop
-        list. It either takes the cached list (if available), or calls
-        get_auxcop_for_language().
-        """
-        if lcode in self.cached_cop_for_language:
-            return self.cached_cop_for_language[lcode]
-        auxlist, coplist = self.get_auxcop_for_language(lcode)
-        return coplist
-
-    def get_tospace_for_language(self, lcode):
-        """
-        Searches the previously loaded database of regular expressions describing
-        permitted tokens with spaces. Returns the expressions for a given language code.
-        """
-        # Do not crash if the user asks for an unknown language.
-        if not lcode in self.tospace:
-            return None
-        return self.tospace[lcode]
-
-    def explain_feats(self, lcode):
-        """
-        Returns explanation message for features of a particular language.
-        To be called after language-specific features have been loaded.
-        """
-        if lcode in self._explanation_feats:
-            return self._explanation_feats[lcode]
-        featset = self.get_feats_for_language(lcode)
-        # Prepare a global message about permitted features and values. We will add
-        # it to the first error message about an unknown feature. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if not lcode in data.feats:
-            msg += f"No feature-value pairs have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
-        else:
-            # Identify feature values that are permitted in the current language.
-            for f in featset:
-                for e in featset[f]['errors']:
-                    msg += f"ERROR in _{lcode}/feat/{f}.md: {e}\n"
-            res = set()
-            for f in featset:
-                if featset[f]['permitted'] > 0:
-                    for v in featset[f]['uvalues']:
-                        res.add(f+'='+v)
-                    for v in featset[f]['lvalues']:
-                        res.add(f+'='+v)
-            sorted_documented_features = sorted(res)
-            msg += f"The following {len(sorted_documented_features)} feature values are currently permitted in language [{lcode}]:\n"
-            msg += ', '.join(sorted_documented_features) + "\n"
-            msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
-            msg += "have a language-specific documentation page in a prescribed format.\n"
-            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-            msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
-            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
-        self._explanation_feats[lcode] = msg
-        return msg
-
-    def explain_deprel(self, lcode):
-        """
-        Returns explanation message for deprels of a particular language.
-        To be called after language-specific deprels have been loaded.
-        """
-        if lcode in self._explanation_deprel:
-            return self._explanation_deprel[lcode]
-        deprelset = self.get_deprel_for_language(lcode)
-        # Prepare a global message about permitted relation labels. We will add
-        # it to the first error message about an unknown relation. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(deprelset) == 0:
-            msg += f"No dependency relation types have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl\n"
-        else:
-            # Identify dependency relations that are permitted in the current language.
-            # If there are errors in documentation, identify the erroneous doc file.
-            # Note that data.deprel[lcode] may not exist even though we have a non-empty
-            # set of relations, if lcode is 'ud'.
-            if lcode in data.deprel:
-                for r in data.deprel[lcode]:
-                    file = re.sub(r':', r'-', r)
-                    if file == 'aux':
-                        file = 'aux_'
-                    for e in data.deprel[lcode][r]['errors']:
-                        msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
-            sorted_documented_relations = sorted(deprelset)
-            msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
-            msg += ', '.join(sorted_documented_relations) + "\n"
-            msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
-            msg += "must have a language-specific documentation page in a prescribed format.\n"
-            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
-            msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
-            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
-        self._explanation_deprel[lcode] = msg
-        return msg
-
-    def explain_edeprel(self, lcode):
-        """
-        Returns explanation message for edeprels of a particular language.
-        To be called after language-specific edeprels have been loaded.
-        """
-        if lcode in self._explanation_edeprel:
-            return self._explanation_edeprel[lcode]
-        edeprelset = self.get_edeprel_for_language(lcode)
-        # Prepare a global message about permitted relation labels. We will add
-        # it to the first error message about an unknown relation. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(edeprelset) == 0:
-            msg += f"No enhanced dependency relation types (case markers) have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl\n"
-        else:
-            # Identify dependency relations that are permitted in the current language.
-            # If there are errors in documentation, identify the erroneous doc file.
-            # Note that data.deprel[lcode] may not exist even though we have a non-empty
-            # set of relations, if lcode is 'ud'.
-            sorted_case_markers = sorted(edeprelset)
-            msg += f"The following {len(sorted_case_markers)} enhanced relations are currently permitted in language [{lcode}]:\n"
-            msg += ', '.join(sorted_case_markers) + "\n"
-            msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.\n"
-        self._explanation_deprel[lcode] = msg
-        return msg
-
-    def explain_aux(self, lcode):
-        """
-        Returns explanation message for auxiliaries of a particular language.
-        To be called after language-specific auxiliaries have been loaded.
-        """
-        if lcode in self._explanation_aux:
-            return self._explanation_aux[lcode]
-        auxdata = self.get_aux_for_language(lcode)
-        # Prepare a global message about permitted auxiliary lemmas. We will add
-        # it to the first error message about an unknown auxiliary. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(auxdata) == 0:
-            msg += f"No auxiliaries have been documented at the address below for language [{lcode}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(auxdata)} auxiliaries are currently documented in language [{lcode}]:\n"
-            msg += ', '.join(auxdata) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
-        self._explanation_aux[lcode] = msg
-        return msg
-
-    def explain_cop(self, lcode):
-        """
-        Returns explanation message for copulas of a particular language.
-        To be called after language-specific copulas have been loaded.
-        """
-        if lcode in self._explanation_cop:
-            return self._explanation_cop[lcode]
-        copdata = self.get_cop_for_language(lcode)
-        # Prepare a global message about permitted copula lemmas. We will add
-        # it to the first error message about an unknown copula. Note that this
-        # global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if len(copdata) == 0:
-            msg += f"No copulas have been documented at the address below for language [{lcode}].\n"
-            msg += f"https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode}\n"
-        else:
-            # Identify auxiliaries that are permitted in the current language.
-            msg += f"The following {len(copdata)} copulas are currently documented in language [{lcode}]:\n"
-            msg += ', '.join(copdata) + "\n"
-            msg += f"See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_auxiliary.pl?lcode={lcode} for details.\n"
-        self._explanation_cop[lcode] = msg
-        return msg
-
-    def explain_tospace(self, lcode):
-        """
-        Returns explanation message for tokens with spaces of a particular language.
-        To be called after language-specific tokens with spaces have been loaded.
-        """
-        if lcode in self._explanation_tospace:
-            return self._explanation_tospace[lcode]
-        # Prepare a global message about permitted features and values. We will add
-        # it to the first error message about an unknown token with space. Note that
-        # this global information pertains to the default validation language and it
-        # should not be used with code-switched segments in alternative languages.
-        msg = ''
-        if not lcode in self.tospace:
-            msg += f"No tokens with spaces have been permitted for language [{lcode}].\n"
-            msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
-        else:
-            msg += f"Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [{lcode}]:\n"
-            msg += self.tospace[lcode][0]
-            msg += "\nOthers can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
-            msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl\n"
-        self._explanation_tospace[lcode] = msg
-        return msg
-
-    def load(self):
-        """
-        Loads the external validation data such as permitted feature-value
-        combinations, and stores them in self. The source JSON files are
-        supposed to be in the data subfolder of the folder where the script
-        lives.
-        """
-        with open(os.path.join(self.datapath, 'upos.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        upos_list = contents['upos']
-        self.upos = set(upos_list)
-        with open(os.path.join(self.datapath, 'feats.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.feats = contents['features']
-        with open(os.path.join(self.datapath, 'udeprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        udeprel_list = contents['udeprels']
-        self.udeprel = set(udeprel_list)
-        with open(os.path.join(self.datapath, 'deprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.deprel = contents['deprels']
-        with open(os.path.join(self.datapath, 'edeprels.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.edeprel = contents['edeprels']
-        with open(os.path.join(self.datapath, 'data.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        self.auxcop = contents['auxiliaries']
-        with open(os.path.join(self.datapath, 'tospace.json'), 'r', encoding='utf-8') as f:
-            contents = json.load(f)
-        # There is one or more regular expressions for each language in the file.
-        # If there are multiple expressions, combine them in one and compile it.
-        self.tospace = {}
-        for l in contents['expressions']:
-            combination = '('+'|'.join(sorted(list(contents['expressions'][l])))+')'
-            compilation = re.compile(combination)
-            self.tospace[l] = (combination, compilation)
-
-
-
-# Global variables:
-data = Data()
 
 
 
@@ -571,6 +67,7 @@ class Validator:
             that have to be passed to the Incident class whenever an incident
             (error or warning) is recorded by the Validator.
         """
+        self.data = data.data
         if not args:
             args = argparse.Namespace()
         # Since we allow args that were not created by our ArgumentParser,
@@ -604,9 +101,233 @@ class Validator:
             self.incfg['max_err'] = args_dict['max_err']
         if 'max_store' in args_dict:
             self.incfg['max_store'] = args_dict['max_store']
-        if 'input' in args_dict:
-            self.incfg['n_files'] = len(args_dict['input'])
+        if 'input' in args_dict and len(args_dict['input']) > 1:
+            self.incfg['report_filename'] = True
         self.conllu_reader = udapi.block.read.conllu.Conllu()
+
+
+
+#==============================================================================
+# Entry points.
+#==============================================================================
+
+
+    def validate_files(self, filenames):
+        """
+        The main entry point, takes a list of filenames that constitute
+        the treebank to be validated. Note that there are tests that consider
+        data from the whole treebank across file boundaries, for example the
+        uniqueness of sentence ids. Unlike other validation methods, this one
+        creates a State object (holding the state of validation) and returns
+        it. The other validation methods take the state from the caller and
+        use it (read from it and write to it).
+
+        Parameters
+        ----------
+        filenames : list(str)
+            List of paths (filenames) to open and validate together. Filename
+            '-' will be interpreted as STDIN.
+
+        Returns
+        -------
+        state : udtools.state.State
+            The resulting state of the validation. May contain the overview
+            of all encountered incidents (errors or warnings) if requested.
+        """
+        state = State()
+        try:
+            for filename in filenames:
+                self.validate_file(state, filename)
+            self.validate_end(state)
+        except:
+            Error(
+                state=state, config=self.incfg,
+                level=0,
+                testclass=TestClass.INTERNAL,
+                testid='exception',
+                message="Exception caught!"
+            ).report()
+            # If the output is used in an HTML page, it must be properly escaped
+            # because the traceback can contain e.g. "<module>". However, escaping
+            # is beyond the goal of validation, which can be also run in a console.
+            traceback.print_exc()
+        return state
+
+
+    def validate_file(self, state, filename):
+        """
+        An envelope around validate_file_handle(). Opens a file or uses STDIN,
+        then calls validate_file_handle() on it.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        filename : str
+            Name of the file to be read and validated. '-' means STDIN.
+        """
+        state.current_file_name = filename
+        if filename == '-':
+            # Set PYTHONIOENCODING=utf-8 before starting Python.
+            # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
+            # Otherwise ANSI will be read in Windows and
+            # locale-dependent encoding will be used elsewhere.
+            self.validate_file_handle(state, sys.stdin)
+        else:
+            with io.open(filename, 'r', encoding='utf-8') as inp:
+                self.validate_file_handle(state, inp)
+
+
+    def validate_file_handle(self, state, inp):
+        """
+        The main entry point for all validation tests applied to one input file.
+        It reads sentences from the input stream one by one, each sentence is
+        immediately tested.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        inp : open file handle
+            The CoNLL-U-formatted input stream.
+        """
+        for all_lines, comments, sentence in self.next_sentence(state, inp):
+            self.validate_sentence(state, all_lines, comments, sentence)
+        self.check_newlines(state, inp) # level 1
+
+
+    def validate_sentence(self, state, all_lines, comments, sentence):
+        """
+        Entry point for all validation tests applied to one sentence. It can
+        be called from annotation tools to check the sentence once annotated.
+        Note that validate_file_handle() calls it after it was able to
+        recognize a sequence of lines that constitute a sentence; some low-
+        level errors may occur while recognizing the sentence.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        all_lines : list
+            List of lines in the sentence (comments and tokens), minus final
+            empty line, minus newline characters (and minus spurious lines
+            that are neither comment lines nor token lines).
+        comments : list
+            List of comment lines to go with the current sentence; initial part
+            of all_lines.
+        sentence : list(list)
+            List of token/word lines of the current sentence, converted from
+            tab-separated string to list of fields.
+        """
+        linenos = utils.get_line_numbers_for_ids(state, sentence)
+        # The individual lines were validated already in next_sentence().
+        # What follows is tests that need to see the whole tree.
+        # Note that low-level errors such as wrong number of columns would be
+        # reported in next_sentence() but then the lines would be thrown away
+        # and no tree lines would be yielded—meaning that we will not encounter
+        # such a mess here.
+        idseqok = self.check_id_sequence(state, sentence) # level 1
+        self.check_token_ranges(state, sentence) # level 1
+        if self.level > 1:
+            idrefok = idseqok and self.check_id_references(state, sentence) # level 2
+            if not idrefok:
+                return
+            treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
+            if not treeok:
+                return
+            # Tests of individual nodes that operate on pre-Udapi data structures.
+            # Some of them (bad feature format) may lead to skipping Udapi completely.
+            colssafe = True
+            line = state.sentence_line - 1
+            for cols in sentence:
+                line += 1
+                # Multiword tokens and empty nodes can or must have certain fields empty.
+                if utils.is_multiword_token(cols):
+                    self.check_mwt_empty_vals(state, cols, line)
+                if utils.is_empty_node(cols):
+                    self.check_empty_node_empty_vals(state, cols, line) # level 2
+                if utils.is_word(cols) or utils.is_empty_node(cols):
+                    self.check_character_constraints(state, cols, line) # level 2
+                    self.check_upos(state, cols, line) # level 2
+                    colssafe = self.check_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
+                self.check_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                self.check_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+            if not colssafe:
+                return
+            # If we successfully passed all the tests above, it is probably
+            # safe to give the lines to Udapi and ask it to build the tree data
+            # structure for us.
+            tree = self.build_tree_udapi(all_lines)
+            self.check_sent_id(state, comments, self.lang) # level 2
+            self.check_parallel_id(state, comments) # level 2
+            self.check_text_meta(state, comments, sentence) # level 2
+            # Test that enhanced graphs exist either for all sentences or for
+            # none. As a side effect, get line numbers for all nodes including
+            # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
+            # These line numbers are returned in any case, even if there are no
+            # enhanced dependencies, hence we can rely on them even with basic
+            # trees.
+            self.check_deps_all_or_none(state, sentence)
+            # Tests of individual nodes with Udapi.
+            nodes = tree.descendants_and_empty
+            for node in nodes:
+                line = linenos[str(node.ord)]
+                self.check_deprels(state, node, line) # level 2 and 4
+                self.check_root(state, node, line) # level 2: deprel root <=> head 0
+                if self.level > 2:
+                    self.check_enhanced_orphan(state, node, line) # level 3
+                    if self.level > 3:
+                        # To disallow words with spaces everywhere, use --lang ud.
+                        self.check_words_with_spaces(state, node, line, self.lang) # level 4
+                        self.check_features_level4(state, node, line, self.lang) # level 4
+                        if self.level > 4:
+                            self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
+                            self.check_copula_lemmas(state, node, line, self.lang) # level 5
+            # Tests on whole trees and enhanced graphs.
+            if self.level > 2:
+                # Level 3 check universally valid consequences of annotation
+                # guidelines. Look at regular nodes and basic tree, not at
+                # enhanced graph (which is checked later).
+                basic_nodes = tree.descendants
+                for node in basic_nodes:
+                    lineno = linenos[str(node.ord)]
+                    self.check_expected_features(state, node, lineno)
+                    self.check_upos_vs_deprel(state, node, lineno)
+                    self.check_flat_foreign(state, node, lineno, linenos)
+                    self.check_left_to_right_relations(state, node, lineno)
+                    self.check_single_subject(state, node, lineno)
+                    self.check_single_object(state, node, lineno)
+                    self.check_nmod_obl(state, node, lineno)
+                    self.check_orphan(state, node, lineno)
+                    self.check_functional_leaves(state, node, lineno, linenos)
+                    self.check_fixed_span(state, node, lineno)
+                    self.check_goeswith_span(state, node, lineno)
+                    self.check_goeswith_morphology_and_edeps(state, node, lineno)
+                    self.check_projective_punctuation(state, node, lineno)
+                self.check_egraph_connected(state, nodes, linenos)
+            if self.check_coref:
+                self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
+
+
+    def build_tree_udapi(self, lines):
+        root = self.conllu_reader.read_tree_from_lines(lines)
+        return root
+
+
+    def validate_end(self, state):
+        """
+        Final tests after processing the entire treebank (possibly multiple files).
+        """
+        # After reading the entire treebank (perhaps multiple files), check whether
+        # the DEPS annotation was not a mere copy of the basic trees.
+        if self.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
+            Error(
+                state=state, config=self.incfg,
+                level=3,
+                testclass=TestClass.ENHANCED,
+                testid='edeps-identical-to-basic-trees',
+                message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
+            ).report()
 
 
 
@@ -649,7 +370,7 @@ class Validator:
             if not state.comment_start_line:
                 state.comment_start_line = state.current_line
             line = line.rstrip("\n")
-            self.validate_unicode_normalization(state, line)
+            self.check_unicode_normalization(state, line)
             if utils.is_whitespace(line):
                 Error(
                     state=state, config=self.incfg,
@@ -709,7 +430,7 @@ class Validator:
                     all_lines.append(line)
                     token_lines_fields.append(cols)
                     # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
-                    self.validate_whitespace(state, cols)
+                    self.check_whitespace(state, cols)
                 else:
                     Error(
                         state=state, config=self.incfg,
@@ -742,46 +463,13 @@ class Validator:
 
 
 
-    @staticmethod
-    def get_line_numbers_for_ids(state, sentence):
-        """
-        Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
-        For each mwt / node / word, gets the number of the line in the input
-        file where the mwt / node / word occurs. We will need this in other
-        functions to be able to report the line on which an error occurred.
-
-        Parameters
-        ----------
-        sentence : list
-            List of mwt / words / nodes, each represented as a list of columns.
-
-        Returns
-        -------
-        linenos : dict
-            Key: word ID (string, not int; decimal for empty nodes and range for
-            mwt lines). Value: 1-based index of the line in the file (int).
-        """
-        linenos = {}
-        node_line = state.sentence_line - 1
-        for cols in sentence:
-            node_line += 1
-            linenos[cols[ID]] = node_line
-            # For normal words, add them also under integer keys, just in case
-            # we later forget to convert node.ord to string. But we cannot do the
-            # same for empty nodes and multiword tokens.
-            if utils.is_word(cols):
-                linenos[int(cols[ID])] = node_line
-        return linenos
-
-
-
 #------------------------------------------------------------------------------
 # Level 1 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
 
 
 
-    def validate_unicode_normalization(self, state, text):
+    def check_unicode_normalization(self, state, text):
         """
         Tests that letters composed of multiple Unicode characters (such as a base
         letter plus combining diacritics) conform to NFC normalization (canonical
@@ -833,7 +521,7 @@ class Validator:
 
 
 
-    def validate_whitespace(self, state, cols):
+    def check_whitespace(self, state, cols):
         """
         Checks that columns are not empty and do not contain whitespace characters
         except for patterns that could be allowed at level 4. Applies to all types
@@ -907,7 +595,7 @@ class Validator:
 
 
 
-    def validate_id_sequence(self, state, sentence):
+    def check_id_sequence(self, state, sentence):
         """
         Validates that the ID sequence is correctly formed.
         Besides reporting the errors, it also returns False to the caller so it can
@@ -1017,7 +705,7 @@ class Validator:
 
 
 
-    def validate_token_ranges(self, state, sentence):
+    def check_token_ranges(self, state, sentence):
         """
         Checks that the word ranges for multiword tokens are valid.
 
@@ -1040,7 +728,7 @@ class Validator:
                 continue
             start, end = m.groups()
             start, end = int(start), int(end)
-            # Do not test if start >= end: This was already tested above in validate_id_sequence().
+            # Do not test if start >= end: This was already tested above in check_id_sequence().
             if covered & set(range(start, end+1)):
                 Error(
                     state=state, config=self.incfg,
@@ -1051,7 +739,7 @@ class Validator:
 
 
 
-    def validate_newlines(self, state, inp):
+    def check_newlines(self, state, inp):
         """
         Checks that the input file consistently uses linux-style newlines (LF only,
         not CR LF like in Windows). To be run on the input file handle after the
@@ -1084,7 +772,7 @@ class Validator:
 
 
 
-    def validate_sent_id(self, state, comments, lcode):
+    def check_sent_id(self, state, comments, lcode):
         """
         Checks that sentence id exists, is well-formed and unique.
         """
@@ -1135,7 +823,7 @@ class Validator:
 
 
 
-    def validate_parallel_id(self, state, comments):
+    def check_parallel_id(self, state, comments):
         """
         The parallel_id sentence-level comment is used after sent_id of
         sentences that are parallel translations of sentences in other
@@ -1234,7 +922,7 @@ class Validator:
 
 
 
-    def validate_text_meta(self, state, comments, tree):
+    def check_text_meta(self, state, comments, tree):
         """
         Checks metadata other than sentence id, that is, document breaks, paragraph
         breaks and sentence text (which is also compared to the sequence of the
@@ -1387,42 +1075,7 @@ class Validator:
 
 
 
-    @staticmethod
-    def deps_list(cols):
-        """
-        Parses the contents of the DEPS column and returns a list of incoming
-        enhanced dependencies. This is needed in early tests, before the sentence
-        has been fed to Udapi.
-
-        Parameters
-        ----------
-        cols : list
-            The values of the columns on the current node / token line.
-
-        Raises
-        ------
-        ValueError
-            If the contents of DEPS cannot be parsed. Note that this does not catch
-            all possible violations of the format, e.g., bad order of the relations
-            will not raise an exception.
-
-        Returns
-        -------
-        deps : list
-            Each list item is a two-member list, containing the parent index (head)
-            and the relation type (deprel).
-        """
-        if cols[DEPS] == '_':
-            deps = []
-        else:
-            deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
-        if any(hd for hd in deps if len(hd) != 2):
-            raise ValueError(f'malformed DEPS: {cols[DEPS]}')
-        return deps
-
-
-
-    def validate_mwt_empty_vals(self, state, cols, line):
+    def check_mwt_empty_vals(self, state, cols, line):
         """
         Checks that a multi-word token has _ empty values in all fields except MISC.
         This is required by UD guidelines although it is not a problem in general,
@@ -1453,7 +1106,7 @@ class Validator:
 
 
 
-    def validate_empty_node_empty_vals(self, state, cols, line):
+    def check_empty_node_empty_vals(self, state, cols, line):
         """
         Checks that an empty node has _ empty values in HEAD and DEPREL. This is
         required by UD guidelines but not necessarily by CoNLL-U, therefore
@@ -1480,7 +1133,7 @@ class Validator:
 
 
 
-    def validate_character_constraints(self, state, cols, line):
+    def check_character_constraints(self, state, cols, line):
         """
         Checks general constraints on valid characters, e.g. that UPOS
         only contains [A-Z].
@@ -1506,7 +1159,7 @@ class Validator:
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
             ).report()
         try:
-            self.deps_list(cols)
+            utils.deps_list(cols)
         except ValueError:
             Error(
                 state=state, config=self.incfg,
@@ -1515,7 +1168,7 @@ class Validator:
                 message=f"Failed to parse DEPS: '{cols[DEPS]}'."
             ).report()
             return
-        if any(deprel for head, deprel in self.deps_list(cols)
+        if any(deprel for head, deprel in utils.deps_list(cols)
             if not utils.crex.edeprel.fullmatch(deprel)):
                 Error(
                     state=state, config=self.incfg,
@@ -1526,7 +1179,7 @@ class Validator:
 
 
 
-    def validate_upos(self, state, cols, line):
+    def check_upos(self, state, cols, line):
         """
         Checks that the UPOS field contains one of the 17 known tags.
 
@@ -1537,13 +1190,12 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        global data
         if utils.is_empty_node(cols) and cols[UPOS] == '_':
             return
         # Just in case, we still match UPOS against the regular expression that
         # checks general character constraints. However, the list of UPOS, loaded
         # from a JSON file, should conform to the regular expression.
-        if not utils.crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in data.upos:
+        if not utils.crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in self.data.upos:
             Error(
                 state=state, config=self.incfg,
                 lineno=line,
@@ -1555,7 +1207,7 @@ class Validator:
 
 
 
-    def validate_features_level2(self, state, cols, line):
+    def check_features_level2(self, state, cols, line):
         """
         Checks general constraints on feature-value format: Permitted characters in
         feature name and value, features must be sorted alphabetically, features
@@ -1655,7 +1307,7 @@ class Validator:
 
 
 
-    def validate_deps(self, state, cols, line):
+    def check_deps(self, state, cols, line):
         """
         Validates that DEPS is correctly formatted and that there are no
         self-loops in DEPS (longer cycles are allowed in enhanced graphs but
@@ -1664,7 +1316,7 @@ class Validator:
         This function must be run on raw DEPS before it is fed into Udapi because
         it checks the order of relations, which is not guaranteed to be preserved
         in Udapi. On the other hand, we assume that it is run after
-        validate_id_references() and only if DEPS is parsable and the head indices
+        check_id_references() and only if DEPS is parsable and the head indices
         in it are OK.
 
         Parameters
@@ -1684,8 +1336,8 @@ class Validator:
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
             state.seen_enhancement = line
         # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from validate_id_references() and the head indices are OK).
-        deps = self.deps_list(cols)
+        # first called from check_id_references() and the head indices are OK).
+        deps = utils.deps_list(cols)
         ###!!! Float will not work if there are 10 empty nodes between the same two
         ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
         heads = [float(h) for h, d in deps]
@@ -1729,7 +1381,7 @@ class Validator:
 
 
 
-    def validate_misc(self, state, cols, line):
+    def check_misc(self, state, cols, line):
         """
         In general, the MISC column can contain almost anything. However, if there
         is a vertical bar character, it is interpreted as the separator of two
@@ -1823,7 +1475,7 @@ class Validator:
 
 
 
-    def validate_id_references(self, state, sentence):
+    def check_id_references(self, state, sentence):
         """
         Verifies that HEAD and DEPS reference existing IDs. If this function does
         not return True, most of the other tests should be skipped for the current
@@ -1864,7 +1516,7 @@ class Validator:
                     ).report()
                     ok = False
             try:
-                deps = self.deps_list(cols)
+                deps = utils.deps_list(cols)
             except ValueError:
                 # Similar errors have probably been reported earlier.
                 Error(
@@ -1895,7 +1547,7 @@ class Validator:
 
 
 
-    def validate_tree(self, state, sentence):
+    def check_tree(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Returns an array with line number corresponding to each tree
@@ -1987,7 +1639,7 @@ class Validator:
 
 
 
-    def validate_root(self, state, node, line):
+    def check_root(self, state, node, line):
         """
         Checks that DEPREL is "root" iff HEAD is 0.
 
@@ -2036,7 +1688,7 @@ class Validator:
 
 
 
-    def validate_deps_all_or_none(self, state, sentence):
+    def check_deps_all_or_none(self, state, sentence):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Checks that enhanced dependencies are present if they were
@@ -2077,7 +1729,7 @@ class Validator:
 
 
 
-    def validate_egraph_connected(self, state, nodes, linenos):
+    def check_egraph_connected(self, state, nodes, linenos):
         """
         Takes the list of nodes (including empty nodes). If there are enhanced
         dependencies in DEPS, builds the enhanced graph and checks that it is
@@ -2145,7 +1797,7 @@ class Validator:
 #==============================================================================
 
 
-    def validate_required_feature(self, state, feats, required_feature, required_value, incident):
+    def check_required_feature(self, state, feats, required_feature, required_value, incident):
         """
         In general, the annotation of morphological features is optional, although
         highly encouraged. However, if the treebank does have features, then certain
@@ -2184,7 +1836,7 @@ class Validator:
                 state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 
 
-    def validate_expected_features(self, state, node, lineno):
+    def check_expected_features(self, state, node, lineno):
         """
         Certain features are expected to occur with certain UPOS or certain values
         of other features. This function issues warnings instead of errors, as
@@ -2205,7 +1857,7 @@ class Validator:
         Incident.default_level = 3
         Incident.default_testclass = TestClass.MORPHO
         if node.upos in ['PRON', 'DET']:
-            self.validate_required_feature(state, node.feats, 'PronType', None, Warning(
+            self.check_required_feature(state, node.feats, 'PronType', None, Warning(
                 state=state, config=self.incfg,
                 testid='pron-det-without-prontype',
                 message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
@@ -2231,7 +1883,7 @@ class Validator:
 
 
 
-    def validate_upos_vs_deprel(self, state, node, lineno):
+    def check_upos_vs_deprel(self, state, node, lineno):
         """
         For certain relations checks that the dependent word belongs to an expected
         part-of-speech category. Occasionally we may have to check the children of
@@ -2378,7 +2030,7 @@ class Validator:
 
 
 
-    def validate_flat_foreign(self, state, node, lineno, linenos):
+    def check_flat_foreign(self, state, node, lineno, linenos):
         """
         flat:foreign is an optional subtype of flat. It is used to connect two words
         in a code-switched segment of foreign words if the annotators did not want
@@ -2420,7 +2072,7 @@ class Validator:
 
 
 
-    def validate_left_to_right_relations(self, state, node, lineno):
+    def check_left_to_right_relations(self, state, node, lineno):
         """
         Certain UD relations must always go left-to-right (in the logical order,
         meaning that parent precedes child, disregarding that some languages have
@@ -2457,7 +2109,7 @@ class Validator:
 
 
 
-    def validate_single_subject(self, state, node, lineno):
+    def check_single_subject(self, state, node, lineno):
         """
         No predicate should have more than one subject.
         An xcomp dependent normally has no subject, but in some languages the
@@ -2522,7 +2174,7 @@ class Validator:
 
 
 
-    def validate_single_object(self, state, node, lineno):
+    def check_single_object(self, state, node, lineno):
         """
         No predicate should have more than one direct object (number of indirect
         objects is unlimited). Theoretically, ccomp should be understood as a
@@ -2552,7 +2204,7 @@ class Validator:
 
 
 
-    def validate_nmod_obl(self, state, node, lineno):
+    def check_nmod_obl(self, state, node, lineno):
         """
         The difference between nmod and obl is that the former modifies a
         nominal while the latter modifies a predicate of a clause. Typically
@@ -2592,7 +2244,7 @@ class Validator:
 
 
 
-    def validate_orphan(self, state, node, lineno):
+    def check_orphan(self, state, node, lineno):
         """
         The orphan relation is used to attach an unpromoted orphan to the promoted
         orphan in gapping constructions. A common error is that the promoted orphan
@@ -2632,7 +2284,7 @@ class Validator:
 
 
 
-    def validate_functional_leaves(self, state, node, lineno, linenos):
+    def check_functional_leaves(self, state, node, lineno, linenos):
         """
         Most of the time, function-word nodes should be leaves. This function
         checks for known exceptions and warns in the other cases.
@@ -2806,7 +2458,7 @@ class Validator:
 
 
 
-    def validate_fixed_span(self, state, node, lineno):
+    def check_fixed_span(self, state, node, lineno):
         """
         Like with goeswith, the fixed relation should not in general skip words that
         are not part of the fixed expression. Unlike goeswith however, there can be
@@ -2843,7 +2495,7 @@ class Validator:
                 ).report()
 
 
-    def validate_goeswith_span(self, state, node, lineno):
+    def check_goeswith_span(self, state, node, lineno):
         """
         The relation 'goeswith' is used to connect word parts that are separated
         by whitespace and should be one word instead. We assume that the relation
@@ -2896,11 +2548,11 @@ class Validator:
                 testid='goeswith-missing-typo',
                 message="Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
             )
-            self.validate_required_feature(state, node.feats, 'Typo', 'Yes', incident)
+            self.check_required_feature(state, node.feats, 'Typo', 'Yes', incident)
 
 
 
-    def validate_goeswith_morphology_and_edeps(self, state, node, lineno):
+    def check_goeswith_morphology_and_edeps(self, state, node, lineno):
         """
         If a node has the 'goeswith' incoming relation, it is a non-first part of
         a mistakenly interrupted word. The lemma, upos tag and morphological features
@@ -3040,7 +2692,7 @@ class Validator:
 
 
 
-    def validate_projective_punctuation(self, state, node, lineno):
+    def check_projective_punctuation(self, state, node, lineno):
         """
         Punctuation is not supposed to cause nonprojectivity or to be attached
         nonprojectively.
@@ -3077,39 +2729,7 @@ class Validator:
 
 
 
-    def validate_annotation(self, state, tree, linenos):
-        """
-        Checks universally valid consequences of the annotation guidelines. Looks
-        at regular nodes and basic tree, not at enhanced graph (which is checked
-        elsewhere).
-
-        Parameters
-        ----------
-        tree : udapi.core.root.Root object
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
-        """
-        nodes = tree.descendants
-        for node in nodes:
-            lineno = linenos[str(node.ord)]
-            self.validate_expected_features(state, node, lineno)
-            self.validate_upos_vs_deprel(state, node, lineno)
-            self.validate_flat_foreign(state, node, lineno, linenos)
-            self.validate_left_to_right_relations(state, node, lineno)
-            self.validate_single_subject(state, node, lineno)
-            self.validate_single_object(state, node, lineno)
-            self.validate_nmod_obl(state, node, lineno)
-            self.validate_orphan(state, node, lineno)
-            self.validate_functional_leaves(state, node, lineno, linenos)
-            self.validate_fixed_span(state, node, lineno)
-            self.validate_goeswith_span(state, node, lineno)
-            self.validate_goeswith_morphology_and_edeps(state, node, lineno)
-            self.validate_projective_punctuation(state, node, lineno)
-
-
-
-    def validate_enhanced_orphan(self, state, node, line):
+    def check_enhanced_orphan(self, state, node, line):
         """
         Checks universally valid consequences of the annotation guidelines in the
         enhanced representation. Currently tests only phenomena specific to the
@@ -3169,7 +2789,7 @@ class Validator:
 
 
 
-    def validate_words_with_spaces(self, state, node, line, lang):
+    def check_words_with_spaces(self, state, node, line, lang):
         """
         Checks a single line for disallowed whitespace.
         Here we assume that all language-independent whitespace-related tests have
@@ -3185,17 +2805,16 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = TestClass.FORMAT
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
-        tospacedata = data.get_tospace_for_language(lang)
+        tospacedata = self.data.get_tospace_for_language(lang)
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            tospacedata = data.get_tospace_for_language(altlang)
+            tospacedata = self.data.get_tospace_for_language(altlang)
         for column in ('FORM', 'LEMMA'):
             word = node.form if column == 'FORM' else node.lemma
             # Is there whitespace in the word?
@@ -3210,7 +2829,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                            explanation=data.explain_tospace(lang)
+                            explanation=self.data.explain_tospace(lang)
                         ).report()
                 else:
                     Error(
@@ -3218,12 +2837,12 @@ class Validator:
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                        explanation=data.explain_tospace(lang)
+                        explanation=self.data.explain_tospace(lang)
                     ).report()
 
 
 
-    def validate_features_level4(self, state, node, line, lang):
+    def check_features_level4(self, state, node, line, lang):
         """
         Checks that a feature-value pair is listed as approved. Feature lists are
         language-specific. To disallow non-universal features, test on level 4 with
@@ -3238,7 +2857,6 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = TestClass.MORPHO
@@ -3247,11 +2865,11 @@ class Validator:
         # List of permited features is language-specific.
         # The current token may be in a different language due to code switching.
         default_lang = lang
-        default_featset = featset = data.get_feats_for_language(lang)
+        default_featset = featset = self.data.get_feats_for_language(lang)
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            featset = data.get_feats_for_language(altlang)
+            featset = self.data.get_feats_for_language(altlang)
         for f in node.feats:
             values = node.feats[f].split(',')
             for v in values:
@@ -3287,7 +2905,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='feature-unknown',
                             message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
-                            explanation=data.explain_feats(effective_lang)
+                            explanation=self.data.explain_feats(effective_lang)
                         ).report()
                     else:
                         lfrecord = effective_featset[f]
@@ -3297,7 +2915,7 @@ class Validator:
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
                                 message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                explanation=data.explain_feats(effective_lang)
+                                explanation=self.data.explain_feats(effective_lang)
                             ).report()
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
@@ -3307,7 +2925,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=data.explain_feats(effective_lang)
+                                    explanation=self.data.explain_feats(effective_lang)
                                 ).report()
                             elif not node.upos in lfrecord['byupos']:
                                 Error(
@@ -3315,7 +2933,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=data.explain_feats(effective_lang)
+                                    explanation=self.data.explain_feats(effective_lang)
                                 ).report()
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                                 Error(
@@ -3323,12 +2941,12 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=data.explain_feats(effective_lang)
+                                    explanation=self.data.explain_feats(effective_lang)
                                 ).report()
 
 
 
-    def validate_deprels(self, state, node, line):
+    def check_deprels(self, state, node, line):
         """
         Checks that a dependency relation label is listed as approved in the given
         language. As a language-specific test, this function generally belongs to
@@ -3342,7 +2960,6 @@ class Validator:
         line : int
             Number of the line where the node occurs in the file.
         """
-        global data
         Incident.default_lineno = line
         Incident.default_level = 4
         Incident.default_testclass = TestClass.SYNTAX
@@ -3362,10 +2979,10 @@ class Validator:
         # The basic relation should be tested on regular nodes but not on empty nodes.
         if not node.is_empty():
             paltlang = utils.get_alt_language(node.parent)
-            main_deprelset = data.get_deprel_for_language(mainlang)
+            main_deprelset = self.data.get_deprel_for_language(mainlang)
             alt_deprelset = set()
             if naltlang != None and naltlang != mainlang and naltlang == paltlang:
-                alt_deprelset = data.get_deprel_for_language(naltlang)
+                alt_deprelset = self.data.get_deprel_for_language(naltlang)
             # Test only the universal part if testing at universal level.
             deprel = node.deprel
             if self.level < 4:
@@ -3377,16 +2994,16 @@ class Validator:
                     nodeid=node.ord,
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
-                    explanation=data.explain_deprel(mainlang)
+                    explanation=self.data.explain_deprel(mainlang)
                 ).report()
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from validate_id_references() and the head indices are OK).
-        # The order of enhanced dependencies was already checked in validate_deps().
+        # first called from check_id_references() and the head indices are OK).
+        # The order of enhanced dependencies was already checked in check_deps().
         Incident.default_testclass = TestClass.ENHANCED
         if str(node.deps) != '_':
-            main_edeprelset = data.get_edeprel_for_language(mainlang)
-            alt_edeprelset = data.get_edeprel_for_language(naltlang)
+            main_edeprelset = self.data.get_edeprel_for_language(mainlang)
+            alt_edeprelset = self.data.get_edeprel_for_language(naltlang)
             for edep in node.deps:
                 parent = edep['parent']
                 deprel = edep['deprel']
@@ -3400,7 +3017,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
-                        explanation=data.explain_edeprel(mainlang)
+                        explanation=self.data.explain_edeprel(mainlang)
                     ).report()
 
 
@@ -3411,7 +3028,7 @@ class Validator:
 
 
 
-    def validate_auxiliary_verbs(self, state, node, line, lang):
+    def check_auxiliary_verbs(self, state, node, line, lang):
         """
         Verifies that the UPOS tag AUX is used only with lemmas that are known to
         act as auxiliary verbs or particles in the given language.
@@ -3425,12 +3042,11 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         if node.upos == 'AUX' and node.lemma != '_':
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
-            auxlist = data.get_aux_for_language(lang)
+            auxlist = self.data.get_aux_for_language(lang)
             if not auxlist or not node.lemma in auxlist:
                 Error(
                     state=state, config=self.incfg,
@@ -3440,12 +3056,12 @@ class Validator:
                     testclass=TestClass.MORPHO,
                     testid='aux-lemma',
                     message=f"'{utils.lemmatl(node)}' is not an auxiliary in language [{lang}]",
-                    explanation=data.explain_aux(lang)
+                    explanation=self.data.explain_aux(lang)
                 ).report()
 
 
 
-    def validate_copula_lemmas(self, state, node, line, lang):
+    def check_copula_lemmas(self, state, node, line, lang):
         """
         Verifies that the relation cop is used only with lemmas that are known to
         act as copulas in the given language.
@@ -3459,12 +3075,11 @@ class Validator:
         lang : str
             Code of the main language of the corpus.
         """
-        global data
         if node.udeprel == 'cop' and node.lemma != '_':
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
-            coplist = data.get_cop_for_language(lang)
+            coplist = self.data.get_cop_for_language(lang)
             if not coplist or not node.lemma in coplist:
                 Error(
                     state=state, config=self.incfg,
@@ -3474,7 +3089,7 @@ class Validator:
                     testclass=TestClass.SYNTAX,
                     testid='cop-lemma',
                     message=f"'{utils.lemmatl(node)}' is not a copula in language [{lang}]",
-                    explanation=data.explain_cop(lang)
+                    explanation=self.data.explain_cop(lang)
                 ).report()
 
 
@@ -3487,7 +3102,7 @@ class Validator:
 
 
 
-    def validate_misc_entity(self, state, comments, sentence):
+    def check_misc_entity(self, state, comments, sentence):
         """
         Optionally checks the well-formedness of the MISC attributes that pertain
         to coreference and named entities.
@@ -4165,267 +3780,3 @@ class Validator:
         for eid in state.entity_mention_spans:
             if sentid in state.entity_mention_spans[eid]:
                 state.entity_mention_spans[eid].pop(sentid)
-
-
-
-#==============================================================================
-# Main part.
-#==============================================================================
-
-    def build_tree_udapi(self, lines):
-        root = self.conllu_reader.read_tree_from_lines(lines)
-        return root
-
-    def validate_file(self, state, inp):
-        """
-        The main entry point for all validation tests applied to one input file.
-        It reads sentences from the input stream one by one, each sentence is
-        immediately tested.
-
-        Parameters
-        ----------
-        inp : open file handle
-            The CoNLL-U-formatted input stream.
-        """
-        for all_lines, comments, sentence in self.next_sentence(state, inp):
-            linenos = self.get_line_numbers_for_ids(state, sentence)
-            # The individual lines were validated already in next_sentence().
-            # What follows is tests that need to see the whole tree.
-            # Note that low-level errors such as wrong number of columns would be
-            # reported in next_sentence() but then the lines would be thrown away
-            # and no tree lines would be yielded—meaning that we will not encounter
-            # such a mess here.
-            idseqok = self.validate_id_sequence(state, sentence) # level 1
-            self.validate_token_ranges(state, sentence) # level 1
-            if self.level > 1:
-                idrefok = idseqok and self.validate_id_references(state, sentence) # level 2
-                if not idrefok:
-                    continue
-                treeok = self.validate_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-                if not treeok:
-                    continue
-                # Tests of individual nodes that operate on pre-Udapi data structures.
-                # Some of them (bad feature format) may lead to skipping Udapi completely.
-                colssafe = True
-                line = state.sentence_line - 1
-                for cols in sentence:
-                    line += 1
-                    # Multiword tokens and empty nodes can or must have certain fields empty.
-                    if utils.is_multiword_token(cols):
-                        self.validate_mwt_empty_vals(state, cols, line)
-                    if utils.is_empty_node(cols):
-                        self.validate_empty_node_empty_vals(state, cols, line) # level 2
-                    if utils.is_word(cols) or utils.is_empty_node(cols):
-                        self.validate_character_constraints(state, cols, line) # level 2
-                        self.validate_upos(state, cols, line) # level 2
-                        colssafe = self.validate_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
-                    self.validate_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                    self.validate_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
-                if not colssafe:
-                    continue
-                # If we successfully passed all the tests above, it is probably
-                # safe to give the lines to Udapi and ask it to build the tree data
-                # structure for us.
-                tree = self.build_tree_udapi(all_lines)
-                self.validate_sent_id(state, comments, self.lang) # level 2
-                self.validate_parallel_id(state, comments) # level 2
-                self.validate_text_meta(state, comments, sentence) # level 2
-                # Test that enhanced graphs exist either for all sentences or for
-                # none. As a side effect, get line numbers for all nodes including
-                # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
-                # These line numbers are returned in any case, even if there are no
-                # enhanced dependencies, hence we can rely on them even with basic
-                # trees.
-                self.validate_deps_all_or_none(state, sentence)
-                # Tests of individual nodes with Udapi.
-                nodes = tree.descendants_and_empty
-                for node in nodes:
-                    line = linenos[str(node.ord)]
-                    self.validate_deprels(state, node, line) # level 2 and 4
-                    self.validate_root(state, node, line) # level 2: deprel root <=> head 0
-                    if self.level > 2:
-                        self.validate_enhanced_orphan(state, node, line) # level 3
-                        if self.level > 3:
-                            # To disallow words with spaces everywhere, use --lang ud.
-                            self.validate_words_with_spaces(state, node, line, self.lang) # level 4
-                            self.validate_features_level4(state, node, line, self.lang) # level 4
-                            if self.level > 4:
-                                self.validate_auxiliary_verbs(state, node, line, self.lang) # level 5
-                                self.validate_copula_lemmas(state, node, line, self.lang) # level 5
-                # Tests on whole trees and enhanced graphs.
-                if self.level > 2:
-                    self.validate_annotation(state, tree, linenos) # level 3
-                    self.validate_egraph_connected(state, nodes, linenos)
-                if self.check_coref:
-                    self.validate_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
-        self.validate_newlines(state, inp) # level 1
-
-
-
-    def validate_end(self, state):
-        """
-        Final tests after processing the entire treebank (possibly multiple files).
-        """
-        # After reading the entire treebank (perhaps multiple files), check whether
-        # the DEPS annotation was not a mere copy of the basic trees.
-        if self.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
-            Error(
-                state=state, config=self.incfg,
-                level=3,
-                testclass=TestClass.ENHANCED,
-                testid='edeps-identical-to-basic-trees',
-                message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
-            ).report()
-
-
-    def validate_files(self, filenames):
-        state = State()
-        try:
-            for fname in filenames:
-                state.current_file_name = fname
-                if fname == '-':
-                    # Set PYTHONIOENCODING=utf-8 before starting Python.
-                    # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
-                    # Otherwise ANSI will be read in Windows and
-                    # locale-dependent encoding will be used elsewhere.
-                    self.validate_file(state, sys.stdin)
-                else:
-                    with io.open(fname, 'r', encoding='utf-8') as inp:
-                        self.validate_file(state, inp)
-            self.validate_end(state)
-        except:
-            Error(
-                state=state, config=self.incfg,
-                level=0,
-                testclass=TestClass.INTERNAL,
-                testid='exception',
-                message="Exception caught!"
-            ).report()
-            # If the output is used in an HTML page, it must be properly escaped
-            # because the traceback can contain e.g. "<module>". However, escaping
-            # is beyond the goal of validation, which can be also run in a console.
-            traceback.print_exc()
-        return state
-
-
-#==============================================================================
-# Argument processing.
-#==============================================================================
-
-
-def build_argparse():
-    opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
-
-    io_group = opt_parser.add_argument_group("Input / output options")
-    io_group.add_argument('--quiet',
-                          dest="quiet", action="store_true", default=False,
-                          help="""Do not print any error messages.
-                          Exit with 0 on pass, non-zero on fail.""")
-    io_group.add_argument('--max-err',
-                          action="store", type=int, default=20,
-                          help="""How many errors to output before exiting? 0 for all.
-                          Default: %(default)d.""")
-    io_group.add_argument('--max-store',
-                          action="store", type=int, default=20,
-                          help="""How many errors to save when collecting errors. 0 for all.
-                          Default: %(default)d.""")
-    io_group.add_argument('input',
-                          nargs='*',
-                          help="""Input file name(s), or "-" or nothing for standard input.""")
-
-    list_group = opt_parser.add_argument_group("Tag sets", "Options relevant to checking tag sets.")
-    list_group.add_argument("--lang",
-                            action="store", required=True, default=None,
-                            help="""Which langauge are we checking?
-                            If you specify this (as a two-letter code), the tags will be checked
-                            using the language-specific files in the
-                            data/directory of the validator.""")
-    list_group.add_argument("--level",
-                            action="store", type=int, default=5, dest="level",
-                            help="""Level 1: Test only CoNLL-U backbone.
-                            Level 2: UD format.
-                            Level 3: UD contents.
-                            Level 4: Language-specific labels.
-                            Level 5: Language-specific contents.""")
-
-    coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
-                                                "Options for checking coreference and entity annotation.")
-    coref_group.add_argument('--coref',
-                             action='store_true', default=False, dest='check_coref',
-                             help='Test coreference and entity-related annotation in MISC.')
-    return opt_parser
-
-def parse_args(args=None):
-    """
-    Creates an instance of the ArgumentParser and parses the command line
-    arguments.
-
-    Parameters
-    ----------
-    args : list of strings, optional
-        If not supplied, the argument parser will read sys.args instead.
-        Otherwise the caller can supply list such as ['--lang', 'en'].
-
-    Returns
-    -------
-    args : argparse.Namespace
-        Values of individual arguments can be accessed as object properties
-        (using the dot notation). It is possible to convert it to a dict by
-        calling vars(args).
-    """
-    opt_parser = build_argparse()
-    args = opt_parser.parse_args(args=args)
-    # Level of validation.
-    if args.level < 1:
-        print(f'Option --level must not be less than 1; changing from {args.level} to 1',
-              file=sys.stderr)
-        args.level = 1
-    # No language-specific tests for levels 1-3.
-    # Anyways, any Feature=Value pair should be allowed at level 3 (because it may be language-specific),
-    # and any word form or lemma can contain spaces (because language-specific guidelines may allow it).
-    # We can also test language 'ud' on level 4; then it will require that no language-specific features are present.
-    if args.level < 4:
-        args.lang = 'ud'
-    if args.input == []:
-        args.input.append('-')
-    return args
-
-
-
-#==============================================================================
-# The main function.
-#==============================================================================
-
-
-
-def main():
-    args = parse_args()
-    validator = Validator(lang=args.lang, level=args.level, args=args)
-    state = validator.validate_files(args.input)
-    # Summarize the warnings and errors.
-    passed = True
-    nerror = 0
-    if state.error_counter:
-        nwarning = 0
-        for k, v in state.error_counter[IncidentType.WARNING].items():
-            nwarning += v
-        if not args.quiet and nwarning > 0:
-            print(f'Warnings: {nwarning}', file=sys.stderr)
-        for k, v in sorted(state.error_counter[IncidentType.ERROR].items()):
-            nerror += v
-            passed = False
-            if not args.quiet:
-                print(f'{str(k)} errors: {v}', file=sys.stderr)
-    # Print the final verdict and exit.
-    if passed:
-        if not args.quiet:
-            print('*** PASSED ***', file=sys.stderr)
-        return 0
-    else:
-        if not args.quiet:
-            print(f'*** FAILED *** with {nerror} errors', file=sys.stderr)
-        return 1
-
-if __name__=="__main__":
-    errcode = main()
-    sys.exit(errcode)

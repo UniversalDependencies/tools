@@ -161,3 +161,65 @@ def get_alt_language(node):
     if node.misc['Lang'] != '':
         return node.misc['Lang']
     return None
+
+def deps_list(cols):
+    """
+    Parses the contents of the DEPS column and returns a list of incoming
+    enhanced dependencies. This is needed in early tests, before the sentence
+    has been fed to Udapi.
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+
+    Raises
+    ------
+    ValueError
+        If the contents of DEPS cannot be parsed. Note that this does not catch
+        all possible violations of the format, e.g., bad order of the relations
+        will not raise an exception.
+
+    Returns
+    -------
+    deps : list
+        Each list item is a two-member list, containing the parent index (head)
+        and the relation type (deprel).
+    """
+    if cols[DEPS] == '_':
+        deps = []
+    else:
+        deps = [hd.split(':', 1) for hd in cols[DEPS].split('|')]
+    if any(hd for hd in deps if len(hd) != 2):
+        raise ValueError(f'malformed DEPS: {cols[DEPS]}')
+    return deps
+
+def get_line_numbers_for_ids(state, sentence):
+    """
+    Takes a list of sentence lines (mwt ranges, word nodes, empty nodes).
+    For each mwt / node / word, gets the number of the line in the input
+    file where the mwt / node / word occurs. We will need this in other
+    functions to be able to report the line on which an error occurred.
+
+    Parameters
+    ----------
+    sentence : list
+        List of mwt / words / nodes, each represented as a list of columns.
+
+    Returns
+    -------
+    linenos : dict
+        Key: word ID (string, not int; decimal for empty nodes and range for
+        mwt lines). Value: 1-based index of the line in the file (int).
+    """
+    linenos = {}
+    node_line = state.sentence_line - 1
+    for cols in sentence:
+        node_line += 1
+        linenos[cols[ID]] = node_line
+        # For normal words, add them also under integer keys, just in case
+        # we later forget to convert node.ord to string. But we cannot do the
+        # same for empty nodes and multiword tokens.
+        if is_word(cols):
+            linenos[int(cols[ID])] = node_line
+    return linenos
