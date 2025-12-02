@@ -28,7 +28,7 @@ try:
     from validator.src.validator.incident import Incident, Error, Warning, IncidentType, TestClass
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident, TestClass
+    from udtools.incident import Incident, Error, Warning, IncidentType, TestClass
 
 
 
