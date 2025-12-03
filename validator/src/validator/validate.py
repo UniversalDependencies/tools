@@ -394,8 +394,6 @@ class Validator:
         """
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
-        comment_lines = [] # List of comment lines before the sentence.
-        token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields ###!!! move elsewhere?
         # When we arrive here, state.current_line points to the last line of the
         # sentence, that is, the terminating empty line (if the input is valid).
         n_lines = len(lines)
@@ -405,6 +403,8 @@ class Validator:
         seen_token_node = False # at least one such line per sentence required
         last_line_is_empty = False
         ok = True # is it ok to run subsequent tests? It can be ok even after some less severe errors.
+        comment_lines = [] # List of comment lines before the sentence.
+        token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields.
         for i in range(n_lines):
             lineno = state.comment_start_line + i
             line = lines[i]
@@ -433,7 +433,7 @@ class Validator:
                 # Token/node lines.
                 if line and line[0].isdigit():
                     seen_token_node = True
-                    ###!!! do we want to do this here, or later?
+                    ###!!! Do we want to do this here, or later in a separate method?
                     cols = line.split("\t")
                     # If there is an unexpected number of columns, do not test their contents.
                     # Maybe the contents belongs to a different column. And we could see
