@@ -1,4 +1,13 @@
 from collections import defaultdict
+# Allow using this module from the root folder of tools even if it is not
+# installed as a package: use the relative path validator/src/validator for
+# submodules. If the path is not available, try the standard qualification,
+# assuming that the user has installed udtools from PyPI and then called
+# from udtools import Validator.
+try:
+    from validator.src.validator.incident import IncidentType
+except ModuleNotFoundError:
+    from udtools.incident import IncidentType
 
 
 
@@ -103,3 +112,30 @@ class State:
         self.entity_split_antecedents = {}
         # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
         self.entity_mention_spans = {}
+
+    def __str__(self):
+        # Summarize the warnings and errors.
+        result = ''
+        passed = True
+        nerror = 0
+        if self.error_counter:
+            nwarning = 0
+            for k, v in self.error_counter[IncidentType.WARNING].items():
+                nwarning += v
+            if nwarning > 0:
+                result += f"Warnings: {nwarning}\n"
+            for k, v in sorted(self.error_counter[IncidentType.ERROR].items()):
+                nerror += v
+                passed = False
+                result += f"{str(k)} errors: {v}\n"
+        if passed:
+            result += '*** PASSED ***'
+        else:
+            result += f'*** FAILED *** with {nerror} errors'
+        return result
+
+    def passed(self):
+        for k, v in self.error_counter[IncidentType.ERROR].items():
+            if v > 0:
+                return False
+        return True

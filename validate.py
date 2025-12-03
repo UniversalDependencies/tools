@@ -9,7 +9,6 @@ import argparse
 # caution: path[0] is reserved for script path (or '' in REPL)
 #sys.path.insert(1, 'validator/src/validator')
 from validator.src.validator.validate import Validator
-from validator.src.validator.incident import IncidentType
 
 
 
@@ -117,27 +116,12 @@ def main():
     validator = Validator(lang=args.lang, level=args.level, args=args)
     state = validator.validate_files(args.input)
     # Summarize the warnings and errors.
-    passed = True
-    nerror = 0
-    if state.error_counter:
-        nwarning = 0
-        for k, v in state.error_counter[IncidentType.WARNING].items():
-            nwarning += v
-        if not args.quiet and nwarning > 0:
-            print(f'Warnings: {nwarning}', file=sys.stderr)
-        for k, v in sorted(state.error_counter[IncidentType.ERROR].items()):
-            nerror += v
-            passed = False
-            if not args.quiet:
-                print(f'{str(k)} errors: {v}', file=sys.stderr)
-    # Print the final verdict and exit.
-    if passed:
-        if not args.quiet:
-            print('*** PASSED ***', file=sys.stderr)
+    summary = str(state)
+    if not args.quiet:
+        print(summary, file=sys.stderr)
+    if state.passed():
         return 0
     else:
-        if not args.quiet:
-            print(f'*** FAILED *** with {nerror} errors', file=sys.stderr)
         return 1
 
 if __name__=="__main__":
