@@ -191,7 +191,7 @@ class Validator:
         inp : open file handle
             The CoNLL-U-formatted input stream.
         """
-        for lines in self.next_sentence(state, inp):
+        for lines in utils.next_sentence(state, inp):
             self.validate_sentence(state, lines)
         self.check_newlines(state, inp) # level 1
 
@@ -332,6 +332,7 @@ class Validator:
             mylines = lines[0:-1]
         root = self.conllu_reader.read_tree_from_lines(mylines)
         # We should not return an empty tree (root should not be None).
+        # But we should not be here if the lines are so bad that no tree is built.
         assert(root)
         return root
 
@@ -356,46 +357,6 @@ class Validator:
 #==============================================================================
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
-
-
-    def next_sentence(self, state, inp):
-        """
-        This function yields one sentence at a time from the input stream.
-
-        This function is a generator. The caller can call it in a 'for x in ...'
-        loop. In each iteration of the caller's loop, the generator will generate
-        the next sentence, that is, it will read the next sentence from the input
-        stream. (Technically, the function returns an object, and the object will
-        then read the sentences within the caller's loop.)
-
-        Parameters
-        ----------
-        state : udtools.state.State
-            The state of the validation run.
-        inp : file handle
-            A file open for reading or STDIN.
-
-        Yields
-        ------
-        sentence_lines : list(str)
-            List of CoNLL-U lines that correspond to one sentence, including
-            initial comments (if any) and the final empty line.
-        """
-        sentence_lines = [] # List of lines in the sentence (comments and tokens), minus final empty line, minus newline characters (and minus spurious lines that are neither comment lines nor token lines)
-        for line_counter, line in enumerate(inp):
-            state.current_line = line_counter + 1
-            line = line.rstrip("\n")
-            sentence_lines.append(line)
-            if not line or utils.is_whitespace(line):
-                # If a line is not empty but contains only whitespace, we will
-                # pretend that it terminates a sentence in order to avoid
-                # subsequent misleading error messages.
-                yield sentence_lines
-                sentence_lines = []
-        else: # end of file
-            # If we found additional lines after the last empty line, yield them now.
-            if sentence_lines:
-                yield sentence_lines
 
 
     def check_sentence(self, state, lines):
