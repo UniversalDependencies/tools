@@ -197,7 +197,7 @@ class Data:
         # global information pertains to the default validation language and it
         # should not be used with code-switched segments in alternative languages.
         msg = ''
-        if not lcode in data.feats:
+        if not lcode in self.feats:
             msg += f"No feature-value pairs have been permitted for language [{lcode}].\n"
             msg += "They can be permitted at the address below (if the language has an ISO code and is registered with UD):\n"
             msg += "https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl\n"
@@ -246,12 +246,12 @@ class Data:
             # If there are errors in documentation, identify the erroneous doc file.
             # Note that data.deprel[lcode] may not exist even though we have a non-empty
             # set of relations, if lcode is 'ud'.
-            if lcode in data.deprel:
-                for r in data.deprel[lcode]:
+            if lcode in self.deprel:
+                for r in self.deprel[lcode]:
                     file = re.sub(r':', r'-', r)
                     if file == 'aux':
                         file = 'aux_'
-                    for e in data.deprel[lcode][r]['errors']:
+                    for e in self.deprel[lcode][r]['errors']:
                         msg += f"ERROR in _{lcode}/dep/{file}.md: {e}\n"
             sorted_documented_relations = sorted(deprelset)
             msg += f"The following {len(sorted_documented_relations)} relations are currently permitted in language [{lcode}]:\n"
@@ -401,8 +401,3 @@ class Data:
             combination = '('+'|'.join(sorted(list(contents['expressions'][l])))+')'
             compilation = re.compile(combination)
             self.tospace[l] = (combination, compilation)
-
-
-
-# Global variables:
-data = Data()

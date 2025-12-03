@@ -67,7 +67,7 @@ class Validator:
             that have to be passed to the Incident class whenever an incident
             (error or warning) is recorded by the Validator.
         """
-        self.data = data.data
+        self.data = data.Data()
         if not args:
             args = argparse.Namespace()
         # Since we allow args that were not created by our ArgumentParser,
