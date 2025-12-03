@@ -41,7 +41,7 @@ COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 
 
 class Validator:
-    def __init__(self, lang=None, level=None, check_coref=None, args=None):
+    def __init__(self, lang=None, level=None, check_coref=None, args=None, datapath=None):
         """
         Initialization of the Validator class.
 
@@ -66,8 +66,12 @@ class Validator:
             directly to the constructor. However, there may be other arguments
             that have to be passed to the Incident class whenever an incident
             (error or warning) is recorded by the Validator.
+        datapath : str, optional
+            Path to the folder with JSON files specifying language-specific
+            behavior. If not provided, the Data class will try expected
+            locations relative to the module.
         """
-        self.data = data.Data()
+        self.data = data.Data(datapath=datapath)
         if not args:
             args = argparse.Namespace()
         # Since we allow args that were not created by our ArgumentParser,
