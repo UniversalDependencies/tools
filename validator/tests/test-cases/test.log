@@ -65,23 +65,21 @@ SYNTAX errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-sentence.conllu 
-[Line 3 Sent None]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 3 Sent None]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\extra-empty-line.conllu 
-[Line 6 Sent extra-empty-line1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 6 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\extra-field.conllu 
-[Line 4 Sent extra-field]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
-[Line 5 Sent extra-field]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 5 Sent extra-field]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-FORMAT errors: 3
-*** FAILED *** with 3 errors
+[Line 4 Sent extra-field]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
+FORMAT errors: 1
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\head-0-deprel-not-root.conllu 
@@ -218,7 +216,7 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-comment-end.conllu 
-[Line 12 Sent misplaced-comment-end]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+[Line 13 Sent misplaced-comment-end]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -230,14 +228,14 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-range.conllu 
-[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 [Line 10 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\missing-final-line.conllu 
-[Line 4 Sent missing-final-line]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 4 Sent missing-final-line]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -267,11 +265,10 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nan-id.conllu 
-[Line 9 Sent id-starting-from-2b]: [L1 FORMAT invalid-line] Spurious line: 'a	valid	valid	NOUN	SP	_	0	root	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 10 Sent id-starting-from-2b]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 10 Sent id-starting-from-2b]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-FORMAT errors: 3
-*** FAILED *** with 3 errors
+[Line 9 Sent id-starting-from-2b]: [L1 FORMAT invalid-line] Spurious line: 'a	valid	valid	NOUN	SP	_	0	root	_	_'. All non-empty lines should start with a digit or the # character.
+[Line 10 Sent id-starting-from-2b]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
+FORMAT errors: 2
+*** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\no-sent_id.conllu 
@@ -294,7 +291,7 @@ FORMAT errors: 2
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\out-of-bounds-range.conllu 
-[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 [Line 10 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 2
 *** FAILED *** with 2 errors
@@ -351,11 +348,11 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\tanl-broken.conllu 
-[Line 6 Sent tanl-broken1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 8 Sent tanl-broken1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 6 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
+[Line 8 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 [Line 11 Sent tanl-broken2]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
 [Line 17 Sent tanl-broken2]: [L1 FORMAT word-interval-out] Spurious token interval 6-6 (out of range)
-[Line 24 Sent tanl-broken3]: [L1 FORMAT missing-empty-line] Missing empty line after the last sentence.
+[Line 24 Sent tanl-broken3]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 [Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'mod=p'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
@@ -375,11 +372,9 @@ FORMAT errors: 3
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\trailing-tab.conllu 
-[Line 4 Sent trailing-tab]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
-[Line 5 Sent trailing-tab]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 5 Sent trailing-tab]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-FORMAT errors: 3
-*** FAILED *** with 3 errors
+[Line 4 Sent trailing-tab]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
+FORMAT errors: 1
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\unnormalized-unicode.conllu 
@@ -567,23 +562,10 @@ SYNTAX errors: 3
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\columns-format.conllu 
-[Line 4 Sent tanl1]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected. The line will be excluded from further tests.
+[Line 4 Sent tanl1]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
 [Line 11 Sent tanl2]: [L1 FORMAT invalid-whitespace-mwt] White space not allowed in multi-word token 'da lla'. If it contains a space, it is not a single surface token.
 [Line 12 Sent tanl2]: [L1 FORMAT empty-column] Empty value in column XPOS: ''.
-[Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	 FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 11 Sent tanl2]: [L2 METADATA text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[2-3] is 'da lla' but text is 'dalla statua ....'
-[Line 10 Sent tanl2]: [L2 METADATA text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'dalla statua .'
-[Line 13 Sent tanl2]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
-
-The following 95 feature values are currently permitted in language [cs]:
-Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-
+[Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	 FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
 [Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column UPOS: 'VERB '.
 [Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column FEATS: ' Gender=Fem|Number=Sing'.
 [Line 20 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column UPOS: 'DE T'.
@@ -591,22 +573,21 @@ See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_fea
 [Line 19 Sent tanl3]: [L2 MORPHO invalid-feature] Spurious morphological feature: ' Gender=Fem'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 20 Sent tanl3]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'DE T'.
 FORMAT errors: 7
-MORPHO errors: 4
-METADATA errors: 2
-*** FAILED *** with 13 errors
+MORPHO errors: 3
+*** FAILED *** with 10 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\extra-empty-line.conllu 
-[Line 6 Sent extra-empty-line1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
-[Line 7 Sent extra-empty-line1]: [L1 FORMAT extra-empty-line] Spurious empty line. Only one empty line is expected after every sentence.
+[Line 6 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
+[Line 7 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-line.conllu 
-[Line 5 Sent tanl1]: [L1 FORMAT invalid-line] Spurious line: '-	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests.
-[Line 13 Sent tanl2]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
+[Line 5 Sent tanl1]: [L1 FORMAT invalid-line] Spurious line: '-	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
+[Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
+[Line 20 Sent tanl3]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -617,10 +598,9 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 20 Sent tanl3]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 FORMAT errors: 2
-MORPHO errors: 2
-*** FAILED *** with 4 errors
+MORPHO errors: 1
+*** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-word-id.conllu 

@@ -191,12 +191,12 @@ class Validator:
         inp : open file handle
             The CoNLL-U-formatted input stream.
         """
-        for all_lines, comments, sentence in self.next_sentence(state, inp):
-            self.validate_sentence(state, all_lines, comments, sentence)
+        for lines in self.next_sentence(state, inp):
+            self.validate_sentence(state, lines)
         self.check_newlines(state, inp) # level 1
 
 
-    def validate_sentence(self, state, all_lines, comments, sentence):
+    def validate_sentence(self, state, all_lines):
         """
         Entry point for all validation tests applied to one sentence. It can
         be called from annotation tools to check the sentence once annotated.
@@ -208,17 +208,14 @@ class Validator:
         ----------
         state : udtools.state.State
             The state of the validation run.
-        all_lines : list
+        all_lines : list(str)
             List of lines in the sentence (comments and tokens), minus final
             empty line, minus newline characters (and minus spurious lines
             that are neither comment lines nor token lines).
-        comments : list
-            List of comment lines to go with the current sentence; initial part
-            of all_lines.
-        sentence : list(list)
-            List of token/word lines of the current sentence, converted from
-            tab-separated string to list of fields.
         """
+        linesok, comments, sentence = self.check_sentence(state, all_lines)
+        if not linesok:
+            return
         linenos = utils.get_line_numbers_for_ids(state, sentence)
         # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
@@ -256,7 +253,8 @@ class Validator:
                 return
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
-            # structure for us.
+            # structure for us. Udapi does not want to get the terminating
+            # empty line.
             tree = self.build_tree_udapi(all_lines)
             self.check_sent_id(state, comments, self.lang) # level 2
             self.check_parallel_id(state, comments) # level 2
@@ -310,7 +308,31 @@ class Validator:
 
 
     def build_tree_udapi(self, lines):
-        root = self.conllu_reader.read_tree_from_lines(lines)
+        """
+        Calls Udapi to build its data structures from the CoNLL-U lines
+        representing one sentence.
+
+        Parameters
+        ----------
+        lines : list(str)
+            Lines as in the CoNLL-U file, including sentence-level comments if
+            any, but without the newline character at the end of each line.
+            The sentence-terminating empty line is optional in this method.
+
+        Returns
+        -------
+        root : udapi.core.node.Node object
+            The artificial root node (all other nodes and all tree attributes
+            can be accessed from it).
+        """
+        # If the final empty line is present, get rid of it. Udapi would die
+        # when trying to access line[0].
+        mylines = lines
+        if len(mylines) > 0 and (not mylines[-1] or utils.is_whitespace(mylines[-1])):
+            mylines = lines[0:-1]
+        root = self.conllu_reader.read_tree_from_lines(mylines)
+        # We should not return an empty tree (root should not be None).
+        assert(root)
         return root
 
 
@@ -338,71 +360,96 @@ class Validator:
 
     def next_sentence(self, state, inp):
         """
-        `inp` a file-like object yielding lines as unicode
-
-        This function does elementary checking of the input and yields one
-        sentence at a time from the input stream. The function guarantees
-        elementary integrity of its yields. Some lines may be skipped (e.g.,
-        extra empty lines or misplaced comments), and a whole sentence will be
-        skipped if one of its token lines has unexpected number of columns.
-
-        However, some low-level errors currently do not lead to excluding the
-        sentence from being yielded and put to subsequent tests. Specifically,
-        character constraints on individual fields are tested here but errors
-        are not considered fatal.
+        This function yields one sentence at a time from the input stream.
 
         This function is a generator. The caller can call it in a 'for x in ...'
         loop. In each iteration of the caller's loop, the generator will generate
         the next sentence, that is, it will read the next sentence from the input
         stream. (Technically, the function returns an object, and the object will
         then read the sentences within the caller's loop.)
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        inp : file handle
+            A file open for reading or STDIN.
+
+        Yields
+        ------
+        sentence_lines : list(str)
+            List of CoNLL-U lines that correspond to one sentence, including
+            initial comments (if any) and the final empty line.
         """
-        all_lines = [] # List of lines in the sentence (comments and tokens), minus final empty line, minus newline characters (and minus spurious lines that are neither comment lines nor token lines)
-        comment_lines = [] # List of comment lines to go with the current sentence; initial part of all_lines
-        token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields
-        corrupted = False # In case of wrong number of columns check the remaining lines of the sentence but do not yield the sentence for further processing.
-        state.comment_start_line = None
+        sentence_lines = [] # List of lines in the sentence (comments and tokens), minus final empty line, minus newline characters (and minus spurious lines that are neither comment lines nor token lines)
         for line_counter, line in enumerate(inp):
-            state.current_line = line_counter+1
-            Incident.default_level = 1
-            Incident.default_testclass = TestClass.FORMAT
-            Incident.default_lineno = None # use the most recently read line
-            if not state.comment_start_line:
-                state.comment_start_line = state.current_line
+            state.current_line = line_counter + 1
             line = line.rstrip("\n")
-            self.check_unicode_normalization(state, line)
-            if utils.is_whitespace(line):
-                Error(
-                    state=state, config=self.incfg,
-                    testid='pseudo-empty-line',
-                    message='Spurious line that appears empty but is not; there are whitespace characters.'
-                ).report()
-                # We will pretend that the line terminates a sentence in order to
-                # avoid subsequent misleading error messages.
-                if token_lines_fields:
-                    if not corrupted:
-                        yield all_lines, comment_lines, token_lines_fields
-                    all_lines = []
-                    comment_lines = []
-                    token_lines_fields = []
-                    corrupted = False
-                    state.comment_start_line = None
-            elif not line: # empty line
-                if token_lines_fields: # sentence done
-                    if not corrupted:
-                        yield all_lines, comment_lines, token_lines_fields
-                    all_lines = []
-                    comment_lines = []
-                    token_lines_fields = []
-                    corrupted = False
-                    state.comment_start_line = None
-                else:
-                    Error(
-                        state=state, config=self.incfg,
-                        testid='extra-empty-line',
-                        message='Spurious empty line. Only one empty line is expected after every sentence.'
-                    ).report()
-            elif line[0] == '#':
+            sentence_lines.append(line)
+            if not line or utils.is_whitespace(line):
+                # If a line is not empty but contains only whitespace, we will
+                # pretend that it terminates a sentence in order to avoid
+                # subsequent misleading error messages.
+                yield sentence_lines
+                sentence_lines = []
+        else: # end of file
+            # If we found additional lines after the last empty line, yield them now.
+            if sentence_lines:
+                yield sentence_lines
+
+
+    def check_sentence(self, state, lines):
+        """
+        Low-level tests of a block of input lines that should represent one
+        sentence. If we are validating a file or treebank, the block was
+        probably obtained by reading lines from the file until the next empty
+        line. But it is also possible that the caller is an annotation tool,
+        which wants to validate one sentence in isolation.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+            First we expect an optional block (zero or more lines) of comments,
+            i.e., lines starting with '#'. Then we expect a non-empty block
+            (one or more lines) of nodes, empty nodes, and multiword tokens.
+            Finally, we expect exactly one empty line.
+
+        Returns
+        -------
+        ok : bool
+            Is it OK to run subsequent checks? It can be OK even after some
+            less severe errors.
+        comments : list
+            List of comment lines to go with the current sentence; initial part
+            of all_lines.
+        sentence : list(list)
+            List of token/word lines of the current sentence, converted from
+            tab-separated string to list of fields.
+        """
+        Incident.default_level = 1
+        Incident.default_testclass = TestClass.FORMAT
+        comment_lines = [] # List of comment lines before the sentence.
+        token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields ###!!! move elsewhere?
+        # When we arrive here, state.current_line points to the last line of the
+        # sentence, that is, the terminating empty line (if the input is valid).
+        n_lines = len(lines)
+        state.comment_start_line = state.current_line - n_lines + 1
+        state.sentence_line = state.comment_start_line # temporarily, until we find the first token
+        seen_non_comment = False # once we see non-comment, no further comments allowed
+        seen_token_node = False # at least one such line per sentence required
+        last_line_is_empty = False
+        ok = True # is it ok to run subsequent tests? It can be ok even after some less severe errors.
+        for i in range(n_lines):
+            lineno = state.comment_start_line + i
+            line = lines[i]
+            self.check_unicode_normalization(state, line, lineno)
+            # Comment lines.
+            if line and line[0] == '#':
                 # We will really validate sentence ids later. But now we want to remember
                 # everything that looks like a sentence id and use it in the error messages.
                 # Line numbers themselves may not be sufficient if we are reading multiple
@@ -410,56 +457,88 @@ class Validator:
                 match = utils.crex.sentid.fullmatch(line)
                 if match:
                     state.sentence_id = match.group(1)
-                if not token_lines_fields: # before sentence
-                    all_lines.append(line)
-                    comment_lines.append(line)
-                else:
+                if seen_non_comment:
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='misplaced-comment',
                         message='Spurious comment line. Comments are only allowed before a sentence.'
                     ).report()
-            elif line[0].isdigit():
-                if not token_lines_fields: # new sentence
-                    state.sentence_line = state.current_line
-                cols = line.split("\t")
-                # If there is an unexpected number of columns, do not test their contents.
-                # Maybe the contents belongs to a different column. And we could see
-                # an exception if a column value is missing.
-                if len(cols) == COLCOUNT:
-                    all_lines.append(line)
-                    token_lines_fields.append(cols)
-                    # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
-                    self.check_whitespace(state, cols)
+                    ok = False
+                comment_lines.append(line)
+            else:
+                if not seen_non_comment:
+                    state.sentence_line = state.comment_start_line + i
+                seen_non_comment = True
+                # Token/node lines.
+                if line and line[0].isdigit():
+                    seen_token_node = True
+                    ###!!! do we want to do this here, or later?
+                    cols = line.split("\t")
+                    # If there is an unexpected number of columns, do not test their contents.
+                    # Maybe the contents belongs to a different column. And we could see
+                    # an exception if a column value is missing.
+                    if len(cols) == COLCOUNT:
+                        token_lines_fields.append(cols)
+                        # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
+                        self.check_whitespace(state, cols, lineno)
+                    else:
+                        Error(
+                            state=state, config=self.incfg, lineno=lineno,
+                            testid='number-of-columns',
+                            message=f'The line has {len(cols)} columns but {COLCOUNT} are expected.'
+                        ).report()
+                        ok = False
+                # Empty line (end of sentence).
+                elif not line or utils.is_whitespace(line):
+                    # Lines consisting of space/tab characters are non-empty and invalid,
+                    # so we will report an error but otherwise we will treat them as empty
+                    # lines to prevent confusing subsequent errors.
+                    if utils.is_whitespace(line):
+                        Error(
+                            state=state, config=self.incfg, lineno=lineno,
+                            testid='pseudo-empty-line',
+                            message='Spurious line that appears empty but is not; there are whitespace characters.'
+                        ).report()
+                    # If the input lines were read from the input stream, there
+                    # will be at most one empty line and it will be the last line
+                    # (because it triggered returning a sentence). However, the
+                    # list of lines may come from other sources (any user can
+                    # ask for validation of their list of lines) and then we may
+                    # encounter empty lines anywhere.
+                    if i != n_lines-1:
+                        Error(
+                            state=state, config=self.incfg, lineno=lineno,
+                            testid='extra-empty-line',
+                            message='Spurious empty line that is not the last line of a sentence.'
+                        ).report()
+                        ok = False
+                    else:
+                        last_line_is_empty = True
+                        if not seen_token_node:
+                            Error(
+                                state=state, config=self.incfg, lineno=lineno,
+                                testid='empty-sentence',
+                                message='Sentence must not be empty. Only one empty line is expected after every sentence.'
+                            ).report()
+                            ok = False
+                # A line which is neither a comment nor a token/word, nor empty. That's bad!
                 else:
                     Error(
-                        state=state, config=self.incfg,
-                        testid='number-of-columns',
-                        message=f'The line has {len(cols)} columns but {COLCOUNT} are expected. The line will be excluded from further tests.'
+                        state=state, config=self.incfg, lineno=lineno,
+                        testid='invalid-line',
+                        message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
                     ).report()
-                    corrupted = True
-            else: # A line which is neither a comment nor a token/word, nor empty. That's bad!
-                Error(
-                    state=state, config=self.incfg,
-                    testid='invalid-line',
-                    message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character. The line will be excluded from further tests."
-                ).report()
-        else: # end of file
-            if comment_lines and not token_lines_fields:
-                # Comments at the end of the file, no sentence follows them.
-                Error(
-                    state=state, config=self.incfg,
-                    testid='misplaced-comment',
-                    message='Spurious comment line. Comments are only allowed before a sentence.'
-                ).report()
-            elif comment_lines or token_lines_fields: # These should have been yielded on an empty line!
-                Error(
-                    state=state, config=self.incfg,
-                    testid='missing-empty-line',
-                    message='Missing empty line after the last sentence.'
-                ).report()
-                if not corrupted:
-                    yield all_lines, comment_lines, token_lines_fields
+                    ok = False
+        # If the last line is not empty (e.g. because the file ended prematurely),
+        # it is an error.
+        if not last_line_is_empty:
+            Error(
+                state=state, config=self.incfg, lineno=state.current_line,
+                testid='missing-empty-line',
+                message='Missing empty line after the sentence.'
+            ).report()
+            ok = seen_token_node
+        return ok, comment_lines, token_lines_fields
 
 
 
@@ -469,7 +548,7 @@ class Validator:
 
 
 
-    def check_unicode_normalization(self, state, text):
+    def check_unicode_normalization(self, state, text, lineno):
         """
         Tests that letters composed of multiple Unicode characters (such as a base
         letter plus combining diacritics) conform to NFC normalization (canonical
@@ -511,7 +590,7 @@ class Validator:
                 testmessage = f"Unicode not normalized: character[{firstj}] is {inpfirst}, should be {nfcfirst}."
             explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
             Error(
-                state=state, config=self.incfg,
+                state=state, config=self.incfg, lineno=lineno,
                 level=1,
                 testclass=TestClass.UNICODE,
                 testid='unicode-normalization',
@@ -521,7 +600,7 @@ class Validator:
 
 
 
-    def check_whitespace(self, state, cols):
+    def check_whitespace(self, state, cols, lineno):
         """
         Checks that columns are not empty and do not contain whitespace characters
         except for patterns that could be allowed at level 4. Applies to all types
@@ -534,7 +613,7 @@ class Validator:
         """
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
-        Incident.default_lineno = None # use the most recently read line
+        Incident.default_lineno = lineno
         # Some whitespace may be permitted in FORM, LEMMA and MISC but not elsewhere.
         # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
         # If it contains a space, it does not make sense to treat it as a MWT.
