@@ -41,4 +41,20 @@ The state is an object with various pieces of information collected during the v
 representation is a summary of the warnings and errors found, as well as the string "*** PASSED ***" or
 "*** FAILED ***". You can also use the state in a boolean context (condition), where "passed" evaluates as `True` and
 "failed" as `False`. Note however that the default behavior of the validator is still to print errors and warnings to
-STDERR as soon as they are detected.
+STDERR as soon as they are detected. To suppress printing, the only possibility at present is to supply the `--quiet`
+option as if it came from the command line:
+
+```python
+import sys
+from udtools.argparser import parse_args
+from udtools import Validator
+
+sys.argv = ['validate.py', '--lang=la', '--quiet']
+args = parse_args()
+validator = Validator(lang='la', args=args)
+state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
+if state:
+    print('Yay!')
+else:
+    print('Oh no ☹')
+```
