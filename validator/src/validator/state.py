@@ -139,3 +139,6 @@ class State:
             if v > 0:
                 return False
         return True
+
+    def __bool__(self):
+        return self.passed()

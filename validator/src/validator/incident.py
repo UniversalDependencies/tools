@@ -59,7 +59,7 @@ class Incident:
         self.explanation = explanation
         # File name. The default is the file from which we are reading right
         # now ('-' if reading from STDIN).
-        self.filename = 'STDIN' if state.current_file_name == '-' else os.path.basename(state.current_file_name)
+        self.filename = 'STDIN' if state.current_file_name == '-' else os.path.basename(state.current_file_name) if state.current_file_name else 'NONE'
         # Line number. The default is the most recently read line as recorded
         # in the state; but in most cases we need to get the number
         # during instantiation, as the most recently read line is the last line

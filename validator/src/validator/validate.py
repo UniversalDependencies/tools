@@ -142,24 +142,11 @@ class Validator:
             The resulting state of the validation. May contain the overview
             of all encountered incidents (errors or warnings) if requested.
         """
-        if not state:
+        if state == None:
             state = State()
-        try:
-            for filename in filenames:
-                self.validate_file(filename, state)
-            self.validate_end(state)
-        except:
-            Error(
-                state=state, config=self.incfg,
-                level=0,
-                testclass=TestClass.INTERNAL,
-                testid='exception',
-                message="Exception caught!"
-            ).report()
-            # If the output is used in an HTML page, it must be properly escaped
-            # because the traceback can contain e.g. "<module>". However, escaping
-            # is beyond the goal of validation, which can be also run in a console.
-            traceback.print_exc()
+        for filename in filenames:
+            self.validate_file(filename, state)
+        self.validate_end(state)
         return state
 
 
@@ -182,7 +169,7 @@ class Validator:
             The resulting state of the validation. May contain the overview
             of all encountered incidents (errors or warnings) if requested.
         """
-        if not state:
+        if state == None:
             state = State()
         state.current_file_name = filename
         if filename == '-':
@@ -249,7 +236,7 @@ class Validator:
             The resulting state of the validation. May contain the overview
             of all encountered incidents (errors or warnings) if requested.
         """
-        if not state:
+        if state == None:
             state = State()
         linesok, comments, sentence = self.check_sentence(state, all_lines)
         if not linesok:
@@ -399,7 +386,7 @@ class Validator:
             The resulting state of the validation. May contain the overview
             of all encountered incidents (errors or warnings) if requested.
         """
-        if not state:
+        if state == None:
             state = State()
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
