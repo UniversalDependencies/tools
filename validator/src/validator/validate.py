@@ -116,7 +116,7 @@ class Validator:
 #==============================================================================
 
 
-    def validate_files(self, filenames):
+    def validate_files(self, filenames, state=None):
         """
         The main entry point, takes a list of filenames that constitute
         the treebank to be validated. Note that there are tests that consider
@@ -131,6 +131,10 @@ class Validator:
         filenames : list(str)
             List of paths (filenames) to open and validate together. Filename
             '-' will be interpreted as STDIN.
+        state : udtools.state.State, optional
+            State from previous validation calls if the current call should
+            take them into account. If not provided, a new state will be
+            initialized.
 
         Returns
         -------
@@ -138,10 +142,11 @@ class Validator:
             The resulting state of the validation. May contain the overview
             of all encountered incidents (errors or warnings) if requested.
         """
-        state = State()
+        if not state:
+            state = State()
         try:
             for filename in filenames:
-                self.validate_file(state, filename)
+                self.validate_file(filename, state)
             self.validate_end(state)
         except:
             Error(
@@ -158,31 +163,41 @@ class Validator:
         return state
 
 
-    def validate_file(self, state, filename):
+    def validate_file(self, filename, state=None):
         """
         An envelope around validate_file_handle(). Opens a file or uses STDIN,
         then calls validate_file_handle() on it.
 
         Parameters
         ----------
-        state : udtools.state.State
-            The state of the validation run.
         filename : str
             Name of the file to be read and validated. '-' means STDIN.
+        state : udtools.state.State, optional
+            The state of the validation run. If not provided, a new state will
+            be initialized.
+
+        Returns
+        -------
+        state : udtools.state.State
+            The resulting state of the validation. May contain the overview
+            of all encountered incidents (errors or warnings) if requested.
         """
+        if not state:
+            state = State()
         state.current_file_name = filename
         if filename == '-':
             # Set PYTHONIOENCODING=utf-8 before starting Python.
             # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONIOENCODING
             # Otherwise ANSI will be read in Windows and
             # locale-dependent encoding will be used elsewhere.
-            self.validate_file_handle(state, sys.stdin)
+            self.validate_file_handle(sys.stdin, state)
         else:
             with io.open(filename, 'r', encoding='utf-8') as inp:
-                self.validate_file_handle(state, inp)
+                self.validate_file_handle(inp, state)
+        return state
 
 
-    def validate_file_handle(self, state, inp):
+    def validate_file_handle(self, inp, state=None):
         """
         The main entry point for all validation tests applied to one input file.
         It reads sentences from the input stream one by one, each sentence is
@@ -190,17 +205,27 @@ class Validator:
 
         Parameters
         ----------
-        state : udtools.state.State
-            The state of the validation run.
         inp : open file handle
             The CoNLL-U-formatted input stream.
+        state : udtools.state.State, optional
+            The state of the validation run. If not provided, a new state will
+            be initialized.
+
+        Returns
+        -------
+        state : udtools.state.State
+            The resulting state of the validation. May contain the overview
+            of all encountered incidents (errors or warnings) if requested.
         """
+        if not state:
+            state = State()
         for lines in utils.next_sentence(state, inp):
-            self.validate_sentence(state, lines)
+            self.validate_sentence(lines, state)
         self.check_newlines(state, inp) # level 1
+        return state
 
 
-    def validate_sentence(self, state, all_lines):
+    def validate_sentence(self, all_lines, state=None):
         """
         Entry point for all validation tests applied to one sentence. It can
         be called from annotation tools to check the sentence once annotated.
@@ -210,16 +235,25 @@ class Validator:
 
         Parameters
         ----------
-        state : udtools.state.State
-            The state of the validation run.
         all_lines : list(str)
             List of lines in the sentence (comments and tokens), minus final
             empty line, minus newline characters (and minus spurious lines
             that are neither comment lines nor token lines).
+        state : udtools.state.State, optional
+            The state of the validation run. If not provided, a new state will
+            be initialized.
+
+        Returns
+        -------
+        state : udtools.state.State
+            The resulting state of the validation. May contain the overview
+            of all encountered incidents (errors or warnings) if requested.
         """
+        if not state:
+            state = State()
         linesok, comments, sentence = self.check_sentence(state, all_lines)
         if not linesok:
-            return
+            return state
         linenos = utils.get_line_numbers_for_ids(state, sentence)
         # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
@@ -232,10 +266,10 @@ class Validator:
         if self.level > 1:
             idrefok = idseqok and self.check_id_references(state, sentence) # level 2
             if not idrefok:
-                return
+                return state
             treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
             if not treeok:
-                return
+                return state
             # Tests of individual nodes that operate on pre-Udapi data structures.
             # Some of them (bad feature format) may lead to skipping Udapi completely.
             colssafe = True
@@ -254,7 +288,7 @@ class Validator:
                 self.check_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                 self.check_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
             if not colssafe:
-                return
+                return state
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us. Udapi does not want to get the terminating
@@ -309,6 +343,7 @@ class Validator:
                 self.check_egraph_connected(state, nodes, linenos)
             if self.check_coref:
                 self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
+        return state
 
 
     def build_tree_udapi(self, lines):
@@ -341,10 +376,31 @@ class Validator:
         return root
 
 
-    def validate_end(self, state):
+    def validate_end(self, state=None):
         """
         Final tests after processing the entire treebank (possibly multiple files).
+
+        Parameters
+        ----------
+        all_lines : list(str)
+            List of lines in the sentence (comments and tokens), minus final
+            empty line, minus newline characters (and minus spurious lines
+            that are neither comment lines nor token lines).
+        state : udtools.state.State, optional
+            The state of the validation run. If not provided, a new state will
+            be initialized. (This is only to unify the interface of all the
+            validate_xxx() methods. Note however that specifically for this
+            method, it does not make sense to run it without state from other
+            validation calls.)
+
+        Returns
+        -------
+        state : udtools.state.State
+            The resulting state of the validation. May contain the overview
+            of all encountered incidents (errors or warnings) if requested.
         """
+        if not state:
+            state = State()
         # After reading the entire treebank (perhaps multiple files), check whether
         # the DEPS annotation was not a mere copy of the basic trees.
         if self.level>2 and state.seen_enhanced_graph and not state.seen_enhancement:
@@ -355,6 +411,7 @@ class Validator:
                 testid='edeps-identical-to-basic-trees',
                 message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
             ).report()
+        return state
 
 
 
