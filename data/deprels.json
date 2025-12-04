@@ -8218,6 +8218,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-12-04-17-15-58", "lastchanger": "rahonalab"},
+"obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-12-04-17-16-14", "lastchanger": "rahonalab"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
