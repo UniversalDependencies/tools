@@ -150,7 +150,7 @@ directly. There are some dangers though, which you should consider first:
   generate, the arguments they expect, their return values (if any) or side effects. Some checks only look at
   individual cells in the CoNLL-U tabular format, others expect the fully built tree structure.
 * There are dependencies among the tests. Some `check_` methods can be run safely only if other `check_` methods have
-  been run previously and did not find any errors.
+  been run previously and did not encounter errors.
 
 ### Adding your own tests
 
