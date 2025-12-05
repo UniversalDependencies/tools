@@ -77,7 +77,7 @@ state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev
 all_errors = []
 # Take only errors, skip warnings.
 for testclass in state.error_tracker[IncidentType.ERROR].keys():
-   for incident in state.error_tracker[IncidentType.WARNING][testclass]:
+   for incident in state.error_tracker[IncidentType.ERROR][testclass]:
        all_errors.append(incident)
 all_errors.sort(key=lambda incident: incident.testid)
 for error in all_errors:
