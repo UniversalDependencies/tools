@@ -84,6 +84,8 @@ for error in all_errors:
     print(error)
 ```
 
+### Entry points
+
 The validator has several other entry points in addition to `validate_files()`:
 
 * `validate_file()` takes just one file name (path), reads that file and tests its validity. If the file name is '-',
@@ -113,7 +115,64 @@ location):
 validator = Validator(lang='la', datapath='/my/copy/of/ud/tools/data')
 ```
 
-# TO ADD
+### Selecting only some tests
 
-how to run only some tests?
-how to add your own tests? inheritance
+UD defines several
+[levels of validity](https://universaldependencies.org/contributing/validation-rules.html#levels-of-validity)
+of CoNLL-U files. By default, validity on the highest level 5 is required; this is the level that UD treebanks must
+pass in order to be released as part of Universal Dependencies. It is possible to request a lower level of validity,
+for example, only the backbone file structure can be checked, omitting any linguistic checks of the annotation
+guidelines. When invoking `validate.py` from the command line, the numeric option `--level` (e.g., `--level 1`)
+tells the validator to skip tests on levels 2 and above. The same argument can be given directly to the constructor
+of the `Validator` class. The lowest level is not specific to individual languages, so we can give the generic
+language "ud" instead.
+
+```python
+validator = Validator(lang='ud', level=1)
+```
+
+One may want to filter the tests along various other dimensions: errors only (skipping warnings); selected test classes
+(FORMAT, MORPHO, SYNTAX, ENHANCED, METADATA etc.); individual test ids (e.g., `obl-should-be-nmod`). It is always
+possible to do what we showed above, i.e., collecting all incidents, then processing them and showing only the selected
+ones. However, this approach has its drawbacks: We waste time by running tests whose results we do not want to see;
+for large treebanks it is not practical to postpone showing first results until the whole treebank is processed; and
+it may be also quite heavy to keep all unnecessary incidents in memory.
+
+You may try to get around this by implementing your own alternative to `validate_sentence()` and call individual tests
+directly. There are some dangers though, which you should consider first:
+
+* The tests are not documented at present, so you have to consult the source code. The relevant functions are methods
+  of `Validator` and their names start with `check_` (as opposed to `validate_`, which signals the better documented
+  entry points). Note that one `check_` method may generate multiple different incident types, whose ids are not
+  reflected in the name of the method; and a few incidents can even occur outside any `check_` method (e.g., directly
+  in a `validate_` method).
+* The interface is far from stable. Names of methods may change at any time, as well as the types of incidents they
+  generate, the arguments they expect, their return values (if any) or side effects. Some checks only look at
+  individual cells in the CoNLL-U tabular format, others expect the fully built tree structure.
+* There are dependencies among the tests. Some `check_` methods can be run safely only if other `check_` methods have
+  been run previously and did not find any errors.
+
+### Adding your own tests
+
+You may want to add language-specific consistency tests beyond what the official validator can do (e.g., ensuring that
+all personal pronouns have a non-empty value of the `Person` feature), or even treebank/project-specific tests (e.g.,
+all tokens should have a valid `Ref` attribute in MISC). One way of doing this would be to derive your own validator
+class based on `udtools.Validator`.
+
+```python
+from udtools import Validator
+
+class MyValidator(Validator):
+
+    def validate_sentence(self, lines, state=None):
+        state = super().validate_sentence(lines, state)
+        self.check_my_own_stuff(state, lines)
+        return state
+
+    def check_my_own_stuff(self, state, lines):
+        ...
+
+validator = MyValidator(lang='la')
+state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
+print(state)
+```
