@@ -58,3 +58,62 @@ if state:
 else:
     print('Oh no ☹')
 ```
+
+Instead of printing the errors to STDERR as soon as they are found, you can have them saved in the validation state
+and later process them the way you prefer. Note that the number of incidents saved (per category) is limited by
+default. This is to save your memory if you do not need to keep the errors (some treebanks have hundreds of thousands
+of errors and warnings). By setting `--max-store=0`, this limit is turned off.
+
+```python
+import sys
+from udtools.argparser import parse_args
+from udtools import Validator
+from udtools.incident import IncidentType
+
+sys.argv = ['validate.py', '--lang=la', '--quiet', '--max-store=0']
+args = parse_args()
+validator = Validator(lang='la', args=args)
+state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
+all_errors = []
+# Take only errors, skip warnings.
+for testclass in state.error_tracker[IncidentType.ERROR].keys():
+   for incident in state.error_tracker[IncidentType.WARNING][testclass]:
+       all_errors.append(incident)
+all_errors.sort(key=lambda incident: incident.testid)
+for error in all_errors:
+    print(error)
+```
+
+The validator has several other entry points in addition to `validate_files()`:
+
+* `validate_file()` takes just one file name (path), reads that file and tests its validity. If the file name is '-',
+  it is interpreted as reading from STDIN. Note that `validate_files()` calls `validate_file()` for each file in turn,
+  then it also calls `validate_end()` to perform checks that can only be done after the whole treebank has been read.
+  If you call directly `validate_file()`, you should take care of calling `validate_end()` yourself.
+  * `validate_end()` takes just the state from the validation performed so far, and checks that the observations saved
+    in the state are not in conflict.
+* `validate_file_handle()` takes the object associated with an open file (or `sys.stdin`). Otherwise it is analogous
+  to `validate_file()` (and is in fact called from `validate_file()`).
+* `validate_sentence()` takes a list of CoNLL-U lines corresponding to one sentence, including the sentence-terminating
+  empty line. When called from `validate_file_handle()`, it will have at most one empty line and this will be the last
+  line in the list, as it is how the file reader detected the sentence end. However, the method is aware that other
+  callers could supply lists with empty lines in the middle, and it will report an error if this happens.
+
+All the `validate_*()` methods mentioned above return a `State` object. All of them can optionally take a `State` from
+previous runs as an argument (named `state`), in which case they will base their decisions on this state, and save
+their observations in it, too.
+
+The validator uses data files with specifications of feature values, lemmas of auxiliaries etc. for each language.
+These files change more often than the validator code itself, so it is likely that your pip-installed `udtools` does
+not have the most up-to-date version. Therefore, you may want to have a local copy of the tools repository, regularly
+update it by calling `git pull`, and tell the validator where to load the data files from (instead of its installation
+location):
+
+```python
+validator = Validator(lang='la', datapath='/my/copy/of/ud/tools/data')
+```
+
+# TO ADD
+
+how to run only some tests?
+how to add your own tests? inheritance

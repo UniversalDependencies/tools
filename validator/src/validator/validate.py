@@ -5,7 +5,6 @@
 import sys
 import io
 import argparse
-import traceback
 # According to https://stackoverflow.com/questions/1832893/python-regex-matching-unicode-properties,
 # the regex module has the same API as re but it can check Unicode character properties using \p{}
 # as in Perl.
