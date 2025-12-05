@@ -161,6 +161,7 @@ class based on `udtools.Validator`.
 
 ```python
 from udtools import Validator
+from udtools.incident import TestClass, Error
 
 class MyValidator(Validator):
 
@@ -170,7 +171,15 @@ class MyValidator(Validator):
         return state
 
     def check_my_own_stuff(self, state, lines):
-        ...
+        for line in lines:
+            if re.match(r'40\t', line):
+                Error(
+                    state=state, config=self.incfg,
+                    level=1,
+                    testclass=TestClass.FORMAT,
+                    testid='id-40',
+                    message="Node ID 40 is not allowed in this treebank."
+                ).report()
 
 validator = MyValidator(lang='la')
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
