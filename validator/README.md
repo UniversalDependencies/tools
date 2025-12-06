@@ -150,8 +150,7 @@ for incidenttype in state.error_tracker:
            incidents.append(incident)
 incidents.sort(key=lambda incident: incident.testid)
 print('[')
-for incident in incidents:
-    print(incident.json())
+print(',\n'.join([incident.json() for incident in incidents]))
 print(']')
 ```
 
