@@ -117,7 +117,17 @@ class Incident:
             self.state.explanation_printed.add(self.explanation)
         return f'[{address}]: [{levelclassid}] {message}'
 
-    def report(self):
+    def confirm(self):
+        """
+        An Incident object is typically created at the time we know the incident
+        (error or warning) really occurred. However, sometimes it is useful to
+        prepare the object when we observe one necessary condition, and then
+        wait whether we also encounter the other necessary conditions. Once we
+        know that all conditions have been met, we should call this method. It
+        will take care of registering the incident, reporting it, adjusting
+        error counters etc. In the typical situation, one calls .confirm()
+        immediately after one constructs the Incident object.
+        """
         # Even if we should be quiet, at least count the error.
         too_many = self._count_me()
         self._store_me()
@@ -139,6 +149,10 @@ class Incident:
 
     def is_warning(self):
         return self.get_type() == IncidentType.WARNING
+
+    def testclass_to_report(self):
+        """ This method must be overridden in derived classes. """
+        raise NotImplementedError()
 
 
 

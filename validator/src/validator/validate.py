@@ -396,7 +396,7 @@ class Validator:
                 testclass=TestClass.ENHANCED,
                 testid='edeps-identical-to-basic-trees',
                 message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
-            ).report()
+            ).confirm()
         return state
 
 
@@ -470,7 +470,7 @@ class Validator:
                         state=state, config=self.incfg, lineno=lineno,
                         testid='misplaced-comment',
                         message='Spurious comment line. Comments are only allowed before a sentence.'
-                    ).report()
+                    ).confirm()
                     ok = False
                 comment_lines.append(line)
             else:
@@ -494,7 +494,7 @@ class Validator:
                             state=state, config=self.incfg, lineno=lineno,
                             testid='number-of-columns',
                             message=f'The line has {len(cols)} columns but {COLCOUNT} are expected.'
-                        ).report()
+                        ).confirm()
                         ok = False
                 # Empty line (end of sentence).
                 elif not line or utils.is_whitespace(line):
@@ -506,7 +506,7 @@ class Validator:
                             state=state, config=self.incfg, lineno=lineno,
                             testid='pseudo-empty-line',
                             message='Spurious line that appears empty but is not; there are whitespace characters.'
-                        ).report()
+                        ).confirm()
                     # If the input lines were read from the input stream, there
                     # will be at most one empty line and it will be the last line
                     # (because it triggered returning a sentence). However, the
@@ -518,7 +518,7 @@ class Validator:
                             state=state, config=self.incfg, lineno=lineno,
                             testid='extra-empty-line',
                             message='Spurious empty line that is not the last line of a sentence.'
-                        ).report()
+                        ).confirm()
                         ok = False
                     else:
                         last_line_is_empty = True
@@ -527,7 +527,7 @@ class Validator:
                                 state=state, config=self.incfg, lineno=lineno,
                                 testid='empty-sentence',
                                 message='Sentence must not be empty. Only one empty line is expected after every sentence.'
-                            ).report()
+                            ).confirm()
                             ok = False
                 # A line which is neither a comment nor a token/word, nor empty. That's bad!
                 else:
@@ -535,7 +535,7 @@ class Validator:
                         state=state, config=self.incfg, lineno=lineno,
                         testid='invalid-line',
                         message=f"Spurious line: '{line}'. All non-empty lines should start with a digit or the # character."
-                    ).report()
+                    ).confirm()
                     ok = False
         # If the last line is not empty (e.g. because the file ended prematurely),
         # it is an error.
@@ -544,7 +544,7 @@ class Validator:
                 state=state, config=self.incfg, lineno=state.current_line,
                 testid='missing-empty-line',
                 message='Missing empty line after the sentence.'
-            ).report()
+            ).confirm()
             ok = seen_token_node
         return ok, comment_lines, token_lines_fields
 
@@ -604,7 +604,7 @@ class Validator:
                 testid='unicode-normalization',
                 message=testmessage,
                 explanation=f"This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
-            ).report()
+            ).confirm()
 
 
 
@@ -634,14 +634,14 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='invalid-whitespace-mwt',
                     message=f"White space not allowed in multi-word token '{cols[col_idx]}'. If it contains a space, it is not a single surface token."
-                ).report()
+                ).confirm()
             # These columns must not have whitespace.
             elif col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS) and utils.crex.ws.search(cols[col_idx]):
                 Error(
                     state=state, config=self.incfg,
                     testid='invalid-whitespace',
                     message=f"White space not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-                ).report()
+                ).confirm()
             # Only perform the following tests if we have not found and reported a space above.
             else:
                 # Must never be empty
@@ -650,7 +650,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='empty-column',
                         message=f"Empty value in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-                    ).report()
+                    ).confirm()
                 else:
                     # Must never have leading/trailing/repeated whitespace.
                     # This will be only reported for columns that allow whitespace in general.
@@ -659,20 +659,20 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='leading-whitespace',
                             message=f"Leading whitespace not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-                        ).report()
+                        ).confirm()
                     if cols[col_idx][-1].isspace():
                         Error(
                             state=state, config=self.incfg,
                             testid='trailing-whitespace',
                             message=f"Trailing whitespace not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-                        ).report()
+                        ).confirm()
                     # Must never contain two consecutive whitespace characters
                     if utils.crex.ws2.search(cols[col_idx]):
                         Error(
                             state=state, config=self.incfg,
                             testid='repeated-whitespace',
                             message=f"Two or more consecutive whitespace characters not allowed in column {COLNAMES[col_idx]}: '{cols[col_idx]}'."
-                        ).report()
+                        ).confirm()
 
 
 
@@ -704,7 +704,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='invalid-word-id',
                     message=f"Unexpected ID format '{cols[ID]}'."
-                ).report()
+                ).confirm()
                 ok = False
                 continue
             if not utils.is_empty_node(cols):
@@ -723,7 +723,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='invalid-word-interval',
                         message=f"Spurious word interval definition: '{cols[ID]}'."
-                    ).report()
+                    ).confirm()
                     ok = False
                     continue
                 beg, end = int(match.group(1)), int(match.group(2))
@@ -732,7 +732,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='misplaced-word-interval',
                         message='Multiword range not before its first word.'
-                    ).report()
+                    ).confirm()
                     ok = False
                     continue
                 tokens.append((beg, end))
@@ -743,7 +743,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='misplaced-empty-node',
                         message=f'Empty node id {cols[ID]}, expected {current_word_id}.{next_empty_id}'
-                    ).report()
+                    ).confirm()
                     ok = False
                 next_empty_id += 1
                 # Interaction of multiword tokens and empty nodes if there is an empty
@@ -755,7 +755,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='misplaced-empty-node',
                         message=f"Empty node id {cols[ID]} must occur before multiword token {tokens[-1][0]}-{tokens[-1][1]}."
-                    ).report()
+                    ).confirm()
                     ok = False
         # Now let's do some basic sanity checks on the sequences.
         # Expected sequence of word IDs is 1, 2, ...
@@ -767,7 +767,7 @@ class Validator:
                 lineno=-1,
                 testid='word-id-sequence',
                 message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
-            ).report()
+            ).confirm()
             ok = False
         # Check elementary sanity of word intervals.
         # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
@@ -777,7 +777,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='reversed-word-interval',
                     message=f'Spurious token interval {b}-{e}'
-                ).report()
+                ).confirm()
                 ok = False
                 continue
             if b < 1 or e > len(words): # out of range
@@ -785,7 +785,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='word-interval-out',
                     message=f'Spurious token interval {b}-{e} (out of range)'
-                ).report()
+                ).confirm()
                 ok = False
                 continue
         return ok
@@ -811,7 +811,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='invalid-word-interval',
                     message=f"Spurious word interval definition: '{cols[ID]}'."
-                ).report()
+                ).confirm()
                 continue
             start, end = m.groups()
             start, end = int(start), int(end)
@@ -821,7 +821,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='overlapping-word-intervals',
                     message=f'Range overlaps with others: {cols[ID]}'
-                ).report()
+                ).confirm()
             covered |= set(range(start, end+1))
 
 
@@ -840,7 +840,7 @@ class Validator:
                 lineno=state.current_line,
                 testid='non-unix-newline',
                 message='Only the unix-style LF line terminator is allowed.'
-            ).report()
+            ).confirm()
 
 
 
@@ -877,19 +877,19 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='invalid-sent-id',
                         message=f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes."
-                    ).report()
+                    ).confirm()
         if not matched:
             Error(
                 state=state, config=self.incfg,
                 testid='missing-sent-id',
                 message='Missing the sent_id attribute.'
-            ).report()
+            ).confirm()
         elif len(matched) > 1:
             Error(
                 state=state, config=self.incfg,
                 testid='multiple-sent-id',
                 message='Multiple sent_id attributes.'
-            ).report()
+            ).confirm()
         else:
             # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
             # For that to happen, all three files should be tested at once.
@@ -899,13 +899,13 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='non-unique-sent-id',
                     message=f"Non-unique sent_id attribute '{sid}'."
-                ).report()
+                ).confirm()
             if sid.count('/') > 1 or (sid.count('/') == 1 and lcode != 'ud'):
                 Error(
                     state=state, config=self.incfg,
                     testid='slash-in-sent-id',
                     message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
-                ).report()
+                ).confirm()
             state.known_sent_ids.add(sid)
 
 
@@ -932,13 +932,13 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='invalid-parallel-id',
                         message=f"Spurious parallel_id line: '{c}' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow."
-                    ).report()
+                    ).confirm()
         if len(matched) > 1:
             Error(
                 state=state, config=self.incfg,
                 testid='multiple-parallel-id',
                 message='Multiple parallel_id attributes.'
-            ).report()
+            ).confirm()
         elif matched:
             # Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
             # For that to happen, all three files should be tested at once.
@@ -948,7 +948,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='non-unique-parallel-id',
                     message=f"Non-unique parallel_id attribute '{pid}'."
-                ).report()
+                ).confirm()
             else:
                 # Additional tests when pid has altN or partN.
                 # Do them only if the whole pid is unique.
@@ -971,19 +971,19 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='parallel-id-alt',
                             message=f"Some instances of parallel sentence '{sid}' have the 'alt' suffix while others do not."
-                        ).report()
+                        ).confirm()
                     elif alt != None and alt != state.parallel_id_lastalt[sid] + 1:
                         Error(
                             state=state, config=self.incfg,
                             testid='parallel-id-alt',
                             message=f"The alt suffix of parallel sentence '{sid}' should be {state.parallel_id_lastalt[sid]}+1 but it is {alt}."
-                        ).report()
+                        ).confirm()
                 elif alt != None and alt != 1:
                     Error(
                         state=state, config=self.incfg,
                         testid='parallel-id-alt',
                         message=f"The alt suffix of parallel sentence '{sid}' should be 1 but it is {alt}."
-                    ).report()
+                    ).confirm()
                 state.parallel_id_lastalt[sid] = alt
                 if sid in state.parallel_id_lastpart:
                     if state.parallel_id_lastpart[sid] == None and part != None or state.parallel_id_lastpart[sid] != None and part == None:
@@ -991,19 +991,19 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='parallel-id-part',
                             message=f"Some instances of parallel sentence '{sid}' have the 'part' suffix while others do not."
-                        ).report()
+                        ).confirm()
                     elif part != None and part != state.parallel_id_lastpart[sid] + 1:
                         Error(
                             state=state, config=self.incfg,
                             testid='parallel-id-part',
                             message=f"The part suffix of parallel sentence '{sid}' should be {state.parallel_id_lastpart[sid]}+1 but it is {part}."
-                        ).report()
+                        ).confirm()
                 elif part != None and part != 1:
                     Error(
                         state=state, config=self.incfg,
                         testid='parallel-id-part',
                         message=f"The part suffix of parallel sentence '{sid}' should be 1 but it is {part}."
-                    ).report()
+                    ).confirm()
                 state.parallel_id_lastpart[sid] = part
             state.known_parallel_ids.add(pid)
 
@@ -1036,31 +1036,31 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='multiple-newdoc',
                 message='Multiple newdoc attributes.'
-            ).report()
+            ).confirm()
         if len(newpar_matched) > 1:
             Error(
                 state=state, config=self.incfg,
                 testid='multiple-newpar',
                 message='Multiple newpar attributes.'
-            ).report()
+            ).confirm()
         if (newdoc_matched or newpar_matched) and state.spaceafterno_in_effect:
             Error(
                 state=state, config=self.incfg,
                 testid='spaceafter-newdocpar',
                 message='New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
-            ).report()
+            ).confirm()
         if not text_matched:
             Error(
                 state=state, config=self.incfg,
                 testid='missing-text',
                 message='Missing the text attribute.'
-            ).report()
+            ).confirm()
         elif len(text_matched) > 1:
             Error(
                 state=state, config=self.incfg,
                 testid='multiple-text',
                 message='Multiple text attributes.'
-            ).report()
+            ).confirm()
         else:
             stext = text_matched[0].group(1)
             if stext[-1].isspace():
@@ -1068,7 +1068,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='text-trailing-whitespace',
                     message='The text attribute must not end with whitespace.'
-                ).report()
+                ).confirm()
             # Validate the text against the SpaceAfter attribute in MISC.
             skip_words = set()
             mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
@@ -1083,14 +1083,14 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='nospaceafter-yes',
                         message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-                    ).report()
+                    ).confirm()
                 if len([x for x in cols[MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
                     Error(
                         state=state, config=self.incfg,
                         lineno=state.sentence_line+iline,
                         testid='spaceafter-value',
                         message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
-                    ).report()
+                    ).confirm()
                 if utils.is_empty_node(cols):
                     if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
                         Error(
@@ -1098,7 +1098,7 @@ class Validator:
                             lineno=state.sentence_line+iline,
                             testid='spaceafter-empty-node',
                             message="'SpaceAfter=No' cannot occur with empty nodes."
-                        ).report()
+                        ).confirm()
                     continue
                 elif utils.is_multiword_token(cols):
                     beg, end = cols[ID].split('-')
@@ -1113,7 +1113,7 @@ class Validator:
                             lineno=state.sentence_line+iline,
                             testid='spaceafter-mwt-node',
                             message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-                        ).report()
+                        ).confirm()
                     continue
                 else:
                     # Err, I guess we have nothing to do here. :)
@@ -1129,7 +1129,7 @@ class Validator:
                             lineno=state.sentence_line+iline,
                             testid='text-form-mismatch',
                             message=f"Mismatch between the text attribute and the FORM field. Form[{cols[ID]}] is '{cols[FORM]}' but text is '{stext[:len(cols[FORM])+20]}...'"+extra_message
-                        ).report()
+                        ).confirm()
                         mismatch_reported = 1
                 else:
                     stext = stext[len(cols[FORM]):] # eat the form
@@ -1145,14 +1145,14 @@ class Validator:
                                 lineno=state.sentence_line+iline,
                                 testid='missing-spaceafter',
                                 message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{utils.shorten(cols[FORM]+stext)}'."
-                            ).report()
+                            ).confirm()
                         stext = stext.lstrip()
             if stext:
                 Error(
                     state=state, config=self.incfg,
                     testid='text-extra-chars',
                     message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
-                ).report()
+                ).confirm()
 
 
 
@@ -1188,7 +1188,7 @@ class Validator:
                     testclass=TestClass.FORMAT,
                     testid='mwt-nonempty-field',
                     message=f"A multi-word token line must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-                ).report()
+                ).confirm()
 
 
 
@@ -1216,7 +1216,7 @@ class Validator:
                     testclass=TestClass.FORMAT,
                     testid='mwt-nonempty-field',
                     message=f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
-                ).report()
+                ).confirm()
 
 
 
@@ -1244,7 +1244,7 @@ class Validator:
                 testclass=TestClass.SYNTAX,
                 testid='invalid-deprel',
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
-            ).report()
+            ).confirm()
         try:
             utils.deps_list(cols)
         except ValueError:
@@ -1253,7 +1253,7 @@ class Validator:
                 testclass=TestClass.ENHANCED,
                 testid='invalid-deps',
                 message=f"Failed to parse DEPS: '{cols[DEPS]}'."
-            ).report()
+            ).confirm()
             return
         if any(deprel for head, deprel in utils.deps_list(cols)
             if not utils.crex.edeprel.fullmatch(deprel)):
@@ -1262,7 +1262,7 @@ class Validator:
                     testclass=TestClass.ENHANCED,
                     testid='invalid-edeprel',
                     message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
-                ).report()
+                ).confirm()
 
 
 
@@ -1290,7 +1290,7 @@ class Validator:
                 testclass=TestClass.MORPHO,
                 testid='unknown-upos',
                 message=f"Unknown UPOS tag: '{cols[UPOS]}'."
-            ).report()
+            ).confirm()
 
 
 
@@ -1326,7 +1326,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='unsorted-features',
                 message=f"Morphological features must be sorted: '{feats}'."
-            ).report()
+            ).confirm()
         attr_set = set() # I'll gather the set of features here to check later that none is repeated.
         # Subsequent higher-level tests could fail if a feature is not in the
         # Feature=Value format. If that happens, we will return False and the caller
@@ -1339,7 +1339,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='invalid-feature',
                     message=f"Spurious morphological feature: '{f}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
-                ).report()
+                ).confirm()
                 attr_set.add(f) # to prevent misleading error "Repeated features are disallowed"
                 safe = False
             else:
@@ -1352,27 +1352,27 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='repeated-feature-value',
                         message=f"Repeated feature values are disallowed: '{feats}'"
-                    ).report()
+                    ).confirm()
                 if [v.lower() for v in values] != sorted(v.lower() for v in values):
                     Error(
                         state=state, config=self.incfg,
                         testid='unsorted-feature-values',
                         message=f"If a feature has multiple values, these must be sorted: '{f}'"
-                    ).report()
+                    ).confirm()
                 for v in values:
                     if not utils.crex.val.fullmatch(v):
                         Error(
                             state=state, config=self.incfg,
                             testid='invalid-feature-value',
                             message=f"Spurious value '{v}' in '{f}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
-                        ).report()
+                        ).confirm()
                     # Level 2 tests character properties and canonical order but not that the f-v pair is known.
         if len(attr_set) != len(feat_list):
             Error(
                 state=state, config=self.incfg,
                 testid='repeated-feature',
                 message=f"Repeated features are disallowed: '{feats}'."
-            ).report()
+            ).confirm()
         return safe
 
 
@@ -1390,7 +1390,7 @@ class Validator:
             state.seen_morpho_feature = state.current_line
             for testid in state.delayed_feature_errors:
                 for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                    occurrence['incident'].report()
+                    occurrence['incident'].confirm()
 
 
 
@@ -1433,7 +1433,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='unsorted-deps',
                 message=f"DEPS not sorted by head index: '{cols[DEPS]}'"
-            ).report()
+            ).confirm()
         else:
             lasth = None
             lastd = None
@@ -1444,13 +1444,13 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='unsorted-deps-2',
                             message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
-                        ).report()
+                        ).confirm()
                     elif d == lastd:
                         Error(
                             state=state, config=self.incfg,
                             testid='repeated-deps',
                             message=f"DEPS contain multiple instances of the same relation '{h}:{d}'"
-                        ).report()
+                        ).confirm()
                 lasth = h
                 lastd = d
         try:
@@ -1464,7 +1464,7 @@ class Validator:
                 testclass=TestClass.ENHANCED,
                 testid='deps-self-loop',
                 message=f"Self-loop in DEPS for '{cols[ID]}'"
-            ).report()
+            ).confirm()
 
 
 
@@ -1501,13 +1501,13 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='empty-misc',
                         message="Empty attribute in MISC; possible misinterpreted vertical bar?"
-                    ).report()
+                    ).confirm()
                 else:
                     Warning(
                         state=state, config=self.incfg,
                         testid='empty-misc-key',
                         message=f"Empty MISC attribute name in '{ma[0]}={ma[1]}'."
-                    ).report()
+                    ).confirm()
             # We do not warn about MISC items that do not contain '='.
             # But the remaining error messages below assume that ma[1] exists.
             if len(ma) == 1:
@@ -1517,25 +1517,25 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute name starts with space in '{ma[0]}={ma[1]}'."
-                ).report()
+                ).confirm()
             elif re.search(r"\s$", ma[0]):
                 Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute name ends with space in '{ma[0]}={ma[1]}'."
-                ).report()
+                ).confirm()
             elif re.match(r"^\s", ma[1]):
                 Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute value starts with space in '{ma[0]}={ma[1]}'."
-                ).report()
+                ).confirm()
             elif re.search(r"\s$", ma[1]):
                 Warning(
                     state=state, config=self.incfg,
                     testid='misc-extra-space',
                     message=f"MISC attribute value ends with space in '{ma[0]}={ma[1]}'."
-                ).report()
+                ).confirm()
             if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv|Ref)$", ma[0]):
                 mamap.setdefault(ma[0], 0)
                 mamap[ma[0]] = mamap[ma[0]] + 1
@@ -1544,7 +1544,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='misc-attr-typo',
                     message=f"Possible typo (case or spaces) in MISC attribute '{ma[0]}={ma[1]}'."
-                ).report()
+                ).confirm()
         for a in list(mamap):
             if mamap[a] > 1:
                 Error(
@@ -1552,7 +1552,7 @@ class Validator:
                     testclass=TestClass.FORMAT, # this one is real error
                     testid='repeated-misc',
                     message=f"MISC attribute '{a}' not supposed to occur twice"
-                ).report()
+                ).confirm()
 
 
 
@@ -1592,7 +1592,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='invalid-head',
                         message=f"Invalid HEAD: '{cols[HEAD]}'."
-                    ).report()
+                    ).confirm()
                     ok = False
                 if not (cols[HEAD] in ids or cols[HEAD] == '0'):
                     Error(
@@ -1600,7 +1600,7 @@ class Validator:
                         testclass=TestClass.SYNTAX,
                         testid='unknown-head',
                         message=f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
-                    ).report()
+                    ).confirm()
                     ok = False
             try:
                 deps = utils.deps_list(cols)
@@ -1610,7 +1610,7 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='invalid-deps',
                     message=f"Failed to parse DEPS: '{cols[DEPS]}'."
-                ).report()
+                ).confirm()
                 ok = False
                 continue
             for head, deprel in deps:
@@ -1620,7 +1620,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='invalid-ehead',
                         message=f"Invalid enhanced head reference: '{head}'."
-                    ).report()
+                    ).confirm()
                     ok = False
                 if not (head in ids or head == '0'):
                     Error(
@@ -1628,7 +1628,7 @@ class Validator:
                         testclass=TestClass.ENHANCED,
                         testid='unknown-ehead',
                         message=f"Undefined enhanced head reference (no such ID): '{head}'."
-                    ).report()
+                    ).confirm()
                     ok = False
         return ok
 
@@ -1683,7 +1683,7 @@ class Validator:
                     lineno=node_line,
                     testid='head-self-loop',
                     message=f'HEAD == ID for {cols[ID]}'
-                ).report()
+                ).confirm()
                 return False
             # Incrementally build the set of children of every node.
             children.setdefault(head, set()).add(id_)
@@ -1696,7 +1696,7 @@ class Validator:
                 lineno=-1,
                 testid='multiple-roots',
                 message=f"Multiple root words: {children_0}"
-            ).report()
+            ).confirm()
             return False
         # Return None if there are any cycles. Otherwise we could not later ask
         # Udapi to built a data structure representing the tree.
@@ -1720,7 +1720,7 @@ class Validator:
                 lineno=-1,
                 testid='non-tree',
                 message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
-            ).report()
+            ).confirm()
             return False
         return True
 
@@ -1748,13 +1748,13 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='0-is-not-root',
                     message="DEPREL must be 'root' if HEAD is 0."
-                ).report()
+                ).confirm()
             if node.parent.ord != 0 and node.udeprel == 'root':
                 Error(
                     state=state, config=self.incfg,
                     testid='root-is-not-0',
                     message="DEPREL cannot be 'root' if HEAD is not 0."
-                ).report()
+                ).confirm()
         # In the enhanced graph, test both regular and empty roots.
         for edep in node.deps:
             if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
@@ -1763,14 +1763,14 @@ class Validator:
                     testclass=TestClass.ENHANCED,
                     testid='enhanced-0-is-not-root',
                     message="Enhanced relation type must be 'root' if head is 0."
-                ).report()
+                ).confirm()
             if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
                 Error(
                     state=state, config=self.incfg,
                     testclass=TestClass.ENHANCED,
                     testid='enhanced-root-is-not-0',
                     message="Enhanced relation type cannot be 'root' if head is not 0."
-                ).report()
+                ).confirm()
 
 
 
@@ -1803,7 +1803,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='edeps-only-sometimes',
                         message=f"Enhanced graph must be empty because we saw empty DEPS on line {state.seen_tree_without_enhanced_graph}"
-                    ).report()
+                    ).confirm()
         else:
             if not state.seen_tree_without_enhanced_graph:
                 state.seen_tree_without_enhanced_graph = state.sentence_line
@@ -1812,7 +1812,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='edeps-only-sometimes',
                         message=f"Enhanced graph cannot be empty because we saw non-empty DEPS on line {state.seen_enhanced_graph}"
-                    ).report()
+                    ).confirm()
 
 
 
@@ -1874,7 +1874,7 @@ class Validator:
                 testclass=TestClass.ENHANCED,
                 testid='unconnected-egraph',
                 message=f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
-            ).report()
+            ).confirm()
             return None
 
 
@@ -1916,7 +1916,7 @@ class Validator:
                 ok = False
         if not ok:
             if state.seen_morpho_feature:
-                incident.report()
+                incident.confirm()
             else:
                 if not incident.testid in state.delayed_feature_errors:
                     state.delayed_feature_errors[incident.testid] = {'occurrences': []}
@@ -1956,7 +1956,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='verbform-fin-without-mood',
                 message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
-            ).report()
+            ).confirm()
         # We have to exclude AUX from the following test because they could be
         # nonverbal and Mood could be their lexical feature
         # (see https://github.com/UniversalDependencies/docs/issues/1147).
@@ -1966,7 +1966,7 @@ class Validator:
         #        state=state, config=self.incfg,
         #        testid='mood-without-verbform-fin',
         #        message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
-        #    ).report()
+        #    ).confirm()
 
 
 
@@ -2008,7 +2008,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='fixed-without-extpos',
                 message=f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
-            ).report()
+            ).confirm()
         # Certain relations are reserved for nominals and cannot be used for verbs.
         # Nevertheless, they can appear with adjectives or adpositions if they are promoted due to ellipsis.
         # Unfortunately, we cannot enforce this test because a word can be cited
@@ -2021,7 +2021,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='rel-upos-det',
                 message=f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Nummod is for "number phrases" only. This could be interpreted as NUM only,
         # but some languages treat some cardinal numbers as NOUNs, and in
         # https://github.com/UniversalDependencies/docs/issues/596,
@@ -2031,7 +2031,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='rel-upos-nummod',
                 message=f"'nummod' should be 'NUM' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Advmod is for adverbs, perhaps particles but not for prepositional phrases or clauses.
         # Nevertheless, we should allow adjectives because they can be used as adverbs in some languages.
         # https://github.com/UniversalDependencies/docs/issues/617#issuecomment-488261396
@@ -2043,28 +2043,28 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='rel-upos-advmod',
                 message=f"'advmod' should be 'ADV' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
         if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
             Error(
                 state=state, config=self.incfg,
                 testid='rel-upos-expl',
                 message=f"'expl' should normally be 'PRON' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Auxiliary verb/particle must be AUX.
         if deprel == 'aux' and not re.match(r"^(AUX)", upos):
             Error(
                 state=state, config=self.incfg,
                 testid='rel-upos-aux',
                 message=f"'aux' should be 'AUX' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
         if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
             Error(
                 state=state, config=self.incfg,
                 testid='rel-upos-cop',
                 message=f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Case is normally an adposition, maybe particle.
         # However, there are also secondary adpositions and they may have the original POS tag:
         # NOUN: [cs] pomocí, prostřednictvím
@@ -2075,7 +2075,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='rel-upos-case',
                 message=f"'case' should not be '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Mark is normally a conjunction or adposition, maybe particle but definitely not a pronoun.
         ###!!! February 2022: Temporarily allow mark+VERB ("regarding"). In the future, it should be banned again
         ###!!! by default (and case+VERB too), but there should be a language-specific list of exceptions.
@@ -2088,32 +2088,32 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='rel-upos-mark',
                 message=f"'mark' should not be '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         # Cc is a conjunction, possibly an adverb or particle.
         if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
             Error(
                 state=state, config=self.incfg,
                 testid='rel-upos-cc',
                 message=f"'cc' should not be '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         if deprel == 'punct' and upos != 'PUNCT':
             Error(
                 state=state, config=self.incfg,
                 testid='rel-upos-punct',
                 message=f"'punct' must be 'PUNCT' but it is '{upos}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
             Error(
                 state=state, config=self.incfg,
                 testid='upos-rel-punct',
                 message=f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{utils.formtl(node)}')"
-            ).report()
+            ).confirm()
         if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
             Error(
                 state=state, config=self.incfg,
                 testid='rel-upos-fixed',
                 message=f"'fixed' should not be used for proper nouns ('{utils.formtl(node)}')."
-            ).report()
+            ).confirm()
 
 
 
@@ -2147,7 +2147,7 @@ class Validator:
                 nodeid=node.ord,
                 testid='flat-foreign-upos-feats',
                 message="The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-            ).report()
+            ).confirm()
         if parent.upos != 'X' or str(parent.feats) != 'Foreign=Yes':
             Warning(
                 state=state, config=self.incfg,
@@ -2155,7 +2155,7 @@ class Validator:
                 nodeid=parent.ord,
                 testid='flat-foreign-upos-feats',
                 message="The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
-            ).report()
+            ).confirm()
 
 
 
@@ -2192,7 +2192,7 @@ class Validator:
                     testclass=TestClass.SYNTAX,
                     testid=f"right-to-left-{node.udeprel}",
                     message=f"Parent of relation '{node.deprel}' must precede the child in the word order."
-                ).report()
+                ).confirm()
 
 
 
@@ -2257,7 +2257,7 @@ class Validator:
                 testid='too-many-subjects',
                 message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{utils.formtl(node)}' not subtyped as ':outer'.",
                 explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
-            ).report()
+            ).confirm()
 
 
 
@@ -2287,7 +2287,7 @@ class Validator:
                 testclass=TestClass.SYNTAX,
                 testid='too-many-objects',
                 message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{utils.formtl(node)}'."
-            ).report()
+            ).confirm()
 
 
 
@@ -2327,7 +2327,7 @@ class Validator:
                     testclass=TestClass.SYNTAX,
                     testid='obl-should-be-nmod',
                     message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'."
-                ).report()
+                ).confirm()
 
 
 
@@ -2367,7 +2367,7 @@ class Validator:
                     testclass=TestClass.SYNTAX,
                     testid='orphan-parent',
                     message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
-                ).report()
+                ).confirm()
 
 
 
@@ -2447,14 +2447,14 @@ class Validator:
                         nodeid=node.ord,
                         testid='leaf-mark-case',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                     Error(
                         state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-aux-cop',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 # Classifiers must be allowed under demonstrative determiners according to the clf guidelines.
                 # People have identified various constructions where the restriction
                 # on children of det dependents may have to be relaxed even if not
@@ -2495,21 +2495,21 @@ class Validator:
                         nodeid=node.ord,
                         testid='leaf-det',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
                     Error(
                         state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-clf',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
                     Error(
                         state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-cc',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 # Fixed expressions should not be nested, i.e., no chains of fixed relations.
                 # As they are supposed to represent functional elements, they should not have
                 # other dependents either, with the possible exception of conj.
@@ -2524,7 +2524,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='leaf-fixed',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 # Goeswith cannot have any children, not even another goeswith.
                 elif pdeprel == 'goeswith':
                     Error(
@@ -2532,7 +2532,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='leaf-goeswith',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
                 # Punctuation can exceptionally have other punct children if an exclamation
                 # mark is in brackets or quotes. It cannot have other children.
                 elif pdeprel == 'punct' and cdeprel != 'punct':
@@ -2541,7 +2541,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='leaf-punct',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
-                    ).report()
+                    ).confirm()
 
 
 
@@ -2579,7 +2579,7 @@ class Validator:
                     testclass=TestClass.SYNTAX,
                     testid='fixed-gap',
                     message=f"Gaps in fixed expression {str(fxordlist)} '{fxexpr}'"
-                ).report()
+                ).confirm()
 
 
     def check_goeswith_span(self, state, node, lineno):
@@ -2614,7 +2614,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='goeswith-gap',
                     message=f"Gaps in goeswith group {str(gwordlist)} != {str(gwordrange)}."
-                ).report()
+                ).confirm()
             # Non-last node in a goeswith range must have a space after itself.
             nospaceafter = [x for x in gwlist[:-1] if x.misc['SpaceAfter'] == 'No']
             if nospaceafter:
@@ -2623,7 +2623,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='goeswith-nospace',
                     message="'goeswith' cannot connect nodes that are not separated by whitespace."
-                ).report()
+                ).confirm()
             # This is not about the span of the interrupted word, but since we already
             # know that we are at the head of a goeswith word, let's do it here, too.
             # Every goeswith parent should also have Typo=Yes. However, this is not
@@ -2662,21 +2662,21 @@ class Validator:
                     nodeid=node.ord,
                     testid='goeswith-lemma',
                     message="The lemma of a 'goeswith'-connected word must be annotated only at the first part."
-                ).report()
+                ).confirm()
             if node.upos != 'X':
                 Error(
                     state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-upos',
                     message="The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
-                ).report()
+                ).confirm()
             if str(node.feats) != '_':
                 Error(
                     state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-feats',
                     message="The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
-                ).report()
+                ).confirm()
             if str(node.raw_deps) != '_' and str(node.raw_deps) != str(node.parent.ord)+':'+node.deprel:
                 Error(
                     state=state, config=self.incfg,
@@ -2684,7 +2684,7 @@ class Validator:
                     testclass=TestClass.ENHANCED,
                     testid='goeswith-edeps',
                     message="A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
-                ).report()
+                ).confirm()
 
 
     def get_caused_nonprojectivities(self, node):
@@ -2803,7 +2803,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='punct-causes-nonproj',
                     message=f"Punctuation must not cause non-projectivity of nodes {nonprojids}"
-                ).report()
+                ).confirm()
             gapnodes = self.get_gap(node)
             if gapnodes:
                 gapids = [x.ord for x in gapnodes]
@@ -2812,7 +2812,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='punct-is-nonproj',
                     message=f"Punctuation must not be attached non-projectively over nodes {gapids}"
-                ).report()
+                ).confirm()
 
 
 
@@ -2853,7 +2853,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='empty-node-after-eorphan',
                         message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
-                    ).report()
+                    ).confirm()
         udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
         if 'orphan' in udeprels:
             if not state.seen_enhanced_orphan:
@@ -2865,7 +2865,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='eorphan-after-empty-node',
                     message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
-                ).report()
+                ).confirm()
 
 
 
@@ -2917,7 +2917,7 @@ class Validator:
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
                             explanation=self.data.explain_tospace(lang)
-                        ).report()
+                        ).confirm()
                 else:
                     Error(
                         state=state, config=self.incfg,
@@ -2925,7 +2925,7 @@ class Validator:
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
                         explanation=self.data.explain_tospace(lang)
-                    ).report()
+                    ).confirm()
 
 
 
@@ -2973,7 +2973,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='mwt-typo-repeated-at-word',
                             message=f"Feature Typo cannot occur at word [{node.ord}] if it already occurred at the corresponding multiword token [{mwt.ord_range}]."
-                        ).report()
+                        ).confirm()
                 # In case of code switching, the current token may not be in the default language
                 # and then its features are checked against a different feature set. An exception
                 # is the feature Foreign, which always relates to the default language of the
@@ -2993,7 +2993,7 @@ class Validator:
                             testid='feature-unknown',
                             message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
                             explanation=self.data.explain_feats(effective_lang)
-                        ).report()
+                        ).confirm()
                     else:
                         lfrecord = effective_featset[f]
                         if lfrecord['permitted'] == 0:
@@ -3003,7 +3003,7 @@ class Validator:
                                 testid='feature-not-permitted',
                                 message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
                                 explanation=self.data.explain_feats(effective_lang)
-                            ).report()
+                            ).confirm()
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                             if not v in values:
@@ -3013,7 +3013,7 @@ class Validator:
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=self.data.explain_feats(effective_lang)
-                                ).report()
+                                ).confirm()
                             elif not node.upos in lfrecord['byupos']:
                                 Error(
                                     state=state, config=self.incfg,
@@ -3021,7 +3021,7 @@ class Validator:
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=self.data.explain_feats(effective_lang)
-                                ).report()
+                                ).confirm()
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                                 Error(
                                     state=state, config=self.incfg,
@@ -3029,7 +3029,7 @@ class Validator:
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=self.data.explain_feats(effective_lang)
-                                ).report()
+                                ).confirm()
 
 
 
@@ -3082,7 +3082,7 @@ class Validator:
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
                     explanation=self.data.explain_deprel(mainlang)
-                ).report()
+                ).confirm()
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from check_id_references() and the head indices are OK).
@@ -3105,7 +3105,7 @@ class Validator:
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
                         explanation=self.data.explain_edeprel(mainlang)
-                    ).report()
+                    ).confirm()
 
 
 
@@ -3144,7 +3144,7 @@ class Validator:
                     testid='aux-lemma',
                     message=f"'{utils.lemmatl(node)}' is not an auxiliary in language [{lang}]",
                     explanation=self.data.explain_aux(lang)
-                ).report()
+                ).confirm()
 
 
 
@@ -3177,7 +3177,7 @@ class Validator:
                     testid='cop-lemma',
                     message=f"'{utils.lemmatl(node)}' is not a copula in language [{lang}]",
                     explanation=self.data.explain_cop(lang)
-                ).report()
+                ).confirm()
 
 
 
@@ -3214,7 +3214,7 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='global-entity-mismatch',
                             message=f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{state.global_entity_attribute_string}' on line {state.seen_global_entity}."
-                        ).report()
+                        ).confirm()
                 else:
                     state.seen_global_entity = state.comment_start_line + iline
                     state.global_entity_attribute_string = global_entity_match.group(1)
@@ -3223,7 +3223,7 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='spurious-global-entity',
                             message=f"Cannot parse global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                        ).report()
+                        ).confirm()
                     else:
                         global_entity_attributes = state.global_entity_attribute_string.split('-')
                         if not 'eid' in global_entity_attributes:
@@ -3231,43 +3231,43 @@ class Validator:
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'eid'."
-                            ).report()
+                            ).confirm()
                         elif global_entity_attributes[0] != 'eid':
                             Error(
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'eid' must come first in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                            ).report()
+                            ).confirm()
                         if not 'etype' in global_entity_attributes:
                             Error(
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'etype'."
-                            ).report()
+                            ).confirm()
                         elif global_entity_attributes[1] != 'etype':
                             Error(
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'etype' must come second in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                            ).report()
+                            ).confirm()
                         if not 'head' in global_entity_attributes:
                             Error(
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'head'."
-                            ).report()
+                            ).confirm()
                         elif global_entity_attributes[2] != 'head':
                             Error(
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'head' must come third in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                            ).report()
+                            ).confirm()
                         if 'other' in global_entity_attributes and global_entity_attributes[3] != 'other':
                             Error(
                                 state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                            ).report()
+                            ).confirm()
                         # Fill the global dictionary that maps attribute names to list indices.
                         i = 0
                         for a in global_entity_attributes:
@@ -3276,7 +3276,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='spurious-global-entity',
                                     message=f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
-                                ).report()
+                                ).confirm()
                             else:
                                 state.entity_attribute_index[a] = i
                             i += 1
@@ -3307,42 +3307,42 @@ class Validator:
                     state=state, config=self.incfg,
                     testid='entity-mwt',
                     message="Entity or coreference annotation must not occur at a multiword-token line."
-                ).report()
+                ).confirm()
                 continue
             if len(entity)>1:
                 Error(
                     state=state, config=self.incfg,
                     testid='multiple-entity-statements',
                     message=f"There can be at most one 'Entity=' statement in MISC but we have {str(misc)}."
-                ).report()
+                ).confirm()
                 continue
             if len(bridge)>1:
                 Error(
                     state=state, config=self.incfg,
                     testid='multiple-bridge-statements',
                     message=f"There can be at most one 'Bridge=' statement in MISC but we have {str(misc)}."
-                ).report()
+                ).confirm()
                 continue
             if len(splitante)>1:
                 Error(
                     state=state, config=self.incfg,
                     testid='multiple-splitante-statements',
                     message=f"There can be at most one 'SplitAnte=' statement in MISC but we have {str(misc)}."
-                ).report()
+                ).confirm()
                 continue
             if len(bridge)>0 and len(entity)==0:
                 Error(
                     state=state, config=self.incfg,
                     testid='bridge-without-entity',
                     message=f"The 'Bridge=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
-                ).report()
+                ).confirm()
                 continue
             if len(splitante)>0 and len(entity)==0:
                 Error(
                     state=state, config=self.incfg,
                     testid='splitante-without-entity',
                     message=f"The 'SplitAnte=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
-                ).report()
+                ).confirm()
                 continue
             # There is at most one Entity (and only if it is there, there may be also one Bridge and/or one SplitAnte).
             if len(entity)>0:
@@ -3351,7 +3351,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='entity-without-global-entity',
                         message="No global.Entity comment was found before the first 'Entity' in MISC."
-                    ).report()
+                    ).confirm()
                     continue
                 match = re.match(r"^Entity=((?:\([^( )]+(?:-[^( )]+)*\)?|[^( )]+\))+)$", entity[0])
                 if not match:
@@ -3359,7 +3359,7 @@ class Validator:
                         state=state, config=self.incfg,
                         testid='spurious-entity-statement',
                         message=f"Cannot parse the Entity statement '{entity[0]}'."
-                    ).report()
+                    ).confirm()
                 else:
                     entity_string = match.group(1)
                     # We cannot check the rest if we cannot identify the 'eid' attribute.
@@ -3389,7 +3389,7 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='internal-error',
                             message='INTERNAL ERROR'
-                        ).report()
+                        ).confirm()
                     # All 1 cases should precede all 0 cases.
                     # The 2 cases can be either before the first 1 case, or after the last 0 case.
                     seen0 = False
@@ -3410,7 +3410,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='too-many-entity-attributes',
                                     message=f"Entity '{e}' has {len(attributes)} attributes while only {state.entity_attribute_number} attributes are globally declared."
-                                ).report()
+                                ).confirm()
                             # The raw eid (bracket eid) may include an identification of a part of a discontinuous mention,
                             # as in 'e155[1/2]'. This is fine for matching opening and closing brackets
                             # because the closing bracket must contain it too. However, to identify the
@@ -3423,7 +3423,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='too-many-entity-attributes',
                                     message=f"Entity '{e}' has {len(attributes)} attributes while only eid is expected at the closing bracket."
-                                ).report()
+                                ).confirm()
                             beid = attributes[0]
                         eid = beid
                         ipart = 1
@@ -3441,20 +3441,20 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-id',
                                     message=f"Discontinuous mention must have at least two parts but it has one in '{beid}'."
-                                ).report()
+                                ).confirm()
                             if ipart > npart:
                                 Error(
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-id',
                                     message=f"Entity id '{beid}' of discontinuous mention says the current part is higher than total number of parts."
-                                ).report()
+                                ).confirm()
                         else:
                             if re.match(r"[\[\]]", beid):
                                 Error(
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-id',
                                     message=f"Entity id '{beid}' contains square brackets but does not have the form used in discontinuous mentions."
-                                ).report()
+                                ).confirm()
 
                         #--------------------------------------------------------------------------------------------------------------------------------
                         # The code that we will have to execute at single-node continuous parts and at the opening brackets of multi-node continuous parts.
@@ -3489,7 +3489,7 @@ class Validator:
                                                 state=state, config=self.incfg,
                                                 testid='misplaced-mention-part',
                                                 message=f"Unexpected part of discontinuous mention '{beid}': last part was '{discontinuous_mention['last_ipart']}/{discontinuous_mention['npart']}' on line {discontinuous_mention['last_part_line']}."
-                                            ).report()
+                                            ).confirm()
                                             # We will update last_ipart at closing bracket, i.e., after the current part has been entirely processed.
                                             # Otherwise nested discontinuous mentions might wrongly assess where they belong.
                                         elif attrstring_to_match != discontinuous_mention['attributes']:
@@ -3497,13 +3497,13 @@ class Validator:
                                                 state=state, config=self.incfg,
                                                 testid='mention-attribute-mismatch',
                                                 message=f"Attribute mismatch of discontinuous mention: current part has '{attrstring_to_match}', first part '{discontinuous_mention['attributes']}' was at line {discontinuous_mention['first_part_line']}."
-                                            ).report()
+                                            ).confirm()
                                     else:
                                         Error(
                                             state=state, config=self.incfg,
                                             testid='misplaced-mention-part',
                                             message=f"Unexpected part of discontinuous mention '{beid}': this is part {ipart} but we do not have information about the previous parts."
-                                        ).report()
+                                        ).confirm()
                                         discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
                                                                 'first_part_line': state.sentence_line+iline,
                                                                 'last_part_line': state.sentence_line+iline,
@@ -3516,7 +3516,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='entity-across-newdoc',
                                     message=f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {state.entity_ids_other_documents[eid]}, before the last newdoc."
-                                ).report()
+                                ).confirm()
                             elif not eid in state.entity_ids_this_document:
                                 state.entity_ids_this_document[eid] = state.sentence_line+iline
                             etype = ''
@@ -3530,7 +3530,7 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='spurious-entity-type',
                                         message=f"Spurious entity type '{etype}'."
-                                    ).report()
+                                    ).confirm()
                             if 'identity' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['identity']+1:
                                 identity = attributes[state.entity_attribute_index['identity']]
                             # Check the form of the head index now.
@@ -3543,7 +3543,7 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='spurious-mention-head',
                                         message=f"Entity head index '{attributes[state.entity_attribute_index['head']]}' must be a non-zero-starting integer."
-                                    ).report()
+                                    ).confirm()
                                 else:
                                     head = int(attributes[state.entity_attribute_index['head']])
                             # If this is the first mention of the entity, remember the values
@@ -3557,14 +3557,14 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='entity-type-mismatch',
                                         message=f"Entity '{eid}' cannot have type '{etype}' that does not match '{state.entity_types[eid][0]}' from the first mention on line {state.entity_types[eid][2]}."
-                                    ).report()
+                                    ).confirm()
                                 # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
                                 if identity != state.entity_types[eid][1]:
                                     Error(
                                         state=state, config=self.incfg,
                                         testid='entity-identity-mismatch',
                                         message=f"Entity '{eid}' cannot have identity '{identity}' that does not match '{state.entity_types[eid][1]}' from the first mention on line {state.entity_types[eid][2]}."
-                                    ).report()
+                                    ).confirm()
                             # Remember the line where (the current part of) the entity mention starts.
                             mention = {'beid': beid, 'line': state.sentence_line+iline,
                                        'span': [cols[ID]], 'text': cols[FORM],
@@ -3587,7 +3587,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='ill-nested-entities',
                                     message=f"Cannot close entity '{beid}' because there are no open entities."
-                                ).report()
+                                ).confirm()
                                 return
                             else:
                                 # If the closing bracket does not occur where expected, it is currently only a warning.
@@ -3600,7 +3600,7 @@ class Validator:
                                         testclass=TestClass.COREF,
                                         testid='ill-nested-entities-warning',
                                         message=f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
-                                    ).report()
+                                    ).confirm()
                                 # Try to find and close the entity whether or not it was well-nested.
                                 for i in reversed(range(len(state.open_entity_mentions))):
                                     if state.open_entity_mentions[i]['beid'] == beid:
@@ -3616,7 +3616,7 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='ill-nested-entities',
                                         message=f"Cannot close entity '{beid}' because it was not found among open entities: {str(state.open_entity_mentions)}"
-                                    ).report()
+                                    ).confirm()
                                     return
                             # If this is a part of a discontinuous mention, update the information about the whole mention.
                             # We do this after reading the new part (and not when we see its opening bracket) so that nested
@@ -3636,7 +3636,7 @@ class Validator:
                                         testclass=TestClass.INTERNAL,
                                         testid='internal-error',
                                         message="INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in state.open_discontinuous_mentions."
-                                    ).report()
+                                    ).confirm()
                                     discontinuous_mention = {'last_ipart': ipart, 'npart': npart,
                                                             'first_part_line': opening_line,
                                                             'last_part_line': opening_line,
@@ -3655,7 +3655,7 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='mention-head-out-of-range',
                                         message=f"Entity mention head was specified as {head} on line {opening_line} but the mention has only {mention_length} nodes."
-                                    ).report()
+                                    ).confirm()
                                 # Check that no two mentions have identical spans (only if this is the last part of a mention).
                                 ending_mention_key = str(opening_line)+str(mention_span)
                                 if ending_mention_key in ending_mentions:
@@ -3663,7 +3663,7 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='same-span-entity-mentions',
                                         message=f"Entity mentions '{ending_mentions[ending_mention_key]}' and '{beid}' from line {opening_line} have the same span {str(mention_span)}."
-                                    ).report()
+                                    ).confirm()
                                 else:
                                     ending_mentions[ending_mention_key] = beid
                                 # Remember the span of the current mention so that we can later check whether it crosses the span of another mention.
@@ -3680,7 +3680,7 @@ class Validator:
                                                     state=state, config=self.incfg,
                                                     testid='crossing-mentions-same-entity',
                                                     message=f"Mentions of entity '{eid}' have crossing spans: {m} vs. {str(mention_span)}."
-                                                ).report()
+                                                ).confirm()
                                     else:
                                         state.entity_mention_spans[eid][sentid] = {}
                                 else:
@@ -3704,13 +3704,13 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"If there are no closing entity brackets, single-node entity must follow all opening entity brackets in '{entity[0]}'."
-                                ).report()
+                                ).confirm()
                             if seen0 and seen2:
                                 Error(
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"Single-node entity must either precede all closing entity brackets or follow all opening entity brackets in '{entity[0]}'."
-                                ).report()
+                                ).confirm()
                             seen0 = True
                             seen2 = False
                             opening_bracket()
@@ -3720,7 +3720,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '{entity[0]}'."
-                                ).report()
+                                ).confirm()
                             seen2 = True
                             opening_bracket()
                             closing_bracket()
@@ -3730,7 +3730,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"All closing entity brackets must precede all opening entity brackets in '{entity[0]}'."
-                                ).report()
+                                ).confirm()
                             seen1 = True
                             closing_bracket()
                 # Now we are done with checking the 'Entity=' statement.
@@ -3742,7 +3742,7 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='spurious-bridge-statement',
                             message=f"Cannot parse the Bridge statement '{bridge[0]}'."
-                        ).report()
+                        ).confirm()
                     else:
                         bridges = match.group(1).split(',')
                         # Hash src<tgt pairs and make sure they are not repeated.
@@ -3759,19 +3759,19 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='spurious-bridge-relation',
                                         message=f"Bridge must not point from an entity to itself: '{b}'."
-                                    ).report()
+                                    ).confirm()
                                 if not tgteid in starting_mentions:
                                     Error(
                                         state=state, config=self.incfg,
                                         testid='misplaced-bridge-statement',
                                         message=f"Bridge relation '{b}' must be annotated at the beginning of a mention of entity '{tgteid}'."
-                                    ).report()
+                                    ).confirm()
                                 if bridgekey in srctgt:
                                     Error(
                                         state=state, config=self.incfg,
                                         testid='repeated-bridge-relation',
                                         message=f"Bridge relation '{bridgekey}' must not be repeated in '{b}'."
-                                    ).report()
+                                    ).confirm()
                                 else:
                                     srctgt[bridgekey] = True
                                 # Check in the global dictionary whether this relation has been specified at another mention.
@@ -3781,7 +3781,7 @@ class Validator:
                                             state=state, config=self.incfg,
                                             testid='bridge-relation-mismatch',
                                             message=f"Bridge relation '{b}' type does not match '{state.entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {state.entity_bridge_relations[bridgekey]['line']}."
-                                        ).report()
+                                        ).confirm()
                                 else:
                                     state.entity_bridge_relations[bridgekey] = {'relation': relation, 'line': state.sentence_line+iline}
                 if len(splitante) > 0:
@@ -3791,7 +3791,7 @@ class Validator:
                             state=state, config=self.incfg,
                             testid='spurious-splitante-statement',
                             message=f"Cannot parse the SplitAnte statement '{splitante[0]}'."
-                        ).report()
+                        ).confirm()
                     else:
                         antecedents = match.group(1).split(',')
                         # Hash src<tgt pairs and make sure they are not repeated. Also remember the number of antecedents for each target.
@@ -3807,20 +3807,20 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='spurious-splitante-relation',
                                         message=f"SplitAnte must not point from an entity to itself: '{srceid}<{tgteid}'."
-                                    ).report()
+                                    ).confirm()
                                 elif not tgteid in starting_mentions:
                                     Error(
                                         state=state, config=self.incfg,
                                         testid='misplaced-splitante-statement',
                                         message=f"SplitAnte relation '{a}' must be annotated at the beginning of a mention of entity '{tgteid}'."
-                                    ).report()
+                                    ).confirm()
                                 if srceid+'<'+tgteid in srctgt:
                                     str_antecedents = ','.join(antecedents)
                                     Error(
                                         state=state, config=self.incfg,
                                         testid='repeated-splitante-relation',
                                         message=f"SplitAnte relation '{srceid}<{tgteid}' must not be repeated in '{str_antecedents}'."
-                                    ).report()
+                                    ).confirm()
                                 else:
                                     srctgt[srceid+'<'+tgteid] = True
                                 if tgteid in tgtante:
@@ -3834,7 +3834,7 @@ class Validator:
                                     state=state, config=self.incfg,
                                     testid='only-one-split-antecedent',
                                     message=f"SplitAnte statement '{str_antecedents}' must specify at least two antecedents for entity '{tgteid}'."
-                                ).report()
+                                ).confirm()
                             # Check in the global dictionary whether this relation has been specified at another mention.
                             tgtante[tgteid].sort()
                             if tgteid in state.entity_split_antecedents:
@@ -3843,7 +3843,7 @@ class Validator:
                                         state=state, config=self.incfg,
                                         testid='split-antecedent-mismatch',
                                         message=f"Split antecedent of entity '{tgteid}' does not match '{state.entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {state.entity_split_antecedents[tgteid]['line']}."
-                                    ).report()
+                                    ).confirm()
                             else:
                                 state.entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
             iline += 1
@@ -3852,7 +3852,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='cross-sentence-mention',
                 message=f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_entity_mentions)}."
-            ).report()
+            ).confirm()
             # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
             state.open_entity_mentions = []
         if len(state.open_discontinuous_mentions)>0:
@@ -3860,7 +3860,7 @@ class Validator:
                 state=state, config=self.incfg,
                 testid='cross-sentence-mention',
                 message=f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_discontinuous_mentions)}."
-            ).report()
+            ).confirm()
             # Close the mentions forcibly. Otherwise one omission would cause the error messages to to explode because the words would be collected from the remainder of the file.
             state.open_discontinuous_mentions = {}
         # Since we only test mentions within one sentence at present, we do not have to carry all mention spans until the end of the corpus.

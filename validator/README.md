@@ -179,7 +179,7 @@ class MyValidator(Validator):
                     testclass=TestClass.FORMAT,
                     testid='id-40',
                     message="Node ID 40 is not allowed in this treebank."
-                ).report()
+                ).confirm()
 
 validator = MyValidator(lang='la')
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
