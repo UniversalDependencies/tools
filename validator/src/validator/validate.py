@@ -287,7 +287,7 @@ class Validator:
             # structure for us. Udapi does not want to get the terminating
             # empty line.
             tree = self.build_tree_udapi(all_lines)
-            self.check_sent_id(state, comments, self.lang) # level 2
+            self.check_sent_id(state, comments) # level 2
             self.check_parallel_id(state, comments) # level 2
             self.check_text_meta(state, comments, sentence) # level 2
             # Test that enhanced graphs exist either for all sentences or for
@@ -866,7 +866,7 @@ class Validator:
 
 
 
-    def check_sent_id(self, state, comments, lcode):
+    def check_sent_id(self, state, comments):
         """
         Checks that sentence id exists, is well-formed and unique.
         """
@@ -907,7 +907,7 @@ class Validator:
                     testid='non-unique-sent-id',
                     message=f"Non-unique sent_id attribute '{sid}'."
                 ).confirm()
-            if sid.count('/') > 1 or (sid.count('/') == 1 and lcode != 'ud'):
+            if sid.count('/') > 1 or (sid.count('/') == 1 and self.lang != 'ud'):
                 Error(
                     state=state, config=self.incfg,
                     testid='slash-in-sent-id',
