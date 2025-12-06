@@ -21,6 +21,7 @@ class TestClass(Enum):
         return self.value < other.value
 
 
+
 class IncidentType(Enum):
     ERROR = 1
     WARNING = 0
@@ -122,6 +123,16 @@ class Incident:
                 print(f'...suppressing further errors regarding {self.testclass_to_report()}', file=sys.stderr)
             return # suppressed
         print(str(self), file=sys.stderr)
+
+    def get_type(self):
+        """ This method must be overridden in derived classes. """
+        raise NotImplementedError()
+
+    def is_error(self):
+        return self.get_type() == IncidentType.ERROR
+
+    def is_warning(self):
+        return self.get_type() == IncidentType.WARNING
 
 
 
