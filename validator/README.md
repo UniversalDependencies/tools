@@ -74,19 +74,17 @@ else:
 ```
 
 Instead of printing the errors to STDERR as soon as they are found, you can have them saved in the validation state
-and later process them the way you prefer. Note that the number of incidents saved (per category) is limited by
-default. This is to save your memory if you do not need to keep the errors (some treebanks have hundreds of thousands
-of errors and warnings). By setting `--max-store=0`, this limit is turned off.
+and later process them the way you prefer. Note that if you use the argparser approach from the previous example, the
+number of incidents saved (per category) is limited by default. This is to save your memory if you do not need to keep
+the errors (some treebanks have hundreds of thousands of errors and warnings). By setting `--max-store=0`, this limit
+is turned off. However, the default limit is set in the argparser, so if you use the simpler approach with
+`output=None` and you do not invoke the argparser for other reasons, no limit will be imposed.
 
 ```python
-import sys
-from udtools.argparser import parse_args
 from udtools import Validator
 from udtools.incident import IncidentType
 
-sys.argv = ['validate.py', '--lang=la', '--quiet', '--max-store=0']
-args = parse_args()
-validator = Validator(lang='la', args=args)
+validator = Validator(lang='la', output=None)
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
 all_errors = []
 # Take only errors, skip warnings.
@@ -135,13 +133,9 @@ Instead of prose error messages suitable for human users, you can print the erro
 easily read and processed by an external application.
 
 ```python
-import sys
-from udtools.argparser import parse_args
 from udtools import Validator
 
-sys.argv = ['validate.py', '--lang=la', '--quiet', '--max-store=0']
-args = parse_args()
-validator = Validator(lang='la', args=args)
+validator = Validator(lang='la', output=None)
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
 incidents = []
 for incidenttype in state.error_tracker:
