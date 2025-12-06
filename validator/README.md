@@ -82,15 +82,11 @@ is turned off. However, the default limit is set in the argparser, so if you use
 
 ```python
 from udtools import Validator
-from udtools.incident import IncidentType
 
 validator = Validator(lang='la', output=None)
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
-all_errors = []
 # Take only errors, skip warnings.
-for testclass in state.error_tracker[IncidentType.ERROR].keys():
-   for incident in state.error_tracker[IncidentType.ERROR][testclass]:
-       all_errors.append(incident)
+all_errors = [x for x in state.error_tracker if x.is_error()]
 all_errors.sort(key=lambda incident: incident.testid)
 for error in all_errors:
     print(error)
@@ -137,12 +133,7 @@ from udtools import Validator
 
 validator = Validator(lang='la', output=None)
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
-incidents = []
-for incidenttype in state.error_tracker:
-    for testclass in state.error_tracker[incidenttype]:
-       for incident in state.error_tracker[incidenttype][testclass]:
-           incidents.append(incident)
-incidents.sort(key=lambda incident: incident.testid)
+incidents = sorted(state.error_tracker, key=lambda incident: incident.testid)
 print('[')
 print(',\n'.join([incident.json() for incident in incidents]))
 print(']')

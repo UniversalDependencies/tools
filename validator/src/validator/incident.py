@@ -1,4 +1,3 @@
-import sys
 import os
 from enum import Enum
 from json import JSONEncoder
@@ -115,12 +114,10 @@ class Incident:
             return 0
 
     def _store_me(self):
-        # self.state.error_tracker is a defaultdict of defaultdicts of lists.
-        # The first level is indexed by ERROR/WARNING, the second by TestClass.
-        mylist = self.state.error_tracker[self.get_type()][self.testclass]
-        if 'max_store' in self.config and self.config['max_store'] > 0 and len(mylist) >= self.config['max_store']:
-            return # we cannot store more incidents of this type and class
-        mylist.append(self)
+        # self.state.error_tracker is a list of incidents.
+        if 'max_store' in self.config and self.config['max_store'] > 0 and len(self.state.error_tracker) >= self.config['max_store']:
+            return # we cannot store more incidents
+        self.state.error_tracker.append(self)
 
     def __str__(self):
         # If we are here, the error message should really be printed.

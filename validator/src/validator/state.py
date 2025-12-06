@@ -38,9 +38,8 @@ class State:
         # Incident counter by type. Key: incident type, test class; value: incident count
         # Incremented in Incident.report(), even if reporting is off or over --max_err.
         self.error_counter = defaultdict(lambda: defaultdict(int))
-        # Lists of incidents for each type, up to --max_store
-        # Key: incident type, test class; value: a list of the incidents
-        self.error_tracker = defaultdict(lambda: defaultdict(list))
+        # Lists of incidents confirmed so far, up to --max_store
+        self.error_tracker = []
         # Set of detailed error explanations that have been printed so far.
         # Each explanation will be printed only once. Typically, an explanation
         # can be identified by test id + language code. Nevertheless, we put
