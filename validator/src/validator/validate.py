@@ -23,13 +23,13 @@ try:
     from validator.src.validator.incident import Incident, Error, Warning, TestClass
     from validator.src.validator.state import State
     import validator.src.validator.data as data
-    from validator.src.validator.level4 import Level4
+    from validator.src.validator.level5 import Level5
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Incident, Error, Warning, TestClass
     from udtools.state import State
     import udtools.data as data
-    from udtools.level4 import Level4
+    from udtools.level5 import Level5
 
 
 
@@ -40,7 +40,7 @@ COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 
 
 
-class Validator(Level4):
+class Validator(Level5):
     def __init__(self, lang=None, level=None, check_coref=None, args=None, datapath=None, output=sys.stderr):
         """
         Initialization of the Validator class.
@@ -406,78 +406,6 @@ class Validator(Level4):
                 message="Enhanced graphs are copies of basic trees in the entire dataset. This can happen for some simple sentences where there is nothing to enhance, but not for all sentences. If none of the enhancements from the guidelines (https://universaldependencies.org/u/overview/enhanced-syntax.html) are annotated, the DEPS should be left unspecified"
             ).confirm()
         return state
-
-
-
-#==============================================================================
-# Level 5 tests. Annotation content vs. the guidelines, language-specific.
-#==============================================================================
-
-
-
-    def check_auxiliary_verbs(self, state, node, line, lang):
-        """
-        Verifies that the UPOS tag AUX is used only with lemmas that are known to
-        act as auxiliary verbs or particles in the given language.
-
-        Parameters
-        ----------
-        node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
-        """
-        if node.upos == 'AUX' and node.lemma != '_':
-            altlang = utils.get_alt_language(node)
-            if altlang:
-                lang = altlang
-            auxlist = self.data.get_aux_for_language(lang)
-            if not auxlist or not node.lemma in auxlist:
-                Error(
-                    state=state, config=self.incfg,
-                    lineno=line,
-                    nodeid=node.ord,
-                    level=5,
-                    testclass=TestClass.MORPHO,
-                    testid='aux-lemma',
-                    message=f"'{utils.lemmatl(node)}' is not an auxiliary in language [{lang}]",
-                    explanation=self.data.explain_aux(lang)
-                ).confirm()
-
-
-
-    def check_copula_lemmas(self, state, node, line, lang):
-        """
-        Verifies that the relation cop is used only with lemmas that are known to
-        act as copulas in the given language.
-
-        Parameters
-        ----------
-        node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
-        """
-        if node.udeprel == 'cop' and node.lemma != '_':
-            altlang = utils.get_alt_language(node)
-            if altlang:
-                lang = altlang
-            coplist = self.data.get_cop_for_language(lang)
-            if not coplist or not node.lemma in coplist:
-                Error(
-                    state=state, config=self.incfg,
-                    lineno=line,
-                    nodeid=node.ord,
-                    level=5,
-                    testclass=TestClass.SYNTAX,
-                    testid='cop-lemma',
-                    message=f"'{utils.lemmatl(node)}' is not a copula in language [{lang}]",
-                    explanation=self.data.explain_cop(lang)
-                ).confirm()
 
 
 
