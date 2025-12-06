@@ -40,7 +40,7 @@ COLNAMES='ID,FORM,LEMMA,UPOS,XPOS,FEATS,HEAD,DEPREL,DEPS,MISC'.split(',')
 
 
 class Validator:
-    def __init__(self, lang=None, level=None, check_coref=None, args=None, datapath=None):
+    def __init__(self, lang=None, level=None, check_coref=None, args=None, datapath=None, output=sys.stderr):
         """
         Initialization of the Validator class.
 
@@ -69,6 +69,12 @@ class Validator:
             Path to the folder with JSON files specifying language-specific
             behavior. If not provided, the Data class will try expected
             locations relative to the module.
+        output : outstream object, default sys.stderr
+            Where to report incidents when they are encountered. Default is
+            sys.stderr, it could be also sys.stdout, an open file handle, or
+            None. If it is None, the output is suppressed (same as the --quiet
+            command line option) and errors are only saved in state for later
+            processing.
         """
         self.data = data.Data(datapath=datapath)
         if not args:
@@ -106,6 +112,7 @@ class Validator:
             self.incfg['max_store'] = args_dict['max_store']
         if 'input' in args_dict and len(args_dict['input']) > 1:
             self.incfg['report_filename'] = True
+        self.incfg['output'] = output
         self.conllu_reader = udapi.block.read.conllu.Conllu()
 
 
