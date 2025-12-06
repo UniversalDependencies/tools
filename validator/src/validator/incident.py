@@ -26,6 +26,12 @@ class IncidentType(Enum):
     ERROR = 1
     WARNING = 0
 
+    def __str__(self):
+        return self.name
+
+    def __lt__(self, other):
+        return self.value < other.value
+
 
 
 class Incident:
@@ -120,7 +126,7 @@ class Incident:
         # Suppress error messages of a type of which we have seen too many.
         if too_many > 0:
             if too_many == 1:
-                print(f'...suppressing further errors regarding {self.testclass_to_report()}', file=sys.stderr)
+                print(f'...suppressing further messages regarding {str(self.get_type())}/{str(self.testclass)}', file=sys.stderr)
             return # suppressed
         print(str(self), file=sys.stderr)
 
