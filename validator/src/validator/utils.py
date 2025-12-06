@@ -263,3 +263,92 @@ def next_sentence(state, inp):
         # If we found additional lines after the last empty line, yield them now.
         if sentence_lines:
             yield sentence_lines
+
+
+def get_caused_nonprojectivities(node):
+    """
+    Checks whether a node is in a gap of a nonprojective edge. Report true only
+    if the node's parent is not in the same gap. (We use this function to check
+    that a punctuation node does not cause nonprojectivity. But if it has been
+    dragged to the gap with a larger subtree, then we do not blame it.) This
+    extra condition makes this function different from node.is_nonprojective_gap();
+    another difference is that instead of just detecting the nonprojectivity,
+    we return the nonprojective nodes so we can report them.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+
+    Returns
+    -------
+    cross : list of udapi.core.node.Node objects
+        The nodes whose attachment is nonprojective because of the current node.
+    """
+    nodes = node.root.descendants
+    iid = node.ord
+    # We need to find all nodes that are not ancestors of this node and lie
+    # on other side of this node than their parent. First get the set of
+    # ancestors.
+    ancestors = []
+    current_node = node
+    while not current_node.is_root():
+        current_node = current_node.parent
+        ancestors.append(current_node)
+    maxid = nodes[-1].ord
+    # Get the lists of nodes to either side of id.
+    # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
+    pid = node.parent.ord
+    if pid < iid:
+        leftidrange = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
+        rightidrange = range(iid + 1, maxid + 1)
+    else:
+        leftidrange = range(1, iid)
+        rightidrange = range(iid + 1, pid)
+    left = [n for n in nodes if n.ord in leftidrange]
+    right = [n for n in nodes if n.ord in rightidrange]
+    # Exclude nodes whose parents are ancestors of id.
+    leftna = [x for x in left if x.parent not in ancestors]
+    rightna = [x for x in right if x.parent not in ancestors]
+    leftcross = [x for x in leftna if x.parent.ord > iid]
+    rightcross = [x for x in rightna if x.parent.ord < iid]
+    # Once again, exclude nonprojectivities that are caused by ancestors of id.
+    if pid < iid:
+        rightcross = [x for x in rightcross if x.parent.ord > pid]
+    else:
+        leftcross = [x for x in leftcross if x.parent.ord < pid]
+    # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
+    return sorted(leftcross + rightcross)
+
+
+def get_gap(node):
+    """
+    Returns the list of nodes between node and its parent that are not dominated
+    by the parent. If the list is not empty, the node is attached nonprojectively.
+
+    Note that the Udapi Node class does not have a method like this. It has
+    is_nonprojective(), which returns the boolean decision without showing the
+    nodes in the gap. There is also the function is_nonprojective_gap() but it,
+    too, does not deliver what we need.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+
+    Returns
+    -------
+    gap : list of udapi.core.node.Node objects
+        The nodes in the gap of the current node's relation to its parent,
+        sorted by their ords (IDs).
+    """
+    iid = node.ord
+    pid = node.parent.ord
+    if iid < pid:
+        rangebetween = range(iid + 1, pid)
+    else:
+        rangebetween = range(pid + 1, iid)
+    gap = []
+    if rangebetween:
+        gap = [n for n in node.root.descendants if n.ord in rangebetween and not n in node.parent.descendants]
+    return sorted(gap)
