@@ -20,7 +20,7 @@ def build_argparse():
                           Exit with 0 on pass, non-zero on fail.""")
     io_group.add_argument('--max-err',
                           action="store", type=int, default=20,
-                          help="""How many errors to output before exiting? 0 for all.
+                          help="""How many errors to output per category? 0 for all.
                           Default: %(default)d.""")
     io_group.add_argument('--max-store',
                           action="store", type=int, default=20,
