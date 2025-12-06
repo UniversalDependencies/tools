@@ -1,6 +1,9 @@
 import sys
 import os
 from enum import Enum
+from json import JSONEncoder
+
+jenc = JSONEncoder()
 
 
 
@@ -80,6 +83,24 @@ class Incident:
         # ID of the node on which the error occurred (if it pertains to one node).
         self.nodeid = nodeid
 
+    def json(self):
+        """
+        Returns the incident description in JSON format so it can be passed to
+        external applications easily.
+        """
+        jsonlist = []
+        jsonlist.append(f'"level": "{self.level}"')
+        jsonlist.append(f'"type": "{str(self.get_type())}"')
+        jsonlist.append(f'"testclass": "{str(self.testclass)}"')
+        jsonlist.append(f'"testid": "{str(self.testid)}"')
+        jsonlist.append(f'"filename": {jenc.encode(str(self.filename))}')
+        jsonlist.append(f'"lineno": "{str(self.lineno)}"')
+        jsonlist.append(f'"sentid": {jenc.encode(str(self.sentid))}')
+        jsonlist.append(f'"nodeid": "{str(self.nodeid)}"')
+        jsonlist.append(f'"message": {jenc.encode(str(self.message))}')
+        jsonlist.append(f'"explanation": {jenc.encode(str(self.explanation))}')
+        return '{' + ', '.join(jsonlist) + '}'
+
     def _count_me(self):
         self.state.error_counter[self.get_type()][self.testclass] += 1
         # Return 0 if we are not over max_err.
@@ -116,6 +137,9 @@ class Incident:
             message += "\n\n" + self.explanation + "\n"
             self.state.explanation_printed.add(self.explanation)
         return f'[{address}]: [{levelclassid}] {message}'
+
+    def __lt__(self, other):
+        return self.lineno < other.lineno
 
     def confirm(self):
         """
