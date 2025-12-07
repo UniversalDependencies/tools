@@ -270,8 +270,6 @@ class Validator(Level6):
                 self.check_misc(state, cols, lineno) # level 2; must operate on pre-Udapi MISC
             if not colssafe:
                 return state
-            sentence = state.current_token_node_table
-            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us. Udapi does not want to get the terminating
@@ -279,7 +277,9 @@ class Validator(Level6):
             tree = self.build_tree_udapi(all_lines)
             self.check_sent_id(state) # level 2
             self.check_parallel_id(state) # level 2
-            self.check_text_meta(state, sentence) # level 2
+            self.check_text_meta(state) # level 2
+            sentence = state.current_token_node_table
+            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # Test that enhanced graphs exist either for all sentences or for
             # none. As a side effect, get line numbers for all nodes including
             # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).

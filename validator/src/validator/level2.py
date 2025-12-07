@@ -1037,7 +1037,7 @@ class Level2(Level1):
 
 
 
-    def check_text_meta(self, state, tree):
+    def check_text_meta(self, state):
         """
         Checks metadata other than sentence id, that is, document breaks, paragraph
         breaks and sentence text (which is also compared to the sequence of the
@@ -1061,6 +1061,9 @@ class Level2(Level1):
         comment_start_line : int
             The line number (relative to input file, 1-based) of the first line
             in the current sentence, including comments if any.
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
         sentence_line : int
             The line number (relative to input file, 1-based) of the first
             node/token line in the current sentence.
@@ -1151,12 +1154,8 @@ class Level2(Level1):
             # Validate the text against the SpaceAfter attribute in MISC.
             skip_words = set()
             mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
-            # We will sum state.sentence_line + iline, and state.sentence_line already points at
-            # the first token/node line after the sentence comments. Hence iline shall
-            # be 0 once we enter the cycle.
-            iline = -1
-            for cols in tree:
-                iline += 1
+            for iline in range(len(state.current_token_node_table)):
+                cols = state.current_token_node_table[iline]
                 if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
                     Error(
                         state=state, config=self.incfg,
