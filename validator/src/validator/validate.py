@@ -234,22 +234,20 @@ class Validator(Level6):
         if state == None:
             state = State()
         state.current_lines = all_lines
-        linesok = self.check_sentence_lines(state)
-        linesok = linesok and self.check_sentence_columns(state)
-        if not linesok:
+        # Low-level errors typically mean that we cannot perform further tests
+        # because we could choke on trying to access non-existent data. Or we
+        # may succeed in performing them but the error messages may be misleading.
+        if not self.check_sentence_lines(state):
             return state
+        if not self.check_sentence_columns(state):
+            return state
+        if not self.check_id_sequence(state):
+            return state
+        self.check_token_ranges(state) # level 1
         sentence = state.current_token_node_table
         linenos = utils.get_line_numbers_for_ids(state, sentence)
-        # The individual lines were validated already in next_sentence().
-        # What follows is tests that need to see the whole tree.
-        # Note that low-level errors such as wrong number of columns would be
-        # reported in next_sentence() but then the lines would be thrown away
-        # and no tree lines would be yielded—meaning that we will not encounter
-        # such a mess here.
-        idseqok = self.check_id_sequence(state, sentence) # level 1
-        self.check_token_ranges(state, sentence) # level 1
         if self.level > 1:
-            idrefok = idseqok and self.check_id_references(state, sentence) # level 2
+            idrefok = self.check_id_references(state, sentence) # level 2
             if not idrefok:
                 return state
             treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free

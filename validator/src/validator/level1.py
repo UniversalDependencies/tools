@@ -69,14 +69,12 @@ class Level1:
         Incidents
         ---------
         misplaced-comment
-        number-of-columns (TO BE MOVED ELSEWHERE?)
         pseudo-empty-line
         extra-empty-line
         empty-sentence
         invalid-line
         missing-empty-line
-        + those issued by check_unicode_normalization() and
-          check_whitespace() (TO BE MOVED ELSEWHERE?)
+        + those issued by check_unicode_normalization()
 
         Returns
         -------
@@ -273,6 +271,10 @@ class Level1:
             fields (token line), errors reports will specify the field where the
             error occurred. Otherwise (comment line), the error report will not be
             localized.
+
+        Incidents
+        ---------
+        unicode-normalization
         """
         normalized_text = unicodedata.normalize('NFC', text)
         if text != normalized_text:
@@ -322,6 +324,15 @@ class Level1:
         ----------
         cols : list
             The values of the columns on the current node / token line.
+
+        Incidents
+        ---------
+        invalid-whitespace-mwt
+        invalid-whitespace
+        empty-column
+        leading-whitespace
+        trailing-whitespace
+        repeated-whitespace
         """
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
@@ -386,26 +397,62 @@ class Level1:
 
 
 
-    def check_id_sequence(self, state, sentence):
+    def check_id_sequence(self, state):
         """
         Validates that the ID sequence is correctly formed.
         Besides reporting the errors, it also returns False to the caller so it can
         avoid building a tree from corrupt IDs.
 
-        sentence ... array of arrays, each inner array contains columns of one line
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+
+        Incidents
+        ---------
+        invalid-word-id
+        invalid-word-interval
+        misplaced-word-interval
+        misplaced-empty-node
+        word-id-sequence
+        reversed-word-interval
+        word-interval-out
+
+        Returns
+        -------
+        ok : bool
+            Is it OK to run subsequent checks? It can be OK even after some
+            less severe errors.
         """
         ok = True
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
-        Incident.default_lineno = None # use the most recently read line
         words=[]
         tokens=[]
         current_word_id, next_empty_id = 0, 1
-        for cols in sentence:
+        for i in range(len(state.current_token_node_table)):
+            lineno = state.sentence_line + i
+            cols = state.current_token_node_table[i]
             # Check for the format of the ID value. (ID must not be empty.)
             if not (utils.is_word(cols) or utils.is_empty_node(cols) or utils.is_multiword_token(cols)):
                 Error(
-                    state=state, config=self.incfg,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='invalid-word-id',
                     message=f"Unexpected ID format '{cols[ID]}'."
                 ).confirm()
@@ -419,12 +466,12 @@ class Level1:
                 words.append(t_id)
                 # Not covered by the previous interval?
                 if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
-                    tokens.append((t_id, t_id)) # nope - let's make a default interval for it
+                    tokens.append((t_id, t_id, lineno)) # nope - let's make a default interval for it
             elif utils.is_multiword_token(cols):
                 match = utils.crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
                 if not match: # This should not happen. The function utils.is_multiword_token() would then not return True.
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='invalid-word-interval',
                         message=f"Spurious word interval definition: '{cols[ID]}'."
                     ).confirm()
@@ -433,18 +480,18 @@ class Level1:
                 beg, end = int(match.group(1)), int(match.group(2))
                 if not ((not words and beg >= 1) or (words and beg >= words[-1] + 1)):
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='misplaced-word-interval',
                         message='Multiword range not before its first word.'
                     ).confirm()
                     ok = False
                     continue
-                tokens.append((beg, end))
+                tokens.append((beg, end, lineno))
             elif utils.is_empty_node(cols):
                 word_id, empty_id = (int(i) for i in utils.parse_empty_node_id(cols))
                 if word_id != current_word_id or empty_id != next_empty_id:
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='misplaced-empty-node',
                         message=f'Empty node id {cols[ID]}, expected {current_word_id}.{next_empty_id}'
                     ).confirm()
@@ -456,7 +503,7 @@ class Level1:
                 # This sequence is wrong:   4 5-6 4.1 5 6
                 if word_id == current_word_id and tokens and word_id < tokens[-1][0]:
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='misplaced-empty-node',
                         message=f"Empty node id {cols[ID]} must occur before multiword token {tokens[-1][0]}-{tokens[-1][1]}."
                     ).confirm()
@@ -467,18 +514,17 @@ class Level1:
         wrdstrseq = ','.join(str(x) for x in words)
         if wrdstrseq != expstrseq:
             Error(
-                state=state, config=self.incfg,
-                lineno=-1,
+                state=state, config=self.incfg, lineno=-1,
                 testid='word-id-sequence',
                 message=f"Words do not form a sequence. Got '{wrdstrseq}'. Expected '{expstrseq}'."
             ).confirm()
             ok = False
         # Check elementary sanity of word intervals.
         # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
-        for (b, e) in tokens:
+        for (b, e, lineno) in tokens:
             if e < b: # end before beginning
                 Error(
-                    state=state, config=self.incfg,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='reversed-word-interval',
                     message=f'Spurious token interval {b}-{e}'
                 ).confirm()
@@ -486,7 +532,7 @@ class Level1:
                 continue
             if b < 1 or e > len(words): # out of range
                 Error(
-                    state=state, config=self.incfg,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='word-interval-out',
                     message=f'Spurious token interval {b}-{e} (out of range)'
                 ).confirm()
@@ -496,7 +542,7 @@ class Level1:
 
 
 
-    def check_token_ranges(self, state, sentence):
+    def check_token_ranges(self, state):
         """
         Checks that the word ranges for multiword tokens are valid.
 
@@ -505,6 +551,7 @@ class Level1:
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
         Incident.default_lineno = None # use the most recently read line
+        sentence = state.current_token_node_table
         covered = set()
         for cols in sentence:
             if not utils.is_multiword_token(cols):
@@ -530,11 +577,21 @@ class Level1:
 
 
 
+#------------------------------------------------------------------------------
+# Level 1 tests applicable to the whole input file.
+#------------------------------------------------------------------------------
+
+
+
     def check_newlines(self, state, inp):
         """
-        Checks that the input file consistently uses linux-style newlines (LF only,
-        not CR LF like in Windows). To be run on the input file handle after the
-        whole input has been read.
+        Checks that the input file consistently uses linux-style newlines (LF
+        only, not CR LF like in Windows). To be run on the input file handle
+        after the whole input has been read.
+
+        Incidents
+        ---------
+        non-unix-newline
         """
         if inp.newlines and inp.newlines != '\n':
             Error(

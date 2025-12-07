@@ -102,13 +102,13 @@ FORMAT errors: 1
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\id-starting-from-2.conllu 
 [Line 9 Sent id-starting-from-2b]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '2'. Expected '1'.
-[Line 10 Sent id-starting-from-2b]: [L1 FORMAT word-interval-out] Spurious token interval 2-2 (out of range)
+[Line 9 Sent id-starting-from-2b]: [L1 FORMAT word-interval-out] Spurious token interval 2-2 (out of range)
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\id-with-extra-0.conllu 
-[Line 5 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
+[Line 4 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -138,13 +138,13 @@ SYNTAX errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-range-format.conllu 
-[Line 11 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
+[Line 5 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-range.conllu 
-[Line 11 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
+[Line 5 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -192,7 +192,7 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misindexed-empty-node.conllu 
-[Line 7 Sent misindexed-empty-node]: [L1 FORMAT misplaced-empty-node] Empty node id 2.2, expected 1.1
+[Line 5 Sent misindexed-empty-node]: [L1 FORMAT misplaced-empty-node] Empty node id 2.2, expected 1.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -210,7 +210,7 @@ MORPHO errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misordered-multiword.conllu 
-[Line 12 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+[Line 7 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -229,7 +229,7 @@ FORMAT errors: 1
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\misplaced-range.conllu 
 [Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
-[Line 10 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+[Line 7 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
@@ -278,21 +278,21 @@ METADATA errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nonsequential-empty-node-id.conllu 
-[Line 7 Sent nonsequential-empty-node-id]: [L1 FORMAT misplaced-empty-node] Empty node id 1.2, expected 1.1
+[Line 5 Sent nonsequential-empty-node-id]: [L1 FORMAT misplaced-empty-node] Empty node id 1.2, expected 1.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\nonsequential-id.conllu 
 [Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
-[Line 6 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
+[Line 5 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\out-of-bounds-range.conllu 
 [Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
-[Line 10 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+[Line 7 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
@@ -351,7 +351,7 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 6 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 [Line 8 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 [Line 11 Sent tanl-broken2]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
-[Line 17 Sent tanl-broken2]: [L1 FORMAT word-interval-out] Spurious token interval 6-6 (out of range)
+[Line 16 Sent tanl-broken2]: [L1 FORMAT word-interval-out] Spurious token interval 6-6 (out of range)
 [Line 24 Sent tanl-broken3]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 [Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'mod=p'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
@@ -602,13 +602,13 @@ MORPHO errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-word-id.conllu 
-[Line 5 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
+[Line 4 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\invalid-word-interval.conllu 
-[Line 11 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
+[Line 5 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -633,19 +633,19 @@ MORPHO errors: 2
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-empty-node-2.conllu 
-[Line 13 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1 must occur before multiword token 2-3.
+[Line 7 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1 must occur before multiword token 2-3.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-empty-node.conllu 
-[Line 12 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1, expected 2.1
+[Line 7 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1, expected 2.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\misplaced-word-interval.conllu 
-[Line 12 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+[Line 7 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -764,7 +764,7 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\reversed-word-interval.conllu 
-[Line 11 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
+[Line 5 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -787,7 +787,7 @@ FORMAT errors: 1
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\word-id-sequence.conllu 
 [Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
-[Line 6 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
+[Line 5 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
 FORMAT errors: 2
 *** FAILED *** with 2 errors
  
