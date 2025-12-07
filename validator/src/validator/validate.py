@@ -281,12 +281,13 @@ class Validator(Level6):
             sentence = state.current_token_node_table
             linenos = utils.get_line_numbers_for_ids(state, sentence)
             # Test that enhanced graphs exist either for all sentences or for
-            # none. As a side effect, get line numbers for all nodes including
+            # none.
+            # As a side effect, get line numbers for all nodes including
             # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
             # These line numbers are returned in any case, even if there are no
             # enhanced dependencies, hence we can rely on them even with basic
             # trees.
-            self.check_deps_all_or_none(state, sentence)
+            self.check_deps_all_or_none(state) # level 2
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
@@ -323,7 +324,7 @@ class Validator(Level6):
                     self.check_goeswith_span(state, node, lineno)
                     self.check_goeswith_morphology_and_edeps(state, node, lineno)
                     self.check_projective_punctuation(state, node, lineno)
-                self.check_egraph_connected(state, nodes, linenos)
+                self.check_egraph_connected(state, nodes, linenos) ###!!! this was supposed to be level 2 test!
             if self.check_coref:
                 self.check_misc_entity(state) # optional for CorefUD treebanks
         return state

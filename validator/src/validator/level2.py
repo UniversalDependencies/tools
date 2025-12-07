@@ -695,15 +695,32 @@ class Level2(Level1):
 
 
 
-    def check_deps_all_or_none(self, state, sentence):
+    def check_deps_all_or_none(self, state):
         """
-        Takes the list of non-comment lines (line = list of columns) describing
-        a sentence. Checks that enhanced dependencies are present if they were
-        present at another sentence, and absent if they were absent at another
-        sentence.
+        Checks that enhanced dependencies are present if they were present in
+        another sentence, and absent if they were absent in another sentence.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Incidents
+        ---------
+        edeps-only-sometimes
         """
         egraph_exists = False # enhanced deps are optional
-        for cols in sentence:
+        for i in range(len(state.current_token_node_table)):
+            cols = state.current_token_node_table[i]
             if utils.is_multiword_token(cols):
                 continue
             if utils.is_empty_node(cols) or cols[DEPS] != '_':
