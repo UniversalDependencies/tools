@@ -32,6 +32,9 @@ class State:
         self.sentence_line = 0
         # The most recently read sentence id.
         self.sentence_id = None
+        # List of input lines representing the current sentence (including
+        # comments and the final empty line). Newline characters omitted.
+        self.current_lines = []
         # Needed to check that no space after last word of sentence does not
         # co-occur with new paragraph or document.
         self.spaceafterno_in_effect = False

@@ -39,13 +39,90 @@ class Level6(Level5):
 
 
 
-    def check_misc_entity(self, state, comments, sentence):
+    def check_misc_entity(self, state, sentence):
         """
         Optionally checks the well-formedness of the MISC attributes that pertain
         to coreference and named entities.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+            First we expect an optional block (zero or more lines) of comments,
+            i.e., lines starting with '#'. Then we expect a non-empty block
+            (one or more lines) of nodes, empty nodes, and multiword tokens.
+            Finally, we expect exactly one empty line.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Reads and writes to state
+        -------------------------
+        global_entity_attribute_string : str
+        entity_attribute_number : int
+        entity_attribute_index : dict
+        entity_types : dict
+        entity_ids_this_document : dict
+        entity_ids_other_documents : dict
+        open_entity_mentions : list
+        open_discontinuous_mentions : dict
+        entity_bridge_relations : dict
+        entity_split_antecedents : dict
+        entity_mention_spans : dict
+
+        Incidents
+        ---------
+            global-entity-mismatch
+            spurious-global-entity
+            entity-mwt
+            multiple-entity-statements
+            multiple-bridge-statements
+            multiple-splitante-statements
+            bridge-without-entity
+            splitante-without-entity
+            entity-without-global-entity
+            spurious-entity-statement
+            too-many-entity-attributes
+            spurious-entity-id
+            misplaced-mention-part
+            mention-attribute-mismatch
+            entity-across-newdoc
+            spurious-entity-type
+            spurious-mention-head
+            entity-type-mismatch
+            entity-identity-mismatch
+            ill-nested-entities
+            ill-nested-entities-warning
+            mention-head-out-of-range
+            same-span-entity-mentions
+            crossing-mentions-same-entity
+            spurious-bridge-statement
+            spurious-bridge-relation
+            misplaced-bridge-statement
+            repeated-bridge-relation
+            bridge-relation-mismatch
+            spurious-splitante-statement
+            spurious-splitante-relation
+            misplaced-splitante-statement
+            repeated-splitante-relation
+            only-one-split-antecedent
+            split-antecedent-mismatch
+            cross-sentence-mention
         """
         Incident.default_level = 6
         Incident.default_testclass = TestClass.COREF
+        n_comment_lines = state.sentence_line-state.comment_start_line
+        comments = state.current_lines[0:n_comment_lines]
         iline = 0
         sentid = ''
         for c in comments:

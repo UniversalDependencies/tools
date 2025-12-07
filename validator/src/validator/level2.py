@@ -41,309 +41,6 @@ class Level2(Level1):
 
 
 #------------------------------------------------------------------------------
-# Level 2 tests of sentence metadata.
-#------------------------------------------------------------------------------
-
-
-
-    def check_sent_id(self, state, comments):
-        """
-        Checks that sentence id exists, is well-formed and unique.
-        """
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.METADATA
-        Incident.default_lineno = -1 # use the first line after the comments
-        matched = []
-        for c in comments:
-            match = utils.crex.sentid.fullmatch(c)
-            if match:
-                matched.append(match)
-            else:
-                if c.startswith('# sent_id') or c.startswith('#sent_id'):
-                    Error(
-                        state=state, config=self.incfg,
-                        testid='invalid-sent-id',
-                        message=f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes."
-                    ).confirm()
-        if not matched:
-            Error(
-                state=state, config=self.incfg,
-                testid='missing-sent-id',
-                message='Missing the sent_id attribute.'
-            ).confirm()
-        elif len(matched) > 1:
-            Error(
-                state=state, config=self.incfg,
-                testid='multiple-sent-id',
-                message='Multiple sent_id attributes.'
-            ).confirm()
-        else:
-            # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
-            # For that to happen, all three files should be tested at once.
-            sid = matched[0].group(1)
-            if sid in state.known_sent_ids:
-                Error(
-                    state=state, config=self.incfg,
-                    testid='non-unique-sent-id',
-                    message=f"Non-unique sent_id attribute '{sid}'."
-                ).confirm()
-            if sid.count('/') > 1 or (sid.count('/') == 1 and self.lang != 'ud'):
-                Error(
-                    state=state, config=self.incfg,
-                    testid='slash-in-sent-id',
-                    message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
-                ).confirm()
-            state.known_sent_ids.add(sid)
-
-
-
-    def check_parallel_id(self, state, comments):
-        """
-        The parallel_id sentence-level comment is used after sent_id of
-        sentences that are parallel translations of sentences in other
-        treebanks. Like sent_id, it must be well-formed and unique. Unlike
-        sent_id, it is optional. Sentences that do not have it are not
-        parallel.
-        """
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.METADATA
-        Incident.default_lineno = -1 # use the first line after the comments
-        matched = []
-        for c in comments:
-            match = utils.crex.parallelid.fullmatch(c)
-            if match:
-                matched.append(match)
-            else:
-                if c.startswith('# parallel_id') or c.startswith('#parallel_id'):
-                    Error(
-                        state=state, config=self.incfg,
-                        testid='invalid-parallel-id',
-                        message=f"Spurious parallel_id line: '{c}' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow."
-                    ).confirm()
-        if len(matched) > 1:
-            Error(
-                state=state, config=self.incfg,
-                testid='multiple-parallel-id',
-                message='Multiple parallel_id attributes.'
-            ).confirm()
-        elif matched:
-            # Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
-            # For that to happen, all three files should be tested at once.
-            pid = matched[0].group(1)
-            if pid in state.known_parallel_ids:
-                Error(
-                    state=state, config=self.incfg,
-                    testid='non-unique-parallel-id',
-                    message=f"Non-unique parallel_id attribute '{pid}'."
-                ).confirm()
-            else:
-                # Additional tests when pid has altN or partN.
-                # Do them only if the whole pid is unique.
-                sid = matched[0].group(2) + '/' + matched[0].group(3)
-                alt = None
-                part = None
-                altpart = matched[0].group(4)
-                if altpart:
-                    apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
-                    if apmatch:
-                        alt = apmatch.group(1)
-                        part = apmatch.group(2)
-                        if alt:
-                            alt = int(alt)
-                        if part:
-                            part = int(part)
-                if sid in state.parallel_id_lastalt:
-                    if state.parallel_id_lastalt[sid] == None and alt != None or state.parallel_id_lastalt[sid] != None and alt == None:
-                        Error(
-                            state=state, config=self.incfg,
-                            testid='parallel-id-alt',
-                            message=f"Some instances of parallel sentence '{sid}' have the 'alt' suffix while others do not."
-                        ).confirm()
-                    elif alt != None and alt != state.parallel_id_lastalt[sid] + 1:
-                        Error(
-                            state=state, config=self.incfg,
-                            testid='parallel-id-alt',
-                            message=f"The alt suffix of parallel sentence '{sid}' should be {state.parallel_id_lastalt[sid]}+1 but it is {alt}."
-                        ).confirm()
-                elif alt != None and alt != 1:
-                    Error(
-                        state=state, config=self.incfg,
-                        testid='parallel-id-alt',
-                        message=f"The alt suffix of parallel sentence '{sid}' should be 1 but it is {alt}."
-                    ).confirm()
-                state.parallel_id_lastalt[sid] = alt
-                if sid in state.parallel_id_lastpart:
-                    if state.parallel_id_lastpart[sid] == None and part != None or state.parallel_id_lastpart[sid] != None and part == None:
-                        Error(
-                            state=state, config=self.incfg,
-                            testid='parallel-id-part',
-                            message=f"Some instances of parallel sentence '{sid}' have the 'part' suffix while others do not."
-                        ).confirm()
-                    elif part != None and part != state.parallel_id_lastpart[sid] + 1:
-                        Error(
-                            state=state, config=self.incfg,
-                            testid='parallel-id-part',
-                            message=f"The part suffix of parallel sentence '{sid}' should be {state.parallel_id_lastpart[sid]}+1 but it is {part}."
-                        ).confirm()
-                elif part != None and part != 1:
-                    Error(
-                        state=state, config=self.incfg,
-                        testid='parallel-id-part',
-                        message=f"The part suffix of parallel sentence '{sid}' should be 1 but it is {part}."
-                    ).confirm()
-                state.parallel_id_lastpart[sid] = part
-            state.known_parallel_ids.add(pid)
-
-
-
-    def check_text_meta(self, state, comments, tree):
-        """
-        Checks metadata other than sentence id, that is, document breaks, paragraph
-        breaks and sentence text (which is also compared to the sequence of the
-        forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
-        """
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.METADATA
-        Incident.default_lineno = -1 # use the first line after the comments
-        newdoc_matched = []
-        newpar_matched = []
-        text_matched = []
-        for c in comments:
-            newdoc_match = utils.crex.newdoc.fullmatch(c)
-            if newdoc_match:
-                newdoc_matched.append(newdoc_match)
-            newpar_match = utils.crex.newpar.fullmatch(c)
-            if newpar_match:
-                newpar_matched.append(newpar_match)
-            text_match = utils.crex.text.fullmatch(c)
-            if text_match:
-                text_matched.append(text_match)
-        if len(newdoc_matched) > 1:
-            Error(
-                state=state, config=self.incfg,
-                testid='multiple-newdoc',
-                message='Multiple newdoc attributes.'
-            ).confirm()
-        if len(newpar_matched) > 1:
-            Error(
-                state=state, config=self.incfg,
-                testid='multiple-newpar',
-                message='Multiple newpar attributes.'
-            ).confirm()
-        if (newdoc_matched or newpar_matched) and state.spaceafterno_in_effect:
-            Error(
-                state=state, config=self.incfg,
-                testid='spaceafter-newdocpar',
-                message='New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
-            ).confirm()
-        if not text_matched:
-            Error(
-                state=state, config=self.incfg,
-                testid='missing-text',
-                message='Missing the text attribute.'
-            ).confirm()
-        elif len(text_matched) > 1:
-            Error(
-                state=state, config=self.incfg,
-                testid='multiple-text',
-                message='Multiple text attributes.'
-            ).confirm()
-        else:
-            stext = text_matched[0].group(1)
-            if stext[-1].isspace():
-                Error(
-                    state=state, config=self.incfg,
-                    testid='text-trailing-whitespace',
-                    message='The text attribute must not end with whitespace.'
-                ).confirm()
-            # Validate the text against the SpaceAfter attribute in MISC.
-            skip_words = set()
-            mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
-            # We will sum state.sentence_line + iline, and state.sentence_line already points at
-            # the first token/node line after the sentence comments. Hence iline shall
-            # be 0 once we enter the cycle.
-            iline = -1
-            for cols in tree:
-                iline += 1
-                if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
-                    Error(
-                        state=state, config=self.incfg,
-                        testid='nospaceafter-yes',
-                        message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-                    ).confirm()
-                if len([x for x in cols[MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
-                    Error(
-                        state=state, config=self.incfg,
-                        lineno=state.sentence_line+iline,
-                        testid='spaceafter-value',
-                        message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
-                    ).confirm()
-                if utils.is_empty_node(cols):
-                    if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
-                        Error(
-                            state=state, config=self.incfg,
-                            lineno=state.sentence_line+iline,
-                            testid='spaceafter-empty-node',
-                            message="'SpaceAfter=No' cannot occur with empty nodes."
-                        ).confirm()
-                    continue
-                elif utils.is_multiword_token(cols):
-                    beg, end = cols[ID].split('-')
-                    begi, endi = int(beg), int(end)
-                    # If we see a multi-word token, add its words to an ignore-set – these will be skipped, and also checked for absence of SpaceAfter=No.
-                    for i in range(begi, endi+1):
-                        skip_words.add(str(i))
-                elif cols[ID] in skip_words:
-                    if 'SpaceAfter=No' in cols[MISC]:
-                        Error(
-                            state=state, config=self.incfg,
-                            lineno=state.sentence_line+iline,
-                            testid='spaceafter-mwt-node',
-                            message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-                        ).confirm()
-                    continue
-                else:
-                    # Err, I guess we have nothing to do here. :)
-                    pass
-                # So now we have either a multi-word token or a word which is also a token in its entirety.
-                if not stext.startswith(cols[FORM]):
-                    if not mismatch_reported:
-                        extra_message = ''
-                        if len(stext) >= 1 and stext[0].isspace():
-                            extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
-                        Error(
-                            state=state, config=self.incfg,
-                            lineno=state.sentence_line+iline,
-                            testid='text-form-mismatch',
-                            message=f"Mismatch between the text attribute and the FORM field. Form[{cols[ID]}] is '{cols[FORM]}' but text is '{stext[:len(cols[FORM])+20]}...'"+extra_message
-                        ).confirm()
-                        mismatch_reported = 1
-                else:
-                    stext = stext[len(cols[FORM]):] # eat the form
-                    # Remember if SpaceAfter=No applies to the last word of the sentence.
-                    # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
-                    if 'SpaceAfter=No' in cols[MISC].split("|"):
-                        state.spaceafterno_in_effect = True
-                    else:
-                        state.spaceafterno_in_effect = False
-                        if (stext) and not stext[0].isspace():
-                            Error(
-                                state=state, config=self.incfg,
-                                lineno=state.sentence_line+iline,
-                                testid='missing-spaceafter',
-                                message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{utils.shorten(cols[FORM]+stext)}'."
-                            ).confirm()
-                        stext = stext.lstrip()
-            if stext:
-                Error(
-                    state=state, config=self.incfg,
-                    testid='text-extra-chars',
-                    message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
-                ).confirm()
-
-
-
-#------------------------------------------------------------------------------
 # Level 2 tests applicable to a single line independently of the others.
 #------------------------------------------------------------------------------
 
@@ -1063,3 +760,439 @@ class Level2(Level1):
                 message=f"Enhanced graph is not connected. Nodes {sur} are not reachable from any root"
             ).confirm()
             return None
+
+
+
+#------------------------------------------------------------------------------
+# Level 2 tests of sentence metadata.
+#------------------------------------------------------------------------------
+
+
+
+    def check_sent_id(self, state):
+        """
+        Checks that sentence id exists, is well-formed and unique.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+            First we expect an optional block (zero or more lines) of comments,
+            i.e., lines starting with '#'. Then we expect a non-empty block
+            (one or more lines) of nodes, empty nodes, and multiword tokens.
+            Finally, we expect exactly one empty line.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+        known_sent_ids : set
+            Sentence ids already seen in this treebank.
+
+        Writes to state
+        ----------------
+        known_sent_ids : set
+            Sentence ids already seen in this treebank.
+
+        Incidents
+        ---------
+            invalid-sent-id
+            missing-sent-id
+            multiple-sent-id
+            non-unique-sent-id
+            slash-in-sent-id
+        """
+        Incident.default_level = 2
+        Incident.default_testclass = TestClass.METADATA
+        Incident.default_lineno = -1 # use the first line after the comments
+        n_comment_lines = state.sentence_line-state.comment_start_line
+        comments = state.current_lines[0:n_comment_lines]
+        matched = []
+        for c in comments:
+            match = utils.crex.sentid.fullmatch(c)
+            if match:
+                matched.append(match)
+            else:
+                if c.startswith('# sent_id') or c.startswith('#sent_id'):
+                    Error(
+                        state=state, config=self.incfg,
+                        testid='invalid-sent-id',
+                        message=f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' where xxxxx is not whitespace. Forward slash reserved for special purposes."
+                    ).confirm()
+        if not matched:
+            Error(
+                state=state, config=self.incfg,
+                testid='missing-sent-id',
+                message='Missing the sent_id attribute.'
+            ).confirm()
+        elif len(matched) > 1:
+            Error(
+                state=state, config=self.incfg,
+                testid='multiple-sent-id',
+                message='Multiple sent_id attributes.'
+            ).confirm()
+        else:
+            # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
+            # For that to happen, all three files should be tested at once.
+            sid = matched[0].group(1)
+            if sid in state.known_sent_ids:
+                Error(
+                    state=state, config=self.incfg,
+                    testid='non-unique-sent-id',
+                    message=f"Non-unique sent_id attribute '{sid}'."
+                ).confirm()
+            if sid.count('/') > 1 or (sid.count('/') == 1 and self.lang != 'ud'):
+                Error(
+                    state=state, config=self.incfg,
+                    testid='slash-in-sent-id',
+                    message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'"
+                ).confirm()
+            state.known_sent_ids.add(sid)
+
+
+
+    def check_parallel_id(self, state):
+        """
+        The parallel_id sentence-level comment is used after sent_id of
+        sentences that are parallel translations of sentences in other
+        treebanks. Like sent_id, it must be well-formed and unique. Unlike
+        sent_id, it is optional. Sentences that do not have it are not
+        parallel.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+            First we expect an optional block (zero or more lines) of comments,
+            i.e., lines starting with '#'. Then we expect a non-empty block
+            (one or more lines) of nodes, empty nodes, and multiword tokens.
+            Finally, we expect exactly one empty line.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+        known_parallel_ids : set
+            Parallel sentence ids already seen in this treebank.
+        parallel_id_lastalt : dict
+        parallel_id_lastpart : dict
+
+        Writes to state
+        ----------------
+        known_parallel_ids : set
+            Parallel sentence ids already seen in this treebank.
+        parallel_id_lastalt : dict
+        parallel_id_lastpart : dict
+
+        Incidents
+        ---------
+            invalid-parallel-id
+            multiple-parallel-id
+            non-unique-parallel-id
+            parallel-id-alt
+            parallel-id-part
+        """
+        Incident.default_level = 2
+        Incident.default_testclass = TestClass.METADATA
+        Incident.default_lineno = -1 # use the first line after the comments
+        n_comment_lines = state.sentence_line-state.comment_start_line
+        comments = state.current_lines[0:n_comment_lines]
+        matched = []
+        for c in comments:
+            match = utils.crex.parallelid.fullmatch(c)
+            if match:
+                matched.append(match)
+            else:
+                if c.startswith('# parallel_id') or c.startswith('#parallel_id'):
+                    Error(
+                        state=state, config=self.incfg,
+                        testid='invalid-parallel-id',
+                        message=f"Spurious parallel_id line: '{c}' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow."
+                    ).confirm()
+        if len(matched) > 1:
+            Error(
+                state=state, config=self.incfg,
+                testid='multiple-parallel-id',
+                message='Multiple parallel_id attributes.'
+            ).confirm()
+        elif matched:
+            # Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
+            # For that to happen, all three files should be tested at once.
+            pid = matched[0].group(1)
+            if pid in state.known_parallel_ids:
+                Error(
+                    state=state, config=self.incfg,
+                    testid='non-unique-parallel-id',
+                    message=f"Non-unique parallel_id attribute '{pid}'."
+                ).confirm()
+            else:
+                # Additional tests when pid has altN or partN.
+                # Do them only if the whole pid is unique.
+                sid = matched[0].group(2) + '/' + matched[0].group(3)
+                alt = None
+                part = None
+                altpart = matched[0].group(4)
+                if altpart:
+                    apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
+                    if apmatch:
+                        alt = apmatch.group(1)
+                        part = apmatch.group(2)
+                        if alt:
+                            alt = int(alt)
+                        if part:
+                            part = int(part)
+                if sid in state.parallel_id_lastalt:
+                    if state.parallel_id_lastalt[sid] == None and alt != None or state.parallel_id_lastalt[sid] != None and alt == None:
+                        Error(
+                            state=state, config=self.incfg,
+                            testid='parallel-id-alt',
+                            message=f"Some instances of parallel sentence '{sid}' have the 'alt' suffix while others do not."
+                        ).confirm()
+                    elif alt != None and alt != state.parallel_id_lastalt[sid] + 1:
+                        Error(
+                            state=state, config=self.incfg,
+                            testid='parallel-id-alt',
+                            message=f"The alt suffix of parallel sentence '{sid}' should be {state.parallel_id_lastalt[sid]}+1 but it is {alt}."
+                        ).confirm()
+                elif alt != None and alt != 1:
+                    Error(
+                        state=state, config=self.incfg,
+                        testid='parallel-id-alt',
+                        message=f"The alt suffix of parallel sentence '{sid}' should be 1 but it is {alt}."
+                    ).confirm()
+                state.parallel_id_lastalt[sid] = alt
+                if sid in state.parallel_id_lastpart:
+                    if state.parallel_id_lastpart[sid] == None and part != None or state.parallel_id_lastpart[sid] != None and part == None:
+                        Error(
+                            state=state, config=self.incfg,
+                            testid='parallel-id-part',
+                            message=f"Some instances of parallel sentence '{sid}' have the 'part' suffix while others do not."
+                        ).confirm()
+                    elif part != None and part != state.parallel_id_lastpart[sid] + 1:
+                        Error(
+                            state=state, config=self.incfg,
+                            testid='parallel-id-part',
+                            message=f"The part suffix of parallel sentence '{sid}' should be {state.parallel_id_lastpart[sid]}+1 but it is {part}."
+                        ).confirm()
+                elif part != None and part != 1:
+                    Error(
+                        state=state, config=self.incfg,
+                        testid='parallel-id-part',
+                        message=f"The part suffix of parallel sentence '{sid}' should be 1 but it is {part}."
+                    ).confirm()
+                state.parallel_id_lastpart[sid] = part
+            state.known_parallel_ids.add(pid)
+
+
+
+    def check_text_meta(self, state, tree):
+        """
+        Checks metadata other than sentence id, that is, document breaks, paragraph
+        breaks and sentence text (which is also compared to the sequence of the
+        forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+            First we expect an optional block (zero or more lines) of comments,
+            i.e., lines starting with '#'. Then we expect a non-empty block
+            (one or more lines) of nodes, empty nodes, and multiword tokens.
+            Finally, we expect exactly one empty line.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+        known_parallel_ids : set
+            Parallel sentence ids already seen in this treebank.
+        parallel_id_lastalt : dict
+        parallel_id_lastpart : dict
+
+        Writes to state
+        ----------------
+        known_parallel_ids : set
+            Parallel sentence ids already seen in this treebank.
+        parallel_id_lastalt : dict
+        parallel_id_lastpart : dict
+
+        Incidents
+        ---------
+            multiple-newdoc
+            multiple-newpar
+            spaceafter-newdocpar
+            missing-text
+            multiple-text
+            text-trailing-whitespace
+            nospaceafter-yes
+            spaceafter-value
+            spaceafter-empty-node
+            spaceafter-mwt-node
+            text-form-mismatch
+            missing-spaceafter
+            text-extra-chars
+        """
+        Incident.default_level = 2
+        Incident.default_testclass = TestClass.METADATA
+        Incident.default_lineno = -1 # use the first line after the comments
+        n_comment_lines = state.sentence_line-state.comment_start_line
+        comments = state.current_lines[0:n_comment_lines]
+        newdoc_matched = []
+        newpar_matched = []
+        text_matched = []
+        for c in comments:
+            newdoc_match = utils.crex.newdoc.fullmatch(c)
+            if newdoc_match:
+                newdoc_matched.append(newdoc_match)
+            newpar_match = utils.crex.newpar.fullmatch(c)
+            if newpar_match:
+                newpar_matched.append(newpar_match)
+            text_match = utils.crex.text.fullmatch(c)
+            if text_match:
+                text_matched.append(text_match)
+        if len(newdoc_matched) > 1:
+            Error(
+                state=state, config=self.incfg,
+                testid='multiple-newdoc',
+                message='Multiple newdoc attributes.'
+            ).confirm()
+        if len(newpar_matched) > 1:
+            Error(
+                state=state, config=self.incfg,
+                testid='multiple-newpar',
+                message='Multiple newpar attributes.'
+            ).confirm()
+        if (newdoc_matched or newpar_matched) and state.spaceafterno_in_effect:
+            Error(
+                state=state, config=self.incfg,
+                testid='spaceafter-newdocpar',
+                message='New document or paragraph starts when the last token of the previous sentence says SpaceAfter=No.'
+            ).confirm()
+        if not text_matched:
+            Error(
+                state=state, config=self.incfg,
+                testid='missing-text',
+                message='Missing the text attribute.'
+            ).confirm()
+        elif len(text_matched) > 1:
+            Error(
+                state=state, config=self.incfg,
+                testid='multiple-text',
+                message='Multiple text attributes.'
+            ).confirm()
+        else:
+            stext = text_matched[0].group(1)
+            if stext[-1].isspace():
+                Error(
+                    state=state, config=self.incfg,
+                    testid='text-trailing-whitespace',
+                    message='The text attribute must not end with whitespace.'
+                ).confirm()
+            # Validate the text against the SpaceAfter attribute in MISC.
+            skip_words = set()
+            mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
+            # We will sum state.sentence_line + iline, and state.sentence_line already points at
+            # the first token/node line after the sentence comments. Hence iline shall
+            # be 0 once we enter the cycle.
+            iline = -1
+            for cols in tree:
+                iline += 1
+                if 'NoSpaceAfter=Yes' in cols[MISC]: # I leave this without the split("|") to catch all
+                    Error(
+                        state=state, config=self.incfg,
+                        testid='nospaceafter-yes',
+                        message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
+                    ).confirm()
+                if len([x for x in cols[MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']) > 0:
+                    Error(
+                        state=state, config=self.incfg,
+                        lineno=state.sentence_line+iline,
+                        testid='spaceafter-value',
+                        message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
+                    ).confirm()
+                if utils.is_empty_node(cols):
+                    if 'SpaceAfter=No' in cols[MISC]: # I leave this without the split("|") to catch all
+                        Error(
+                            state=state, config=self.incfg,
+                            lineno=state.sentence_line+iline,
+                            testid='spaceafter-empty-node',
+                            message="'SpaceAfter=No' cannot occur with empty nodes."
+                        ).confirm()
+                    continue
+                elif utils.is_multiword_token(cols):
+                    beg, end = cols[ID].split('-')
+                    begi, endi = int(beg), int(end)
+                    # If we see a multi-word token, add its words to an ignore-set – these will be skipped, and also checked for absence of SpaceAfter=No.
+                    for i in range(begi, endi+1):
+                        skip_words.add(str(i))
+                elif cols[ID] in skip_words:
+                    if 'SpaceAfter=No' in cols[MISC]:
+                        Error(
+                            state=state, config=self.incfg,
+                            lineno=state.sentence_line+iline,
+                            testid='spaceafter-mwt-node',
+                            message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
+                        ).confirm()
+                    continue
+                else:
+                    # Err, I guess we have nothing to do here. :)
+                    pass
+                # So now we have either a multi-word token or a word which is also a token in its entirety.
+                if not stext.startswith(cols[FORM]):
+                    if not mismatch_reported:
+                        extra_message = ''
+                        if len(stext) >= 1 and stext[0].isspace():
+                            extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
+                        Error(
+                            state=state, config=self.incfg,
+                            lineno=state.sentence_line+iline,
+                            testid='text-form-mismatch',
+                            message=f"Mismatch between the text attribute and the FORM field. Form[{cols[ID]}] is '{cols[FORM]}' but text is '{stext[:len(cols[FORM])+20]}...'"+extra_message
+                        ).confirm()
+                        mismatch_reported = 1
+                else:
+                    stext = stext[len(cols[FORM]):] # eat the form
+                    # Remember if SpaceAfter=No applies to the last word of the sentence.
+                    # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+                    if 'SpaceAfter=No' in cols[MISC].split("|"):
+                        state.spaceafterno_in_effect = True
+                    else:
+                        state.spaceafterno_in_effect = False
+                        if (stext) and not stext[0].isspace():
+                            Error(
+                                state=state, config=self.incfg,
+                                lineno=state.sentence_line+iline,
+                                testid='missing-spaceafter',
+                                message=f"'SpaceAfter=No' is missing in the MISC field of node {cols[ID]} because the text is '{utils.shorten(cols[FORM]+stext)}'."
+                            ).confirm()
+                        stext = stext.lstrip()
+            if stext:
+                Error(
+                    state=state, config=self.incfg,
+                    testid='text-extra-chars',
+                    message=f"Extra characters at the end of the text attribute, not accounted for in the FORM fields: '{stext}'"
+                ).confirm()

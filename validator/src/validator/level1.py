@@ -30,7 +30,7 @@ class Level1:
 #==============================================================================
 
 
-    def check_sentence(self, state, lines):
+    def check_sentence(self, state):
         """
         Low-level tests of a block of input lines that should represent one
         sentence. If we are validating a file or treebank, the block was
@@ -42,7 +42,10 @@ class Level1:
         ----------
         state : udtools.state.State
             The state of the validation run.
-        lines : list(str)
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
             List of lines in the sentence (comments and tokens), including
             final empty line. The lines are not expected to include the final
             newline character.
@@ -50,15 +53,36 @@ class Level1:
             i.e., lines starting with '#'. Then we expect a non-empty block
             (one or more lines) of nodes, empty nodes, and multiword tokens.
             Finally, we expect exactly one empty line.
+        current_line : int
+            The number of the most recently read line from the input file
+            (1-based).
+
+        Writes to state
+        ----------------
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Incidents
+        ---------
+            misplaced-comment
+            number-of-columns (TO BE MOVED ELSEWHERE?)
+            pseudo-empty-line
+            extra-empty-line
+            empty-sentence
+            invalid-line
+            missing-empty-line
+            + those issued by check_unicode_normalization() and
+              check_whitespace() (TO BE MOVED ELSEWHERE?)
 
         Returns
         -------
         ok : bool
             Is it OK to run subsequent checks? It can be OK even after some
             less severe errors.
-        comments : list
-            List of comment lines to go with the current sentence; initial part
-            of all_lines.
         sentence : list(list)
             List of token/word lines of the current sentence, converted from
             tab-separated string to list of fields.
@@ -67,6 +91,7 @@ class Level1:
         Incident.default_testclass = TestClass.FORMAT
         # When we arrive here, state.current_line points to the last line of the
         # sentence, that is, the terminating empty line (if the input is valid).
+        lines = state.current_lines
         n_lines = len(lines)
         state.comment_start_line = state.current_line - n_lines + 1
         state.sentence_line = state.comment_start_line # temporarily, until we find the first token
@@ -74,7 +99,6 @@ class Level1:
         seen_token_node = False # at least one such line per sentence required
         last_line_is_empty = False
         ok = True # is it ok to run subsequent tests? It can be ok even after some less severe errors.
-        comment_lines = [] # List of comment lines before the sentence.
         token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields.
         for i in range(n_lines):
             lineno = state.comment_start_line + i
@@ -96,7 +120,6 @@ class Level1:
                         message='Spurious comment line. Comments are only allowed before a sentence.'
                     ).confirm()
                     ok = False
-                comment_lines.append(line)
             else:
                 if not seen_non_comment:
                     state.sentence_line = state.comment_start_line + i
@@ -170,7 +193,7 @@ class Level1:
                 message='Missing empty line after the sentence.'
             ).confirm()
             ok = seen_token_node
-        return ok, comment_lines, token_lines_fields
+        return ok, token_lines_fields
 
 
 

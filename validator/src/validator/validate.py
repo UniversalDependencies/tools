@@ -233,7 +233,8 @@ class Validator(Level6):
         """
         if state == None:
             state = State()
-        linesok, comments, sentence = self.check_sentence(state, all_lines)
+        state.current_lines = all_lines
+        linesok, sentence = self.check_sentence(state)
         if not linesok:
             return state
         linenos = utils.get_line_numbers_for_ids(state, sentence)
@@ -276,9 +277,9 @@ class Validator(Level6):
             # structure for us. Udapi does not want to get the terminating
             # empty line.
             tree = self.build_tree_udapi(all_lines)
-            self.check_sent_id(state, comments) # level 2
-            self.check_parallel_id(state, comments) # level 2
-            self.check_text_meta(state, comments, sentence) # level 2
+            self.check_sent_id(state) # level 2
+            self.check_parallel_id(state) # level 2
+            self.check_text_meta(state, sentence) # level 2
             # Test that enhanced graphs exist either for all sentences or for
             # none. As a side effect, get line numbers for all nodes including
             # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
@@ -324,7 +325,7 @@ class Validator(Level6):
                     self.check_projective_punctuation(state, node, lineno)
                 self.check_egraph_connected(state, nodes, linenos)
             if self.check_coref:
-                self.check_misc_entity(state, comments, sentence) # optional for CorefUD treebanks
+                self.check_misc_entity(state, sentence) # optional for CorefUD treebanks
         return state
 
 
@@ -364,10 +365,6 @@ class Validator(Level6):
 
         Parameters
         ----------
-        all_lines : list(str)
-            List of lines in the sentence (comments and tokens), minus final
-            empty line, minus newline characters (and minus spurious lines
-            that are neither comment lines nor token lines).
         state : udtools.state.State, optional
             The state of the validation run. If not provided, a new state will
             be initialized. (This is only to unify the interface of all the
