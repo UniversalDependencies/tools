@@ -2443,6 +2443,7 @@
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-28-08-06-13", "lastchanger": "UD-Egyptian"},
+"flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-12-07-18-56-43", "lastchanger": "bguil"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
