@@ -245,7 +245,7 @@ class Validator(Level6):
             return state
         if not self.check_token_range_overlaps(state): # level 1
             return state
-        if self.level > 1:
+        if self.level >= 2:
             if not self.check_id_references(state): # level 2
                 return state
             # Check that the basic tree is single-rooted, connected, cycle-free.
@@ -293,17 +293,17 @@ class Validator(Level6):
                 line = linenos[str(node.ord)]
                 self.check_deprels(state, node, line) # level 2 and 4
                 self.check_root(state, node, line) # level 2: deprel root <=> head 0
-                if self.level > 2:
+                if self.level >= 3:
                     self.check_enhanced_orphan(state, node, line) # level 3
-                    if self.level > 3:
+                    if self.level >= 4:
                         # To disallow words with spaces everywhere, use --lang ud.
                         self.check_words_with_spaces(state, node, line, self.lang) # level 4
                         self.check_features_level4(state, node, line, self.lang) # level 4
-                        if self.level > 4:
+                        if self.level >= 5:
                             self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
                             self.check_copula_lemmas(state, node, line, self.lang) # level 5
             # Tests on whole trees and enhanced graphs.
-            if self.level > 2:
+            if self.level >= 3:
                 # Level 3 check universally valid consequences of annotation
                 # guidelines. Look at regular nodes and basic tree, not at
                 # enhanced graph (which is checked later).
@@ -325,7 +325,7 @@ class Validator(Level6):
                     self.check_projective_punctuation(state, node, lineno)
                 self.check_egraph_connected(state, nodes, linenos)
             if self.check_coref:
-                self.check_misc_entity(state, sentence) # optional for CorefUD treebanks
+                self.check_misc_entity(state) # optional for CorefUD treebanks
         return state
 
 

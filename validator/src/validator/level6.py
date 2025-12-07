@@ -39,7 +39,7 @@ class Level6(Level5):
 
 
 
-    def check_misc_entity(self, state, sentence):
+    def check_misc_entity(self, state):
         """
         Optionally checks the well-formedness of the MISC attributes that pertain
         to coreference and named entities.
@@ -62,6 +62,9 @@ class Level6(Level5):
         comment_start_line : int
             The line number (relative to input file, 1-based) of the first line
             in the current sentence, including comments if any.
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
         sentence_line : int
             The line number (relative to input file, 1-based) of the first
             node/token line in the current sentence.
@@ -82,42 +85,42 @@ class Level6(Level5):
 
         Incidents
         ---------
-            global-entity-mismatch
-            spurious-global-entity
-            entity-mwt
-            multiple-entity-statements
-            multiple-bridge-statements
-            multiple-splitante-statements
-            bridge-without-entity
-            splitante-without-entity
-            entity-without-global-entity
-            spurious-entity-statement
-            too-many-entity-attributes
-            spurious-entity-id
-            misplaced-mention-part
-            mention-attribute-mismatch
-            entity-across-newdoc
-            spurious-entity-type
-            spurious-mention-head
-            entity-type-mismatch
-            entity-identity-mismatch
-            ill-nested-entities
-            ill-nested-entities-warning
-            mention-head-out-of-range
-            same-span-entity-mentions
-            crossing-mentions-same-entity
-            spurious-bridge-statement
-            spurious-bridge-relation
-            misplaced-bridge-statement
-            repeated-bridge-relation
-            bridge-relation-mismatch
-            spurious-splitante-statement
-            spurious-splitante-relation
-            misplaced-splitante-statement
-            repeated-splitante-relation
-            only-one-split-antecedent
-            split-antecedent-mismatch
-            cross-sentence-mention
+        global-entity-mismatch
+        spurious-global-entity
+        entity-mwt
+        multiple-entity-statements
+        multiple-bridge-statements
+        multiple-splitante-statements
+        bridge-without-entity
+        splitante-without-entity
+        entity-without-global-entity
+        spurious-entity-statement
+        too-many-entity-attributes
+        spurious-entity-id
+        misplaced-mention-part
+        mention-attribute-mismatch
+        entity-across-newdoc
+        spurious-entity-type
+        spurious-mention-head
+        entity-type-mismatch
+        entity-identity-mismatch
+        ill-nested-entities
+        ill-nested-entities-warning
+        mention-head-out-of-range
+        same-span-entity-mentions
+        crossing-mentions-same-entity
+        spurious-bridge-statement
+        spurious-bridge-relation
+        misplaced-bridge-statement
+        repeated-bridge-relation
+        bridge-relation-mismatch
+        spurious-splitante-statement
+        spurious-splitante-relation
+        misplaced-splitante-statement
+        repeated-splitante-relation
+        only-one-split-antecedent
+        split-antecedent-mismatch
+        cross-sentence-mention
         """
         Incident.default_level = 6
         Incident.default_testclass = TestClass.COREF
@@ -215,8 +218,8 @@ class Level6(Level5):
             elif sentid_match:
                 sentid = sentid_match.group(1)
             iline += 1
-        iline = 0
-        for cols in sentence:
+        for iline in range(len(state.current_token_node_table)):
+            cols = state.current_token_node_table[iline]
             Incident.default_lineno = state.sentence_line+iline
             # Add the current word to all currently open mentions. We will use it in error messages.
             # Do this for regular and empty nodes but not for multi-word-token lines.
@@ -773,7 +776,6 @@ class Level6(Level5):
                                     ).confirm()
                             else:
                                 state.entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
-            iline += 1
         if len(state.open_entity_mentions)>0:
             Error(
                 state=state, config=self.incfg,
