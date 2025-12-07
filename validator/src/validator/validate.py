@@ -251,27 +251,27 @@ class Validator(Level6):
             # Check that the basic tree is single-rooted, connected, cycle-free.
             if not self.check_tree(state): # level 2
                 return state
-            sentence = state.current_token_node_table
-            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # Tests of individual nodes that operate on pre-Udapi data structures.
             # Some of them (bad feature format) may lead to skipping Udapi completely.
             colssafe = True
-            line = state.sentence_line - 1
-            for cols in sentence:
-                line += 1
+            for i in range(len(state.current_token_node_table)):
+                lineno = state.sentence_line + i
+                cols = state.current_token_node_table[i]
                 # Multiword tokens and empty nodes can or must have certain fields empty.
                 if utils.is_multiword_token(cols):
-                    self.check_mwt_empty_vals(state, cols, line)
+                    self.check_mwt_empty_vals(state, cols, lineno)
                 if utils.is_empty_node(cols):
-                    self.check_empty_node_empty_vals(state, cols, line) # level 2
+                    self.check_empty_node_empty_vals(state, cols, lineno) # level 2
                 if utils.is_word(cols) or utils.is_empty_node(cols):
-                    self.check_character_constraints(state, cols, line) # level 2
-                    self.check_upos(state, cols, line) # level 2
-                    colssafe = self.check_features_level2(state, cols, line) and colssafe # level 2 (level 4 tests will be called later)
-                self.check_deps(state, cols, line) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                self.check_misc(state, cols, line) # level 2; must operate on pre-Udapi MISC
+                    self.check_character_constraints(state, cols, lineno) # level 2
+                    self.check_upos(state, cols, lineno) # level 2
+                    colssafe = self.check_features_level2(state, cols, lineno) and colssafe # level 2 (level 4 tests will be called later)
+                self.check_deps(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                self.check_misc(state, cols, lineno) # level 2; must operate on pre-Udapi MISC
             if not colssafe:
                 return state
+            sentence = state.current_token_node_table
+            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # If we successfully passed all the tests above, it is probably
             # safe to give the lines to Udapi and ask it to build the tree data
             # structure for us. Udapi does not want to get the terminating
