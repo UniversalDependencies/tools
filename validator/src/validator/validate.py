@@ -288,7 +288,7 @@ class Validator(Level6):
             nodes = tree.descendants_and_empty
             for node in nodes:
                 self.check_deprels(state, node) # level 2 and 4
-                self.check_root(state, node) # level 2: deprel root <=> head 0
+                self.check_zero_root(state, node) # level 2
                 if self.level >= 3:
                     self.check_enhanced_orphan(state, node) # level 3
                     if self.level >= 4:

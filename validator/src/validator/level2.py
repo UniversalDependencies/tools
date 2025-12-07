@@ -646,7 +646,7 @@ class Level2(Level1):
 
 
 
-    def check_root(self, state, node):
+    def check_zero_root(self, state, node):
         """
         Checks that DEPREL is "root" iff HEAD is 0.
 
