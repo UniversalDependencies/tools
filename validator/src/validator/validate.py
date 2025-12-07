@@ -278,16 +278,12 @@ class Validator(Level6):
             self.check_sent_id(state) # level 2
             self.check_parallel_id(state) # level 2
             self.check_text_meta(state) # level 2
-            sentence = state.current_token_node_table
-            linenos = utils.get_line_numbers_for_ids(state, sentence)
             # Test that enhanced graphs exist either for all sentences or for
             # none.
-            # As a side effect, get line numbers for all nodes including
-            # empty ones (here linenos is a dict indexed by cols[ID], i.e., a string).
-            # These line numbers are returned in any case, even if there are no
-            # enhanced dependencies, hence we can rely on them even with basic
-            # trees.
             self.check_deps_all_or_none(state) # level 2
+            # Get line numbers for all nodes including empty ones (here linenos
+            # is a dict indexed by cols[ID], i.e., a string).
+            linenos = utils.get_line_numbers_for_ids(state, state.current_token_node_table)
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
@@ -304,8 +300,9 @@ class Validator(Level6):
                             self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
                             self.check_copula_lemmas(state, node, line, self.lang) # level 5
             # Tests on whole trees and enhanced graphs.
+            self.check_egraph_connected(state, nodes, linenos) # level 2
             if self.level >= 3:
-                # Level 3 check universally valid consequences of annotation
+                # Level 3 checks universally valid consequences of annotation
                 # guidelines. Look at regular nodes and basic tree, not at
                 # enhanced graph (which is checked later).
                 basic_nodes = tree.descendants
@@ -324,7 +321,6 @@ class Validator(Level6):
                     self.check_goeswith_span(state, node, lineno)
                     self.check_goeswith_morphology_and_edeps(state, node, lineno)
                     self.check_projective_punctuation(state, node, lineno)
-                self.check_egraph_connected(state, nodes, linenos) ###!!! this was supposed to be level 2 test!
             if self.check_coref:
                 self.check_misc_entity(state) # optional for CorefUD treebanks
         return state
