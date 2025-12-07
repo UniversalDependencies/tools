@@ -68,7 +68,7 @@ class Level3(Level2):
                 state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 
 
-    def check_expected_features(self, state, node, lineno):
+    def check_expected_features(self, state, node):
         """
         Certain features are expected to occur with certain UPOS or certain values
         of other features. This function issues warnings instead of errors, as
@@ -80,12 +80,18 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
         Incident.default_testclass = TestClass.MORPHO
         if node.upos in ['PRON', 'DET']:
@@ -115,7 +121,7 @@ class Level3(Level2):
 
 
 
-    def check_upos_vs_deprel(self, state, node, lineno):
+    def check_upos_vs_deprel(self, state, node):
         """
         For certain relations checks that the dependent word belongs to an expected
         part-of-speech category. Occasionally we may have to check the children of
@@ -123,12 +129,18 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
         Incident.default_testclass = TestClass.SYNTAX
         # Occasionally a word may be marked by the feature ExtPos as acting as
@@ -262,7 +274,7 @@ class Level3(Level2):
 
 
 
-    def check_flat_foreign(self, state, node, lineno, linenos):
+    def check_flat_foreign(self, state, node):
         """
         flat:foreign is an optional subtype of flat. It is used to connect two words
         in a code-switched segment of foreign words if the annotators did not want
@@ -272,13 +284,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         Incident.default_level = 3
         Incident.default_testclass = TestClass.MORPHO
@@ -288,7 +303,7 @@ class Level3(Level2):
         if node.upos != 'X' or str(node.feats) != 'Foreign=Yes':
             Warning(
                 state=state, config=self.incfg,
-                lineno=lineno,
+                lineno=state.current_node_linenos[str(node.ord)],
                 nodeid=node.ord,
                 testid='flat-foreign-upos-feats',
                 message="The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
@@ -296,7 +311,7 @@ class Level3(Level2):
         if parent.upos != 'X' or str(parent.feats) != 'Foreign=Yes':
             Warning(
                 state=state, config=self.incfg,
-                lineno=linenos[str(parent.ord)],
+                lineno=state.current_node_linenos[str(parent.ord)],
                 nodeid=parent.ord,
                 testid='flat-foreign-upos-feats',
                 message="The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
@@ -304,7 +319,7 @@ class Level3(Level2):
 
 
 
-    def check_left_to_right_relations(self, state, node, lineno):
+    def check_left_to_right_relations(self, state, node):
         """
         Certain UD relations must always go left-to-right (in the logical order,
         meaning that parent precedes child, disregarding that some languages have
@@ -314,10 +329,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
         if node.udeprel in ['conj', 'fixed', 'flat', 'goeswith', 'appos']:
@@ -331,7 +352,7 @@ class Level3(Level2):
                 # We keep it in the testid but we make the testmessage more neutral.
                 Error(
                     state=state, config=self.incfg,
-                    lineno=lineno,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
                     testclass=TestClass.SYNTAX,
@@ -341,7 +362,7 @@ class Level3(Level2):
 
 
 
-    def check_single_subject(self, state, node, lineno):
+    def check_single_subject(self, state, node):
         """
         No predicate should have more than one subject.
         An xcomp dependent normally has no subject, but in some languages the
@@ -369,10 +390,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
 
         def is_inner_subject(node):
@@ -395,7 +422,7 @@ class Level3(Level2):
         if len(subjects) > 1:
             Error(
                 state=state, config=self.incfg,
-                lineno=lineno,
+                lineno=state.current_node_linenos[str(node.ord)],
                 nodeid=node.ord,
                 level=3,
                 testclass=TestClass.SYNTAX,
@@ -406,7 +433,7 @@ class Level3(Level2):
 
 
 
-    def check_single_object(self, state, node, lineno):
+    def check_single_object(self, state, node):
         """
         No predicate should have more than one direct object (number of indirect
         objects is unlimited). Theoretically, ccomp should be understood as a
@@ -415,10 +442,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         objects = [x for x in node.children if x.udeprel == 'obj']
         object_ids = [x.ord for x in objects]
@@ -426,7 +459,7 @@ class Level3(Level2):
         if len(objects) > 1:
             Error(
                 state=state, config=self.incfg,
-                lineno=lineno,
+                lineno=state.current_node_linenos[str(node.ord)],
                 nodeid=node.ord,
                 level=3,
                 testclass=TestClass.SYNTAX,
@@ -436,7 +469,7 @@ class Level3(Level2):
 
 
 
-    def check_nmod_obl(self, state, node, lineno):
+    def check_nmod_obl(self, state, node):
         """
         The difference between nmod and obl is that the former modifies a
         nominal while the latter modifies a predicate of a clause. Typically
@@ -450,10 +483,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         if node.udeprel == 'obl' and node.parent.upos in ['NOUN', 'PROPN', 'PRON']:
             # If the parent itself has certain deprels, we know that it is just
@@ -466,7 +505,7 @@ class Level3(Level2):
                 # But I suppose that it will became an error in the future.
                 Error(
                     state=state, config=self.incfg,
-                    lineno=lineno,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
                     testclass=TestClass.SYNTAX,
@@ -476,7 +515,7 @@ class Level3(Level2):
 
 
 
-    def check_orphan(self, state, node, lineno):
+    def check_orphan(self, state, node):
         """
         The orphan relation is used to attach an unpromoted orphan to the promoted
         orphan in gapping constructions. A common error is that the promoted orphan
@@ -485,10 +524,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         if node.udeprel == 'orphan':
@@ -506,7 +551,7 @@ class Level3(Level2):
             if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", node.parent.udeprel):
                 Warning(
                     state=state, config=self.incfg,
-                    lineno=lineno,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
                     testclass=TestClass.SYNTAX,
@@ -516,7 +561,7 @@ class Level3(Level2):
 
 
 
-    def check_functional_leaves(self, state, node, lineno, linenos):
+    def check_functional_leaves(self, state, node):
         """
         Most of the time, function-word nodes should be leaves. This function
         checks for known exceptions and warns in the other cases.
@@ -524,13 +569,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         deprel = node.udeprel
@@ -540,7 +588,7 @@ class Level3(Level2):
             pfeats = node.feats
             for child in node.children:
                 idchild = child.ord
-                Incident.default_lineno = linenos[str(idchild)]
+                Incident.default_lineno = state.current_node_linenos[str(idchild)]
                 Incident.default_level = 3
                 Incident.default_testclass = TestClass.SYNTAX
                 cdeprel = child.udeprel
@@ -690,7 +738,7 @@ class Level3(Level2):
 
 
 
-    def check_fixed_span(self, state, node, lineno):
+    def check_fixed_span(self, state, node):
         """
         Like with goeswith, the fixed relation should not in general skip words that
         are not part of the fixed expression. Unlike goeswith however, there can be
@@ -702,10 +750,16 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         fxchildren = [c for c in node.children if c.udeprel == 'fixed']
         if fxchildren:
@@ -718,7 +772,7 @@ class Level3(Level2):
                 fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
                 Warning(
                     state=state, config=self.incfg,
-                    lineno=lineno,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
                     testclass=TestClass.SYNTAX,
@@ -727,7 +781,7 @@ class Level3(Level2):
                 ).confirm()
 
 
-    def check_goeswith_span(self, state, node, lineno):
+    def check_goeswith_span(self, state, node):
         """
         The relation 'goeswith' is used to connect word parts that are separated
         by whitespace and should be one word instead. We assume that the relation
@@ -738,12 +792,18 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
         Incident.default_testclass = TestClass.SYNTAX
         gwchildren = [c for c in node.children if c.udeprel == 'goeswith']
@@ -784,7 +844,7 @@ class Level3(Level2):
 
 
 
-    def check_goeswith_morphology_and_edeps(self, state, node, lineno):
+    def check_goeswith_morphology_and_edeps(self, state, node):
         """
         If a node has the 'goeswith' incoming relation, it is a non-first part of
         a mistakenly interrupted word. The lemma, upos tag and morphological features
@@ -792,12 +852,18 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
         Incident.default_testclass = TestClass.MORPHO
         if node.udeprel == 'goeswith':
@@ -833,19 +899,25 @@ class Level3(Level2):
 
 
 
-    def check_projective_punctuation(self, state, node, lineno):
+    def check_projective_punctuation(self, state, node):
         """
         Punctuation is not supposed to cause nonprojectivity or to be attached
         nonprojectively.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
         Incident.default_testclass = TestClass.SYNTAX
         if node.udeprel == 'punct':
@@ -870,7 +942,7 @@ class Level3(Level2):
 
 
 
-    def check_enhanced_orphan(self, state, node, line):
+    def check_enhanced_orphan(self, state, node):
         """
         Checks universally valid consequences of the annotation guidelines in the
         enhanced representation. Currently tests only phenomena specific to the
@@ -880,14 +952,21 @@ class Level3(Level2):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node whose incoming relations will be validated. This function
+            The node whose incoming relation will be validated. This function
             operates on both regular and empty nodes. Make sure to call it for
             empty nodes, too!
-        line : int
-            Number of the line where the node occurs in the file.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = line
+        lineno = state.current_node_linenos[str(node.ord)]
+        Incident.default_lineno = lineno
         Incident.default_level = 3
         Incident.default_testclass = TestClass.ENHANCED
         # Enhanced dependencies should not contain the orphan relation.
@@ -898,7 +977,7 @@ class Level3(Level2):
             return
         if node.is_empty():
             if not state.seen_empty_node:
-                state.seen_empty_node = line
+                state.seen_empty_node = lineno
                 # Empty node itself is not an error. Report it only for the first time
                 # and only if an orphan occurred before it.
                 if state.seen_enhanced_orphan:
@@ -911,7 +990,7 @@ class Level3(Level2):
         udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
         if 'orphan' in udeprels:
             if not state.seen_enhanced_orphan:
-                state.seen_enhanced_orphan = line
+                state.seen_enhanced_orphan = lineno
             # If we have seen an empty node, then the orphan is an error.
             if  state.seen_empty_node:
                 Error(

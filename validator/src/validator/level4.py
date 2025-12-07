@@ -31,7 +31,7 @@ class Level4(Level3):
 
 
 
-    def check_words_with_spaces(self, state, node, line, lang):
+    def check_words_with_spaces(self, state, node):
         """
         Checks a single line for disallowed whitespace.
         Here we assume that all language-independent whitespace-related tests have
@@ -40,19 +40,26 @@ class Level4(Level3):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
         Incident.default_testclass = TestClass.FORMAT
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
-        tospacedata = self.data.get_tospace_for_language(lang)
+        tospacedata = self.data.get_tospace_for_language(self.lang)
+        lang = self.lang
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
@@ -84,7 +91,7 @@ class Level4(Level3):
 
 
 
-    def check_features_level4(self, state, node, line, lang):
+    def check_features_level4(self, state, node):
         """
         Checks that a feature-value pair is listed as approved. Feature lists are
         language-specific. To disallow non-universal features, test on level 4 with
@@ -92,22 +99,29 @@ class Level4(Level3):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
         Incident.default_testclass = TestClass.MORPHO
         if str(node.feats) == '_':
             return True
         # List of permited features is language-specific.
         # The current token may be in a different language due to code switching.
-        default_lang = lang
-        default_featset = featset = self.data.get_feats_for_language(lang)
+        default_lang = self.lang
+        default_featset = featset = self.data.get_feats_for_language(self.lang)
+        lang = default_lang
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
@@ -188,7 +202,7 @@ class Level4(Level3):
 
 
 
-    def check_deprels(self, state, node, line):
+    def check_deprels(self, state, node):
         """
         Checks that a dependency relation label is listed as approved in the given
         language. As a language-specific test, this function generally belongs to
@@ -197,12 +211,18 @@ class Level4(Level3):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The node whose incoming relation will be validated.
-        line : int
-            Number of the line where the node occurs in the file.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
         Incident.default_testclass = TestClass.SYNTAX
         # List of permited relations is language-specific.

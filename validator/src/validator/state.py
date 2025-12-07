@@ -38,6 +38,9 @@ class State:
         # List of token/node lines in the current sentence, each line split
         # to fields (columns). It is thus a list of lists of strings.
         self.current_token_node_table = []
+        # Mapping from node ids (including empty nodes) to line numbers in the
+        # input file. Dictionary indexed by string.
+        self.current_node_linenos = {}
         # Needed to check that no space after last word of sentence does not
         # co-occur with new paragraph or document.
         self.spaceafterno_in_effect = False

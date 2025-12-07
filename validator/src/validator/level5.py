@@ -25,21 +25,28 @@ class Level5(Level4):
 
 
 
-    def check_auxiliary_verbs(self, state, node, line, lang):
+    def check_auxiliary_verbs(self, state, node):
         """
         Verifies that the UPOS tag AUX is used only with lemmas that are known to
         act as auxiliary verbs or particles in the given language.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         if node.upos == 'AUX' and node.lemma != '_':
+            lang = self.lang
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
@@ -47,7 +54,7 @@ class Level5(Level4):
             if not auxlist or not node.lemma in auxlist:
                 Error(
                     state=state, config=self.incfg,
-                    lineno=line,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=5,
                     testclass=TestClass.MORPHO,
@@ -58,21 +65,28 @@ class Level5(Level4):
 
 
 
-    def check_copula_lemmas(self, state, node, line, lang):
+    def check_copula_lemmas(self, state, node):
         """
         Verifies that the relation cop is used only with lemmas that are known to
         act as copulas in the given language.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         if node.udeprel == 'cop' and node.lemma != '_':
+            lang = self.lang
             altlang = utils.get_alt_language(node)
             if altlang:
                 lang = altlang
@@ -80,7 +94,7 @@ class Level5(Level4):
             if not coplist or not node.lemma in coplist:
                 Error(
                     state=state, config=self.incfg,
-                    lineno=line,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=5,
                     testclass=TestClass.SYNTAX,

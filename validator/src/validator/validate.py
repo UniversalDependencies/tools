@@ -275,52 +275,50 @@ class Validator(Level6):
             # structure for us. Udapi does not want to get the terminating
             # empty line.
             tree = self.build_tree_udapi(all_lines)
+            # Get line numbers for all nodes including empty ones (here linenos
+            # is a dict indexed by cols[ID], i.e., a string).
+            state.current_node_linenos = utils.get_line_numbers_for_ids(state, state.current_token_node_table)
             self.check_sent_id(state) # level 2
             self.check_parallel_id(state) # level 2
             self.check_text_meta(state) # level 2
             # Test that enhanced graphs exist either for all sentences or for
             # none.
             self.check_deps_all_or_none(state) # level 2
-            # Get line numbers for all nodes including empty ones (here linenos
-            # is a dict indexed by cols[ID], i.e., a string).
-            linenos = utils.get_line_numbers_for_ids(state, state.current_token_node_table)
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
-                line = linenos[str(node.ord)]
-                self.check_deprels(state, node, line) # level 2 and 4
-                self.check_root(state, node, line) # level 2: deprel root <=> head 0
+                self.check_deprels(state, node) # level 2 and 4
+                self.check_root(state, node) # level 2: deprel root <=> head 0
                 if self.level >= 3:
-                    self.check_enhanced_orphan(state, node, line) # level 3
+                    self.check_enhanced_orphan(state, node) # level 3
                     if self.level >= 4:
                         # To disallow words with spaces everywhere, use --lang ud.
-                        self.check_words_with_spaces(state, node, line, self.lang) # level 4
-                        self.check_features_level4(state, node, line, self.lang) # level 4
+                        self.check_words_with_spaces(state, node) # level 4
+                        self.check_features_level4(state, node) # level 4
                         if self.level >= 5:
-                            self.check_auxiliary_verbs(state, node, line, self.lang) # level 5
-                            self.check_copula_lemmas(state, node, line, self.lang) # level 5
+                            self.check_auxiliary_verbs(state, node) # level 5
+                            self.check_copula_lemmas(state, node) # level 5
             # Tests on whole trees and enhanced graphs.
-            self.check_egraph_connected(state, nodes, linenos) # level 2
+            self.check_egraph_connected(state, nodes) # level 2
             if self.level >= 3:
                 # Level 3 checks universally valid consequences of annotation
                 # guidelines. Look at regular nodes and basic tree, not at
                 # enhanced graph (which is checked later).
                 basic_nodes = tree.descendants
                 for node in basic_nodes:
-                    lineno = linenos[str(node.ord)]
-                    self.check_expected_features(state, node, lineno)
-                    self.check_upos_vs_deprel(state, node, lineno)
-                    self.check_flat_foreign(state, node, lineno, linenos)
-                    self.check_left_to_right_relations(state, node, lineno)
-                    self.check_single_subject(state, node, lineno)
-                    self.check_single_object(state, node, lineno)
-                    self.check_nmod_obl(state, node, lineno)
-                    self.check_orphan(state, node, lineno)
-                    self.check_functional_leaves(state, node, lineno, linenos)
-                    self.check_fixed_span(state, node, lineno)
-                    self.check_goeswith_span(state, node, lineno)
-                    self.check_goeswith_morphology_and_edeps(state, node, lineno)
-                    self.check_projective_punctuation(state, node, lineno)
+                    self.check_expected_features(state, node)
+                    self.check_upos_vs_deprel(state, node)
+                    self.check_flat_foreign(state, node)
+                    self.check_left_to_right_relations(state, node)
+                    self.check_single_subject(state, node)
+                    self.check_single_object(state, node)
+                    self.check_nmod_obl(state, node)
+                    self.check_orphan(state, node)
+                    self.check_functional_leaves(state, node)
+                    self.check_fixed_span(state, node)
+                    self.check_goeswith_span(state, node)
+                    self.check_goeswith_morphology_and_edeps(state, node)
+                    self.check_projective_punctuation(state, node)
             if self.check_coref:
                 self.check_misc_entity(state) # optional for CorefUD treebanks
         return state

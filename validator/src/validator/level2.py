@@ -646,20 +646,26 @@ class Level2(Level1):
 
 
 
-    def check_root(self, state, node, line):
+    def check_root(self, state, node):
         """
         Checks that DEPREL is "root" iff HEAD is 0.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The node whose incoming relation will be validated. This function
             operates on both regular and empty nodes. Make sure to call it for
             empty nodes, too!
-        line : int
-            Number of the line where the node occurs in the file.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 2
         Incident.default_testclass = TestClass.SYNTAX
         if not node.is_empty():
@@ -753,7 +759,7 @@ class Level2(Level1):
 
 
 
-    def check_egraph_connected(self, state, nodes, linenos):
+    def check_egraph_connected(self, state, nodes):
         """
         Takes the list of nodes (including empty nodes). If there are enhanced
         dependencies in DEPS, builds the enhanced graph and checks that it is
@@ -761,12 +767,17 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         nodes : list of udapi.core.node.Node objects
             List of nodes in the sentence, including empty nodes, sorted by word
             order.
-        linenos : dict
-            Indexed by node ID (string), contains the line number on which the node
-            occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         egraph_exists = False # enhanced deps are optional
         egraph = {'0': {'children': set()}}
@@ -806,7 +817,7 @@ class Level2(Level1):
             sur = sorted(unreachable)
             Error(
                 state=state, config=self.incfg,
-                lineno=linenos[sur[0]],
+                lineno=state.current_node_linenos[sur[0]],
                 level=2,
                 testclass=TestClass.ENHANCED,
                 testid='unconnected-egraph',
