@@ -114,7 +114,7 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-id.conllu 
-[Line 5 Sent invalid-deps-id]: [L2 ENHANCED unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
+[Line 4 Sent invalid-deps-id]: [L2 ENHANCED unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
 ENHANCED errors: 1
 *** FAILED *** with 1 errors
  
@@ -126,7 +126,7 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-syntax.conllu 
-[Line 5 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
+[Line 4 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -186,7 +186,7 @@ MORPHO errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\malformed_deps.conllu 
-[Line 14 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
+[Line 9 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  

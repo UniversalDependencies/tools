@@ -237,23 +237,22 @@ class Validator(Level6):
         # Low-level errors typically mean that we cannot perform further tests
         # because we could choke on trying to access non-existent data. Or we
         # may succeed in performing them but the error messages may be misleading.
-        if not self.check_sentence_lines(state):
+        if not self.check_sentence_lines(state): # level 1
             return state
-        if not self.check_sentence_columns(state):
+        if not self.check_sentence_columns(state): # level 1
             return state
-        if not self.check_id_sequence(state):
+        if not self.check_id_sequence(state): # level 1
             return state
-        if not self.check_token_range_overlaps(state):
+        if not self.check_token_range_overlaps(state): # level 1
             return state
         if self.level > 1:
+            if not self.check_id_references(state): # level 2
+                return state
+            # Check that the basic tree is single-rooted, connected, cycle-free.
+            if not self.check_tree(state): # level 2
+                return state
             sentence = state.current_token_node_table
             linenos = utils.get_line_numbers_for_ids(state, sentence)
-            idrefok = self.check_id_references(state, sentence) # level 2
-            if not idrefok:
-                return state
-            treeok = self.check_tree(state, sentence) # level 2 test: tree is single-rooted, connected, cycle-free
-            if not treeok:
-                return state
             # Tests of individual nodes that operate on pre-Udapi data structures.
             # Some of them (bad feature format) may lead to skipping Udapi completely.
             colssafe = True

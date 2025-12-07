@@ -446,7 +446,7 @@ class Level2(Level1):
 
 
 
-    def check_id_references(self, state, sentence):
+    def check_id_references(self, state):
         """
         Verifies that HEAD and DEPS reference existing IDs. If this function does
         not return True, most of the other tests should be skipped for the current
@@ -454,33 +454,55 @@ class Level2(Level1):
 
         Parameters
         ----------
-        sentence : list
-            Lines (arrays of columns): words, mwt tokens, empty nodes.
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Incidents
+        ---------
+        invalid-head
+        unknown-head
+        invalid-deps
+        invalid-ehead
+        unknown-ehead
 
         Returns
         -------
         ok : bool
+            Is it OK to run subsequent checks? It can be OK even after some
+            less severe errors.
         """
         ok = True
         Incident.default_level = 2
         Incident.default_testclass = TestClass.FORMAT
-        word_tree = [cols for cols in sentence if utils.is_word(cols) or utils.is_empty_node(cols)]
-        ids = set([cols[ID] for cols in word_tree])
-        for cols in word_tree:
+        ids = set([cols[ID] for cols in state.current_token_node_table if utils.is_word(cols) or utils.is_empty_node(cols)])
+        for i in range(len(state.current_token_node_table)):
+            lineno = state.sentence_line + i
+            cols = state.current_token_node_table[i]
+            if utils.is_multiword_token(cols):
+                continue
             # Test the basic HEAD only for non-empty nodes.
             # We have checked elsewhere that it is empty for empty nodes.
             if not utils.is_empty_node(cols):
                 match = utils.crex.head.fullmatch(cols[HEAD])
                 if match is None:
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='invalid-head',
                         message=f"Invalid HEAD: '{cols[HEAD]}'."
                     ).confirm()
                     ok = False
                 if not (cols[HEAD] in ids or cols[HEAD] == '0'):
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testclass=TestClass.SYNTAX,
                         testid='unknown-head',
                         message=f"Undefined HEAD (no such ID): '{cols[HEAD]}'."
@@ -491,7 +513,7 @@ class Level2(Level1):
             except ValueError:
                 # Similar errors have probably been reported earlier.
                 Error(
-                    state=state, config=self.incfg,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='invalid-deps',
                     message=f"Failed to parse DEPS: '{cols[DEPS]}'."
                 ).confirm()
@@ -501,14 +523,14 @@ class Level2(Level1):
                 match = utils.crex.ehead.fullmatch(head)
                 if match is None:
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testid='invalid-ehead',
                         message=f"Invalid enhanced head reference: '{head}'."
                     ).confirm()
                     ok = False
                 if not (head in ids or head == '0'):
                     Error(
-                        state=state, config=self.incfg,
+                        state=state, config=self.incfg, lineno=lineno,
                         testclass=TestClass.ENHANCED,
                         testid='unknown-ehead',
                         message=f"Undefined enhanced head reference (no such ID): '{head}'."
@@ -518,7 +540,7 @@ class Level2(Level1):
 
 
 
-    def check_tree(self, state, sentence):
+    def check_tree(self, state):
         """
         Takes the list of non-comment lines (line = list of columns) describing
         a sentence. Returns an array with line number corresponding to each tree
@@ -526,9 +548,9 @@ class Level2(Level1):
         (and reports the error, unless it is something that should have been
         reported earlier).
 
-        We will assume that this function is called only if both ID and HEAD values
-        have been found valid for all tree nodes, including the sequence of IDs
-        and the references from HEAD to existing IDs.
+        We will assume that this function is called only if both ID and HEAD
+        values have been found valid for all tree nodes, including the sequence
+        of IDs and the references from HEAD to existing IDs.
 
         This function originally served to build a data structure that would
         describe the tree and make it accessible during subsequent tests. Now we
@@ -539,20 +561,37 @@ class Level2(Level1):
 
         Parameters
         ----------
-        sentence : list
-            Lines (arrays of columns): words, mwt tokens, empty nodes.
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Incidents
+        ---------
+        head-self-loop
+        multiple-roots
+        non-tree
 
         Returns
         -------
         ok : bool
+            Is it OK to run subsequent checks? It can be OK even after some
+            less severe errors.
         """
         Incident.default_level = 2
         Incident.default_testclass = TestClass.SYNTAX
-        node_line = state.sentence_line - 1
         children = {} # int(node id) -> set of children
         n_words = 0
-        for cols in sentence:
-            node_line += 1
+        for i in range(len(state.current_token_node_table)):
+            lineno = state.sentence_line + i
+            cols = state.current_token_node_table[i]
             if not utils.is_word(cols):
                 continue
             n_words += 1
@@ -563,8 +602,7 @@ class Level2(Level1):
             head = int(cols[HEAD])
             if head == id_:
                 Error(
-                    state=state, config=self.incfg,
-                    lineno=node_line,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='head-self-loop',
                     message=f'HEAD == ID for {cols[ID]}'
                 ).confirm()
@@ -576,8 +614,7 @@ class Level2(Level1):
         children_0 = sorted(children.get(0, []))
         if len(children_0) > 1:
             Error(
-                state=state, config=self.incfg,
-                lineno=-1,
+                state=state, config=self.incfg, lineno=state.sentence_line,
                 testid='multiple-roots',
                 message=f"Multiple root words: {children_0}"
             ).confirm()
@@ -600,8 +637,7 @@ class Level2(Level1):
         if unreachable:
             str_unreachable = ','.join(str(w) for w in sorted(unreachable))
             Error(
-                state=state, config=self.incfg,
-                lineno=-1,
+                state=state, config=self.incfg, lineno=state.sentence_line,
                 testid='non-tree',
                 message=f'Non-tree structure. Words {str_unreachable} are not reachable from the root 0.'
             ).confirm()
