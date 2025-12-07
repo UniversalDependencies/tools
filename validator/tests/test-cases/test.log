@@ -57,8 +57,8 @@ METADATA errors: 1
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\empty-head.conllu 
 [Line 4 Sent empty-head]: [L1 FORMAT empty-column] Empty value in column HEAD: ''.
-[Line 5 Sent empty-head]: [L2 FORMAT invalid-head] Invalid HEAD: ''.
-[Line 5 Sent empty-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): ''.
+[Line 4 Sent empty-head]: [L2 FORMAT invalid-head] Invalid HEAD: ''.
+[Line 4 Sent empty-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): ''.
 FORMAT errors: 2
 SYNTAX errors: 1
 *** FAILED *** with 3 errors
@@ -114,7 +114,7 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-id.conllu 
-[Line 6 Sent invalid-deps-id]: [L2 ENHANCED unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
+[Line 5 Sent invalid-deps-id]: [L2 ENHANCED unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
 ENHANCED errors: 1
 *** FAILED *** with 1 errors
  
@@ -126,13 +126,13 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-deps-syntax.conllu 
-[Line 6 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
+[Line 5 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\invalid-head.conllu 
-[Line 6 Sent invalid-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): '3'.
+[Line 5 Sent invalid-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): '3'.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
@@ -186,7 +186,7 @@ MORPHO errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\malformed_deps.conllu 
-[Line 15 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
+[Line 14 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -298,18 +298,15 @@ FORMAT errors: 2
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\overlapping-multiword.conllu 
-[Line 12 Sent overlapping-multiword]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
+[Line 7 Sent overlapping-multiword]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\overlapping-range.conllu 
-[Line 12 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
-[Line 7 Sent invalid-range-format]: [L2 METADATA text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[3-4] is 'nota' but text is 'have not a clue PUNCT...'
-[Line 4 Sent invalid-range-format]: [L2 METADATA text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'have not a clue PUNCT'
+[Line 7 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
 FORMAT errors: 1
-METADATA errors: 2
-*** FAILED *** with 3 errors
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-level1-2\parallel-id.conllu 
@@ -729,32 +726,9 @@ MORPHO errors: 11
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\overlapping-word-interval.conllu 
-[Line 12 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
-[Line 7 Sent invalid-range-format]: [L2 METADATA text-form-mismatch] Mismatch between the text attribute and the FORM field. Form[3-4] is 'nota' but text is 'have not a clue PUNCT...'
-[Line 4 Sent invalid-range-format]: [L2 METADATA text-extra-chars] Extra characters at the end of the text attribute, not accounted for in the FORM fields: 'have not a clue PUNCT'
-[Line 4 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('I').
-
-The following 95 feature values are currently permitted in language [cs]:
-Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
-If a language needs a feature that is not documented in the universal guidelines, the feature must
-have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-All features including universal must be specifically turned on for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
-
-
-[Line 4 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Per is not documented for language [cs] ('I').
-[Line 6 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Tens is not documented for language [cs] ('have').
-[Line 10 Sent invalid-range-format]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('clue').
-[Line 4 Sent invalid-range-format]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
-[Line 8 Sent invalid-range-format]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
-[Line 9 Sent invalid-range-format]: [L3 WARNING pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature
-Warnings: 2
+[Line 7 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
 FORMAT errors: 1
-MORPHO errors: 4
-SYNTAX errors: 1
-METADATA errors: 2
-*** FAILED *** with 8 errors
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\pseudo-empty-line.conllu 

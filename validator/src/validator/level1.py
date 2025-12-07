@@ -410,19 +410,12 @@ class Level1:
 
         Reads from state
         ----------------
-        current_lines : list(str)
-            List of lines in the sentence (comments and tokens), including
-            final empty line. The lines are not expected to include the final
-            newline character.
-        comment_start_line : int
-            The line number (relative to input file, 1-based) of the first line
-            in the current sentence, including comments if any.
-        sentence_line : int
-            The line number (relative to input file, 1-based) of the first
-            node/token line in the current sentence.
         current_token_node_table : list(list(str))
             The list of multiword token lines / regular node lines / empty node
             lines, each split to fields (columns).
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
 
         Incidents
         ---------
@@ -542,24 +535,48 @@ class Level1:
 
 
 
-    def check_token_ranges(self, state):
+    def check_token_range_overlaps(self, state):
         """
-        Checks that the word ranges for multiword tokens are valid.
+        Checks that the word ranges for multiword tokens do not overlap.
 
-        sentence ... array of arrays, each inner array contains columns of one line
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Incidents
+        ---------
+        invalid-word-interval
+        overlapping-word-intervals
+
+        Returns
+        -------
+        ok : bool
+            Is it OK to run subsequent checks? It can be OK even after some
+            less severe errors.
         """
+        ok = True
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
-        Incident.default_lineno = None # use the most recently read line
-        sentence = state.current_token_node_table
         covered = set()
-        for cols in sentence:
+        for i in range(len(state.current_token_node_table)):
+            lineno = state.sentence_line + i
+            cols = state.current_token_node_table[i]
             if not utils.is_multiword_token(cols):
                 continue
             m = utils.crex.mwtid.fullmatch(cols[ID])
             if not m: # This should not happen. The function utils.is_multiword_token() would then not return True.
                 Error(
-                    state=state, config=self.incfg,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='invalid-word-interval',
                     message=f"Spurious word interval definition: '{cols[ID]}'."
                 ).confirm()
@@ -569,11 +586,13 @@ class Level1:
             # Do not test if start >= end: This was already tested above in check_id_sequence().
             if covered & set(range(start, end+1)):
                 Error(
-                    state=state, config=self.incfg,
+                    state=state, config=self.incfg, lineno=lineno,
                     testid='overlapping-word-intervals',
                     message=f'Range overlaps with others: {cols[ID]}'
                 ).confirm()
+                ok = False
             covered |= set(range(start, end+1))
+        return ok
 
 
 

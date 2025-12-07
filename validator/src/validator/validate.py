@@ -243,10 +243,11 @@ class Validator(Level6):
             return state
         if not self.check_id_sequence(state):
             return state
-        self.check_token_ranges(state) # level 1
-        sentence = state.current_token_node_table
-        linenos = utils.get_line_numbers_for_ids(state, sentence)
+        if not self.check_token_range_overlaps(state):
+            return state
         if self.level > 1:
+            sentence = state.current_token_node_table
+            linenos = utils.get_line_numbers_for_ids(state, sentence)
             idrefok = self.check_id_references(state, sentence) # level 2
             if not idrefok:
                 return state
