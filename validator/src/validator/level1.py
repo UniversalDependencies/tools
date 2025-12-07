@@ -30,7 +30,7 @@ class Level1:
 #==============================================================================
 
 
-    def check_sentence(self, state):
+    def check_sentence_lines(self, state):
         """
         Low-level tests of a block of input lines that should represent one
         sentence. If we are validating a file or treebank, the block was
@@ -68,24 +68,21 @@ class Level1:
 
         Incidents
         ---------
-            misplaced-comment
-            number-of-columns (TO BE MOVED ELSEWHERE?)
-            pseudo-empty-line
-            extra-empty-line
-            empty-sentence
-            invalid-line
-            missing-empty-line
-            + those issued by check_unicode_normalization() and
-              check_whitespace() (TO BE MOVED ELSEWHERE?)
+        misplaced-comment
+        number-of-columns (TO BE MOVED ELSEWHERE?)
+        pseudo-empty-line
+        extra-empty-line
+        empty-sentence
+        invalid-line
+        missing-empty-line
+        + those issued by check_unicode_normalization() and
+          check_whitespace() (TO BE MOVED ELSEWHERE?)
 
         Returns
         -------
         ok : bool
             Is it OK to run subsequent checks? It can be OK even after some
             less severe errors.
-        sentence : list(list)
-            List of token/word lines of the current sentence, converted from
-            tab-separated string to list of fields.
         """
         Incident.default_level = 1
         Incident.default_testclass = TestClass.FORMAT
@@ -99,7 +96,6 @@ class Level1:
         seen_token_node = False # at least one such line per sentence required
         last_line_is_empty = False
         ok = True # is it ok to run subsequent tests? It can be ok even after some less severe errors.
-        token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields.
         for i in range(n_lines):
             lineno = state.comment_start_line + i
             line = lines[i]
@@ -127,22 +123,6 @@ class Level1:
                 # Token/node lines.
                 if line and line[0].isdigit():
                     seen_token_node = True
-                    ###!!! Do we want to do this here, or later in a separate method?
-                    cols = line.split("\t")
-                    # If there is an unexpected number of columns, do not test their contents.
-                    # Maybe the contents belongs to a different column. And we could see
-                    # an exception if a column value is missing.
-                    if len(cols) == COLCOUNT:
-                        token_lines_fields.append(cols)
-                        # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
-                        self.check_whitespace(state, cols, lineno)
-                    else:
-                        Error(
-                            state=state, config=self.incfg, lineno=lineno,
-                            testid='number-of-columns',
-                            message=f'The line has {len(cols)} columns but {COLCOUNT} are expected.'
-                        ).confirm()
-                        ok = False
                 # Empty line (end of sentence).
                 elif not line or utils.is_whitespace(line):
                     # Lines consisting of space/tab characters are non-empty and invalid,
@@ -193,7 +173,84 @@ class Level1:
                 message='Missing empty line after the sentence.'
             ).confirm()
             ok = seen_token_node
-        return ok, token_lines_fields
+        return ok
+
+
+    def check_sentence_columns(self, state):
+        """
+        Low-level tests of the token/node lines of one sentence. The lines
+        should have been already checked by check_sentence_lines() and all
+        should start with a digit. We will split them to columns (cells),
+        check that there is the expected number of columns and that they are
+        not empty.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Writes to state
+        ----------------
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+
+        Incidents
+        ---------
+        number-of-columns
+        + those issued by check_whitespace()
+
+        Returns
+        -------
+        ok : bool
+            Is it OK to run subsequent checks? It can be OK even after some
+            less severe errors.
+        """
+        Incident.default_level = 1
+        Incident.default_testclass = TestClass.FORMAT
+        n_comment_lines = state.sentence_line-state.comment_start_line
+        n_lines = len(state.current_lines)
+        # Normally we should exclude the last line because it is the empty line
+        # terminating the sentence. But if the empty line is missing (which is
+        # an error that we reported elsewhere), we must keep the last line.
+        range_end = n_lines-1 if (not state.current_lines[-1] or utils.is_whitespace(state.current_lines[-1])) else n_lines
+        token_lines = state.current_lines[n_comment_lines:range_end]
+        n_token_lines = len(token_lines)
+        token_lines_fields = [] # List of token/word lines of the current sentence, converted from string to list of fields.
+        ok = True # is it ok to run subsequent tests? It can be ok even after some less severe errors.
+        for i in range(n_token_lines):
+            lineno = state.sentence_line + i
+            line = token_lines[i]
+            cols = line.split("\t")
+            token_lines_fields.append(cols)
+            # If there is an unexpected number of columns, do not test their contents.
+            # Maybe the contents belongs to a different column. And we could see
+            # an exception if a column value is missing.
+            if len(cols) == COLCOUNT:
+                # Low-level tests, mostly universal constraints on whitespace in fields, also format of the ID field.
+                self.check_whitespace(state, cols, lineno)
+            else:
+                Error(
+                    state=state, config=self.incfg, lineno=lineno,
+                    testid='number-of-columns',
+                    message=f'The line has {len(cols)} columns but {COLCOUNT} are expected.'
+                ).confirm()
+                ok = False
+        state.current_token_node_table = token_lines_fields
+        return ok
 
 
 

@@ -35,6 +35,9 @@ class State:
         # List of input lines representing the current sentence (including
         # comments and the final empty line). Newline characters omitted.
         self.current_lines = []
+        # List of token/node lines in the current sentence, each line split
+        # to fields (columns). It is thus a list of lists of strings.
+        self.current_token_node_table = []
         # Needed to check that no space after last word of sentence does not
         # co-occur with new paragraph or document.
         self.spaceafterno_in_effect = False

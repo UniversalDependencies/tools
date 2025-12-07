@@ -563,8 +563,6 @@ SYNTAX errors: 3
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\columns-format.conllu 
 [Line 4 Sent tanl1]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
-[Line 11 Sent tanl2]: [L1 FORMAT invalid-whitespace-mwt] White space not allowed in multi-word token 'da lla'. If it contains a space, it is not a single surface token.
-[Line 12 Sent tanl2]: [L1 FORMAT empty-column] Empty value in column XPOS: ''.
 [Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	 FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
 [Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column UPOS: 'VERB '.
 [Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column FEATS: ' Gender=Fem|Number=Sing'.
@@ -572,9 +570,9 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\va
 [Line 19 Sent tanl3]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'VERB '.
 [Line 19 Sent tanl3]: [L2 MORPHO invalid-feature] Spurious morphological feature: ' Gender=Fem'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 [Line 20 Sent tanl3]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'DE T'.
-FORMAT errors: 7
+FORMAT errors: 5
 MORPHO errors: 3
-*** FAILED *** with 10 errors
+*** FAILED *** with 8 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\validator\tests\test-cases\invalid-functions\extra-empty-line.conllu 

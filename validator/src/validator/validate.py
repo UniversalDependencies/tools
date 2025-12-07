@@ -234,9 +234,11 @@ class Validator(Level6):
         if state == None:
             state = State()
         state.current_lines = all_lines
-        linesok, sentence = self.check_sentence(state)
+        linesok = self.check_sentence_lines(state)
+        linesok = linesok and self.check_sentence_columns(state)
         if not linesok:
             return state
+        sentence = state.current_token_node_table
         linenos = utils.get_line_numbers_for_ids(state, sentence)
         # The individual lines were validated already in next_sentence().
         # What follows is tests that need to see the whole tree.
