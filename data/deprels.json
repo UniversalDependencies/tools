@@ -2445,7 +2445,7 @@
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
-"dislocated:ccomp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"dislocated:ccomp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-44-05", "lastchanger": "UD_Egyptian"},
 "dislocated:csubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
