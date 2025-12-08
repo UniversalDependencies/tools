@@ -419,6 +419,7 @@ class Level3(Level2):
         subjects = [x for x in node.children if is_inner_subject(x)]
         subject_ids = [x.ord for x in subjects]
         subject_forms = [utils.formtl(x) for x in subjects]
+        subject_references = utils.create_references(subjects, state, 'Subject')
         if len(subjects) > 1:
             Error(
                 state=state, config=self.incfg,
@@ -428,7 +429,8 @@ class Level3(Level2):
                 testclass=TestClass.SYNTAX,
                 testid='too-many-subjects',
                 message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{utils.formtl(node)}' not subtyped as ':outer'.",
-                explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
+                explanation="Outer subjects are allowed if a clause acts as the predicate of another clause.",
+                references=subject_references
             ).confirm()
 
 
@@ -512,7 +514,8 @@ class Level3(Level2):
                     level=3,
                     testclass=TestClass.SYNTAX,
                     testid='obl-should-be-nmod',
-                    message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'."
+                    message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.",
+                    references=utils.create_references([node.parent], state, 'Parent')
                 ).confirm()
 
 
@@ -558,7 +561,8 @@ class Level3(Level2):
                     level=3,
                     testclass=TestClass.SYNTAX,
                     testid='orphan-parent',
-                    message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
+                    message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'.",
+                    references=utils.create_references([node.parent], state, 'Parent')
                 ).confirm()
 
 
@@ -930,7 +934,8 @@ class Level3(Level2):
                     state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='punct-causes-nonproj',
-                    message=f"Punctuation must not cause non-projectivity of nodes {nonprojids}"
+                    message=f"Punctuation must not cause non-projectivity of nodes {nonprojids}",
+                    references=utils.create_references(nonprojnodes, state, 'Node made nonprojective')
                 ).confirm()
             gapnodes = utils.get_gap(node)
             if gapnodes:
@@ -939,7 +944,8 @@ class Level3(Level2):
                     state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='punct-is-nonproj',
-                    message=f"Punctuation must not be attached non-projectively over nodes {gapids}"
+                    message=f"Punctuation must not be attached non-projectively over nodes {gapids}",
+                    references=utils.create_references(gapnodes, state, 'Node in gap')
                 ).confirm()
 
 
