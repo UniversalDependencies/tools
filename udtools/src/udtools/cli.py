@@ -6,7 +6,7 @@
 # 2025-09: Refactoring by @harisont and @ellepannitto
 import sys
 from udtools.argparser import parse_args
-from udtools.validate import Validator
+from udtools.validator import Validator
 
 
 

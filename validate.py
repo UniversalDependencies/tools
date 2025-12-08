@@ -5,7 +5,7 @@
 import sys
 # Import the Validator class from the package subfolder regardless whether it
 # is installed as a package.
-from udtools.src.udtools.validate import Validator
+from udtools.src.udtools.validator import Validator
 from udtools.src.udtools.argparser import parse_args
 
 
