@@ -2419,7 +2419,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-06-12-10-55-04", "lastchanger": "UD-Egyptian"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:consec": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advcl:consec": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-45-46", "lastchanger": "UD_Egyptian"},
 "advcl:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
