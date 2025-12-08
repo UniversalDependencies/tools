@@ -2420,7 +2420,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-06-12-10-55-04", "lastchanger": "UD-Egyptian"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:consec": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advcl:purp": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advcl:purp'."]},
+"advcl:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tcl": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advcl:tcl'."]},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod:neg'."]},
