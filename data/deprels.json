@@ -2446,7 +2446,7 @@
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated:ccomp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:csubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"dislocated:nsubj": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'dislocated:nsubj'."]},
+"dislocated:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:obj": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'dislocated:obj'."]},
 "dislocated:obl": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'dislocated:obl'."]},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-27-22-09-37", "lastchanger": "UD-Egyptian"},
