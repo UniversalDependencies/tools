@@ -56,6 +56,19 @@ class Reference:
     nodeid: str = ''
     comment: str = ''
 
+    def json(self):
+        """
+        Returns the reference description in JSON format so it can be passed to
+        external applications easily.
+        """
+        jsonlist = []
+        jsonlist.append(f'"filename": {jenc.encode(str(self.filename))}')
+        jsonlist.append(f'"lineno": "{str(self.lineno)}"')
+        jsonlist.append(f'"sentid": {jenc.encode(str(self.sentid))}')
+        jsonlist.append(f'"nodeid": "{str(self.nodeid)}"')
+        jsonlist.append(f'"comment": {jenc.encode(self.comment)}')
+        return '{' + ', '.join(jsonlist) + '}'
+
 
 
 class Incident:
@@ -125,7 +138,8 @@ class Incident:
         jsonlist.append(f'"nodeid": "{str(self.nodeid)}"')
         jsonlist.append(f'"message": {jenc.encode(str(self.message))}')
         jsonlist.append(f'"explanation": {jenc.encode(str(self.explanation))}')
-        jsonlist.append(f'"references": {jenc.encode(self.references)}')
+        refjson = '[' + ', '.join([x.json() for x in self.references]) + ']'
+        jsonlist.append(f'"references": {refjson}')
         return '{' + ', '.join(jsonlist) + '}'
 
     def _count_me(self):
