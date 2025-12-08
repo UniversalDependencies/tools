@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from enum import Enum
 from json import JSONEncoder
 
@@ -36,6 +37,27 @@ class IncidentType(Enum):
 
 
 
+@dataclass(order=True)
+class Reference:
+    """
+    Points to a position in the source file. Each incident (error or warning)
+    has always a main anchor (reference) that is reported with the error.
+    However, some errors may also relate to additional positions in the file,
+    which can be then given as a list of Reference objects. As a minimum,
+    a reference indicates the line number. If there were multiple input files,
+    it should also indicate the file name, as line numbers reset when new file
+    starts. Optionally, references can also indicate the sentence and node ids
+    (if pointing to a node) to facilitate locating the target. Finally, the
+    reference can include a comment which explain its relation to the incident.
+    """
+    filename: str
+    lineno: int
+    sentid: str = ''
+    nodeid: str = ''
+    comment: str = ''
+
+
+
 class Incident:
     """
     Instances of this class describe individual errors or warnings in the input
@@ -48,7 +70,7 @@ class Incident:
     default_testid = 'generic-error'
     default_message = 'No error description provided.'
     default_lineno = None
-    def __init__(self, state, config, level=None, testclass=None, testid=None, message=None, lineno=None, nodeid=None, explanation=''):
+    def __init__(self, state, config, level=None, testclass=None, testid=None, message=None, lineno=None, nodeid=None, explanation='', references=[]):
         self.state = state
         self.config = config
 
@@ -81,6 +103,11 @@ class Incident:
         self.sentid = state.sentence_id
         # ID of the node on which the error occurred (if it pertains to one node).
         self.nodeid = nodeid
+        # Additional references to nodes or other input lines, if needed.
+        # List of Reference objects. Note that the main anchor is not included
+        # in the list; it is described directly in filename, lineno, sentid and
+        # nodeid parameters.
+        self.references = references
 
     def json(self):
         """
@@ -98,6 +125,7 @@ class Incident:
         jsonlist.append(f'"nodeid": "{str(self.nodeid)}"')
         jsonlist.append(f'"message": {jenc.encode(str(self.message))}')
         jsonlist.append(f'"explanation": {jenc.encode(str(self.explanation))}')
+        jsonlist.append(f'"references": {jenc.encode(self.references)}')
         return '{' + ', '.join(jsonlist) + '}'
 
     def _count_me(self):

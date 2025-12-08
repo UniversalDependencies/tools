@@ -456,6 +456,7 @@ class Level3(Level2):
         objects = [x for x in node.children if x.udeprel == 'obj']
         object_ids = [x.ord for x in objects]
         object_forms = [utils.formtl(x) for x in objects]
+        object_references = utils.create_references(objects, state, 'Object')
         if len(objects) > 1:
             Error(
                 state=state, config=self.incfg,
@@ -464,7 +465,8 @@ class Level3(Level2):
                 level=3,
                 testclass=TestClass.SYNTAX,
                 testid='too-many-objects',
-                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{utils.formtl(node)}'."
+                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{utils.formtl(node)}'.",
+                references=object_references
             ).confirm()
 
 

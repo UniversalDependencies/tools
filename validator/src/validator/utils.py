@@ -1,4 +1,14 @@
+import os
 import regex as re
+# Allow using this module from the root folder of tools even if it is not
+# installed as a package: use the relative path validator/src/validator for
+# submodules. If the path is not available, try the standard qualification,
+# assuming that the user has installed udtools from PyPI and then called
+# from udtools import Validator.
+try:
+    from validator.src.validator.incident import Reference
+except ModuleNotFoundError:
+    from udtools.incident import Reference
 
 
 
@@ -352,3 +362,25 @@ def get_gap(node):
     if rangebetween:
         gap = [n for n in node.root.descendants if n.ord in rangebetween and not n in node.parent.descendants]
     return sorted(gap)
+
+
+def create_references(nodes, state, comment=''):
+    """
+    Takes a list of nodes and converts it to a list of Reference objects to be
+    reported with an Incident.
+
+    Parameters
+    ----------
+    nodes : list(udapi.core.node.Node)
+        The nodes to which we wish to refer.
+    state : udtools.state.State
+        The state of the validation run.
+    comment : str
+        The comment to add to each reference.
+
+    Returns
+    -------
+    references : list(udtools.incident.Reference)
+    """
+    filename = 'STDIN' if state.current_file_name == '-' else os.path.basename(state.current_file_name) if state.current_file_name else 'NONE'
+    return [Reference(nodeid=str(x.ord), sentid=state.sentence_id, filename=filename, lineno=state.current_node_linenos[str(x.ord)], comment=comment) for x in nodes]
