@@ -1283,6 +1283,9 @@
 "ol": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "light verb compound", "example": "şad [ol]", "exampleen": "be happy", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-15-02-50", "lastchanger": "sb-b"},
 "y": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "i copula", "example": "Eve gelir [iken]", "exampleen": "As you are coming home", "comment": ""}], "status": "documented", "lastchanged": "2024-05-01-15-01-02", "lastchanger": "sb-b"}
 },
+"pa": {
+"ہونا": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[ہے] چھوٹی بھیڈ", "exampleen": "It is a little sheep.", "comment": ""}], "status": "documented", "lastchanged": "2025-12-08-12-31-59", "lastchanger": "rahonalab"}
+},
 "pay": {
 "ak": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past or bare form of the verb.", "deficient": "", "example": "toʔ arwã ma pak [aki] wiʃã akaki ya", "exampleen": "‘The Mother of the Fish had already taken that man’.", "comment": ""}], "status": "documented", "lastchanged": "2024-10-30-23-18-18", "lastchanger": "natalia-caceres-arandia"},
 "ka": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary following the main verb", "deficient": "", "example": "weʃa [kaa]", "exampleen": "I [had] heard.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-30-14-00-13", "lastchanger": "natalia-caceres-arandia"},
