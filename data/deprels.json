@@ -2448,7 +2448,7 @@
 "dislocated:ccomp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-44-05", "lastchanger": "UD_Egyptian"},
 "dislocated:csubj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-44-31", "lastchanger": "UD_Egyptian"},
 "dislocated:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-44-47", "lastchanger": "UD_Egyptian"},
-"dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-45-02", "lastchanger": "UD_Egyptian"},
 "dislocated:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-27-22-09-37", "lastchanger": "UD-Egyptian"},
 "expl:pv": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-26-23-56-01", "lastchanger": "UD-Egyptian"},
