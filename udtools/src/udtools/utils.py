@@ -6,7 +6,7 @@ import regex as re
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.
 try:
-    from validator.src.validator.incident import Reference
+    from udtools.src.udtools.incident import Reference
 except ModuleNotFoundError:
     from udtools.incident import Reference
 

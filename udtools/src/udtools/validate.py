@@ -14,11 +14,11 @@ import udapi.block.read.conllu
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.
 try:
-    import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Error, TestClass
-    from validator.src.validator.state import State
-    import validator.src.validator.data as data
-    from validator.src.validator.level6 import Level6
+    import udtools.src.udtools.utils as utils
+    from udtools.src.udtools.incident import Error, TestClass
+    from udtools.src.udtools.state import State
+    import udtools.src.udtools.data as data
+    from udtools.src.udtools.level6 import Level6
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Error, TestClass

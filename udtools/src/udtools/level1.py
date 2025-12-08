@@ -9,8 +9,8 @@ import unicodedata
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.
 try:
-    import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Incident, Error, TestClass
+    import udtools.src.udtools.utils as utils
+    from udtools.src.udtools.incident import Incident, Error, TestClass
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Incident, Error, TestClass

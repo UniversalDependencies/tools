@@ -8,9 +8,9 @@
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.
 try:
-    import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Error, TestClass
-    from validator.src.validator.level4 import Level4
+    import udtools.src.udtools.utils as utils
+    from udtools.src.udtools.incident import Error, TestClass
+    from udtools.src.udtools.level4 import Level4
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Error, TestClass

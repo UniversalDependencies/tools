@@ -13,9 +13,9 @@ import regex as re
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.
 try:
-    import validator.src.validator.utils as utils
-    from validator.src.validator.incident import Incident, Error, Warning, TestClass
-    from validator.src.validator.level2 import Level2
+    import udtools.src.udtools.utils as utils
+    from udtools.src.udtools.incident import Incident, Error, Warning, TestClass
+    from udtools.src.udtools.level2 import Level2
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Incident, Error, Warning, TestClass

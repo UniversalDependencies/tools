@@ -5,10 +5,8 @@
 import sys
 # Import the Validator class from the package subfolder regardless whether it
 # is installed as a package.
-# caution: path[0] is reserved for script path (or '' in REPL)
-#sys.path.insert(1, 'validator/src/validator')
-from validator.src.validator.validate import Validator
-from validator.src.validator.argparser import parse_args
+from udtools.src.udtools.validate import Validator
+from udtools.src.udtools.argparser import parse_args
 
 
 

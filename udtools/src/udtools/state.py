@@ -5,7 +5,7 @@ from collections import defaultdict
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.
 try:
-    from validator.src.validator.incident import IncidentType
+    from udtools.src.udtools.incident import IncidentType
 except ModuleNotFoundError:
     from udtools.incident import IncidentType
 
