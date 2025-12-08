@@ -2423,7 +2423,7 @@
 "advcl:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:neg": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod:neg'."]},
+"advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
