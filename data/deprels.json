@@ -2444,6 +2444,7 @@
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"dislocated:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "dislocated:ccomp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:csubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
