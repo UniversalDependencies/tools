@@ -2423,7 +2423,7 @@
 "advcl:purp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-46-06", "lastchanger": "UD_Egyptian"},
 "advcl:tcl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-46-19", "lastchanger": "UD_Egyptian"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-46-33", "lastchanger": "UD_Egyptian"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
