@@ -52,6 +52,10 @@ class Level4(Level3):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        invalid-word-with-space
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
@@ -111,6 +115,15 @@ class Level4(Level3):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        mwt-typo-repeated-at-word
+        feature-unknown
+        feature-not-permitted
+        feature-value-unknown
+        feature-upos-not-permitted
+        feature-value-upos-not-permitted
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
@@ -160,7 +173,7 @@ class Level4(Level3):
                             state=state, config=self.incfg,
                             nodeid=node.ord,
                             testid='feature-unknown',
-                            message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
+                            message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}', {f}={v}).",
                             explanation=self.data.explain_feats(effective_lang)
                         ).confirm()
                     else:
@@ -170,7 +183,7 @@ class Level4(Level3):
                                 state=state, config=self.incfg,
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
-                                message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
+                                message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}, {f}={v}').",
                                 explanation=self.data.explain_feats(effective_lang)
                             ).confirm()
                         else:
@@ -204,10 +217,10 @@ class Level4(Level3):
 
     def check_deprels(self, state, node):
         """
-        Checks that a dependency relation label is listed as approved in the given
-        language. As a language-specific test, this function generally belongs to
-        level 4, but it can be also used on levels 2 and 3, in which case it will
-        check only the main dependency type and ignore any subtypes.
+        Checks that a dependency relation label is listed as approved in the
+        given language. As a language-specific test, this function belongs to
+        level 4. This method currently checks udeprels both in the DEPREL
+        column and in the DEPS column.
 
         Parameters
         ----------
@@ -221,6 +234,11 @@ class Level4(Level3):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        unknown-deprel
+        unknown-edeprel
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
@@ -247,9 +265,6 @@ class Level4(Level3):
                 alt_deprelset = self.data.get_deprel_for_language(naltlang)
             # Test only the universal part if testing at universal level.
             deprel = node.deprel
-            if self.level < 4:
-                deprel = node.udeprel
-                Incident.default_level = 2
             if deprel not in main_deprelset and deprel not in alt_deprelset:
                 Error(
                     state=state, config=self.incfg,
@@ -270,9 +285,6 @@ class Level4(Level3):
                 parent = edep['parent']
                 deprel = edep['deprel']
                 paltlang = utils.get_alt_language(parent)
-                if self.level < 4:
-                    deprel = utils.lspec2ud(deprel)
-                    Incident.default_level = 2
                 if not (deprel in main_edeprelset or naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
                     Error(
                         state=state, config=self.incfg,

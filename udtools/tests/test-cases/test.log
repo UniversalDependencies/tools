@@ -387,30 +387,14 @@ UNICODE errors: 2
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\uppercase-deprel.conllu 
 [Line 5 Sent uppercase-deprel]: [L2 SYNTAX invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
-[Line 5 Sent uppercase-deprel]: [L2 SYNTAX unknown-deprel] Unknown DEPREL label: 'Punct'
-
-The following 37 relations are currently permitted in language [ud]:
-acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nummod, obj, obl, orphan, parataxis, punct, reparandum, root, vocative, xcomp
-If a language needs a relation subtype that is not documented in the universal guidelines, the relation
-must have a language-specific documentation page in a prescribed format.
-See https://universaldependencies.org/contributing_language_specific.html for further guidelines.
-Documented dependency relations can be specifically turned on/off for each language in which they are used.
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.
-
-
+[Line 5 Sent uppercase-deprel]: [L2 SYNTAX unknown-udeprel] Unknown main DEPREL type: 'Punct'
 SYNTAX errors: 2
 *** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
 [Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
-[Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED unknown-edeprel] Unknown enhanced relation type 'Dep' in '1:Dep'
-
-The following 40 enhanced relations are currently permitted in language [ud]:
-acl, advcl, advmod, amod, appos, aux, case, cc, ccomp, clf, compound, conj, cop, csubj, csubj:xsubj, dep, det, discourse, dislocated, expl, fixed, flat, goeswith, iobj, list, mark, nmod, nsubj, nsubj:xsubj, nummod, obj, obl, orphan, parataxis, punct, ref, reparandum, root, vocative, xcomp
-See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_edeprel.pl for details.
-
-
+[Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED unknown-eudeprel] Unknown main relation type 'Dep' in '1:Dep'
 [Line 4 Sent uppercase-deps-deprel]: [L2 ENHANCED unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2'] are not reachable from any root
 ENHANCED errors: 3
 *** FAILED *** with 3 errors
@@ -506,7 +490,7 @@ SYNTAX errors: 1
 LEVEL 4-5 TESTS 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level4-5\cs_pud-ud-test.conllu 
-[Line 9 Sent n01001011]: [L4 MORPHO feature-unknown] Feature NonExistent is not documented for language [cs] ('„').
+[Line 9 Sent n01001011]: [L4 MORPHO feature-unknown] Feature NonExistent is not documented for language [cs] ('„', NonExistent=Feature).
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -543,6 +527,7 @@ Others can be permitted at the address below (if the language has an ISO code an
 https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_token_with_space.pl
 
 
+[Line 4 Sent tanl1]: [L2 SYNTAX unknown-udeprel] Unknown main DEPREL type: ' punct'
 [Line 4 Sent tanl1]: [L4 SYNTAX unknown-deprel] Unknown DEPREL label: ' punct'
 
 The following 53 relations are currently permitted in language [cs]:
@@ -556,8 +541,8 @@ See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_dep
 
 [Line 4 Sent tanl1]: [L3 SYNTAX upos-rel-punct] 'PUNCT' must be 'punct' but it is ' punct' ('.')
 FORMAT errors: 3
-SYNTAX errors: 3
-*** FAILED *** with 6 errors
+SYNTAX errors: 4
+*** FAILED *** with 7 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-functions\columns-format.conllu 
@@ -671,7 +656,7 @@ FORMAT errors: 2
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-functions\mwt-nonempty-field.conllu 
 [Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
 [Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '1'.
-[Line 5 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('I').
+[Line 5 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('I', Num=Sing).
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -682,9 +667,9 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 5 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Per is not documented for language [cs] ('I').
-[Line 7 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Tens is not documented for language [cs] ('have').
-[Line 10 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('clue').
+[Line 5 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Per is not documented for language [cs] ('I', Per=1).
+[Line 7 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Tens is not documented for language [cs] ('have', Tens=Pres).
+[Line 10 Sent multiword-with-pos]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('clue', Num=Sing).
 [Line 5 Sent multiword-with-pos]: [L3 WARNING pron-det-without-prontype] The word 'I' is tagged 'PRON' but it lacks the 'PronType' feature
 [Line 8 Sent multiword-with-pos]: [L3 SYNTAX rel-upos-aux] 'aux' should be 'AUX' but it is 'ADV' ('not')
 [Line 9 Sent multiword-with-pos]: [L3 WARNING pron-det-without-prontype] The word 'a' is tagged 'DET' but it lacks the 'PronType' feature

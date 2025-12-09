@@ -288,7 +288,7 @@ class Validator(Level6):
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
-                self.check_deprels(state, node) # level 2 and 4
+                self.check_udeprels(state, node) # level 2
                 self.check_zero_root(state, node) # level 2
                 if self.level >= 3:
                     self.check_enhanced_orphan(state, node) # level 3
@@ -296,6 +296,7 @@ class Validator(Level6):
                         # To disallow words with spaces everywhere, use --lang ud.
                         self.check_words_with_spaces(state, node) # level 4
                         self.check_feature_values(state, node) # level 4
+                        self.check_deprels(state, node) # level 4
                         if self.level >= 5:
                             self.check_auxiliary_verbs(state, node) # level 5
                             self.check_copula_lemmas(state, node) # level 5
