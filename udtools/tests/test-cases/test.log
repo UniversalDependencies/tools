@@ -696,7 +696,7 @@ SYNTAX errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-functions\non-unix-newline.conllu 
-[Line 9 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('Gas').
+[Line 12 Sent dos-newlines2]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 
 The following 95 feature values are currently permitted in language [cs]:
 Abbr=Yes, AdpType=Comprep, AdpType=Prep, AdpType=Voc, Animacy=Anim, Animacy=Inan, Aspect=Imp, Aspect=Perf, Case=Acc, Case=Dat, Case=Gen, Case=Ins, Case=Loc, Case=Nom, Case=Voc, ConjType=Oper, Degree=Cmp, Degree=Pos, Degree=Sup, Emph=Yes, ExtPos=ADJ, ExtPos=ADP, ExtPos=ADV, ExtPos=CCONJ, ExtPos=SCONJ, Foreign=Yes, Gender=Fem, Gender=Masc, Gender=Neut, Gender[psor]=Fem, Gender[psor]=Masc, Gender[psor]=Neut, Hyph=Yes, Mood=Cnd, Mood=Imp, Mood=Ind, NameType=Com, NameType=Geo, NameType=Giv, NameType=Nat, NameType=Oth, NameType=Pro, NameType=Sur, NumForm=Digit, NumForm=Roman, NumForm=Word, NumType=Card, NumType=Frac, NumType=Mult, NumType=Ord, NumType=Sets, Number=Dual, Number=Plur, Number=Sing, Number[psor]=Plur, Number[psor]=Sing, Person=1, Person=2, Person=3, Polarity=Neg, Polarity=Pos, Polite=Form, Poss=Yes, PrepCase=Npr, PrepCase=Pre, PronType=Dem, PronType=Emp, PronType=Ind, PronType=Int, PronType=Neg, PronType=Prs, PronType=Rel, PronType=Tot, Reflex=Yes, Style=Coll, Style=Expr, Style=Rare, Style=Slng, Style=Vrnc, Style=Vulg, Tense=Fut, Tense=Imp, Tense=Past, Tense=Pres, Typo=Yes, Variant=Long, Variant=Short, VerbForm=Conv, VerbForm=Fin, VerbForm=Inf, VerbForm=Part, VerbForm=Sup, VerbForm=Vnoun, Voice=Act, Voice=Pass
@@ -707,24 +707,11 @@ All features including universal must be specifically turned on for each languag
 See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.
 
 
-[Line 9 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('Gas').
-[Line 12 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('la').
-[Line 12 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('la').
-[Line 13 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('statua').
-[Line 13 Sent dos-newlines2]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('statua').
-[Line 12 Sent dos-newlines2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 18 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('Evacuata').
-[Line 18 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Mod is not documented for language [cs] ('Evacuata').
-[Line 18 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('Evacuata').
-[Line 19 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Gen is not documented for language [cs] ('la').
-[Line 19 Sent dos-newlines3]: [L4 MORPHO feature-unknown] Feature Num is not documented for language [cs] ('la').
-[Line 19 Sent dos-newlines3]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
-[Line 20 Sent dos-newlines3]: [L3 WARNING fixed-without-extpos] Fixed expression 'Tate Gallery' does not have the 'ExtPos' feature
+[Line 19 Sent dos-newlines3]: [L4 MORPHO feature-value-unknown] Value Art is not documented for feature PronType in language [cs] ('la').
 [Line 23 Sent dos-newlines3]: [L1 FORMAT non-unix-newline] Only the unix-style LF line terminator is allowed.
-Warnings: 3
 FORMAT errors: 1
-MORPHO errors: 11
-*** FAILED *** with 12 errors
+MORPHO errors: 2
+*** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-functions\overlapping-word-interval.conllu 
