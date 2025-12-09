@@ -253,10 +253,9 @@ class Level2(Level1):
 
 
 
-    def check_deprel_deps_format(self, state, cols, line):
+    def check_deprel_format(self, state, cols, line):
         """
-        Checks general constraints on valid characters, e.g. that UPOS
-        only contains [A-Z].
+        Checks general constraints on valid characters in DEPREL.
 
         Parameters
         ----------
@@ -268,15 +267,11 @@ class Level2(Level1):
         Incidents
         ---------
         invalid-deprel
-        invalid-deps
-        invalid-edeprel
         """
         Incident.default_level = 2
         Incident.default_lineno = line
         if utils.is_multiword_token(cols):
             return
-        # Do not test the regular expression utils.crex.upos here. We will test UPOS
-        # directly against the list of known tags. That is a level 2 test, too.
         if not (utils.crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
             Error(
                 state=state, config=self.incfg,
@@ -284,6 +279,29 @@ class Level2(Level1):
                 testid='invalid-deprel',
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
             ).confirm()
+
+
+
+    def check_deps_format(self, state, cols, line):
+        """
+        Checks general constraints on valid characters in DEPS.
+
+        Parameters
+        ----------
+        cols : list
+            The values of the columns on the current node / token line.
+        line : int
+            Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        invalid-deps
+        invalid-edeprel
+        """
+        Incident.default_level = 2
+        Incident.default_lineno = line
+        if utils.is_multiword_token(cols):
+            return
         try:
             utils.deps_list(cols)
         except ValueError:
