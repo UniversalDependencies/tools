@@ -44,6 +44,10 @@ class Level5(Level4):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        aux-lemma
         """
         if node.upos == 'AUX' and node.lemma != '_':
             lang = self.lang
@@ -84,6 +88,10 @@ class Level5(Level4):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        cop-lemma
         """
         if node.udeprel == 'cop' and node.lemma != '_':
             lang = self.lang
