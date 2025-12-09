@@ -58,6 +58,10 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        mwt-nonempty-field
         """
         assert utils.is_multiword_token(cols), 'internal error'
         for col_idx in range(LEMMA, MISC): # all columns except the first two (ID, FORM) and the last one (MISC)
@@ -89,6 +93,10 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        empty-node-nonempty-field
         """
         assert utils.is_empty_node(cols), 'internal error'
         for col_idx in (HEAD, DEPREL):
@@ -98,7 +106,7 @@ class Level2(Level1):
                     lineno=line,
                     level=2,
                     testclass=TestClass.FORMAT,
-                    testid='mwt-nonempty-field',
+                    testid='empty-node-nonempty-field',
                     message=f"An empty node must have '_' in the column {COLNAMES[col_idx]}. Now: '{cols[col_idx]}'."
                 ).confirm()
 
@@ -115,6 +123,12 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        invalid-deprel
+        invalid-deps
+        invalid-edeprel
         """
         Incident.default_level = 2
         Incident.default_lineno = line
@@ -160,6 +174,10 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        unknown-upos
         """
         if utils.is_empty_node(cols) and cols[UPOS] == '_':
             return
@@ -190,6 +208,15 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        unsorted-features
+        invalid-feature
+        repeated-feature-value
+        unsorted-feature-values
+        invalid-feature-value
+        repeated-feature
 
         Returns
         -------
@@ -296,6 +323,13 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        unsorted-deps
+        unsorted-deps-2
+        repeated-deps
+        deps-self-loop
         """
         Incident.default_lineno = line
         Incident.default_level = 2
@@ -309,9 +343,7 @@ class Level2(Level1):
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from check_id_references() and the head indices are OK).
         deps = utils.deps_list(cols)
-        ###!!! Float will not work if there are 10 empty nodes between the same two
-        ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
-        heads = [float(h) for h, d in deps]
+        heads = [utils.nodeid2tuple(h) for h, d in deps]
         if heads != sorted(heads):
             Error(
                 state=state, config=self.incfg,
@@ -337,11 +369,7 @@ class Level2(Level1):
                         ).confirm()
                 lasth = h
                 lastd = d
-        try:
-            id_ = float(cols[ID])
-        except ValueError:
-            # This error has been reported previously.
-            return
+        id_ = utils.nodeid2tuple(cols[ID])
         if id_ in heads:
             Error(
                 state=state, config=self.incfg,
@@ -370,6 +398,14 @@ class Level2(Level1):
             The values of the columns on the current node / token line.
         line : int
             Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        empty-misc
+        empty-misc-key
+        misc-extra-space
+        misc-attr-typo
+        repeated-misc
         """
         Incident.default_lineno = line
         Incident.default_level = 2
@@ -670,6 +706,13 @@ class Level2(Level1):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        0-is-not-root
+        root-is-not-0
+        enhanced-0-is-not-root
+        enhanced-root-is-not-0
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 2
@@ -784,6 +827,10 @@ class Level2(Level1):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        unconnected-egraph
         """
         egraph_exists = False # enhanced deps are optional
         egraph = {'0': {'children': set()}}
@@ -1115,19 +1162,19 @@ class Level2(Level1):
 
         Incidents
         ---------
-            multiple-newdoc
-            multiple-newpar
-            spaceafter-newdocpar
-            missing-text
-            multiple-text
-            text-trailing-whitespace
-            nospaceafter-yes
-            spaceafter-value
-            spaceafter-empty-node
-            spaceafter-mwt-node
-            text-form-mismatch
-            missing-spaceafter
-            text-extra-chars
+        multiple-newdoc
+        multiple-newpar
+        spaceafter-newdocpar
+        missing-text
+        multiple-text
+        text-trailing-whitespace
+        nospaceafter-yes
+        spaceafter-value
+        spaceafter-empty-node
+        spaceafter-mwt-node
+        text-form-mismatch
+        missing-spaceafter
+        text-extra-chars
         """
         Incident.default_level = 2
         Incident.default_testclass = TestClass.METADATA

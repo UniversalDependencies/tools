@@ -113,6 +113,18 @@ def shorten(string):
 def lspec2ud(deprel):
     return deprel.split(':', 1)[0]
 
+def nodeid2tuple(nodeid: str):
+    """
+    Node ID can look like a decimal number, but 1.1 != 1.10. To be able to
+    sort node IDs, we need to be able to convert them to a pair of integers
+    (major and minor). For IDs of regular nodes, the ID will be converted to
+    int (major) and the minor will be set to zero.
+    """
+    parts = nodeid.split('.', maxsplit=1)
+    if len(parts) == 1:
+        parts.append(0)
+    return tuple(parts)
+
 def formtl(node):
     """
     Returns the word form of a node, possibly accompanied by its
