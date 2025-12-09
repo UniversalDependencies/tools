@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "udtools"
+version = "0.1.22"
+authors = [
+  { name="Daniel Zeman", email="zeman@ufal.mff.cuni.cz" },
+]
+description = "Python tools for Universal Dependencies"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["udapi>=0.5.0", "regex>=2020.09.27"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+license = "GPL-2.0-or-later"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://universaldependencies.org/"
+Issues = "https://github.com/UniversalDependencies/tools/issues"
+
+[project.scripts]
+udvalidate = "udtools.validate:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+udtools = ["data/*.json"]
+
