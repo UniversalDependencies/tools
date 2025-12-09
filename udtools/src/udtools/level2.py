@@ -14,11 +14,11 @@ import regex as re
 # from udtools import Validator.
 try:
     import udtools.src.udtools.utils as utils
-    from udtools.src.udtools.incident import Incident, Error, TestClass
+    from udtools.src.udtools.incident import Incident, Error, TestClass, Reference
     from udtools.src.udtools.level1 import Level1
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident, Error, TestClass
+    from udtools.incident import Incident, Error, TestClass, Reference
     from udtools.level1 import Level1
 
 
@@ -613,10 +613,16 @@ class Level2(Level1):
         # Check that there is just one node with the root relation.
         children_0 = sorted(children.get(0, []))
         if len(children_0) > 1:
+            references = [Reference(filename=state.current_file_name,
+                                    lineno=state.sentence_line + i,
+                                    sentid=state.sentence_id,
+                                    nodeid=i)
+                          for i in children_0]
             Error(
                 state=state, config=self.incfg, lineno=state.sentence_line,
                 testid='multiple-roots',
-                message=f"Multiple root words: {children_0}"
+                message=f"Multiple root words: {children_0}",
+                references=references
             ).confirm()
             return False
         # Return None if there are any cycles. Otherwise we could not later ask
