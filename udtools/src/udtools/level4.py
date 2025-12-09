@@ -91,7 +91,7 @@ class Level4(Level3):
 
 
 
-    def check_features_level4(self, state, node):
+    def check_feature_values(self, state, node):
         """
         Checks that a feature-value pair is listed as approved. Feature lists are
         language-specific. To disallow non-universal features, test on level 4 with

@@ -295,7 +295,7 @@ class Validator(Level6):
                     if self.level >= 4:
                         # To disallow words with spaces everywhere, use --lang ud.
                         self.check_words_with_spaces(state, node) # level 4
-                        self.check_features_level4(state, node) # level 4
+                        self.check_feature_values(state, node) # level 4
                         if self.level >= 5:
                             self.check_auxiliary_verbs(state, node) # level 5
                             self.check_copula_lemmas(state, node) # level 5
