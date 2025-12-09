@@ -120,7 +120,7 @@ def nodeid2tuple(nodeid: str):
     (major and minor). For IDs of regular nodes, the ID will be converted to
     int (major) and the minor will be set to zero.
     """
-    parts = nodeid.split('.', maxsplit=1)
+    parts = [int(x) for x in nodeid.split('.', maxsplit=1)]
     if len(parts) == 1:
         parts.append(0)
     return tuple(parts)
