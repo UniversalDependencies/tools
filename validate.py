@@ -6,7 +6,7 @@ import sys
 # Import the Validator class from the package subfolder regardless whether it
 # is installed as a package.
 from udtools.src.udtools.validator import Validator
-from udtools.src.udtools.argparser import parse_args
+from udtools.src.udtools.argparser import parse_args_validator
 
 
 
@@ -17,7 +17,7 @@ from udtools.src.udtools.argparser import parse_args
 
 
 def main():
-    args = parse_args()
+    args = parse_args_validator()
     validator = Validator(lang=args.lang, level=args.level, args=args)
     state = validator.validate_files(args.input)
     # Summarize the warnings and errors.

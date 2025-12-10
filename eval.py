@@ -108,6 +108,9 @@ import io
 import sys
 import unicodedata
 import unittest
+# Import the modules from the package subfolder regardless whether it is
+# installed as a package.
+from udtools.src.udtools.argparser import parse_args_scorer
 
 # CoNLL-U column names
 ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC = range(10)
@@ -756,24 +759,7 @@ def build_evaluation_table(evaluation, verbose, counts, enhanced):
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument('gold_file', type=str,
-                        help='Name of the CoNLL-U file with the gold data.')
-    parser.add_argument('system_file', type=str,
-                        help='Name of the CoNLL-U file with the predicted data.')
-    parser.add_argument('--verbose', '-v', default=False, action='store_true',
-                        help='Print all metrics.')
-    parser.add_argument('--counts', '-c', default=False, action='store_true',
-                        help='Print raw counts of correct/gold/system/aligned words instead of precision/recall/F1 for all metrics.')
-    parser.add_argument('--no-enhanced', dest='enhanced', action='store_false', default=True,
-                        help='Turn off evaluation of enhanced dependencies.')
-    parser.add_argument('--enhancements', type=str, default='0',
-                        help='Level of enhancements in the gold data (see guidelines) 0=all (default), 1=no gapping, 2=no shared parents, 3=no shared dependents 4=no control, 5=no external arguments, 6=no lemma info, combinations: 12=both 1 and 2 apply, etc.')
-    parser.add_argument('--no-empty-nodes', default=False,
-                        help='Empty nodes have been collapsed (needed to correctly evaluate enhanced/gapping). Raise exception if an empty node is encountered.')
-    parser.add_argument('--multiple-roots-okay', default=False, action='store_true',
-                        help='A single sentence can have multiple nodes with HEAD=0.')
-    args = parser.parse_args()
+    args = parse_args_scorer()
 
     # Evaluate
     evaluation = evaluate_wrapper(args)

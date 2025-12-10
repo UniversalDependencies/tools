@@ -5,7 +5,7 @@
 # 2025-08-31: Refactoring by @AngledLuffa
 # 2025-09: Refactoring by @harisont and @ellepannitto
 import sys
-from udtools.argparser import parse_args
+from udtools.argparser import parse_args_validator
 from udtools.validator import Validator
 
 
@@ -17,7 +17,7 @@ from udtools.validator import Validator
 
 
 def main():
-    args = parse_args()
+    args = parse_args_validator()
     validator = Validator(lang=args.lang, level=args.level, args=args)
     state = validator.validate_files(args.input)
     # Summarize the warnings and errors.
