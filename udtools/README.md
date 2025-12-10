@@ -1,6 +1,9 @@
 # UD Tools
 
-This package contains Python tools for [Universal Dependencies](https://universaldependencies.org/).
+This package contains Python tools for [Universal Dependencies](https://universaldependencies.org/):
+
+* The official UD/CoNLL-U validator
+* The official UD parsing scorer from the CoNLL (2017, 2018) and IWPT (2020, 2021) shared tasks
 
 ## The official UD/CoNLL-U validator
 
@@ -208,4 +211,25 @@ class MyValidator(Validator):
 validator = MyValidator(lang='la')
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
 print(state)
+```
+
+
+
+## The official UD parsing scorer
+
+Reads two CoNLL-U files: gold standard (annotated manually) and system output (predicted by a parsing model). Both
+files must be valid at least at level 2, and their underlying text must be compatible, i.e., it can differ in
+whitespace but not in other characters. The scorer evaluates similarity of the system output to the gold standard
+by computing several metrics that were defined in the UD parsing shared tasks (CoNLL 2017 & 2018, IWPT 2020 & 2021).
+
+If you supply `--help` as the only argument in the code below, you will get the description of the options available.
+
+```python
+from udtools.argparser import parse_args_scorer
+from udtools.eval import evaluate_wrapper, build_evaluation_table
+
+args = parse_args_scorer()
+evaluation = evaluate_wrapper(args)
+results = build_evaluation_table(evaluation, args.verbose, args.counts, args.enhanced)
+print(results)
 ```
