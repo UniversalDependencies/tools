@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "udtools"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
   { name="Filip Ginter" },
   { name="Sampo Pyysalo" },
@@ -12,9 +12,6 @@ authors = [
   { name="Milan Straka" },
   { name="Martin Popel" },
   { name="Gosse Bouma" },
-]
-maintainers = [
-  { name="Daniel Zeman", email="zeman@ufal.mff.cuni.cz" },
 ]
 description = "Python tools for Universal Dependencies"
 readme = "README.md"
