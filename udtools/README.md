@@ -63,11 +63,11 @@ Alternatively, you could simulate supplying the `--quiet` option as if it came f
 
 ```python
 import sys
-from udtools.argparser import parse_args
+from udtools.argparser import parse_args_validator
 from udtools import Validator
 
 sys.argv = ['validate.py', '--lang=la', '--quiet']
-args = parse_args()
+args = parse_args_validator()
 validator = Validator(lang='la', args=args)
 state = validator.validate_files(['la_proiel-ud-train.conllu', 'la_proiel-ud-dev.conllu', 'la_proiel-ud-test.conllu'])
 if state:
