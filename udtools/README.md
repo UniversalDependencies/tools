@@ -226,7 +226,7 @@ If you supply `--help` as the only argument in the code below, you will get the 
 
 ```python
 from udtools.argparser import parse_args_scorer
-from udtools.eval import evaluate_wrapper, build_evaluation_table
+from udtools.udeval import evaluate_wrapper, build_evaluation_table
 
 args = parse_args_scorer()
 evaluation = evaluate_wrapper(args)

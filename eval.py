@@ -103,7 +103,7 @@
 
 # Import the modules from the package subfolder regardless whether it is
 # installed as a package.
-from udtools.src.udtools.eval import evaluate_wrapper, build_evaluation_table
+from udtools.src.udtools.udeval import evaluate_wrapper, build_evaluation_table
 from udtools.src.udtools.argparser import parse_args_scorer
 
 
