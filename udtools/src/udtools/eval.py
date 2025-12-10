@@ -103,14 +103,10 @@
 from __future__ import division
 from __future__ import print_function
 
-import argparse
 import io
 import sys
 import unicodedata
 import unittest
-# Import the modules from the package subfolder regardless whether it is
-# installed as a package.
-from udtools.src.udtools.argparser import parse_args_scorer
 
 # CoNLL-U column names
 ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC = range(10)
@@ -757,17 +753,7 @@ def build_evaluation_table(evaluation, verbose, counts, enhanced):
 
     return "\n".join(text)
 
-def main():
-    # Parse arguments
-    args = parse_args_scorer()
 
-    # Evaluate
-    evaluation = evaluate_wrapper(args)
-    results = build_evaluation_table(evaluation, args.verbose, args.counts, args.enhanced)
-    print(results)
-
-if __name__ == "__main__":
-    main()
 
 # Tests, which can be executed with `python -m unittest eval`.
 class TestAlignment(unittest.TestCase):
