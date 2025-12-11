@@ -767,7 +767,7 @@ def evaluate_wrapper(args):
 
 
 
-def build_evaluation_table(evaluation, verbose, counts, enhanced):
+def build_evaluation_table(evaluation, verbose=True, counts=False, enhanced=False):
     """
     Creates a plaintext table with the results.
 
@@ -775,13 +775,14 @@ def build_evaluation_table(evaluation, verbose, counts, enhanced):
     ----------
     evaluation : dict
         The output of the evaluate() function.
-    verbose : bool
+    verbose : bool, optional
         Print results of all metrics. (Otherwise, print only LAS P+R+F1.)
-    counts : bool
+        Default is True.
+    counts : bool, optional
         Print raw counts of correct/gold/system/aligned words instead of
-        precision/recall/F1 for all metrics.
-    enhanced : bool
-        Include evaluation of enhanced graphs.
+        precision/recall/F1 for all metrics. Default is False.
+    enhanced : bool, optional
+        Include evaluation of enhanced graphs. Default is False.
 
     Returns
     -------
