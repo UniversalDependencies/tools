@@ -12,6 +12,9 @@ authors = [
   { name="Milan Straka" },
   { name="Martin Popel" },
   { name="Gosse Bouma" },
+  { name="John Bauer" },
+  { name="Arianna Masciolini" },
+  { name="Ludovica Pannitto" },
 ]
 description = "Python tools for Universal Dependencies"
 readme = "README.md"

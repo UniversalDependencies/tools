@@ -222,7 +222,21 @@ files must be valid at least at level 2, and their underlying text must be compa
 whitespace but not in other characters. The scorer evaluates similarity of the system output to the gold standard
 by computing several metrics that were defined in the UD parsing shared tasks (CoNLL 2017 & 2018, IWPT 2020 & 2021).
 
-If you supply `--help` as the only argument in the code below, you will get the description of the options available.
+To load two files and evaluate their similarity without enhanced dependencies (i.e., in the style of the CoNLL shared
+tasks), you can do the following.
+
+```python
+from udtools.udeval import load_conllu_file, evaluate, build_evaluation_table
+
+gold_ud = load_conllu_file('gold.conllu')
+system_ud = load_conllu_file('system.conllu')
+evaluation = evaluate(gold_ud, system_ud)
+results = build_evaluation_table(evaluation, verbose=True)
+print(results)
+```
+
+To use the command line interface and arguments, you can use `parse_args_scorer()` as shown below. If you supply
+`--help` as the only argument, you will get the description of the options available.
 
 ```python
 from udtools.argparser import parse_args_scorer

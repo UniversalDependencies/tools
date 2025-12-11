@@ -133,12 +133,7 @@ UNIVERSAL_FEATURES = {
 class UDError(Exception):
     pass
 
-# Conversion methods handling `str` <-> `unicode` conversions in Python2
-def _decode(text):
-    return text if sys.version_info[0] >= 3 or not isinstance(text, str) else text.decode("utf-8")
 
-def _encode(text):
-    return text if sys.version_info[0] >= 3 or not isinstance(text, unicode) else text.encode("utf-8")
 
 CASE_DEPRELS = {'obl','nmod','conj','advcl'}
 UNIVERSAL_DEPREL_EXTENSIONS = {'pass','relcl','xsubj'}
@@ -216,7 +211,7 @@ def load_conllu(file, path, treebank_type):
         line_idx += 1 # errors will be displayed indexed from 1
         if not line:
             break
-        line = _decode(line.rstrip("\r\n"))
+        line = line.rstrip("\r\n")
 
         # Handle sentence start boundaries
         if sentence_start is None:
@@ -234,7 +229,7 @@ def load_conllu(file, path, treebank_type):
                 if word.parent is None:
                     head = int(word.columns[HEAD])
                     if head < 0 or head > len(ud.words) - sentence_start:
-                        raise UDError("HEAD '{}' points outside of the sentence that ends at line {}".format(_encode(word.columns[HEAD]), line_idx))
+                        raise UDError("HEAD '{}' points outside of the sentence that ends at line {}".format(word.columns[HEAD], line_idx))
                     if head:
                         parent = ud.words[sentence_start + head - 1]
                         word.parent = "remapping"
@@ -254,7 +249,7 @@ def load_conllu(file, path, treebank_type):
                     # with preprocessing.
                     if '.' in head:
                         if treebank_type.get('no_empty_nodes', False):
-                            raise UDError("The collapsed CoNLL-U file still contains references to empty nodes at line {}: {}".format(line_idx, _encode(line)))
+                            raise UDError("The collapsed CoNLL-U file still contains references to empty nodes at line {}: {}".format(line_idx, line))
                         else:
                             continue
                     hd = int(head)
@@ -367,7 +362,7 @@ def load_conllu(file, path, treebank_type):
         # Read next token/word
         columns = line.split("\t")
         if len(columns) != 10:
-            raise UDError("The CoNLL-U line does not contain 10 tab-separated columns at line {}: '{}'".format(line_idx, _encode(line)))
+            raise UDError("The CoNLL-U line does not contain 10 tab-separated columns at line {}: '{}'".format(line_idx, line))
 
         # Skip empty nodes
         # If we are evaluating enhanced graphs, empty nodes should have been collapsed
@@ -377,7 +372,7 @@ def load_conllu(file, path, treebank_type):
         if "." in columns[ID]:
             # When launching this script, we can specify that empty nodes should be considered errors.
             if treebank_type.get('no_empty_nodes', False):
-                raise UDError("The collapsed CoNLL-U line still contains empty nodes at line {}: {}".format(line_idx, _encode(line)))
+                raise UDError("The collapsed CoNLL-U line still contains empty nodes at line {}: {}".format(line_idx, line))
             else:
                 continue
 
@@ -398,21 +393,21 @@ def load_conllu(file, path, treebank_type):
             try:
                 start, end = map(int, columns[ID].split("-"))
             except:
-                raise UDError("Cannot parse multi-word token ID '{}' at line {}".format(_encode(columns[ID]), line_idx))
+                raise UDError("Cannot parse multi-word token ID '{}' at line {}".format(columns[ID], line_idx))
 
             words_expected = end - start + 1
             words_found = 0
             while words_found < words_expected:
-                word_line = _decode(file.readline().rstrip("\r\n"))
+                word_line = file.readline().rstrip("\r\n")
                 if not word_line:
                     raise UDError("The CoNLL-U file ends in an unfinished MWT at line {}".format(line_idx))
                 line_idx += 1
                 word_columns = word_line.split("\t")
                 if len(word_columns) != 10:
-                    raise UDError("The CoNLL-U line does not contain 10 tab-separated columns at line {}: '{}'".format(line_idx, _encode(word_line)))
+                    raise UDError("The CoNLL-U line does not contain 10 tab-separated columns at line {}: '{}'".format(line_idx, word_line))
                 if "." in word_columns[ID]:
                     if treebank_type.get('no_empty_nodes', False):
-                        raise UDError("The collapsed CoNLL-U line still contains empty nodes at line {}: {}".format(line_idx, _encode(line)))
+                        raise UDError("The collapsed CoNLL-U line still contains empty nodes at line {}: {}".format(line_idx, line))
                     else:
                         continue
                 ud.words.append(UDWord(ud.tokens[-1], word_columns, is_multiword=True))
@@ -423,15 +418,15 @@ def load_conllu(file, path, treebank_type):
             try:
                 word_id = int(columns[ID])
             except:
-                raise UDError("Cannot parse word ID '{}' at line {}".format(_encode(columns[ID]), line_idx))
+                raise UDError("Cannot parse word ID '{}' at line {}".format(columns[ID], line_idx))
             if word_id != len(ud.words) - sentence_start + 1:
                 raise UDError("Incorrect word ID '{}' for word '{}', expected '{}' at line {}".format(
-                    _encode(columns[ID]), _encode(columns[FORM]), len(ud.words) - sentence_start + 1, line_idx))
+                    columns[ID], columns[FORM], len(ud.words) - sentence_start + 1, line_idx))
 
             try:
                 head_id = int(columns[HEAD])
             except ValueError as e:
-                raise UDError("Cannot parse HEAD '{}' at line {}".format(_encode(columns[HEAD]), line_idx)) from e
+                raise UDError("Cannot parse HEAD '{}' at line {}".format(columns[HEAD], line_idx)) from e
             if head_id < 0:
                 raise UDError("HEAD cannot be negative at line %d" % line_idx)
 
@@ -442,8 +437,31 @@ def load_conllu(file, path, treebank_type):
 
     return ud
 
+
+
 # Evaluate the gold and system treebanks (loaded using load_conllu).
 def evaluate(gold_ud, system_ud):
+    """
+    Takes internal representations of two CoNLL-U files, compares their
+    contents and returns the scores.
+
+    Parameters
+    ----------
+    gold_ud : UDRepresentation
+        Gold standard data.
+    system_ud : UDRepresentationi
+        System output data.
+
+    Raises
+    ------
+    UDError
+        If the underlying texts of the files are not compatible.
+
+    Returns
+    -------
+    dict
+        Indexed by metric names, the values are scores.
+    """
     class Score:
         def __init__(self, gold_total, system_total, correct, aligned_total=None):
             self.correct = correct
@@ -657,8 +675,8 @@ def evaluate(gold_ud, system_ud):
         raise UDError(
             "The concatenation of tokens in gold file and in system file differ!\n" + gtokenreport + stokenreport +
             "First 20 differing characters in gold file: '{}' and system file: '{}'".format(
-                "".join(map(_encode, gold_ud.characters[index:index + 20])),
-                "".join(map(_encode, system_ud.characters[index:index + 20]))
+                "".join(gold_ud.characters[index:index + 20]),
+                "".join(system_ud.characters[index:index + 20])
             )
         )
 
@@ -690,13 +708,47 @@ def evaluate(gold_ud, system_ud):
                                 filter_fn=lambda w: w.is_content_deprel),
     }
 
+
+
 def load_conllu_file(path, treebank_type=None):
+    """
+    Reads a CoNLL-U file into internal representation.
+
+    Parameters
+    ----------
+    path : str
+        The name of (and path to) the file.
+    treebank_type : dict, optional
+        Additional information about what we expect / should read. The default is None.
+
+    Returns
+    -------
+    UDRepresentation
+        The internal representation of the file contents, usable in evaluate().
+    """
     if treebank_type is None:
         treebank_type = {}
-    _file = open(path, mode="r", **({"encoding": "utf-8"} if sys.version_info >= (3, 0) else {}))
+    _file = open(path, mode="r", **({"encoding": "utf-8"}))
     return load_conllu(_file, path, treebank_type)
 
+
+
 def evaluate_wrapper(args):
+    """
+    Takes file names and options from command line arguments, loads the files,
+    evaluates their similarity and returns the result of evaluate(). Use
+    `--help` to obtain their description (or see udtools.argparser.parse_args_scorer()).
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Command line arguments of the eval.py script.
+
+    Returns
+    -------
+    dict
+        Indexed by metric names, values are scores.
+    """
     treebank_type = {}
     enhancements = list(args.enhancements)
     treebank_type['no_gapping'] = 1 if '1' in enhancements else 0
@@ -713,7 +765,29 @@ def evaluate_wrapper(args):
     system_ud = load_conllu_file(args.system_file, treebank_type)
     return evaluate(gold_ud, system_ud)
 
+
+
 def build_evaluation_table(evaluation, verbose, counts, enhanced):
+    """
+    Creates a plaintext table with the results.
+
+    Parameters
+    ----------
+    evaluation : dict
+        The output of the evaluate() function.
+    verbose : bool
+        Print results of all metrics. (Otherwise, print only LAS P+R+F1.)
+    counts : bool
+        Print raw counts of correct/gold/system/aligned words instead of
+        precision/recall/F1 for all metrics.
+    enhanced : bool
+        Include evaluation of enhanced graphs.
+
+    Returns
+    -------
+    str
+        The table with results.
+    """
     text = []
 
     # Print the evaluation
@@ -755,7 +829,7 @@ def build_evaluation_table(evaluation, verbose, counts, enhanced):
 
 
 
-# Tests, which can be executed with `python -m unittest eval`.
+# Tests, which can be executed with `python -m unittest udeval`.
 class TestAlignment(unittest.TestCase):
     @staticmethod
     def _load_words(words):
