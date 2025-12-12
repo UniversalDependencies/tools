@@ -5,8 +5,9 @@
 # 2025-08-31: Refactoring by @AngledLuffa
 # 2025-09: Refactoring by @harisont and @ellepannitto
 import sys
-from udtools.argparser import parse_args_validator
+from udtools.argparser import parse_args_validator, parse_args_scorer
 from udtools.validator import Validator
+from udtools.udeval import evaluate_wrapper, build_evaluation_table
 
 
 
@@ -28,6 +29,20 @@ def main():
         return 0
     else:
         return 1
+
+
+
+def main_eval():
+    # Parse arguments
+    args = parse_args_scorer()
+
+    # Evaluate
+    evaluation = evaluate_wrapper(args)
+    results = build_evaluation_table(evaluation, args.verbose, args.counts, args.enhanced)
+    print(results)
+    return 0
+
+
 
 if __name__=="__main__":
     errcode = main()
