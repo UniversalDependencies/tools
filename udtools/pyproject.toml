@@ -37,7 +37,7 @@ Homepage = "https://universaldependencies.org/"
 Issues = "https://github.com/UniversalDependencies/tools/issues"
 
 [project.scripts]
-udvalidate = "udtools.validate:main"
+udvalidate = "udtools.validator:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
