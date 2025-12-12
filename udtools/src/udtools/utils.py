@@ -1,4 +1,3 @@
-import os
 import regex as re
 # Allow using this module from the root folder of tools even if it is not
 # installed as a package: use the relative path validator/src/validator for
@@ -394,5 +393,4 @@ def create_references(nodes, state, comment=''):
     -------
     references : list(udtools.incident.Reference)
     """
-    filename = 'STDIN' if state.current_file_name == '-' else os.path.basename(state.current_file_name) if state.current_file_name else 'NONE'
-    return [Reference(nodeid=str(x.ord), sentid=state.sentence_id, filename=filename, lineno=state.current_node_linenos[str(x.ord)], comment=comment) for x in nodes]
+    return [Reference(nodeid=str(x.ord), sentid=state.sentence_id, filename=state.get_current_file_name(), lineno=state.current_node_linenos[str(x.ord)], comment=comment) for x in nodes]

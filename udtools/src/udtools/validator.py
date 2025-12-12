@@ -199,7 +199,7 @@ class Validator(Level6):
             The resulting state of the validation. May contain the overview
             of all encountered incidents (errors or warnings) if requested.
         """
-        if not state:
+        if state == None:
             state = State()
         for lines in utils.next_sentence(state, inp):
             self.validate_sentence(lines, state)

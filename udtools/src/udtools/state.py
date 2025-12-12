@@ -1,3 +1,4 @@
+import os
 from collections import defaultdict
 # Allow using this module from the root folder of tools even if it is not
 # installed as a package: use the relative path validator/src/validator for
@@ -121,6 +122,27 @@ class State:
         # Key: [eid][sentid][str(mention_span)]; value: set of node ids.
         self.entity_mention_spans = {}
 
+
+    def get_current_file_name(self):
+        """
+        Returns the current file name in the form suitable for Incident objects
+        and their string reports (i.e., 'STDIN' instead of '-', basename for
+        paths, 'NONE' otherwise).
+
+        Returns
+        -------
+        str
+            The modified name of the current input file.
+        """
+        if self.current_file_name:
+            if self.current_file_name == '-':
+                return 'STDIN'
+            else:
+                return os.path.basename(self.current_file_name)
+        else:
+            return 'NONE'
+
+
     def __str__(self):
         # Summarize the warnings and errors.
         result = ''
@@ -142,11 +164,13 @@ class State:
             result += f'*** FAILED *** with {nerror} errors'
         return result
 
+
     def passed(self):
         for k, v in self.error_counter[IncidentType.ERROR].items():
             if v > 0:
                 return False
         return True
+
 
     def __bool__(self):
         return self.passed()
