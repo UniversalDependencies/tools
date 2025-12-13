@@ -1,0 +1,30 @@
+# Typo=Yes is valid at node 1 (single word token) and at 6-7 (multiword token), but then it is not valid at node 6 (part of multiword token that has Typo=Yes).
+# It would be valid at node 6 if it did not occur on line 6-7.
+# lang=yrl (Nheengatu)
+# sent_id = Hartt1938:0:0:515-1
+# text = Humbú se xapewa se akanga aape.
+# text_por = Meto meu chapéu na cabeça.
+# text_por_orig = Metc meu chapéu na cabeça.
+# text_source = p. 356, No. 515
+# text_orig = hombó sexapéa seakána aápe (Ereré).
+# place = Ereré
+# text_eng = TODO
+# text_orig_transcriber = Antônio Levy Melo Nogueira
+# text_por_modernizer = Antônio Levy Melo Nogueira
+# text_sec = Amumburi se xapewa se akanga árupi.
+# text_por_sec = Ponho meu chapéu sobre a cabeça.
+# text_sec_source = Avila (2021)
+# text_por_sec_source = Avila (2021)
+# inputline = Humbú/=typo:c|Hamburi se xapewa se akanga árupi.
+# text_annotator = Dominick Maia Alexandre
+# reviewer1 = Leonel Figueiredo de Alencar
+1	Humbú	mburi	VERB	V	Mood=Ind|Number=Sing|Person=1|Typo=Yes|VerbForm=Fin	0	root	_	CorrectForm=Hamburi|TokenRange=0:5
+2	se	se	PRON	PRON2	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	3	nmod:poss	_	TokenRange=6:8
+3	xapewa	xapewa	NOUN	N	Number=Sing	1	obj	_	TokenRange=9:15
+4	se	se	PRON	PRON2	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	5	nmod:poss	_	TokenRange=16:18
+5	akanga	akanga	NOUN	N	Number=Sing	6	nmod:poss	_	TokenRange=19:25
+6-7	aape	_	_	_	Typo=Yes	_	_	_	CorrectForm=árupi|SpaceAfter=No|TokenRange=26:30
+6	ara	ara	NOUN	N	Number=Sing|Typo=Yes	1	obl	_	_
+7	upé	upé	ADP	ADP	AdpType=Post|Clitic=Yes	6	case	_	_
+8	.	.	PUNCT	PUNCT	_	1	punct	_	SpaceAfter=No|TokenRange=30:31
+

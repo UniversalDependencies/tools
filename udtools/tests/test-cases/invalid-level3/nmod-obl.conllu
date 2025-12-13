@@ -1,0 +1,8 @@
+# Invalid because node 2 is a nominal, node 3 modifies it and is also a nominal, hence the relation should be nmod but it is obl.
+# sent_id = invalid-obl
+# text = Vidím ředitele školy.
+1	Vidím	vidět	VERB	_	_	0	root	_	_
+2	ředitele	ředitel	NOUN	_	_	1	obj	_	_
+3	školy	škola	NOUN	_	_	2	obl	_	SpaceAfter=No
+4	.	.	PUNCT	punct	_	1	punct	_	_
+
