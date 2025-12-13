@@ -2,7 +2,7 @@
 
 "expressions": {
 "af": {
-"[0-9]+ [0-9]+": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-06-12-21-28-40", "lastchanger": "dan-zeman"}
+"[0-9]+( [0-9]+)+(,[0-9]+)?": {"example": "898 000", "exampleen": "898,000", "comment": "Making long numbers readable.", "lastchanged": "2025-09-29-22-22-52", "lastchanger": "peedirix"}
 },
 "akk": {
 "([0-9 ]+[^ ]*)+": {"example": "1 mē", "exampleen": "1 mē", "comment": "lemma=meʾatu", "lastchanged": "2025-06-12-08-23-21", "lastchanger": "dan-zeman"},

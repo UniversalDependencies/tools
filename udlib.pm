@@ -302,6 +302,7 @@ sub get_ud_files_and_codes
 #Data available since: UD v1.0
 #License: CC BY-NC-SA 3.0
 #Includes text: yes
+#Parallel: no
 #Genre: news
 #Lemmas: converted from manual
 #UPOS: converted from manual
@@ -323,7 +324,7 @@ sub read_readme
     binmode(README, ':utf8');
     my %metadata;
     my @attributes = ('Data available since', 'License', 'Genre', 'Contributors',
-        'Includes text', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact');
+        'Includes text', 'Parallel', 'Lemmas', 'UPOS', 'XPOS', 'Features', 'Relations', 'Contributing', 'Contact');
     my $attributes_re = join('|', @attributes);
     my $current_section_heading = '';
     my $current_section_text = '';
@@ -1058,8 +1059,35 @@ sub check_files_data
     my $metadata = read_readme($folder, '..');
     if(defined($metadata) && $metadata->{Lemmas} eq 'not available' && $stats->{nlemma} > 0)
     {
+        $ok = 0;
         push(@{$errors}, "[L0 Repo metadata] $folder: README says lemmas not available but there are $stats->{nlemma} non-empty lemmas in the data\n");
         $$n_errors++;
+    }
+    # If metadata say Parallel: xxx, there should be at least one sentence with
+    # parallel_id = xxx/... Conversely, any corpus mentioned in parallel_ids
+    # should also be listed in metadata.
+    if(defined($metadata) && $metadata->{Parallel} ne '' && $metadata->{Parallel} ne 'no')
+    {
+        my @pcorp_readme = split(/\s+/, $metadata->{Parallel});
+        my @pcorp_data = keys(%{$stats->{nparallel}});
+        foreach my $pc (@pcorp_data)
+        {
+            if($stats->{nparallel}{$pc} > 0 && !grep {$_ eq $pc} (@pcorp_readme))
+            {
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo metadata] $folder: README does not indicate the treebank is part of '$pc' parallel corpus but there are $stats->{nparallel}{$pc} sentences with parallel_id referring to '$pc'.\n");
+                $$n_errors++;
+            }
+        }
+        foreach my $pc (@pcorp_readme)
+        {
+            if(!exists($stats->{nparallel}{$pc}) || $stats->{nparallel}{$pc} == 0)
+            {
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo metadata] $folder: README says the treebank is part of '$pc' parallel corpus but there are no sentences with corresponding parallel_id.\n");
+                $$n_errors++;
+            }
+        }
     }
     return $ok;
 }
@@ -1373,6 +1401,38 @@ sub check_metadata
         push(@{$errors}, "[L0 Repo readme-first-release] $folder README: Unknown format of Data available since: '$metadata->{'Data available since'}'\n");
         $$n_errors++;
     }
+    if($metadata->{Parallel} !~ m/\w/)
+    {
+        $ok = 0;
+        push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Missing info whether the treebank is parallel.\n");
+        $$n_errors++;
+    }
+    else
+    {
+        my @parallel = split(/\s+/, $metadata->{Parallel});
+        my $n = scalar(@parallel);
+        my $no = scalar(grep {$_ eq 'no'} (@parallel));
+        if($no)
+        {
+            if($n > 1)
+            {
+                $ok = 0;
+                push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Parallel: no cannot be combined with other values: '$metadata->{Parallel}'\n");
+                $$n_errors++;
+            }
+        }
+        else
+        {
+            my @unknown_parallel = grep {!m/^(cairo|pud|tuecl|partut|lines|set|hk|atis|bible|zhgsd|jagsd)$/} (@parallel);
+            if(scalar(@unknown_parallel) > 0)
+            {
+                $ok = 0;
+                my $up = join(' ', sort(@unknown_parallel));
+                push(@{$errors}, "[L0 Repo readme-parallel] $folder README: Unknown parallel treebank: '$up'\n");
+                $$n_errors++;
+            }
+        }
+    }
     if($metadata->{Genre} !~ m/\w/)
     {
         $ok = 0;
@@ -1521,12 +1581,24 @@ sub check_documentation
         # So the file exists but does it really contain anything useful?
         # Some people just create an almost empty file without bothering to put the contents there.
         my $doc;
+        my $instructions_still_there = 0;
         open(IDX, $indexpath);
         while(<IDX>)
         {
             $doc .= $_;
+            if(m/\*\*Instruction\*\*:/)
+            {
+                $instructions_still_there = 1;
+            }
         }
         close(IDX);
+        # The instructions that are in the template should be removed before the final documentation is ready.
+        if($instructions_still_there)
+        {
+            $ok = 0;
+            push(@{$errors}, "[L0 Repo lang-spec-doc] $folder: The one-page documentation summary of language '$lcode' still contains the instructions from the template. They should be removed.\n");
+            $$n_errors++;
+        }
         # Czech documentation has over 16000 B.
         # Swedish documentation has over 4500 B.
         # Yoruba is probably incomplete but it still has over 3500 B.
@@ -1571,7 +1643,9 @@ sub collect_statistics_about_ud_treebank
         'nfus'   => 0,
         'nword'  => 0,
         'nabstr' => 0,
-        'nlemma' => 0
+        'nlemma' => 0,
+        # parallel sentences grouped by parallel corpora
+        'nparallel' => {}
     };
     foreach my $file (@files)
     {
@@ -1594,9 +1668,16 @@ sub collect_statistics_about_ud_file
     my $nword = 0;
     my $nabstr = 0;
     my $nlemma = 0;
+    my $nparallel = {};
     open(CONLLU, $file_path) or confess("Cannot read file $file_path: $!");
     while(<CONLLU>)
     {
+        # One comment line is interesting for the info we collect: parallel_id.
+        if(m/^\#\s*parallel_id\s*=\s*([a-z]+)/)
+        {
+            my $pid = $1;
+            $nparallel->{$pid}++;
+        }
         # Skip comment lines.
         next if(m/^\#/);
         # Empty lines separate sentences. There must be an empty line after every sentence including the last one.
@@ -1641,7 +1722,8 @@ sub collect_statistics_about_ud_file
         'nfus'   => $nfus,
         'nword'  => $nword,
         'nabstr' => $nabstr,
-        'nlemma' => $nlemma
+        'nlemma' => $nlemma,
+        'nparallel' => $nparallel
     };
     return $stats;
 }
@@ -1661,6 +1743,10 @@ sub add_statistics
     foreach my $key (qw(nsent ntok nfus nword nabstr nlemma))
     {
         $tgt->{$key} += $src->{$key};
+    }
+    foreach my $key (keys(%{$src->{nparallel}}))
+    {
+        $tgt->{nparallel}{$key} += $src->{nparallel}{$key};
     }
     return $tgt;
 }
