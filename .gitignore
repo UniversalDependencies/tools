@@ -56,6 +56,6 @@ docs/_build/
 # PyBuilder
 target/
 
-# Validator
-validator/logs/*.log
-validator/logs/*.err
+# UDTools
+udtools/logs/*.log
+udtools/logs/*.err
