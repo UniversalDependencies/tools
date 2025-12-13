@@ -1,38 +1,48 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.envs.static]
-dev-mode = true
-dev-mode-dirs = ["."]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "validator"
-version = "0.0.1"
+name = "udtools"
+version = "0.2.4"
 authors = [
-	{ name="Filip Ginter"},
-	{ name="Sampo Pyysalo"},
-	{ name="Daniel Zeman", email="zeman@ufal.mff.cuni.cz"},
-	{ name="Arianna Masciolini", email="arianna.masciolini@gu.se"},
-	{ name="Ludovica Pannitto", email="ellepannitto@gmail.com"},
-	{ name="John Bauer", email="horatio@gmail.com"}
+  { name="Filip Ginter" },
+  { name="Sampo Pyysalo" },
+  { name="Daniel Zeman" },
+  { name="Milan Straka" },
+  { name="Martin Popel" },
+  { name="Gosse Bouma" },
+  { name="John Bauer" },
+  { name="Arianna Masciolini" },
+  { name="Ludovica Pannitto" },
 ]
+maintainers = [
+  { name="Daniel Zeman", email="zeman@ufal.mff.cuni.cz" },
+]
+description = "Python tools for Universal Dependencies"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+dependencies = ["udapi>=0.5.0", "regex>=2020.09.27"]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
 ]
+license = "GPL-2.0-or-later"
+license-files = ["LICEN[CS]E*"]
 
-dependencies = ["dotenv",
-				"regex",
-				"unicodedata"]
-
-[tool.hatch.build]
-# Tell hatchling where your source code is
-sources = ["src"]
+[project.urls]
+Homepage = "https://universaldependencies.org/"
+Issues = "https://github.com/UniversalDependencies/tools/issues"
 
 [project.scripts]
-validate = "validator.validate:main"
+udvalidate = "udtools.cli:main"
+udeval = "udtools.cli:main_eval"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+udtools = ["data/*.json"]
 
