@@ -6,7 +6,6 @@
 # 2025-09: Refactoring by @harisont and @ellepannitto
 
 import sys
-import argparse
 import os
 import yaml
 
@@ -18,6 +17,7 @@ import udtools.specifications as specifications
 import udtools.utils as utils
 import udtools.output_utils as outils
 import udtools.validate as vlib
+from udtools.argparser import build_argparse_validator
 
 logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
@@ -74,92 +74,40 @@ def _validate(args):
 	#    return 1
 
 def main():
+    ###!!! For now, load the options currently supported in master, then add new options here. After complete merge, all options should be handled at one place.
+    opt_parser = build_argparse_validator()
 
-	opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
+    config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
+    config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
+    config_group.add_argument('--config-file', type=str)
 
-	io_group = opt_parser.add_argument_group("Input / output options")
-	io_group.add_argument('--quiet',
-						dest="quiet", action="store_true", default=False,
-						help="""Do not print any error messages.
-						Exit with 0 on pass, non-zero on fail.""")
-	io_group.add_argument('--max-err',
-						action="store", type=int, default=20,
-						help="""How many errors to output before exiting? 0 for all.
-						Default: %(default)d.""")
-	io_group.add_argument('input',
-						nargs='*',
-						help="""Input file name(s), or "-" or nothing for standard input.""")
-
-	list_group = opt_parser.add_argument_group("Tag sets", "Options relevant to checking tag sets.")
-	list_group.add_argument("--lang",
-							action="store", required=True, default=None,
-							help="""Which langauge are we checking?
-							If you specify this (as a two-letter code), the tags will be checked
-							using the language-specific files in the
-							data/directory of the udtools.""")
-	list_group.add_argument("--level",
-							action="store", type=int, default=5, dest="level",
-							help="""Level 1: Test only CoNLL-U backbone.
-							Level 2: UD format.
-							Level 3: UD contents.
-							Level 4: Language-specific labels.
-							Level 5: Language-specific contents.""")
-
-	tree_group = opt_parser.add_argument_group("Tree constraints",
-												"Options for checking the validity of the tree.")
-	tree_group.add_argument("--multiple-roots",
-							action="store_false", default=True, dest="single_root",
-							help="""Allow trees with several root words
-							(single root required by default).""")
-
-	meta_group = opt_parser.add_argument_group("Metadata constraints",
-												"Options for checking the validity of tree metadata.")
-	meta_group.add_argument("--no-tree-text",
-							action="store_false", default=True, dest="check_tree_text",
-							help="""Do not test tree text.
-							For internal use only, this test is required and on by default.""")
-	meta_group.add_argument("--no-space-after",
-							action="store_false", default=True, dest="check_space_after",
-							help="Do not test presence of SpaceAfter=No.")
-
-	coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
-												"Options for checking coreference and entity annotation.")
-	coref_group.add_argument('--coref',
-							action='store_true', default=False, dest='check_coref',
-							help='Test coreference and entity-related annotation in MISC.')
-
-	config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
-	config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
-	config_group.add_argument('--config-file', type=str)
-
-
-	out_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
-	out_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
+    out_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
+    out_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
 						help='Produce output in desired format')
-	out_format.add_argument('--dest', default='-', type=str,
+    out_format.add_argument('--dest', default='-', type=str,
 							help="Output destination")
-	out_format.add_argument(
+    out_format.add_argument(
 		'--explanations',
 		action='store_true',
 		default=False,
 		help="Include longer explanations.")
-	out_format.add_argument(
+    out_format.add_argument(
 		'--lines-content', # TODO: better names
 		action='store_true',
 		default=False,
 		help="Include the content of the errored lines in the output.")
 
-	opt_parser.set_defaults(func=_validate)
-	args = opt_parser.parse_args() #Parsed command-line arguments
+    opt_parser.set_defaults(func=_validate)
+    args = opt_parser.parse_args() #Parsed command-line arguments
 
-	if "func" not in args:
-		opt_parser.print_usage()
-		exit()
+    if "func" not in args:
+        opt_parser.print_usage()
+        exit()
 
-	logger.info("Arguments: \n%s", logging_utils.pprint(vars(args)))
+    logger.info("Arguments: \n%s", logging_utils.pprint(vars(args)))
 
-	args.func(args)
+    args.func(args)
 
 
 if __name__ == "__main__":
-	main()
+    main()
