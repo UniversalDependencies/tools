@@ -2441,7 +2441,7 @@
 "ccomp:speech": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-47-36", "lastchanger": "UD_Egyptian"},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"compound:a": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:a": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-14-11-40-03", "lastchanger": "UD-Egyptian"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-24-20-59-36", "lastchanger": "UD-Egyptian"},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
