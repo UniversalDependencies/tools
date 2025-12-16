@@ -18,10 +18,10 @@ import json
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
 
-import validator.compiled_regex as crex
-import validator.utils as utils
-import validator.output_utils as outils
-import validator.specifications as data
+import udtools.compiled_regex as crex
+import udtools.utils as utils
+import udtools.output_utils as outils
+import udtools.specifications as data
 
 
 
@@ -3802,4 +3802,3 @@ def main():
 if __name__=="__main__":
     errcode = main()
     sys.exit(errcode)
-

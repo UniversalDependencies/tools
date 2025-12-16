@@ -8,11 +8,11 @@ import inspect
 from typing import List, Tuple, TextIO, Set, Any, Dict
 from dataclasses import dataclass, field
 
-from validator.incident import Incident, Error, Warning, TestClass, IncidentType
-import validator.utils as utils
-import validator.compiled_regex as crex
-# from validator.validate_lib import State
-from validator.logging_utils import setup_logging
+from udtools.incident import Incident, Error, Warning, TestClass, IncidentType
+import udtools.utils as utils
+import udtools.compiled_regex as crex
+# from udtools.validate_lib import State
+from udtools.logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 setup_logging(logger)
@@ -2534,5 +2534,3 @@ def validate_required_feature(node, required_feature, required_value, seen_morph
 			#		state.delayed_feature_errors[incident.testid] = {'occurrences': []}
 			#	state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 	return incidents
-
-
