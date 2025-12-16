@@ -132,6 +132,9 @@
 "waʔye": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with affirmative meaning in indicative clauses", "example": "məy yét maʔpəy ŋa [waʔye] cán nã makɨra", "exampleen": "Then this woman started a fire", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-53-08", "lastchanger": "tatiana-merz"},
 "ʔe": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "to say or do", "example": "kanãy yét péŋ [ʔe]t", "exampleen": "Then this white man said/did", "comment": ""}], "status": "documented", "lastchanged": "2022-04-30-16-49-48", "lastchanger": "tatiana-merz"}
 },
+"as": {
+"হওঁ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "তাঽ [এজনী] Teacher", "exampleen": "she is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2025-12-16-17-59-37", "lastchanger": "rahonalab"}
+},
 "az": {
 "bil": {"functions": [{"function": "Mood=Irr", "rule": "combines with any non-finite verb.", "deficient": "", "example": "Deniz vəxtikən yatmıya [bil]ir.", "exampleen": "Deniz may not be able to sleep on time.", "comment": "Function should probably be specified better."}], "status": "documented", "lastchanged": "2024-04-28-13-04-07", "lastchanger": "coltekin"},
 "dəyil": {"functions": [{"function": "agr", "rule": "This is more like a negative copula, it can get many other TAME features as affixes.", "deficient": "", "example": "Nəticələr gəlmiş; belə [dǝyil]?", "exampleen": "The results have been announced, haven’t they?", "comment": ""}], "status": "documented", "lastchanged": "2024-04-28-17-06-27", "lastchanger": "coltekin"},
