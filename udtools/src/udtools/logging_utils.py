@@ -6,8 +6,8 @@ CONSOLE_FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s()]  %(message)s"
 
 def setup_logging(logger):
 
-	log_file = os.getenv("LOG_FILE", "logs/validate.log")
-	error_file = os.getenv("ERROR_FILE", "logs/validate.err")
+	log_file = os.getenv("LOG_FILE", "validate.log")
+	error_file = os.getenv("ERROR_FILE", "validate.err")
 
 	log_level = os.getenv("LOG_LEVEL", "DEBUG").upper()
 	logger.setLevel(getattr(logging, log_level, logging.DEBUG))
