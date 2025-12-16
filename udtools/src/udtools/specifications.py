@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Set, Dict
 import regex as re
 
-import validator.loaders as loaders
+import udtools.loaders as loaders
 
 @dataclass
 class UDSpecs:
@@ -50,7 +50,7 @@ class UDSpecs:
         self.deprel = loaders.load_json_data_set(os.path.join(self.data_folder, "deprels.json"), "deprels") #! change to plural
         self.cached_deprel_for_language = {}
         self.edeprel = loaders.load_json_data(os.path.join(self.data_folder,"edeprels.json"), "edeprels")#! change to plural
-        self.cached_edeprel_for_language =  {} 
+        self.cached_edeprel_for_language =  {}
         self.auxcop = loaders.load_json_data(os.path.join(self.data_folder,"data.json"), "auxiliaries") #! change to plural
         self.cached_aux_for_language = {}
         self.cached_cop_for_language = {}
