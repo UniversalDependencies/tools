@@ -1,9 +1,9 @@
 import os
 import regex as re
 
-from validator.loaders import load_conllu_spec
+from udtools.loaders import load_conllu_spec
 
-import validator.compiled_regex as crex
+import udtools.compiled_regex as crex
 
 THIS_DIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
