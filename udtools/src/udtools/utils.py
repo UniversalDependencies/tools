@@ -1,7 +1,18 @@
 import os
 import regex as re
+# Allow using this module from the root folder of tools even if it is not
+# installed as a package: use the relative path validator/src/validator for
+# submodules. If the path is not available, try the standard qualification,
+# assuming that the user has installed udtools from PyPI and then called
+# from udtools import Validator.
+try:
+    from udtools.src.udtools.incident import Reference
+    from udtools.src.udtools.loaders import load_conllu_spec
+except ModuleNotFoundError:
+    from udtools.incident import Reference
+    from udtools.loaders import load_conllu_spec
 
-from udtools.loaders import load_conllu_spec
+
 
 THIS_DIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
@@ -198,6 +209,18 @@ def lspec2ud(deprel):
     """
     return deprel.split(':', 1)[0]
 
+def nodeid2tuple(nodeid: str):
+    """
+    Node ID can look like a decimal number, but 1.1 != 1.10. To be able to
+    sort node IDs, we need to be able to convert them to a pair of integers
+    (major and minor). For IDs of regular nodes, the ID will be converted to
+    int (major) and the minor will be set to zero.
+    """
+    parts = [int(x) for x in nodeid.split('.', maxsplit=1)]
+    if len(parts) == 1:
+        parts.append(0)
+    return tuple(parts)
+
 def formtl(node):
     """
     Joins a node's form and transliteration together in a space-separated
@@ -318,6 +341,8 @@ def get_line_numbers_for_ids(state, sentence):
             linenos[int(cols[ID])] = node_line
     return linenos
 
+
+###!!! THIS SHOULD BE REMOVED AND INSTEAD THE next_sentence() FUNCTION BELOW SHOULD BE USED.
 def next_block(fin):
     block = []
     for counter, line in enumerate(fin):
@@ -326,3 +351,153 @@ def next_block(fin):
             yield block
             block = []
     if len(block): yield block
+
+
+def next_sentence(state, inp):
+    """
+    This function yields one sentence at a time from the input stream.
+
+    This function is a generator. The caller can call it in a 'for x in ...'
+    loop. In each iteration of the caller's loop, the generator will generate
+    the next sentence, that is, it will read the next sentence from the input
+    stream. (Technically, the function returns an object, and the object will
+    then read the sentences within the caller's loop.)
+
+    Parameters
+    ----------
+    state : udtools.state.State
+        The state of the validation run.
+    inp : file handle
+        A file open for reading or STDIN.
+
+    Yields
+    ------
+    sentence_lines : list(str)
+        List of CoNLL-U lines that correspond to one sentence, including
+        initial comments (if any) and the final empty line.
+    """
+    sentence_lines = [] # List of lines in the sentence (comments and tokens), minus final empty line, minus newline characters (and minus spurious lines that are neither comment lines nor token lines)
+    for line_counter, line in enumerate(inp):
+        state.current_line = line_counter + 1
+        line = line.rstrip("\n")
+        sentence_lines.append(line)
+        if not line or is_whitespace(line):
+            # If a line is not empty but contains only whitespace, we will
+            # pretend that it terminates a sentence in order to avoid
+            # subsequent misleading error messages.
+            yield sentence_lines
+            sentence_lines = []
+    else: # end of file
+        # If we found additional lines after the last empty line, yield them now.
+        if sentence_lines:
+            yield sentence_lines
+
+
+def get_caused_nonprojectivities(node):
+    """
+    Checks whether a node is in a gap of a nonprojective edge. Report true only
+    if the node's parent is not in the same gap. (We use this function to check
+    that a punctuation node does not cause nonprojectivity. But if it has been
+    dragged to the gap with a larger subtree, then we do not blame it.) This
+    extra condition makes this function different from node.is_nonprojective_gap();
+    another difference is that instead of just detecting the nonprojectivity,
+    we return the nonprojective nodes so we can report them.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+
+    Returns
+    -------
+    cross : list of udapi.core.node.Node objects
+        The nodes whose attachment is nonprojective because of the current node.
+    """
+    nodes = node.root.descendants
+    iid = node.ord
+    # We need to find all nodes that are not ancestors of this node and lie
+    # on other side of this node than their parent. First get the set of
+    # ancestors.
+    ancestors = []
+    current_node = node
+    while not current_node.is_root():
+        current_node = current_node.parent
+        ancestors.append(current_node)
+    maxid = nodes[-1].ord
+    # Get the lists of nodes to either side of id.
+    # Do not look beyond the parent (if it is in the same gap, it is the parent's responsibility).
+    pid = node.parent.ord
+    if pid < iid:
+        leftidrange = range(pid + 1, iid) # ranges are open from the right (i.e. iid-1 is the last number)
+        rightidrange = range(iid + 1, maxid + 1)
+    else:
+        leftidrange = range(1, iid)
+        rightidrange = range(iid + 1, pid)
+    left = [n for n in nodes if n.ord in leftidrange]
+    right = [n for n in nodes if n.ord in rightidrange]
+    # Exclude nodes whose parents are ancestors of id.
+    leftna = [x for x in left if x.parent not in ancestors]
+    rightna = [x for x in right if x.parent not in ancestors]
+    leftcross = [x for x in leftna if x.parent.ord > iid]
+    rightcross = [x for x in rightna if x.parent.ord < iid]
+    # Once again, exclude nonprojectivities that are caused by ancestors of id.
+    if pid < iid:
+        rightcross = [x for x in rightcross if x.parent.ord > pid]
+    else:
+        leftcross = [x for x in leftcross if x.parent.ord < pid]
+    # Do not return just a boolean value. Return the nonprojective nodes so we can report them.
+    return sorted(leftcross + rightcross)
+
+
+def get_gap(node):
+    """
+    Returns the list of nodes between node and its parent that are not dominated
+    by the parent. If the list is not empty, the node is attached nonprojectively.
+
+    Note that the Udapi Node class does not have a method like this. It has
+    is_nonprojective(), which returns the boolean decision without showing the
+    nodes in the gap. There is also the function is_nonprojective_gap() but it,
+    too, does not deliver what we need.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+
+    Returns
+    -------
+    gap : list of udapi.core.node.Node objects
+        The nodes in the gap of the current node's relation to its parent,
+        sorted by their ords (IDs).
+    """
+    iid = node.ord
+    pid = node.parent.ord
+    if iid < pid:
+        rangebetween = range(iid + 1, pid)
+    else:
+        rangebetween = range(pid + 1, iid)
+    gap = []
+    if rangebetween:
+        gap = [n for n in node.root.descendants if n.ord in rangebetween and not n in node.parent.descendants]
+    return sorted(gap)
+
+
+def create_references(nodes, state, comment=''):
+    """
+    Takes a list of nodes and converts it to a list of Reference objects to be
+    reported with an Incident.
+
+    Parameters
+    ----------
+    nodes : list(udapi.core.node.Node)
+        The nodes to which we wish to refer.
+    state : udtools.state.State
+        The state of the validation run.
+    comment : str
+        The comment to add to each reference.
+
+    Returns
+    -------
+    references : list(udtools.incident.Reference)
+    """
+    return [Reference(nodeid=str(x.ord), sentid=state.sentence_id, filename=state.get_current_file_name(), lineno=state.current_node_linenos[str(x.ord)], comment=comment) for x in nodes]
