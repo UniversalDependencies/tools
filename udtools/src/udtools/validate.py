@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 
 from udtools.incident import Incident, Error, Warning, TestClass, IncidentType
 import udtools.utils as utils
-import udtools.compiled_regex as crex
 # from udtools.validate_lib import State
 from udtools.logging_utils import setup_logging
 
@@ -79,7 +78,7 @@ def validate_file(path, cfg_obj):
 			tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
 
 			for (counter, line) in comments:
-				match_sentid = crex.sentid.fullmatch(line)
+				match_sentid = utils.crex.sentid.fullmatch(line)
 				if match_sentid:
 					state.sentence_id = match_sentid.group(1)
 
@@ -267,7 +266,7 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
 				logger.debug("'trailing-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
 
 			# Must never contain two consecutive whitespace characters
-			if crex.ws2.search(cols[col_idx]):
+			if utils.crex.ws2.search(cols[col_idx]):
 				incidents.append(Error(
 					testclass=TestClass.FORMAT,
 					testid='repeated-whitespace',
@@ -280,7 +279,7 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
 	# If it contains a space, it does not make sense to treat it as a MWT.
 	if utils.is_multiword_token(cols):
 		for col_idx in (utils.FORM, utils.LEMMA):
-			if crex.ws.search(cols[col_idx]):
+			if utils.crex.ws.search(cols[col_idx]):
 				incidents.append(Error(
 					testclass=TestClass.FORMAT,
 					testid='invalid-whitespace-mwt',
@@ -291,8 +290,8 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
 
 	# These columns must not have whitespace.
 	for col_idx in (utils.ID, utils.UPOS, utils.XPOS, utils.FEATS, utils.HEAD, utils.DEPREL, utils.DEPS):
-		# if crex.ws.search(cols[col_idx]):
-		if crex.ws.search(cols[col_idx].strip()):
+		# if utils.crex.ws.search(cols[col_idx]):
+		if utils.crex.ws.search(cols[col_idx].strip()):
 			incidents.append(Error(
 				testclass=TestClass.FORMAT,
 				testid='invalid-whitespace',
@@ -668,7 +667,7 @@ def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incid
 	for col_no, cols in sentence:
 		if not "-" in cols[utils.ID]:
 			continue
-		m = crex.mwtid.fullmatch(cols[utils.ID])
+		m = utils.crex.mwtid.fullmatch(cols[utils.ID])
 		if not m:
 			incidents.append(Error(
 				testid="invalid-word-interval",
@@ -774,7 +773,7 @@ def check_sent_id(comments: List[Tuple[int, str]],
 	matched = []
 	firstmatch = -1
 	for lineno, c in comments:
-		match = crex.sentid.fullmatch(c)
+		match = utils.crex.sentid.fullmatch(c)
 		if match:
 			matched.append(match)
 			firstmatch = lineno
@@ -879,7 +878,7 @@ def check_parallel_id(comments: List[Tuple[int, str]],
 	incidents = []
 	matched = []
 	for lineno, c in comments:
-		match = crex.parallelid.fullmatch(c)
+		match = utils.crex.parallelid.fullmatch(c)
 		if match:
 			matched.append((lineno, match))
 		else:
@@ -1018,13 +1017,13 @@ def check_text_meta(comments: List[Tuple[int, str]],
 	newpar_matched = []
 	text_matched = []
 	for lineno, c in comments:
-		newdoc_match = crex.newdoc.fullmatch(c)
+		newdoc_match = utils.crex.newdoc.fullmatch(c)
 		if newdoc_match:
 			newdoc_matched.append((lineno, newdoc_match))
-		newpar_match = crex.newpar.fullmatch(c)
+		newpar_match = utils.crex.newpar.fullmatch(c)
 		if newpar_match:
 			newpar_matched.append((lineno, newpar_match))
-		text_match = crex.text.fullmatch(c)
+		text_match = utils.crex.text.fullmatch(c)
 		if text_match:
 			text_matched.append((lineno, text_match))
 
@@ -1294,7 +1293,7 @@ def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
 	return incidents
 
 #! proposal: rename into check_deps_deprel_contraints, or also check UPOS format (not value)
-#! I don't like that it relies on crex
+#! I don't like that it relies on utils.crex
 def check_character_constraints(cols):
 	"""
 	Checks general constraints on valid characters, e.g. that UPOS
@@ -1310,14 +1309,14 @@ def check_character_constraints(cols):
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 
-	# Do not test the regular expression crex.upos here. We will test UPOS
+	# Do not test the regular expression utils.crex.upos here. We will test UPOS
 	# directly against the list of known tags. That is a level 2 test, too.
 
 	if utils.is_empty_node(cols) and cols[utils.DEPREL] == '_':
 		logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
 		return incidents
 
-	if not crex.deprel.fullmatch(cols[utils.DEPREL]):
+	if not utils.crex.deprel.fullmatch(cols[utils.DEPREL]):
 		incidents.append(
 			Error(
 				level=2,
@@ -1342,7 +1341,7 @@ def check_character_constraints(cols):
 		return incidents
 
 	for _, edep in deps:
-		if not crex.edeprel.fullmatch(edep):
+		if not utils.crex.edeprel.fullmatch(edep):
 			incidents.append(
 				Error(
 					level=2,
@@ -1378,7 +1377,7 @@ def check_upos(cols, specs):
 	# Just in case, we still match UPOS against the regular expression that
 	# checks general character constraints. However, the list of UPOS, loaded
 	# from a JSON file, should conform to the regular expression.
-	if not crex.upos.fullmatch(cols[utils.UPOS]) or cols[utils.UPOS] not in specs.upos:
+	if not utils.crex.upos.fullmatch(cols[utils.UPOS]) or cols[utils.UPOS] not in specs.upos:
 		incidents.append(
 			Error(
 				level=2,
@@ -1428,7 +1427,7 @@ def check_features_level2(cols):
 	# Level 2 tests character properties and canonical order but not that the f-v pair is known.
 
 	for feat_val in feat_list:
-		match = crex.featval.fullmatch(feat_val)
+		match = utils.crex.featval.fullmatch(feat_val)
 		if not match:
 			incidents.append(
 				Error(
@@ -1466,7 +1465,7 @@ def check_features_level2(cols):
 					)
 				)
 			for v in values:
-				if not crex.val.fullmatch(v): # ! can this ever be true? If val.fullmatch() does not match, than also featval.fullmatch() wouldn't
+				if not utils.crex.val.fullmatch(v): # ! can this ever be true? If val.fullmatch() does not match, than also featval.fullmatch() wouldn't
 					incidents.append(
 						Error(
 							level=2,
@@ -1745,7 +1744,7 @@ def check_deps_all_or_none(sentence, seen_enhanced_graph):
 # TODO: move elsewhere
 # # If a multi-word token has Typo=Yes, its component words must not have it.
 # 			# We must remember the span of the MWT and check it in check_features_level4().
-# 			m = crex.mwtid.fullmatch(cols[ID])
+# 			m = utils.crex.mwtid.fullmatch(cols[ID])
 # 			state.mwt_typo_span_end = m.group(2)
 
 
@@ -1774,7 +1773,7 @@ def check_id_references(sentence):
 		# Test the basic HEAD only for non-empty nodes.
 		# We have checked elsewhere that it is empty for empty nodes.
 		if not utils.is_empty_node(cols):
-			match = crex.head.fullmatch(cols[utils.HEAD])
+			match = utils.crex.head.fullmatch(cols[utils.HEAD])
 			if match is None:
 				incidents.append(Error(
 					testid='invalid-head',
@@ -1796,7 +1795,7 @@ def check_id_references(sentence):
 			))
 			continue
 		for head, _ in deps:
-			match = crex.ehead.fullmatch(head)
+			match = utils.crex.ehead.fullmatch(head)
 			if match is None:
 				incidents.append(Error(
 					testid='invalid-ehead',
@@ -2210,7 +2209,7 @@ def check_words_with_spaces(node, lang, specs):
 	for column in ('FORM', 'LEMMA'):
 		word = node.form if column == 'FORM' else node.lemma
 		# Is there whitespace in the word?
-		if crex.ws.search(word):
+		if utils.crex.ws.search(word):
 			# Whitespace found. Does the word pass the regular expression that defines permitted words with spaces in this language?
 			if tospacedata:
 				# For the purpose of this test, NO-BREAK SPACE is equal to SPACE.

@@ -3,14 +3,85 @@ import regex as re
 
 from udtools.loaders import load_conllu_spec
 
-import udtools.compiled_regex as crex
-
 THIS_DIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
 CONLLU_SPEC = load_conllu_spec(os.path.join(THIS_DIR, "conllu_spec.yaml"))
 COLCOUNT = len(CONLLU_SPEC["columns"])
 ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC = range(COLCOUNT)
 COLNAMES = CONLLU_SPEC["columns"]
+
+
+
+class CompiledRegexes:
+    """
+    The CompiledRegexes class holds various regular expressions needed to
+    recognize individual elements of the CoNLL-U format, precompiled to speed
+    up parsing. Individual expressions are typically not enclosed in ^...$
+    because one can use re.fullmatch() if it is desired that the whole string
+    matches the expression.
+    """
+    def __init__(self):
+        # Whitespace.
+        self.ws = re.compile(r"\s+")
+        # Two consecutive whitespaces.
+        self.ws2 = re.compile(r"\s\s")
+        # Regular word/node id: integer number.
+        self.wordid = re.compile(r"[1-9][0-9]*")
+        # Multiword token id: range of integers.
+        # The two parts are bracketed so they can be captured and processed separately.
+        self.mwtid = re.compile(r"([1-9][0-9]*)-([1-9][0-9]*)")
+        # Empty node id: "decimal" number (but 1.10 != 1.1).
+        # The two parts are bracketed so they can be captured and processed separately.
+        self.enodeid = re.compile(r"([0-9]+)\.([1-9][0-9]*)")
+        # New document comment line. Document id, if present, is bracketed.
+        self.newdoc = re.compile(r"#\s*newdoc(?:\s+(\S+))?")
+        # New paragraph comment line. Paragraph id, if present, is bracketed.
+        self.newpar = re.compile(r"#\s*newpar(?:\s+(\S+))?")
+        # Sentence id comment line. The actual id is bracketed.
+        self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
+        # Parallel sentence id comment line. The actual id as well as its predefined parts are bracketed.
+        self.parallelid = re.compile(r"#\s*parallel_id\s*=\s*(([a-z]+)/([-0-9a-z]+)(?:/(alt[1-9][0-9]*|part[1-9][0-9]*|alt[1-9][0-9]*part[1-9][0-9]*))?)")
+        # Sentence text comment line. The actual text is bracketed.
+        self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
+        # Global entity comment is a declaration of entity attributes in MISC.
+        # It occurs once per document and it is optional (only CorefUD data).
+        # The actual attribute declaration is bracketed so it can be captured in the match.
+        self.global_entity = re.compile(r"#\s*global\.Entity\s*=\s*(.+)")
+        # UPOS tag.
+        self.upos = re.compile(r"[A-Z]+")
+        # Feature=value pair.
+        # Feature name and feature value are bracketed so that each can be captured separately in the match.
+        self.featval = re.compile(r"([A-Z][A-Za-z0-9]*(?:\[[a-z0-9]+\])?)=(([A-Z0-9][A-Z0-9a-z]*)(,([A-Z0-9][A-Z0-9a-z]*))*)")
+        self.val = re.compile(r"[A-Z0-9][A-Za-z0-9]*")
+        # Basic parent reference (HEAD).
+        self.head = re.compile(r"(0|[1-9][0-9]*)")
+        # Enhanced parent reference (head).
+        self.ehead = re.compile(r"(0|[1-9][0-9]*)(\.[1-9][0-9]*)?")
+        # Basic dependency relation (including optional subtype).
+        self.deprel = re.compile(r"[a-z]+(:[a-z]+)?")
+        # Enhanced dependency relation (possibly with Unicode subtypes).
+        # Ll ... lowercase Unicode letters
+        # Lm ... modifier Unicode letters (e.g., superscript h)
+        # Lo ... other Unicode letters (all caseless scripts, e.g., Arabic)
+        # M .... combining diacritical marks
+        # Underscore is allowed between letters but not at beginning, end, or next to another underscore.
+        edeprelpart_resrc = r'[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*'
+        # There must be always the universal part, consisting only of ASCII letters.
+        # There can be up to three additional, colon-separated parts: subtype, preposition and case.
+        # One of them, the preposition, may contain Unicode letters. We do not know which one it is
+        # (only if there are all four parts, we know it is the third one).
+        # ^[a-z]+(:[a-z]+)?(:[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(_[\p{Ll}\p{Lm}\p{Lo}\p{M}]+)*)?(:[a-z]+)?$
+        edeprel_resrc = '^[a-z]+(:[a-z]+)?(:' + edeprelpart_resrc + ')?(:[a-z]+)?$'
+        self.edeprel = re.compile(edeprel_resrc)
+
+
+
+# Global variables:
+crex = CompiledRegexes()
+
+
+
+# Support functions.
 
 def is_whitespace(line):
     """

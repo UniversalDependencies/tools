@@ -18,7 +18,6 @@ import json
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
 
-import udtools.compiled_regex as crex
 import udtools.utils as utils
 import udtools.output_utils as outils
 import udtools.specifications as data
@@ -299,7 +298,7 @@ class Validator:
                 # everything that looks like a sentence id and use it in the error messages.
                 # Line numbers themselves may not be sufficient if we are reading multiple
                 # files from a pipe.
-                match = crex.sentid.fullmatch(line)
+                match = utils.crex.sentid.fullmatch(line)
                 if match:
                     state.sentence_id = match.group(1)
                 if not token_lines_fields: # before sentence
@@ -451,7 +450,7 @@ class Validator:
                         message=f'Trailing whitespace not allowed in column {COLNAMES[col_idx]}.'
                     ).report(state, self.args)
                 # Must never contain two consecutive whitespace characters
-                if crex.ws2.search(cols[col_idx]):
+                if utils.crex.ws2.search(cols[col_idx]):
                     Incident(
                         state=state,
                         testid='repeated-whitespace',
@@ -463,7 +462,7 @@ class Validator:
             for col_idx in (FORM, LEMMA):
                 if col_idx >= len(cols):
                     break # this has been already reported in next_sentence()
-                if crex.ws.search(cols[col_idx]):
+                if utils.crex.ws.search(cols[col_idx]):
                     Incident(
                         state=state,
                         testid='invalid-whitespace-mwt',
@@ -473,7 +472,7 @@ class Validator:
         for col_idx in (ID, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS):
             if col_idx >= len(cols):
                 break # this has been already reported in next_sentence()
-            if crex.ws.search(cols[col_idx]):
+            if utils.crex.ws.search(cols[col_idx]):
                 Incident(
                     state=state,
                     testid='invalid-whitespace',
@@ -527,7 +526,7 @@ class Validator:
                 if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
                     tokens.append((t_id, t_id)) # nope - let's make a default interval for it
             elif utils.is_multiword_token(cols):
-                match = crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
+                match = utils.crex.mwtid.fullmatch(cols[ID]) # Check the interval against the regex
                 if not match: # This should not happen. The function utils.is_multiword_token() would then not return True.
                     Incident(
                         state=state,
@@ -615,7 +614,7 @@ class Validator:
         for cols in sentence:
             if not utils.is_multiword_token(cols):
                 continue
-            m = crex.mwtid.fullmatch(cols[ID])
+            m = utils.crex.mwtid.fullmatch(cols[ID])
             if not m: # This should not happen. The function utils.is_multiword_token() would then not return True.
                 Incident(
                     state=state,
@@ -678,7 +677,7 @@ class Validator:
         Incident.default_lineno = -1 # use the first line after the comments
         matched = []
         for c in comments:
-            match = crex.sentid.fullmatch(c)
+            match = utils.crex.sentid.fullmatch(c)
             if match:
                 matched.append(match)
             else:
@@ -733,13 +732,13 @@ class Validator:
         newpar_matched = []
         text_matched = []
         for c in comments:
-            newdoc_match = crex.newdoc.fullmatch(c)
+            newdoc_match = utils.crex.newdoc.fullmatch(c)
             if newdoc_match:
                 newdoc_matched.append(newdoc_match)
-            newpar_match = crex.newpar.fullmatch(c)
+            newpar_match = utils.crex.newpar.fullmatch(c)
             if newpar_match:
                 newpar_matched.append(newpar_match)
-            text_match = crex.text.fullmatch(c)
+            text_match = utils.crex.text.fullmatch(c)
             if text_match:
                 text_matched.append(text_match)
         if len(newdoc_matched) > 1:
@@ -890,7 +889,7 @@ class Validator:
             if col_idx == FEATS and cols[col_idx] == 'Typo=Yes':
                 # If a multi-word token has Typo=Yes, its component words must not have it.
                 # We must remember the span of the MWT and check it in validate_features_level4().
-                m = crex.mwtid.fullmatch(cols[ID])
+                m = utils.crex.mwtid.fullmatch(cols[ID])
                 state.mwt_typo_span_end = m.group(2)
             elif cols[col_idx] != '_':
                 Incident(
@@ -948,9 +947,9 @@ class Validator:
         Incident.default_lineno = line
         if utils.is_multiword_token(cols):
             return
-        # Do not test the regular expression crex.upos here. We will test UPOS
+        # Do not test the regular expression utils.crex.upos here. We will test UPOS
         # directly against the list of known tags. That is a level 2 test, too.
-        if not (crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
+        if not (utils.crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
             Incident(
                 state=state,
                 testclass='Syntax',
@@ -968,7 +967,7 @@ class Validator:
             ).report(state, self.args)
             return
         if any(deprel for head, deprel in utils.deps_list(cols)
-            if not crex.edeprel.fullmatch(deprel)):
+            if not utils.crex.edeprel.fullmatch(deprel)):
                 Incident(
                     state=state,
                     testclass='Enhanced',
@@ -994,7 +993,7 @@ class Validator:
         # Just in case, we still match UPOS against the regular expression that
         # checks general character constraints. However, the list of UPOS, loaded
         # from a JSON file, should conform to the regular expression.
-        if not crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in self.specs.upos:
+        if not utils.crex.upos.fullmatch(cols[UPOS]) or cols[UPOS] not in self.specs.upos:
             Incident(
                 state=state,
                 lineno=line,
@@ -1045,7 +1044,7 @@ class Validator:
         # can skip the more fragile tests.
         safe = True
         for f in feat_list:
-            match = crex.featval.fullmatch(f)
+            match = utils.crex.featval.fullmatch(f)
             if match is None:
                 Incident(
                     state=state,
@@ -1072,7 +1071,7 @@ class Validator:
                         message=f"If a feature has multiple values, these must be sorted: '{f}'"
                     ).report(state, self.args)
                 for v in values:
-                    if not crex.val.fullmatch(v):
+                    if not utils.crex.val.fullmatch(v):
                         Incident(
                             state=state,
                             testid='invalid-feature-value',
@@ -1299,7 +1298,7 @@ class Validator:
             # Test the basic HEAD only for non-empty nodes.
             # We have checked elsewhere that it is empty for empty nodes.
             if not utils.is_empty_node(cols):
-                match = crex.head.fullmatch(cols[HEAD])
+                match = utils.crex.head.fullmatch(cols[HEAD])
                 if match is None:
                     Incident(
                         state=state,
@@ -1327,7 +1326,7 @@ class Validator:
                 ok = False
                 continue
             for head, deprel in deps:
-                match = crex.ehead.fullmatch(head)
+                match = utils.crex.ehead.fullmatch(head)
                 if match is None:
                     Incident(
                         state=state,
@@ -2597,7 +2596,7 @@ class Validator:
         for column in ('FORM', 'LEMMA'):
             word = node.form if column == 'FORM' else node.lemma
             # Is there whitespace in the word?
-            if crex.ws.search(word):
+            if utils.crex.ws.search(word):
                 # Whitespace found. Does the word pass the regular expression that defines permitted words with spaces in this language?
                 if tospacedata:
                     # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
@@ -2892,9 +2891,9 @@ class Validator:
         sentid = ''
         for c in comments:
             Incident.default_lineno = state.comment_start_line+iline
-            global_entity_match = crex.global_entity.fullmatch(c)
-            newdoc_match = crex.newdoc.fullmatch(c)
-            sentid_match = crex.sentid.fullmatch(c)
+            global_entity_match = utils.crex.global_entity.fullmatch(c)
+            newdoc_match = utils.crex.newdoc.fullmatch(c)
+            sentid_match = utils.crex.sentid.fullmatch(c)
             if global_entity_match:
                 # As a global declaration, global.Entity is expected only once per file.
                 # However, we may be processing multiple files or people may have created
