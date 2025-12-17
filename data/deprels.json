@@ -1523,6 +1523,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-12-17-16-23-59", "lastchanger": "rahonalab"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
