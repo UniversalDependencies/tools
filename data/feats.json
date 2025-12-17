@@ -627,7 +627,7 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fin": 618, "Inf": 24, "Part": 68}, "VERB": {"Fin": 290, "Inf": 389, "Part": 366}}}
 },
 "brh": {
-
+"Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past", "Pres"], "lvalues": [], "unused_uvalues": ["Imp", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Fut": 1, "Past": 1, "Pres": 1}, "VERB": {"Fut": 1, "Past": 1, "Pres": 1}}, "lastchanged": "2025-12-17-15-41-31", "lastchanger": "rahonalab"}
 },
 "bxr": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
