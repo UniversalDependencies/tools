@@ -2894,6 +2894,7 @@
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Aux", "Cop", "Mod"], "unused_uvalues": [], "unused_lvalues": ["Light", "Quasi"], "evalues": [], "byupos": {"AUX": {"Aux": 1, "Cop": 1, "Mod": 1}}, "lastchanged": "2021-10-31-17-59-24", "lastchanger": "jasiewert"}
 },
 "ne": {
+"Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Abl", "Acc", "Dat", "Erg", "Gen", "Loc", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Del", "Dis", "Ela", "Equ", "Ess", "Ill", "Ine", "Ins", "Lat", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Abl": 1, "Acc": 1, "Dat": 1, "Erg": 1, "Gen": 1, "Loc": 1, "Nom": 1}, "PRON": {"Abl": 1, "Acc": 1, "Dat": 1, "Gen": 1}, "PROPN": {"Abl": 1, "Acc": 1, "Dat": 1, "Erg": 1, "Gen": 1, "Loc": 1, "Nom": 1}}, "lastchanged": "2025-12-18-14-52-32", "lastchanger": "rahonalab"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Ind", "Int", "Prs", "Rel", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Neg", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1, "Ind": 1, "Int": 1, "Prs": 1, "Tot": 1}, "PROPN": {"Dem": 1, "Ind": 1, "Int": 1, "Prs": 1, "Rel": 1, "Tot": 1}}, "lastchanged": "2025-12-18-14-46-00", "lastchanger": "rahonalab"}
 },
 "nhi": {
