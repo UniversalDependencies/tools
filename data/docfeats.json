@@ -637,6 +637,7 @@
 },
 "egy": {
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Prosp", "Prog", "Hab", "Iter", "Stat"], "errors": []},
+"Conj": {"type": "local", "values": [], "errors": ["No feature values found."]},
 "Nominal": {"type": "local", "values": ["Yes"], "errors": []},
 "Prefix": {"type": "local", "values": ["Yodh"], "errors": []},
 "SubForm": {"type": "local", "values": ["AbstRel", "RelForm", "Pred"], "errors": []},
