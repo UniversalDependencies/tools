@@ -636,7 +636,7 @@
 "Variant": {"type": "local", "values": ["Short"], "errors": []}
 },
 "egy": {
-"Aspect": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Ind\">`Stat</a>: stative'.", "No feature values found."]},
+"Aspect": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Stat\">Stat</a>: stative'.", "No feature values found."]},
 "Nominal": {"type": "local", "values": ["Yes"], "errors": []},
 "Prefix": {"type": "local", "values": ["Yodh"], "errors": []},
 "SubForm": {"type": "local", "values": ["AbstRel", "RelForm", "Pred"], "errors": []},
