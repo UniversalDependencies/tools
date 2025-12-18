@@ -236,6 +236,10 @@
 "rankout": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""},
 "ur": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
+"brh": {
+"as": {"functions": [{"function": "Aspect=Imp", "rule": "combination of the auxiliary and infinitive form of the main verb", "deficient": "", "example": "Tā̃zī paxīrnā raaṭī tūlok [as].", "exampleen": "The hound was sitting beside the wanderer.", "comment": ""}], "status": "documented", "lastchanged": "2025-12-17-16-40-49", "lastchanger": "rahonalab"},
+"mare": {"functions": [{"function": "Aspect=Imp", "rule": "combination of the auxiliary and the infinitive form of the main verb", "deficient": "", "example": "dunki ɣaebī o dušmane daṛakko tiningaṭī [mare] .", "exampleen": "As if it were threatening an enemy out of sight.", "comment": ""}], "status": "documented", "lastchanged": "2025-12-17-16-43-28", "lastchanger": "rahonalab"}
+},
 "bxr": {
 "бай": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Хүзүүбшэ улан үнгэтэй [байгаа].", "exampleen": "The neck has a red fox.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-30-02", "lastchanger": "dan-zeman"},
 "боло": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "Энэ хэрэгтэ зандинаархиниие хабаадуулхада [болохо].", "exampleen": "In this case, we [will] dump the sandbags.", "comment": "The verb болохо (to become) functions as an auxiliary and a pseudo-copula in Buryat. Лиджиева et al. 2020, DOI: 10.22162/2619-0990-2020-52-6-1677-1691."}], "status": "documented", "lastchanged": "2022-06-02-15-42-01", "lastchanger": "dan-zeman"},
