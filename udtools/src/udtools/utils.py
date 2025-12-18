@@ -342,17 +342,6 @@ def get_line_numbers_for_ids(state, sentence):
     return linenos
 
 
-###!!! THIS SHOULD BE REMOVED AND INSTEAD THE next_sentence() FUNCTION BELOW SHOULD BE USED.
-def next_block(fin):
-    block = []
-    for counter, line in enumerate(fin):
-        block.append((counter, line.rstrip("\n\r")))
-        if re.fullmatch(r"^\s*$", line):
-            yield block
-            block = []
-    if len(block): yield block
-
-
 def next_sentence(state, inp):
     """
     This function yields one sentence at a time from the input stream.
