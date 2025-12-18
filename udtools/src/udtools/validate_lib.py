@@ -225,7 +225,6 @@ class Validator:
         self.args = args
         self.specs = specs
 
-    # TODO: rename to next_block
     def OLD_next_sentence(self, state, inp):
         """
         `inp` a file-like object yielding lines as unicode
