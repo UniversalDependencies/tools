@@ -34,16 +34,16 @@ def validate(paths, cfg_obj):
     for path in paths:
         yield validate_file(path, cfg_obj)
 
+
 def run_checks(checks, parameters, incidents, state):
-
     current_incidents = []
-
     for check, check_info in checks.items():
-
         dependencies = []
         if 'depends_on' in check_info:
             dependencies = check_info['depends_on']
-
+        ###!!! Or keep run_checks() as a method of Validator, then do something like:
+        # method = getattr(self, check)
+        # method(**parameters)
         fun = globals()[check]
         if not any(err.testid in dependencies for err in current_incidents):
             current_incidents.extend([err.set_state(state) for err in fun(**parameters)])
@@ -57,8 +57,8 @@ def run_checks(checks, parameters, incidents, state):
             #         message=f"Check {check} not performed because of previous failures",
             #     )
             # )
-
     incidents.extend(current_incidents)
+
 
 def validate_file(path, cfg_obj):
 
