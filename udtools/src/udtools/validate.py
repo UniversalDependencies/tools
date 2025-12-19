@@ -44,6 +44,7 @@ def run_checks(checks, parameters, incidents, state):
         ###!!! Or keep run_checks() as a method of Validator, then do something like:
         # method = getattr(self, check)
         # method(**parameters)
+        ###!!! But it would be safer to explictly whitelist methods that can be called (that holds even if we keep using global functions).
         fun = globals()[check]
         if not any(err.testid in dependencies for err in current_incidents):
             current_incidents.extend([err.set_state(state) for err in fun(**parameters)])
