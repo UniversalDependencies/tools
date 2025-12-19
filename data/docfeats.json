@@ -640,6 +640,7 @@
 "Conjug": {"type": "local", "values": ["Suffix", "AfroAsia"], "errors": []},
 "Nominal": {"type": "local", "values": ["Yes"], "errors": []},
 "Prefix": {"type": "local", "values": ["Yodh"], "errors": []},
+"PronClass": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Dep>`Dep`</a>: Dependent Pronouns'."]},
 "SubForm": {"type": "local", "values": ["AbstRel", "RelForm", "Pred"], "errors": []},
 "VerbClass": {"type": "local", "values": ["1lit", "2lit", "3lit", "4lit", "5lit", "6lit", "2aeinf", "3aeinf", "4aeinf", "5aeinf", "2aered", "3aered", "Caus2lit", "Caus3lit", "Caus4lit", "Caus5lit", "Caus3aeinf", "Caus4aeinf", "Caus2aered", "Caus3aered", "Def", "Anom"], "errors": []}
 },
