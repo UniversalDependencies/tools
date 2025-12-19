@@ -36,9 +36,10 @@ def _validate(args):
     cfg = yaml.safe_load(open(args.config_file))
     for incidents in vlib.validate(args.input, cfg_obj=cfg):
         if out_format == 'json':
-            print('[', file=dest)
-            print(',\n'.join([incident.json() for incident in incidents]), file=dest)
-            print(']', file=dest)
+            if incidents:
+                print('[', file=dest)
+                print(',\n'.join([incident.json() for incident in incidents]), file=dest)
+                print(']', file=dest)
         else:
             outils.serialize_output(incidents, dest, explanations, lines_content)
     if len(incidents):
