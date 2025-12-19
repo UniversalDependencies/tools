@@ -13,7 +13,6 @@ import logging
 
 import udtools.logging_utils as logging_utils
 
-import udtools.specifications as specifications
 import udtools.utils as utils
 import udtools.output_utils as outils
 import udtools.validate as vlib
@@ -22,56 +21,31 @@ from udtools.argparser import build_argparse_validator
 logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
 
+
 def _validate(args):
-	out_format = args.format
-	dest = args.dest
-	explanations = args.explanations
-	lines_content = args.lines_content
+    out_format = args.format
+    dest = args.dest
+    explanations = args.explanations
+    lines_content = args.lines_content
+    if dest == '-':
+        dest = sys.stdout
+    elif dest == 'stderr':
+        dest = sys.stderr
+    else:
+        dest = open(dest, 'w')
+    cfg = yaml.safe_load(open(args.config_file))
+    for incidents in vlib.validate(args.input, cfg_obj=cfg):
+        if out_format == 'json':
+            print('[', file=dest)
+            print(',\n'.join([incident.json() for incident in incidents]), file=dest)
+            print(']', file=dest)
+        else:
+            outils.serialize_output(incidents, dest, explanations, lines_content)
+    if len(incidents):
+        return 1
+    else:
+        return 0
 
-	if dest == "-":
-		dest = sys.stdout
-	elif dest == "stderr":
-		dest = sys.stderr
-	else:
-		dest = open(dest, 'w')
-
-	ud_specs = specifications.UDSpecs(args.data_folder)
-	validation_fun = vlib.validate
-	cfg = yaml.safe_load(open(args.config_file))
-
-	for incidents in vlib.validate(args.input, cfg_obj=cfg):
-		if out_format == "json":
-			outils.dump_json(incidents, dest, explanations, lines_content)
-		else:
-			outils.serialize_output(incidents, dest, explanations, lines_content)
-
-		if len(incidents):
-			return 1
-		else:
-			return 0
-
-	# Summarize the warnings and errors.
-	passed = True
-	nerror = 0
-	#if state.error_counter:
-	#    for k, v in sorted(state.error_counter.items()):
-	#        if k == 'Warning':
-	#            errors = 'Warnings'
-	#        else:
-	#            errors = k+' errors'
-	#            nerror += v
-	#            passed = False
-	#        if not args.quiet:
-	#            print(f'{errors}: {v}', file=sys.stderr)
-	## Print the final verdict and exit.
-	#if passed:
-	#    if not args.quiet:
-	#        print('*** PASSED ***', file=sys.stderr)
-	#    return 0
-	#else:
-	#    if not args.quiet:
-	#        print(f'*** FAILED *** with {nerror} errors', file=sys.stderr)
-	#    return 1
 
 def main():
     ###!!! For now, load the options currently supported in master, then add new options here. After complete merge, all options should be handled at one place.
@@ -83,19 +57,19 @@ def main():
 
     out_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
     out_format.add_argument('--format', default='LOG', choices=['json', 'LOG'],
-						help='Produce output in desired format')
+                        help='Produce output in desired format')
     out_format.add_argument('--dest', default='-', type=str,
-							help="Output destination")
+                            help="Output destination")
     out_format.add_argument(
-		'--explanations',
-		action='store_true',
-		default=False,
-		help="Include longer explanations.")
+        '--explanations',
+        action='store_true',
+        default=False,
+        help="Include longer explanations.")
     out_format.add_argument(
-		'--lines-content', # TODO: better names
-		action='store_true',
-		default=False,
-		help="Include the content of the errored lines in the output.")
+        '--lines-content', # TODO: better names
+        action='store_true',
+        default=False,
+        help="Include the content of the errored lines in the output.")
 
     opt_parser.set_defaults(func=_validate)
     args = opt_parser.parse_args() #Parsed command-line arguments

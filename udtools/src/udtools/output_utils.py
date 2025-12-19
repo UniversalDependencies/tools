@@ -1,5 +1,4 @@
 import regex as re
-import json
 
 def explain_feats(specs, lcode):
     """
@@ -255,24 +254,3 @@ def serialize_output(incidents, output_fhandle, explanations, lines_content):
         print("*** PASSED ***")
     else:
         print(f"*** FAILED *** with {len(incidents)} error(s)")
-
-def dump_json(incidents, dest, explanations, lines_content):
-    json_dict = {}
-    for incident in incidents:
-        filename = incident.filename
-        if filename not in json_dict:
-            json_dict[filename] = []
-        incidict = {
-            "level": incident.level,
-            "testclass": str(incident.testclass),
-            "testid": incident.testid,
-            "message": incident.message,
-            "sentid": incident.sentid,
-            "lineno": incident.lineno
-        }
-        if explanations:
-            pass # TODO: extend incidict
-        if lines_content:
-            pass # TODO: extend incidict
-        json_dict[filename].append(incidict)
-        json.dump(json_dict, dest, indent=4)
