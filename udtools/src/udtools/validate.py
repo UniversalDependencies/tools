@@ -27,9 +27,9 @@ class State:
     parallel_id_lastalt: collections.defaultdict[None] = field(default_factory=lambda: collections.defaultdict(None))
 
 def validate(paths, cfg_obj):
-    '''
+    """
     Validates the input files.
-    '''
+    """
     # TODO: complete docstring
     for path in paths:
         yield validate_file(path, cfg_obj)
@@ -152,7 +152,7 @@ def validate_file(path, cfg_obj):
 
 #* DONE
 def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
-    '''
+    """
     check_invalid_lines checks for lines that are not empty, not comments and not tokens.
 
     Empty lines are checked against the utils.is_whitespace() function.
@@ -176,7 +176,7 @@ def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/invalid-lines.conllu
-    '''
+    """
     lineno, line = line
     incidents = []
     if line and not (line[0].isdigit() or line[0] == "#" or utils.is_whitespace(line)):
@@ -192,7 +192,7 @@ def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
 
 #* DONE
 def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
-    '''check_columns_format checks that the line is made up by the right number of columns.
+    """check_columns_format checks that the line is made up by the right number of columns.
     Moreover, it checks that no column is empty, no leader or trailing spaces are present
     and that no whitespace is present in fields, except if for FORM and LEMMA if the token
     is not a multiword. In case of multiword, whitespaces are not allowed in any field.
@@ -222,7 +222,7 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
     To be run only if no
     - 'invalid-line'
     errors are found on the same line.
-    '''
+    """
     lineno, line = line
     incidents = []
 
@@ -314,7 +314,7 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
 
 #* DONE
 def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]:
-    '''check_misplaced_comment checks that comments (i.e., lines starting with '#') always precede
+    """check_misplaced_comment checks that comments (i.e., lines starting with '#') always precede
     tokens (i.e., lines starting with digits)
 
     Parameters
@@ -334,7 +334,7 @@ def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]
     Reference-test
     --------------
     test-cases/invalid-functions/misplaced-comment.conllu
-    '''
+    """
     incidents = []
 
     if len(block) > 1:
@@ -364,7 +364,7 @@ def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]
 
 #* DONE
 def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
-    '''check_extra_empty_line checks that exactly one empty line is present after every sentence
+    """check_extra_empty_line checks that exactly one empty line is present after every sentence
 
     Parameters
     ----------
@@ -383,7 +383,7 @@ def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/extra-empty-line.conllu
-    '''
+    """
 
     incidents = []
     if len(block) == 1 and (utils.is_whitespace(block[0][1]) or len(block[0][1])==0):
@@ -401,7 +401,7 @@ def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
 
 #* DONE
 def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
-    '''check_pseudo_empty_line checks whether a line that appears empty contains whitespaces.
+    """check_pseudo_empty_line checks whether a line that appears empty contains whitespaces.
 
     Parameters
     ----------
@@ -420,7 +420,7 @@ def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/pseudo-empty-line.conllu
-    '''
+    """
     lineno, line = line
     incidents = []
     if utils.is_whitespace(line):
@@ -435,7 +435,7 @@ def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
 
 #* DONE
 def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
-    '''check_unicode_normalization checks that letters composed of multiple Unicode characters
+    """check_unicode_normalization checks that letters composed of multiple Unicode characters
     (such as a base letter plus combining diacritics) conform to NFC normalization (canonical
     decomposition followed by canonical composition).
 
@@ -459,7 +459,7 @@ def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/unicode-normalization.conllu
-    '''
+    """
     lineno, line = line
     incidents = []
     normalized_text = unicodedata.normalize('NFC', line)
@@ -506,7 +506,7 @@ def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
 
 #? one if to check
 def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incident]:
-    '''check_id_sequence checks that the ID sequence is correctly formed.
+    """check_id_sequence checks that the ID sequence is correctly formed.
     If this function returns an nonempty list, subsequent tests should not be run.
 
     Parameters
@@ -533,7 +533,7 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incide
     test-cases/invalid-functions/word-id-sequence.conllu
     test-cases/invalid-functions/word-id-sequence-2.conllu
     test-cases/invalid-functions/reversed-word-interval.conllu
-    '''
+    """
     incidents = []
 
     words=[]
@@ -644,7 +644,7 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incide
 
 #* DONE
 def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incident]:
-    '''check_token_ranges checks that the word ranges for multiword tokens are valid.
+    """check_token_ranges checks that the word ranges for multiword tokens are valid.
 
     Parameters
     ----------
@@ -664,7 +664,7 @@ def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incid
     --------------
     test-cases/invalid-functions/invalid-word-id.conllu
     test-cases/invalid-functions/overlapping-word-interval.conllu
-    '''
+    """
 
     incidents = []
     covered = set()
@@ -695,7 +695,7 @@ def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incid
 
 #* DONE
 def check_newlines(inp: TextIO, **_) -> List[Incident]:
-    '''check_newlines checks that the input file consistently uses linux-style newlines
+    """check_newlines checks that the input file consistently uses linux-style newlines
     (LF only, not CR LF like in Windows). To be run on the input file handle after the
     whole input has been read.
     This check is universal and not configurable.
@@ -717,7 +717,7 @@ def check_newlines(inp: TextIO, **_) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/non-unix-newline.conllu
-    '''
+    """
 
     incidents = []
     if inp.newlines and inp.newlines != '\n':
@@ -744,7 +744,7 @@ def check_sent_id(comments: List[Tuple[int, str]],
                 known_sent_ids: Set,
                 state:State = None,
                 **_) -> List[Incident]:
-    '''check_sent_id checks that sentence id exists, is well-formed and unique.
+    """check_sent_id checks that sentence id exists, is well-formed and unique.
 
     Parameters
     ----------
@@ -771,7 +771,7 @@ def check_sent_id(comments: List[Tuple[int, str]],
     Reference-test
     --------------
     test-cases/invalid-functions/multiple-sent-id.conllu
-    '''
+    """
 
     incidents = []
     matched = []
@@ -847,7 +847,7 @@ def check_parallel_id(comments: List[Tuple[int, str]],
                     parallel_id_lastpart: Any, #TODO: define type
                     state: State=None,
                     **_ ) -> List[Incident]:
-    '''check_parallel_id checks that parallel_id sentence-level comment
+    """check_parallel_id checks that parallel_id sentence-level comment
     is used after sent_id of sentences that are parallel translations of sentences in other
     treebanks. Like sent_id, it must be well-formed and unique. Unlike
     sent_id, it is optional. Sentences that do not have it are not
@@ -877,7 +877,7 @@ def check_parallel_id(comments: List[Tuple[int, str]],
     Reference-test
     --------------
     TODO
-    '''
+    """
 
     incidents = []
     matched = []
@@ -995,7 +995,7 @@ def check_text_meta(comments: List[Tuple[int, str]],
                     spaceafterno_in_effect:bool,
                     state :State=None,
                     **_) -> List[Incident]:
-    '''check_text_meta checks metadata other than sentence id, that is, document breaks,
+    """check_text_meta checks metadata other than sentence id, that is, document breaks,
     paragraph breaks and sentence text (which is also compared to the sequence of the
     forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
 
@@ -1012,7 +1012,7 @@ def check_text_meta(comments: List[Tuple[int, str]],
     -------
     List[Incident]
         A list of Incidents (empty if validation is successful).
-    '''
+    """
 
     incidents = []
 
@@ -1195,7 +1195,7 @@ def check_text_meta(comments: List[Tuple[int, str]],
 #* DONE
 def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
 
-    '''check_mwt_empty_vals checks that a multi-word token has _ empty values
+    """check_mwt_empty_vals checks that a multi-word token has _ empty values
     in all fields except MISC.
     This is required by UD guidelines although it is not a problem in general,
     therefore a level 2 test.
@@ -1217,7 +1217,7 @@ def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/mwt-non-empty-field.conllu
-    '''
+    """
     lineno, cols = cols
 
     incidents = []
@@ -1249,7 +1249,7 @@ def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
 
 #? change testid
 def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
-    '''check_empty_node_empty_vals checks that an empty node has _ empty values in HEAD and DEPREL.
+    """check_empty_node_empty_vals checks that an empty node has _ empty values in HEAD and DEPREL.
     This is required by UD guidelines but not necessarily by CoNLL-U, therefore
     a level 2 test.
 
@@ -1270,7 +1270,7 @@ def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
     Reference-test
     --------------
     test-cases/invalid-functions/mwt-non-empty-field.conllu #?
-    '''
+    """
     lineno, cols = cols
     incidents = []
 
