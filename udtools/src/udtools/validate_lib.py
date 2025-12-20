@@ -3057,7 +3057,7 @@ class Validator:
 
 
 
-    def check_words_with_spaces(self, state, node, line, lang):
+    def check_words_with_spaces(self, state, node):
         """
         Checks a single line for disallowed whitespace.
         Here we assume that all language-independent whitespace-related tests have
@@ -3066,23 +3066,34 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
+
+        Incidents
+        ---------
+        invalid-word-with-space
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
-        Incident.default_testclass = 'Format'
+        Incident.default_testclass = TestClass.FORMAT
         # List of permited words with spaces is language-specific.
         # The current token may be in a different language due to code switching.
-        tospacedata = self.specs.get_tospace_for_language(lang)
+        tospacedata = self.data.get_tospace_for_language(self.lang)
+        lang = self.lang
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            tospacedata = self.specs.get_tospace_for_language(altlang)
+            tospacedata = self.data.get_tospace_for_language(altlang)
         for column in ('FORM', 'LEMMA'):
             word = node.form if column == 'FORM' else node.lemma
             # Is there whitespace in the word?
@@ -3092,16 +3103,16 @@ class Validator:
                     # For the purpose of this test, NO-BREAK SPACE is equal to SPACE.
                     string_to_test = re.sub(r'\xA0', ' ', word)
                     if not tospacedata[1].fullmatch(string_to_test):
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             nodeid=node.ord,
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
                             explanation=self.data.explain_tospace(lang)
                         ).confirm()
                 else:
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
@@ -3110,7 +3121,7 @@ class Validator:
 
 
 
-    def check_features_level4(self, state, node, line, lang):
+    def check_feature_values(self, state, node):
         """
         Checks that a feature-value pair is listed as approved. Feature lists are
         language-specific. To disallow non-universal features, test on level 4 with
@@ -3118,26 +3129,42 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node to be validated.
-        line : int
-            Number of the line where the node occurs in the file.
-        lang : str
-            Code of the main language of the corpus.
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
+
+        Incidents
+        ---------
+        mwt-typo-repeated-at-word
+        feature-unknown
+        feature-not-permitted
+        feature-value-unknown
+        feature-upos-not-permitted
+        feature-value-upos-not-permitted
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
-        Incident.default_testclass = 'Morpho'
+        Incident.default_testclass = TestClass.MORPHO
         if str(node.feats) == '_':
             return True
         # List of permited features is language-specific.
         # The current token may be in a different language due to code switching.
-        default_lang = lang
-        default_featset = featset = self.specs.get_feats_for_language(lang)
+        default_lang = self.lang
+        default_featset = featset = self.data.get_feats_for_language(self.lang)
+        lang = default_lang
         altlang = utils.get_alt_language(node)
         if altlang:
             lang = altlang
-            featset = self.specs.get_feats_for_language(altlang)
+            featset = self.data.get_feats_for_language(altlang)
         for f in node.feats:
             values = node.feats[f].split(',')
             for v in values:
@@ -3146,13 +3173,15 @@ class Validator:
                 # If only universal feature-value pairs are allowed, test on level 4 with lang='ud'.
                 # The feature Typo=Yes is the only feature allowed on a multi-word token line.
                 # If it occurs there, it cannot be duplicated on the lines of the component words.
-                if f == 'Typo' and state.mwt_typo_span_end and node.ord <= state.mwt_typo_span_end:
-                    Incident(
-                        state=state,
-                        nodeid=node.ord,
-                        testid='mwt-typo-repeated-at-word',
-                        message="Feature Typo cannot occur at a word if it already occurred at the corresponding multi-word token."
-                    ).confirm()
+                if f == 'Typo' and node.multiword_token:
+                    mwt = node.multiword_token
+                    if mwt.feats['Typo'] == 'Yes':
+                        Error(
+                            state=state, config=self.incfg,
+                            nodeid=node.ord,
+                            testid='mwt-typo-repeated-at-word',
+                            message=f"Feature Typo cannot occur at word [{node.ord}] if it already occurred at the corresponding multiword token [{mwt.ord_range}]."
+                        ).confirm()
                 # In case of code switching, the current token may not be in the default language
                 # and then its features are checked against a different feature set. An exception
                 # is the feature Foreign, which always relates to the default language of the
@@ -3166,71 +3195,80 @@ class Validator:
                     effective_lang = default_lang
                 if effective_featset is not None:
                     if f not in effective_featset:
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             nodeid=node.ord,
                             testid='feature-unknown',
-                            message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
+                            message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}', {f}={v}).",
                             explanation=self.data.explain_feats(effective_lang)
                         ).confirm()
                     else:
                         lfrecord = effective_featset[f]
                         if lfrecord['permitted'] == 0:
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
-                                message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
+                                message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}, {f}={v}').",
                                 explanation=self.data.explain_feats(effective_lang)
                             ).confirm()
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
                             if not v in values:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=self.data.explain_feats(effective_lang)
                                 ).confirm()
                             elif not node.upos in lfrecord['byupos']:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=self.data.explain_feats(effective_lang)
                                 ).confirm()
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
                                     explanation=self.data.explain_feats(effective_lang)
                                 ).confirm()
-        if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
-            state.mwt_typo_span_end = None
 
 
 
-    def OLD_check_deprels(self, state, node, line):
+    def OLD_check_deprels(self, state, node):
         """
-        Checks that a dependency relation label is listed as approved in the given
-        language. As a language-specific test, this function generally belongs to
-        level 4, but it can be also used on levels 2 and 3, in which case it will
-        check only the main dependency type and ignore any subtypes.
+        Checks that a dependency relation label is listed as approved in the
+        given language. As a language-specific test, this function belongs to
+        level 4. This method currently checks udeprels both in the DEPREL
+        column and in the DEPS column.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The node whose incoming relation will be validated.
-        line : int
-            Number of the line where the node occurs in the file.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
+
+        Incidents
+        ---------
+        unknown-deprel
+        unknown-edeprel
         """
-        Incident.default_lineno = line
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 4
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         # List of permited relations is language-specific.
         # The current token may be in a different language due to code switching.
         # Unlike with features and auxiliaries, with deprels it is less clear
@@ -3242,23 +3280,20 @@ class Validator:
         # happened in French GSD.) We will thus allow the union of the main and the
         # alternative deprelset when both the parent and the child belong to the
         # same alternative language. Otherwise, only the main deprelset is allowed.
-        mainlang = self.args.lang
+        mainlang = self.lang
         naltlang = utils.get_alt_language(node)
         # The basic relation should be tested on regular nodes but not on empty nodes.
         if not node.is_empty():
             paltlang = utils.get_alt_language(node.parent)
-            main_deprelset = self.specs.get_deprel_for_language(mainlang)
+            main_deprelset = self.data.get_deprel_for_language(mainlang)
             alt_deprelset = set()
             if naltlang != None and naltlang != mainlang and naltlang == paltlang:
-                alt_deprelset = self.specs.get_deprel_for_language(naltlang)
+                alt_deprelset = self.data.get_deprel_for_language(naltlang)
             # Test only the universal part if testing at universal level.
             deprel = node.deprel
-            if self.args.level < 4:
-                deprel = node.udeprel
-                Incident.default_level = 2
             if deprel not in main_deprelset and deprel not in alt_deprelset:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
@@ -3268,20 +3303,17 @@ class Validator:
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from check_id_references() and the head indices are OK).
         # The order of enhanced dependencies was already checked in check_deps().
-        Incident.default_testclass = 'Enhanced'
+        Incident.default_testclass = TestClass.ENHANCED
         if str(node.deps) != '_':
-            main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
-            alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+            main_edeprelset = self.data.get_edeprel_for_language(mainlang)
+            alt_edeprelset = self.data.get_edeprel_for_language(naltlang)
             for edep in node.deps:
                 parent = edep['parent']
                 deprel = edep['deprel']
                 paltlang = utils.get_alt_language(parent)
-                if self.args.level < 4:
-                    deprel = utils.lspec2ud(deprel)
-                    Incident.default_level = 2
                 if not (deprel in main_edeprelset or naltlang != None and naltlang != mainlang and naltlang == paltlang and deprel in alt_edeprelset):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
