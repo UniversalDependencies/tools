@@ -3424,13 +3424,93 @@ class Validator:
 
 
 
-    def check_misc_entity(self, state, comments, sentence):
+    def check_misc_entity(self, state):
         """
         Optionally checks the well-formedness of the MISC attributes that pertain
         to coreference and named entities.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+
+        Reads from state
+        ----------------
+        current_lines : list(str)
+            List of lines in the sentence (comments and tokens), including
+            final empty line. The lines are not expected to include the final
+            newline character.
+            First we expect an optional block (zero or more lines) of comments,
+            i.e., lines starting with '#'. Then we expect a non-empty block
+            (one or more lines) of nodes, empty nodes, and multiword tokens.
+            Finally, we expect exactly one empty line.
+        comment_start_line : int
+            The line number (relative to input file, 1-based) of the first line
+            in the current sentence, including comments if any.
+        current_token_node_table : list(list(str))
+            The list of multiword token lines / regular node lines / empty node
+            lines, each split to fields (columns).
+        sentence_line : int
+            The line number (relative to input file, 1-based) of the first
+            node/token line in the current sentence.
+
+        Reads and writes to state
+        -------------------------
+        global_entity_attribute_string : str
+        entity_attribute_number : int
+        entity_attribute_index : dict
+        entity_types : dict
+        entity_ids_this_document : dict
+        entity_ids_other_documents : dict
+        open_entity_mentions : list
+        open_discontinuous_mentions : dict
+        entity_bridge_relations : dict
+        entity_split_antecedents : dict
+        entity_mention_spans : dict
+
+        Incidents
+        ---------
+        global-entity-mismatch
+        spurious-global-entity
+        entity-mwt
+        multiple-entity-statements
+        multiple-bridge-statements
+        multiple-splitante-statements
+        bridge-without-entity
+        splitante-without-entity
+        entity-without-global-entity
+        spurious-entity-statement
+        too-many-entity-attributes
+        spurious-entity-id
+        misplaced-mention-part
+        mention-attribute-mismatch
+        entity-across-newdoc
+        spurious-entity-type
+        spurious-mention-head
+        entity-type-mismatch
+        entity-identity-mismatch
+        ill-nested-entities
+        ill-nested-entities-warning
+        mention-head-out-of-range
+        same-span-entity-mentions
+        crossing-mentions-same-entity
+        spurious-bridge-statement
+        spurious-bridge-relation
+        misplaced-bridge-statement
+        repeated-bridge-relation
+        bridge-relation-mismatch
+        spurious-splitante-statement
+        spurious-splitante-relation
+        misplaced-splitante-statement
+        repeated-splitante-relation
+        only-one-split-antecedent
+        split-antecedent-mismatch
+        cross-sentence-mention
         """
         Incident.default_level = 6
-        Incident.default_testclass = 'Coref'
+        Incident.default_testclass = TestClass.COREF
+        n_comment_lines = state.sentence_line-state.comment_start_line
+        comments = state.current_lines[0:n_comment_lines]
         iline = 0
         sentid = ''
         for c in comments:
@@ -3445,8 +3525,8 @@ class Validator:
                 # declarations iff they are identical to the first one.
                 if state.seen_global_entity:
                     if global_entity_match.group(1) != state.global_entity_attribute_string:
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             testid='global-entity-mismatch',
                             message=f"New declaration of global.Entity '{global_entity_match.group(1)}' does not match the first declaration '{state.global_entity_attribute_string}' on line {state.seen_global_entity}."
                         ).confirm()
@@ -3454,52 +3534,52 @@ class Validator:
                     state.seen_global_entity = state.comment_start_line + iline
                     state.global_entity_attribute_string = global_entity_match.group(1)
                     if not re.match(r"^[a-z]+(-[a-z]+)*$", state.global_entity_attribute_string):
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             testid='spurious-global-entity',
                             message=f"Cannot parse global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                         ).confirm()
                     else:
                         global_entity_attributes = state.global_entity_attribute_string.split('-')
                         if not 'eid' in global_entity_attributes:
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'eid'."
                             ).confirm()
                         elif global_entity_attributes[0] != 'eid':
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'eid' must come first in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                             ).confirm()
                         if not 'etype' in global_entity_attributes:
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'etype'."
                             ).confirm()
                         elif global_entity_attributes[1] != 'etype':
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'etype' must come second in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                             ).confirm()
                         if not 'head' in global_entity_attributes:
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Global.Entity attribute declaration '{state.global_entity_attribute_string}' does not include 'head'."
                             ).confirm()
                         elif global_entity_attributes[2] != 'head':
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'head' must come third in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                             ).confirm()
                         if 'other' in global_entity_attributes and global_entity_attributes[3] != 'other':
-                            Incident(
-                                state=state,
+                            Error(
+                                state=state, config=self.incfg,
                                 testid='spurious-global-entity',
                                 message=f"Attribute 'other', if present, must come fourth in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                             ).confirm()
@@ -3507,8 +3587,8 @@ class Validator:
                         i = 0
                         for a in global_entity_attributes:
                             if a in state.entity_attribute_index:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-global-entity',
                                     message=f"Attribute '{a}' occurs more than once in global.Entity attribute declaration '{state.global_entity_attribute_string}'."
                                 ).confirm()
@@ -3523,8 +3603,8 @@ class Validator:
             elif sentid_match:
                 sentid = sentid_match.group(1)
             iline += 1
-        iline = 0
-        for cols in sentence:
+        for iline in range(len(state.current_token_node_table)):
+            cols = state.current_token_node_table[iline]
             Incident.default_lineno = state.sentence_line+iline
             # Add the current word to all currently open mentions. We will use it in error messages.
             # Do this for regular and empty nodes but not for multi-word-token lines.
@@ -3538,43 +3618,43 @@ class Validator:
             bridge = [x for x in misc if re.match(r"^Bridge=", x)]
             splitante = [x for x in misc if re.match(r"^SplitAnte=", x)]
             if utils.is_multiword_token(cols) and (len(entity)>0 or len(bridge)>0 or len(splitante)>0):
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     testid='entity-mwt',
                     message="Entity or coreference annotation must not occur at a multiword-token line."
                 ).confirm()
                 continue
             if len(entity)>1:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     testid='multiple-entity-statements',
                     message=f"There can be at most one 'Entity=' statement in MISC but we have {str(misc)}."
                 ).confirm()
                 continue
             if len(bridge)>1:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     testid='multiple-bridge-statements',
                     message=f"There can be at most one 'Bridge=' statement in MISC but we have {str(misc)}."
                 ).confirm()
                 continue
             if len(splitante)>1:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     testid='multiple-splitante-statements',
                     message=f"There can be at most one 'SplitAnte=' statement in MISC but we have {str(misc)}."
                 ).confirm()
                 continue
             if len(bridge)>0 and len(entity)==0:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     testid='bridge-without-entity',
                     message=f"The 'Bridge=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
                 ).confirm()
                 continue
             if len(splitante)>0 and len(entity)==0:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     testid='splitante-without-entity',
                     message=f"The 'SplitAnte=' statement can only occur together with 'Entity=' in MISC but we have {str(misc)}."
                 ).confirm()
@@ -3582,16 +3662,16 @@ class Validator:
             # There is at most one Entity (and only if it is there, there may be also one Bridge and/or one SplitAnte).
             if len(entity)>0:
                 if not state.seen_global_entity:
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         testid='entity-without-global-entity',
                         message="No global.Entity comment was found before the first 'Entity' in MISC."
                     ).confirm()
                     continue
                 match = re.match(r"^Entity=((?:\([^( )]+(?:-[^( )]+)*\)?|[^( )]+\))+)$", entity[0])
                 if not match:
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         testid='spurious-entity-statement',
                         message=f"Cannot parse the Entity statement '{entity[0]}'."
                     ).confirm()
@@ -3620,8 +3700,8 @@ class Validator:
                             entity_string = re.sub(r"^[^( )]+\)", '', entity_string, count=1)
                             continue
                         # If we pre-checked the string well, we should never arrive here!
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             testid='internal-error',
                             message='INTERNAL ERROR'
                         ).confirm()
@@ -3641,8 +3721,8 @@ class Validator:
                             # Fewer attributes are allowed because trailing empty values can be omitted.
                             # More attributes are not allowed.
                             if len(attributes) > state.entity_attribute_number:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='too-many-entity-attributes',
                                     message=f"Entity '{e}' has {len(attributes)} attributes while only {state.entity_attribute_number} attributes are globally declared."
                                 ).confirm()
@@ -3654,8 +3734,8 @@ class Validator:
                         else:
                             # No attributes other than eid are expected at the closing bracket.
                             if len(attributes) > 1:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='too-many-entity-attributes',
                                     message=f"Entity '{e}' has {len(attributes)} attributes while only eid is expected at the closing bracket."
                                 ).confirm()
@@ -3672,21 +3752,21 @@ class Validator:
                             eidnpart = eid+'['+match.group(3)+']'
                             # We should omit the square brackets if they would be [1/1].
                             if ipart == 1 and npart == 1:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-id',
                                     message=f"Discontinuous mention must have at least two parts but it has one in '{beid}'."
                                 ).confirm()
                             if ipart > npart:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-id',
                                     message=f"Entity id '{beid}' of discontinuous mention says the current part is higher than total number of parts."
                                 ).confirm()
                         else:
                             if re.match(r"[\[\]]", beid):
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-id',
                                     message=f"Entity id '{beid}' contains square brackets but does not have the form used in discontinuous mentions."
                                 ).confirm()
@@ -3720,22 +3800,22 @@ class Validator:
                                     if eidnpart in state.open_discontinuous_mentions:
                                         discontinuous_mention = state.open_discontinuous_mentions[eidnpart][-1]
                                         if ipart != discontinuous_mention['last_ipart']+1:
-                                            Incident(
-                                                state=state,
+                                            Error(
+                                                state=state, config=self.incfg,
                                                 testid='misplaced-mention-part',
                                                 message=f"Unexpected part of discontinuous mention '{beid}': last part was '{discontinuous_mention['last_ipart']}/{discontinuous_mention['npart']}' on line {discontinuous_mention['last_part_line']}."
                                             ).confirm()
                                             # We will update last_ipart at closing bracket, i.e., after the current part has been entirely processed.
                                             # Otherwise nested discontinuous mentions might wrongly assess where they belong.
                                         elif attrstring_to_match != discontinuous_mention['attributes']:
-                                            Incident(
-                                                state=state,
+                                            Error(
+                                                state=state, config=self.incfg,
                                                 testid='mention-attribute-mismatch',
                                                 message=f"Attribute mismatch of discontinuous mention: current part has '{attrstring_to_match}', first part '{discontinuous_mention['attributes']}' was at line {discontinuous_mention['first_part_line']}."
                                             ).confirm()
                                     else:
-                                        Incident(
-                                            state=state,
+                                        Error(
+                                            state=state, config=self.incfg,
                                             testid='misplaced-mention-part',
                                             message=f"Unexpected part of discontinuous mention '{beid}': this is part {ipart} but we do not have information about the previous parts."
                                         ).confirm()
@@ -3747,8 +3827,8 @@ class Validator:
                                         state.open_discontinuous_mentions[eidnpart] = [discontinuous_mention]
                             # Check all attributes of the entity, except those that must be examined at the closing bracket.
                             if eid in state.entity_ids_other_documents:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='entity-across-newdoc',
                                     message=f"Same entity id should not occur in multiple documents; '{eid}' first seen on line {state.entity_ids_other_documents[eid]}, before the last newdoc."
                                 ).confirm()
@@ -3761,8 +3841,8 @@ class Validator:
                                 # For etype values tentatively approved for CorefUD 1.0, see
                                 # https://github.com/ufal/corefUD/issues/13#issuecomment-1008447464
                                 if not re.match(r"^(person|place|organization|animal|plant|object|substance|time|number|abstract|event|other)?$", etype):
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='spurious-entity-type',
                                         message=f"Spurious entity type '{etype}'."
                                     ).confirm()
@@ -3774,8 +3854,8 @@ class Validator:
                             head = 0
                             if 'head' in state.entity_attribute_index and len(attributes) >= state.entity_attribute_index['head']+1:
                                 if not re.match(r"^[1-9][0-9]*$", attributes[state.entity_attribute_index['head']]):
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='spurious-mention-head',
                                         message=f"Entity head index '{attributes[state.entity_attribute_index['head']]}' must be a non-zero-starting integer."
                                     ).confirm()
@@ -3788,15 +3868,15 @@ class Validator:
                             else:
                                 # All mentions of one entity (cluster) must have the same entity type.
                                 if etype != state.entity_types[eid][0]:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='entity-type-mismatch',
                                         message=f"Entity '{eid}' cannot have type '{etype}' that does not match '{state.entity_types[eid][0]}' from the first mention on line {state.entity_types[eid][2]}."
                                     ).confirm()
                                 # All mentions of one entity (cluster) must have the same identity (Wikipedia link or similar).
                                 if identity != state.entity_types[eid][1]:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='entity-identity-mismatch',
                                         message=f"Entity '{eid}' cannot have identity '{identity}' that does not match '{state.entity_types[eid][1]}' from the first mention on line {state.entity_types[eid][2]}."
                                     ).confirm()
@@ -3818,8 +3898,8 @@ class Validator:
                             head = 0
                             opening_line = 0
                             if len(state.open_entity_mentions)==0:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='ill-nested-entities',
                                     message=f"Cannot close entity '{beid}' because there are no open entities."
                                 ).confirm()
@@ -3830,9 +3910,9 @@ class Validator:
                                 ###!!! Note that this will not catch ill-nested mentions whose only intersection is one node. The bracketing will
                                 ###!!! not be a problem in such cases because one mention will be closed first, then the other will be opened.
                                 if beid != state.open_entity_mentions[-1]['beid']:
-                                    Incident(
-                                        state=state,
-                                        testclass='Warning',
+                                    Warning(
+                                        state=state, config=self.incfg,
+                                        testclass=TestClass.COREF,
                                         testid='ill-nested-entities-warning',
                                         message=f"Entity mentions are not well nested: closing '{beid}' while the innermost open entity is '{state.open_entity_mentions[-1]['beid']}' from line {state.open_entity_mentions[-1]['line']}: {str(state.open_entity_mentions)}."
                                     ).confirm()
@@ -3847,8 +3927,8 @@ class Validator:
                                         break
                                 else:
                                     # If we did not find the entity to close, then the warning above was not enough and we have to make it a validation error.
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='ill-nested-entities',
                                         message=f"Cannot close entity '{beid}' because it was not found among open entities: {str(state.open_entity_mentions)}"
                                     ).confirm()
@@ -3866,9 +3946,9 @@ class Validator:
                                     discontinuous_mention['span'] += mention_span
                                 else:
                                     # This should have been taken care of at the opening bracket.
-                                    Incident(
-                                        state=state,
-                                        testclass='Internal',
+                                    Error(
+                                        state=state, config=self.incfg,
+                                        testclass=TestClass.INTERNAL,
                                         testid='internal-error',
                                         message="INTERNAL ERROR: at the closing bracket of a part of a discontinuous mention, still no record in state.open_discontinuous_mentions."
                                     ).confirm()
@@ -3886,16 +3966,16 @@ class Validator:
                             # We only check these requirements after the last part of the discontinuous span (or after the single part of a continuous one).
                             if ipart == npart:
                                 if mention_length < head:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='mention-head-out-of-range',
                                         message=f"Entity mention head was specified as {head} on line {opening_line} but the mention has only {mention_length} nodes."
                                     ).confirm()
                                 # Check that no two mentions have identical spans (only if this is the last part of a mention).
                                 ending_mention_key = str(opening_line)+str(mention_span)
                                 if ending_mention_key in ending_mentions:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='same-span-entity-mentions',
                                         message=f"Entity mentions '{ending_mentions[ending_mention_key]}' and '{beid}' from line {opening_line} have the same span {str(mention_span)}."
                                     ).confirm()
@@ -3911,8 +3991,8 @@ class Validator:
                                         for m in state.entity_mention_spans[eid][sentid]:
                                             ms = state.entity_mention_spans[eid][sentid][m]
                                             if ms.intersection(myset) and not ms.issubset(myset) and not myset.issubset(ms):
-                                                Incident(
-                                                    state=state,
+                                                Error(
+                                                    state=state, config=self.incfg,
                                                     testid='crossing-mentions-same-entity',
                                                     message=f"Mentions of entity '{eid}' have crossing spans: {m} vs. {str(mention_span)}."
                                                 ).confirm()
@@ -3935,14 +4015,14 @@ class Validator:
                         # We can check the well-nestedness of brackets.
                         if b==0:
                             if seen2 and not seen1:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"If there are no closing entity brackets, single-node entity must follow all opening entity brackets in '{entity[0]}'."
                                 ).confirm()
                             if seen0 and seen2:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"Single-node entity must either precede all closing entity brackets or follow all opening entity brackets in '{entity[0]}'."
                                 ).confirm()
@@ -3951,8 +4031,8 @@ class Validator:
                             opening_bracket()
                         elif b==2:
                             if seen1 and not seen0:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"If there are no opening entity brackets, single-node entity must precede all closing entity brackets in '{entity[0]}'."
                                 ).confirm()
@@ -3961,8 +4041,8 @@ class Validator:
                             closing_bracket()
                         else: # b==1
                             if seen0:
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='spurious-entity-statement',
                                     message=f"All closing entity brackets must precede all opening entity brackets in '{entity[0]}'."
                                 ).confirm()
@@ -3973,8 +4053,8 @@ class Validator:
                 if len(bridge) > 0:
                     match = re.match(r"^Bridge=([^(< :>)]+<[^(< :>)]+(:[a-z]+)?(,[^(< :>)]+<[^(< :>)]+(:[a-z]+)?)*)$", bridge[0])
                     if not match:
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             testid='spurious-bridge-statement',
                             message=f"Cannot parse the Bridge statement '{bridge[0]}'."
                         ).confirm()
@@ -3990,20 +4070,20 @@ class Validator:
                                 relation = match.group(3) # optional
                                 bridgekey = srceid+'<'+tgteid
                                 if srceid == tgteid:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='spurious-bridge-relation',
                                         message=f"Bridge must not point from an entity to itself: '{b}'."
                                     ).confirm()
                                 if not tgteid in starting_mentions:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='misplaced-bridge-statement',
                                         message=f"Bridge relation '{b}' must be annotated at the beginning of a mention of entity '{tgteid}'."
                                     ).confirm()
                                 if bridgekey in srctgt:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='repeated-bridge-relation',
                                         message=f"Bridge relation '{bridgekey}' must not be repeated in '{b}'."
                                     ).confirm()
@@ -4012,8 +4092,8 @@ class Validator:
                                 # Check in the global dictionary whether this relation has been specified at another mention.
                                 if bridgekey in state.entity_bridge_relations:
                                     if relation != state.entity_bridge_relations[bridgekey]['relation']:
-                                        Incident(
-                                            state=state,
+                                        Error(
+                                            state=state, config=self.incfg,
                                             testid='bridge-relation-mismatch',
                                             message=f"Bridge relation '{b}' type does not match '{state.entity_bridge_relations[bridgekey]['relation']}' specified earlier on line {state.entity_bridge_relations[bridgekey]['line']}."
                                         ).confirm()
@@ -4022,8 +4102,8 @@ class Validator:
                 if len(splitante) > 0:
                     match = re.match(r"^SplitAnte=([^(< :>)]+<[^(< :>)]+(,[^(< :>)]+<[^(< :>)]+)*)$", splitante[0])
                     if not match:
-                        Incident(
-                            state=state,
+                        Error(
+                            state=state, config=self.incfg,
                             testid='spurious-splitante-statement',
                             message=f"Cannot parse the SplitAnte statement '{splitante[0]}'."
                         ).confirm()
@@ -4038,21 +4118,21 @@ class Validator:
                                 srceid = match.group(1)
                                 tgteid = match.group(2)
                                 if srceid == tgteid:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='spurious-splitante-relation',
                                         message=f"SplitAnte must not point from an entity to itself: '{srceid}<{tgteid}'."
                                     ).confirm()
                                 elif not tgteid in starting_mentions:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='misplaced-splitante-statement',
                                         message=f"SplitAnte relation '{a}' must be annotated at the beginning of a mention of entity '{tgteid}'."
                                     ).confirm()
                                 if srceid+'<'+tgteid in srctgt:
                                     str_antecedents = ','.join(antecedents)
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='repeated-splitante-relation',
                                         message=f"SplitAnte relation '{srceid}<{tgteid}' must not be repeated in '{str_antecedents}'."
                                     ).confirm()
@@ -4065,8 +4145,8 @@ class Validator:
                         for tgteid in tgtante:
                             if len(tgtante[tgteid]) == 1:
                                 str_antecedents = ','.join(antecedents)
-                                Incident(
-                                    state=state,
+                                Error(
+                                    state=state, config=self.incfg,
                                     testid='only-one-split-antecedent',
                                     message=f"SplitAnte statement '{str_antecedents}' must specify at least two antecedents for entity '{tgteid}'."
                                 ).confirm()
@@ -4074,25 +4154,24 @@ class Validator:
                             tgtante[tgteid].sort()
                             if tgteid in state.entity_split_antecedents:
                                 if tgtante[tgteid] != state.entity_split_antecedents[tgteid]['antecedents']:
-                                    Incident(
-                                        state=state,
+                                    Error(
+                                        state=state, config=self.incfg,
                                         testid='split-antecedent-mismatch',
                                         message=f"Split antecedent of entity '{tgteid}' does not match '{state.entity_split_antecedents[tgteid]['antecedents']}' specified earlier on line {state.entity_split_antecedents[tgteid]['line']}."
                                     ).confirm()
                             else:
                                 state.entity_split_antecedents[tgteid] = {'antecedents': str(tgtante[tgteid]), 'line': state.sentence_line+iline}
-            iline += 1
         if len(state.open_entity_mentions)>0:
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='cross-sentence-mention',
                 message=f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_entity_mentions)}."
             ).confirm()
             # Close the mentions forcibly. Otherwise one omitted closing bracket would cause the error messages to to explode because the words would be collected from the remainder of the file.
             state.open_entity_mentions = []
         if len(state.open_discontinuous_mentions)>0:
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='cross-sentence-mention',
                 message=f"Entity mentions must not cross sentence boundaries; still open at sentence end: {str(state.open_discontinuous_mentions)}."
             ).confirm()
