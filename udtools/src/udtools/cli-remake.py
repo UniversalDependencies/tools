@@ -14,12 +14,20 @@ import logging
 import udtools.logging_utils as logging_utils
 
 import udtools.utils as utils
-import udtools.output_utils as outils
 import udtools.validate as vlib
 from udtools.argparser import build_argparse_validator
 
 logger = logging.getLogger(__name__)
 logging_utils.setup_logging(logger)
+
+
+def serialize_output(incidents, output_fhandle, explanations, lines_content):
+    for incident in incidents:
+        print(incident)
+    if not incidents:
+        print("*** PASSED ***")
+    else:
+        print(f"*** FAILED *** with {len(incidents)} error(s)")
 
 
 def _validate(args):
@@ -41,7 +49,7 @@ def _validate(args):
                 print(',\n'.join([incident.json() for incident in incidents]), file=dest)
                 print(']', file=dest)
         else:
-            outils.serialize_output(incidents, dest, explanations, lines_content)
+            serialize_output(incidents, dest, explanations, lines_content)
     if len(incidents):
         return 1
     else:
