@@ -111,46 +111,6 @@ CLASSES
      |
      |  build_tree_udapi(self, lines)
      |
-     |  TODO: mv to module for tree ops?
-     |  get_caused_nonprojectivities(self, node)
-     |      Checks whether a node is in a gap of a nonprojective edge. Report true only
-     |      if the node's parent is not in the same gap. (We use this function to check
-     |      that a punctuation node does not cause nonprojectivity. But if it has been
-     |      dragged to the gap with a larger subtree, then we do not blame it.) This
-     |      extra condition makes this function different from node.is_nonprojective_gap();
-     |      another difference is that instead of just detecting the nonprojectivity,
-     |      we return the nonprojective nodes so we can report them.
-     |
-     |      Parameters
-     |      ----------
-     |      node : udapi.core.node.Node object
-     |          The tree node to be tested.
-     |
-     |      Returns
-     |      -------
-     |      cross : list of udapi.core.node.Node objects
-     |          The nodes whose attachment is nonprojective because of the current node.
-     |
-     |  next_sentence(self, state, inp)
-     |      `inp` a file-like object yielding lines as unicode
-     |
-     |      This function does elementary checking of the input and yields one
-     |      sentence at a time from the input stream. The function guarantees
-     |      elementary integrity of its yields. Some lines may be skipped (e.g.,
-     |      extra empty lines or misplaced comments), and a whole sentence will be
-     |      skipped if one of its token lines has unexpected number of columns.
-     |
-     |      However, some low-level errors currently do not lead to excluding the
-     |      sentence from being yielded and put to subsequent tests. Specifically,
-     |      character constraints on individual fields are tested here but errors
-     |      are not considered fatal.
-     |
-     |      This function is a generator. The caller can call it in a 'for x in ...'
-     |      loop. In each iteration of the caller's loop, the generator will generate
-     |      the next sentence, that is, it will read the next sentence from the input
-     |      stream. (Technically, the function returns an object, and the object will
-     |      then read the sentences within the caller's loop.)
-     |
      |  WHAT: entry points for validation
      |  validate_files(self, filenames)
      |

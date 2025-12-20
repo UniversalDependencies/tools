@@ -1366,7 +1366,7 @@ def check_upos(cols, specs):
     ----------
     cols : list
         The values of the columns on the current node / token line.
-    specs : UDSpecs
+    specs : udtools.data.Data
         The object containing specific information about the allowed values
     """
     incidents = []
@@ -2195,7 +2195,7 @@ def check_words_with_spaces(node, lang, specs):
         The node to be validated.
     lang : str
         Code of the main language of the corpus.
-    specs : UDSpecs
+    specs : udtools.data.Data
         The object containing specific information about the allowed values
 
     returns
@@ -2248,7 +2248,7 @@ def check_features_level4(node, lang, specs, mwt_typo_span_end):
         The node to be validated.
     lang : str
         Code of the main language of the corpus.
-    specs : UDSpecs
+    specs : udtools.data.Data
         The object containing specific information about the allowed values
     mwt_typo_span_end : TODO: add type and description
 
@@ -2360,7 +2360,7 @@ def check_auxiliary_verbs(node, lang, specs):
         The node to be validated.
     lang : str
         Code of the main language of the corpus.
-    specs : UDSpecs
+    specs : udtools.data.Data
         The object containing specific information about the allowed values
 
     returns
@@ -2395,7 +2395,7 @@ def check_copula_lemmas(node, lang, specs):
         The node to be validated.
     lang : str
         Code of the main language of the corpus.
-    specs : UDSpecs
+    specs : udtools.data.Data
         The object containing specific information about the allowed values
 
     returns

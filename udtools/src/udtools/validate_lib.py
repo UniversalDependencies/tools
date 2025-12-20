@@ -13,14 +13,11 @@ import traceback
 #import re
 import regex as re
 import unicodedata
-import json
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
 
 import udtools.utils as utils
-import udtools.output_utils as outils
-import udtools.specifications as data
 
 
 
@@ -2515,7 +2512,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='invalid-word-with-space',
                             message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                            explanation=outils.explain_tospace(lang)
+                            explanation=self.data.explain_tospace(lang)
                         ).confirm()
                 else:
                     Incident(
@@ -2523,7 +2520,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='invalid-word-with-space',
                         message=f"'{word}' in column {column} is not on the list of exceptions allowed to contain whitespace.",
-                        explanation=outils.explain_tospace(lang)
+                        explanation=self.data.explain_tospace(lang)
                     ).confirm()
 
 
@@ -2589,7 +2586,7 @@ class Validator:
                             nodeid=node.ord,
                             testid='feature-unknown',
                             message=f"Feature {f} is not documented for language [{effective_lang}] ('{utils.formtl(node)}').",
-                            explanation=outils.explain_feats(effective_lang)
+                            explanation=self.data.explain_feats(effective_lang)
                         ).confirm()
                     else:
                         lfrecord = effective_featset[f]
@@ -2599,7 +2596,7 @@ class Validator:
                                 nodeid=node.ord,
                                 testid='feature-not-permitted',
                                 message=f"Feature {f} is not permitted in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                explanation=outils.explain_feats(effective_lang)
+                                explanation=self.data.explain_feats(effective_lang)
                             ).confirm()
                         else:
                             values = lfrecord['uvalues'] + lfrecord['lvalues'] + lfrecord['unused_uvalues'] + lfrecord['unused_lvalues']
@@ -2609,7 +2606,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-unknown',
                                     message=f"Value {v} is not documented for feature {f} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=outils.explain_feats(effective_lang)
+                                    explanation=self.data.explain_feats(effective_lang)
                                 ).confirm()
                             elif not node.upos in lfrecord['byupos']:
                                 Incident(
@@ -2617,7 +2614,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-upos-not-permitted',
                                     message=f"Feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=outils.explain_feats(effective_lang)
+                                    explanation=self.data.explain_feats(effective_lang)
                                 ).confirm()
                             elif not v in lfrecord['byupos'][node.upos] or lfrecord['byupos'][node.upos][v]==0:
                                 Incident(
@@ -2625,7 +2622,7 @@ class Validator:
                                     nodeid=node.ord,
                                     testid='feature-value-upos-not-permitted',
                                     message=f"Value {v} of feature {f} is not permitted with UPOS {node.upos} in language [{effective_lang}] ('{utils.formtl(node)}').",
-                                    explanation=outils.explain_feats(effective_lang)
+                                    explanation=self.data.explain_feats(effective_lang)
                                 ).confirm()
         if state.mwt_typo_span_end and int(state.mwt_typo_span_end) <= int(node.ord):
             state.mwt_typo_span_end = None
@@ -2680,7 +2677,7 @@ class Validator:
                     nodeid=node.ord,
                     testid='unknown-deprel',
                     message=f"Unknown DEPREL label: '{deprel}'",
-                    explanation=outils.explain_deprel(mainlang)
+                    explanation=self.data.explain_deprel(mainlang)
                 ).confirm()
         # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
@@ -2703,7 +2700,7 @@ class Validator:
                         nodeid=node.ord,
                         testid='unknown-edeprel',
                         message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'",
-                        explanation=outils.explain_edeprel(mainlang)
+                        explanation=self.data.explain_edeprel(mainlang)
                     ).confirm()
 
 
@@ -2742,7 +2739,7 @@ class Validator:
                     testclass='Morpho',
                     testid='aux-lemma',
                     message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
-                    explanation=outils.explain_aux(lang)
+                    explanation=self.data.explain_aux(lang)
                 ).confirm()
 
 
@@ -2775,7 +2772,7 @@ class Validator:
                     testclass='Syntax',
                     testid='cop-lemma',
                     message=f"'{node.lemma}' is not a copula in language [{lang}]",
-                    explanation=outils.explain_cop(lang)
+                    explanation=self.data.explain_cop(lang)
                 ).confirm()
 
 
