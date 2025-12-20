@@ -1,5 +1,6 @@
 import os
 import regex as re
+import yaml
 # Allow using this module from the root folder of tools even if it is not
 # installed as a package: use the relative path validator/src/validator for
 # submodules. If the path is not available, try the standard qualification,
@@ -7,14 +8,17 @@ import regex as re
 # from udtools import Validator.
 try:
     from udtools.src.udtools.incident import Reference
-    from udtools.src.udtools.loaders import load_conllu_spec
 except ModuleNotFoundError:
     from udtools.incident import Reference
-    from udtools.loaders import load_conllu_spec
 
 
 
 THIS_DIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
+
+###!!! Is it necessary to read this from a YAML file?
+def load_conllu_spec(spec_path):
+    with open(spec_path, encoding="utf-8") as spec_handle:
+        return yaml.safe_load(spec_handle)
 
 CONLLU_SPEC = load_conllu_spec(os.path.join(THIS_DIR, "conllu_spec.yaml"))
 COLCOUNT = len(CONLLU_SPEC["columns"])
