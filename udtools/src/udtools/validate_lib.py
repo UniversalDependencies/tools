@@ -2069,7 +2069,6 @@ class Validator:
 #==============================================================================
 
 
-
     def check_required_feature(self, state, feats, required_feature, required_value, incident):
         """
         In general, the annotation of morphological features is optional, although
@@ -2109,7 +2108,7 @@ class Validator:
                 state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
 
 
-    def check_expected_features(self, state, node, lineno):
+    def check_expected_features(self, state, node):
         """
         Certain features are expected to occur with certain UPOS or certain values
         of other features. This function issues warnings instead of errors, as
@@ -2121,36 +2120,48 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
-        Incident.default_testclass = 'Warning'
+        Incident.default_testclass = TestClass.MORPHO
         if node.upos in ['PRON', 'DET']:
-            self.check_required_feature(state, node.feats, 'PronType', None, Incident(
-                state=state,
+            self.check_required_feature(state, node.feats, 'PronType', None, Warning(
+                state=state, config=self.incfg,
                 testid='pron-det-without-prontype',
                 message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
             ))
+        # See https://github.com/UniversalDependencies/docs/issues/1155 for
+        # complaints about this warning.
         if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
-            Incident(
-                state=state,
+            Warning(
+                state=state, config=self.incfg,
                 testid='verbform-fin-without-mood',
                 message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
             ).confirm()
-        elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
-            Incident(
-                state=state,
-                testid='mood-without-verbform-fin',
-                message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
-            ).confirm()
+        # We have to exclude AUX from the following test because they could be
+        # nonverbal and Mood could be their lexical feature
+        # (see https://github.com/UniversalDependencies/docs/issues/1147).
+        # Update: Lithuanian seems to need Mood=Nec with participles. Turning the test off.
+        #elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin' and not (node.upos == 'AUX' and node.feats['VerbForm'] == ''):
+        #    Warning(
+        #        state=state, config=self.incfg,
+        #        testid='mood-without-verbform-fin',
+        #        message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
+        #    ).confirm()
 
 
 
-    def check_upos_vs_deprel(self, state, node, lineno):
+    def check_upos_vs_deprel(self, state, node):
         """
         For certain relations checks that the dependent word belongs to an expected
         part-of-speech category. Occasionally we may have to check the children of
@@ -2158,14 +2169,20 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         # Occasionally a word may be marked by the feature ExtPos as acting as
         # a part of speech different from its usual one (which is given in UPOS).
         # Typical examples are words that head fixed multiword expressions (the
@@ -2184,9 +2201,8 @@ class Validator:
         if 'fixed' in childrels and not node.feats['ExtPos']:
             fixed_forms = [node.form] + [x.form for x in node.children if x.udeprel == 'fixed']
             str_fixed_forms = ' '.join(fixed_forms)
-            Incident(
-                state=state,
-                testclass='Warning',
+            Warning(
+                state=state, config=self.incfg,
                 testid='fixed-without-extpos',
                 message=f"Fixed expression '{str_fixed_forms}' does not have the 'ExtPos' feature"
             ).confirm()
@@ -2198,8 +2214,8 @@ class Validator:
         # [hsb] Z werba danci "rejować" móže substantiw nastać danco "reja", adjektiw danca "rejowanski" a adwerb dance "rejowansce", ale tež z substantiwa martelo "hamor" móže nastać werb marteli "klepać z hamorom", adjektiw martela "hamorowy" a adwerb martele "z hamorom".
         # Determiner can alternate with a pronoun.
         if deprel == 'det' and not re.match(r"^(DET|PRON)", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-det',
                 message=f"'det' should be 'DET' or 'PRON' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
@@ -2208,8 +2224,8 @@ class Validator:
         # https://github.com/UniversalDependencies/docs/issues/596,
         # we concluded that the validator will tolerate them.
         if deprel == 'nummod' and not re.match(r"^(NUM|NOUN|SYM)$", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-nummod',
                 message=f"'nummod' should be 'NUM' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
@@ -2220,29 +2236,29 @@ class Validator:
         # I am not sure whether advmod is the best relation for them but the alternative
         # det is not much better, so maybe we should not enforce it. Adding DET to the tolerated UPOS tags.
         if deprel == 'advmod' and not re.match(r"^(ADV|ADJ|CCONJ|DET|PART|SYM)", upos) and not 'goeswith' in childrels:
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-advmod',
                 message=f"'advmod' should be 'ADV' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
         # Known expletives are pronouns. Determiners and particles are probably acceptable, too.
         if deprel == 'expl' and not re.match(r"^(PRON|DET|PART)$", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-expl',
                 message=f"'expl' should normally be 'PRON' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
         # Auxiliary verb/particle must be AUX.
         if deprel == 'aux' and not re.match(r"^(AUX)", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-aux',
                 message=f"'aux' should be 'AUX' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
         # Copula is an auxiliary verb/particle (AUX) or a pronoun (PRON|DET).
         if deprel == 'cop' and not re.match(r"^(AUX|PRON|DET|SYM)", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-cop',
                 message=f"'cop' should be 'AUX' or 'PRON'/'DET' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
@@ -2252,8 +2268,8 @@ class Validator:
         # VERB: [en] including
         # Interjection can also act as case marker for vocative, as in Sanskrit: भोः भगवन् / bhoḥ bhagavan / oh sir.
         if deprel == 'case' and re.match(r"^(PROPN|ADJ|PRON|DET|NUM|AUX)", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-case',
                 message=f"'case' should not be '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
@@ -2265,40 +2281,40 @@ class Validator:
         ###!!! as a function word, but Amir was opposed to the idea that ExtPos would
         ###!!! now be required also for single-word expressions.
         if deprel == 'mark' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|AUX|INTJ)", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-mark',
                 message=f"'mark' should not be '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
         # Cc is a conjunction, possibly an adverb or particle.
         if deprel == 'cc' and re.match(r"^(NOUN|PROPN|ADJ|PRON|DET|NUM|VERB|AUX|INTJ)", upos):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-cc',
                 message=f"'cc' should not be '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
         if deprel == 'punct' and upos != 'PUNCT':
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-punct',
                 message=f"'punct' must be 'PUNCT' but it is '{upos}' ('{utils.formtl(node)}')"
             ).confirm()
         if upos == 'PUNCT' and not re.match(r"^(punct|root)", deprel):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='upos-rel-punct',
                 message=f"'PUNCT' must be 'punct' but it is '{node.deprel}' ('{utils.formtl(node)}')"
             ).confirm()
         if upos == 'PROPN' and (deprel == 'fixed' or 'fixed' in childrels):
-            Incident(
-                state=state,
+            Error(
+                state=state, config=self.incfg,
                 testid='rel-upos-fixed',
                 message=f"'fixed' should not be used for proper nouns ('{utils.formtl(node)}')."
             ).confirm()
 
 
 
-    def check_flat_foreign(self, state, node, lineno, linenos):
+    def check_flat_foreign(self, state, node):
         """
         flat:foreign is an optional subtype of flat. It is used to connect two words
         in a code-switched segment of foreign words if the annotators did not want
@@ -2308,31 +2324,34 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         Incident.default_level = 3
-        Incident.default_testclass = 'Warning' # or Morpho
+        Incident.default_testclass = TestClass.MORPHO
         if node.deprel != 'flat:foreign':
             return
         parent = node.parent
         if node.upos != 'X' or str(node.feats) != 'Foreign=Yes':
-            Incident(
-                state=state,
-                lineno=lineno,
+            Warning(
+                state=state, config=self.incfg,
+                lineno=state.current_node_linenos[str(node.ord)],
                 nodeid=node.ord,
                 testid='flat-foreign-upos-feats',
                 message="The child of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
             ).confirm()
         if parent.upos != 'X' or str(parent.feats) != 'Foreign=Yes':
-            Incident(
-                state=state,
-                lineno=linenos[str(parent.ord)],
+            Warning(
+                state=state, config=self.incfg,
+                lineno=state.current_node_linenos[str(parent.ord)],
                 nodeid=parent.ord,
                 testid='flat-foreign-upos-feats',
                 message="The parent of a flat:foreign relation should have UPOS X and Foreign=Yes (but no other features)."
@@ -2340,7 +2359,7 @@ class Validator:
 
 
 
-    def check_left_to_right_relations(self, state, node, lineno):
+    def check_left_to_right_relations(self, state, node):
         """
         Certain UD relations must always go left-to-right (in the logical order,
         meaning that parent precedes child, disregarding that some languages have
@@ -2350,13 +2369,19 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
-        if re.match(r"^(conj|fixed|flat|goeswith|appos)", node.deprel):
+        if node.udeprel in ['conj', 'fixed', 'flat', 'goeswith', 'appos']:
             ichild = node.ord
             iparent = node.parent.ord
             if ichild < iparent:
@@ -2365,19 +2390,19 @@ class Validator:
                 # For appos and goeswith the requirement was introduced before UD 2.4.
                 # The designation "right-to-left" is confusing in languages with right-to-left writing systems.
                 # We keep it in the testid but we make the testmessage more neutral.
-                Incident(
-                    state=state,
-                    lineno=lineno,
+                Error(
+                    state=state, config=self.incfg,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
-                    testclass='Syntax',
+                    testclass=TestClass.SYNTAX,
                     testid=f"right-to-left-{node.udeprel}",
                     message=f"Parent of relation '{node.deprel}' must precede the child in the word order."
                 ).confirm()
 
 
 
-    def check_single_subject(self, state, node, lineno):
+    def check_single_subject(self, state, node):
         """
         No predicate should have more than one subject.
         An xcomp dependent normally has no subject, but in some languages the
@@ -2405,10 +2430,16 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
 
         def is_inner_subject(node):
@@ -2428,21 +2459,23 @@ class Validator:
         subjects = [x for x in node.children if is_inner_subject(x)]
         subject_ids = [x.ord for x in subjects]
         subject_forms = [utils.formtl(x) for x in subjects]
+        subject_references = utils.create_references(subjects, state, 'Subject')
         if len(subjects) > 1:
-            Incident(
-                state=state,
-                lineno=lineno,
+            Error(
+                state=state, config=self.incfg,
+                lineno=state.current_node_linenos[str(node.ord)],
                 nodeid=node.ord,
                 level=3,
-                testclass='Syntax',
+                testclass=TestClass.SYNTAX,
                 testid='too-many-subjects',
-                message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) not subtyped as ':outer'.",
-                explanation="Outer subjects are allowed if a clause acts as the predicate of another clause."
+                message=f"Multiple subjects {str(subject_ids)} ({str(subject_forms)[1:-1]}) under the predicate '{utils.formtl(node)}' not subtyped as ':outer'.",
+                explanation="Outer subjects are allowed if a clause acts as the predicate of another clause.",
+                references=subject_references
             ).confirm()
 
 
 
-    def check_single_object(self, state, node, lineno):
+    def check_single_object(self, state, node):
         """
         No predicate should have more than one direct object (number of indirect
         objects is unlimited). Theoretically, ccomp should be understood as a
@@ -2451,28 +2484,83 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         objects = [x for x in node.children if x.udeprel == 'obj']
         object_ids = [x.ord for x in objects]
         object_forms = [utils.formtl(x) for x in objects]
+        object_references = utils.create_references(objects, state, 'Object')
         if len(objects) > 1:
-            Incident(
-                state=state,
-                lineno=lineno,
+            Error(
+                state=state, config=self.incfg,
+                lineno=state.current_node_linenos[str(node.ord)],
                 nodeid=node.ord,
                 level=3,
-                testclass='Syntax',
+                testclass=TestClass.SYNTAX,
                 testid='too-many-objects',
-                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under one predicate."
+                message=f"Multiple direct objects {str(object_ids)} ({str(object_forms)[1:-1]}) under the predicate '{utils.formtl(node)}'.",
+                references=object_references
             ).confirm()
 
 
 
-    def check_orphan(self, state, node, lineno):
+    def check_nmod_obl(self, state, node):
+        """
+        The difference between nmod and obl is that the former modifies a
+        nominal while the latter modifies a predicate of a clause. Typically
+        the parent of nmod will be NOUN, PROPN or PRON; the parent of obl is
+        usually a VERB, sometimes ADJ or ADV. However, nominals can also be
+        predicates and then they may take obl dependents:
+            I am the leader of the group (nmod)
+            I am the leader on Mondays (obl)
+        This function tries to detect at least some cases where the nominal
+        is not a predicate and thus cannot take obl dependents.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        node : udapi.core.node.Node object
+            The tree node to be tested.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
+        """
+        if node.udeprel == 'obl' and node.parent.upos in ['NOUN', 'PROPN', 'PRON']:
+            # If the parent itself has certain deprels, we know that it is just
+            # a nominal and not a predicate. This will reveal some erroneous
+            # obliques but not all, because we will not recognize some non-
+            # predicative nominals, and even for the predicative ones, some
+            # dependents might be better analyzed as nmod.
+            if node.parent.udeprel in ['nsubj', 'obj', 'iobj', 'obl', 'vocative', 'dislocated', 'expl', 'nmod']:
+                # For the moment (2025-09-20), I am making this a warning only.
+                # But I suppose that it will became an error in the future.
+                Error(
+                    state=state, config=self.incfg,
+                    lineno=state.current_node_linenos[str(node.ord)],
+                    nodeid=node.ord,
+                    level=3,
+                    testclass=TestClass.SYNTAX,
+                    testid='obl-should-be-nmod',
+                    message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.",
+                    references=utils.create_references([node.parent], state, 'Parent')
+                ).confirm()
+
+
+
+    def check_orphan(self, state, node):
         """
         The orphan relation is used to attach an unpromoted orphan to the promoted
         orphan in gapping constructions. A common error is that the promoted orphan
@@ -2481,10 +2569,16 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         if node.udeprel == 'orphan':
@@ -2500,19 +2594,20 @@ class Validator:
             # the parent of orphan may receive many other relations. See issue 635
             # for details and a Latin example.
             if not re.match(r"^(conj|parataxis|root|csubj|ccomp|advcl|acl|reparandum)$", node.parent.udeprel):
-                Incident(
-                    state=state,
-                    lineno=lineno,
+                Warning(
+                    state=state, config=self.incfg,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
-                    testclass='Warning',
+                    testclass=TestClass.SYNTAX,
                     testid='orphan-parent',
-                    message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'."
+                    message=f"The parent of 'orphan' should normally be 'conj' but it is '{node.parent.udeprel}'.",
+                    references=utils.create_references([node.parent], state, 'Parent')
                 ).confirm()
 
 
 
-    def check_functional_leaves(self, state, node, lineno, linenos):
+    def check_functional_leaves(self, state, node):
         """
         Most of the time, function-word nodes should be leaves. This function
         checks for known exceptions and warns in the other cases.
@@ -2520,25 +2615,28 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         deprel = node.udeprel
-        if re.match(r"^(case|mark|cc|aux|cop|det|clf|fixed|goeswith|punct)$", deprel):
+        if deprel in ['case', 'mark', 'cc', 'aux', 'cop', 'det', 'clf', 'fixed', 'goeswith', 'punct']:
             idparent = node.ord
             pdeprel = deprel
             pfeats = node.feats
             for child in node.children:
                 idchild = child.ord
-                Incident.default_lineno = linenos[str(idchild)]
+                Incident.default_lineno = state.current_node_linenos[str(idchild)]
                 Incident.default_level = 3
-                Incident.default_testclass = 'Syntax'
+                Incident.default_testclass = TestClass.SYNTAX
                 cdeprel = child.udeprel
                 # The guidelines explicitly say that negation can modify any function word
                 # (see https://universaldependencies.org/u/overview/syntax.html#function-word-modifiers).
@@ -2583,15 +2681,15 @@ class Validator:
                 # we do not want to allow 'cc' under another 'cc'. (Still, 'cc' can have
                 # a 'conj' dependent. In "and/or", "or" will depend on "and" as 'conj'.)
                 if re.match(r"^(mark|case)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-mark-case',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
                     ).confirm()
                 if re.match(r"^(aux|cop)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-aux-cop',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
@@ -2631,22 +2729,22 @@ class Validator:
                 # connected by flat:redup (rather than fixed), which is why flat should
                 # be another exception.
                 if re.match(r"^(det)$", pdeprel) and not re.match(r"^(det|case|advmod|obl|clf|goeswith|fixed|flat|compound|reparandum|discourse|parataxis|conj|cc|punct)$", cdeprel) and not (pfeats['Poss'] == 'Yes' and re.match(r"^(appos|acl|nmod)$", cdeprel)):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-det',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
                     ).confirm()
                 if re.match(r"^(clf)$", pdeprel) and not re.match(r"^(advmod|obl|goeswith|fixed|reparandum|conj|cc|punct)$", cdeprel):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-clf',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
                     ).confirm()
                 if re.match(r"^(cc)$", pdeprel) and not re.match(r"^(goeswith|fixed|reparandum|conj|punct)$", cdeprel):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-cc',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
@@ -2660,16 +2758,16 @@ class Validator:
                 # the tokenizer is out of control of the UD data providers and it is not
                 # practical to retokenize.
                 elif pdeprel == 'fixed' and not re.match(r"^(goeswith|reparandum|conj|punct)$", cdeprel):
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-fixed',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
                     ).confirm()
                 # Goeswith cannot have any children, not even another goeswith.
                 elif pdeprel == 'goeswith':
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-goeswith',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
@@ -2677,8 +2775,8 @@ class Validator:
                 # Punctuation can exceptionally have other punct children if an exclamation
                 # mark is in brackets or quotes. It cannot have other children.
                 elif pdeprel == 'punct' and cdeprel != 'punct':
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='leaf-punct',
                         message=f"'{pdeprel}' not expected to have children ({idparent}:{node.form}:{pdeprel} --> {idchild}:{child.form}:{cdeprel})"
@@ -2686,7 +2784,7 @@ class Validator:
 
 
 
-    def check_fixed_span(self, state, node, lineno):
+    def check_fixed_span(self, state, node):
         """
         Like with goeswith, the fixed relation should not in general skip words that
         are not part of the fixed expression. Unlike goeswith however, there can be
@@ -2698,10 +2796,16 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
         fxchildren = [c for c in node.children if c.udeprel == 'fixed']
         if fxchildren:
@@ -2712,18 +2816,18 @@ class Validator:
             if fxgap:
                 fxordlist = [n.ord for n in fxlist]
                 fxexpr = ' '.join([(n.form if n in fxlist else '*') for n in fxrange])
-                Incident(
-                    state=state,
-                    lineno=lineno,
+                Warning(
+                    state=state, config=self.incfg,
+                    lineno=state.current_node_linenos[str(node.ord)],
                     nodeid=node.ord,
                     level=3,
-                    testclass='Warning',
+                    testclass=TestClass.SYNTAX,
                     testid='fixed-gap',
                     message=f"Gaps in fixed expression {str(fxordlist)} '{fxexpr}'"
                 ).confirm()
 
 
-    def check_goeswith_span(self, state, node, lineno):
+    def check_goeswith_span(self, state, node):
         """
         The relation 'goeswith' is used to connect word parts that are separated
         by whitespace and should be one word instead. We assume that the relation
@@ -2734,14 +2838,20 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         gwchildren = [c for c in node.children if c.udeprel == 'goeswith']
         if gwchildren:
             gwlist = sorted([node] + gwchildren)
@@ -2750,8 +2860,8 @@ class Validator:
             if gwlist != gwrange:
                 gwordlist = [n.ord for n in gwlist]
                 gwordrange = [n.ord for n in gwrange]
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-gap',
                     message=f"Gaps in goeswith group {str(gwordlist)} != {str(gwordrange)}."
@@ -2759,8 +2869,8 @@ class Validator:
             # Non-last node in a goeswith range must have a space after itself.
             nospaceafter = [x for x in gwlist[:-1] if x.misc['SpaceAfter'] == 'No']
             if nospaceafter:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-nospace',
                     message="'goeswith' cannot connect nodes that are not separated by whitespace."
@@ -2769,10 +2879,10 @@ class Validator:
             # know that we are at the head of a goeswith word, let's do it here, too.
             # Every goeswith parent should also have Typo=Yes. However, this is not
             # required if the treebank does not have features at all.
-            incident = Incident(
-                state=state,
+            incident = Error(
+                state=state, config=self.incfg,
                 nodeid=node.ord,
-                testclass='Morpho',
+                testclass=TestClass.MORPHO,
                 testid='goeswith-missing-typo',
                 message="Since the treebank has morphological features, 'Typo=Yes' must be used with 'goeswith' heads."
             )
@@ -2780,7 +2890,7 @@ class Validator:
 
 
 
-    def check_goeswith_morphology_and_edeps(self, state, node, lineno):
+    def check_goeswith_morphology_and_edeps(self, state, node):
         """
         If a node has the 'goeswith' incoming relation, it is a non-first part of
         a mistakenly interrupted word. The lemma, upos tag and morphological features
@@ -2788,114 +2898,99 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
-        Incident.default_testclass = 'Morpho'
+        Incident.default_testclass = TestClass.MORPHO
         if node.udeprel == 'goeswith':
             if node.lemma != '_':
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-lemma',
                     message="The lemma of a 'goeswith'-connected word must be annotated only at the first part."
                 ).confirm()
             if node.upos != 'X':
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-upos',
                     message="The UPOS tag of a 'goeswith'-connected word must be annotated only at the first part; the other parts must be tagged 'X'."
                 ).confirm()
             if str(node.feats) != '_':
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='goeswith-feats',
                     message="The morphological features of a 'goeswith'-connected word must be annotated only at the first part."
                 ).confirm()
             if str(node.raw_deps) != '_' and str(node.raw_deps) != str(node.parent.ord)+':'+node.deprel:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
-                    testclass='Enhanced',
+                    testclass=TestClass.ENHANCED,
                     testid='goeswith-edeps',
                     message="A 'goeswith' dependent cannot have any additional dependencies in the enhanced graph."
                 ).confirm()
 
 
 
-    def check_projective_punctuation(self, state, node, lineno):
+    def check_projective_punctuation(self, state, node):
         """
         Punctuation is not supposed to cause nonprojectivity or to be attached
         nonprojectively.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
             The tree node to be tested.
-        lineno : int
-            The 1-based index of the line where the node occurs.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = lineno
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
-        Incident.default_testclass = 'Syntax'
+        Incident.default_testclass = TestClass.SYNTAX
         if node.udeprel == 'punct':
             nonprojnodes = utils.get_caused_nonprojectivities(node)
             if nonprojnodes:
-                Incident(
-                    state=state,
+                nonprojids = [x.ord for x in nonprojnodes]
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='punct-causes-nonproj',
-                    message=f"Punctuation must not cause non-projectivity of nodes {nonprojnodes}"
+                    message=f"Punctuation must not cause non-projectivity of nodes {nonprojids}",
+                    references=utils.create_references(nonprojnodes, state, 'Node made nonprojective')
                 ).confirm()
-            gap = utils.get_gap(node)
-            if gap:
-                Incident(
-                    state=state,
+            gapnodes = utils.get_gap(node)
+            if gapnodes:
+                gapids = [x.ord for x in gapnodes]
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='punct-is-nonproj',
-                    message=f"Punctuation must not be attached non-projectively over nodes {sorted(gap)}"
+                    message=f"Punctuation must not be attached non-projectively over nodes {gapids}",
+                    references=utils.create_references(gapnodes, state, 'Node in gap')
                 ).confirm()
 
 
-    # TODO: rename to something more meaningful
-    def check_annotation(self, state, tree, linenos):
-        """
-        Checks universally valid consequences of the annotation guidelines. Looks
-        at regular nodes and basic tree, not at enhanced graph (which is checked
-        elsewhere).
 
-        Parameters
-        ----------
-        tree : udapi.core.root.Root object
-        linenos : dict
-            Key is node ID (string, not int or float!) Value is the 1-based index
-            of the line where the node occurs (int).
-        """
-        nodes = tree.descendants
-        for node in nodes:
-            lineno = linenos[str(node.ord)]
-            self.check_expected_features(state, node, lineno)
-            self.check_upos_vs_deprel(state, node, lineno)
-            self.check_flat_foreign(state, node, lineno, linenos)
-            self.check_left_to_right_relations(state, node, lineno)
-            self.check_single_subject(state, node, lineno)
-            self.check_single_object(state, node, lineno)
-            self.check_orphan(state, node, lineno)
-            self.check_functional_leaves(state, node, lineno, linenos)
-            self.check_fixed_span(state, node, lineno)
-            self.check_goeswith_span(state, node, lineno)
-            self.check_goeswith_morphology_and_edeps(state, node, lineno)
-            self.check_projective_punctuation(state, node, lineno)
-
-
-
-    def check_enhanced_orphan(self, state, node, line):
+    def check_enhanced_orphan(self, state, node):
         """
         Checks universally valid consequences of the annotation guidelines in the
         enhanced representation. Currently tests only phenomena specific to the
@@ -2905,16 +3000,23 @@ class Validator:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         node : udapi.core.node.Node object
-            The node whose incoming relations will be validated. This function
+            The node whose incoming relation will be validated. This function
             operates on both regular and empty nodes. Make sure to call it for
             empty nodes, too!
-        line : int
-            Number of the line where the node occurs in the file.
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
         """
-        Incident.default_lineno = line
+        lineno = state.current_node_linenos[str(node.ord)]
+        Incident.default_lineno = lineno
         Incident.default_level = 3
-        Incident.default_testclass = 'Enhanced'
+        Incident.default_testclass = TestClass.ENHANCED
         # Enhanced dependencies should not contain the orphan relation.
         # However, all types of enhancements are optional and orphans are excluded
         # only if this treebank addresses gapping. We do not know it until we see
@@ -2923,12 +3025,12 @@ class Validator:
             return
         if node.is_empty():
             if not state.seen_empty_node:
-                state.seen_empty_node = line
+                state.seen_empty_node = lineno
                 # Empty node itself is not an error. Report it only for the first time
                 # and only if an orphan occurred before it.
                 if state.seen_enhanced_orphan:
-                    Incident(
-                        state=state,
+                    Error(
+                        state=state, config=self.incfg,
                         nodeid=node.ord,
                         testid='empty-node-after-eorphan',
                         message=f"Empty node means that we address gapping and there should be no orphans in the enhanced graph; but we saw one on line {state.seen_enhanced_orphan}"
@@ -2936,11 +3038,11 @@ class Validator:
         udeprels = set([utils.lspec2ud(edep['deprel']) for edep in node.deps])
         if 'orphan' in udeprels:
             if not state.seen_enhanced_orphan:
-                state.seen_enhanced_orphan = line
+                state.seen_enhanced_orphan = lineno
             # If we have seen an empty node, then the orphan is an error.
             if  state.seen_empty_node:
-                Incident(
-                    state=state,
+                Error(
+                    state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='eorphan-after-empty-node',
                     message=f"'orphan' not allowed in enhanced graph because we saw an empty node on line {state.seen_empty_node}"
