@@ -155,7 +155,7 @@ def validate_file(path, cfg_obj):
 #* DONE
 def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
     """
-    check_invalid_lines checks for lines that are not empty, not comments and not tokens.
+    Checks for lines that are not empty, not comments and not tokens.
 
     Empty lines are checked against the utils.is_whitespace() function.
     Tokens are identified by the first character of the line being a digit.
@@ -195,7 +195,8 @@ def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
 
 #* DONE
 def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
-    """check_columns_format checks that the line is made up by the right number of columns.
+    """
+    Checks that the line is made up by the right number of columns.
     Moreover, it checks that no column is empty, no leader or trailing spaces are present
     and that no whitespace is present in fields, except if for FORM and LEMMA if the token
     is not a multiword. In case of multiword, whitespaces are not allowed in any field.
@@ -307,8 +308,9 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
 
 #* DONE
 def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]:
-    """check_misplaced_comment checks that comments (i.e., lines starting with '#') always precede
-    tokens (i.e., lines starting with digits)
+    """
+    Checks that comments (i.e., lines starting with '#') always precede
+    tokens (i.e., lines starting with digits).
 
     Parameters
     ----------
@@ -355,7 +357,8 @@ def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]
 
 #* DONE
 def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
-    """check_extra_empty_line checks that exactly one empty line is present after every sentence
+    """
+    Checks that exactly one empty line is present after every sentence.
 
     Parameters
     ----------
@@ -392,7 +395,8 @@ def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
 
 #* DONE
 def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
-    """check_pseudo_empty_line checks whether a line that appears empty contains whitespaces.
+    """
+    Checks whether a line that appears empty contains whitespaces.
 
     Parameters
     ----------
