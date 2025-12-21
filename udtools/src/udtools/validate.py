@@ -5,7 +5,7 @@ import unicodedata
 import logging
 import inspect
 
-from typing import List, Tuple, TextIO, Set, Any, Dict
+from typing import List, Tuple, TextIO, Set, Any
 from dataclasses import dataclass, field
 
 from udtools.incident import Incident, Error, Warning, TestClass, IncidentType
@@ -24,6 +24,7 @@ class State:
     known_parallel_ids:Set = field(default_factory=set)
     parallel_id_lastalt: collections.defaultdict[None] = field(default_factory=lambda: collections.defaultdict(None))
     parallel_id_lastalt: collections.defaultdict[None] = field(default_factory=lambda: collections.defaultdict(None))
+
 
 def validate(paths, cfg_obj):
     """
@@ -150,6 +151,7 @@ def validate_file(path, cfg_obj):
 # Level 1 tests. Only CoNLL-U backbone. Values can be empty or non-UD.
 #==============================================================================
 
+
 #* DONE
 def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
     """
@@ -190,6 +192,7 @@ def check_invalid_lines(line:Tuple[int, str], **_) -> List[Incident]:
         logger.debug("'invalid-line' error triggered by line '%s'", line)
     return incidents
 
+
 #* DONE
 def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
     """check_columns_format checks that the line is made up by the right number of columns.
@@ -225,11 +228,9 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
     """
     lineno, line = line
     incidents = []
-
     # the function is only defined on potential tokens
     if not line[0].isdigit():
         return incidents
-
     cols = line.split("\t")
     if not len(cols) == utils.COLCOUNT:
         incidents.append(Error(
@@ -240,9 +241,7 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
         logger.debug("'number-of-columns' triggered by line '%s'.", line)
         logger.debug("No other checks performed")
         return incidents
-
     for col_idx in range(utils.COLCOUNT):
-
         # Must never be empty
         if not cols[col_idx]:
             incidents.append(Error(
@@ -251,7 +250,6 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
             ))
             logger.debug("'empty-columns' error triggered by column '%s'.", utils.COLNAMES[col_idx])
         else:
-
             # Must never have leading/trailing whitespace
             if cols[col_idx][0].isspace():
                 incidents.append(Error(
@@ -260,7 +258,6 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
                     message=f"Leading whitespace not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
                 ))
                 logger.debug("'leading-whitespace' error triggered by column '%s'.", utils.COLNAMES[col_idx])
-
             if cols[col_idx][-1].isspace():
                 incidents.append(Error(
                     testclass=TestClass.FORMAT,
@@ -268,7 +265,6 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
                     message=f"Trailing whitespace not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
                 ))
                 logger.debug("'trailing-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
-
             # Must never contain two consecutive whitespace characters
             if utils.crex.ws2.search(cols[col_idx]):
                 incidents.append(Error(
@@ -278,7 +274,6 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
                             f"in column {utils.COLNAMES[col_idx]}.")
                 ))
                 logger.debug("'repeated-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
-
     # Multi-word tokens may have whitespaces in MISC but not in FORM or LEMMA.
     # If it contains a space, it does not make sense to treat it as a MWT.
     if utils.is_multiword_token(cols):
@@ -291,7 +286,6 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
                             "If it contains a space, it is not one surface token.")
                     ))
                 logger.debug("'invalid-whitespace-mwt' triggered by column '%s'.", utils.COLNAMES[col_idx])
-
     # These columns must not have whitespace.
     for col_idx in (utils.ID, utils.UPOS, utils.XPOS, utils.FEATS, utils.HEAD, utils.DEPREL, utils.DEPS):
         # if utils.crex.ws.search(cols[col_idx]):
@@ -302,15 +296,14 @@ def check_columns_format(line:Tuple[int, str], **_) -> List[Incident]:
                 message=f"White space not allowed in column {utils.COLNAMES[col_idx]}: '{cols[col_idx]}'."
             ))
             logger.debug("'invalid-whitespace' triggered by column '%s'.", utils.COLNAMES[col_idx])
-
     # ! Comment from previous validator
     # ?: get rid of this comment
     # We should also check the ID format (e.g., '1' is good, '01' is wrong).
     # Although it is checking just a single column, we will do it in
     # validate_id_sequence() because that function has the power to block
     # further tests, which could choke up on this.
-
     return incidents
+
 
 #* DONE
 def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]:
@@ -336,7 +329,6 @@ def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]
     test-cases/invalid-functions/misplaced-comment.conllu
     """
     incidents = []
-
     if len(block) > 1:
         max_comment = len(block)
         min_token = -1
@@ -349,7 +341,6 @@ def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]
                 else:
                     if min_token == -1:
                         min_token = counter
-
         if max_comment >= min_token:
             error = Error(
                 testclass=TestClass.FORMAT,
@@ -359,8 +350,8 @@ def check_misplaced_comment(block: List[Tuple[int, str]], **_) -> List[Incident]
             )
             incidents.append(error)
             logger.debug("'misplaced-comment' error triggered by line: '%s'.", block[max_comment][1])
-
     return incidents
+
 
 #* DONE
 def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
@@ -384,7 +375,6 @@ def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
     --------------
     test-cases/invalid-functions/extra-empty-line.conllu
     """
-
     incidents = []
     if len(block) == 1 and (utils.is_whitespace(block[0][1]) or len(block[0][1])==0):
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
@@ -398,6 +388,7 @@ def check_extra_empty_line(block: List[Tuple[int, str]], **_) -> List[Incident]:
         logger.debug("'extra-empty-line' triggered by line '%s'", block[0][1])
 
     return incidents
+
 
 #* DONE
 def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
@@ -432,6 +423,7 @@ def check_pseudo_empty_line(line:Tuple[int, str], **_) -> List[Incident]:
         incidents.append(error)
         logger.debug("'pseudo-empty-line' triggered by line '%s'", line)
     return incidents
+
 
 #* DONE
 def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
@@ -472,7 +464,6 @@ def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
         nfcfirst = ''
         tcols = line.split("\t")
         ncols = normalized_text.split("\t")
-
         for i in range(len(tcols)):
             for j in range(len(tcols[i])):
                 if tcols[i][j] != ncols[i][j]:
@@ -489,11 +480,9 @@ def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
             testmessage = f"Unicode not normalized: {utils.COLNAMES[firsti]}.character[{firstj}] is {inpfirst}, should be {nfcfirst}."
         else:
             testmessage = f"Unicode not normalized: character[{firstj}] is {inpfirst}, should be {nfcfirst}."
-
         #TODO: WHAT TO DO WITH THIS?
         # explanation_second = f" In this case, your next character is {inpsecond}." if inpsecond else ''
         # This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
-
         incidents.append(Error(
             testclass=TestClass.UNICODE,
             testid='unicode-normalization',
@@ -501,8 +490,8 @@ def check_unicode_normalization(line:Tuple[int, str], **_) -> List[Incident]:
             lineno=lineno
         ))
         logger.debug("'unicode-normalization' error triggered by line '%s'", line)
-
     return incidents
+
 
 #? one if to check
 def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incident]:
@@ -535,7 +524,6 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incide
     test-cases/invalid-functions/reversed-word-interval.conllu
     """
     incidents = []
-
     words=[]
     tokens=[]
     current_word_id, next_empty_id = 0, 1
@@ -553,14 +541,12 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incide
         if not utils.is_empty_node(cols):
             next_empty_id = 1    # reset sequence
         if utils.is_word(cols):
-
             t_id = int(cols[utils.ID])
             current_word_id = t_id
             words.append(t_id)
             # Not covered by the previous interval?
             if not (tokens and tokens[-1][0] <= t_id and tokens[-1][1] >= t_id):
                 tokens.append((t_id, t_id)) # nope - let's make a default interval for it
-
         # ! looks like a duplicate of check_id_sequence
         elif utils.is_multiword_token(cols):
             match = utils.is_multiword_token(cols)
@@ -618,7 +604,6 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incide
             lineno=sentence[0][0]
         ))
         logger.debug("'word-id-sequence' error triggered by sequence '%s'", wrdstrseq)
-
     # Check elementary sanity of word intervals.
     # Remember that these are not just multi-word tokens. Here we have intervals even for single-word tokens (b=e)!
     for (b, e) in tokens:
@@ -639,8 +624,8 @@ def check_id_sequence(sentence: List[Tuple[int, List[str]]], **_) -> List[Incide
             ))
             logger.debug("'word-interval-out' error triggered by sequence '%s-%s'", b, e)
             continue
-
     return incidents
+
 
 #* DONE
 def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incident]:
@@ -665,7 +650,6 @@ def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incid
     test-cases/invalid-functions/invalid-word-id.conllu
     test-cases/invalid-functions/overlapping-word-interval.conllu
     """
-
     incidents = []
     covered = set()
     for col_no, cols in sentence:
@@ -693,6 +677,7 @@ def check_token_ranges(sentence: List[Tuple[int, List[str]]], **_) -> List[Incid
         covered |= set(range(start, end+1))
     return incidents
 
+
 #* DONE
 def check_newlines(inp: TextIO, **_) -> List[Incident]:
     """check_newlines checks that the input file consistently uses linux-style newlines
@@ -718,7 +703,6 @@ def check_newlines(inp: TextIO, **_) -> List[Incident]:
     --------------
     test-cases/invalid-functions/non-unix-newline.conllu
     """
-
     incidents = []
     if inp.newlines and inp.newlines != '\n':
         incidents.append(Error(
@@ -728,8 +712,8 @@ def check_newlines(inp: TextIO, **_) -> List[Incident]:
                 message='Only the unix-style LF line terminator is allowed.'
             ))
         logger.debug("'non-unix-newlines' error triggered")
-
     return incidents
+
 
 #==============================================================================
 # Level 2 tests. Tree structure, universal tags and deprels. Note that any
@@ -738,465 +722,11 @@ def check_newlines(inp: TextIO, **_) -> List[Incident]:
 # specific guidelines may permit it).
 #==============================================================================
 
-#* DONE
-def check_sent_id(comments: List[Tuple[int, str]],
-                allow_slash: bool,
-                known_sent_ids: Set,
-                state:State = None,
-                **_) -> List[Incident]:
-    """check_sent_id checks that sentence id exists, is well-formed and unique.
-
-    Parameters
-    ----------
-    comments : List[Tuple[int, str]]
-        A list of comments, represented as strings.
-    allow_slash : bool
-        Whether exactly one "/" character is allowed (this is reserved for
-        parallel treebanks). This parameter replaces lang, which was used to
-        allow slashes when equal to "ud".
-    known_sent_ids : Set
-        The set of previously encountered sentence IDs.
-    state : State, optional
-        The object where known_sent_ids are stored and updated, by default None
-
-    Returns
-    -------
-    List[Incident]
-        A list of Incidents (empty if validation is successful).
-
-    Test-ids
-    --------
-    invalid-sent-id, missing-sent-id, multiple-sent-id, non-unique-sent-id, slash-in-sent-id
-
-    Reference-test
-    --------------
-    test-cases/invalid-functions/multiple-sent-id.conllu
-    """
-
-    incidents = []
-    matched = []
-    firstmatch = -1
-    for lineno, c in comments:
-        match = utils.crex.sentid.fullmatch(c)
-        if match:
-            matched.append(match)
-            firstmatch = lineno
-        else:
-            if c.startswith('# sent_id') or c.startswith('#sent_id'):
-            # if 'sent_id' in c:
-                incidents.append(Error(
-                    testclass=TestClass.METADATA,
-                    level=2,
-                    testid='invalid-sent-id',
-                    message=(f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' "
-                        "where xxxxx is not whitespace. Forward slash reserved for special purposes."),
-                    lineno = lineno
-                ))
-                logger.debug("'invalid-sent-id' triggered by line '%s'", c)
-
-    if not matched:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            testid='missing-sent-id',
-            message='Missing the sent_id attribute.',
-            lineno=comments[0][0]
-        ))
-        logger.debug("'missing-sent-id' triggered by comments '%s'", '\n'.join([c for _, c in comments]))
-    elif len(matched) > 1:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            testid='multiple-sent-id',
-            message='Multiple sent_id attributes.',
-            lineno=comments[0][0]
-        ))
-        logger.debug("'multiple-sent-id' triggered by comments '%s'", '\n'.join([c for _, c in comments]))
-    else:
-        # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
-        # For that to happen, all three files should be tested at once.
-        sid = matched[0].group(1)
-        if sid in known_sent_ids:
-            incidents.append(Error(
-                testclass=TestClass.METADATA,
-                level=2,
-                testid='non-unique-sent-id',
-                message=f"Non-unique sent_id attribute '{sid}'.",
-                lineno=firstmatch
-            ))
-            logger.debug("'non-unique-sent-id' triggered by sid '%s'", sid)
-
-        if sid.count('/') > 1 or (sid.count('/') == 1 and allow_slash):
-            incidents.append(Error(
-                testclass=TestClass.METADATA,
-                level=2,
-                testid='slash-in-sent-id',
-                message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'",
-                lineno=firstmatch
-            ))
-            logger.debug("'slash-in-sent-id' triggered by sid '%s'", sid)
-
-        if state:
-            state.known_sent_ids.add(sid)
-    return incidents
-
-#! needs checking and testing, I don't think it works
-def check_parallel_id(comments: List[Tuple[int, str]],
-                    known_parallel_ids: Set,
-                    parallel_id_lastalt: Any, #TODO: define type
-                    parallel_id_lastpart: Any, #TODO: define type
-                    state: State=None,
-                    **_ ) -> List[Incident]:
-    """check_parallel_id checks that parallel_id sentence-level comment
-    is used after sent_id of sentences that are parallel translations of sentences in other
-    treebanks. Like sent_id, it must be well-formed and unique. Unlike
-    sent_id, it is optional. Sentences that do not have it are not
-    parallel.
-
-    Parameters
-    ----------
-    comments : List[Tuple[int, str]]
-        _description_
-    known_parallel_ids : Set
-        _description_
-    parallel_id_lastalt : Any
-        _description_
-    state : State, optional
-        The object where known_sent_ids are stored and updated, by default None
-
-    Returns
-    -------
-    List[Incident]
-        A list of Incidents (empty if validation is successful).
-
-    Test-ids
-    --------
-    invalid-parallel-id, multiple-parallel-id, non-unique-parallel-id, parallel-id-alt,
-    parallel-id-part
-
-    Reference-test
-    --------------
-    TODO
-    """
-
-    incidents = []
-    matched = []
-    for lineno, c in comments:
-        match = utils.crex.parallelid.fullmatch(c)
-        if match:
-            matched.append((lineno, match))
-        else:
-            if c.startswith('# parallel_id') or c.startswith('#parallel_id'):
-                error = Error(
-                    level=2,
-                    testclass=TestClass.METADATA,
-                    lineno=lineno,
-                    testid='invalid-parallel-id',
-                    message=(f"Spurious parallel_id line: '{c}' should look like "
-                            "'# parallel_id = corpus/sentence' where corpus is [a-z]+ "
-                            "and sentence is [-0-9a-z]. "
-                            "Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.")
-                )
-                incidents.append(error)
-
-    if len(matched) > 1:
-        incidents.append(Error(
-            level=2,
-            testclass=TestClass.METADATA,
-            testid='multiple-parallel-id',
-            lineno=matched[1][0], # error on second parallel_id found
-            message="Multiple parallel_id attributes."
-        ))
-    elif matched:
-        lineno, match = matched[0]
-        # Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
-        # For that to happen, all three files should be tested at once.
-        pid = match.group(1)
-        if pid in known_parallel_ids:
-            incidents.append(Error(
-                level=2,
-                testclass=TestClass.METADATA,
-                testid='non-unique-parallel-id',
-                lineno=lineno,
-                message=f"Non-unique parallel_id attribute '{pid}'."
-            ))
-        else:
-            # Additional tests when pid has altN or partN.
-            # Do them only if the whole pid is unique.
-            sid = match.group(2) + '/' + match.group(3)
-            alt = None
-            part = None
-            altpart = match.group(4)
-            if altpart:
-                apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
-                if apmatch:
-                    alt = apmatch.group(1)
-                    part = apmatch.group(2)
-                    if alt:
-                        alt = int(alt)
-                    if part:
-                        part = int(part)
-            if sid in parallel_id_lastalt:
-                # TODO: add parentheses to make precedence explicit
-                if parallel_id_lastalt[sid] == None and \
-                    alt != None or \
-                    parallel_id_lastalt[sid] != None and alt == None:
-
-                    incidents.append(Error(
-                        level=2,
-                        testid='parallel-id-alt',
-                        testclass=TestClass.METADATA,
-                        message=(f"Some instances of parallel sentence '{sid}' have the 'alt' "
-                                "suffix while others do not.")
-                    ))
-                elif alt != None and alt != parallel_id_lastalt[sid] + 1:
-                    incidents.append(Error(
-                        level=2,
-                        testid='parallel-id-alt',
-                        testclass=TestClass.METADATA,
-                        message=(f"The alt suffix of parallel sentence '{sid}' should be"
-                                f"{parallel_id_lastalt[sid]}+1 but it is {alt}.")
-                    ))
-
-            parallel_id_lastalt[sid] = alt
-            if state:
-                state.parallel_id_lastalt[sid] = alt
-
-            if sid in parallel_id_lastpart:
-                #TODO: add parentheses to make precedence explicit
-                if parallel_id_lastpart[sid] == None and part != None or \
-                    parallel_id_lastpart[sid] != None and part == None:
-                    incidents.append(Error(
-                        testid='parallel-id-part',
-                        level=2,
-                        testclass=TestClass.METADATA,
-                        message=(f"Some instances of parallel sentence '{sid}' have the 'part' "
-                                "suffix while others do not.")
-                    ))
-
-                elif part != None and part != parallel_id_lastpart[sid] + 1:
-                    incidents.append(Error(
-                        testid='parallel-id-part',
-                        level=2,
-                        testclass=TestClass.METADATA,
-                        message=(f"The part suffix of parallel sentence '{sid}' should be "
-                                f"{parallel_id_lastpart[sid]}+1 but it is {part}.")
-                    ))
-            parallel_id_lastpart[sid] = part
-            if state:
-                state.parallel_id_lastpart[sid] = part
-    if state:
-        state.known_parallel_ids.add(pid)
-    return incidents
-
-#! needs checking and testing
-def check_text_meta(comments: List[Tuple[int, str]],
-                    sentence: List[Tuple[int, List[str]]],
-                    spaceafterno_in_effect:bool,
-                    state :State=None,
-                    **_) -> List[Incident]:
-    """check_text_meta checks metadata other than sentence id, that is, document breaks,
-    paragraph breaks and sentence text (which is also compared to the sequence of the
-    forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
-
-    Parameters
-    ----------
-    comments : List[Tuple[int, str]]
-        A list of comments, represented as strings.
-    sentence : List[Tuple[int, List[str]]]
-        A list of lists representing a sentence in tabular format.
-    spaceafterno_in_effect : bool
-        _description_
-
-    Returns
-    -------
-    List[Incident]
-        A list of Incidents (empty if validation is successful).
-    """
-
-    incidents = []
-
-    firstline = 0
-    newdoc_matched = []
-    newpar_matched = []
-    text_matched = []
-    for lineno, c in comments:
-        newdoc_match = utils.crex.newdoc.fullmatch(c)
-        if newdoc_match:
-            newdoc_matched.append((lineno, newdoc_match))
-        newpar_match = utils.crex.newpar.fullmatch(c)
-        if newpar_match:
-            newpar_matched.append((lineno, newpar_match))
-        text_match = utils.crex.text.fullmatch(c)
-        if text_match:
-            text_matched.append((lineno, text_match))
-
-        if firstline == 0:
-            firstline = lineno
-
-    if len(newdoc_matched) > 1:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            lineno=newdoc_matched[1][0],
-            testid='multiple-newdoc',
-            message='Multiple newdoc attributes.'
-        ))
-    if len(newpar_matched) > 1:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            lineno=newpar_matched[1][0],
-            testid='multiple-newpar',
-            message='Multiple newpar attributes.'
-        ))
-
-    if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            lineno=firstline,
-            testid='spaceafter-newdocpar',
-            message=("New document or paragraph starts when the last token of the previous "
-                    "sentence says SpaceAfter=No.")
-        ))
-
-    if not text_matched:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            lineno=firstline,
-            testid='missing-text',
-            message='Missing the text attribute.'
-        ))
-    elif len(text_matched) > 1:
-        incidents.append(Error(
-            testclass=TestClass.METADATA,
-            level=2,
-            lineno=text_match[1][0],
-            testid='multiple-text',
-            message='Multiple text attributes.'
-        ))
-    else:
-        lineno, text_matched = text_matched[0]
-        stext = text_matched.group(1)
-        if stext[-1].isspace():
-            incidents.append(Error(
-                testclass=TestClass.METADATA,
-                level=2,
-                lineno=lineno,
-                testid='text-trailing-whitespace',
-                message='The text attribute must not end with whitespace.'
-            ))
-
-        # Validate the text against the SpaceAfter attribute in MISC.
-        skip_words = set()
-        mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
-
-        for lineno, cols in sentence:
-            if 'NoSpaceAfter=Yes' in cols[utils.MISC]: # I leave this without the split("|") to catch all
-                incidents.append(Error(
-                    testclass=TestClass.METADATA,
-                    level=2,
-                    lineno=lineno,
-                    testid='nospaceafter-yes',
-                    message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
-                ))
-            misc_attributes_spaceafter = [x for x in cols[utils.MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']
-            if len(misc_attributes_spaceafter) > 0:
-                incidents.append(Error(
-                    testclass=TestClass.METADATA,
-                    level=2,
-                    lineno=lineno,
-                    testid='spaceafter-value',
-                    message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
-                ))
-
-            #? can we change the order of these conditions and avoid the 'continue'?
-            if utils.is_empty_node(cols):
-                if 'SpaceAfter=No' in cols[utils.MISC]: # I leave this without the split("|") to catch all
-                    incidents.append(Error(
-                        testclass=TestClass.METADATA,
-                        level=2,
-                        lineno=lineno,
-                        testid='spaceafter-empty-node',
-                        message="'SpaceAfter=No' cannot occur with empty nodes."
-                    ))
-                continue
-            elif utils.is_multiword_token(cols):
-                beg, end = cols[utils.ID].split('-')
-                begi, endi = int(beg), int(end)
-                # If we see a multi-word token, add its words to an ignore-set
-                # these will be skipped, and also checked for absence of SpaceAfter=No.
-                for i in range(begi, endi+1):
-                    skip_words.add(str(i))
-            elif cols[utils.ID] in skip_words:
-                if 'SpaceAfter=No' in cols[utils.MISC]:
-                    incidents.append(Error(
-                        testclass=TestClass.METADATA,
-                        level=2,
-                        lineno=lineno,
-                        testid='spaceafter-mwt-node',
-                        message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
-                    ))
-                continue
-            # else:
-                # Err, I guess we have nothing to do here. :)
-                # pass
-
-            # So now we have either a multi-word token or a word which is also a token in its entirety.
-            if not stext.startswith(cols[utils.FORM]):
-                if not mismatch_reported:
-                    extra_message = ''
-                    if len(stext) >= 1 and stext[0].isspace():
-                        extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
-                    incidents.append(Error(
-                        testclass=TestClass.METADATA,
-                        level=2,
-                        lineno = lineno,
-                        testid='text-form-mismatch',
-                        message=(f"Mismatch between the text attribute and the FORM field. "
-                                f"Form[{cols[utils.ID]}] is '{cols[utils.FORM]}' but text is "
-                                f"'{stext[:len(cols[utils.FORM])+20]}...'"+extra_message)
-                    ))
-                    mismatch_reported = 1
-            else:
-                stext = stext[len(cols[utils.FORM]):] # eat the form
-                # Remember if SpaceAfter=No applies to the last word of the sentence.
-                # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
-                #? do we need to do it for every word? Maybe just the last one
-                if 'SpaceAfter=No' in cols[utils.MISC].split("|"):
-                    if state:
-                        state.spaceafterno_in_effect = True
-                else:
-                    if state:
-                        state.spaceafterno_in_effect = False
-                    if (stext) and not stext[0].isspace():
-                        incidents.append(Error(
-                            testclass=TestClass.METADATA,
-                            level=2,
-                            lineno=lineno,
-                            testid='missing-spaceafter',
-                            message=(f"'SpaceAfter=No' is missing in the MISC field of node "
-                                    f"{cols[utils.ID]} because the text is '{utils.shorten(cols[utils.FORM]+stext)}'.")
-                        ))
-                    stext = stext.lstrip()
-        if stext:
-            incidents.append(Error(
-                testclass=TestClass.METADATA,
-                level=2,
-                lineno=lineno,
-                testid='text-extra-chars',
-                message=(f"Extra characters at the end of the text attribute, "
-                        f"not accounted for in the FORM fields: '{stext}'")
-            ))
-    return incidents
 
 #* DONE
 def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
-
-    """check_mwt_empty_vals checks that a multi-word token has _ empty values
-    in all fields except MISC.
+    """
+    Checks that a multi-word token has _ empty values in all fields except MISC.
     This is required by UD guidelines although it is not a problem in general,
     therefore a level 2 test.
 
@@ -1219,9 +749,7 @@ def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
     test-cases/invalid-functions/mwt-non-empty-field.conllu
     """
     lineno, cols = cols
-
     incidents = []
-
     if not utils.is_multiword_token(cols):
         return incidents
         # incidents = [Error(level=0,
@@ -1229,7 +757,6 @@ def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
         #             testid='internal-error')]
         # logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
         # return incidents
-
     # all columns except the first two (ID, FORM) and the last one (MISC)
     for col_idx in range(utils.LEMMA, utils.MISC):
 
@@ -1244,12 +771,13 @@ def check_mwt_empty_vals(cols: Tuple[int,List[str]], **_) -> List[Incident]:
                     )
             )
             logger.debug("'mwt-nonempty-field' triggered by column '%s'", utils.COLNAMES[col_idx])
-
     return incidents
+
 
 #? change testid
 def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
-    """check_empty_node_empty_vals checks that an empty node has _ empty values in HEAD and DEPREL.
+    """
+    Checks that an empty node has _ empty values in HEAD and DEPREL.
     This is required by UD guidelines but not necessarily by CoNLL-U, therefore
     a level 2 test.
 
@@ -1273,14 +801,12 @@ def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
     """
     lineno, cols = cols
     incidents = []
-
     if not utils.is_empty_node(cols):
         return incidents
         # incidents = [Error(level=0,
         #             testclass=TestClass.INTERNAL,
         #             testid='internal-error')]
         # logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-
     for col_idx in (utils.HEAD, utils.DEPREL):
         if cols[col_idx]!= '_':
             #? check testid
@@ -1293,69 +819,8 @@ def check_empty_node_empty_vals(cols: Tuple[int,List[str]]) -> List[Incident]:
                     lineno=lineno
             ))
         logger.debug("'mwt-nonempty-field' triggered by column '%s'", utils.COLNAMES[col_idx])
-
     return incidents
 
-#! proposal: rename into check_deps_deprel_contraints, or also check UPOS format (not value)
-#! I don't like that it relies on utils.crex
-def check_character_constraints(cols):
-    """
-    Checks general constraints on valid characters, e.g. that UPOS
-    only contains [A-Z].
-
-    Parameters
-    ----------
-    cols : list
-        The values of the columns on the current node / token line.
-    """
-    incidents = []
-    if utils.is_multiword_token(cols):
-        logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-        return incidents
-
-    # Do not test the regular expression utils.crex.upos here. We will test UPOS
-    # directly against the list of known tags. That is a level 2 test, too.
-
-    if utils.is_empty_node(cols) and cols[utils.DEPREL] == '_':
-        logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-        return incidents
-
-    if not utils.crex.deprel.fullmatch(cols[utils.DEPREL]):
-        incidents.append(
-            Error(
-                level=2,
-                testclass=TestClass.SYNTAX,
-                testid='invalid-deprel',
-                message=f"Invalid DEPREL value '{cols[utils.DEPREL]}'. Only lowercase"
-            )
-        )
-
-    try:
-        deps = utils.deps_list(cols)
-    except ValueError:
-        incidents.append(
-            Error(
-                    level=2,
-                    testclass=TestClass.ENHANCED,
-                    testid='invalid-deps',
-                    message=f"Failed to parse DEPS: '{cols[utils.DEPS]}'."
-            )
-        )
-        logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-        return incidents
-
-    for _, edep in deps:
-        if not utils.crex.edeprel.fullmatch(edep):
-            incidents.append(
-                Error(
-                    level=2,
-                    testclass=TestClass.ENHANCED,
-                    testid='invalid-edeprel',
-                    message=f"Invalid enhanced relation type: '{edep}' in '{cols[utils.DEPS]}'."
-                )
-            )
-    logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
-    return incidents
 
 def check_upos(cols, specs):
     """
@@ -1373,11 +838,9 @@ def check_upos(cols, specs):
     if utils.is_multiword_token(cols) and cols[utils.UPOS] == '_':
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
         return incidents
-
     if utils.is_empty_node(cols) and cols[utils.UPOS] == '_':
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
         return incidents
-
     # Just in case, we still match UPOS against the regular expression that
     # checks general character constraints. However, the list of UPOS, loaded
     # from a JSON file, should conform to the regular expression.
@@ -1390,12 +853,11 @@ def check_upos(cols, specs):
                 message=f"Unknown UPOS tag: '{cols[utils.UPOS]}'."
             )
         )
-
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
 
-# ! proposal: rename into feature format or something alike
-def check_features_level2(cols):
+
+def check_feats_format(cols):
     """
     Checks general constraints on feature-value format: Permitted characters in
     feature name and value, features must be sorted alphabetically, features
@@ -1408,13 +870,10 @@ def check_features_level2(cols):
 
     """
     incidents = []
-
     feats = cols[utils.FEATS]
     if feats == '_':
         return incidents
-
     # self.features_present(state) # TODO: do elsewhere
-
     feat_list = feats.split('|') #! why not a function in utils? Like the one that gets deps
     if [f.lower() for f in feat_list] != list(sorted(f.lower() for f in feat_list)):
         incidents.append(
@@ -1425,11 +884,9 @@ def check_features_level2(cols):
                 message=f"Morphological features must be alphabetically sorted: '{feats}'."
             )
         )
-
     # I'll gather the set of features here to check later that none is repeated.
     attr_set = set()
     # Level 2 tests character properties and canonical order but not that the f-v pair is known.
-
     for feat_val in feat_list:
         match = utils.crex.featval.fullmatch(feat_val)
         if not match:
@@ -1441,10 +898,8 @@ def check_features_level2(cols):
                     message=f"Spurious morphological feature: '{feat_val}'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9]."
                 )
             )
-
             # to prevent misleading error "Repeated features are disallowed"
             attr_set.add(feat_val)
-
         else:
             # Check that the values are sorted as well
             attr = match.group(1)
@@ -1478,7 +933,6 @@ def check_features_level2(cols):
                             message=f"Spurious value '{v}' in '{feat_val}'. Must start with [A-Z0-9] and only contain [A-Za-z0-9]."
                         )
                     )
-
     if len(attr_set) != len(feat_list):
         incidents.append(
             Error(
@@ -1488,12 +942,68 @@ def check_features_level2(cols):
                 message=f"Repeated features are disallowed: '{feats}'."
             )
         )
-
     # Subsequent higher-level tests could fail if a feature is not in the
     # Feature=Value format. If that happens, we return False and the caller
     # can skip the more fragile tests.
     # TODO: the engine has to know that 'invalid-feature' is a testid that prevents from further testing
     return incidents
+
+
+###!!! Split to check_deprel_format() and check_deps_format().
+def check_deprel_format(cols):
+    """
+    Checks general constraints on valid characters, e.g. that UPOS
+    only contains [A-Z].
+
+    Parameters
+    ----------
+    cols : list
+        The values of the columns on the current node / token line.
+    """
+    incidents = []
+    if utils.is_multiword_token(cols):
+        logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+        return incidents
+    # Do not test the regular expression utils.crex.upos here. We will test UPOS
+    # directly against the list of known tags. That is a level 2 test, too.
+    if utils.is_empty_node(cols) and cols[utils.DEPREL] == '_':
+        logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+        return incidents
+    if not utils.crex.deprel.fullmatch(cols[utils.DEPREL]):
+        incidents.append(
+            Error(
+                level=2,
+                testclass=TestClass.SYNTAX,
+                testid='invalid-deprel',
+                message=f"Invalid DEPREL value '{cols[utils.DEPREL]}'. Only lowercase"
+            )
+        )
+    try:
+        deps = utils.deps_list(cols)
+    except ValueError:
+        incidents.append(
+            Error(
+                    level=2,
+                    testclass=TestClass.ENHANCED,
+                    testid='invalid-deps',
+                    message=f"Failed to parse DEPS: '{cols[utils.DEPS]}'."
+            )
+        )
+        logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+        return incidents
+    for _, edep in deps:
+        if not utils.crex.edeprel.fullmatch(edep):
+            incidents.append(
+                Error(
+                    level=2,
+                    testclass=TestClass.ENHANCED,
+                    testid='invalid-edeprel',
+                    message=f"Invalid enhanced relation type: '{edep}' in '{cols[utils.DEPS]}'."
+                )
+            )
+    logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+    return incidents
+
 
 # TODO: write tests
 def check_deps(cols):
@@ -1513,27 +1023,22 @@ def check_deps(cols):
     cols : list
         The values of the columns on the current node / token line.
     """
-
     # TODO: the engine must assume that it is run after check_id_references() and only if DEPS is parsable and the head indices in it are OK.
-
     incidents = []
     if not (utils.is_word(cols) or utils.is_empty_node(cols)):
         logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
         return incidents
-
     # TODO: move elsewhere
     # Remember whether there is at least one difference between the basic
     # tree and the enhanced graph in the entire dataset.
     #if cols[utils.DEPS] != '_' and cols[utils.DEPS] != cols[utils.HEAD]+':'+cols[utils.DEPREL]:
     #    state.seen_enhancement = line
-
     # We already know that the contents of DEPS is parsable (deps_list() was
     # first called from check_id_references() and the head indices are OK).
     deps = utils.deps_list(cols)
     ###!!! Float will not work if there are 10 empty nodes between the same two
     ###!!! regular nodes. '1.10' is not equivalent to '1.1'.
     # ORIGINAL VERSION: heads = [float(h) for h, d in deps]
-
     # NEW VERSION:
     #! maybe do this only if [0-9]+.[1-9][0-9]+ is present somewhere?
     heads = [h for h, _ in deps]
@@ -1551,7 +1056,6 @@ def check_deps(cols):
             hacked_heads_sorted.append(x[:y])
         else:
             hacked_heads_sorted.append(x)
-
     # if heads != sorted(heads): # sort strings keeping the integer-like ordering
     if heads != hacked_heads_restored:
         incidents.append(
@@ -1587,14 +1091,12 @@ def check_deps(cols):
                     )
             lasth = h
             lastd = d
-
     try:
         id_ = float(cols[utils.ID])
     except ValueError:
         # This error has been reported previously.
         # TODO: check, before there was just a return
         return incidents
-
     if id_ in heads:
         incidents.append(
             Error(
@@ -1604,8 +1106,84 @@ def check_deps(cols):
                 message=f"Self-loop in DEPS for '{cols[utils.ID]}'"
             )
         )
-
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
+    return incidents
+
+
+def check_udeprels(node, deprels, lang):
+    """
+    Checks that a dependency relation label is listed as approved in the given
+    language. As a language-specific test, this function generally belongs to
+    level 4, but it can be also used on levels 2 and 3, in which case it will
+    check only the main dependency type and ignore any subtypes.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose incoming relation will be validated.
+    deprels: TODO
+    lang: TODO
+    """
+    # List of permited relations is language-specific.
+    # The current token may be in a different language due to code switching.
+    # Unlike with features and auxiliaries, with deprels it is less clear
+    # whether we want to switch the set of labels when the token belongs to
+    # another language. Especially with subtypes that are not so much language
+    # specific. For example, we may have allowed 'flat:name' for our language,
+    # the maintainers of the other language have not allowed it, and then we
+    # could not use it when the foreign language is active. (This actually
+    # happened in French GSD.) We will thus allow the union of the main and the
+    # alternative deprelset when both the parent and the child belong to the
+    # same alternative language. Otherwise, only the main deprelset is allowed.
+    incidents = []
+    naltlang = utils.get_alt_language(node)
+    # The basic relation should be tested on regular nodes but not on empty nodes.
+    if not node.is_empty():
+        paltlang = utils.get_alt_language(node.parent)
+
+          # Test only the universal part if testing at universal level.
+        deprel = node.udeprel
+        check = False
+        if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
+            check = True
+        if naltlang != None and naltlang != lang and naltlang == paltlang:
+            if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
+                check = True
+        if not check:
+            incidents.append(
+                Error(
+                    level=2,
+                    testclass=TestClass.SYNTAX,
+                    testid='unknown-deprel',
+                    message=f"Unknown DEPREL label: '{deprel}'"
+                )
+            )
+    # If there are enhanced dependencies, test their deprels, too.
+    # We already know that the contents of DEPS is parsable (deps_list() was
+    # first called from validate_id_references() and the head indices are OK).
+    # The order of enhanced dependencies was already checked in validate_deps().
+    if str(node.deps) != '_':
+        # main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+        # alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+        for edep in node.deps:
+            parent = edep['parent']
+            deprel = utils.lspec2ud(edep['deprel'])
+            paltlang = utils.get_alt_language(parent)
+            check = False
+            if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
+                check = True
+            if naltlang != None and naltlang != lang and naltlang == paltlang:
+                if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
+                    check = True
+            if not check:
+                incidents.append(
+                    Error(
+                        level=2,
+                        testclass=TestClass.ENHANCED,
+                        testid='unknown-edeprel',
+                        message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+                    )
+                )
     return incidents
 
 
@@ -1626,12 +1204,9 @@ def check_misc(cols):
     cols : list
         The values of the columns on the current node / token line.
     """
-
     incidents = []
-
     if cols[utils.MISC] == '_':
         return incidents
-
     misc = [ma.split('=', 1) for ma in cols[utils.MISC].split('|')] #! why not using a function in utils? Just like the one for features
     mamap = collections.defaultdict(int)
     for ma in misc:
@@ -1666,7 +1241,6 @@ def check_misc(cols):
                 message=f"MISC attribute: leading or trailing extra space in '{'='.join(ma)}'."
             )
             )
-
         if re.match(r"^(SpaceAfter|Lang|Translit|LTranslit|Gloss|LId|LDeriv)$", ma[0]):
             mamap[ma[0]] += 1
         elif re.match(r"^\s*(spaceafter|lang|translit|ltranslit|gloss|lid|lderiv)\s*$", ma[0], re.IGNORECASE):
@@ -1676,9 +1250,7 @@ def check_misc(cols):
                     testid='misc-attr-typo',
                     message=f"Possible typo (case or spaces) in MISC attribute '{'='.join(ma)}'."
                 )
-
             )
-
     for ma in mamap:
         if mamap[ma] > 1:
             incidents.append(
@@ -1689,69 +1261,8 @@ def check_misc(cols):
                     message=f"MISC attribute '{ma}' not supposed to occur twice"
                 )
             )
-
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
-
-# TODO: write tests
-def check_deps_all_or_none(sentence, seen_enhanced_graph):
-    """
-    Takes the list of non-comment lines (line = list of columns) describing
-    a sentence. Checks that enhanced dependencies are present if they were
-    present at another sentence, and absent if they were absent at another
-    sentence.
-    """
-    incidents = []
-    egraph_exists = False # enhanced deps are optional
-    for cols in sentence:
-        # if utils.is_multiword_token(cols):
-        #     continue
-        if not utils.is_multiword_token(cols) and (utils.is_empty_node(cols) or cols[utils.DEPS] != '_'):
-            egraph_exists = True
-
-    # We are currently testing the existence of enhanced graphs separately for each sentence.
-    # However, we should not allow that one sentence has a connected egraph and another
-    # has no enhanced dependencies. Such inconsistency could come as a nasty surprise
-    # to the users.
-    if egraph_exists:
-        if not seen_enhanced_graph:
-            # TODO: do elsewhere
-            # state.seen_enhanced_graph = state.sentence_line
-            incidents.append(
-                Error(
-                    testclass=TestClass.ENHANCED,
-                    testid='edeps-only-sometimes',
-                    message=f"Enhanced graph must be empty because we saw empty DEPS earlier."
-                )
-            )
-            #! we should add something to this message in the engine where we have access to the state:
-            #on line {state.seen_tree_without_enhanced_graph}
-
-    else:
-#        if not state.seen_tree_without_enhanced_graph:
-            # TODO: do elsewhere
-#              state.seen_tree_without_enhanced_graph = state.sentence_line
-            if seen_enhanced_graph:
-                incidents.append(
-                    Error(
-                        level=2,
-                        testid='edeps-only-sometimes',
-                        message=f"Enhanced graph cannot be empty because we saw non-empty DEPS earlier."
-                    )
-                )
-                #! we should add something to this message in the engine where we have access to the state:
-                #  on line {state.seen_enhanced_graph}
-
-    return incidents
-
-
-# TODO: move elsewhere
-# # If a multi-word token has Typo=Yes, its component words must not have it.
-#             # We must remember the span of the MWT and check it in check_features_level4().
-#             m = utils.crex.mwtid.fullmatch(cols[ID])
-#             state.mwt_typo_span_end = m.group(2)
-
-
 
 
 def check_id_references(sentence):
@@ -1813,6 +1324,7 @@ def check_id_references(sentence):
                 ))
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
+
 
 def check_tree(sentence, node_line, single_root):
     """
@@ -1896,186 +1408,8 @@ def check_tree(sentence, node_line, single_root):
     logger.debug("%d incidents occurred in %s", len(incidents), inspect.stack()[0][3])
     return incidents
 
-def check_deprels_level2(node, deprels, lang):
-    """
-    Checks that a dependency relation label is listed as approved in the given
-    language. As a language-specific test, this function generally belongs to
-    level 4, but it can be also used on levels 2 and 3, in which case it will
-    check only the main dependency type and ignore any subtypes.
 
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The node whose incoming relation will be validated.
-    deprels: TODO
-    lang: TODO
-    """
-
-    # List of permited relations is language-specific.
-    # The current token may be in a different language due to code switching.
-    # Unlike with features and auxiliaries, with deprels it is less clear
-    # whether we want to switch the set of labels when the token belongs to
-    # another language. Especially with subtypes that are not so much language
-    # specific. For example, we may have allowed 'flat:name' for our language,
-    # the maintainers of the other language have not allowed it, and then we
-    # could not use it when the foreign language is active. (This actually
-    # happened in French GSD.) We will thus allow the union of the main and the
-    # alternative deprelset when both the parent and the child belong to the
-    # same alternative language. Otherwise, only the main deprelset is allowed.
-
-    incidents = []
-
-    naltlang = utils.get_alt_language(node)
-
-    # The basic relation should be tested on regular nodes but not on empty nodes.
-    if not node.is_empty():
-        paltlang = utils.get_alt_language(node.parent)
-
-          # Test only the universal part if testing at universal level.
-        deprel = node.udeprel
-        check = False
-        if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
-            check = True
-
-        if naltlang != None and naltlang != lang and naltlang == paltlang:
-            if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
-                check = True
-
-        if not check:
-            incidents.append(
-                Error(
-                    level=2,
-                    testclass=TestClass.SYNTAX,
-                    testid='unknown-deprel',
-                    message=f"Unknown DEPREL label: '{deprel}'"
-                )
-            )
-    # If there are enhanced dependencies, test their deprels, too.
-    # We already know that the contents of DEPS is parsable (deps_list() was
-    # first called from validate_id_references() and the head indices are OK).
-    # The order of enhanced dependencies was already checked in validate_deps().
-    if str(node.deps) != '_':
-        # main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
-        # alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
-        for edep in node.deps:
-            parent = edep['parent']
-            deprel = utils.lspec2ud(edep['deprel'])
-            paltlang = utils.get_alt_language(parent)
-
-            check = False
-            if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
-                check = True
-
-            if naltlang != None and naltlang != lang and naltlang == paltlang:
-                if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
-                    check = True
-
-            if not check:
-                incidents.append(
-                    Error(
-                        level=2,
-                        testclass=TestClass.ENHANCED,
-                        testid='unknown-edeprel',
-                        message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
-                    )
-                )
-
-    return incidents
-
-def check_deprels_level4(node, deprels, lang):
-    """
-    Checks that a dependency relation label is listed as approved in the given
-    language. As a language-specific test, this function generally belongs to
-    level 4, but it can be also used on levels 2 and 3, in which case it will
-    check only the main dependency type and ignore any subtypes.
-
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The node whose incoming relation will be validated.
-    line : int
-        Number of the line where the node occurs in the file.
-    """
-
-    # List of permited relations is language-specific.
-    # The current token may be in a different language due to code switching.
-    # Unlike with features and auxiliaries, with deprels it is less clear
-    # whether we want to switch the set of labels when the token belongs to
-    # another language. Especially with subtypes that are not so much language
-    # specific. For example, we may have allowed 'flat:name' for our language,
-    # the maintainers of the other language have not allowed it, and then we
-    # could not use it when the foreign language is active. (This actually
-    # happened in French GSD.) We will thus allow the union of the main and the
-    # alternative deprelset when both the parent and the child belong to the
-    # same alternative language. Otherwise, only the main deprelset is allowed.
-
-    incidents = []
-
-    naltlang = utils.get_alt_language(node)
-
-    # The basic relation should be tested on regular nodes but not on empty nodes.
-    if not node.is_empty():
-        paltlang = utils.get_alt_language(node.parent)
-
-          # main_deprelset = self.specs.get_deprel_for_language(mainlang)
-        # alt_deprelset = set()
-        # if naltlang != None and naltlang != mainlang and naltlang == paltlang:
-            # alt_deprelset = self.specs.get_deprel_for_language(naltlang)
-
-          # Test only the universal part if testing at universal level.
-        deprel = node.deprel
-
-        check = False
-        if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
-            check = True
-
-        if naltlang != None and naltlang != lang and naltlang == paltlang:
-            if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
-                check = True
-
-        if not check:
-            incidents.append(
-                Error(
-                    level=4,
-                    testclass=TestClass.SYNTAX,
-                    testid='unknown-deprel',
-                    message=f"Unknown DEPREL label: '{deprel}'"
-                )
-            )
-    # If there are enhanced dependencies, test their deprels, too.
-    # We already know that the contents of DEPS is parsable (deps_list() was
-    # first called from validate_id_references() and the head indices are OK).
-    # The order of enhanced dependencies was already checked in validate_deps().
-    # Incident.default_testclass = 'Enhanced'
-    if str(node.deps) != '_':
-        # main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
-        # alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
-        for edep in node.deps:
-            parent = edep['parent']
-            deprel = edep['deprel']
-            paltlang = utils.get_alt_language(parent)
-
-            check = False
-            if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
-                check = True
-
-            if naltlang != None and naltlang != lang and naltlang == paltlang:
-                if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
-                    check = True
-
-            if not check:
-                incidents.append(
-                    Error(
-                        level=4,
-                        testclass=TestClass.ENHANCED,
-                        testid='unknown-edeprel',
-                        message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
-                    )
-                )
-
-    return incidents
-
-def check_root(node):
+def check_zero_root(node):
     """
     Checks that DEPREL is "root" iff HEAD is 0.
 
@@ -2124,6 +1458,585 @@ def check_root(node):
                 message="Enhanced relation type cannot be 'root' if head is not 0."
             ))
     return incidents
+
+
+# TODO: write tests
+def check_deps_all_or_none(sentence, seen_enhanced_graph):
+    """
+    Takes the list of non-comment lines (line = list of columns) describing
+    a sentence. Checks that enhanced dependencies are present if they were
+    present at another sentence, and absent if they were absent at another
+    sentence.
+    """
+    incidents = []
+    egraph_exists = False # enhanced deps are optional
+    for cols in sentence:
+        # if utils.is_multiword_token(cols):
+        #     continue
+        if not utils.is_multiword_token(cols) and (utils.is_empty_node(cols) or cols[utils.DEPS] != '_'):
+            egraph_exists = True
+    # We are currently testing the existence of enhanced graphs separately for each sentence.
+    # However, we should not allow that one sentence has a connected egraph and another
+    # has no enhanced dependencies. Such inconsistency could come as a nasty surprise
+    # to the users.
+    if egraph_exists:
+        if not seen_enhanced_graph:
+            # TODO: do elsewhere
+            # state.seen_enhanced_graph = state.sentence_line
+            incidents.append(
+                Error(
+                    testclass=TestClass.ENHANCED,
+                    testid='edeps-only-sometimes',
+                    message="Enhanced graph must be empty because we saw empty DEPS earlier."
+                )
+            )
+            #! we should add something to this message in the engine where we have access to the state:
+            #on line {state.seen_tree_without_enhanced_graph}
+    else:
+#        if not state.seen_tree_without_enhanced_graph:
+            # TODO: do elsewhere
+#              state.seen_tree_without_enhanced_graph = state.sentence_line
+            if seen_enhanced_graph:
+                incidents.append(
+                    Error(
+                        level=2,
+                        testid='edeps-only-sometimes',
+                        message="Enhanced graph cannot be empty because we saw non-empty DEPS earlier."
+                    )
+                )
+                #! we should add something to this message in the engine where we have access to the state:
+                #  on line {state.seen_enhanced_graph}
+    return incidents
+
+
+#* DONE
+def check_sent_id(comments: List[Tuple[int, str]],
+                allow_slash: bool,
+                known_sent_ids: Set,
+                state:State = None,
+                **_) -> List[Incident]:
+    """check_sent_id checks that sentence id exists, is well-formed and unique.
+
+    Parameters
+    ----------
+    comments : List[Tuple[int, str]]
+        A list of comments, represented as strings.
+    allow_slash : bool
+        Whether exactly one "/" character is allowed (this is reserved for
+        parallel treebanks). This parameter replaces lang, which was used to
+        allow slashes when equal to "ud".
+    known_sent_ids : Set
+        The set of previously encountered sentence IDs.
+    state : State, optional
+        The object where known_sent_ids are stored and updated, by default None
+
+    Returns
+    -------
+    List[Incident]
+        A list of Incidents (empty if validation is successful).
+
+    Test-ids
+    --------
+    invalid-sent-id, missing-sent-id, multiple-sent-id, non-unique-sent-id, slash-in-sent-id
+
+    Reference-test
+    --------------
+    test-cases/invalid-functions/multiple-sent-id.conllu
+    """
+    incidents = []
+    matched = []
+    firstmatch = -1
+    for lineno, c in comments:
+        match = utils.crex.sentid.fullmatch(c)
+        if match:
+            matched.append(match)
+            firstmatch = lineno
+        else:
+            if c.startswith('# sent_id') or c.startswith('#sent_id'):
+            # if 'sent_id' in c:
+                incidents.append(Error(
+                    testclass=TestClass.METADATA,
+                    level=2,
+                    testid='invalid-sent-id',
+                    message=(f"Spurious sent_id line: '{c}' should look like '# sent_id = xxxxx' "
+                        "where xxxxx is not whitespace. Forward slash reserved for special purposes."),
+                    lineno = lineno
+                ))
+                logger.debug("'invalid-sent-id' triggered by line '%s'", c)
+    if not matched:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            testid='missing-sent-id',
+            message='Missing the sent_id attribute.',
+            lineno=comments[0][0]
+        ))
+        logger.debug("'missing-sent-id' triggered by comments '%s'", '\n'.join([c for _, c in comments]))
+    elif len(matched) > 1:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            testid='multiple-sent-id',
+            message='Multiple sent_id attributes.',
+            lineno=comments[0][0]
+        ))
+        logger.debug("'multiple-sent-id' triggered by comments '%s'", '\n'.join([c for _, c in comments]))
+    else:
+        # Uniqueness of sentence ids should be tested treebank-wide, not just file-wide.
+        # For that to happen, all three files should be tested at once.
+        sid = matched[0].group(1)
+        if sid in known_sent_ids:
+            incidents.append(Error(
+                testclass=TestClass.METADATA,
+                level=2,
+                testid='non-unique-sent-id',
+                message=f"Non-unique sent_id attribute '{sid}'.",
+                lineno=firstmatch
+            ))
+            logger.debug("'non-unique-sent-id' triggered by sid '%s'", sid)
+        if sid.count('/') > 1 or (sid.count('/') == 1 and allow_slash):
+            incidents.append(Error(
+                testclass=TestClass.METADATA,
+                level=2,
+                testid='slash-in-sent-id',
+                message=f"The forward slash is reserved for special use in parallel treebanks: '{sid}'",
+                lineno=firstmatch
+            ))
+            logger.debug("'slash-in-sent-id' triggered by sid '%s'", sid)
+        if state:
+            state.known_sent_ids.add(sid)
+    return incidents
+
+
+#! needs checking and testing, I don't think it works
+def check_parallel_id(comments: List[Tuple[int, str]],
+                    known_parallel_ids: Set,
+                    parallel_id_lastalt: Any, #TODO: define type
+                    parallel_id_lastpart: Any, #TODO: define type
+                    state: State=None,
+                    **_ ) -> List[Incident]:
+    """check_parallel_id checks that parallel_id sentence-level comment
+    is used after sent_id of sentences that are parallel translations of sentences in other
+    treebanks. Like sent_id, it must be well-formed and unique. Unlike
+    sent_id, it is optional. Sentences that do not have it are not
+    parallel.
+
+    Parameters
+    ----------
+    comments : List[Tuple[int, str]]
+        _description_
+    known_parallel_ids : Set
+        _description_
+    parallel_id_lastalt : Any
+        _description_
+    state : State, optional
+        The object where known_sent_ids are stored and updated, by default None
+
+    Returns
+    -------
+    List[Incident]
+        A list of Incidents (empty if validation is successful).
+
+    Test-ids
+    --------
+    invalid-parallel-id, multiple-parallel-id, non-unique-parallel-id, parallel-id-alt,
+    parallel-id-part
+
+    Reference-test
+    --------------
+    TODO
+    """
+    incidents = []
+    matched = []
+    for lineno, c in comments:
+        match = utils.crex.parallelid.fullmatch(c)
+        if match:
+            matched.append((lineno, match))
+        else:
+            if c.startswith('# parallel_id') or c.startswith('#parallel_id'):
+                error = Error(
+                    level=2,
+                    testclass=TestClass.METADATA,
+                    lineno=lineno,
+                    testid='invalid-parallel-id',
+                    message=(f"Spurious parallel_id line: '{c}' should look like "
+                            "'# parallel_id = corpus/sentence' where corpus is [a-z]+ "
+                            "and sentence is [-0-9a-z]. "
+                            "Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.")
+                )
+                incidents.append(error)
+
+    if len(matched) > 1:
+        incidents.append(Error(
+            level=2,
+            testclass=TestClass.METADATA,
+            testid='multiple-parallel-id',
+            lineno=matched[1][0], # error on second parallel_id found
+            message="Multiple parallel_id attributes."
+        ))
+    elif matched:
+        lineno, match = matched[0]
+        # Uniqueness of parallel ids should be tested treebank-wide, not just file-wide.
+        # For that to happen, all three files should be tested at once.
+        pid = match.group(1)
+        if pid in known_parallel_ids:
+            incidents.append(Error(
+                level=2,
+                testclass=TestClass.METADATA,
+                testid='non-unique-parallel-id',
+                lineno=lineno,
+                message=f"Non-unique parallel_id attribute '{pid}'."
+            ))
+        else:
+            # Additional tests when pid has altN or partN.
+            # Do them only if the whole pid is unique.
+            sid = match.group(2) + '/' + match.group(3)
+            alt = None
+            part = None
+            altpart = match.group(4)
+            if altpart:
+                apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
+                if apmatch:
+                    alt = apmatch.group(1)
+                    part = apmatch.group(2)
+                    if alt:
+                        alt = int(alt)
+                    if part:
+                        part = int(part)
+            if sid in parallel_id_lastalt:
+                # TODO: add parentheses to make precedence explicit
+                if parallel_id_lastalt[sid] == None and \
+                    alt != None or \
+                    parallel_id_lastalt[sid] != None and alt == None:
+
+                    incidents.append(Error(
+                        level=2,
+                        testid='parallel-id-alt',
+                        testclass=TestClass.METADATA,
+                        message=(f"Some instances of parallel sentence '{sid}' have the 'alt' "
+                                "suffix while others do not.")
+                    ))
+                elif alt != None and alt != parallel_id_lastalt[sid] + 1:
+                    incidents.append(Error(
+                        level=2,
+                        testid='parallel-id-alt',
+                        testclass=TestClass.METADATA,
+                        message=(f"The alt suffix of parallel sentence '{sid}' should be"
+                                f"{parallel_id_lastalt[sid]}+1 but it is {alt}.")
+                    ))
+            parallel_id_lastalt[sid] = alt
+            if state:
+                state.parallel_id_lastalt[sid] = alt
+            if sid in parallel_id_lastpart:
+                #TODO: add parentheses to make precedence explicit
+                if parallel_id_lastpart[sid] == None and part != None or \
+                    parallel_id_lastpart[sid] != None and part == None:
+                    incidents.append(Error(
+                        testid='parallel-id-part',
+                        level=2,
+                        testclass=TestClass.METADATA,
+                        message=(f"Some instances of parallel sentence '{sid}' have the 'part' "
+                                "suffix while others do not.")
+                    ))
+
+                elif part != None and part != parallel_id_lastpart[sid] + 1:
+                    incidents.append(Error(
+                        testid='parallel-id-part',
+                        level=2,
+                        testclass=TestClass.METADATA,
+                        message=(f"The part suffix of parallel sentence '{sid}' should be "
+                                f"{parallel_id_lastpart[sid]}+1 but it is {part}.")
+                    ))
+            parallel_id_lastpart[sid] = part
+            if state:
+                state.parallel_id_lastpart[sid] = part
+    if state:
+        state.known_parallel_ids.add(pid)
+    return incidents
+
+
+#! needs checking and testing
+def check_text_meta(comments: List[Tuple[int, str]],
+                    sentence: List[Tuple[int, List[str]]],
+                    spaceafterno_in_effect:bool,
+                    state :State=None,
+                    **_) -> List[Incident]:
+    """check_text_meta checks metadata other than sentence id, that is, document breaks,
+    paragraph breaks and sentence text (which is also compared to the sequence of the
+    forms of individual tokens, and the spaces vs. SpaceAfter=No in MISC).
+
+    Parameters
+    ----------
+    comments : List[Tuple[int, str]]
+        A list of comments, represented as strings.
+    sentence : List[Tuple[int, List[str]]]
+        A list of lists representing a sentence in tabular format.
+    spaceafterno_in_effect : bool
+        _description_
+
+    Returns
+    -------
+    List[Incident]
+        A list of Incidents (empty if validation is successful).
+    """
+    incidents = []
+    firstline = 0
+    newdoc_matched = []
+    newpar_matched = []
+    text_matched = []
+    for lineno, c in comments:
+        newdoc_match = utils.crex.newdoc.fullmatch(c)
+        if newdoc_match:
+            newdoc_matched.append((lineno, newdoc_match))
+        newpar_match = utils.crex.newpar.fullmatch(c)
+        if newpar_match:
+            newpar_matched.append((lineno, newpar_match))
+        text_match = utils.crex.text.fullmatch(c)
+        if text_match:
+            text_matched.append((lineno, text_match))
+        if firstline == 0:
+            firstline = lineno
+    if len(newdoc_matched) > 1:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            lineno=newdoc_matched[1][0],
+            testid='multiple-newdoc',
+            message='Multiple newdoc attributes.'
+        ))
+    if len(newpar_matched) > 1:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            lineno=newpar_matched[1][0],
+            testid='multiple-newpar',
+            message='Multiple newpar attributes.'
+        ))
+    if (newdoc_matched or newpar_matched) and spaceafterno_in_effect:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            lineno=firstline,
+            testid='spaceafter-newdocpar',
+            message=("New document or paragraph starts when the last token of the previous "
+                    "sentence says SpaceAfter=No.")
+        ))
+    if not text_matched:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            lineno=firstline,
+            testid='missing-text',
+            message='Missing the text attribute.'
+        ))
+    elif len(text_matched) > 1:
+        incidents.append(Error(
+            testclass=TestClass.METADATA,
+            level=2,
+            lineno=text_match[1][0],
+            testid='multiple-text',
+            message='Multiple text attributes.'
+        ))
+    else:
+        lineno, text_matched = text_matched[0]
+        stext = text_matched.group(1)
+        if stext[-1].isspace():
+            incidents.append(Error(
+                testclass=TestClass.METADATA,
+                level=2,
+                lineno=lineno,
+                testid='text-trailing-whitespace',
+                message='The text attribute must not end with whitespace.'
+            ))
+        # Validate the text against the SpaceAfter attribute in MISC.
+        skip_words = set()
+        mismatch_reported = 0 # do not report multiple mismatches in the same sentence; they usually have the same cause
+        for lineno, cols in sentence:
+            if 'NoSpaceAfter=Yes' in cols[utils.MISC]: # I leave this without the split("|") to catch all
+                incidents.append(Error(
+                    testclass=TestClass.METADATA,
+                    level=2,
+                    lineno=lineno,
+                    testid='nospaceafter-yes',
+                    message="'NoSpaceAfter=Yes' should be replaced with 'SpaceAfter=No'."
+                ))
+            misc_attributes_spaceafter = [x for x in cols[utils.MISC].split('|') if re.match(r"^SpaceAfter=", x) and x != 'SpaceAfter=No']
+            if len(misc_attributes_spaceafter) > 0:
+                incidents.append(Error(
+                    testclass=TestClass.METADATA,
+                    level=2,
+                    lineno=lineno,
+                    testid='spaceafter-value',
+                    message="Unexpected value of the 'SpaceAfter' attribute in MISC. Did you mean 'SpacesAfter'?"
+                ))
+
+            #? can we change the order of these conditions and avoid the 'continue'?
+            if utils.is_empty_node(cols):
+                if 'SpaceAfter=No' in cols[utils.MISC]: # I leave this without the split("|") to catch all
+                    incidents.append(Error(
+                        testclass=TestClass.METADATA,
+                        level=2,
+                        lineno=lineno,
+                        testid='spaceafter-empty-node',
+                        message="'SpaceAfter=No' cannot occur with empty nodes."
+                    ))
+                continue
+            elif utils.is_multiword_token(cols):
+                beg, end = cols[utils.ID].split('-')
+                begi, endi = int(beg), int(end)
+                # If we see a multi-word token, add its words to an ignore-set
+                # these will be skipped, and also checked for absence of SpaceAfter=No.
+                for i in range(begi, endi+1):
+                    skip_words.add(str(i))
+            elif cols[utils.ID] in skip_words:
+                if 'SpaceAfter=No' in cols[utils.MISC]:
+                    incidents.append(Error(
+                        testclass=TestClass.METADATA,
+                        level=2,
+                        lineno=lineno,
+                        testid='spaceafter-mwt-node',
+                        message="'SpaceAfter=No' cannot occur with words that are part of a multi-word token."
+                    ))
+                continue
+            # else:
+                # Err, I guess we have nothing to do here. :)
+                # pass
+            # So now we have either a multi-word token or a word which is also a token in its entirety.
+            if not stext.startswith(cols[utils.FORM]):
+                if not mismatch_reported:
+                    extra_message = ''
+                    if len(stext) >= 1 and stext[0].isspace():
+                        extra_message = ' (perhaps extra SpaceAfter=No at previous token?)'
+                    incidents.append(Error(
+                        testclass=TestClass.METADATA,
+                        level=2,
+                        lineno = lineno,
+                        testid='text-form-mismatch',
+                        message=(f"Mismatch between the text attribute and the FORM field. "
+                                f"Form[{cols[utils.ID]}] is '{cols[utils.FORM]}' but text is "
+                                f"'{stext[:len(cols[utils.FORM])+20]}...'"+extra_message)
+                    ))
+                    mismatch_reported = 1
+            else:
+                stext = stext[len(cols[utils.FORM]):] # eat the form
+                # Remember if SpaceAfter=No applies to the last word of the sentence.
+                # This is not prohibited in general but it is prohibited at the end of a paragraph or document.
+                #? do we need to do it for every word? Maybe just the last one
+                if 'SpaceAfter=No' in cols[utils.MISC].split("|"):
+                    if state:
+                        state.spaceafterno_in_effect = True
+                else:
+                    if state:
+                        state.spaceafterno_in_effect = False
+                    if (stext) and not stext[0].isspace():
+                        incidents.append(Error(
+                            testclass=TestClass.METADATA,
+                            level=2,
+                            lineno=lineno,
+                            testid='missing-spaceafter',
+                            message=(f"'SpaceAfter=No' is missing in the MISC field of node "
+                                    f"{cols[utils.ID]} because the text is '{utils.shorten(cols[utils.FORM]+stext)}'.")
+                        ))
+                    stext = stext.lstrip()
+        if stext:
+            incidents.append(Error(
+                testclass=TestClass.METADATA,
+                level=2,
+                lineno=lineno,
+                testid='text-extra-chars',
+                message=(f"Extra characters at the end of the text attribute, "
+                        f"not accounted for in the FORM fields: '{stext}'")
+            ))
+    return incidents
+
+
+# TODO: move elsewhere
+# # If a multi-word token has Typo=Yes, its component words must not have it.
+#             # We must remember the span of the MWT and check it in check_features_level4().
+#             m = utils.crex.mwtid.fullmatch(cols[ID])
+#             state.mwt_typo_span_end = m.group(2)
+
+
+def check_required_feature(node, required_feature, required_value, seen_morpho_feature, delayed_feature_errors, incident_type, testclass, testid):
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function will check the presence of a feature
+    and if it is missing, an error will be reported only if at least one feature
+    has been already encountered. Otherwise the error will be remembered and it
+    may be reported afterwards if any feature is encountered later.
+
+    Parameters
+    ----------
+    node : TODO: update
+    required_feature : str
+        The name of the required feature.
+    required_value : str
+        The required value of the feature. Multivalues are not supported (they
+        are just a string value containing one or more commas). If
+        required_value is None or an empty string, it means that we require any
+        non-empty value of required_feature.
+    TODO: update
+    """
+    incidents = []
+    feats = node.feats
+    if required_value:
+        if feats[required_feature] != required_value or feats[required_feature] == '':
+            if seen_morpho_feature:
+                incidents.append(Error if incident_type == IncidentType.ERROR else Warning(
+                    level=3,
+                    testclass=testclass,
+                    testid=testid,
+                    message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
+            ))
+            # TODO: outside of this function
+            #else:
+            #    if not testid in delayed_feature_errors:
+            #        state.delayed_feature_errors[incident.testid] = {'occurrences': []}
+            #    state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
+    return incidents
+
+
+def check_expected_features(node, seen_morpho_feature, delayed_feature_errors):
+    """
+    Certain features are expected to occur with certain UPOS or certain values
+    of other features. This function issues warnings instead of errors, as
+    features are in general optional and language-specific. Even the warnings
+    are issued only if the treebank has features. Note that the expectations
+    tested here are considered (more or less) universal. Checking that a given
+    feature-value pair is compatible with a particular UPOS is done using
+    language-specific lists at level 4.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The tree node to be tested.
+    """
+    incidents = []
+    # TODO:
+    if node.upos in ['PRON', 'DET']:
+        incidents.extend(check_required_feature(
+            node, 'PronType', None,
+            seen_morpho_feature, delayed_feature_errors,
+            IncidentType.ERROR, TestClass.MORPHO, 'pron-det-without-prontype'
+            ))
+    if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
+        incidents.append(Warning(
+            level=3,
+            # ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
+            testclass=TestClass.MORPHO,
+            testid='verbform-fin-without-mood',
+            message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
+        ))
+    elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
+        incidents.append(Warning(
+            level=3,
+            # ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
+            testclass=TestClass.MORPHO,
+            testid='mood-without-verbform-fin',
+            message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
+        ))
+
 
 def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
     """
@@ -2181,6 +2094,13 @@ def check_enhanced_orphan(node, seen_empty_node, seen_enhanced_orphan):
             ))
     return incidents
 
+
+#==============================================================================
+# Level 4 tests. Language-specific formal tests. Now we can check in which
+# words spaces are permitted, and which Feature=Value pairs are defined.
+#==============================================================================
+
+
 def check_words_with_spaces(node, lang, specs):
     """
     Checks a single line for disallowed whitespace.
@@ -2236,7 +2156,8 @@ def check_words_with_spaces(node, lang, specs):
                 ))
     return incidents
 
-def check_features_level4(node, lang, specs, mwt_typo_span_end):
+
+def check_feature_values(node, lang, specs, mwt_typo_span_end):
     """
     Checks that a feature-value pair is listed as approved. Feature lists are
     language 'ud'. # ?
@@ -2342,16 +2263,100 @@ def check_features_level4(node, lang, specs, mwt_typo_span_end):
     # TODO: (outside of this function)
     #if mwt_typo_span_end and int(mwt_typo_span_end) <= int(node.ord):
     #    state.mwt_typo_span_end = None
-
     return incidents
 
-# ! proposal: rename to validate_auxiliaries, since some ar particles as per
-# ! the docstring below
+
+def check_deprels(node, deprels, lang):
+    """
+    Checks that a dependency relation label is listed as approved in the given
+    language. As a language-specific test, this function generally belongs to
+    level 4, but it can be also used on levels 2 and 3, in which case it will
+    check only the main dependency type and ignore any subtypes.
+
+    Parameters
+    ----------
+    node : udapi.core.node.Node object
+        The node whose incoming relation will be validated.
+    line : int
+        Number of the line where the node occurs in the file.
+    """
+    # List of permited relations is language-specific.
+    # The current token may be in a different language due to code switching.
+    # Unlike with features and auxiliaries, with deprels it is less clear
+    # whether we want to switch the set of labels when the token belongs to
+    # another language. Especially with subtypes that are not so much language
+    # specific. For example, we may have allowed 'flat:name' for our language,
+    # the maintainers of the other language have not allowed it, and then we
+    # could not use it when the foreign language is active. (This actually
+    # happened in French GSD.) We will thus allow the union of the main and the
+    # alternative deprelset when both the parent and the child belong to the
+    # same alternative language. Otherwise, only the main deprelset is allowed.
+    incidents = []
+    naltlang = utils.get_alt_language(node)
+    # The basic relation should be tested on regular nodes but not on empty nodes.
+    if not node.is_empty():
+        paltlang = utils.get_alt_language(node.parent)
+          # main_deprelset = self.specs.get_deprel_for_language(mainlang)
+        # alt_deprelset = set()
+        # if naltlang != None and naltlang != mainlang and naltlang == paltlang:
+            # alt_deprelset = self.specs.get_deprel_for_language(naltlang)
+          # Test only the universal part if testing at universal level.
+        deprel = node.deprel
+        check = False
+        if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
+            check = True
+        if naltlang != None and naltlang != lang and naltlang == paltlang:
+            if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
+                check = True
+        if not check:
+            incidents.append(
+                Error(
+                    level=4,
+                    testclass=TestClass.SYNTAX,
+                    testid='unknown-deprel',
+                    message=f"Unknown DEPREL label: '{deprel}'"
+                )
+            )
+    # If there are enhanced dependencies, test their deprels, too.
+    # We already know that the contents of DEPS is parsable (deps_list() was
+    # first called from validate_id_references() and the head indices are OK).
+    # The order of enhanced dependencies was already checked in validate_deps().
+    # Incident.default_testclass = 'Enhanced'
+    if str(node.deps) != '_':
+        # main_edeprelset = self.specs.get_edeprel_for_language(mainlang)
+        # alt_edeprelset = self.specs.get_edeprel_for_language(naltlang)
+        for edep in node.deps:
+            parent = edep['parent']
+            deprel = edep['deprel']
+            paltlang = utils.get_alt_language(parent)
+            check = False
+            if deprel in deprels[lang] and deprels[lang][deprel]["permitted"]:
+                check = True
+            if naltlang != None and naltlang != lang and naltlang == paltlang:
+                if deprel in deprels[naltlang] and deprels[lang][naltlang]["permitted"]:
+                    check = True
+            if not check:
+                incidents.append(
+                    Error(
+                        level=4,
+                        testclass=TestClass.ENHANCED,
+                        testid='unknown-edeprel',
+                        message=f"Unknown enhanced relation type '{deprel}' in '{parent.ord}:{deprel}'"
+                    )
+                )
+    return incidents
+
+
+#==============================================================================
+# Level 5 tests. Annotation content vs. the guidelines, language-specific.
+#==============================================================================
+
+
+# ! proposal: rename to check_auxiliaries, since some are not verbs
 def check_auxiliary_verbs(node, lang, specs):
     """
     Checks that the UPOS tag AUX is used only with lemmas that are known to
     act as auxiliary verbs or particles in the given language.
-
 
     Parameters
     ----------
@@ -2382,6 +2387,7 @@ def check_auxiliary_verbs(node, lang, specs):
                 message=f"'{node.lemma}' is not an auxiliary in language [{lang}]",
             ))
     return incidents
+
 
 def check_copula_lemmas(node, lang, specs):
     """
@@ -2416,124 +2422,4 @@ def check_copula_lemmas(node, lang, specs):
                 testid='cop-lemma',
                 message=f"'{node.lemma}' is not a copula in language [{lang}]",
             ))
-    return incidents
-
-# ! proposal: remove entirely and put in tree block of the validator, or at
-# ! least rename to check_universal_guidelines (this function simply groups a
-# ! few checks together, and the tree section of the engine kinda does the same
-# ! thing), not to mention that removing this function spares us passing line
-# ! numbers around
-def validate_annotation(tree, linenos):
-    """
-    Checks universally valid consequences of the annotation guidelines. Looks
-    at regular nodes and basic tree, not at enhanced graph (which is checked
-    elsewhere).
-
-    Parameters
-    ----------
-    tree : udapi.core.root.Root object
-    linenos : dict
-        Key is node ID (string, not int or float!) Value is the 1-based index
-        of the line where the node occurs (int).
-
-    returns
-    -------
-    incidents : list
-        A list of Incidents (empty if validation is successful).
-    """
-    incidents = []
-    nodes = tree.descendants
-    for node in nodes:
-        lineno = linenos[str(node.ord)]
-        incidents.extend(check_expected_features(node, lineno))
-        #incidents.extend(validate_upos_vs_deprel(node, lineno))
-        #incidents.extend(validate_flat_foreign(node, lineno, linenos))
-        #incidents.extend(validate_left_to_right_relations(node, lineno))
-        #incidents.extend(validate_single_subject(node, lineno))
-        #incidents.extend(validate_single_object(node, lineno))
-        #incidents.extend(validate_orphan(node, lineno))
-        #incidents.extend(validate_functional_leaves(node, lineno, linenos))
-        #incidents.extend(validate_fixed_span(node, lineno))
-        #incidents.extend(validate_goeswith_span(node, lineno))
-        #incidents.extend(validate_goeswith_morphology_and_edeps(node, lineno))
-        #incidents.extend(validate_projective_punctuation(node, lineno))
-    incidents = []
-
-def check_expected_features(node, seen_morpho_feature, delayed_feature_errors):
-    """
-    Certain features are expected to occur with certain UPOS or certain values
-    of other features. This function issues warnings instead of errors, as
-    features are in general optional and language-specific. Even the warnings
-    are issued only if the treebank has features. Note that the expectations
-    tested here are considered (more or less) universal. Checking that a given
-    feature-value pair is compatible with a particular UPOS is done using
-    language-specific lists at level 4.
-
-    Parameters
-    ----------
-    node : udapi.core.node.Node object
-        The tree node to be tested.
-    """
-    incidents = []
-    # TODO:
-    if node.upos in ['PRON', 'DET']:
-        incidents.extend(validate_required_feature(
-            node, 'PronType', None,
-            seen_morpho_feature, delayed_feature_errors,
-            IncidentType.ERROR, TestClass.MORPHO, 'pron-det-without-prontype'
-            ))
-    if node.feats['VerbForm'] == 'Fin' and node.feats['Mood'] == '':
-        incidents.append(Warning(
-            level=3,
-            # ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
-            testclass=TestClass.MORPHO,
-            testid='verbform-fin-without-mood',
-            message=f"Finite verb '{utils.formtl(node)}' lacks the 'Mood' feature"
-        ))
-    elif node.feats['Mood'] != '' and node.feats['VerbForm'] != 'Fin':
-        incidents.append(Warning(
-            level=3,
-            # ! used to be Incident with testclass="Warning", but now Warning is an alternative to Error and TestClass.MORPHO makes sense here
-            testclass=TestClass.MORPHO,
-            testid='mood-without-verbform-fin',
-            message=f"Non-empty 'Mood' feature at a word that is not finite verb ('{utils.formtl(node)}')"
-        ))
-
-def validate_required_feature(node, required_feature, required_value, seen_morpho_feature, delayed_feature_errors, incident_type, testclass, testid):
-    """
-    In general, the annotation of morphological features is optional, although
-    highly encouraged. However, if the treebank does have features, then certain
-    features become required. This function will check the presence of a feature
-    and if it is missing, an error will be reported only if at least one feature
-    has been already encountered. Otherwise the error will be remembered and it
-    may be reported afterwards if any feature is encountered later.
-
-    Parameters
-    ----------
-    node : TODO: update
-    required_feature : str
-        The name of the required feature.
-    required_value : str
-        The required value of the feature. Multivalues are not supported (they
-        are just a string value containing one or more commas). If
-        required_value is None or an empty string, it means that we require any
-        non-empty value of required_feature.
-    TODO: update
-    """
-    incidents = []
-    feats = node.feats
-    if required_value:
-        if feats[required_feature] != required_value or feats[required_feature] == '':
-            if seen_morpho_feature:
-                incidents.append(Error if incident_type == IncidentType.ERROR else Warning(
-                    level=3,
-                    testclass=testclass,
-                    testid=testid,
-                    message=f"The word '{utils.formtl(node)}' is tagged '{node.upos}' but it lacks the 'PronType' feature"
-            ))
-            # TODO: outside of this function
-            #else:
-            #    if not testid in delayed_feature_errors:
-            #        state.delayed_feature_errors[incident.testid] = {'occurrences': []}
-            #    state.delayed_feature_errors[incident.testid]['occurrences'].append({'incident': incident})
     return incidents

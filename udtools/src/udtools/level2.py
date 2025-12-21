@@ -835,7 +835,6 @@ class Level2(Level1):
 
 
 
-
     def check_deps_all_or_none(self, state):
         """
         Checks that enhanced dependencies are present if they were present in
