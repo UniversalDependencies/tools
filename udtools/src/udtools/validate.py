@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 
 from udtools.incident import Incident, Error, Warning, TestClass, IncidentType
 import udtools.utils as utils
-# from udtools.validate_lib import State
 from udtools.logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
