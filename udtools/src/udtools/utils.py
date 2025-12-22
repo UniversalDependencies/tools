@@ -1,4 +1,3 @@
-import os
 import regex as re
 # Allow using this module from the root folder of tools even if it is not
 # installed as a package: use the relative path validator/src/validator for
@@ -11,8 +10,6 @@ except ModuleNotFoundError:
     from udtools.incident import Reference
 
 
-
-THIS_DIR = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
 CONLLU_SPEC = {'columns': ['ID', 'FORM', 'LEMMA', 'UPOS', 'XPOS', 'FEATS', 'HEAD', 'DEPREL', 'DEPS', 'MISC']}
 COLCOUNT = len(CONLLU_SPEC['columns'])

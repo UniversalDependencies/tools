@@ -61,7 +61,8 @@ def main():
     opt_parser = build_argparse_validator()
 
     config_group = opt_parser.add_argument_group("Directories and paths", "TBD") # TODO better helper
-    config_group.add_argument('--data-folder', default=os.path.normpath(os.path.join(utils.THIS_DIR,"../../../data")))
+    config_group.add_argument('--data-folder', default=None) ###!!! If not provided, the default is handled in Validator/Data classes, so we do not have to guess the path here.
+    ###!!! We should then pass args.data_folder to the constructor of Validator. At present, this version of the script does not use the Validator class and the option is ignored.
     config_group.add_argument('--config-file', type=str)
 
     out_format = opt_parser.add_argument_group("Choices of output formats", "TBD")
