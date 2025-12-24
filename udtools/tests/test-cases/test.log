@@ -16,12 +16,6 @@ FORMAT errors: 5
 *** FAILED *** with 5 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\dos-newlines.conllu 
-[Line 23 Sent dos-newlines3]: [L1 FORMAT non-unix-newline] Only the unix-style LF line terminator is allowed.
-FORMAT errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\duplicate-id.conllu 
 [Line 4 Sent duplicate-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,1'. Expected '1,2'.
 FORMAT errors: 1
@@ -91,6 +85,30 @@ FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misindexed-empty-node.conllu 
+[Line 5 Sent misindexed-empty-node]: [L1 FORMAT misplaced-empty-node] Empty node id 2.2, expected 1.1
+FORMAT errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misordered-multiword.conllu 
+[Line 7 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+FORMAT errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-comment-end.conllu 
+[Line 13 Sent misplaced-comment-end]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
+FORMAT errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-comment-mid.conllu 
+[Line 6 Sent misplaced-comment-mid]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
+FORMAT errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-comment.conllu 
 [Line 4 Sent tanl1]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 FORMAT errors: 1
@@ -107,6 +125,13 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\ud
 [Line 7 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1, expected 2.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-range.conllu 
+[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
+[Line 7 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
+FORMAT errors: 2
+*** FAILED *** with 2 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-word-interval.conllu 
@@ -194,6 +219,16 @@ FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\tanl-broken.conllu 
+[Line 6 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
+[Line 8 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
+[Line 11 Sent tanl-broken2]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
+[Line 16 Sent tanl-broken2]: [L1 FORMAT word-interval-out] Spurious token interval 6-6 (out of range)
+[Line 24 Sent tanl-broken3]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
+FORMAT errors: 5
+*** FAILED *** with 5 errors
+ 
+-------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\trailing-tab.conllu 
 [Line 4 Sent trailing-tab]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
 FORMAT errors: 1
@@ -201,16 +236,6 @@ FORMAT errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\unicode-normalization.conllu 
-[Line 3 Sent None]: [L1 UNICODE unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
-
-This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
-
-[Line 8 Sent 1]: [L1 UNICODE unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
-UNICODE errors: 2
-*** FAILED *** with 2 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\unnormalized-unicode.conllu 
 [Line 3 Sent None]: [L1 UNICODE unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
 
 This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
@@ -271,6 +296,13 @@ MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\empty-node-nonempty.conllu 
+[Line 5 Sent empty-node]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column HEAD. Now: '2'.
+[Line 5 Sent empty-node]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'dep'.
+FORMAT errors: 2
+*** FAILED *** with 2 errors
+ 
+-------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\extra-empty-line.conllu 
 [Line 6 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
@@ -303,6 +335,12 @@ FORMAT errors: 1
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-deps-syntax.conllu 
 [Line 4 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
+FORMAT errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-deps.conllu 
+[Line 9 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
@@ -355,18 +393,6 @@ MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\malformed_deps.conllu 
-[Line 9 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
-FORMAT errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misindexed-empty-node.conllu 
-[Line 5 Sent misindexed-empty-node]: [L1 FORMAT misplaced-empty-node] Empty node id 2.2, expected 1.1
-FORMAT errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misordered-feature.conllu 
 [Line 5 Sent misordered-feature]: [L2 MORPHO unsorted-features] Morphological features must be sorted: 'XB=True|Xa=True'.
 MORPHO errors: 1
@@ -379,34 +405,15 @@ MORPHO errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misordered-multiword.conllu 
-[Line 7 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
-FORMAT errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misplaced-comment-end.conllu 
-[Line 13 Sent misplaced-comment-end]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
-FORMAT errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misplaced-comment-mid.conllu 
-[Line 6 Sent misplaced-comment-mid]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
-FORMAT errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misplaced-range.conllu 
-[Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
-[Line 7 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
-FORMAT errors: 2
-*** FAILED *** with 2 errors
- 
--------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\missing-space-after.conllu 
 [Line 4 Sent missing-space-after]: [L2 METADATA missing-spaceafter] 'SpaceAfter=No' is missing in the MISC field of node 1 because the text is 'Dog.'.
 METADATA errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\multiple-roots.conllu 
+[Line 3 Sent multiple-0]: [L2 SYNTAX multiple-roots] Multiple root words: [1, 2]
+SYNTAX errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
@@ -422,23 +429,18 @@ METADATA errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\multiple_roots.conllu 
-[Line 3 Sent multiple-0]: [L2 SYNTAX multiple-roots] Multiple root words: [1, 2]
-SYNTAX errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\multiword-with-pos.conllu 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\mwt-nonempty-upos.conllu 
 [Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\mwt-nonempty-2.conllu 
-[Line 5 Sent empty-node]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column HEAD. Now: '2'.
-[Line 5 Sent empty-node]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'dep'.
-FORMAT errors: 2
-*** FAILED *** with 2 errors
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\mwt-nonempty.conllu 
+[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
+[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
+[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
+FORMAT errors: 3
+*** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\no-sent_id.conllu 
@@ -475,30 +477,6 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\ud
 [Line 4 Sent space-in-field]: [L1 FORMAT invalid-whitespace] White space not allowed in column XPOS: 'this is not valid'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\tanl-broken.conllu 
-[Line 6 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
-[Line 8 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
-[Line 11 Sent tanl-broken2]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
-[Line 16 Sent tanl-broken2]: [L1 FORMAT word-interval-out] Spurious token interval 6-6 (out of range)
-[Line 24 Sent tanl-broken3]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
-[Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'mod=p'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 20 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 21 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'gen=f'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-[Line 21 Sent tanl-broken3]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'num=s'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
-FORMAT errors: 5
-MORPHO errors: 5
-*** FAILED *** with 10 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\token_with_cols_filled.conllu 
-[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
-[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
-[Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
-FORMAT errors: 3
-*** FAILED *** with 3 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\uppercase-deprel.conllu 

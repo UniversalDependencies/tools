@@ -427,6 +427,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
