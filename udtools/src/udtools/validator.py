@@ -267,7 +267,6 @@ class Validator(Level6):
                     colssafe = self.check_feats_format(state, cols, lineno) and colssafe # level 2 (level 4 tests will be called later)
                     self.check_deprel_format(state, cols, lineno) # level 2
                     self.check_deps_format(state, cols, lineno) # level 2
-                    self.check_eudeprels(state, cols, lineno) # level 2
                     self.check_deps(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                 self.check_misc(state, cols, lineno) # level 2; must operate on pre-Udapi MISC
             if not colssafe:

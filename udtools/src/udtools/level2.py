@@ -54,6 +54,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -89,6 +91,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -118,6 +122,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -152,6 +158,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -292,56 +300,12 @@ class Level2(Level1):
 
     def check_deps_format(self, state, cols, line):
         """
-        Checks general constraints on valid characters in DEPS.
-
-        Parameters
-        ----------
-        cols : list
-            The values of the columns on the current node / token line.
-        line : int
-            Number of the line where the node occurs in the file.
-
-        Incidents
-        ---------
-        invalid-deps
-        invalid-edeprel
-        """
-        Incident.default_level = 2
-        Incident.default_lineno = line
-        if utils.is_multiword_token(cols):
-            return
-        try:
-            utils.deps_list(cols)
-        except ValueError:
-            Error(
-                state=state, config=self.incfg,
-                testclass=TestClass.ENHANCED,
-                testid='invalid-deps',
-                message=f"Failed to parse DEPS: '{cols[DEPS]}'."
-            ).confirm()
-            return
-        if any(deprel for head, deprel in utils.deps_list(cols)
-            if not utils.crex.edeprel.fullmatch(deprel)):
-                Error(
-                    state=state, config=self.incfg,
-                    testclass=TestClass.ENHANCED,
-                    testid='invalid-edeprel',
-                    message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
-                ).confirm()
-
-
-
-    def check_eudeprels(self, state, cols, line):
-        """
-        Checks that a dependency relation label is on the list of main deprel
-        types defined in UD. If there is a subtype, it is ignored. This is a
-        level 2 test and it does not consult language-specific lists. It will
-        not report an error even if a main deprel is forbidden in a language.
-        This method currently checks udeprels only in the DEPS column.
-
-        Unlike check_deprel_format(), check_udeprel(), check_deps_format() and check_deps(),
-        this method is called later when all low-level tests have been passed
-        and the Node object has been created.
+        Checks general constraints on valid characters in DEPS. Furthermore,
+        if the general character format is OK, checks that the main relation
+        type of each relation in DEPS is on the list of main deprel types
+        defined in UD. If there is a subtype, it is ignored. This is a level 2
+        test and it does not consult language-specific lists. It will not
+        report an error even if a main deprel is forbidden in a language.
 
         Parameters
         ----------
@@ -354,19 +318,43 @@ class Level2(Level1):
 
         Incidents
         ---------
+        invalid-deps
+        invalid-edeprel
         unknown-eudeprel
         """
         Incident.default_level = 2
         Incident.default_lineno = line
+        if utils.is_multiword_token(cols):
+            return
+        if cols[DEPS] == '_':
+            return
+        # We should have called check_id_references() before (and only come
+        # here if that check succeeded); since utils.deps_list() is called
+        # there, it should be now guaranteed that the contents of DEPS is
+        # parsable. Nevertheless, do it in try-except, just in case.
+        try:
+            edeps = utils.deps_list(cols)
+        except ValueError:
+            Error(
+                state=state, config=self.incfg,
+                testclass=TestClass.ENHANCED,
+                testid='invalid-deps',
+                message=f"Failed to parse DEPS: '{cols[DEPS]}'."
+            ).confirm()
+            return
         # At this level, ignore the language-specific lists and use language
         # 'ud' instead.
         deprelset = self.data.get_deprel_for_language('ud')
         deprelset.add('ref')
-        # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from check_id_references() and the head indices are OK).
-        # The order of enhanced dependencies was already checked in check_deps().
-        if cols[DEPS] != '_':
-            for head, deprel in utils.deps_list(cols):
+        for head, deprel in edeps:
+            if not utils.crex.edeprel.fullmatch(deprel):
+                Error(
+                    state=state, config=self.incfg,
+                    testclass=TestClass.ENHANCED,
+                    testid='invalid-edeprel',
+                    message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
+                ).confirm()
+            else:
                 # Test only the universal part if testing at universal level.
                 udeprel = utils.lspec2ud(deprel)
                 if not udeprel in deprelset:
