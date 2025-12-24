@@ -268,6 +268,8 @@ class Validator(Level6):
                     self.check_deprel_format(state, cols, lineno) # level 2
                     self.check_deps_format(state, cols, lineno) # level 2
                     self.check_deps(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                if utils.is_word(cols):
+                    self.check_udeprel(state, cols, lineno) # level 2
                 self.check_misc(state, cols, lineno) # level 2; must operate on pre-Udapi MISC
             if not colssafe:
                 return state
@@ -288,7 +290,7 @@ class Validator(Level6):
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
-                self.check_udeprels(state, node) # level 2
+                self.check_eudeprels(state, node) # level 2
                 self.check_zero_root(state, node) # level 2
                 if self.level >= 3:
                     self.check_enhanced_orphan(state, node) # level 3

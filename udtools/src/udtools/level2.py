@@ -242,6 +242,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -261,6 +263,47 @@ class Level2(Level1):
                 testclass=TestClass.SYNTAX,
                 testid='invalid-deprel',
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
+            ).confirm()
+
+
+
+    def check_udeprel(self, state, cols, line):
+        """
+        Checks that a dependency relation label is on the list of main deprel
+        types defined in UD. If there is a subtype, it is ignored. This is a
+        level 2 test and it does not consult language-specific lists. It will
+        not report an error even if a main deprel is forbidden in a language.
+        This method checks udeprels in the DEPREL column but not in DEPS.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        cols : list
+            The values of the columns on the current node / token line.
+        line : int
+            Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        unknown-udeprel
+        """
+        Incident.default_level = 2
+        Incident.default_lineno = line
+        # The basic relation should be tested on regular nodes but not on empty nodes.
+        if utils.is_multiword_token(cols) or utils.is_empty_node(cols):
+            return
+        # At this level, ignore the language-specific lists and use language
+        # 'ud' instead.
+        deprelset = self.data.get_deprel_for_language('ud')
+        # Test only the universal part if testing at universal level.
+        deprel = utils.lspec2ud(cols[DEPREL])
+        if deprel not in deprelset:
+            Error(
+                state=state, config=self.incfg,
+                testclass=TestClass.SYNTAX,
+                testid='unknown-udeprel',
+                message=f"Unknown main DEPREL type: '{deprel}'."
             ).confirm()
 
 
@@ -381,16 +424,15 @@ class Level2(Level1):
 
 
 
-    def check_udeprels(self, state, node):
+    def check_eudeprels(self, state, node):
         """
         Checks that a dependency relation label is on the list of main deprel
         types defined in UD. If there is a subtype, it is ignored. This is a
         level 2 test and it does not consult language-specific lists. It will
         not report an error even if a main deprel is forbidden in a language.
-        This method currently checks udeprels both in the DEPREL column and in
-        the DEPS column.
+        This method currently checks udeprels only in the DEPS column.
 
-        Unlike check_deprel_format(), check_deps_format() and check_deps(),
+        Unlike check_deprel_format(), check_udeprel(), check_deps_format() and check_deps(),
         this method is called later when all low-level tests have been passed
         and the Node object has been created.
 
@@ -409,27 +451,13 @@ class Level2(Level1):
 
         Incidents
         ---------
-        unknown-udeprel
         unknown-eudeprel
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 2
-        Incident.default_testclass = TestClass.SYNTAX
         # At this level, ignore the language-specific lists and use language
         # 'ud' instead.
         deprelset = self.data.get_deprel_for_language('ud')
-        # The basic relation should be tested on regular nodes but not on empty nodes.
-        if not node.is_empty():
-            # Test only the universal part if testing at universal level.
-            deprel = node.udeprel
-            if deprel not in deprelset:
-                Error(
-                    state=state, config=self.incfg,
-                    nodeid=node.ord,
-                    testid='unknown-udeprel',
-                    message=f"Unknown main DEPREL type: '{deprel}'"
-                ).confirm()
-        # If there are enhanced dependencies, test their deprels, too.
         # We already know that the contents of DEPS is parsable (deps_list() was
         # first called from check_id_references() and the head indices are OK).
         # The order of enhanced dependencies was already checked in check_deps().
