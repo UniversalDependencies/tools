@@ -780,67 +780,6 @@ class Level2(Level1):
 
 
 
-    def check_zero_root(self, state, node):
-        """
-        Checks that DEPREL is "root" iff HEAD is 0.
-
-        Parameters
-        ----------
-        state : udtools.state.State
-            The state of the validation run.
-        node : udapi.core.node.Node object
-            The node whose incoming relation will be validated. This function
-            operates on both regular and empty nodes. Make sure to call it for
-            empty nodes, too!
-
-        Reads from state
-        ----------------
-        current_node_linenos : dict(str: int)
-            Mapping from node ids (including empty nodes) to line numbers in
-            the input file.
-
-        Incidents
-        ---------
-        0-is-not-root
-        root-is-not-0
-        enhanced-0-is-not-root
-        enhanced-root-is-not-0
-        """
-        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.SYNTAX
-        if not node.is_empty():
-            if node.parent.ord == 0 and node.udeprel != 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testid='0-is-not-root',
-                    message="DEPREL must be 'root' if HEAD is 0."
-                ).confirm()
-            if node.parent.ord != 0 and node.udeprel == 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testid='root-is-not-0',
-                    message="DEPREL cannot be 'root' if HEAD is not 0."
-                ).confirm()
-        # In the enhanced graph, test both regular and empty roots.
-        for edep in node.deps:
-            if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testclass=TestClass.ENHANCED,
-                    testid='enhanced-0-is-not-root',
-                    message="Enhanced relation type must be 'root' if head is 0."
-                ).confirm()
-            if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testclass=TestClass.ENHANCED,
-                    testid='enhanced-root-is-not-0',
-                    message="Enhanced relation type cannot be 'root' if head is not 0."
-                ).confirm()
-
-
-
 
     def check_deps_all_or_none(self, state):
         """

@@ -90,6 +90,11 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        pron-det-without-prontype
+        verbform-fin-without-mood
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
@@ -121,6 +126,67 @@ class Level3(Level2):
 
 
 
+    def check_zero_root(self, state, node):
+        """
+        Checks that DEPREL is "root" iff HEAD is 0.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        node : udapi.core.node.Node object
+            The node whose incoming relation will be validated. This function
+            operates on both regular and empty nodes. Make sure to call it for
+            empty nodes, too!
+
+        Reads from state
+        ----------------
+        current_node_linenos : dict(str: int)
+            Mapping from node ids (including empty nodes) to line numbers in
+            the input file.
+
+        Incidents
+        ---------
+        0-is-not-root
+        root-is-not-0
+        enhanced-0-is-not-root
+        enhanced-root-is-not-0
+        """
+        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
+        Incident.default_level = 3
+        Incident.default_testclass = TestClass.SYNTAX
+        if not node.is_empty():
+            if node.parent.ord == 0 and node.udeprel != 'root':
+                Error(
+                    state=state, config=self.incfg,
+                    testid='0-is-not-root',
+                    message="DEPREL must be 'root' if HEAD is 0."
+                ).confirm()
+            if node.parent.ord != 0 and node.udeprel == 'root':
+                Error(
+                    state=state, config=self.incfg,
+                    testid='root-is-not-0',
+                    message="DEPREL cannot be 'root' if HEAD is not 0."
+                ).confirm()
+        # In the enhanced graph, test both regular and empty roots.
+        for edep in node.deps:
+            if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
+                Error(
+                    state=state, config=self.incfg,
+                    testclass=TestClass.ENHANCED,
+                    testid='enhanced-0-is-not-root',
+                    message="Enhanced relation type must be 'root' if head is 0."
+                ).confirm()
+            if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
+                Error(
+                    state=state, config=self.incfg,
+                    testclass=TestClass.ENHANCED,
+                    testid='enhanced-root-is-not-0',
+                    message="Enhanced relation type cannot be 'root' if head is not 0."
+                ).confirm()
+
+
+
     def check_upos_vs_deprel(self, state, node):
         """
         For certain relations checks that the dependent word belongs to an expected
@@ -139,6 +205,22 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        fixed-without-extpos
+        rel-upos-det
+        rel-upos-nummod
+        rel-upos-advmod
+        rel-upos-expl
+        rel-upos-aux
+        rel-upos-cop
+        rel-upos-case
+        rel-upos-mark
+        rel-upos-cc
+        rel-upos-punct
+        upos-rel-punct
+        rel-upos-fixed
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
@@ -294,6 +376,10 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        flat-foreign-upos-feats
         """
         Incident.default_level = 3
         Incident.default_testclass = TestClass.MORPHO
@@ -339,6 +425,14 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        right-to-left-conj
+        right-to-left-fixed
+        right-to-left-flat
+        right-to-left-goeswith
+        right-to-left-appos
         """
         # According to the v2 guidelines, apposition should also be left-headed, although the definition of apposition may need to be improved.
         if node.udeprel in ['conj', 'fixed', 'flat', 'goeswith', 'appos']:
@@ -400,6 +494,10 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        too-many-subjects
         """
 
         def is_inner_subject(node):
@@ -454,6 +552,10 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        too-many-objects
         """
         objects = [x for x in node.children if x.udeprel == 'obj']
         object_ids = [x.ord for x in objects]
@@ -497,6 +599,10 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        obl-should-be-nmod
         """
         if node.udeprel == 'obl' and node.parent.upos in ['NOUN', 'PROPN', 'PRON']:
             # If the parent itself has certain deprels, we know that it is just
@@ -539,6 +645,10 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        orphan-parent
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         if node.udeprel == 'orphan':
@@ -585,6 +695,17 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        leaf-mark-case
+        leaf-aux-cop
+        leaf-det
+        leaf-clf
+        leaf-cc
+        leaf-fixed
+        leaf-goeswith
+        leaf-punct
         """
         # This is a level 3 test, we will check only the universal part of the relation.
         deprel = node.udeprel
@@ -766,6 +887,10 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        fixed-gap
         """
         fxchildren = [c for c in node.children if c.udeprel == 'fixed']
         if fxchildren:
@@ -808,6 +933,12 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        goeswith-gap
+        goeswith-nospace
+        goeswith-missing-typo
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
@@ -868,6 +999,13 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        goeswith-lemma
+        goeswith-upos
+        goeswith-feats
+        goeswith-edeps
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
@@ -922,6 +1060,11 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        punct-causes-nonproj
+        punct-is-nonproj
         """
         Incident.default_lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_level = 3
@@ -972,6 +1115,11 @@ class Level3(Level2):
         current_node_linenos : dict(str: int)
             Mapping from node ids (including empty nodes) to line numbers in
             the input file.
+
+        Incidents
+        ---------
+        empty-node-after-eorphan
+        eorphan-after-empty-node
         """
         lineno = state.current_node_linenos[str(node.ord)]
         Incident.default_lineno = lineno

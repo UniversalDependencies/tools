@@ -292,8 +292,8 @@ class Validator(Level6):
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
-                self.check_zero_root(state, node) # level 2
                 if self.level >= 3:
+                    self.check_zero_root(state, node) # level 3
                     self.check_enhanced_orphan(state, node) # level 3
                     if self.level >= 4:
                         # To disallow words with spaces everywhere, use --lang ud.
@@ -324,8 +324,10 @@ class Validator(Level6):
                     self.check_goeswith_span(state, node)
                     self.check_goeswith_morphology_and_edeps(state, node)
                     self.check_projective_punctuation(state, node)
+            # Optional checks for CorefUD treebanks. They operate on MISC and
+            # currently do not use the Udapi data structures.
             if self.check_coref:
-                self.check_misc_entity(state) # optional for CorefUD treebanks
+                self.check_misc_entity(state)
         return state
 
 

@@ -82,18 +82,6 @@ FORMAT errors: 1
 *** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\head-0-deprel-not-root.conllu 
-[Line 4 Sent head-0-deprel-not-root]: [L2 SYNTAX 0-is-not-root] DEPREL must be 'root' if HEAD is 0.
-SYNTAX errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
-Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\head-not-0-deprel-root.conllu 
-[Line 5 Sent head-not-0-deprel-root]: [L2 SYNTAX root-is-not-0] DEPREL cannot be 'root' if HEAD is not 0.
-SYNTAX errors: 1
-*** FAILED *** with 1 errors
- 
--------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\head-not-empty-in-empty.conllu 
 [Line 5 Sent head-not-empty-in-empty]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column HEAD. Now: '1'.
 FORMAT errors: 1
@@ -401,6 +389,18 @@ ENHANCED errors: 3
  
 -------------------------------------------------------------------------------- 
 LEVEL 3 TESTS 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\head-0-deprel-not-root.conllu 
+[Line 4 Sent head-0-deprel-not-root]: [L3 SYNTAX 0-is-not-root] DEPREL must be 'root' if HEAD is 0.
+SYNTAX errors: 1
+*** FAILED *** with 1 errors
+ 
+-------------------------------------------------------------------------------- 
+Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\head-not-0-deprel-root.conllu 
+[Line 5 Sent head-not-0-deprel-root]: [L3 SYNTAX root-is-not-0] DEPREL cannot be 'root' if HEAD is not 0.
+SYNTAX errors: 1
+*** FAILED *** with 1 errors
+ 
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\nmod-obl.conllu 
 [Line 6 Sent invalid-obl]: [L3 SYNTAX obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
