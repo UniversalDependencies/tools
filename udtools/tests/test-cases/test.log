@@ -108,7 +108,7 @@ ENHANCED errors: 1
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\invalid-deps-order.conllu 
-[Line 4 Sent invalid-deps-order]: [L2 FORMAT unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'
+[Line 4 Sent invalid-deps-order]: [L2 FORMAT unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
  

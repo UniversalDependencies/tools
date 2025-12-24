@@ -300,12 +300,23 @@ class Level2(Level1):
 
     def check_deps_format(self, state, cols, line):
         """
-        Checks general constraints on valid characters in DEPS. Furthermore,
-        if the general character format is OK, checks that the main relation
-        type of each relation in DEPS is on the list of main deprel types
-        defined in UD. If there is a subtype, it is ignored. This is a level 2
-        test and it does not consult language-specific lists. It will not
-        report an error even if a main deprel is forbidden in a language.
+        Checks that DEPS is correctly formatted and that there are no
+        self-loops in DEPS (longer cycles are allowed in enhanced graphs but
+        self-loops are not).
+
+        For each relation in DEPS, it also checks the general constraints on
+        valid characters in DEPS. If the general character format is OK, checks
+        that the main relation type of each relation in DEPS is on the list of
+        main deprel types defined in UD. If there is a subtype, it is ignored.
+        This is a level 2 test and it does not consult language-specific lists.
+        It will not report an error even if a main deprel is forbidden in the
+        language.
+
+        This function must be run on raw DEPS before it is fed into Udapi because
+        it checks the order of relations, which is not guaranteed to be preserved
+        in Udapi. On the other hand, we assume that it is run after
+        check_id_references() and only if DEPS is parsable and the head indices
+        in it are OK.
 
         Parameters
         ----------
@@ -318,7 +329,10 @@ class Level2(Level1):
 
         Incidents
         ---------
-        invalid-deps
+        unsorted-deps
+        unsorted-deps-2
+        repeated-deps
+        deps-self-loop
         invalid-edeprel
         unknown-eudeprel
         """
@@ -328,20 +342,52 @@ class Level2(Level1):
             return
         if cols[DEPS] == '_':
             return
+        # Remember whether there is at least one difference between the basic
+        # tree and the enhanced graph in the entire dataset.
+        if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
+            state.seen_enhancement = line
         # We should have called check_id_references() before (and only come
         # here if that check succeeded); since utils.deps_list() is called
         # there, it should be now guaranteed that the contents of DEPS is
-        # parsable. Nevertheless, do it in try-except, just in case.
-        try:
-            edeps = utils.deps_list(cols)
-        except ValueError:
+        # parsable.
+        edeps = utils.deps_list(cols)
+        heads = [utils.nodeid2tuple(h) for h, d in edeps]
+        if heads != sorted(heads):
+            Error(
+                state=state, config=self.incfg,
+                testclass=TestClass.FORMAT,
+                testid='unsorted-deps',
+                message=f"DEPS not sorted by head index: '{cols[DEPS]}'."
+            ).confirm()
+        else:
+            lasth = None
+            lastd = None
+            for h, d in edeps:
+                if h == lasth:
+                    if d < lastd:
+                        Error(
+                            state=state, config=self.incfg,
+                            testclass=TestClass.FORMAT,
+                            testid='unsorted-deps-2',
+                            message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'."
+                        ).confirm()
+                    elif d == lastd:
+                        Error(
+                            state=state, config=self.incfg,
+                            testclass=TestClass.FORMAT,
+                            testid='repeated-deps',
+                            message=f"DEPS contain multiple instances of the same relation '{h}:{d}'."
+                        ).confirm()
+                lasth = h
+                lastd = d
+        id_ = utils.nodeid2tuple(cols[ID])
+        if id_ in heads:
             Error(
                 state=state, config=self.incfg,
                 testclass=TestClass.ENHANCED,
-                testid='invalid-deps',
-                message=f"Failed to parse DEPS: '{cols[DEPS]}'."
+                testid='deps-self-loop',
+                message=f"Self-loop in DEPS for '{cols[ID]}'"
             ).confirm()
-            return
         # At this level, ignore the language-specific lists and use language
         # 'ud' instead.
         deprelset = self.data.get_deprel_for_language('ud')
@@ -364,81 +410,6 @@ class Level2(Level1):
                         testid='unknown-eudeprel',
                         message=f"Unknown main relation type '{udeprel}' in '{head}:{deprel}'."
                     ).confirm()
-
-
-
-    def check_deps(self, state, cols, line):
-        """
-        Validates that DEPS is correctly formatted and that there are no
-        self-loops in DEPS (longer cycles are allowed in enhanced graphs but
-        self-loops are not).
-
-        This function must be run on raw DEPS before it is fed into Udapi because
-        it checks the order of relations, which is not guaranteed to be preserved
-        in Udapi. On the other hand, we assume that it is run after
-        check_id_references() and only if DEPS is parsable and the head indices
-        in it are OK.
-
-        Parameters
-        ----------
-        cols : list
-            The values of the columns on the current node / token line.
-        line : int
-            Number of the line where the node occurs in the file.
-
-        Incidents
-        ---------
-        unsorted-deps
-        unsorted-deps-2
-        repeated-deps
-        deps-self-loop
-        """
-        Incident.default_lineno = line
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.FORMAT
-        if not (utils.is_word(cols) or utils.is_empty_node(cols)):
-            return
-        # Remember whether there is at least one difference between the basic
-        # tree and the enhanced graph in the entire dataset.
-        if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
-            state.seen_enhancement = line
-        # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from check_id_references() and the head indices are OK).
-        deps = utils.deps_list(cols)
-        heads = [utils.nodeid2tuple(h) for h, d in deps]
-        if heads != sorted(heads):
-            Error(
-                state=state, config=self.incfg,
-                testid='unsorted-deps',
-                message=f"DEPS not sorted by head index: '{cols[DEPS]}'"
-            ).confirm()
-        else:
-            lasth = None
-            lastd = None
-            for h, d in deps:
-                if h == lasth:
-                    if d < lastd:
-                        Error(
-                            state=state, config=self.incfg,
-                            testid='unsorted-deps-2',
-                            message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
-                        ).confirm()
-                    elif d == lastd:
-                        Error(
-                            state=state, config=self.incfg,
-                            testid='repeated-deps',
-                            message=f"DEPS contain multiple instances of the same relation '{h}:{d}'"
-                        ).confirm()
-                lasth = h
-                lastd = d
-        id_ = utils.nodeid2tuple(cols[ID])
-        if id_ in heads:
-            Error(
-                state=state, config=self.incfg,
-                testclass=TestClass.ENHANCED,
-                testid='deps-self-loop',
-                message=f"Self-loop in DEPS for '{cols[ID]}'"
-            ).confirm()
 
 
 
