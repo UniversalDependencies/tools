@@ -375,9 +375,8 @@ UNICODE errors: 2
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\uppercase-deprel.conllu 
 [Line 5 Sent uppercase-deprel]: [L2 SYNTAX invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
-[Line 5 Sent uppercase-deprel]: [L2 SYNTAX unknown-udeprel] Unknown main DEPREL type: 'Punct'.
-SYNTAX errors: 2
-*** FAILED *** with 2 errors
+SYNTAX errors: 1
+*** FAILED *** with 1 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
@@ -519,7 +518,6 @@ Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\ud
 [Line 3 Sent tanl1]: [L1 FORMAT leading-whitespace] Leading whitespace not allowed in column LEMMA: ' Lon dra'.
 [Line 4 Sent tanl1]: [L1 FORMAT invalid-whitespace] White space not allowed in column DEPREL: ' punct'.
 [Line 4 Sent tanl1]: [L2 SYNTAX invalid-deprel] Invalid DEPREL value ' punct'. Only lowercase English letters or a colon are expected.
-[Line 4 Sent tanl1]: [L2 SYNTAX unknown-udeprel] Unknown main DEPREL type: ' punct'.
 [Line 3 Sent tanl1]: [L4 FORMAT invalid-word-with-space] ' Lon dra' in column LEMMA is not on the list of exceptions allowed to contain whitespace.
 
 Only tokens and lemmas matching the following regular expression are currently permitted to contain spaces in language [cs]:
@@ -541,8 +539,8 @@ See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_dep
 
 [Line 4 Sent tanl1]: [L3 SYNTAX upos-rel-punct] 'PUNCT' must be 'punct' but it is ' punct' ('.')
 FORMAT errors: 3
-SYNTAX errors: 4
-*** FAILED *** with 7 errors
+SYNTAX errors: 3
+*** FAILED *** with 6 errors
  
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-functions\columns-format.conllu 

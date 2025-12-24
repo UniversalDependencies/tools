@@ -269,8 +269,6 @@ class Validator(Level6):
                     self.check_deps_format(state, cols, lineno) # level 2
                     self.check_eudeprels(state, cols, lineno) # level 2
                     self.check_deps(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
-                if utils.is_word(cols):
-                    self.check_udeprel(state, cols, lineno) # level 2
                 self.check_misc(state, cols, lineno) # level 2; must operate on pre-Udapi MISC
             if not colssafe:
                 return state
