@@ -394,7 +394,7 @@ SYNTAX errors: 2
 -------------------------------------------------------------------------------- 
 Processing file: C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1-2\uppercase-deps-deprel.conllu 
 [Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
-[Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED unknown-eudeprel] Unknown main relation type 'Dep' in '1:Dep'
+[Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED unknown-eudeprel] Unknown main relation type 'Dep' in '1:Dep'.
 [Line 4 Sent uppercase-deps-deprel]: [L2 ENHANCED unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2'] are not reachable from any root
 ENHANCED errors: 3
 *** FAILED *** with 3 errors

@@ -349,6 +349,54 @@ class Level2(Level1):
 
 
 
+    def check_eudeprels(self, state, cols, line):
+        """
+        Checks that a dependency relation label is on the list of main deprel
+        types defined in UD. If there is a subtype, it is ignored. This is a
+        level 2 test and it does not consult language-specific lists. It will
+        not report an error even if a main deprel is forbidden in a language.
+        This method currently checks udeprels only in the DEPS column.
+
+        Unlike check_deprel_format(), check_udeprel(), check_deps_format() and check_deps(),
+        this method is called later when all low-level tests have been passed
+        and the Node object has been created.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        cols : list
+            The values of the columns on the current node / token line.
+        line : int
+            Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        unknown-eudeprel
+        """
+        Incident.default_level = 2
+        Incident.default_lineno = line
+        # At this level, ignore the language-specific lists and use language
+        # 'ud' instead.
+        deprelset = self.data.get_deprel_for_language('ud')
+        deprelset.add('ref')
+        # We already know that the contents of DEPS is parsable (deps_list() was
+        # first called from check_id_references() and the head indices are OK).
+        # The order of enhanced dependencies was already checked in check_deps().
+        if cols[DEPS] != '_':
+            for head, deprel in utils.deps_list(cols):
+                # Test only the universal part if testing at universal level.
+                udeprel = utils.lspec2ud(deprel)
+                if not udeprel in deprelset:
+                    Error(
+                        state=state, config=self.incfg,
+                        testclass=TestClass.ENHANCED,
+                        testid='unknown-eudeprel',
+                        message=f"Unknown main relation type '{udeprel}' in '{head}:{deprel}'."
+                    ).confirm()
+
+
+
     def check_deps(self, state, cols, line):
         """
         Validates that DEPS is correctly formatted and that there are no
@@ -421,59 +469,6 @@ class Level2(Level1):
                 testid='deps-self-loop',
                 message=f"Self-loop in DEPS for '{cols[ID]}'"
             ).confirm()
-
-
-
-    def check_eudeprels(self, state, node):
-        """
-        Checks that a dependency relation label is on the list of main deprel
-        types defined in UD. If there is a subtype, it is ignored. This is a
-        level 2 test and it does not consult language-specific lists. It will
-        not report an error even if a main deprel is forbidden in a language.
-        This method currently checks udeprels only in the DEPS column.
-
-        Unlike check_deprel_format(), check_udeprel(), check_deps_format() and check_deps(),
-        this method is called later when all low-level tests have been passed
-        and the Node object has been created.
-
-        Parameters
-        ----------
-        state : udtools.state.State
-            The state of the validation run.
-        node : udapi.core.node.Node object
-            The node whose incoming relation will be validated.
-
-        Reads from state
-        ----------------
-        current_node_linenos : dict(str: int)
-            Mapping from node ids (including empty nodes) to line numbers in
-            the input file.
-
-        Incidents
-        ---------
-        unknown-eudeprel
-        """
-        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
-        Incident.default_level = 2
-        # At this level, ignore the language-specific lists and use language
-        # 'ud' instead.
-        deprelset = self.data.get_deprel_for_language('ud')
-        # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from check_id_references() and the head indices are OK).
-        # The order of enhanced dependencies was already checked in check_deps().
-        Incident.default_testclass = TestClass.ENHANCED
-        if str(node.deps) != '_':
-            deprelset.add('ref')
-            for edep in node.deps:
-                parent = edep['parent']
-                deprel = utils.lspec2ud(edep['deprel'])
-                if not deprel in deprelset:
-                    Error(
-                        state=state, config=self.incfg,
-                        nodeid=node.ord,
-                        testid='unknown-eudeprel',
-                        message=f"Unknown main relation type '{deprel}' in '{parent.ord}:{deprel}'"
-                    ).confirm()
 
 
 
