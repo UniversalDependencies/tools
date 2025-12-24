@@ -1,5 +1,5 @@
 # not valid: multiple roots
 # sent_id = multiple-0
-1	word	word	NOUN	_	_	0	nsubj	_	_
+1	word	word	NOUN	_	_	0	root	_	_
 2	word	word	NOUN	_	_	0	root	_	_
 

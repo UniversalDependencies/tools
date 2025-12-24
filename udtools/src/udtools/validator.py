@@ -266,31 +266,30 @@ class Validator(Level6):
                     self.check_upos(state, cols, lineno) # level 2
                     colssafe = self.check_feats_format(state, cols, lineno) and colssafe # level 2 (level 4 tests will be called later)
                     self.check_deprel_format(state, cols, lineno) # level 2
-                    self.check_deps_format(state, cols, lineno) # level 2
-                    self.check_deps(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
+                    self.check_deps_format(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)
                 self.check_misc(state, cols, lineno) # level 2; must operate on pre-Udapi MISC
             if not colssafe:
                 return state
-            # If we successfully passed all the tests above, it is probably
-            # safe to give the lines to Udapi and ask it to build the tree data
-            # structure for us. Udapi does not want to get the terminating
-            # empty line.
-            tree = self.build_tree_udapi(all_lines)
             # Get line numbers for all nodes including empty ones (here linenos
             # is a dict indexed by cols[ID], i.e., a string).
             state.current_node_linenos = utils.get_line_numbers_for_ids(state, state.current_token_node_table)
+            # Check that enhanced graphs exist either for all sentences or for
+            # none.
+            self.check_deps_all_or_none(state) # level 2
+            # Check sentence-level metadata in the comment lines.
             self.check_sent_id(state) # level 2
             self.check_parallel_id(state) # level 2
             self.check_text_meta(state) # level 2
-            # Test that enhanced graphs exist either for all sentences or for
-            # none.
-            self.check_deps_all_or_none(state) # level 2
+            # If we successfully passed all the critical tests above, it is
+            # probably safe to give the lines to Udapi and ask it to build the
+            # tree data structure for us. Udapi does not want to get the
+            # terminating empty line.
+            tree = self.build_tree_udapi(all_lines)
             # Tests of individual nodes with Udapi.
             nodes = tree.descendants_and_empty
             for node in nodes:
-                self.check_udeprels(state, node) # level 2
-                self.check_zero_root(state, node) # level 2
                 if self.level >= 3:
+                    self.check_zero_root(state, node) # level 3
                     self.check_enhanced_orphan(state, node) # level 3
                     if self.level >= 4:
                         # To disallow words with spaces everywhere, use --lang ud.
@@ -305,7 +304,7 @@ class Validator(Level6):
             if self.level >= 3:
                 # Level 3 checks universally valid consequences of annotation
                 # guidelines. Look at regular nodes and basic tree, not at
-                # enhanced graph (which is checked later).
+                # enhanced graph.
                 basic_nodes = tree.descendants
                 for node in basic_nodes:
                     self.check_expected_features(state, node)
@@ -321,8 +320,10 @@ class Validator(Level6):
                     self.check_goeswith_span(state, node)
                     self.check_goeswith_morphology_and_edeps(state, node)
                     self.check_projective_punctuation(state, node)
+            # Optional checks for CorefUD treebanks. They operate on MISC and
+            # currently do not use the Udapi data structures.
             if self.check_coref:
-                self.check_misc_entity(state) # optional for CorefUD treebanks
+                self.check_misc_entity(state)
         return state
 
 

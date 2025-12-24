@@ -54,6 +54,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -89,6 +91,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -118,6 +122,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -152,6 +158,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -178,7 +186,7 @@ class Level2(Level1):
         feats = cols[FEATS]
         if feats == '_':
             return True
-        self.features_present(state)
+        utils.features_present(state, line)
         feat_list = feats.split('|')
         if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
             Error(
@@ -236,29 +244,19 @@ class Level2(Level1):
 
 
 
-    def features_present(self, state):
-        """
-        In general, the annotation of morphological features is optional, although
-        highly encouraged. However, if the treebank does have features, then certain
-        features become required. This function is called when the first morphological
-        feature is encountered. It remembers that from now on, missing features can
-        be reported as errors. In addition, if any such errors have already been
-        encountered, they will be reported now.
-        """
-        if not state.seen_morpho_feature:
-            state.seen_morpho_feature = state.current_line
-            for testid in state.delayed_feature_errors:
-                for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                    occurrence['incident'].confirm()
-
-
-
     def check_deprel_format(self, state, cols, line):
         """
-        Checks general constraints on valid characters in DEPREL.
+        Checks general constraints on valid characters in DEPREL. Furthermore,
+        if the general character format is OK, checks that the main relation
+        type (udeprel) is defined in UD. Subtypes, if any, are ignored. This is
+        a level 2 test and it does not consult language-specific lists. It will
+        not report an error even if a main deprel is forbidden in a language.
+        This method checks the DEPREL column but not DEPS.
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -267,67 +265,52 @@ class Level2(Level1):
         Incidents
         ---------
         invalid-deprel
+        unknown-deprel
         """
         Incident.default_level = 2
         Incident.default_lineno = line
         if utils.is_multiword_token(cols):
             return
-        if not (utils.crex.deprel.fullmatch(cols[DEPREL]) or (utils.is_empty_node(cols) and cols[DEPREL] == '_')):
+        # Empty nodes must have '_' in DEPREL but that has been already checked
+        # in check_empty_node_empty_vals().
+        if utils.is_empty_node(cols):
+            return
+        if not utils.crex.deprel.fullmatch(cols[DEPREL]):
             Error(
                 state=state, config=self.incfg,
                 testclass=TestClass.SYNTAX,
                 testid='invalid-deprel',
                 message=f"Invalid DEPREL value '{cols[DEPREL]}'. Only lowercase English letters or a colon are expected."
             ).confirm()
+        else:
+            # At this level, ignore the language-specific lists and use
+            # language 'ud' instead.
+            deprelset = self.data.get_deprel_for_language('ud')
+            # Test only the universal part if testing at universal level.
+            deprel = utils.lspec2ud(cols[DEPREL])
+            if deprel not in deprelset:
+                Error(
+                    state=state, config=self.incfg,
+                    testclass=TestClass.SYNTAX,
+                    testid='unknown-udeprel',
+                    message=f"Unknown main DEPREL type: '{deprel}'."
+                ).confirm()
 
 
 
     def check_deps_format(self, state, cols, line):
         """
-        Checks general constraints on valid characters in DEPS.
-
-        Parameters
-        ----------
-        cols : list
-            The values of the columns on the current node / token line.
-        line : int
-            Number of the line where the node occurs in the file.
-
-        Incidents
-        ---------
-        invalid-deps
-        invalid-edeprel
-        """
-        Incident.default_level = 2
-        Incident.default_lineno = line
-        if utils.is_multiword_token(cols):
-            return
-        try:
-            utils.deps_list(cols)
-        except ValueError:
-            Error(
-                state=state, config=self.incfg,
-                testclass=TestClass.ENHANCED,
-                testid='invalid-deps',
-                message=f"Failed to parse DEPS: '{cols[DEPS]}'."
-            ).confirm()
-            return
-        if any(deprel for head, deprel in utils.deps_list(cols)
-            if not utils.crex.edeprel.fullmatch(deprel)):
-                Error(
-                    state=state, config=self.incfg,
-                    testclass=TestClass.ENHANCED,
-                    testid='invalid-edeprel',
-                    message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
-                ).confirm()
-
-
-
-    def check_deps(self, state, cols, line):
-        """
-        Validates that DEPS is correctly formatted and that there are no
+        Checks that DEPS is correctly formatted and that there are no
         self-loops in DEPS (longer cycles are allowed in enhanced graphs but
         self-loops are not).
+
+        For each relation in DEPS, it also checks the general constraints on
+        valid characters in DEPS. If the general character format is OK, checks
+        that the main relation type of each relation in DEPS is on the list of
+        main deprel types defined in UD. If there is a subtype, it is ignored.
+        This is a level 2 test and it does not consult language-specific lists.
+        It will not report an error even if a main deprel is forbidden in the
+        language.
 
         This function must be run on raw DEPS before it is fed into Udapi because
         it checks the order of relations, which is not guaranteed to be preserved
@@ -337,6 +320,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -348,42 +333,50 @@ class Level2(Level1):
         unsorted-deps-2
         repeated-deps
         deps-self-loop
+        invalid-edeprel
+        unknown-eudeprel
         """
-        Incident.default_lineno = line
         Incident.default_level = 2
-        Incident.default_testclass = TestClass.FORMAT
-        if not (utils.is_word(cols) or utils.is_empty_node(cols)):
+        Incident.default_lineno = line
+        if utils.is_multiword_token(cols):
+            return
+        if cols[DEPS] == '_':
             return
         # Remember whether there is at least one difference between the basic
         # tree and the enhanced graph in the entire dataset.
         if cols[DEPS] != '_' and cols[DEPS] != cols[HEAD]+':'+cols[DEPREL]:
             state.seen_enhancement = line
-        # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from check_id_references() and the head indices are OK).
-        deps = utils.deps_list(cols)
-        heads = [utils.nodeid2tuple(h) for h, d in deps]
+        # We should have called check_id_references() before (and only come
+        # here if that check succeeded); since utils.deps_list() is called
+        # there, it should be now guaranteed that the contents of DEPS is
+        # parsable.
+        edeps = utils.deps_list(cols)
+        heads = [utils.nodeid2tuple(h) for h, d in edeps]
         if heads != sorted(heads):
             Error(
                 state=state, config=self.incfg,
+                testclass=TestClass.FORMAT,
                 testid='unsorted-deps',
-                message=f"DEPS not sorted by head index: '{cols[DEPS]}'"
+                message=f"DEPS not sorted by head index: '{cols[DEPS]}'."
             ).confirm()
         else:
             lasth = None
             lastd = None
-            for h, d in deps:
+            for h, d in edeps:
                 if h == lasth:
                     if d < lastd:
                         Error(
                             state=state, config=self.incfg,
+                            testclass=TestClass.FORMAT,
                             testid='unsorted-deps-2',
-                            message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'"
+                            message=f"DEPS pointing to head '{h}' not sorted by relation type: '{cols[DEPS]}'."
                         ).confirm()
                     elif d == lastd:
                         Error(
                             state=state, config=self.incfg,
+                            testclass=TestClass.FORMAT,
                             testid='repeated-deps',
-                            message=f"DEPS contain multiple instances of the same relation '{h}:{d}'"
+                            message=f"DEPS contain multiple instances of the same relation '{h}:{d}'."
                         ).confirm()
                 lasth = h
                 lastd = d
@@ -395,73 +388,27 @@ class Level2(Level1):
                 testid='deps-self-loop',
                 message=f"Self-loop in DEPS for '{cols[ID]}'"
             ).confirm()
-
-
-
-    def check_udeprels(self, state, node):
-        """
-        Checks that a dependency relation label is on the list of main deprel
-        types defined in UD. If there is a subtype, it is ignored. This is a
-        level 2 test and it does not consult language-specific lists. It will
-        not report an error even if a main deprel is forbidden in a language.
-        This method currently checks udeprels both in the DEPREL column and in
-        the DEPS column.
-
-        Unlike check_deprel_format(), check_deps_format() and check_deps(),
-        this method is called later when all low-level tests have been passed
-        and the Node object has been created.
-
-        Parameters
-        ----------
-        state : udtools.state.State
-            The state of the validation run.
-        node : udapi.core.node.Node object
-            The node whose incoming relation will be validated.
-
-        Reads from state
-        ----------------
-        current_node_linenos : dict(str: int)
-            Mapping from node ids (including empty nodes) to line numbers in
-            the input file.
-
-        Incidents
-        ---------
-        unknown-udeprel
-        unknown-eudeprel
-        """
-        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.SYNTAX
         # At this level, ignore the language-specific lists and use language
         # 'ud' instead.
         deprelset = self.data.get_deprel_for_language('ud')
-        # The basic relation should be tested on regular nodes but not on empty nodes.
-        if not node.is_empty():
-            # Test only the universal part if testing at universal level.
-            deprel = node.udeprel
-            if deprel not in deprelset:
+        deprelset.add('ref')
+        for head, deprel in edeps:
+            if not utils.crex.edeprel.fullmatch(deprel):
                 Error(
                     state=state, config=self.incfg,
-                    nodeid=node.ord,
-                    testid='unknown-udeprel',
-                    message=f"Unknown main DEPREL type: '{deprel}'"
+                    testclass=TestClass.ENHANCED,
+                    testid='invalid-edeprel',
+                    message=f"Invalid enhanced relation type: '{cols[DEPS]}'."
                 ).confirm()
-        # If there are enhanced dependencies, test their deprels, too.
-        # We already know that the contents of DEPS is parsable (deps_list() was
-        # first called from check_id_references() and the head indices are OK).
-        # The order of enhanced dependencies was already checked in check_deps().
-        Incident.default_testclass = TestClass.ENHANCED
-        if str(node.deps) != '_':
-            deprelset.add('ref')
-            for edep in node.deps:
-                parent = edep['parent']
-                deprel = utils.lspec2ud(edep['deprel'])
-                if not deprel in deprelset:
+            else:
+                # Test only the universal part if testing at universal level.
+                udeprel = utils.lspec2ud(deprel)
+                if not udeprel in deprelset:
                     Error(
                         state=state, config=self.incfg,
-                        nodeid=node.ord,
+                        testclass=TestClass.ENHANCED,
                         testid='unknown-eudeprel',
-                        message=f"Unknown main relation type '{deprel}' in '{parent.ord}:{deprel}'"
+                        message=f"Unknown main relation type '{udeprel}' in '{head}:{deprel}'."
                     ).confirm()
 
 
@@ -480,6 +427,8 @@ class Level2(Level1):
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
         line : int
@@ -772,66 +721,6 @@ class Level2(Level1):
             return False
         return True
 
-
-
-    def check_zero_root(self, state, node):
-        """
-        Checks that DEPREL is "root" iff HEAD is 0.
-
-        Parameters
-        ----------
-        state : udtools.state.State
-            The state of the validation run.
-        node : udapi.core.node.Node object
-            The node whose incoming relation will be validated. This function
-            operates on both regular and empty nodes. Make sure to call it for
-            empty nodes, too!
-
-        Reads from state
-        ----------------
-        current_node_linenos : dict(str: int)
-            Mapping from node ids (including empty nodes) to line numbers in
-            the input file.
-
-        Incidents
-        ---------
-        0-is-not-root
-        root-is-not-0
-        enhanced-0-is-not-root
-        enhanced-root-is-not-0
-        """
-        Incident.default_lineno = state.current_node_linenos[str(node.ord)]
-        Incident.default_level = 2
-        Incident.default_testclass = TestClass.SYNTAX
-        if not node.is_empty():
-            if node.parent.ord == 0 and node.udeprel != 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testid='0-is-not-root',
-                    message="DEPREL must be 'root' if HEAD is 0."
-                ).confirm()
-            if node.parent.ord != 0 and node.udeprel == 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testid='root-is-not-0',
-                    message="DEPREL cannot be 'root' if HEAD is not 0."
-                ).confirm()
-        # In the enhanced graph, test both regular and empty roots.
-        for edep in node.deps:
-            if edep['parent'].ord == 0 and utils.lspec2ud(edep['deprel']) != 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testclass=TestClass.ENHANCED,
-                    testid='enhanced-0-is-not-root',
-                    message="Enhanced relation type must be 'root' if head is 0."
-                ).confirm()
-            if edep['parent'].ord != 0 and utils.lspec2ud(edep['deprel']) == 'root':
-                Error(
-                    state=state, config=self.incfg,
-                    testclass=TestClass.ENHANCED,
-                    testid='enhanced-root-is-not-0',
-                    message="Enhanced relation type cannot be 'root' if head is not 0."
-                ).confirm()
 
 
 
