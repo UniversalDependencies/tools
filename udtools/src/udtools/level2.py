@@ -178,7 +178,7 @@ class Level2(Level1):
         feats = cols[FEATS]
         if feats == '_':
             return True
-        self.features_present(state)
+        utils.features_present(state, line)
         feat_list = feats.split('|')
         if [f.lower() for f in feat_list] != sorted(f.lower() for f in feat_list):
             Error(
@@ -233,23 +233,6 @@ class Level2(Level1):
                 message=f"Repeated features are disallowed: '{feats}'."
             ).confirm()
         return safe
-
-
-
-    def features_present(self, state):
-        """
-        In general, the annotation of morphological features is optional, although
-        highly encouraged. However, if the treebank does have features, then certain
-        features become required. This function is called when the first morphological
-        feature is encountered. It remembers that from now on, missing features can
-        be reported as errors. In addition, if any such errors have already been
-        encountered, they will be reported now.
-        """
-        if not state.seen_morpho_feature:
-            state.seen_morpho_feature = state.current_line
-            for testid in state.delayed_feature_errors:
-                for occurrence in state.delayed_feature_errors[testid]['occurrences']:
-                    occurrence['incident'].confirm()
 
 
 

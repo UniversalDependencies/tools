@@ -286,6 +286,44 @@ def next_sentence(state, inp):
             yield sentence_lines
 
 
+def features_present(state, line):
+    """
+    In general, the annotation of morphological features is optional, although
+    highly encouraged. However, if the treebank does have features, then certain
+    features become required. This function is called when the first morphological
+    feature is encountered. It remembers that from now on, missing features can
+    be reported as errors. In addition, if any such errors have already been
+    encountered, they will be reported now.
+
+    Parameters
+    ----------
+    state : udtools.state.State
+        The state of the validation run.
+    line : int
+        Number of the line where the current node occurs in the file.
+
+    Reads from state
+    ----------------
+    seen_morpho_feature : int
+        Line number of the first occurrence of a morphological feature in the
+        corpus. None if no feature has been encountered so far.
+    delayed_feature_errors : list(udtools.incident.Incident)
+        The number of the most recently read line from the input file
+        (1-based).
+
+    Writes to state
+    ----------------
+    seen_morpho_feature : int
+        Line number of the first occurrence of a morphological feature in the
+        corpus. None if no feature has been encountered so far.
+    """
+    if not state.seen_morpho_feature:
+        state.seen_morpho_feature = line
+        for testid in state.delayed_feature_errors:
+            for occurrence in state.delayed_feature_errors[testid]['occurrences']:
+                occurrence['incident'].confirm()
+
+
 def get_caused_nonprojectivities(node):
     """
     Checks whether a node is in a gap of a nonprojective edge. Report true only
