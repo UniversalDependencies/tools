@@ -95,6 +95,8 @@ class Validator(Level6):
         self.incfg = {}
         if 'quiet' in args_dict:
             self.incfg['quiet'] = args_dict['quiet']
+        if 'no_warnings' in args_dict:
+            self.incfg['no_warnings'] = args_dict['no_warnings']
         if 'max_err' in args_dict:
             self.incfg['max_err'] = args_dict['max_err']
         if 'max_store' in args_dict:
