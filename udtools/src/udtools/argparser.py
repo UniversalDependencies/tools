@@ -16,16 +16,24 @@ def build_argparse_validator():
     io_group = opt_parser.add_argument_group("Input / output options")
     io_group.add_argument('--quiet',
                           dest="quiet", action="store_true", default=False,
-                          help="""Do not print any error messages.
+                          help="""Do not print anything (errors, warnings, summary).
                           Exit with 0 on pass, non-zero on fail.""")
+    io_group.add_argument('--no-warnings',
+                          dest='no_warnings', action='store_true', default=False,
+                          help="""Print only errors but no warnings.
+                          The final summary will still include the number of warnings, although they were not printed.
+                          This option also does not affect storing warnings in the validation state.""")
     io_group.add_argument('--max-err',
                           action="store", type=int, default=20,
-                          help="""How many errors to output per category? 0 for all.
+                          help="""How many incidents to output per category? 0 for all.
                           Default: %(default)d.""")
+    ###!!! --max-store should not be a commandline option if the saved errors are useless for the user. The limit should be incorporated as a default in the Validator class, or the default should be 0 but the cli should construct the Validator with a limit.
     io_group.add_argument('--max-store',
                           action="store", type=int, default=20,
-                          help="""How many errors to save when collecting errors. 0 for all.
-                          Default: %(default)d.""")
+                          help="""How many incidents to save in the validation state? 0 for all.
+                          Default: %(default)d.
+                          Saved incidents are not used for anything when the validator is invoked as a command line script.
+                          However, setting a low limit here protects the memory when a treebank contains large number of errors.""")
     io_group.add_argument('input',
                           nargs='*',
                           help="""Input file name(s), or "-" or nothing for standard input.""")
