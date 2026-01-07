@@ -29,7 +29,7 @@ except ModuleNotFoundError:
 
 
 class Validator(Level6):
-    def __init__(self, lang=None, level=None, check_coref=None, args=None, datapath=None, output=sys.stderr):
+    def __init__(self, lang=None, level=None, check_coref=None, args=None, datapath=None, output=sys.stderr, max_store=0):
         """
         Initialization of the Validator class.
 
@@ -64,6 +64,13 @@ class Validator(Level6):
             None. If it is None, the output is suppressed (same as the --quiet
             command line option) and errors are only saved in state for later
             processing.
+        max_store : int, optional
+            How many incidents to store in the validation state? Default 0
+            means no limit. Limiting this helps save memory with large
+            treebanks and large numbers of incidents. Especially if the
+            intended use of the Validator object is to immediately report
+            incidents without returning to them later. The limit is applied
+            separately to each test class.
         """
         self.data = data.Data(datapath=datapath)
         if not args:
@@ -99,11 +106,10 @@ class Validator(Level6):
             self.incfg['no_warnings'] = args_dict['no_warnings']
         if 'max_err' in args_dict:
             self.incfg['max_err'] = args_dict['max_err']
-        if 'max_store' in args_dict:
-            self.incfg['max_store'] = args_dict['max_store']
         if 'input' in args_dict and len(args_dict['input']) > 1:
             self.incfg['report_filename'] = True
         self.incfg['output'] = output
+        self.incfg['max_store'] = max_store
         self.conllu_reader = udapi.block.read.conllu.Conllu()
 
 

@@ -27,13 +27,6 @@ def build_argparse_validator():
                           action="store", type=int, default=20,
                           help="""How many incidents to output per category? 0 for all.
                           Default: %(default)d.""")
-    ###!!! --max-store should not be a commandline option if the saved errors are useless for the user. The limit should be incorporated as a default in the Validator class, or the default should be 0 but the cli should construct the Validator with a limit.
-    io_group.add_argument('--max-store',
-                          action="store", type=int, default=20,
-                          help="""How many incidents to save in the validation state? 0 for all.
-                          Default: %(default)d.
-                          Saved incidents are not used for anything when the validator is invoked as a command line script.
-                          However, setting a low limit here protects the memory when a treebank contains large number of errors.""")
     io_group.add_argument('input',
                           nargs='*',
                           help="""Input file name(s), or "-" or nothing for standard input.""")
