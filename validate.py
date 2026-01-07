@@ -18,7 +18,7 @@ from udtools.src.udtools.argparser import parse_args_validator
 
 def main():
     args = parse_args_validator()
-    validator = Validator(lang=args.lang, level=args.level, args=args)
+    validator = Validator(lang=args.lang, level=args.level, max_store=10, args=args)
     state = validator.validate_files(args.input)
     # Summarize the warnings and errors.
     summary = str(state)
