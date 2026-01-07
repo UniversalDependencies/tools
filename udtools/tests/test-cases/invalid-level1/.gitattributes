@@ -1,0 +1,2 @@
+# Do not convert CRLF to LF in the test file that intentionally contains CRLF.
+non-unix-newline.conllu -text
