@@ -198,6 +198,8 @@ class Incident:
             return
         if 'no_warnings' in self.config and self.config['no_warnings'] and self.is_warning():
             return
+        if 'exclude' in self.config and self.testid in self.config['exclude']:
+            return
         # Suppress error messages of a type of which we have seen too many.
         if too_many > 0:
             if too_many == 1:
