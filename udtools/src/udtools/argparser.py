@@ -14,43 +14,51 @@ def build_argparse_validator():
     opt_parser = argparse.ArgumentParser(description="CoNLL-U validation script. Python 3 is needed to run it!")
 
     io_group = opt_parser.add_argument_group("Input / output options")
-    io_group.add_argument('--quiet',
-                          dest="quiet", action="store_true", default=False,
+    io_group.add_argument('-q', '--quiet',
+                          dest='quiet', action="store_true", default=False,
                           help="""Do not print anything (errors, warnings, summary).
                           Exit with 0 on pass, non-zero on fail.""")
     io_group.add_argument('--no-warnings',
                           dest='no_warnings', action='store_true', default=False,
                           help="""Print only errors but no warnings.
-                          The final summary will still include the number of warnings, although they were not printed.
-                          This option also does not affect storing warnings in the validation state.""")
+                          The final summary will still include the number of warnings, although they were not printed.""")
+    io_group.add_argument('-e', '--exclude',
+                          nargs='+',
+                          help="""One or more ids of tests whose incidents should not be printed.
+                          For example: --exclude missing-sent-id invalid-sent-id.
+                          The tests will still be performed and resulting incidents counted in the final summary.""")
+    io_group.add_argument('-i', '--include-only',
+                          nargs='+',
+                          help="""One or more ids of tests whose incidents should be printed.
+                          For example: --include-only missing-sent-id invalid-sent-id.
+                          Any other incidents will not be printed.
+                          The tests will still be performed and resulting incidents counted in the final summary.""")
     io_group.add_argument('--max-err',
-                          action="store", type=int, default=20,
-                          help="""How many incidents to output per category? 0 for all.
+                          action='store', type=int, default=20,
+                          help="""How many incidents to print per test class? 0 for all.
                           Default: %(default)d.""")
     io_group.add_argument('input',
                           nargs='*',
                           help="""Input file name(s), or "-" or nothing for standard input.""")
 
-    list_group = opt_parser.add_argument_group("Tag sets", "Options relevant to checking tag sets.")
-    list_group.add_argument("--lang",
-                            action="store", required=True, default=None,
-                            help="""Which langauge are we checking?
-                            If you specify this (as a two-letter code), the tags will be checked
-                            using the language-specific files in the
-                            data/directory of the validator.""")
-    list_group.add_argument("--level",
-                            action="store", type=int, default=5, dest="level",
+    test_group = opt_parser.add_argument_group("Test configuration options")
+    test_group.add_argument('--lang',
+                            action='store', required=True, default=None,
+                            help="""Which langauge are we checking (ISO 639 code)?
+                            Determines the language-specific lists of features,
+                            auxiliaries, relation subtypes etc. This is a required
+                            argument. Use "ud" as the value if you only want to
+                            test the universal part of the UD guidelines.""")
+    test_group.add_argument('--level',
+                            action='store', type=int, default=5, dest="level",
                             help="""Level 1: Test only CoNLL-U backbone.
                             Level 2: UD format.
                             Level 3: UD contents.
                             Level 4: Language-specific labels.
-                            Level 5: Language-specific contents.""")
-
-    coref_group = opt_parser.add_argument_group("Coreference / entity constraints",
-                                                "Options for checking coreference and entity annotation.")
-    coref_group.add_argument('--coref',
-                             action='store_true', default=False, dest='check_coref',
-                             help='Test coreference and entity-related annotation in MISC.')
+                            Level 5 (default): Language-specific contents.""")
+    test_group.add_argument('--coref',
+                            action='store_true', default=False, dest='check_coref',
+                            help='Test coreference and entity-related annotation in MISC.')
     return opt_parser
 
 
