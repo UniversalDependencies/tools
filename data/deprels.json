@@ -3216,6 +3216,7 @@
 "nsubj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-30-11-03-17", "lastchanger": "lgrobol"},
+"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-08-10-58-38", "lastchanger": "mregnault"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj:advmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
