@@ -27,6 +27,12 @@ def build_argparse_validator():
                           help="""One or more ids of tests whose incidents should not be printed.
                           For example: --exclude missing-sent-id invalid-sent-id.
                           The tests will still be performed and resulting incidents counted in the final summary.""")
+    io_group.add_argument('-i', '--include-only',
+                          nargs='+',
+                          help="""One or more ids of tests whose incidents should be printed.
+                          For example: --include-only missing-sent-id invalid-sent-id.
+                          Any other incidents will not be printed.
+                          The tests will still be performed and resulting incidents counted in the final summary.""")
     io_group.add_argument('--max-err',
                           action='store', type=int, default=20,
                           help="""How many incidents to print per test class? 0 for all.

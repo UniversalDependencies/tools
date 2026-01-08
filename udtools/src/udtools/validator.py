@@ -104,8 +104,10 @@ class Validator(Level6):
             self.incfg['quiet'] = args_dict['quiet']
         if 'no_warnings' in args_dict:
             self.incfg['no_warnings'] = args_dict['no_warnings']
-        if 'exclude' in args_dict:
+        if 'exclude' in args_dict and args_dict['exclude']:
             self.incfg['exclude'] = args_dict['exclude']
+        if 'include_only' in args_dict and args_dict['include_only']:
+            self.incfg['include_only'] = args_dict['include_only']
         if 'max_err' in args_dict:
             self.incfg['max_err'] = args_dict['max_err']
         if 'input' in args_dict and len(args_dict['input']) > 1:
