@@ -3225,6 +3225,7 @@
 "obj:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:advmod": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
+"obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-08-10-59-45", "lastchanger": "mregnault"},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-08-10-59-26", "lastchanger": "mregnault"},
 "obl:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
