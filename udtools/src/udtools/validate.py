@@ -35,7 +35,118 @@ def validate(paths, cfg_obj):
         yield validate_file(path, cfg_obj)
 
 
+def validate_file(path, cfg_obj):
+    """
+    Reads a CoNLL-U file and performs checks described in cfg_obj.
+
+    Parameters
+    ----------
+    path : str
+        Path to the input file.
+    cfg_obj : dict
+        Data read from the configuration YAML file. Expected dict keys denote
+        which part of the input data the check applies to:
+            file : the whole file
+            block : block of lines (sentence; the lines can be comments or token/nodes)
+            line : one sentence line (comment or token/node, not yet split to columns)
+            comment_lines : list of comment lines from one sentence
+            tokens_cols : list of tokens/nodes, each split to columns (fields)
+
+    Returns
+    -------
+    incidents : list(udtools.incident.Incident)
+        List of incidents (errors or warnings) encountered during the checks.
+    """
+    state = State(current_file_name=os.path.basename(path))
+    incidents = []
+    # newline='' necessary because otherwise non-unix newlines are
+    # automagically converted to \n, see
+    # https://docs.python.org/3/library/functions.html#open
+    with open(path, newline='') as fin:
+        logger.info("Opening file %s", path)
+        block = []
+        for sentence in utils.next_sentence(state, fin):
+            block = []
+            n_lines = len(sentence)
+            for i in range(n_lines):
+                block.append((state.current_line-n_lines+i+1, sentence[i]))
+            # state.current_line = block[0][0]
+            comments = [(counter,line) for (counter,line) in block if line and line[0] == "#"]
+            tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
+            for (counter, line) in comments:
+                match_sentid = utils.crex.sentid.fullmatch(line)
+                if match_sentid:
+                    state.sentence_id = match_sentid.group(1)
+            if cfg_obj['block']:
+                params = {
+                    "block": block,
+                    "useless_param": True
+                }
+                run_checks(cfg_obj['block'], params, incidents, state)
+            block = [(counter,line) for (counter,line) in block if line]
+            if cfg_obj['line']:
+                for (counter,line) in block:
+                    params = {
+                        "line": (counter, line)
+                    }
+                    # state.current_line = counter
+                    run_checks(cfg_obj['line'], params, incidents, state)
+            if 'comment_lines' in cfg_obj:
+                params = {
+                    "comments" : comments,
+                    "allow_slash": True,
+                    "known_sent_ids": state.known_sent_ids,
+                    "state": state
+                }
+                run_checks(cfg_obj['comment_lines'], params, incidents, state)
+            tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
+            if cfg_obj['tokens_cols']:
+                params = {
+                    "sentence": tokens
+                }
+                run_checks(cfg_obj['tokens_cols'], params, incidents, state)
+            for (counter,line) in tokens:
+                params = {
+                    "cols": (counter, line)
+                }
+                run_checks(cfg_obj['cols'], params, incidents, state)
+        if len(block) == 1 and not block[0][1]:
+            incidents.append(Error(
+                testid='missing-empty-line',
+                message='Missing empty line after the last sentence.'
+                ))
+        if 'file' in cfg_obj:
+            params = {
+                "inp": fin
+            }
+            run_checks(cfg_obj['file'], params, incidents, state)
+    return incidents
+
+
 def run_checks(checks, parameters, incidents, state):
+    """
+    Runs required checks of a given category. This function is called separately
+    for checks that apply to the whole sentence, those that apply to just one
+    line etc. When a check returns one or more incidents (errors or warnings),
+    these are added to a list supplied by the caller.
+
+    Parameters
+    ----------
+    checks : dict
+        The necessary information about each check to perform. The keys are
+        names of functions in the current module. The values are also dicts,
+        the only key currently needed from these dicts is 'depends_on'.
+    parameters : dict
+        Parameters for the checks. As a minimum, there must be the relevant
+        part of the data (block, line, tokens_cols...) to be checked.
+    incidents : list(udtools.incident.Incident)
+        The list of incidents (errors or warnings) encountered during the
+        current validation run. If new incidents are encountered during the
+        checks invoked by this function, the list will be extended.
+    state : State
+        The object holding the state of the validation run (what have we seen
+        already etc.).
+    """
     current_incidents = []
     for check, check_info in checks.items():
         dependencies = []
@@ -59,92 +170,6 @@ def run_checks(checks, parameters, incidents, state):
             #     )
             # )
     incidents.extend(current_incidents)
-
-
-def validate_file(path, cfg_obj):
-
-    state = State(current_file_name=os.path.basename(path))
-    incidents = []
-
-    # newline='' necessary because otherwise non-unix newlines are
-    # automagically converted to \n, see
-    # https://docs.python.org/3/library/functions.html#open
-    with open(path, newline='') as fin:
-
-        logger.info("Opening file %s", path)
-        block = []
-        for sentence in utils.next_sentence(state, fin):
-            block = []
-            n_lines = len(sentence)
-            for i in range(n_lines):
-                block.append((state.current_line-n_lines+i+1, sentence[i]))
-            # state.current_line = block[0][0]
-            comments = [(counter,line) for (counter,line) in block if line and line[0] == "#"]
-            tokens = [(counter,line) for (counter,line) in block if line and line[0].isdigit()]
-
-            for (counter, line) in comments:
-                match_sentid = utils.crex.sentid.fullmatch(line)
-                if match_sentid:
-                    state.sentence_id = match_sentid.group(1)
-
-
-            if cfg_obj['block']:
-                params = {
-                    "block": block,
-                    "useless_param": True
-                }
-                run_checks(cfg_obj['block'], params, incidents, state)
-
-            block = [(counter,line) for (counter,line) in block if line]
-            if cfg_obj['line']:
-                for (counter,line) in block:
-                    params = {
-                        "line": (counter, line)
-                    }
-                    # state.current_line = counter
-                    run_checks(cfg_obj['line'], params, incidents, state)
-
-            if 'comment_lines' in cfg_obj:
-                params = {
-                    "comments" : comments,
-                    "allow_slash": True,
-                    "known_sent_ids": state.known_sent_ids,
-                    "state": state
-                }
-                run_checks(cfg_obj['comment_lines'], params, incidents, state)
-
-            # for (counter,line) in tokens:
-                # state.current_line = counter
-                # run_checks(cfg_obj['token_lines'], line, incidents, state)
-
-            # state.current_line = block[0][0] # TODO: FIND MORE ELEGANT SOLUTION
-            tokens = [(counter,line.split("\t")) for (counter,line) in tokens]
-
-            if cfg_obj['tokens_cols']:
-                params = {
-                    "sentence": tokens
-                }
-                run_checks(cfg_obj['tokens_cols'], params, incidents, state)
-
-            for (counter,line) in tokens:
-                params = {
-                    "cols": (counter, line)
-                }
-                run_checks(cfg_obj['cols'], params, incidents, state)
-
-        if len(block) == 1 and not block[0][1]:
-            incidents.append(Error(
-                testid='missing-empty-line',
-                message='Missing empty line after the last sentence.'
-                ))
-
-        if 'file' in cfg_obj:
-            params = {
-                "inp": fin
-            }
-            run_checks(cfg_obj['file'], params, incidents, state)
-
-    return incidents
 
 
 #==============================================================================

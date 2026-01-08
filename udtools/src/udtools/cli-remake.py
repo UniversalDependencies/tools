@@ -6,14 +6,12 @@
 # 2025-09: Refactoring by @harisont and @ellepannitto
 
 import sys
-import os
 import yaml
 
 import logging
 
 import udtools.logging_utils as logging_utils
 
-import udtools.utils as utils
 import udtools.validate as vlib
 from udtools.argparser import build_argparse_validator
 
