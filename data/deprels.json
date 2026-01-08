@@ -3147,6 +3147,7 @@
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-08-11-02-45", "lastchanger": "mregnault"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
