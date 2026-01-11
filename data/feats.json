@@ -3060,7 +3060,9 @@
 "Number[subj]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}},
 "PartType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Emp", "Inf", "Int", "Neg", "Ta"], "evalues": [], "byupos": {}},
 "Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Person[io]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["1", "2", "3"], "byupos": {}}
+"Person[io]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2", "3"], "evalues": [], "byupos": {}},
+"Person[obj]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2", "3"], "evalues": [], "byupos": {}},
+"Person[subj]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2", "3"], "evalues": [], "byupos": {}}
 },
 "ojp": {
 "AdvType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Deg", "Man", "Tim"], "unused_uvalues": [], "unused_lvalues": ["Cau", "Loc", "Mod"], "evalues": [], "byupos": {"ADV": {"Deg": 1, "Man": 1, "Tim": 1}}, "lastchanged": "2022-12-08-18-14-45", "lastchanger": "@StasReichert"},
