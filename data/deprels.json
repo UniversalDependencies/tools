@@ -2474,7 +2474,7 @@
 "nmod:nisba": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-13-15-16-15", "lastchanger": "UD-Egyptian"},
 "nmod:obl": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-28-07-46-22", "lastchanger": "UD-Egyptian"},
-"nmod:unmarked": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation 'nmod:unmarked' is not a subtype of any approved main type."]},
+"nmod:unmarked": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-01-15-30-53", "lastchanger": "UD-Egyptian"},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-26-18-00-56", "lastchanger": "UD-Egyptian"},
