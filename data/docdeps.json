@@ -696,6 +696,7 @@
 "dislocated:obj": {"type": "local", "errors": []},
 "dislocated:obl": {"type": "local", "errors": []},
 "nmod:nisba": {"type": "local", "errors": []},
+"nmod:unmarked": {"type": "", "errors": ["Relation 'nmod:unmarked' is not a subtype of any approved main type."]},
 "obl:nisba": {"type": "local", "errors": []},
 "obl:unmarked": {"type": "local", "errors": []}
 },
