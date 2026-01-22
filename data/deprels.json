@@ -2836,7 +2836,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-09-17-09-40-02", "lastchanger": "kailimp"},
 "obl:arg": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-21-11-15-33", "lastchanger": "kailimp"},
-"obl:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-21-11-14-35", "lastchanger": "kailimp"},
+"obl:lmod": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'obl:lmod'."], "lastchanged": "2026-01-21-11-14-35", "lastchanger": "kailimp"},
 "obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-21-11-15-07", "lastchanger": "kailimp"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
