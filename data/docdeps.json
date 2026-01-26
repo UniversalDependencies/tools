@@ -861,7 +861,6 @@
 "csubj": {"type": "universal", "errors": []},
 "csubj:cop": {"type": "local", "errors": []},
 "flat": {"type": "universal", "errors": []},
-"neg": {"type": "", "errors": ["Relation 'neg' is not a subtype of any approved main type.", "No examples found for relation 'neg'.", "Documentation does not belong to UD v2 guidelines."]},
 "nmod": {"type": "universal", "errors": []},
 "nsubj": {"type": "universal", "errors": []},
 "nsubj:cop": {"type": "local", "errors": []},
