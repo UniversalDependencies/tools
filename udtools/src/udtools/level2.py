@@ -14,11 +14,11 @@ import regex as re
 # from udtools import Validator.
 try:
     import udtools.src.udtools.utils as utils
-    from udtools.src.udtools.incident import Incident, Error, TestClass, Reference
+    from udtools.src.udtools.incident import Incident, Error, TestClass, Reference, Warning
     from udtools.src.udtools.level1 import Level1
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident, Error, TestClass, Reference
+    from udtools.incident import Incident, Error, TestClass, Reference, Warning
     from udtools.level1 import Level1
 
 
