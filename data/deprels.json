@@ -4188,6 +4188,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:affix": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "compound:smixut": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-27-15-07-41", "lastchanger": "yitzilindenbaum@gmail.com"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
