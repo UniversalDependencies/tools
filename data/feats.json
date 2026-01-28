@@ -3657,6 +3657,9 @@
 "VerbType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Cop"], "unused_uvalues": [], "unused_lvalues": ["Aux", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {"PART": {"Cop": 1}, "VERB": {"Cop": 1}}, "lastchanged": "2022-10-28-12-06-20", "lastchanger": "bguil"},
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cau", "Pass"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 1, "Pass": 1}}, "lastchanged": "2024-04-24-13-46-49", "lastchanger": "bguil"}
 },
+"sc": {
+
+},
 "scn": {
 "Clitic": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Yes"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"PRON": {"Yes": 1}}, "lastchanged": "2025-10-31-10-43-22", "lastchanger": "SabrinaDali"},
 "Definite": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": ["Com", "Cons", "Spec"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Def": 1, "Ind": 1}}, "lastchanged": "2025-10-23-15-33-56", "lastchanger": "SabrinaDali"},
