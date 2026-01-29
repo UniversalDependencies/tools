@@ -217,6 +217,20 @@ print(state)
 
 ## The official UD parsing scorer
 
+Evaluates the accuracy of a UD tokenizer / lemmatizer / tagger / parser against gold-standard data.
+The script was originally developed for the [CoNLL 2017](http://universaldependencies.org/conll17/)
+and [2018 shared tasks](http://universaldependencies.org/conll18/) in UD parsing, and later extended
+to handle the enhanced dependency representation in the [IWPT 2020](https://universaldependencies.org/iwpt20/)
+and [2021 shared tasks](https://universaldependencies.org/iwpt21/).
+
+```
+python eval.py -v goldstandard.conllu systemoutput.conllu
+```
+
+For more details on the metrics reported, see the overview papers of the shared tasks linked above.
+
+### The scorer module
+
 Reads two CoNLL-U files: gold standard (annotated manually) and system output (predicted by a parsing model). Both
 files must be valid at least at level 2, and their underlying text must be compatible, i.e., it can differ in
 whitespace but not in other characters. The scorer evaluates similarity of the system output to the gold standard

@@ -8,24 +8,13 @@ This repository contains various scripts in Perl and Python that can be used as 
 
 ## [validate.py](https://github.com/UniversalDependencies/tools/blob/master/validate.py)
 
-The validator has [its own README](https://github.com/UniversalDependencies/tools/blob/master/udtools/README.md).
+The validator is described in a separate [README of Python tools](https://github.com/UniversalDependencies/tools/blob/master/udtools/README.md).
 
 
 
 ## [eval.py](https://github.com/UniversalDependencies/tools/blob/master/eval.py)
 
-Evaluates the accuracy of a UD tokenizer / lemmatizer / tagger / parser against gold-standard data.
-The script was originally developed for the [CoNLL 2017](http://universaldependencies.org/conll17/)
-and [2018 shared tasks](http://universaldependencies.org/conll18/) in UD parsing, and later extended
-to handle the enhanced dependency representation in the [IWPT 2020](https://universaldependencies.org/iwpt20/)
-and [2021 shared tasks](https://universaldependencies.org/iwpt21/).
-
-```
-python eval.py -v goldstandard.conllu systemoutput.conllu
-```
-
-For more details on usage, see the comments in the script. For more details on the metrics reported,
-see the overview papers of the shared tasks linked above.
+The official parsing scorer is described in a separate [README of Python tools](https://github.com/UniversalDependencies/tools/blob/master/udtools/README.md).
 
 
 
