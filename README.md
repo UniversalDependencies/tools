@@ -8,7 +8,7 @@ This repository contains various scripts in Perl and Python that can be used as 
 
 ## [validate.py](https://github.com/UniversalDependencies/tools/blob/master/validate.py)
 
-The validator has [its own README](https://github.com/UniversalDependencies/tools/blob/master/validator/README.md).
+The validator has [its own README](https://github.com/UniversalDependencies/tools/blob/master/udtools/README.md).
 
 
 
