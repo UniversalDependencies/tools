@@ -3212,6 +3212,7 @@
 "expl:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-08-10-58-13", "lastchanger": "mregnault"},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-30-16-33-41", "lastchanger": "mregnault"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
