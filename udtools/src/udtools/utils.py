@@ -47,8 +47,8 @@ class CompiledRegexes:
         self.sentid = re.compile(r"#\s*sent_id\s*=\s*(\S+)")
         # Parallel sentence id comment line. The actual id as well as its predefined parts are bracketed.
         self.parallelid = re.compile(r"#\s*parallel_id\s*=\s*(([a-z]+)/([-0-9a-z]+)(?:/(alt[1-9][0-9]*|part[1-9][0-9]*|alt[1-9][0-9]*part[1-9][0-9]*))?)")
-        # Sentence text comment line. The actual text is bracketed.
-        self.text = re.compile(r"#\s*text\s*=\s*(.*\S)")
+        # Sentence text comment line. The actual text is bracketed. Note that the RE matches even empty text but it will be reported as an error.
+        self.text = re.compile(r"#\s*text\s*=\s*(.*)")
         # Global entity comment is a declaration of entity attributes in MISC.
         # It occurs once per document and it is optional (only CorefUD data).
         # The actual attribute declaration is bracketed so it can be captured in the match.

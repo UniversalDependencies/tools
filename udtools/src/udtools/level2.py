@@ -1200,7 +1200,13 @@ class Level2(Level1):
             ).confirm()
         else:
             stext = text_matched[0].group(1)
-            if stext[-1].isspace():
+            if len(stext) == 0:
+                Error(
+                    state=state, config=self.incfg,
+                    testid='empty-text',
+                    message='The text attribute must not be empty.'
+                ).confirm()
+            elif stext[-1].isspace():
                 Error(
                     state=state, config=self.incfg,
                     testid='text-trailing-whitespace',
