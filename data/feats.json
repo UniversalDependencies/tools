@@ -3067,6 +3067,7 @@
 "Person[subj]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2", "3"], "evalues": [], "byupos": {}},
 "Poss": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Yes"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "PronType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Dem", "Ind", "Int", "Neg", "Prs", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"PunctType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Brck", "Colo", "Comm", "Dash", "Elip", "Excl", "Parag", "Peri", "Qest", "Quot", "Semi"], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Part", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aux"], "evalues": [], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Act", "Cau", "Inv", "Mid", "Pass"], "unused_lvalues": [], "evalues": [], "byupos": {}}
