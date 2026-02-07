@@ -8146,7 +8146,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"aux:q": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"aux:q": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-02-07-13-48-28", "lastchanger": "Koras0ff"},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc:preconj": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-05-01-14-24-51", "lastchanger": "sb-b"},
