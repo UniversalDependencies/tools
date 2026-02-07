@@ -11443,7 +11443,7 @@
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"aux:q": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:q": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-02-07-13-47-26", "lastchanger": "Koras0ff"},
 "auxpass": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
