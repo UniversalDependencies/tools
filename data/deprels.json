@@ -6218,7 +6218,7 @@
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:numgov": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
-"discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
