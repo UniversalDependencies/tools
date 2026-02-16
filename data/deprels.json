@@ -10033,6 +10033,7 @@
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"expl:impers": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-02-16-19-26-27", "lastchanger": "rahonalab"},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-02-16-19-26-03", "lastchanger": "rahonalab"},
