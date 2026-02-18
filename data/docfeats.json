@@ -1508,6 +1508,9 @@
 "PartType": {"type": "local", "values": ["Adv", "Foc", "Illoc", "Neg", "Pred", "Top", "Disc"], "errors": []},
 "Tense": {"type": "universal", "values": ["Fut", "Imm", "Rec", "Rem"], "errors": []}
 },
+"sc": {
+"Clitic": {"type": "local", "values": [], "errors": ["No examples found under value 'Yes'."]}
+},
 "scn": {
 "Clitic": {"type": "local", "values": ["Yes"], "errors": []}
 },
