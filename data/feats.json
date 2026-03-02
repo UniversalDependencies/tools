@@ -365,7 +365,7 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1, "Vnoun": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1, "Vnoun": 1}}, "lastchanged": "2025-12-16-17-08-43", "lastchanger": "rahonalab"}
 },
 "axm": {
-
+"AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ambi", "Comadp", "Post", "Prep"], "evalues": [], "byupos": {}}
 },
 "az": {
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf", "Prog", "Prosp"], "lvalues": [], "unused_uvalues": ["Iter"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1, "Prosp": 1}, "VERB": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1, "Prosp": 1}}, "lastchanged": "2025-04-30-18-44-50", "lastchanger": "coltekin"},
