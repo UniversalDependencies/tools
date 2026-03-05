@@ -370,7 +370,7 @@
 "Animacy": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Hum", "Nhum"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Aspect": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Iter", "Perf", "Prosp"], "unused_lvalues": ["Dur"], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Unrecognized level 3 heading '### <a name=\"Gen-Dat\">`Gen`-'Dat'</a>: genitive-dative'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Abl", "Acc", "Dat", "Gen", "Ins", "Loc", "Nom"], "byupos": {}},
-"ConjType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Comp", "Oper"], "evalues": [], "byupos": {}},
+"ConjType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Comp"], "evalues": ["Oper"], "byupos": {}},
 "Connegative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}}
 },
 "az": {
