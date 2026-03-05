@@ -1179,6 +1179,7 @@
 "willen": {"functions": [{"function": "Tense=Fut", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "ik [wil] dat morgen doon", "exampleen": "I will do it tomorrow", "comment": ""}, {"function": "Mood=Cnd", "rule": "combination of the auxiliary in past tense and an infinitive of the main verb", "deficient": "", "example": "hee sea, hee [wul] dat doon", "exampleen": "he said that he would do it", "comment": ""}, {"function": "Mood=Des", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "see [wil] uns besöken", "exampleen": "she wants to visit us", "comment": ""}], "status": "documented", "lastchanged": "2021-04-21-14-03-28", "lastchanger": "jasiewert"}
 },
 "ne": {
+"छ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the past participle", "deficient": "", "example": "नीतिश्लोकमा भनिएको [छ]", "exampleen": "It is written in the Nītishloka.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-05-14-58-01", "lastchanger": "rahonalab"},
 "हुनु": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "राम शिक्षक [हो]।", "exampleen": "Ram is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-05-14-49-41", "lastchanger": "rahonalab"}
 },
 "nhi": {
