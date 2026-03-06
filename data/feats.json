@@ -374,6 +374,7 @@
 "Connegative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Def", "Ind"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Degree": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cmp", "Pos", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Deixis": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Med", "Prox", "Remt"], "evalues": [], "byupos": {}},
 "Deixis[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Med", "Prox"], "evalues": [], "byupos": {}}
 },
 "az": {
