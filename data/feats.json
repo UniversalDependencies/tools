@@ -373,7 +373,8 @@
 "ConjType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Comp"], "evalues": ["Oper"], "byupos": {}},
 "Connegative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Def", "Ind"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Degree": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cmp", "Pos", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Degree": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cmp", "Pos", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Deixis[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Med", "Prox"], "evalues": [], "byupos": {}}
 },
 "az": {
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf", "Prog", "Prosp"], "lvalues": [], "unused_uvalues": ["Iter"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1, "Prosp": 1}, "VERB": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1, "Prosp": 1}}, "lastchanged": "2025-04-30-18-44-50", "lastchanger": "coltekin"},
