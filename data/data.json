@@ -889,6 +889,9 @@
 "შეიძლება": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and main verb in Sub mood", "deficient": "", "example": "[შეიძლება] ასე იყოს", "exampleen": "it [might] be like that", "comment": ""}], "status": "documented", "lastchanged": "2025-04-06-11-23-35", "lastchanger": "paulm"},
 "შეძლება": {"functions": [{"function": "Mood=Pot", "rule": "conbination of auxiliary and subjunctive form of the main verb", "deficient": "", "example": "[შეიძლება] იწვიმოს", "exampleen": "it [might] rain", "comment": "lemma is the verbal noun form"}], "status": "documented", "lastchanged": "2024-12-24-12-58-32", "lastchanger": "paulmeurer"}
 },
+"kbc": {
+"jaG": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and an inflected form of the main verb", "deficient": "", "example": "ajo liwatece [ja] iwaGadi.", "exampleen": "His/her canoe is heavy.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-17-22-15-34", "lastchanger": "leoalenc"}
+},
 "kfm": {
 "دار": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "“مُن [دار]ُن رِختا ما کول مِکِرُن.”", "exampleen": "-ing", "comment": ""}], "status": "documented", "lastchanged": "2020-11-01-20-08-00", "lastchanger": "amirmojiry"}
 },
