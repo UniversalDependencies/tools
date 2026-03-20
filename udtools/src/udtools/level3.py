@@ -609,20 +609,27 @@ class Level3(Level2):
             # a nominal and not a predicate. This will reveal some erroneous
             # obliques but not all, because we will not recognize some non-
             # predicative nominals, and even for the predicative ones, some
-            # dependents might be better analyzed as nmod.
+            # dependents might be better analyzed as nmod. Furthermore, in rare
+            # cases a clause headed by a nominal acts to the outside as a nominal
+            # when it is the title of a book or movie (e.g., Croatian:
+            # "Životopis mu je objavljen u Tko je tko u NDH, str.. 314." =
+            # "His biography was published in Who's Who in the Independent State of Croatia, p. 314.")
+            # This can be sometimes helped by also searching for subjects or
+            # copulas under the clause head, also it will still not catch
+            # everything.
             if node.parent.udeprel in ['nsubj', 'obj', 'iobj', 'obl', 'vocative', 'dislocated', 'expl', 'nmod']:
-                # For the moment (2025-09-20), I am making this a warning only.
-                # But I suppose that it will became an error in the future.
-                Error(
-                    state=state, config=self.incfg,
-                    lineno=state.current_node_linenos[str(node.ord)],
-                    nodeid=node.ord,
-                    level=3,
-                    testclass=TestClass.SYNTAX,
-                    testid='obl-should-be-nmod',
-                    message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.",
-                    references=utils.create_references([node.parent], state, 'Parent')
-                ).confirm()
+                clause_indicators = [x for x in node.parent.children if x.udeprel in ['cop', 'nsubj', 'csubj']]
+                if not clause_indicators:
+                    Error(
+                        state=state, config=self.incfg,
+                        lineno=state.current_node_linenos[str(node.ord)],
+                        nodeid=node.ord,
+                        level=3,
+                        testclass=TestClass.SYNTAX,
+                        testid='obl-should-be-nmod',
+                        message=f"The parent (node [{node.parent.ord}] '{utils.formtl(node.parent)}') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.",
+                        references=utils.create_references([node.parent], state, 'Parent')
+                    ).confirm()
 
 
 
