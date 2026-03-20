@@ -383,6 +383,7 @@
 "NameType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Geo", "Giv", "Oth", "Prs", "Sur"], "evalues": ["Com", "Pro"], "byupos": {}},
 "NumForm": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Armenian", "Digit", "Word"], "evalues": [], "byupos": {}},
 "NumType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Card", "Dist", "Frac", "Ord", "Range"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Coll", "Plur", "Ptan", "Sing"], "unused_lvalues": ["Assoc"], "evalues": [], "byupos": {}},
 "Number[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}}
 },
 "az": {
