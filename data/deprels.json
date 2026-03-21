@@ -8952,7 +8952,7 @@
 "aux": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux'."]},
 "aux:cnd": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:cnd'."]},
 "aux:fut": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:fut'."]},
-"aux:hab": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"aux:hab": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:hab'."]},
 "aux:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-07-25-01-36-34", "lastchanger": "Jankus1994"},
 "aux:perf": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:pot": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
