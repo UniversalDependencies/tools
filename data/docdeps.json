@@ -2094,6 +2094,7 @@
 "aux:pass": {"type": "local", "errors": ["No examples found for relation 'aux:pass'."]},
 "aux:perf": {"type": "local", "errors": ["No examples found for relation 'aux:perf'."]},
 "aux:pot": {"type": "local", "errors": ["No examples found for relation 'aux:pot'."]},
+"aux:sub": {"type": "local", "errors": ["No examples found for relation 'aux:sub'."]},
 "compound:lvc": {"type": "local", "errors": []},
 "orphan:nsubjobj": {"type": "local", "errors": []},
 "orphan:nsubjobl": {"type": "local", "errors": []},
