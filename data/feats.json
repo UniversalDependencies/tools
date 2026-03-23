@@ -385,6 +385,7 @@
 "NumType": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Card", "Dist", "Frac", "Ord", "Range"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Number": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Coll", "Plur", "Sing"], "unused_lvalues": [], "evalues": ["Assoc", "Ptan"], "byupos": {}},
 "Number[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Plur", "Sing"], "evalues": [], "byupos": {}},
+"Person": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["1", "2", "3"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Person[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["1", "2", "3"], "evalues": [], "byupos": {}}
 },
 "az": {
