@@ -6215,7 +6215,7 @@
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det:numgov": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
