@@ -954,7 +954,7 @@
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-25-21-39-21", "lastchanger": "hiwasan"},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
