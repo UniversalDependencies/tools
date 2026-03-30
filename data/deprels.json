@@ -9830,7 +9830,7 @@
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "ruc": {
-"_template-dep": {"type": "", "doc": "lerror", "permitted": 0, "errors": ["Relation '_template-dep' does not have the prescribed form.", "Relation '_template-dep' is not a subtype of any approved main type."]},
+"_template-dep": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},

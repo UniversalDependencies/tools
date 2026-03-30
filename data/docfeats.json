@@ -1554,8 +1554,7 @@
 "Red": {"type": "local", "values": ["Yes"], "errors": []},
 "Referent": {"type": "local", "values": ["Yes"], "errors": []},
 "Tense": {"type": "universal", "values": ["Pres", "Past", "Fut", "Nar"], "errors": []},
-"Voice": {"type": "universal", "values": ["Act", "Rcp", "Pass", "Cau", "Rfl", "Appl", "CauAppl", "RflAppl", "RflCau"], "errors": []},
-"_template-feature": {"type": "local", "values": [], "errors": ["Feature name '_template-feature' does not have the prescribed form.", "Header title 'Name' does not match the file name '_template-feature'."]}
+"Voice": {"type": "universal", "values": ["Act", "Rcp", "Pass", "Cau", "Rfl", "Appl", "CauAppl", "RflAppl", "RflCau"], "errors": []}
 },
 "sa": {
 "Compound": {"type": "local", "values": ["Yes"], "errors": []}
