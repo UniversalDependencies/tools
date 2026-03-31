@@ -1434,7 +1434,8 @@
 "это": {"functions": [{"function": "cop.PRON", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "А единый государственный экзамен - [это] разве не новация?", "exampleen": "And the unified state exam is not an innovation?", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-10-49-47", "lastchanger": "dan-zeman"}
 },
 "ruc": {
-"li": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "does not imply exclusivity", "example": "Omukali [yali] musomesya.", "exampleen": "The woman was a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-31-11-05-53", "lastchanger": "kiratul"}
+"li": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "does not imply exclusivity", "example": "Omukali [yali] musomesya.", "exampleen": "The woman was a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-31-11-05-53", "lastchanger": "kiratul"},
+"ta": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "imply exclusivity", "example": "Olusozi Rwenzori [luta] mu Uganda.", "exampleen": "Moutain Rwenzori is (found) in Uganda (implied: only in Uganda).", "comment": ""}], "status": "documented", "lastchanged": "2026-03-31-11-06-50", "lastchanger": "kiratul"}
 },
 "sa": {
 "as": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Latin script", "example": "[asti] dākṣiṇātye janapade mahilāropyaṁ nāma nagaram.", "exampleen": "There is a city called Mahilaropya in the southern country.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-01-19-07-31", "lastchanger": "dan-zeman"},
