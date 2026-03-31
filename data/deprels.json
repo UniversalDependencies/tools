@@ -9875,7 +9875,7 @@
 "obj:manner": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-59-24", "lastchanger": "kiratul"},
-"obl:manner": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obl:manner": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-59-30", "lastchanger": "kiratul"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
