@@ -9832,6 +9832,7 @@
 "ruc": {
 "_template-dep": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-49-39", "lastchanger": "kiratul"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:cop": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
