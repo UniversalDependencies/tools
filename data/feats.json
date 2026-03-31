@@ -395,7 +395,7 @@
 "Subcat": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Intr", "Tran"], "evalues": [], "byupos": {}},
 "Tense": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Imp", "Past", "Pres"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Inf", "Part"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Fin", "Inf", "Part"], "unused_lvalues": [], "evalues": ["Conv"], "byupos": {}},
 "Voice": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Act", "Cau", "Mid", "Pass", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "az": {
