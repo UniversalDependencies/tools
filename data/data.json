@@ -1435,6 +1435,7 @@
 },
 "ruc": {
 "li": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "does not imply exclusivity", "example": "Omukali [yali] musomesya.", "exampleen": "The woman was a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-31-11-05-53", "lastchanger": "kiratul"},
+"ni": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "the subject of the clause is focused", "example": "Omukali [niye] musomesya.", "exampleen": "The woman is the one who is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-31-11-09-06", "lastchanger": "kiratul"},
 "ta": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "imply exclusivity", "example": "Olusozi Rwenzori [luta] mu Uganda.", "exampleen": "Moutain Rwenzori is (found) in Uganda (implied: only in Uganda).", "comment": ""}], "status": "documented", "lastchanged": "2026-03-31-11-06-50", "lastchanger": "kiratul"}
 },
 "sa": {
