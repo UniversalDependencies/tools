@@ -9838,7 +9838,7 @@
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-49-54", "lastchanger": "kiratul"},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-59-50", "lastchanger": "kiratul"},
-"advmod:loc": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"advmod:loc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-59-57", "lastchanger": "kiratul"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
