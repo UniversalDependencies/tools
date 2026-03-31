@@ -9867,6 +9867,7 @@
 "nmod:desc": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-58-41", "lastchanger": "kiratul"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-58-55", "lastchanger": "kiratul"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:appl": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
