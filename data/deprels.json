@@ -9860,6 +9860,7 @@
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-11-00-37", "lastchanger": "kiratul"},
+"flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-11-00-43", "lastchanger": "kiratul"},
 "flat:num": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
