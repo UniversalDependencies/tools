@@ -9834,6 +9834,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-49-39", "lastchanger": "kiratul"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-59-41", "lastchanger": "kiratul"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod:cop": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-49-54", "lastchanger": "kiratul"},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
