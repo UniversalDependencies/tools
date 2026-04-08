@@ -794,7 +794,7 @@
 "xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
 },
 "axm": {
-"acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
