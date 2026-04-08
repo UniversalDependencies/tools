@@ -803,6 +803,7 @@
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'appos'."]},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"aux:ex": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
