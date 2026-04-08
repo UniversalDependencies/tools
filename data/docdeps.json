@@ -400,7 +400,7 @@
 "axm": {
 "acl": {"type": "universal", "errors": []},
 "acl:relcl": {"type": "local", "errors": ["Documentation does not belong to UD v2 guidelines."]},
-"advcl:relcl": {"type": "local", "errors": ["No examples found for relation 'advcl:relcl'.", "Documentation does not belong to UD v2 guidelines."]}
+"advcl:relcl": {"type": "local", "errors": ["No examples found for relation 'advcl:relcl'."]}
 },
 "be": {
 "obl:depict": {"type": "local", "errors": []},
