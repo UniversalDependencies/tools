@@ -9905,7 +9905,7 @@
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-11-00-37", "lastchanger": "kiratul"},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-11-00-43", "lastchanger": "kiratul"},
 "flat:num": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-11-00-49", "lastchanger": "kiratul"},
-"flat:redup": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"flat:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-09-12-10-39", "lastchanger": "kiratul"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj:appl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-11-00-54", "lastchanger": "kiratul"},
