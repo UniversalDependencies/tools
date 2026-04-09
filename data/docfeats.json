@@ -1540,7 +1540,7 @@
 "Hort": {"type": "local", "values": ["Yes"], "errors": []},
 "InfStruct": {"type": "local", "values": ["Foc"], "errors": []},
 "Mood": {"type": "universal", "values": ["Ind", "Imp", "Sub"], "errors": []},
-"NounClass": {"type": "universal", "values": [], "errors": ["No title found in the header.", "Documentation does not belong to UD v2 guidelines."]},
+"NounClass": {"type": "universal", "values": [], "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "NounClass[iobj]": {"type": "local", "values": ["Bantu1", "Bantu2", "Bantu3", "Bantu4", "Bantu5", "Bantu6", "Bantu7", "Bantu8", "Bantu9", "Bantu10", "Bantu11", "Bantu12", "Bantu13", "Bantu14", "Bantu15", "Bantu20", "Bantu22"], "errors": []},
 "NounClass[obj]": {"type": "local", "values": ["Bantu1", "Bantu2", "Bantu3", "Bantu4", "Bantu5", "Bantu6", "Bantu7", "Bantu8", "Bantu9", "Bantu10", "Bantu11", "Bantu12", "Bantu13", "Bantu14", "Bantu15", "Bantu20", "Bantu22"], "errors": []},
 "NounClass[psed]": {"type": "local", "values": ["Bantu1", "Bantu2", "Bantu3", "Bantu4", "Bantu5", "Bantu6", "Bantu7", "Bantu8", "Bantu9", "Bantu10", "Bantu11", "Bantu12", "Bantu13", "Bantu14", "Bantu15", "Bantu20", "Bantu22"], "errors": []},
