@@ -798,7 +798,7 @@
 "acl:relcl": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advcl:relcl'."]},
-"advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"advmod": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'advmod'."]},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'appos'."]},
