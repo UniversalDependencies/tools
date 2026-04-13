@@ -9043,7 +9043,7 @@
 "aux:hab": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2024-07-25-01-36-34", "lastchanger": "Jankus1994"},
 "aux:perf": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"aux:pot": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:pot'."]},
+"aux:pot": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:sub": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:sub'."]},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
