@@ -9038,7 +9038,7 @@
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"aux:cnd": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:cnd'."]},
+"aux:cnd": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:fut": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:fut'."]},
 "aux:hab": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:hab'."]},
 "aux:pass": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'aux:pass'."], "lastchanged": "2024-07-25-01-36-34", "lastchanger": "Jankus1994"},
