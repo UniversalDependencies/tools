@@ -3095,7 +3095,7 @@
 "dislocated:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-22-35", "lastchanger": "bguil"},
 "dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-22-54", "lastchanger": "bguil"},
 "dislocated:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-23-08", "lastchanger": "bguil"},
-"dislocated:subj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"dislocated:subj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-23-22", "lastchanger": "bguil"},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "expl:comp": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "expl:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
