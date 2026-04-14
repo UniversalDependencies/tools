@@ -4196,6 +4196,7 @@
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-04-24-16-47-19", "lastchanger": "bguil"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-15-12-47", "lastchanger": "bguil"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
