@@ -3093,7 +3093,7 @@
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-22-35", "lastchanger": "bguil"},
-"dislocated:obj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-22-54", "lastchanger": "bguil"},
 "dislocated:obl": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "dislocated:subj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
