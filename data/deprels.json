@@ -805,7 +805,7 @@
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "aux:caus": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "aux:ex": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
-"case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
