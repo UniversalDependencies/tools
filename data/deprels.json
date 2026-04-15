@@ -812,6 +812,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "compound:redup": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:svc": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
