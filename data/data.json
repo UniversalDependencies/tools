@@ -582,6 +582,9 @@
 "gv": {
 "she": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[She] dooinney-ooasle va'n ayr echey.", "exampleen": "His father was a gentleman.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-18-44-33", "lastchanger": "dan-zeman"}
 },
+"ha": {
+"neː": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Identifier and Focus copula", "example": "à dâː, shiː [nèː] gidan gwamnà", "exampleen": "formerly, it [was] the government house", "comment": ""}], "status": "documented", "lastchanged": "2026-04-16-01-42-15", "lastchanger": "CARON-B"}
+},
 "hbo": {
 "היה": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "הוא [היה] איש", "exampleen": "he was a man", "comment": ""}], "status": "documented", "lastchanged": "2021-12-21-03-25-52", "lastchanger": "mr-martian"}
 },
