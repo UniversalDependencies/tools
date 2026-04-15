@@ -2,7 +2,7 @@
 # Reads all UD treebanks in the UD folder, counts regular nodes (i.e. syntactic
 # words/tokens) in all of them. Skips treebanks that do not contain the under-
 # lying texts. Prints the counts grouped by language family.
-# Copyright © 2023 Dan Zeman <zeman@ufal.mff.cuni.cz>
+# Copyright © 2023–2026 Dan Zeman <zeman@ufal.mff.cuni.cz>
 # License: GNU GPL
 
 use utf8;
@@ -16,6 +16,10 @@ use udlib;
 sub usage
 {
     print STDERR ("Usage: $0 --udpath /data/udreleases/2.12 --langyaml /data/ud/docs-automation/codes_and_flags.yaml\n");
+    print STDERR ("    In order to save time when extracting many different charts, it is possible to run the script\n");
+    print STDERR ("    in two steps: First extract the treebank statistics from a release (takes time, reads all data),\n");
+    print STDERR ("    then use the extracted statistics to generate various charts (fast, possibly run this multiple\n");
+    print STDERR ("    times).\n");
     print STDERR ("Usage: $0 --input release --udpath /net/data/universal-dependencies-2.17 --output tbkstats > tbkstats.2.17.txt\n");
     print STDERR ("Usage: $0 --input tbkstats --output famstats|fampie < tbkstats.2.17.txt\n");
     print STDERR ("Usage: for i in 1.0 1.1 1.2 1.3 1.4 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 2.10 2.11 2.12 2.13 2.14 2.15 2.16 2.17 ; do survey_language_families.pl --input tbkstats --output fampie --relid $i < tbkstats.$i.txt ; done > log.tex\n");
@@ -67,23 +71,23 @@ else
     if($output eq 'fampie')
     {
         # Print the pie charts with family/genus/languages/words proportions.
-        if(0)
+        if(1)
         {
             if($families && $languages)
             {
-                print(get_family_piechart($family_languages));
+                print(get_family_piechart($family_languages), "\n");
             }
             if($genera_of_family && $languages)
             {
-                print(get_family_piechart($iegenus_languages));
+                print(get_family_piechart($iegenus_languages), "\n");
             }
             if($families && $words)
             {
-                print(get_family_piechart($family_words));
+                print(get_family_piechart($family_words), "\n");
             }
             if($genera_of_family && $words)
             {
-                print(get_family_piechart($iegenus_words));
+                print(get_family_piechart($iegenus_words), "\n");
             }
         }
         else
@@ -113,7 +117,7 @@ EOF
             print(get_latex_standalone($table));
         }
     }
-    else
+    else # output not fampie
     {
         # Print the language statistics.
         if($families && $languages)
