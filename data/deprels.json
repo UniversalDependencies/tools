@@ -7984,15 +7984,15 @@
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"root": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
+"root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "ojp": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
