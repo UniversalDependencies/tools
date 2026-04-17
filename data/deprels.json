@@ -6323,7 +6323,7 @@
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "list": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:arg": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-20-22-35-44", "lastchanger": "Vozeraitis"},
 "nmod:gov": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-20-22-34-56", "lastchanger": "Vozeraitis"},
