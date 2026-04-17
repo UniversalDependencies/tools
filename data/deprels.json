@@ -6294,7 +6294,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-22-22-25-03", "lastchanger": "dan-zeman"},
-"advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
