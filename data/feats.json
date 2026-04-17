@@ -3113,7 +3113,7 @@
 },
 "oge": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "CCONJ": {"Yes": 1}, "DET": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PART": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "SCONJ": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2026-04-17-22-26-03", "lastchanger": "ILobzhanidze"},
-"Abbreviation": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
+"Abbreviation": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["Header title 'Abbr' does not match the file name 'Abbreviation'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Yes"], "byupos": {}},
 "AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Post"], "evalues": [], "byupos": {}},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Cau", "Int", "Loc", "Man", "Rel", "Tim"], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Anim", "Inan"], "unused_lvalues": [], "evalues": [], "byupos": {}},
