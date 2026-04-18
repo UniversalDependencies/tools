@@ -928,6 +928,7 @@
 },
 "bal": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-18-09-36-49", "lastchanger": "hiwasan"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-18-09-31-11", "lastchanger": "hiwasan"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
