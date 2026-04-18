@@ -954,7 +954,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-25-21-39-44", "lastchanger": "hiwasan"},
+"nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-18-09-18-48", "lastchanger": "hiwasan"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
