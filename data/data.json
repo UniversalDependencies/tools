@@ -1483,7 +1483,8 @@
 },
 "say": {
 "nə": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Identifier and Focus copula", "example": "[nə] ŋǎː ɬəɓə́r", "exampleen": "it's a young man", "comment": ""}], "status": "documented", "lastchanged": "2026-04-20-16-17-07", "lastchanger": "CARON-B"},
-"yi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Predicative and Locative copula", "example": "kə́ kusuŋ [ʧi] mari", "exampleen": "that of famine is different", "comment": "Derived from the verb yi, 'be'. Includes a subject marker"}], "status": "documented", "lastchanged": "2026-04-20-16-14-21", "lastchanger": "CARON-B"}
+"yi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Predicative and Locative copula", "example": "kə́ kusuŋ [ʧi] mari", "exampleen": "that of famine is different", "comment": "Derived from the verb yi, 'be'. Includes a subject marker"}], "status": "documented", "lastchanged": "2026-04-20-16-14-21", "lastchanger": "CARON-B"},
+"ɗa": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula of existence", "example": "Tʃôɣn [ɗa].", "exampleen": "God exists.", "comment": ""}], "status": "documented", "lastchanged": "2026-04-20-17-11-09", "lastchanger": "CARON-B"}
 },
 "scn": {
 "aviri": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a past participle", "deficient": "", "example": "nun [aju] rinisciutu", "exampleen": "I didn't succeed", "comment": ""}, {"function": "Mood=Nec", "rule": "use of the auxiliary verb followed by the particle a and an infinitive verb", "deficient": "", "example": "[avianu] a partiri", "exampleen": "they had to leave", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-41-14", "lastchanger": "SabrinaDali"},
