@@ -10165,7 +10165,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:appos": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"nmod:appos": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-14-05-57", "lastchanger": "CARON-B"},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2022-10-26-10-29-57", "lastchanger": "bguil"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2025-10-23-14-12-31", "lastchanger": "bguil"},
