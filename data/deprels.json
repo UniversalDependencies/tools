@@ -7983,7 +7983,7 @@
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"det:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-21-38-11", "lastchanger": "ILobzhanidze"},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
