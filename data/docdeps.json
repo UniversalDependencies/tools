@@ -1252,6 +1252,7 @@
 },
 "ha": {
 "advcl:cleft": {"type": "local", "errors": []},
+"nmod:appos": {"type": "local", "errors": ["No examples found for relation 'nmod:appos'."]},
 "obl:mod": {"type": "local", "errors": []},
 "parataxis:parenth": {"type": "local", "errors": []}
 },
