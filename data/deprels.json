@@ -7999,7 +7999,7 @@
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"nsubj:pass": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-21-40-47", "lastchanger": "ILobzhanidze"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
