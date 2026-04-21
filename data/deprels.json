@@ -7967,6 +7967,7 @@
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-21-39-57", "lastchanger": "ILobzhanidze"},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-21-39-14", "lastchanger": "ILobzhanidze"},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
