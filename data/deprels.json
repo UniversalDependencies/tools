@@ -7965,6 +7965,7 @@
 },
 "oge": {
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-21-40-16", "lastchanger": "ILobzhanidze"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-21-21-39-57", "lastchanger": "ILobzhanidze"},
