@@ -2423,6 +2423,7 @@
 "obl:mod": {"type": "local", "errors": []}
 },
 "say": {
+"nmod:appos": {"type": "local", "errors": ["No examples found for relation 'nmod:appos'."]},
 "obj:lvc": {"type": "local", "errors": []}
 },
 "scn": {
