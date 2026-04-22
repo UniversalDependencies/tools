@@ -3668,7 +3668,7 @@
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"iobj:instrument": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"iobj:instrument": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-22-17-16-07", "lastchanger": "andidyer"},
 "iobj:patient": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
