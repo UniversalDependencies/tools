@@ -3681,7 +3681,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
-"obj:instrument": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'obj:instrument'."]},
+"obj:instrument": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:patient": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
