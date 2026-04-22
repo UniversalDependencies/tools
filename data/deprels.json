@@ -3682,7 +3682,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-22-17-14-05", "lastchanger": "andidyer"},
 "obj:instrument": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obj:patient": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obj:patient": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-22-17-17-05", "lastchanger": "andidyer"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
