@@ -3680,7 +3680,7 @@
 "nsubj:patient": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"obj:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obj:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-22-17-14-05", "lastchanger": "andidyer"},
 "obj:instrument": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "obj:patient": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
