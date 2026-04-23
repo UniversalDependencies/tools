@@ -8841,7 +8841,7 @@
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "obl:arg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"obl:cmp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-23-09-30-27", "lastchanger": "alina-wroblewska"},
 "obl:cmpr": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "obl:orphan": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
