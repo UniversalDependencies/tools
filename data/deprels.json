@@ -8782,7 +8782,7 @@
 "advmod:emph": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"amod:cmp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"amod:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-23-09-29-44", "lastchanger": "alina-wroblewska"},
 "amod:flat": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
