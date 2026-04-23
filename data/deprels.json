@@ -8773,7 +8773,7 @@
 "acl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-23-09-28-42", "lastchanger": "alina-wroblewska"},
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:cmp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"advcl:cmp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-23-09-29-04", "lastchanger": "alina-wroblewska"},
 "advcl:cmpr": {"type": "local", "doc": "none", "permitted": 0, "errors": []},
 "advcl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
