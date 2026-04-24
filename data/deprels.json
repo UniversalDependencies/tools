@@ -820,6 +820,7 @@
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"det:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
