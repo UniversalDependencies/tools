@@ -828,7 +828,7 @@
 "flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "iobj:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
