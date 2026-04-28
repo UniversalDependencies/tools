@@ -373,7 +373,7 @@
 "ConjType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Comp"], "evalues": ["Oper"], "byupos": {}},
 "Connegative": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Def", "Ind"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Def": 1, "Ind": 1}}, "lastchanged": "2026-04-28-11-05-52", "lastchanger": "myavrum"},
-"Degree": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Cmp", "Pos", "Sup"], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Degree": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cmp", "Pos"], "lvalues": [], "unused_uvalues": ["Sup"], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Pos": 1}, "ADV": {"Cmp": 1}}, "lastchanged": "2026-04-28-11-17-26", "lastchanger": "myavrum"},
 "Deixis": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Med", "Prox", "Remt"], "evalues": [], "byupos": {}},
 "Deixis[psor]": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Med", "Prox"], "evalues": [], "byupos": {}},
 "Echo": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Ech", "Rdp"], "evalues": [], "byupos": {}},
