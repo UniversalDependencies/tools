@@ -479,7 +479,7 @@
 "AdpType": {"type": "local", "values": ["Ambi", "Prep", "Post", "Comadp"], "errors": []},
 "Animacy": {"type": "universal", "values": ["Hum", "Nhum"], "errors": []},
 "Aspect": {"type": "universal", "values": ["Imp", "Perf", "Prosp", "Dur", "Iter"], "errors": []},
-"Case": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Gen-Dat\">`Gen`-'Dat'</a>: genitive-dative'."]},
+"Case": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"Gen-Dat\">'Dat'</a>: dative'."]},
 "ConjType": {"type": "local", "values": ["Comp"], "errors": []},
 "Connegative": {"type": "local", "values": ["Yes"], "errors": []},
 "Definite": {"type": "universal", "values": ["Ind", "Def"], "errors": []},
