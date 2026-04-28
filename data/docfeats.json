@@ -912,7 +912,7 @@
 "Voice": {"type": "universal", "values": ["Com", "Cau", "Mid", "Rcp"], "errors": []}
 },
 "gor": {
-"Case": {"type": "universal", "values": ["Piv", "Npiv", "Nom", "Gen"], "errors": []},
+"Case": {"type": "universal", "values": ["Piv", "Npiv", "Gen", "Nom"], "errors": []},
 "Voice": {"type": "universal", "values": ["Act", "Pat", "Pass", "Ivoc", "Ifoc"], "errors": []}
 },
 "got": {
