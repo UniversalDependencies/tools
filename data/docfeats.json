@@ -499,7 +499,7 @@
 "Person[psor]": {"type": "local", "values": ["1", "2", "3"], "errors": []},
 "Polarity": {"type": "universal", "values": ["Pos", "Neg"], "errors": []},
 "Poss": {"type": "universal", "values": ["Yes"], "errors": []},
-"PronType": {"type": "universal", "values": [], "errors": ["Feature value 'Pօss' does not have the prescribed form.", "No examples found under value 'Pօss'."]},
+"PronType": {"type": "universal", "values": [], "errors": ["No examples found under value 'Poss'."]},
 "Reflex": {"type": "universal", "values": ["Yes"], "errors": []},
 "Style": {"type": "local", "values": ["Arch", "Rare", "Vrnc", "Expr", "Vulg", "Var"], "errors": []},
 "Subcat": {"type": "local", "values": ["Intr", "Tran"], "errors": []},
