@@ -822,7 +822,7 @@
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-29-08-55-22", "lastchanger": "myavrum"},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"dislocated": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines.", "No examples found for relation 'dislocated'."]},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
