@@ -834,7 +834,7 @@
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod:npmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
-"nmod:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nmod:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-29-08-54-20", "lastchanger": "myavrum"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:caus": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
