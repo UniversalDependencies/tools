@@ -137,7 +137,8 @@
 "হওঁ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "তাঽ [এজনী] Teacher", "exampleen": "she is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2025-12-16-17-59-37", "lastchanger": "rahonalab"}
 },
 "axm": {
-"եմ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "the main copula in Middle Armenien", "example": "[Չէ] իրավունք որ թագաւոր...", "exampleen": "The king has no right", "comment": "lit.: There is no right that the king..."}], "status": "documented", "lastchanged": "2026-04-28-11-01-23", "lastchanger": "myavrum"}
+"եմ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "the main copula in Middle Armenien", "example": "[Չէ] իրավունք որ թագաւոր...", "exampleen": "The king has no right", "comment": "lit.: There is no right that the king..."}], "status": "documented", "lastchanged": "2026-04-28-11-01-23", "lastchanger": "myavrum"},
+"լինիլ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used as a rule in compound tenses", "example": "Եւ թէ ոք զքրիստոնէ տուրտվել [լինի] ի թուրք", "exampleen": "And if someone happens to betray a Christian to the Turks", "comment": ""}], "status": "documented", "lastchanged": "2026-04-29-07-55-07", "lastchanger": "myavrum"}
 },
 "az": {
 "bil": {"functions": [{"function": "Mood=Irr", "rule": "combines with any non-finite verb.", "deficient": "", "example": "Deniz vəxtikən yatmıya [bil]ir.", "exampleen": "Deniz may not be able to sleep on time.", "comment": "Function should probably be specified better."}], "status": "documented", "lastchanged": "2024-04-28-13-04-07", "lastchanger": "coltekin"},
