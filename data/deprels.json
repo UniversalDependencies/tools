@@ -2826,7 +2826,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-01-21-11-13-37", "lastchanger": "kailimp"},
+"advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-01-21-11-13-37", "lastchanger": "kailimp"},
 "advmod:quant": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
