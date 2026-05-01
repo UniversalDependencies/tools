@@ -2838,7 +2838,7 @@
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"compound:idiom": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:idiom": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-05-01-18-05-06", "lastchanger": "kailimp"},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
