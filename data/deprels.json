@@ -5267,6 +5267,7 @@
 "acl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-06-22-21-02-57", "lastchanger": "ILobzhanidze"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-15-14-06-20", "lastchanger": "paulmeurer"},
+"advcl:speech": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "advmod:neg": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
