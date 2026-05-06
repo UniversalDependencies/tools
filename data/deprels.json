@@ -6384,7 +6384,7 @@
 "reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"xcomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []}
+"xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "ltg": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
