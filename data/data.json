@@ -1508,6 +1508,9 @@
 "áː": {"functions": [{"function": "Aspect=Perf", "rule": "combination of AUX, including subject marker and TAM, with a VERB", "deficient": "", "example": "[màː] ɲáːr sòːséy", "exampleen": "I thank (you) very much", "comment": ""}], "status": "documented", "lastchanged": "2026-04-20-20-08-12", "lastchanger": "CARON-B"},
 "ɗa": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula of existence", "example": "Tʃôɣn [ɗa].", "exampleen": "God exists.", "comment": ""}], "status": "documented", "lastchanged": "2026-04-20-17-11-09", "lastchanger": "CARON-B"}
 },
+"sc": {
+"èssere": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Ses] s'anghelu 'e sas corrias...", "exampleen": "You are the angel of the laces...", "comment": ""}], "status": "documented", "lastchanged": "2026-05-07-15-15-18", "lastchanger": "rahonalab"}
+},
 "scn": {
 "aviri": {"functions": [{"function": "Tense=Past", "rule": "combination of the auxiliary and a past participle", "deficient": "", "example": "nun [aju] rinisciutu", "exampleen": "I didn't succeed", "comment": ""}, {"function": "Mood=Nec", "rule": "use of the auxiliary verb followed by the particle a and an infinitive verb", "deficient": "", "example": "[avianu] a partiri", "exampleen": "they had to leave", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-41-14", "lastchanger": "SabrinaDali"},
 "duviri": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and an infinitive verb", "deficient": "", "example": "cci [duvia] diri", "exampleen": "he [had to] tell him", "comment": ""}], "status": "documented", "lastchanged": "2025-10-23-17-10-56", "lastchanger": "SabrinaDali"},
