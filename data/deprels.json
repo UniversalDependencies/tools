@@ -4798,7 +4798,7 @@
 "flat:frac": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-10-16-16-08-22", "lastchanger": "myavrum"},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-10-06-10-13-14", "lastchanger": "myavrum"},
 "flat:range": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"flat:redup": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'flat:redup'."]},
+"flat:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "goeswith": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "iobj:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
