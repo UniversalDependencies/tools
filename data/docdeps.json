@@ -1404,6 +1404,7 @@
 "flat:frac": {"type": "local", "errors": []},
 "flat:name": {"type": "local", "errors": []},
 "flat:range": {"type": "local", "errors": []},
+"flat:redup": {"type": "local", "errors": ["No examples found for relation 'flat:redup'."]},
 "goeswith": {"type": "universal", "errors": []},
 "iobj": {"type": "universal", "errors": []},
 "iobj:agent": {"type": "local", "errors": []},
