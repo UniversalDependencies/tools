@@ -1386,6 +1386,7 @@
 "Animacy": {"type": "universal", "values": ["Anim", "Inan"], "errors": []},
 "Aspect": {"type": "universal", "values": ["Imp", "Iter", "Perf"], "errors": []},
 "Case": {"type": "universal", "values": ["Abs", "Nom", "Erg", "Dat", "Gen", "Ins", "Ess", "Voc"], "errors": []},
+"Case[stack2]": {"type": "local", "values": [], "errors": ["Feature name 'Case[stack2]' does not have the prescribed form."]},
 "Case[stack]": {"type": "local", "values": ["Gen"], "errors": []},
 "Degree": {"type": "universal", "values": ["Dim", "Pos", "Sup"], "errors": []},
 "Evident": {"type": "universal", "values": ["Fh", "Nfh"], "errors": []},
