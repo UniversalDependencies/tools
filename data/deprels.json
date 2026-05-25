@@ -2529,7 +2529,7 @@
 "dislocated:obl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2025-12-08-21-45-20", "lastchanger": "UD_Egyptian"},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-27-22-09-37", "lastchanger": "UD-Egyptian"},
 "expl:pv": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-03-26-23-56-01", "lastchanger": "UD-Egyptian"},
-"expl:rel": {"type": "local", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'expl:rel'."]},
+"expl:rel": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-12-28-08-06-13", "lastchanger": "UD-Egyptian"},
