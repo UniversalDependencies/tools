@@ -767,6 +767,7 @@
 "dislocated:nsubj": {"type": "local", "errors": []},
 "dislocated:obj": {"type": "local", "errors": []},
 "dislocated:obl": {"type": "local", "errors": []},
+"expl:rel": {"type": "local", "errors": ["No examples found for relation 'expl:rel'."]},
 "nmod:nisba": {"type": "local", "errors": []},
 "nmod:unmarked": {"type": "local", "errors": []},
 "obl:nisba": {"type": "local", "errors": []},
