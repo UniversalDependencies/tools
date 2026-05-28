@@ -102,9 +102,9 @@
 "lv": {
 "([+-] ?)?[0-9]+( [0-9]+)*([.,][0-9]+)?": {"example": "898 000,5", "exampleen": "898,000.5", "comment": "Making long numbers readable.", "lastchanged": "2026-05-28-14-23-12", "lastchanger": "lauma"},
 "[0-9]?[0-9]\\. [0-9]?[0-9]\\. ([0-9][0-9])?[0-9][0-9]\\.?": {"example": "29. 01. 1999", "exampleen": "January 29, 1999", "comment": "Dates can be written with or without spaces.", "lastchanged": "2025-06-11-22-07-37", "lastchanger": "dan-zeman"},
+"[uv]\\. *tml\\.": {"example": "u. tml.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-29-48", "lastchanger": "lauma"},
 "u\\. *c\\.": {"example": "u. c.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-26-39", "lastchanger": "lauma"},
-"u\\. *t\\. *jpr\\.": {"example": "u. t. jpr.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-25-35", "lastchanger": "lauma"},
-"u\\. *tml\\.": {"example": "u. tml.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-21-52", "lastchanger": "lauma"}
+"u\\. *t\\. *jpr\\.": {"example": "u. t. jpr.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-25-35", "lastchanger": "lauma"}
 },
 "nl": {
 "(acellulair kinkhoest vaccin|also known as|au sérieux|Bescherming Bevolking|Burgerlijk Wetboek|buiten dienst|bruto register ton|casu quo|christelijk hervormden|cum suis|dat wil zeggen|de dato|direct verkozenen|dit is|en andere|en dergelijke|plan Hoog Catharijnen|in plaats van|knock down|knock out|know how|met andere woorden|met name|na Christus|nota bene|onder ander|onder veel|plus minus)": {"example": "onder ander", "exampleen": "among other things", "comment": "Lemma of abbreviation \"o.a.\"", "lastchanged": "2025-06-12-14-50-36", "lastchanger": "dan-zeman"},
