@@ -102,7 +102,7 @@
 "lv": {
 "(P. *)+S.": {"example": "P. P. S.", "exampleen": "P. P. S.", "comment": "Variations on Post Scriptum shortening.", "lastchanged": "2026-05-28-14-36-12", "lastchanger": "lauma"},
 "([+-] ?)?[0-9]+( [0-9]+)*([.,][0-9]+)?": {"example": "898 000,5", "exampleen": "898,000.5", "comment": "Making long numbers readable.", "lastchanged": "2026-05-28-14-23-12", "lastchanger": "lauma"},
-"N\\. *B(\\.|\\.?\\u0021*)": {"example": "N. B.", "exampleen": "NB!", "comment": "Shordened Nota Bene, punctuated in various ways", "lastchanged": "2026-05-28-14-40-21", "lastchanger": "lauma"},
+"N\\. *B(\\.|\\.?\\u0021+)": {"example": "N. B.", "exampleen": "NB!", "comment": "Shordened Nota Bene, punctuated in various ways", "lastchanged": "2026-05-28-14-40-47", "lastchanger": "lauma"},
 "[0-9]?[0-9]\\. [0-9]?[0-9]\\. ([0-9][0-9])?[0-9][0-9]\\.?": {"example": "29. 01. 1999", "exampleen": "January 29, 1999", "comment": "Dates can be written with or without spaces.", "lastchanged": "2025-06-11-22-07-37", "lastchanger": "dan-zeman"},
 "[uv]\\. *tml\\.": {"example": "u. tml.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-29-48", "lastchanger": "lauma"},
 "u\\. *c\\.": {"example": "u. c.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-26-39", "lastchanger": "lauma"},
