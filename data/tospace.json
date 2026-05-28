@@ -98,7 +98,8 @@
 },
 "ltg": {
 "([+-] ?)?[0-9]+( [0-9]+)*([.,][0-9]+)?": {"example": "898 000,5", "exampleen": "898,000.5", "comment": "Making long numbers readable.", "lastchanged": "2026-05-28-14-51-47", "lastchanger": "lauma"},
-"([0-9][0-9])?[0-9][0-9]\\. [0-9]?[0-9]\\. [0-9]?[0-9]\\.?": {"example": "1999. 01. 21.", "exampleen": "January 21, 1999.", "comment": "Rarer, but dates can start with year as well.", "lastchanged": "2026-05-28-14-53-08", "lastchanger": "lauma"}
+"([0-9][0-9])?[0-9][0-9]\\. [0-9]?[0-9]\\. [0-9]?[0-9]\\.?": {"example": "1999. 01. 21.", "exampleen": "January 21, 1999.", "comment": "Rarer, but dates can start with year as well.", "lastchanged": "2026-05-28-14-53-08", "lastchanger": "lauma"},
+"[0-9]?[0-9]\\. [0-9]?[0-9]\\. ([0-9][0-9])?[0-9][0-9]\\.?": {"example": "29. 01. 1999", "exampleen": "January 29, 1999", "comment": "Dates can be written with or without spaces.", "lastchanged": "2026-05-28-14-53-52", "lastchanger": "lauma"}
 },
 "lv": {
 "(P. *)+S.": {"example": "P. P. S.", "exampleen": "P. P. S.", "comment": "Variations on Post Scriptum shortening.", "lastchanged": "2026-05-28-14-36-12", "lastchanger": "lauma"},
