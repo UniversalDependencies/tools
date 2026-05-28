@@ -102,6 +102,7 @@
 "lv": {
 "([+-] ?)?[0-9]+( [0-9]+)*([.,][0-9]+)?": {"example": "898 000,5", "exampleen": "898,000.5", "comment": "Making long numbers readable.", "lastchanged": "2026-05-28-14-23-12", "lastchanger": "lauma"},
 "[0-9]?[0-9]\\. [0-9]?[0-9]\\. ([0-9][0-9])?[0-9][0-9]\\.?": {"example": "29. 01. 1999", "exampleen": "January 29, 1999", "comment": "Dates can be written with or without spaces.", "lastchanged": "2025-06-11-22-07-37", "lastchanger": "dan-zeman"},
+"u\\. *t\\. *jpr\\.": {"example": "u. t. jpr.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-25-35", "lastchanger": "lauma"},
 "u\\. *tml\\.": {"example": "u. tml.", "exampleen": "etc.", "comment": "", "lastchanged": "2026-05-28-14-21-52", "lastchanger": "lauma"}
 },
 "nl": {
