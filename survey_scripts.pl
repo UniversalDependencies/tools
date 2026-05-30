@@ -131,6 +131,7 @@ foreach my $language (keys(%{$languages_from_yaml}))
 # Look for scripts in the data.
 my %hash; # $hash{$script}{$treebank/$language} = $count
 my %expected_scripts; # indexed by $treebank/$language
+my %chash; # frequencies of individual characters: $chash{$treebank/$language}{$script}{$character} = $count
 foreach my $folder (@folders)
 {
     # If we received the list of treebanks to be released, skip all other treebanks.
@@ -181,14 +182,14 @@ foreach my $folder (@folders)
             my @conllufiles = grep {-f "$datapath/$folder/$_" && m/\.conllu$/} (@files);
             foreach my $file (@conllufiles)
             {
-                read_conllu_file("$datapath/$folder/$file", \%hash, $key);
+                read_conllu_file("$datapath/$folder/$file", \%hash, \%chash, $key);
             }
         }
     }
 }
 if($oformat eq 'markdown')
 {
-    print_markdown(\%hash, \%expected_scripts);
+    print_markdown(\%hash, \%expected_scripts, \%chash);
 }
 else
 {
@@ -205,6 +206,7 @@ sub read_conllu_file
 {
     my $path = shift;
     my $hash = shift; # $hash->{$script}{$treebank/$language} = $count
+    my $chash = shift; # $chash->{$treebank/$language}{$script}{$character} = $count
     my $key = shift;
     my $nhits = 0;
     open(FILE, $path) or die("Cannot read '$path': $!");
@@ -223,6 +225,7 @@ sub read_conllu_file
             {
                 my $script = charscript(ord($c));
                 $hash->{$script}{$key}++;
+                $chash->{$key}{$script}{$c}++;
             }
         }
     }
@@ -239,6 +242,7 @@ sub print_markdown
 {
     my $hash = shift;
     my $expected_scripts = shift;
+    my $chash = shift; # $chash->{$treebank/$language}{$script}{$character} = $count
     # The hash is organized first by scripts, then by languages/treebanks.
     # If we want to present it from the opposite side, we must reorganize it.
     my %bydataset;
@@ -269,7 +273,7 @@ EOF
     foreach my $d (@datasets)
     {
         print("\#\# $d\n\n");
-        my @scripts = sort {$bydataset{$d}{$b} <=> $bydataset{$d}{$a}} (keys(%{$bydataset{$d}}));
+        my @scripts = sort {my $r = $bydataset{$d}{$b} <=> $bydataset{$d}{$a}; unless($r) {$r = $a cmp $b} $r} (keys(%{$bydataset{$d}}));
         # Check that the most frequent script is expected in this language.
         if(scalar(@scripts) > 0)
         {
@@ -282,7 +286,13 @@ EOF
         foreach my $s (@scripts)
         {
             my $siso = script_to_iso($s);
-            print("* \`$siso\` ($bydataset{$d}{$s})\n");
+            # Show the most frequent character as example.
+            my @characters = sort {my $r = $chash->{$d}{$s}{$b} <=> $chash->{$d}{$s}{$a}; unless($r) {$r = $a cmp $b} $r} (keys(%{$chash->{$d}{$s}}));
+            my $c = $characters[0];
+            my $o = ord($c);
+            my $cname = charnames::viacode($o);
+            my $example = "$c $o $cname ($chash->{$d}{$s}{$c})";
+            print("* \`$siso\` ($bydataset{$d}{$s}), example: $example\n");
         }
         print("\n");
     }
