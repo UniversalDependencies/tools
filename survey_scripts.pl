@@ -164,6 +164,16 @@ foreach my $folder (@folders)
             }
             # Remember expected script(s) for each key.
             $expected_scripts{$key} = $languages_from_yaml->{$langnames{$langcode}}{scripts};
+            foreach my $es (@{$expected_scripts{$key}})
+            {
+                # Jpan denotes a mixture of Hani, Hira and Kana, but every character
+                # belongs to only one of them.
+                if($es eq 'Jpan')
+                {
+                    push(@{$expected_scripts{$key}}, 'Hani', 'Hira', 'Kana');
+                    last;
+                }
+            }
             # Look for CoNLL-U files in the repository.
             opendir(DIR, "$datapath/$folder") or die("Cannot read the contents of the folder '$datapath/$folder': $!");
             my @files = readdir(DIR);
@@ -251,7 +261,8 @@ udver: '2'
 
 This is an automatically generated list of scripts that occur in the UD data.
 Only letters were surveyed. Other characters (digits, punctuation, spaces) were
-ignored.
+ignored. The scripts are identified by their
+[ISO 15924 codes](https://en.wikipedia.org/wiki/ISO_15924).
 
 EOF
     ;
@@ -265,7 +276,7 @@ EOF
             my $mainscript_iso = script_to_iso($scripts[0]);
             if(!grep {$_ eq $mainscript_iso} (@{$expected_scripts->{$d}}))
             {
-                print("<span style=\"color:red\"><b>Expected scripts: <tt>", join(', ', @{$expected_scripts->{$d}}), "</tt></span>\n\n");
+                print("<span style=\"color:red\">Expected scripts: <tt>", join(', ', @{$expected_scripts->{$d}}), "</tt></span>\n\n");
             }
         }
         foreach my $s (@scripts)
