@@ -276,6 +276,7 @@ class Validator(Level6):
                     self.check_empty_node_empty_vals(state, cols, lineno) # level 2
                 if utils.is_word(cols) or utils.is_empty_node(cols):
                     self.check_upos(state, cols, lineno) # level 2
+                    self.check_xpos_format(state, cols, lineno) # level 2
                     colssafe = self.check_feats_format(state, cols, lineno) and colssafe # level 2 (level 4 tests will be called later)
                     self.check_deprel_format(state, cols, lineno) # level 2
                     self.check_deps_format(state, cols, lineno) # level 2; must operate on pre-Udapi DEPS (to see order of relations)

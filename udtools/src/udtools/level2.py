@@ -244,6 +244,37 @@ class Level2(Level1):
 
 
 
+    def check_xpos_format(self, state, cols, line):
+        """
+        Checks that the XPOS field is not empty. It can contain underscore but
+        not empty string. That is the only requirement we have on this field,
+        which is otherwise not covered by the UD guidelines.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        cols : list
+            The values of the columns on the current node / token line.
+        line : int
+            Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        empty-string-in-xpos
+        """
+        if cols[XPOS] == None or cols[XPOS] == '':
+            Error(
+                state=state, config=self.incfg,
+                lineno=line,
+                level=2,
+                testclass=TestClass.MORPHO,
+                testid='empty-string-in-xpos',
+                message="Unspecified XPOS must be encoded as an underscore ('_'), the field must not be empty."
+            ).confirm()
+
+
+
     def check_deprel_format(self, state, cols, line):
         """
         Checks general constraints on valid characters in DEPREL. Furthermore,
