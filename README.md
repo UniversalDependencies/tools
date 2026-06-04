@@ -171,9 +171,13 @@ perl conllu_to_text.pl --lang zh < file.conllu > file.txt
 
 
 ## [conll_convert_tags_to_uposf.pl](https://github.com/UniversalDependencies/tools/blob/master/conll_convert_tags_to_uposf.pl)
-This script takes the CoNLL columns CPOS, POS and FEAT and converts their combined values to the universal POS tag and features.
 
-You need Perl. On Linux, you probably already have it; on Windows, you may have to download and install Strawberry Perl. You also need the Interset libraries. Once you have Perl, it is easy to get them via the following (call `cpan` instead of `cpanm` if you do not have cpanm).
+This script takes the CoNLL columns CPOS, POS and FEAT and converts their combined values to the
+universal POS tag and features.
+
+You need Perl. On Linux, you probably already have it; on Windows, you may have to download and
+install Strawberry Perl. You also need the Interset libraries. Once you have Perl, it is easy to
+get them via the following (call `cpan` instead of `cpanm` if you do not have cpanm).
 ```
 cpanm Lingua::Interset
 ```
@@ -181,16 +185,43 @@ Then use the script like this:
 ```
 perl conll_convert_tags_to_uposf.pl -f source_tagset < input.conll > output.conll
 ```
-The source tagset is the identifier of the tagset used in your data and known to Interset. Typically it is the language code followed by two colons and **conll**, e.g. **sl::conll** for the Slovenian data of CoNLL 2006. See the [tagset conversion tables](http://universaldependencies.github.io/docs/tagset-conversion/index.html) for more tagset codes.
+The source tagset is the identifier of the tagset used in your data and known to Interset.
+Typically it is the language code followed by two colons and **conll**, e.g. **sl::conll** for the
+Slovenian data of CoNLL 2006. See the [tagset conversion
+tables](http://universaldependencies.github.io/docs/tagset-conversion/index.html) for more tagset
+codes.
 
 **IMPORTANT**:
 
-The script assumes the CoNLL-X (2006 and 2007) file format. If your data is in another format (most notably CoNLL-U, but also e.g. CoNLL 2008/2009, which is not identical to 2006/2007), you have to modify the data or the script. Furthermore,
-you have to know something about the tagset driver (-f source_tagset above) you are going to use. Some drivers do not expect to receive three values joined by TAB characters. Some expect two values and many expect just a single tag, perhaps the one you have in your POS column. These factors may also require you to adapt the script to your needs. You may want to consult the [documentation](https://metacpan.org/pod/Lingua::Interset). Go to Browse / Interset / Tagset, look up your language code and tagset name, then locate the list() function in the source code. That will give you an idea of what the input tags should look like (usually the driver is able to decode even some tags that are not on the list but have the same structure and feature values).
+The script assumes the CoNLL-X (2006 and 2007) file format. If your data is in another format (most
+notably CoNLL-U, but also e.g. CoNLL 2008/2009, which is not identical to 2006/2007), you have to
+modify the data or the script. Furthermore, you have to know something about the tagset driver
+(`-f source_tagset` above) you are going to use. Some drivers do not expect to receive three values
+joined by TAB characters. Some expect two values and many expect just a single tag, perhaps the one
+you have in your POS column. These factors may also require you to adapt the script to your needs.
+You may want to consult the [documentation](https://metacpan.org/pod/Lingua::Interset). Go to
+Browse / Interset / Tagset, look up your language code and tagset name, then locate the `list()`
+function in the source code. That will give you an idea of what the input tags should look like
+(usually the driver is able to decode even some tags that are not on the list but have the same
+structure and feature values).
+
+
+
+## [conllu_convert_uposf_to_xpos.pl](https://github.com/UniversalDependencies/tools/blob/master/conllu_convert_uposf_to_xpos.pl)
+
+To some extent, this script is the inverse of `conll_convert_tags_to_uposf.pl`. It takes UPOS and
+FEATS, and based on them it computes XPOS in a specific tagset. Unlike the other script, this one
+works with the CoNLL-U format (both input and output). Similarly to the other script, it needs
+Perl and `Lingua::Interset` (see above). The script is used like this:
+```
+perl conllu_convert_uposf_to_xpos.pl -t target_tagset < input.conllu > output.conllu
+```
+The target tagset is a tagset identifier known to Interset; the default value is `cs::pdtc`.
 
 
 
 ## [check_files.pl](https://github.com/UniversalDependencies/tools/blob/master/check_files.pl)
+
 This script checks the contents of one data repositories for missing/extra files,
 invalid metadata in README etc. Together with validate.py, which checks the contents
 of individual CoNLL-U files, this script assesses whether a treebank is valid and
@@ -199,6 +230,7 @@ ready to be released.
 
 
 ## [check_release.pl](https://github.com/UniversalDependencies/tools/blob/master/check_release.pl)
+
 This script must be run in a folder where all the data repositories (UD_*) are
 stored as subfolders. It checks the contents of the data repositories for various
 issues that we want to solve before a new release of UD is published.
@@ -206,6 +238,7 @@ issues that we want to solve before a new release of UD is published.
 
 
 ## [conllu_align_tokens.pl](https://github.com/UniversalDependencies/tools/blob/master/conllu_align_tokens.pl)
+
 Compares tokenization and word segmentation of two CoNLL-U files. Assumes that no normalization was performed, that is, the sequence of non-whitespace characters is identical on both sides. Use case: We want to merge a gold-standard file, which has no lemmas, with lemmatization predicted by an external tool. But the tool also performed tokenization and we have no guarantee that it matches the gold-standard tokenization. Despite its name, the script now does exactly that, i.e., copies the system lemma to the gold-standard annotation if the tokens match, and prints the merged file to STDOUT. If something else than lemma shall be copied, the source code must be adjusted.
 ```
 perl conllu_align_tokens.pl UD_Turkish-PUD/tr_pud-ud-test.conllu media/conll17-ud-test-2017-05-09/UFAL-UDPipe-1-2/2017-05-15-02-00-38/output/tr_pud.conllu
