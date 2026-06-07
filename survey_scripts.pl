@@ -132,6 +132,7 @@ foreach my $language (keys(%{$languages_from_yaml}))
 my %hash; # $hash{$script}{$treebank/$language} = $count
 my %expected_scripts; # indexed by $treebank/$language
 my %chash; # frequencies of individual characters: $chash{$treebank/$language}{$script}{$character} = $count
+my %langnames_by_ltcodes;
 foreach my $folder (@folders)
 {
     # If we received the list of treebanks to be released, skip all other treebanks.
@@ -163,6 +164,8 @@ foreach my $folder (@folders)
                 $key = $language;
                 $key =~ s/_/ /g;
             }
+            $language =~ s/_/ /g;
+            $langnames_by_ltcodes{$key} = $language;
             # Remember expected script(s) for each key.
             $expected_scripts{$key} = $languages_from_yaml->{$langnames{$langcode}}{scripts};
             foreach my $es (@{$expected_scripts{$key}})
@@ -246,14 +249,16 @@ sub print_markdown
     # The hash is organized first by scripts, then by languages/treebanks.
     # If we want to present it from the opposite side, we must reorganize it.
     my %bydataset;
+    my %datasetsizes; # in characters; to be used to compute percentages
     foreach my $script (keys(%{$hash}))
     {
         foreach my $dataset (keys(%{$hash->{$script}}))
         {
             $bydataset{$dataset}{$script} = $hash->{$script}{$dataset};
+            $datasetsizes{$dataset} += $hash->{$script}{$dataset};
         }
     }
-    my @datasets = sort(keys(%bydataset));
+    my @datasets = sort {my $r = $langnames_by_ltcodes{$a} cmp $langnames_by_ltcodes{$b}; unless($r) {$r = $a cmp $b} $r} (keys(%bydataset));
     print <<EOF
 ---
 layout: base
@@ -272,7 +277,8 @@ EOF
     ;
     foreach my $d (@datasets)
     {
-        print("\#\# $d\n\n");
+        my $language = $langnames_by_ltcodes{$d};
+        print("\#\# $language: $d\n\n");
         my @scripts = sort {my $r = $bydataset{$d}{$b} <=> $bydataset{$d}{$a}; unless($r) {$r = $a cmp $b} $r} (keys(%{$bydataset{$d}}));
         # Check that the most frequent script is expected in this language.
         if(scalar(@scripts) > 0)
@@ -285,6 +291,7 @@ EOF
         }
         foreach my $s (@scripts)
         {
+            my $share = $bydataset{$d}{$s}/$datasetsizes{$d};
             my $siso = script_to_iso($s);
             # Show the most frequent character as example.
             my @characters = sort {my $r = $chash->{$d}{$s}{$b} <=> $chash->{$d}{$s}{$a}; unless($r) {$r = $a cmp $b} $r} (keys(%{$chash->{$d}{$s}}));
@@ -292,7 +299,7 @@ EOF
             my $o = ord($c);
             my $cname = charnames::viacode($o);
             my $example = "$c $o $cname ($chash->{$d}{$s}{$c})";
-            print("* \`$siso\` ($bydataset{$d}{$s}), example: $example\n");
+            printf("* \`$siso\` ($bydataset{$d}{$s} = %d%%), example: $example\n", $share*100+0.5);
         }
         print("\n");
     }
