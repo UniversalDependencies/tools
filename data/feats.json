@@ -2240,6 +2240,9 @@
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Part"], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Gdv", "Ger", "Inf", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Part": 2}}}
 },
+"kfx": {
+
+},
 "kfz": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
