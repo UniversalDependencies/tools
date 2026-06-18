@@ -9,7 +9,7 @@ import argparse
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
 # Allow using this module from the root folder of tools even if it is not
-# installed as a package: use the relative path validator/src/validator for
+# installed as a package: use the relative path udtools/src/udtools for
 # submodules. If the path is not available, try the standard qualification,
 # assuming that the user has installed udtools from PyPI and then called
 # from udtools import Validator.

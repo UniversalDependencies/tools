@@ -1,4 +1,3 @@
-import regex as re
 from validator import compiled_regex as crex
 
 def test_ws():
