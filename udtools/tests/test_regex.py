@@ -1,4 +1,12 @@
-from validator import compiled_regex as crex
+# Allow using this module from the root folder of tools even if it is not
+# installed as a package: use the relative path udtools/src/udtools for
+# submodules. If the path is not available, try the standard qualification,
+# assuming that the user has installed udtools from PyPI and then called
+# from udtools import Validator.
+try:
+    from udtools.src.udtools.utils import crex
+except ModuleNotFoundError:
+    from udtools.utils import crex
 
 def test_ws():
 	spaces = [" ",
