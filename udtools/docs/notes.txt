@@ -1,42 +1,5 @@
-Conceptual differences between the active version of the Validator class and the proposed changes in udtools/validate.py
-
-- Every check_...() function should return a list of incidents, possibly empty.
-  - This would invert the current logic, where check_...() methods return bool, with True meaning "no incidents (errors)".
-    With a list as return value, the function could still be used in a condition, but empty list = False would mean OK.
-    (In Validator, we currently return the bool value only from functions whose OK is needed before other checks can be
-    run. But we could easily extend the behavior to all checks.)
-- When constructing Incident, the new proposal does not call its confirm() method as we do in Validator. Calling this
-  method must be restored, otherwise it would not be possible to print incidents as soon as they are encountered (which
-  is useful with very large treebanks).
-- Long explanations of errors and possible remedies are omitted from incidents. I would put them back at least for now.
-  If something is to happen with them, it can be a separate issue in the future.
-- A logger is used for debugging purposes and every check_...() function prints a summary of checks performed and
-  incidents encountered.
-
-- A central engine runs the checks that the user specifies in a configuration file. Even the default (official) full
-  validation would rely on a default configuration file.
-  - I am not very enthusiastic about making it so flexible, although I agree that some customization of the checks to
-    be run is desirable. I would prefer to keep the validation plan in the source code and to allow the user to turn
-    off certain checks. The dependencies between checks (check B cannot be run if check A did not pass) should be also
-    hardcoded rather than allowing the user to fiddle with them.
-  - In any case, disabling individual checks (or restricting validation only to selected checks) would provide much
-    more fine-grained control over the validation than the existing --level options (but those would be preserved, too).
-  - This is in addition to the option already available in the current Validator, namely to run all the checks but print
-    only selected incidents. (This is now possible if the Validator is set to the --quiet mode, incidents are collected,
-    filtered and then printed. Therefore, it is not compatible with printing incidents as soon as they are encountered.)
-- There seems to be a tendency to divide the check_...() functions so that each incident type (testid) has its own
-  function. I don't think it is practical to do this systematically everywhere, although in some cases the division may
-  improve code readability and manageability.
-  - Nevertheless, if the user can customize the validator to print only selected incidents (but still immediately after
-    encountering them), and if this can be customized separately from saying which checks should be run, then it does
-    not matter that some check_...() functions can return incidents of different kinds.
-  - Independently of the above, one may want to turn off warnings and keep only errors (this could be a third state to
-    the --quiet vs. normal mode).
-- Although not directly apparent from the current code in udtools/validate.py, I think that the idea is to also allow
-  for custom checks on top of the official validator. While it is easy to derive a new class from Validator and define
-  new check_...() methods in it, it is an open question how such extensions should be made available for the user
-  through the command line interface. Ideally, they could be turned on and off the same way as the standard checks.
-  But this can be left as a separate issue for the future.
-
-- In the current implementation of udtools/validate.py, the check_...() functions are placed directly in the module,
-  without the Validator class. However, I do not see reasons to abandon the class and I intend to keep it.
+- Although not directly apparent from the code in udtools/validate.py (once in remake branch, now removed), I think
+  that the idea was to also allow for custom checks on top of the official validator. While it is easy to derive a new
+  class from Validator and define new check_...() methods in it, it is an open question how such extensions should be
+  made available for the user through the command line interface. Ideally, they could be turned on and off the same way
+  as the standard checks. But this can be left as a separate issue for the future.
