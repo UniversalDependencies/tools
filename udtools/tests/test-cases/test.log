@@ -11,6 +11,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\columns-format-minimal.conllu
 [Line 3 Sent tanl1]: [L1 FORMAT leading-whitespace] Leading whitespace not allowed in column LEMMA: ' Lon dra'.
 [Line 4 Sent tanl1]: [L1 FORMAT invalid-whitespace] White space not allowed in column DEPREL: ' punct'.
 FORMAT errors: 2
@@ -29,6 +30,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\columns-format.conllu
 [Line 4 Sent tanl1]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
 [Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	 FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
 [Line 19 Sent tanl3]: [L1 FORMAT invalid-whitespace] White space not allowed in column UPOS: 'VERB '.
@@ -50,6 +52,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\duplicate-id.conllu
 [Line 4 Sent duplicate-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,1'. Expected '1,2'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -67,6 +70,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\empty-field.conllu
 [Line 4 Sent empty-field]: [L1 FORMAT empty-column] Empty value in column FORM: ''.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -84,6 +88,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\empty-head.conllu
 [Line 4 Sent empty-head]: [L1 FORMAT empty-column] Empty value in column HEAD: ''.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -101,6 +106,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\empty-sentence.conllu
 [Line 3 Sent None]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -118,6 +124,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\extra-empty-line.conllu
 [Line 6 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 [Line 7 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 2
@@ -136,6 +143,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\id-starting-from-2.conllu
 [Line 9 Sent id-starting-from-2b]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '2'. Expected '1'.
 [Line 9 Sent id-starting-from-2b]: [L1 FORMAT word-interval-out] Spurious token interval 2-2 (out of range)
 FORMAT errors: 2
@@ -154,6 +162,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\id-with-extra-0.conllu
 [Line 4 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -171,6 +180,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\invalid-line.conllu
 [Line 5 Sent tanl1]: [L1 FORMAT invalid-line] Spurious line: '-	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
 [Line 15 Sent tanl2]: [L1 FORMAT invalid-line] Spurious line: ' 5	.	.	PUNCT	FS	_	1	punct	_	_'. All non-empty lines should start with a digit or the # character.
 FORMAT errors: 2
@@ -189,6 +199,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\invalid-range.conllu
 [Line 5 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -206,6 +217,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\invalid-word-id.conllu
 [Line 4 Sent id-with-extra-0]: [L1 FORMAT invalid-word-id] Unexpected ID format '01'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -223,6 +235,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\invalid-word-interval.conllu
 [Line 5 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -240,6 +253,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misindexed-empty-node.conllu
 [Line 5 Sent misindexed-empty-node]: [L1 FORMAT misplaced-empty-node] Empty node id 2.2, expected 1.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -257,6 +271,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misordered-multiword.conllu
 [Line 7 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -274,6 +289,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-comment-end.conllu
 [Line 13 Sent misplaced-comment-end]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -291,6 +307,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-comment-mid.conllu
 [Line 6 Sent misplaced-comment-mid]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -308,6 +325,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-comment.conllu
 [Line 4 Sent tanl1]: [L1 FORMAT misplaced-comment] Spurious comment line. Comments are only allowed before a sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -325,6 +343,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-empty-node-2.conllu
 [Line 7 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1 must occur before multiword token 2-3.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -342,6 +361,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-empty-node.conllu
 [Line 7 Sent misordered-empty]: [L1 FORMAT misplaced-empty-node] Empty node id 1.1, expected 2.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -359,6 +379,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-range.conllu
 [Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 [Line 7 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 2
@@ -377,6 +398,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\misplaced-word-interval.conllu
 [Line 7 Sent misordered-multiword]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -394,6 +416,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\missing-final-line.conllu
 [Line 4 Sent missing-final-line]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -411,6 +434,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\mwt-nonempty-field.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -426,6 +450,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\nan-id.conllu
 [Line 9 Sent id-starting-from-2b]: [L1 FORMAT invalid-line] Spurious line: 'a	valid	valid	NOUN	SP	_	0	root	_	_'. All non-empty lines should start with a digit or the # character.
 [Line 10 Sent id-starting-from-2b]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 2
@@ -444,6 +469,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\non-unix-newline.conllu
 [Line 23 Sent dos-newlines3]: [L1 FORMAT non-unix-newline] Only the unix-style LF line terminator is allowed.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -461,6 +487,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\nonsequential-empty-node-id.conllu
 [Line 5 Sent nonsequential-empty-node-id]: [L1 FORMAT misplaced-empty-node] Empty node id 1.2, expected 1.1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -478,6 +505,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\nonsequential-id.conllu
 [Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
 [Line 5 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
 FORMAT errors: 2
@@ -496,6 +524,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\out-of-bounds-range.conllu
 [Line 10 Sent invalid-range-format]: [L1 FORMAT missing-empty-line] Missing empty line after the sentence.
 [Line 7 Sent invalid-range-format]: [L1 FORMAT misplaced-word-interval] Multiword range not before its first word.
 FORMAT errors: 2
@@ -514,6 +543,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\overlapping-multiword.conllu
 [Line 7 Sent overlapping-multiword]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -531,6 +561,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\overlapping-range.conllu
 [Line 7 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -548,6 +579,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\overlapping-word-interval.conllu
 [Line 7 Sent invalid-range-format]: [L1 FORMAT overlapping-word-intervals] Range overlaps with others: 3-4
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -565,6 +597,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\pseudo-empty-line.conllu
 [Line 5 Sent extra-empty-line1]: [L1 FORMAT pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -582,6 +615,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\reversed-word-interval.conllu
 [Line 5 Sent invalid-range]: [L1 FORMAT reversed-word-interval] Spurious token interval 2-1
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -599,6 +633,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\seemingly-empty-line.conllu
 [Line 5 Sent 1]: [L1 FORMAT pseudo-empty-line] Spurious line that appears empty but is not; there are whitespace characters.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -616,6 +651,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\tanl-broken.conllu
 [Line 6 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 [Line 8 Sent tanl-broken1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 [Line 11 Sent tanl-broken2]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,2,3,4,6'. Expected '1,2,3,4,5'.
@@ -637,6 +673,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\trailing-tab.conllu
 [Line 4 Sent trailing-tab]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -654,6 +691,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\unicode-normalization.conllu
 [Line 3 Sent None]: [L1 UNICODE unicode-normalization] Unicode not normalized: character[28] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
 
 This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
@@ -677,6 +715,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\word-id-sequence-2.conllu
 [Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '2,1'. Expected '1,2'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -694,6 +733,7 @@ lang                                     - ud
 level                                    - 1                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level1\word-id-sequence.conllu
 [Line 4 Sent nonsequential-id]: [L1 FORMAT word-id-sequence] Words do not form a sequence. Got '1,3'. Expected '1,2'.
 [Line 5 Sent nonsequential-id]: [L1 FORMAT word-interval-out] Spurious token interval 3-3 (out of range)
 FORMAT errors: 2
@@ -714,6 +754,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\ambiguous-feature.conllu
 [Line 4 Sent ambiguous-feature]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'A=B=C'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -731,6 +772,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\cyclic-deps.conllu
 [Line 4 Sent cyclic-deps]: [L2 SYNTAX non-tree] Non-tree structure. Words 2,3 are not reachable from the root 0.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -748,6 +790,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\deprel-not-empty-in-empty.conllu
 [Line 5 Sent deprel-not-empty-in-empty]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'orphan'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -765,6 +808,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\duplicate-feature.conllu
 [Line 4 Sent duplicate-feature]: [L2 MORPHO repeated-feature] Repeated features are disallowed: 'Gen=M|Gen=M'.
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -782,6 +826,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\duplicate-layered-feature.conllu
 [Line 4 Sent duplicate-layered-feature]: [L2 MORPHO repeated-feature] Repeated features are disallowed: 'Number=Sing|Number[psor]=Plur|Number[psor]=Sing'.
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -799,6 +844,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\duplicate-value.conllu
 [Line 4 Sent duplicate-value]: [L2 MORPHO repeated-feature-value] Repeated feature values are disallowed: 'Gen=M,M'
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -816,6 +862,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\empty-node-nonempty.conllu
 [Line 5 Sent empty-node]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column HEAD. Now: '2'.
 [Line 5 Sent empty-node]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column DEPREL. Now: 'dep'.
 FORMAT errors: 2
@@ -834,6 +881,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\extra-empty-line.conllu
 [Line 6 Sent extra-empty-line1]: [L1 FORMAT empty-sentence] Sentence must not be empty. Only one empty line is expected after every sentence.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -851,6 +899,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\extra-field.conllu
 [Line 4 Sent extra-field]: [L1 FORMAT number-of-columns] The line has 11 columns but 10 are expected.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -868,6 +917,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\head-not-empty-in-empty.conllu
 [Line 5 Sent head-not-empty-in-empty]: [L2 FORMAT empty-node-nonempty-field] An empty node must have '_' in the column HEAD. Now: '1'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -885,6 +935,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-deps-id.conllu
 [Line 4 Sent invalid-deps-id]: [L2 ENHANCED unknown-ehead] Undefined enhanced head reference (no such ID): '3'.
 ENHANCED errors: 1
 *** FAILED *** with 1 errors
@@ -902,6 +953,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-deps-order.conllu
 [Line 4 Sent invalid-deps-order]: [L2 FORMAT unsorted-deps] DEPS not sorted by head index: '4:nsubj|2:csubj'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -919,6 +971,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-deps-syntax.conllu
 [Line 4 Sent invalid-deps-syntax]: [L2 FORMAT invalid-deps] Failed to parse DEPS: '2'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -936,6 +989,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-deps.conllu
 [Line 9 Sent malformed_deps2]: [L2 FORMAT invalid-deps] Failed to parse DEPS: 'xxx'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -953,6 +1007,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-head.conllu
 [Line 5 Sent invalid-head]: [L2 SYNTAX unknown-head] Undefined HEAD (no such ID): '3'.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -970,6 +1025,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\invalid-range-format.conllu
 [Line 5 Sent invalid-range-format]: [L1 FORMAT invalid-word-id] Unexpected ID format '2-X'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -987,6 +1043,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\lowercase-feature-in-empty.conllu
 [Line 5 Sent lowercase-feature-in-empty]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'tense=Pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1004,6 +1061,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\lowercase-feature-value-in-empty.conllu
 [Line 5 Sent lowercase-feature-value-in-empty]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'Tense=pres'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1021,6 +1079,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\lowercase-feature.conllu
 [Line 5 Sent lowercase-feature]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'lower=Nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1038,6 +1097,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\lowercase-postag-in-empty.conllu
 [Line 5 Sent lowercase-postag-in-empty]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'verb'.
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1055,6 +1115,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\lowercase-postag.conllu
 [Line 4 Sent lowercase-postag]: [L2 MORPHO unknown-upos] Unknown UPOS tag: 'noun'.
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1072,6 +1133,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\lowercase-value.conllu
 [Line 5 Sent lowercase-value]: [L2 MORPHO invalid-feature] Spurious morphological feature: 'Lower=nonvalid'. Should be of the form Feature=Value and must start with [A-Z] and only contain [A-Za-z0-9].
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1089,6 +1151,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misordered-feature.conllu
 [Line 5 Sent misordered-feature]: [L2 MORPHO unsorted-features] Morphological features must be sorted: 'XB=True|Xa=True'.
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1106,6 +1169,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\misordered-layered-feature.conllu
 [Line 5 Sent misordered-layered-feature]: [L2 MORPHO unsorted-features] Morphological features must be sorted: 'Number[psor]=Plur|Number=Sing'.
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1123,6 +1187,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\missing-space-after.conllu
 [Line 4 Sent missing-space-after]: [L2 METADATA missing-spaceafter] 'SpaceAfter=No' is missing in the MISC field of node 1 because the text is 'Dog.'.
 METADATA errors: 1
 *** FAILED *** with 1 errors
@@ -1140,6 +1205,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\multiple-roots.conllu
 [Line 3 Sent multiple-0]: [L2 SYNTAX multiple-roots] Multiple root words: [1, 2]
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1157,6 +1223,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\multiple-sent-id.conllu
 [Line 19 Sent tanl2]: [L2 METADATA multiple-sent-id] Multiple sent_id attributes.
 METADATA errors: 1
 *** FAILED *** with 1 errors
@@ -1174,6 +1241,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\multiple-sent_id.conllu
 [Line 19 Sent tanl2]: [L2 METADATA multiple-sent-id] Multiple sent_id attributes.
 METADATA errors: 1
 *** FAILED *** with 1 errors
@@ -1191,6 +1259,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\mwt-nonempty-upos.conllu
 [Line 6 Sent multiword-with-pos]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column UPOS. Now: 'VERB'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -1208,6 +1277,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\mwt-nonempty.conllu
 [Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column LEMMA. Now: 'dalla'.
 [Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column HEAD. Now: '0'.
 [Line 6 Sent token-with-cols-filled]: [L2 FORMAT mwt-nonempty-field] A multi-word token line must have '_' in the column DEPREL. Now: 'root'.
@@ -1227,6 +1297,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\no-sent_id.conllu
 [Line 8 Sent tanl1]: [L2 METADATA missing-sent-id] Missing the sent_id attribute.
 METADATA errors: 1
 *** FAILED *** with 1 errors
@@ -1244,6 +1315,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\parallel-id.conllu
 [Line 6 Sent cairo-1]: [L2 METADATA invalid-parallel-id] Spurious parallel_id line: '# parallel_id would be cairo/1 but we messed up this line.' should look like '# parallel_id = corpus/sentence' where corpus is [a-z]+ and sentence is [-0-9a-z]. Optionally, '/alt[1-9][0-9]*' and/or 'part[1-9][0-9]*' may follow.
 [Line 18 Sent cairo-2]: [L2 METADATA multiple-parallel-id] Multiple parallel_id attributes.
 [Line 28 Sent cairo-3.2]: [L2 METADATA parallel-id-alt] The alt suffix of parallel sentence 'cairo/3' should be 1 but it is 2.
@@ -1266,6 +1338,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\self-cycle-deps.conllu
 [Line 5 Sent self-cycle-deps]: [L2 ENHANCED deps-self-loop] Self-loop in DEPS for '2'
 [Line 4 Sent self-cycle-deps]: [L2 ENHANCED unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2'] are not reachable from any root
 ENHANCED errors: 2
@@ -1284,6 +1357,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\self-cycle-head.conllu
 [Line 5 Sent self-cycle-head]: [L2 SYNTAX head-self-loop] HEAD == ID for 2
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1301,6 +1375,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\space-in-field.conllu
 [Line 4 Sent space-in-field]: [L1 FORMAT invalid-whitespace] White space not allowed in column XPOS: 'this is not valid'.
 FORMAT errors: 1
 *** FAILED *** with 1 errors
@@ -1318,6 +1393,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\uppercase-deprel.conllu
 [Line 5 Sent uppercase-deprel]: [L2 SYNTAX invalid-deprel] Invalid DEPREL value 'Punct'. Only lowercase English letters or a colon are expected.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1335,6 +1411,7 @@ lang                                     - ud
 level                                    - 2                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level2\uppercase-deps-deprel.conllu
 [Line 5 Sent uppercase-deps-deprel]: [L2 ENHANCED invalid-edeprel] Invalid enhanced relation type: '1:Dep'.
 [Line 4 Sent uppercase-deps-deprel]: [L2 ENHANCED unconnected-egraph] Enhanced graph is not connected. Nodes ['1', '2'] are not reachable from any root
 ENHANCED errors: 2
@@ -1355,6 +1432,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\head-0-deprel-not-root.conllu
 [Line 4 Sent head-0-deprel-not-root]: [L3 SYNTAX 0-is-not-root] DEPREL must be 'root' if HEAD is 0.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1372,6 +1450,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\head-not-0-deprel-root.conllu
 [Line 5 Sent head-not-0-deprel-root]: [L3 SYNTAX root-is-not-0] DEPREL cannot be 'root' if HEAD is not 0.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1389,6 +1468,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\nmod-obl.conllu
 [Line 6 Sent invalid-obl]: [L3 SYNTAX obl-should-be-nmod] The parent (node [2] 'øeditele') is a nominal (and not a predicate), hence the relation should be 'nmod', not 'obl'.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1406,6 +1486,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\non-proj.conllu
 [Line 6 Sent non-proj]: [L3 SYNTAX punct-is-nonproj] Punctuation must not be attached non-projectively over nodes [2]
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1423,6 +1504,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\rel-upos.conllu
 [Line 8 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 WARNING verbform-fin-without-mood] Finite verb 'loste' lacks the 'Mood' feature
 [Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 WARNING fixed-without-extpos] Fixed expression '5 2/3' does not have the 'ExtPos' feature
 [Line 13 Sent WR-P-P-H-0000000041\WR-P-P-H-0000000041.p.2.s.4]: [L3 SYNTAX rel-upos-det] 'det' should be 'DET' or 'PRON' but it is 'NUM' ('5')
@@ -1475,6 +1557,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\right-to-left.conllu
 [Line 9 Sent 13147]: [L3 SYNTAX right-to-left-conj] Parent of relation 'conj' must precede the child in the word order.
 [Line 11 Sent 13147]: [L3 SYNTAX right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
 [Line 13 Sent 13147]: [L3 SYNTAX right-to-left-flat] Parent of relation 'flat' must precede the child in the word order.
@@ -1503,6 +1586,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\too-many-objects.conllu
 [Line 7 Sent penchev-s66]: [L3 SYNTAX too-many-objects] Multiple direct objects [2, 4] ('\u0442\u0435', '\u043d\u0435\u0449\u043e') under the predicate '\u043f\u0438\u0442\u0430\u043c'.
 SYNTAX errors: 1
 *** FAILED *** with 1 errors
@@ -1520,6 +1604,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level3\too-many-subjects.conllu
 [Line 17 Sent dev-6]: [L3 SYNTAX too-many-subjects] Multiple subjects [2, 11] ('situacións', 'persoas') under the predicate 'viven' not subtyped as ':outer'.
 
 Outer subjects are allowed if a clause acts as the predicate of another clause.
@@ -1542,6 +1627,7 @@ lang                                     - cs
 level                                    - 5                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level4-5\cs_pud-ud-test.conllu
 [Line 9 Sent n01001011]: [L4 MORPHO feature-unknown] Feature NonExistent is not documented for language [cs] ('„', NonExistent=Feature).
 
 The following 95 feature values are currently permitted in language [cs]:
@@ -1571,6 +1657,7 @@ lang                                     - yrl
 level                                    - 5                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\invalid-level4-5\yrl_complin-mwt-typo-yes.conllu
 [Line 27 Sent Hartt1938:0:0:515-1]: [L4 MORPHO mwt-typo-repeated-at-word] Feature Typo cannot occur at word [6] if it already occurred at the corresponding multiword token [6-7].
 MORPHO errors: 1
 *** FAILED *** with 1 errors
@@ -1590,6 +1677,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\empty-file.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -1605,6 +1693,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\empty-nodes.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -1620,6 +1709,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\layered-features.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -1635,6 +1725,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\maximal-empty-node.conllu
 [Line 4 Sent maximal-empty-node]: [L3 WARNING pron-det-without-prontype] The word 'This' is tagged 'PRON' but it lacks the 'PronType' feature
 Warnings: 1
 *** PASSED ***
@@ -1652,6 +1743,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\minimal-empty-node.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -1667,6 +1759,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\multiple-features.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -1682,6 +1775,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\nmod-obl.conllu
 *** PASSED ***
  
 -------------------------------------------------------------------------------- 
@@ -1697,6 +1791,7 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\tanl.conllu
 [Line 12 Sent tanl2]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 [Line 19 Sent tanl3]: [L3 WARNING pron-det-without-prontype] The word 'la' is tagged 'DET' but it lacks the 'PronType' feature
 Warnings: 2
@@ -1715,5 +1810,6 @@ lang                                     - ud
 level                                    - 3                                                                               
 check_coref                              - False                                                                           
 
+[validator.py:196 -        validate_file()]  Opening file C:\Users\zeman\Documents\lingvistika-projekty\ud-repos\tools\udtools\tests\test-cases\valid\whitespace.conllu
 *** PASSED ***
  
