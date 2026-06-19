@@ -7,6 +7,11 @@ import sys
 # is installed as a package.
 from udtools.src.udtools.validator import Validator
 from udtools.src.udtools.argparser import parse_args_validator
+import logging
+import udtools.src.udtools.logging_utils as logging_utils
+
+logger = logging.getLogger(__name__)
+logging_utils.setup_logging(logger)
 
 
 
@@ -18,6 +23,7 @@ from udtools.src.udtools.argparser import parse_args_validator
 
 def main():
     args = parse_args_validator()
+    logger.info("Arguments: \n%s", logging_utils.pprint(vars(args)))
     validator = Validator(lang=args.lang, level=args.level, max_store=10, args=args)
     state = validator.validate_files(args.input)
     # Summarize the warnings and errors.
