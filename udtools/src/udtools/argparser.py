@@ -20,19 +20,16 @@ def build_argparse_validator():
                           Exit with 0 on pass, non-zero on fail.""")
     io_group.add_argument('--no-warnings',
                           dest='no_warnings', action='store_true', default=False,
-                          help="""Print only errors but no warnings.
-                          The final summary will still include the number of warnings, although they were not printed.""")
+                          help="""Print and count only errors but no warnings.""")
     io_group.add_argument('-e', '--exclude',
                           nargs='+',
-                          help="""One or more ids of tests whose incidents should not be printed.
-                          For example: --exclude missing-sent-id invalid-sent-id.
-                          The tests will still be performed and resulting incidents counted in the final summary.""")
+                          help="""One or more ids of tests whose incidents should not be printed and counted.
+                          For example: --exclude missing-sent-id invalid-sent-id.""")
     io_group.add_argument('-i', '--include-only',
                           nargs='+',
-                          help="""One or more ids of tests whose incidents should be printed.
+                          help="""One or more ids of tests whose incidents should be printed and counted.
                           For example: --include-only missing-sent-id invalid-sent-id.
-                          Any other incidents will not be printed.
-                          The tests will still be performed and resulting incidents counted in the final summary.""")
+                          Any other incidents will not be printed.""")
     io_group.add_argument('--max-err',
                           action='store', type=int, default=20,
                           help="""How many incidents to print per test class? 0 for all.

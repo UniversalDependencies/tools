@@ -14,11 +14,11 @@ import regex as re
 # from udtools import Validator.
 try:
     import udtools.src.udtools.utils as utils
-    from udtools.src.udtools.incident import Incident, Error, TestClass, Reference
+    from udtools.src.udtools.incident import Incident, Error, Warning, TestClass, Reference
     from udtools.src.udtools.level1 import Level1
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident, Error, TestClass, Reference
+    from udtools.incident import Incident, Error, Warning, TestClass, Reference
     from udtools.level1 import Level1
 
 
@@ -241,6 +241,37 @@ class Level2(Level1):
                 message=f"Repeated features are disallowed: '{feats}'."
             ).confirm()
         return safe
+
+
+
+    def check_xpos_format(self, state, cols, line):
+        """
+        Checks that the XPOS field is not empty. It can contain underscore but
+        not empty string. That is the only requirement we have on this field,
+        which is otherwise not covered by the UD guidelines.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        cols : list
+            The values of the columns on the current node / token line.
+        line : int
+            Number of the line where the node occurs in the file.
+
+        Incidents
+        ---------
+        empty-string-in-xpos
+        """
+        if cols[XPOS] == None or cols[XPOS] == '':
+            Error(
+                state=state, config=self.incfg,
+                lineno=line,
+                level=2,
+                testclass=TestClass.MORPHO,
+                testid='empty-string-in-xpos',
+                message="Unspecified XPOS must be encoded as an underscore ('_'), the field must not be empty."
+            ).confirm()
 
 
 
@@ -1200,7 +1231,13 @@ class Level2(Level1):
             ).confirm()
         else:
             stext = text_matched[0].group(1)
-            if stext[-1].isspace():
+            if len(stext) == 0:
+                Error(
+                    state=state, config=self.incfg,
+                    testid='empty-text',
+                    message='The text attribute must not be empty.'
+                ).confirm()
+            elif stext[-1].isspace():
                 Error(
                     state=state, config=self.incfg,
                     testid='text-trailing-whitespace',

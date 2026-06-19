@@ -1,5 +1,12 @@
-import regex as re
-from validator import compiled_regex as crex
+# Allow using this module from the root folder of tools even if it is not
+# installed as a package: use the relative path udtools/src/udtools for
+# submodules. If the path is not available, try the standard qualification,
+# assuming that the user has installed udtools from PyPI and then called
+# from udtools import Validator.
+try:
+    from udtools.src.udtools.utils import crex
+except ModuleNotFoundError:
+    from udtools.utils import crex
 
 def test_ws():
 	spaces = [" ",
@@ -125,7 +132,6 @@ def test_decimalwithzero():
 def general_test_metadata(regex_name, meta_str, expected):
 	obj = getattr(crex, regex_name)
 	match = obj.fullmatch(meta_str)
-
 	if (match and expected) or (match is None and not expected):
 		assert True
 	else:
@@ -154,7 +160,6 @@ def test_text():
 	general_test_metadata("text", "# text", False)
 	general_test_metadata("text", "# text Mary had a little lamb", False)
 	general_test_metadata("text", "# text = Mary had a little lamb", True)
-	general_test_metadata("text", "# text = Mary had a little lamb ", False) # ! isn't this too strict? Maybe we could to allow trailing whitespaces
 
 def test_uppercasestring():
 	strings_true = ["ABC",

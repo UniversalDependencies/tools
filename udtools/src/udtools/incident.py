@@ -190,17 +190,17 @@ class Incident:
         error counters etc. In the typical situation, one calls .confirm()
         immediately after one constructs the Incident object.
         """
-        # Even if we should be quiet, at least count the error.
-        too_many = self._count_me()
-        self._store_me()
-        # Check if this incident should be printed, and if so, print it.
-        if not self.config['output'] or 'quiet' in self.config and self.config['quiet']:
-            return
+        # Check if this incident should be counted and printed.
         if 'no_warnings' in self.config and self.config['no_warnings'] and self.is_warning():
             return
         if 'exclude' in self.config and self.testid in self.config['exclude']:
             return
         if 'include_only' in self.config and self.testid not in self.config['include_only']:
+            return
+        # Even if we should be quiet, at least count the error.
+        too_many = self._count_me()
+        self._store_me()
+        if not self.config['output'] or 'quiet' in self.config and self.config['quiet']:
             return
         # Suppress error messages of a type of which we have seen too many.
         if too_many > 0:

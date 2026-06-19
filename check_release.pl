@@ -280,7 +280,7 @@ if(scalar(@invalid_folders) > 0)
 }
 if(scalar(@retired_folders) > 0)
 {
-    print(scalar(@retired_folders), " folders ignored because they are retired (and not and valid again): ", join(', ', @retired_folders), "\n\n");
+    print(scalar(@retired_folders), " folders ignored because they are retired (and not valid again): ", join(', ', @retired_folders), "\n\n");
 }
 # Do not separate names of released folders by commas. We will want to copy the list as arguments for the packaging script.
 print("$n_folders_with_data folders are git repositories and contain valid data:\n\n", join(' ', @released_folders), "\n\n");

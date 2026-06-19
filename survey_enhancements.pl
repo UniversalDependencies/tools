@@ -158,8 +158,7 @@ foreach my $treebank (@treebanks)
         $maxlength = $l;
     }
 }
-summarize_enhanced_graph_properties(\@treebanks, \%hash, $maxlength);
-print("Total $n_languages_something languages have at least one type of enhancement in at least one treebank.\n");
+summarize_enhanced_graph_properties(\@treebanks, \%hash, $maxlength, $n_languages_something);
 
 
 
@@ -208,7 +207,24 @@ sub summarize_enhanced_graph_properties
     my $treebanks = shift;
     my $hash = shift;
     my $maxlength = shift;
+    my $n_languages_something = shift;
     my @treebanks = @{$treebanks};
+    my $markdown = 1;
+    if($markdown)
+    {
+        print <<EOF
+---
+layout: base
+title: 'Enhanced Representation'
+udver: '2'
+---
+
+# Enhanced UD Graphs in the Data
+
+<pre>
+EOF
+        ;
+    }
     my $n_treebanks_something = 0;
     my $n_treebanks_everything = 0;
     foreach my $treebank (@treebanks)
@@ -250,6 +266,11 @@ sub summarize_enhanced_graph_properties
     print("\n");
     print("Total $n_treebanks_everything treebanks (marked with *) have all types of enhancements.\n");
     print("Total $n_treebanks_something treebanks have at least one type of enhancement.\n");
+    print("Total $n_languages_something languages have at least one type of enhancement in at least one treebank.\n");
+    if($markdown)
+    {
+        print("</pre>\n");
+    }
 }
 
 
