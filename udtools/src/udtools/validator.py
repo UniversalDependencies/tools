@@ -5,7 +5,7 @@
 import sys
 import io
 import argparse
-import logging
+###!!!import logging
 # Once we know that the low-level CoNLL-U format is OK, we will be able to use
 # the Udapi library to access the data and perform the tests at higher levels.
 import udapi.block.read.conllu
@@ -20,17 +20,17 @@ try:
     from udtools.src.udtools.state import State
     import udtools.src.udtools.data as data
     from udtools.src.udtools.level6 import Level6
-    from udtools.src.udtools.logging_utils import setup_logging
+    ###!!!from udtools.src.udtools.logging_utils import setup_logging
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Error, TestClass
     from udtools.state import State
     import udtools.data as data
     from udtools.level6 import Level6
-    from udtools.logging_utils import setup_logging
+    ###!!!from udtools.logging_utils import setup_logging
 
-logger = logging.getLogger(__name__)
-setup_logging(logger)
+###!!!logger = logging.getLogger(__name__)
+###!!!setup_logging(logger)
 
 
 
@@ -193,7 +193,7 @@ class Validator(Level6):
             self.validate_file_handle(sys.stdin, state)
         else:
             with io.open(filename, 'r', encoding='utf-8') as inp:
-                logger.info("Opening file %s", filename)
+                ###!!!logger.info("Opening file %s", filename)
                 self.validate_file_handle(inp, state)
         return state
 

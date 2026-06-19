@@ -8,11 +8,11 @@ import sys
 from udtools.argparser import parse_args_validator, parse_args_scorer
 from udtools.validator import Validator
 from udtools.udeval import evaluate_wrapper, build_evaluation_table
-import logging
-import udtools.logging_utils as logging_utils
+###!!!import logging
+###!!!import udtools.logging_utils as logging_utils
 
-logger = logging.getLogger(__name__)
-logging_utils.setup_logging(logger)
+###!!!logger = logging.getLogger(__name__)
+###!!!logging_utils.setup_logging(logger)
 
 
 
@@ -24,7 +24,7 @@ logging_utils.setup_logging(logger)
 
 def main():
     args = parse_args_validator()
-    logger.info("Arguments: \n%s", logging_utils.pprint(vars(args)))
+    ###!!!logger.info("Arguments: \n%s", logging_utils.pprint(vars(args)))
     validator = Validator(lang=args.lang, level=args.level, max_store=10, args=args)
     state = validator.validate_files(args.input)
     # Summarize the warnings and errors.
