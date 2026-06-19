@@ -168,7 +168,6 @@ def parse_empty_node_id(cols):
         A 2-uple of strings, e.g. ("1", "2").
     """
     m = crex.enodeid.fullmatch(cols[ID])
-    # ! REMOVE/CHANGE
     assert m, 'parse_empty_node_id with non-empty node'
     return m.groups()
 
