@@ -3,6 +3,7 @@
 # DZ 2018-11-04: Porting the validator to Python 3.
 # DZ: Many subsequent changes. See the git history.
 import unicodedata
+import logging
 # Allow using this module from the root folder of tools even if it is not
 # installed as a package: use the relative path validator/src/validator for
 # submodules. If the path is not available, try the standard qualification,
@@ -11,9 +12,14 @@ import unicodedata
 try:
     import udtools.src.udtools.utils as utils
     from udtools.src.udtools.incident import Incident, Error, TestClass
+    from udtools.src.udtools.logging_utils import setup_logging
 except ModuleNotFoundError:
     import udtools.utils as utils
     from udtools.incident import Incident, Error, TestClass
+    from udtools.logging_utils import setup_logging
+
+logger = logging.getLogger(__name__)
+setup_logging(logger)
 
 
 
@@ -313,6 +319,7 @@ class Level1:
                 message=testmessage,
                 explanation=f"This error usually does not mean that {inpfirst} is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character.{explanation_second} You can fix normalization errors using the normalize_unicode.pl script from the tools repository."
             ).confirm()
+            logger.debug("'unicode-normalization' error triggered by line '%s'", lineno)
 
 
 

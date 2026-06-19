@@ -658,7 +658,9 @@ check_coref                              - False
 
 This error usually does not mean that LATIN SMALL LETTER C is an invalid character. Usually it means that this is a base character followed by combining diacritics, and you should replace them by a single combined character. In this case, your next character is COMBINING CARON. You can fix normalization errors using the normalize_unicode.pl script from the tools repository.
 
+[level1.py:322 - check_unicode_normalization()]  'unicode-normalization' error triggered by line '3'
 [Line 8 Sent 1]: [L1 UNICODE unicode-normalization] Unicode not normalized: LEMMA.character[3] is LATIN SMALL LETTER C, should be LATIN SMALL LETTER C WITH CARON.
+[level1.py:322 - check_unicode_normalization()]  'unicode-normalization' error triggered by line '8'
 UNICODE errors: 2
 *** FAILED *** with 2 errors
  
