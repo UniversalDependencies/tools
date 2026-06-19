@@ -266,6 +266,8 @@ class Level1:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         text : str
             The input line to be tested. If the line consists of TAB-separated
             fields (token line), errors reports will specify the field where the
@@ -322,6 +324,8 @@ class Level1:
 
         Parameters
         ----------
+        state : udtools.state.State
+            The state of the validation run.
         cols : list
             The values of the columns on the current node / token line.
 
@@ -607,6 +611,13 @@ class Level1:
         Checks that the input file consistently uses linux-style newlines (LF
         only, not CR LF like in Windows). To be run on the input file handle
         after the whole input has been read.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        inp : TextIO
+            File handler that is being read.
 
         Incidents
         ---------
