@@ -186,7 +186,6 @@ def shorten(string):
     """
     return string if len(string) < 25 else string[:20]+'[...]'
 
-# ! proposal: rename to drop_subtype
 def lspec2ud(deprel):
     """
     Drops the relation subtype from the given DEPREL (e.g. "nmod" -> "nmod";
@@ -218,18 +217,19 @@ def nodeid2tuple(nodeid: str):
 
 def formtl(node):
     """
-    Joins a node's form and transliteration together in a space-separated
-    string, e.g. "ኧሁ 'ăhu".
+    Returns the word form of a node, possibly accompanied by its
+    transliteration (if available in the MISC column).
 
     Parameters
     ----------
-    node : udapi.core.node.Node
-        A word node.
+    node : udapi.core.node.Node object
+        The node whose form we want to get.
 
     Returns
     -------
-    _ : str
-        A string in "FORM Translit" format, e.g. "ኧሁ 'ăhu".
+    x : str
+        The form and translit, space separated, e.g., "ኧሁ 'ăhu". Only form if
+        translit not available.
     """
     x = node.form
     if node.misc['Translit'] != '':
@@ -238,18 +238,19 @@ def formtl(node):
 
 def lemmatl(node):
     """
-    Joins a node's lemma and its transliteration together in a space-separated
-    string, e.g. "እኔ 'əne".
+    Returns the lemma of a node, possibly accompanied by its transliteration
+    (if available in the MISC column).
 
     Parameters
     ----------
-    node : udapi.core.node.Node
-        A word node.
+    node : udapi.core.node.Node object
+        The node whose lemma we want to get.
 
     Returns
     -------
-    _ : str
-        A string in "LEMMA LTranslit" format, e.g. "እኔ 'əne".
+    x : str
+        The lemma and translit, space separated, e.g., "እኔ 'əne". Only lemma if
+        translit not available.
     """
     x = node.lemma
     if node.misc['LTranslit'] != '':
