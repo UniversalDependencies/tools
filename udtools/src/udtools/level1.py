@@ -612,6 +612,13 @@ class Level1:
         only, not CR LF like in Windows). To be run on the input file handle
         after the whole input has been read.
 
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        inp : TextIO
+            File handler that is being read.
+
         Incidents
         ---------
         non-unix-newline
