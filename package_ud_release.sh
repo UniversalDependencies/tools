@@ -125,7 +125,13 @@ fi
 pushd tools ; git pull --no-edit ; popd
 cd release-$RELEASE
 mkdir ud-tools-v$RELEASE
-cp -r ../tools/* ud-tools-v$RELEASE
+# I want to exclude __pycache__ from the copying below. ChatGPT recommends using rsync instead of cp.
+# cp -r ../tools/* ud-tools-v$RELEASE
+echo DOUBLE CHECK THAT TOOLS IS COPIED CORRECTLY (USING EXPERIMENTAL CODE FROM CHATGPT TO EXCLUDE PYCACHE)
+rsync -a \
+    --exclude='__pycache__/' \
+    --exclude='*.pyc' \
+    ../tools/ ud-tools-v"$RELEASE"/
 rm -rf ud-tools-v$RELEASE/.git* ud-tools-v$RELEASE/not-to-release
 tar czf ud-tools-v$RELEASE.tgz ud-tools-v$RELEASE
 cd ..
