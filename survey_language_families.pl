@@ -35,6 +35,7 @@ my $genera_of_family; # survey genera of given family
 my $languages = 0; # count languages per group
 my $words = 0; # count words per group
 my $relid; # release id to put to headers when printing output
+my $complete_latex = 0; # print LaTeX preamble and document environment around the pie chart
 GetOptions
 (
     'udpath=s'   => \$udpath,
@@ -45,7 +46,8 @@ GetOptions
     'genera=s'   => \$genera_of_family,
     'languages'  => \$languages,
     'words'      => \$words,
-    'relid=s'    => \$relid
+    'relid=s'    => \$relid,
+    'complatex'  => \$complete_latex
 );
 $families = 1 if(!$families && !$genera_of_family);
 $words = 1 if(!$languages && !$words);
@@ -315,6 +317,11 @@ sub get_family_piechart
     $pie .= join(",\n", map {sprintf("        %d/$_", $cutoff_stats{$_})} (@cutoff_keys))."\n";
     $pie .= "      }\n";
     $pie .= "    \\end{tikzpicture}";
+    # If required by a global variable, wrap the pie chart in complete LaTeX code.
+    if($complete_latex)
+    {
+        $pie = "\\documentclass{standalone}\n\\usepackage{pgf-pie}\n\\begin{document}\n$pie\n\\end{document}\n";
+    }
     return $pie;
 }
 
