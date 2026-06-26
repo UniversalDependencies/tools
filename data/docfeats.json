@@ -1389,6 +1389,7 @@
 "Aspect": {"type": "universal", "values": ["Imp", "Iter", "Perf"], "errors": []},
 "Case": {"type": "universal", "values": ["Abs", "Nom", "Erg", "Dat", "Gen", "Ins", "Ess", "All", "Voc"], "errors": []},
 "Case-stack2": {"type": "local", "values": [], "errors": ["Feature name 'Case-stack2' does not have the prescribed form.", "Header title 'Case[stack2]' does not match the file name 'Case-stack2'."]},
+"Case[dsauf]": {"type": "local", "values": [], "errors": ["No examples found under value 'Erg'.", "No examples found under value 'Gen'.", "No examples found under value 'Dat'.", "No examples found under value 'Ins'.", "No examples found under value 'All'.", "No examples found under value 'Voc'."]},
 "Case[sauf]": {"type": "local", "values": ["Nom", "Erg", "Gen", "Dat", "Ins", "All", "Voc"], "errors": []},
 "Case[stack]": {"type": "local", "values": ["Gen"], "errors": []},
 "Degree": {"type": "universal", "values": ["Dim", "Pos", "Sup"], "errors": []},
