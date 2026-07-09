@@ -1472,7 +1472,7 @@
 "Transc": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Yes'>`Yes`: explanation of the value'.", "No feature values found."]},
 "Typo": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Yes'>`Yes`: explanation of the value'.", "No feature values found."]},
 "VerbForm": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Fin'>`Fin`: Finite'.", "Unrecognized level 3 heading '### <a name='Inf'>`Inf`: Infinite'.", "Unrecognized level 3 heading '### <a name='Part'>`Part`: Participle'.", "Unrecognized level 3 heading '### <a name='Vnoun'>`Vnoun`: Verbal noun'.", "Header title 'Verbform' does not match the file name 'VerbForm'.", "No feature values found."]},
-"VerbType": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Light'>`Light`: explanation of the value'.", "Header title 'Verbtype' does not match the file name 'VerbType'.", "No feature values found."]}
+"VerbType": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Aux'>`Aux`: Auxiliary verb'.", "Unrecognized level 3 heading '### <a name='Cop'>`Cop`: Copular verb'.", "Unrecognized level 3 heading '### <a name='Light'>`Light`: Light verb'.", "Unrecognized level 3 heading '### <a name='Quasi'>`Quasi`: Quasi verb'.", "Header title 'Verbtype' does not match the file name 'VerbType'.", "No feature values found."]}
 },
 "pay": {
 "AdvType": {"type": "local", "values": ["Ideoph"], "errors": []},
