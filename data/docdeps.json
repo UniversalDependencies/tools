@@ -2075,6 +2075,7 @@
 "case": {"type": "universal", "errors": []},
 "cc": {"type": "universal", "errors": []},
 "ccomp": {"type": "universal", "errors": []},
+"compund:lvc": {"type": "", "errors": ["Relation 'compund:lvc' is not a subtype of any approved main type."]},
 "conj": {"type": "universal", "errors": []},
 "cop": {"type": "universal", "errors": []},
 "csubj": {"type": "universal", "errors": []},
