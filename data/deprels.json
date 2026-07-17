@@ -8978,7 +8978,7 @@
 "dep:conj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"dislocated": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'dislocated'."]},
 "dislocated:res": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "dislocated:topic": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
