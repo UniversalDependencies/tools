@@ -1128,6 +1128,7 @@
 },
 "mvf": {
 "bai": {"functions": [{"function": "Aspect=Prog", "rule": "Progressive auxiliary marking ongoing action", "deficient": "", "example": "Bi yabu-ji [bai-na].", "exampleen": "I am walking.", "comment": ""}], "status": "documented", "lastchanged": "2026-07-20-14-43-33", "lastchanger": "wenchao-li-zju"},
+"uguah": {"functions": [{"function": "neg", "rule": "Negative auxiliary in past tense clauses", "deficient": "", "example": "Bi ide-sen [ugua-asan].", "exampleen": "I did not eat.", "comment": ""}], "status": "documented", "lastchanged": "2026-07-20-14-45-16", "lastchanger": "wenchao-li-zju"},
 "yum": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Ter bagshi [yum].", "exampleen": "He is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-07-20-14-01-10", "lastchanger": "wenchao-li-zju"}
 },
 "mxx": {
