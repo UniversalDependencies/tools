@@ -7609,6 +7609,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-20-10-41-20", "lastchanger": "wenchao-li-zju"},
+"obl:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-20-10-45-06", "lastchanger": "wenchao-li-zju"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
