@@ -1458,7 +1458,7 @@
 "Voice": {"type": "universal", "values": ["Pass", "PassPass", "PassRfl", "PassRcp", "Rcp", "Cau", "CauCau", "CauPass", "CauCauPass", "CauRcp", "CauPassRcp"], "errors": []}
 },
 "pal": {
-"Abbr": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Yes'>`Yes`: Abbr'.", "No feature values found."]},
+"Abbr": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Yes'>`Yes`: Abbreviation'.", "No feature values found."]},
 "AdpType": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Post'>`Post`: Postposition'.", "Unrecognized level 3 heading '### <a name='Post,Circ'>`Post,Circ`: Postpositional part of a circumposition'.", "Unrecognized level 3 heading '### <a name='Prep'>`Prep`: Preposition'.", "Unrecognized level 3 heading '### <a name='Prep,Circ'>`Prep,Circ`: Prepositional part of a circumposition'.", "No feature values found."]},
 "AdvType": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Deg'>`Deg`: Degree'.", "Unrecognized level 3 heading '### <a name='Loc'>`Loc`: Location'.", "Unrecognized level 3 heading '### <a name='Man'>`Man`: Manner'.", "Unrecognized level 3 heading '### <a name='Tim'>`Tim`: Time'.", "No feature values found."]},
 "Animacy": {"type": "universal", "values": [], "errors": ["Unrecognized level 3 heading '### <a name='Anim'>`Anim`: Animate'.", "Unrecognized level 3 heading '### <a name='Hum'>`Hum`: Human'.", "Unrecognized level 3 heading '### <a name='Inan'>`Inan`: Inanimate'.", "Unrecognized level 3 heading '### <a name='Nhum'>`Nhum`: Non-human'.", "No feature values found."]},
