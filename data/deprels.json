@@ -6560,6 +6560,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-28-02-06-44", "lastchanger": "jeanm"},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-28-02-06-52", "lastchanger": "jeanm"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-18-03-38-35", "lastchanger": "jeanm"},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-18-03-36-56", "lastchanger": "jeanm"},
