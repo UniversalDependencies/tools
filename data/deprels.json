@@ -6528,6 +6528,7 @@
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-28-02-07-00", "lastchanger": "jeanm"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod:lmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-28-02-07-08", "lastchanger": "jeanm"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
