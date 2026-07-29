@@ -6554,7 +6554,6 @@
 "expl:pv": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-09-10-07-40-06", "lastchanger": "jeanm"},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-28-02-06-01", "lastchanger": "jeanm"},
 "flat:name": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-07-28-02-06-10", "lastchanger": "jeanm"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
