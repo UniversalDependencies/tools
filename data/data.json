@@ -335,7 +335,8 @@
 },
 "dar": {
 "es": {"functions": [{"function": "Mood=Jus", "rule": "combination of the auxiliary and the finite form of the main verb", "deficient": "", "example": "gʷe [bet'a]!", "exampleen": "Let him see!", "comment": "is claimed to be auxiliary in grammars"}], "status": "documented", "lastchanged": "2026-08-16-00-24-59", "lastchanger": "olesar"},
-"le": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ʁača ħala [aħin], dila [leb]", "exampleen": "The calf is not yours, (it) is mine", "comment": "calf you.sg.OBL-GEN [be:NEG] I.OBL-GEN [be-N]"}], "status": "documented", "lastchanged": "2026-08-15-10-53-18", "lastchanger": "olesar"}
+"le": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ʁača ħala [aħin], dila [leb]", "exampleen": "The calf is not yours, (it) is mine", "comment": "calf you.sg.OBL-GEN [be:NEG] I.OBL-GEN [be-N]"}], "status": "documented", "lastchanged": "2026-08-15-10-53-18", "lastchanger": "olesar"},
+"uʔes": {"functions": [{"function": "Mood=Irr", "rule": "combination of the auxiliary and the converb form of the main verb", "deficient": "", "example": "sunejni ira k'ʷan abajla heš dursira daχuwe [duʔak'a] ħu [dues] ʡaj", "exampleen": "She{i} (the narrator) said that, my{y} daughter, you{y} better [take care] of her daughter", "comment": ""}], "status": "documented", "lastchanged": "2026-08-16-01-31-56", "lastchanger": "olesar"}
 },
 "de": {
 "dürfen": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Flora [darf] wieder ihren Mädchennamen tragen.", "exampleen": "Flora is allowed to use her maiden name again.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-04-08-36-03", "lastchanger": "dan-zeman"},
