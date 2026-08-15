@@ -334,6 +334,7 @@
 "være": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Det [er] hans første rigtige teaterrolle.", "exampleen": "It is his first real theatrical role.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-04-20-01-56", "lastchanger": "dan-zeman"}
 },
 "dar": {
+"es": {"functions": [{"function": "Mood=Jus", "rule": "combination of the auxiliary and the finite form of the main verb", "deficient": "", "example": "gʷe [bet'a]!", "exampleen": "Let him see!", "comment": "is claimed to be auxiliary in grammars"}], "status": "documented", "lastchanged": "2026-08-16-00-24-59", "lastchanger": "olesar"},
 "le": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "ʁača ħala [aħin], dila [leb]", "exampleen": "The calf is not yours, (it) is mine", "comment": "calf you.sg.OBL-GEN [be:NEG] I.OBL-GEN [be-N]"}], "status": "documented", "lastchanged": "2026-08-15-10-53-18", "lastchanger": "olesar"}
 },
 "de": {
