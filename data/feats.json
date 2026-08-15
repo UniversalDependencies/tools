@@ -3401,7 +3401,7 @@
 "pal": {
 "Abbr": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Yes'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Circ", "Post", "Prep"], "evalues": [], "byupos": {}},
-"AdvType": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Deg'.", "No examples found under value 'Loc'.", "No examples found under value 'Man'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Deg", "Loc", "Man", "Tim"], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Anim'.", "No examples found under value 'Hum'.", "No examples found under value 'Inan'.", "No examples found under value 'Nhum'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Acc'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Ind'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
