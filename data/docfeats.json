@@ -689,7 +689,7 @@
 "VerbForm": {"type": "universal", "values": ["Fin", "FinRel", "Vnoun"], "errors": []}
 },
 "dar": {
-"Case": {"type": "universal", "values": [], "errors": ["No examples found under value 'Erg'.", "No examples found under value 'Abs'.", "No examples found under value 'Gen'.", "No examples found under value 'Dat'.", "No examples found under value 'Com'.", "No examples found under value 'Cau'.", "No examples found under value 'Cns'.", "Unrecognized level 3 heading '### <a name=\"Equ\">`Voc`</a>: vocative'.", "No examples found under value 'Ine'.", "No examples found under value 'Sup'.", "No examples found under value 'Ade'.", "No examples found under value 'Ess'.", "No examples found under value 'Lat'.", "No examples found under value 'Ela'.", "No examples found under value 'Tra'.", "No examples found under value 'All'."]},
+"Case": {"type": "universal", "values": [], "errors": ["No examples found under value 'Ine'.", "No examples found under value 'Sup'.", "No examples found under value 'Ade'.", "No examples found under value 'Ess'.", "No examples found under value 'Lat'.", "No examples found under value 'Ela'.", "No examples found under value 'Tra'.", "No examples found under value 'All'."]},
 "Evident": {"type": "universal", "values": ["Nfh"], "errors": []}
 },
 "de": {
