@@ -3399,11 +3399,11 @@
 
 },
 "pal": {
-"Abbr": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Yes'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Abbr": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "AdpType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Circ", "Post", "Prep"], "evalues": [], "byupos": {}},
 "AdvType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Deg", "Loc", "Man", "Tim"], "evalues": [], "byupos": {}},
 "Animacy": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Anim'.", "No examples found under value 'Hum'.", "No examples found under value 'Inan'.", "No examples found under value 'Nhum'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Case": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Acc'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Case": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Acc", "Nom"], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Definite": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Ind'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Degree": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Abs'.", "No examples found under value 'Cmp'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Deixis": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No examples found under value 'Prox'.", "No examples found under value 'Remt'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
