@@ -3427,7 +3427,7 @@
 "Transc": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1, "Vnoun": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1, "Vnoun": 1}}, "lastchanged": "2026-08-16-19-33-23", "lastchanger": "bulbulistan"},
-"VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aux", "Cop", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {}}
+"VerbType": {"type": "lspec", "doc": "local", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Aux", "Cop", "Light", "Mod", "Quasi"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Aux": 1, "Cop": 1, "Light": 1, "Mod": 1, "Quasi": 1}, "VERB": {"Aux": 1, "Cop": 1, "Light": 1, "Mod": 1, "Quasi": 1}}, "lastchanged": "2026-08-16-20-07-07", "lastchanger": "bulbulistan"}
 },
 "pap": {
 
