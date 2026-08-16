@@ -3427,7 +3427,7 @@
 "Transc": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Yes"], "evalues": [], "byupos": {}},
 "Typo": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "VerbForm": {"type": "universal", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Inf", "Part", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"VerbType": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["Header title 'Verbtype' does not match the file name 'VerbType'.", "No examples found under value 'Aux'.", "No examples found under value 'Cop'.", "No examples found under value 'Light'.", "No examples found under value 'Mod'.", "No examples found under value 'Quasi'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"VerbType": {"type": "lspec", "doc": "local", "permitted": 0, "errors": [], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": ["Aux", "Cop", "Light", "Mod", "Quasi"], "evalues": [], "byupos": {}}
 },
 "pap": {
 
