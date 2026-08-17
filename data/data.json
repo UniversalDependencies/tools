@@ -1394,6 +1394,9 @@
 "zostawać": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a passive participle of the main verb", "deficient": "", "example": "Wszyscy natychmiast [zostają] wezwani do Moskwy.", "exampleen": "Everyone is immediately summoned to Moscow.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-13-05-02", "lastchanger": "dan-zeman"},
 "zostać": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a passive participle of the main verb", "deficient": "", "example": "Nauczycielka [została] zatrzymana.", "exampleen": "The teacher was detained.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-13-03-01", "lastchanger": "dan-zeman"}
 },
+"pro": {
+"eser": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "e granre d' autres cavayers que [seria] trop lonc per recomtar", "exampleen": "and many other knights that it would be too long to enumerate", "comment": ""}], "status": "documented", "lastchanged": "2026-08-17-13-46-56", "lastchanger": "Nataroma"}
+},
 "prx": {
 "d̪uk": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with adjectival predicates", "example": "Kʰo rd̪amo [d̪uk].", "exampleen": "She is beautiful.", "comment": "Rangan, 1979"}], "status": "documented", "lastchanged": "2020-11-08-12-29-26", "lastchanger": "dan-zeman"},
 "in": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used with nominal predicates", "example": "Kʰo rgyalpoik [inmin].", "exampleen": "He was a king.", "comment": "Rangan, 1979"}], "status": "documented", "lastchanged": "2020-11-08-12-28-06", "lastchanger": "dan-zeman"}
