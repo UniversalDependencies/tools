@@ -2387,7 +2387,7 @@
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nsubj:nc": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nsubj:nc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-18-13-41-23", "lastchanger": "olesar"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
