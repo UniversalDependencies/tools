@@ -5029,7 +5029,7 @@
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "hyw": {
-"acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-20-43", "lastchanger": "myavrum"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
