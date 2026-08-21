@@ -5033,7 +5033,7 @@
 "acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-20-43", "lastchanger": "myavrum"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advcl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-21-07", "lastchanger": "myavrum"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
