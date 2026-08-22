@@ -4535,7 +4535,8 @@
 "Person[psor]": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["1"], "unused_uvalues": [], "unused_lvalues": ["2", "3"], "evalues": [], "byupos": {"NOUN": {"1": 1}}, "lastchanged": "2026-08-22-13-38-29", "lastchanger": "wenchao-li-zju"},
 "Polarity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Neg"], "lvalues": [], "unused_uvalues": ["Pos"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Neg": 1}}, "lastchanged": "2026-08-22-13-38-49", "lastchanger": "wenchao-li-zju"},
 "Poss": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}}, "lastchanged": "2026-08-22-13-39-13", "lastchanger": "wenchao-li-zju"},
-"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Int", "Prs"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Ind", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1}, "PRON": {"Int": 1, "Prs": 1}}, "lastchanged": "2026-08-22-13-40-15", "lastchanger": "wenchao-li-zju"}
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Int", "Prs"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Ind", "Neg", "Rcp", "Rel", "Tot"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1}, "PRON": {"Int": 1, "Prs": 1}}, "lastchanged": "2026-08-22-13-40-15", "lastchanger": "wenchao-li-zju"},
+"Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Yes": 1}}, "lastchanged": "2026-08-22-13-40-40", "lastchanger": "wenchao-li-zju"}
 },
 "umo": {
 
