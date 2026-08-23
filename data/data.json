@@ -555,7 +555,8 @@
 "vir": {"functions": [{"function": "Aspect=Iter", "rule": "It expresses an iterative process when combined with a gerund (main verb).", "deficient": "", "example": "Xosé Bugallo [vén] facendo diversos chamamentos a ambos os partidos.", "exampleen": "Xosé Bugallo has been making various appeals to both parties.", "comment": ""}], "status": "documented", "lastchanged": "2020-12-14-10-25-45", "lastchanger": "marcospln"}
 },
 "gld": {
-"bi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula in Nanai", "example": "xoto naj [bi]-j.", "exampleen": "He is a Nanai person.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-11-13-56", "lastchanger": "wenchao-li-zju"}
+"bi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula in Nanai", "example": "xoto naj [bi]-j.", "exampleen": "He is a Nanai person.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-11-13-56", "lastchanger": "wenchao-li-zju"},
+"əǯi": {"functions": [{"function": "neg", "rule": "Negative auxiliary in Nanai imperative", "deficient": "", "example": "[əǯi] ta-ra!", "exampleen": "Don't do it!", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-11-17-37", "lastchanger": "wenchao-li-zju"}
 },
 "glk": {
 "buon": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Dəryåkənår nəzdik [bu].", "exampleen": "The seashore was close.", "comment": ""}], "status": "documented", "lastchanged": "2025-10-06-16-27-33", "lastchanger": "rahonalab"},
