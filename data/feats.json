@@ -2815,7 +2815,8 @@
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Int", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Ind", "Neg", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1}, "PRON": {"Dem": 1, "Int": 1, "Prs": 1, "Tot": 1}}, "lastchanged": "2026-08-23-04-37-54", "lastchanger": "wenchao-li-zju"},
 "Reflex": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Yes": 1}, "NOUN": {"Yes": 1}, "VERB": {"Yes": 1}}, "lastchanged": "2026-08-23-04-40-09", "lastchanger": "wenchao-li-zju"},
 "Tense": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fut", "Past", "Pres"], "lvalues": [], "unused_uvalues": ["Imp", "Pqp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Past": 1, "Pres": 1}, "VERB": {"Fut": 1, "Past": 1, "Pres": 1}}, "lastchanged": "2026-08-23-04-41-47", "lastchanger": "wenchao-li-zju"},
-"Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Conv", "Fin", "Inf", "Part"], "lvalues": [], "unused_uvalues": ["Gdv", "Ger", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Conv": 1, "Fin": 1, "Part": 1}, "VERB": {"Conv": 1, "Fin": 1, "Inf": 1, "Part": 1}}, "lastchanged": "2026-08-23-04-43-13", "lastchanger": "wenchao-li-zju"}
 },
 "mnc": {
 
