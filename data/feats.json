@@ -2806,6 +2806,7 @@
 "Evident": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fh"], "lvalues": [], "unused_uvalues": ["Nfh"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Fh": 1}}, "lastchanged": "2026-08-23-04-17-01", "lastchanger": "wenchao-li-zju"},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cnd", "Ind", "Int"], "lvalues": [], "unused_uvalues": ["Adm", "Des", "Imp", "Irr", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Ind": 1}, "VERB": {"Cnd": 1, "Ind": 1, "Int": 1}}, "lastchanged": "2026-08-23-04-19-09", "lastchanger": "wenchao-li-zju"},
+"Number": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Plur", "Sing"], "lvalues": [], "unused_uvalues": ["Coll", "Count", "Dual", "Grpa", "Grpl", "Inv", "Pauc", "Ptan", "Tri"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Plur": 1, "Sing": 1}, "PRON": {"Sing": 1}, "PROPN": {"Sing": 1}}, "lastchanged": "2026-08-23-04-23-22", "lastchanger": "wenchao-li-zju"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "mnc": {
