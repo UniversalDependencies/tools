@@ -1110,6 +1110,9 @@
 "കഴിയുക": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the infinitive verb form", "deficient": "", "example": "നിങ്ങൾക്ക് എപ്പോൾ വരാൻ [കഴിയുമെ]ന്ന് നിങ്ങൾ കരുതുന്നു?", "exampleen": "When do you think you can come?", "comment": ""}], "status": "documented", "lastchanged": "2022-10-31-12-25-06", "lastchanger": "abishekjs"},
 "പാട്": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "സീറ്റിങ് രീതി മുൻകൂട്ടി അറിയാൻ [പാടില്ല].", "exampleen": "The seating pattern [should not] be known in advance.", "comment": ""}], "status": "documented", "lastchanged": "2023-04-06-16-09-32", "lastchanger": "dan-zeman"}
 },
+"mn": {
+"baj": {"functions": [{"function": "Aspect=Prog", "rule": "Progressive auxiliary marking ongoing action", "deficient": "", "example": "Bi yav-j [baj-na].", "exampleen": "I am going", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-04-59-37", "lastchanger": "wenchao-li-zju"}
+},
 "mov": {
 "iðu:m": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
