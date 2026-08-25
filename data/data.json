@@ -353,6 +353,7 @@
 "wollen": {"functions": [{"function": "Mood=Des", "rule": "combination of the auxiliary and an infinitive of the main verb", "deficient": "", "example": "Beide [wollten] ihm bei der Suche nach ihr helfen.", "exampleen": "Both wanted to help him find her.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-04-08-45-53", "lastchanger": "dan-zeman"}
 },
 "dta": {
+"adʒ": {"functions": [{"function": "Aspect=Prog", "rule": "continuous or progressive auxiliary", "deficient": "", "example": "bi jab-x [adʒ]", "exampleen": "I am walking.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-25-10-49-08", "lastchanger": "wenchao-li-zju"},
 "biʃin": {"functions": [{"function": "Tense=Past", "rule": "Past auxiliary in Daur", "deficient": "", "example": "min-də mörʲ [biʃin].", "exampleen": "I had a horse.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-25-10-37-31", "lastchanger": "wenchao-li-zju"},
 "biː": {"functions": [{"function": "Aspect=Perf", "rule": "Auxiliary marking past or existential in Daur", "deficient": "", "example": "min-də mörʲ [biː].", "exampleen": "I had a horse.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-25-10-36-41", "lastchanger": "wenchao-li-zju"},
 "bəi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula in Daur", "example": "min-də mörʲ [bəi].", "exampleen": "I have a horse.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-25-10-18-09", "lastchanger": "wenchao-li-zju"},
