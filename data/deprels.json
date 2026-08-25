@@ -2525,7 +2525,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-08-22-11-10-06", "lastchanger": "wenchao-li-zju"},
+"nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-08-25-10-01-23", "lastchanger": "wenchao-li-zju"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-08-22-11-10-27", "lastchanger": "wenchao-li-zju"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
