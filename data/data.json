@@ -1918,6 +1918,9 @@
 "还要": {"functions": [{"function": "Mood=Nec", "rule": "Indicates continued necessity", "deficient": "", "example": "[还要]有上进心", "exampleen": "You still need ambition", "comment": ""}], "status": "documented", "lastchanged": "2025-10-31-01-21-47", "lastchanger": "q1zhen"},
 "非要": {"functions": [{"function": "Mood=Nec", "rule": "Emphatic necessity", "deficient": "", "example": "[非要]寻吾", "exampleen": "insist on finding me", "comment": ""}], "status": "documented", "lastchanged": "2025-10-31-02-21-17", "lastchanger": "q1zhen"}
 },
+"xal": {
+"uga": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Negative copula in Kalmyk", "example": "min-de mörn [uga].", "exampleen": "I don't have a horse.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-25-03-37-18", "lastchanger": "wenchao-li-zju"}
+},
 "xav": {
 "di": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "Wahitébré ma robdze uptabi [di]", "exampleen": "Our brother is very happy", "comment": "di is used in some types of non-verbal predication"}], "status": "documented", "lastchanged": "2024-04-27-17-00-12", "lastchanger": "@languagestructure"},
 "ma": {"functions": [{"function": "Tense=Past", "rule": "past tense non first person", "deficient": "", "example": "a hã [ma] wi", "exampleen": "You came", "comment": ""}], "status": "documented", "lastchanged": "2025-04-18-10-06-32", "lastchanger": "@LanguageStructure"},
