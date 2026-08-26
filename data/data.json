@@ -452,6 +452,9 @@
 "izan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "permanent state", "example": "Hurrengo orrialdeko mapa baliagarria [izan] dakizuke.", "exampleen": "The map on the next page may be useful to you.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-23-16-18", "lastchanger": "dan-zeman"},
 "ukan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "ownership or existential copula (to have)", "example": "Familia eta gertuko komunitatea euskaldunak [dituzte] guztiz.", "exampleen": "The family and the nearby community are completely Basque.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-07-23-19-42", "lastchanger": "dan-zeman"}
 },
+"eve": {
+"bi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Existential copula in Even", "example": "tar etiken abaga [bi].", "exampleen": "That old man was a shaman.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-26-08-18-06", "lastchanger": "wenchao-li-zju"}
+},
 "fa": {
 "است": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "present copula", "example": "آیا تو قاتل حضرمی [نیستی]؟", "exampleen": "Aren't you a murderer?", "comment": ""}], "status": "documented", "lastchanged": "2022-07-27-15-37-44", "lastchanger": "dan-zeman"},
 "بایست": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "من [باید] به خانه برگردم.", "exampleen": "I [must] return home.", "comment": ""}], "status": "documented", "lastchanged": "2022-07-27-17-46-01", "lastchanger": "dan-zeman"},
