@@ -1336,7 +1336,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Mid"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Pass", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Act": 1, "Mid": 1}}, "lastchanged": "2026-08-26-08-03-39", "lastchanger": "wenchao-li-zju"}
 },
 "evn": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp"], "lvalues": [], "unused_uvalues": ["Iter", "Perf", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Hab": 1, "Imp": 1}}, "lastchanged": "2026-08-26-09-26-56", "lastchanger": "wenchao-li-zju"}
 },
 "fa": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
