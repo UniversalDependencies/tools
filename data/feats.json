@@ -1316,7 +1316,8 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Cau"], "lvalues": [], "unused_uvalues": ["Act", "Antip", "Bfoc", "Dir", "Inv", "Lfoc", "Mid", "Pass", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 234}}}
 },
 "eve": {
-"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2026-08-26-07-25-28", "lastchanger": "wenchao-li-zju"}
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Imp", "Perf", "Prog"], "lvalues": [], "unused_uvalues": ["Iter", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Hab": 1, "Imp": 1, "Perf": 1, "Prog": 1}}, "lastchanged": "2026-08-26-07-25-28", "lastchanger": "wenchao-li-zju"},
+"Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Abl", "Acc", "Dat", "Ins", "Loc"], "lvalues": [], "unused_uvalues": ["Abe", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Gen", "Ill", "Ine", "Lat", "Nom", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Acc": 1}, "NOUN": {"Abl": 1, "Acc": 1, "Dat": 1, "Loc": 1}, "PRON": {"Acc": 1, "Ins": 1}, "PROPN": {"Acc": 1}}, "lastchanged": "2026-08-26-07-26-49", "lastchanger": "wenchao-li-zju"}
 },
 "evn": {
 
