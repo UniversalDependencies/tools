@@ -1558,6 +1558,7 @@
 },
 "sce": {
 "be": {"functions": [{"function": "Tense=Past", "rule": "Past auxiliary in Dongxiang", "deficient": "", "example": "bi jab-x [be].", "exampleen": "I walked.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-26-10-45-40", "lastchanger": "wenchao-li-zju"},
+"dʑi": {"functions": [{"function": "Aspect=Imp", "rule": "Auxiliary in Dongxiang", "deficient": "", "example": "bi jab [dʑi].", "exampleen": "I walk.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-26-11-13-13", "lastchanger": "wenchao-li-zju"},
 "gi": {"functions": [{"function": "Aspect=Imp", "rule": "Auxiliary in Dongxiang", "deficient": "", "example": "bi jab [gi].", "exampleen": "I walk.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-26-11-11-03", "lastchanger": "wenchao-li-zju"},
 "na": {"functions": [{"function": "Aspect=Imp", "rule": "Present or imperfective auxiliary in Dongxiang", "deficient": "", "example": "bi kere [na].", "exampleen": "I do it.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-26-11-12-42", "lastchanger": "wenchao-li-zju"},
 "nu": {"functions": [{"function": "Tense=Fut", "rule": "Future auxiliary in Dongxiang", "deficient": "", "example": "bi jab-x [nu].", "exampleen": "I will walk.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-26-11-00-14", "lastchanger": "wenchao-li-zju"},
