@@ -1131,6 +1131,7 @@
 "bol": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Change-of-state copula meaning to become", "example": "Bi bagsh [bol-son].", "exampleen": "I became a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-05-10-21", "lastchanger": "wenchao-li-zju"}
 },
 "mnc": {
+"akū": {"functions": [{"function": "neg", "rule": "Negative auxiliary in Manchu", "deficient": "", "example": "mini bithe [akū].", "exampleen": "I do not have a book.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-02-24-20", "lastchanger": "wenchao-li-zju"},
 "o": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula in Manchu", "example": "tere niyalma [o-me].", "exampleen": "He becomes a person.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-02-23-04", "lastchanger": "wenchao-li-zju"}
 },
 "mov": {
