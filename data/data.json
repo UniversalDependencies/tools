@@ -1254,6 +1254,9 @@
 "छ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the past participle", "deficient": "", "example": "नीतिश्लोकमा भनिएको [छ]", "exampleen": "It is written in the Nītishloka.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-05-14-58-01", "lastchanger": "rahonalab"},
 "हुनु": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "राम शिक्षक [हो]।", "exampleen": "Ram is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-03-05-14-49-41", "lastchanger": "rahonalab"}
 },
+"neg": {
+"o": {"functions": [{"function": "neg", "rule": "Negative auxiliary in Negidal. Inflects for tense, person and number (e.g. o-si-n meaning negative present third person singular). The lexical verb appears in a negative converb form.", "deficient": "", "example": "nuptin-ma-n [osin] man uli-jə", "exampleen": "One of us did not sleep well all night, freezing.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-08-54-40", "lastchanger": "wenchao-li-zju"}
+},
 "nhi": {
 "catqui": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "orthographic variant", "example": "yeh o[catca] tzotszocotzin", "exampleen": "She/he/it was small.", "comment": ""}], "status": "documented", "lastchanged": "2021-12-28-02-22-33", "lastchanger": "Lguyogiro"},
 "estar": {"functions": [{"function": "Aspect=Prog", "rule": "Same as Spanish, estar followed by main verb with ndo ending to form the progressive aspect.", "deficient": "", "example": "[está] creciendo", "exampleen": "It is growing", "comment": ""}], "status": "documented", "lastchanged": "2022-11-01-15-36-17", "lastchanger": "lguyogiro"},
