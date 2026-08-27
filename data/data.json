@@ -1800,6 +1800,9 @@
 "чык": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the predicate in a generic converb form and this auxiliary", "deficient": "", "example": "укып [чык]ты", "exampleen": "He read through it", "comment": "achievement, accomplishment, one sudden action"}], "status": "documented", "lastchanged": "2021-11-02-10-16-34", "lastchanger": "chipewyan"},
 "үт": {"functions": [{"function": "Aspect=Dur", "rule": "combination of a converb and the auxiliary", "deficient": "", "example": "сөйләп [үт]ү", "exampleen": "to talk (for a while)", "comment": ""}], "status": "documented", "lastchanged": "2022-05-01-00-27-43", "lastchanger": "chipewyan"}
 },
+"ude": {
+"o": {"functions": [{"function": "Aspect=Perf", "rule": "Periphrastic perfect auxiliary in Udihe. The lexical verb appears as a bare stem or short form, while the auxiliary o- carries tense, person and number marking.", "deficient": "", "example": "Ələhə bua-du uli-lə bukki [osini] buniga-tigi tukəä-mə ŋənə-ini", "exampleen": "If somebody has drowned far away he comes to the underworld running.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-10-36-28", "lastchanger": "wenchao-li-zju"}
+},
 "ug": {
 "ئى": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "suffixed copula can provide only some forms", "example": "ئۆيىمىز بولسا ئارا تام قوشنا [ئىدى].", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-08-11-24-47", "lastchanger": "dan-zeman"},
 "بول": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used when the suffixed copula cannot provide the corresponding form", "example": "ئۆيىمىز [بولسا] ئارا تام قوشنا ئىدى.", "exampleen": "Our house was next door to Ara.", "comment": ""}], "status": "documented", "lastchanged": "2022-06-10-14-40-18", "lastchanger": "dan-zeman"},
