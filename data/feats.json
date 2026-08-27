@@ -4614,7 +4614,7 @@
 
 },
 "ude": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Iter", "Perf", "Prosp"], "lvalues": [], "unused_uvalues": ["Imp", "Prog"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Hab": 1, "Iter": 1, "Perf": 1, "Prosp": 1}, "VERB": {"Hab": 1, "Iter": 1, "Perf": 1, "Prosp": 1}}, "lastchanged": "2026-08-27-09-27-48", "lastchanger": "wenchao-li-zju"}
 },
 "ug": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
