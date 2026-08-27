@@ -1801,6 +1801,7 @@
 "үт": {"functions": [{"function": "Aspect=Dur", "rule": "combination of a converb and the auxiliary", "deficient": "", "example": "сөйләп [үт]ү", "exampleen": "to talk (for a while)", "comment": ""}], "status": "documented", "lastchanged": "2022-05-01-00-27-43", "lastchanger": "chipewyan"}
 },
 "ude": {
+"e-u": {"functions": [{"function": "Voice=Pass", "rule": "Negative passive auxiliary in Udihe, combining the negation stem e- with the passive marker -u-. Attaches to a lexical verb and carries all inflection.", "deficient": "", "example": "Utenti mo:kt'oi o:kt'oi do-ni-ni ise uta-wa [euji]", "exampleen": "Hence it cannot be seen in the grass and bushes.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-10-37-19", "lastchanger": "wenchao-li-zju"},
 "o": {"functions": [{"function": "Aspect=Perf", "rule": "Periphrastic perfect auxiliary in Udihe. The lexical verb appears as a bare stem or short form, while the auxiliary o- carries tense, person and number marking.", "deficient": "", "example": "Ələhə bua-du uli-lə bukki [osini] buniga-tigi tukəä-mə ŋənə-ini", "exampleen": "If somebody has drowned far away he comes to the underworld running.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-10-36-28", "lastchanger": "wenchao-li-zju"}
 },
 "ug": {
