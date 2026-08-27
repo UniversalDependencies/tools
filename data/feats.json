@@ -3298,7 +3298,7 @@
 "VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Part"], "lvalues": [], "unused_uvalues": ["Conv", "Fin", "Gdv", "Ger", "Inf", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Part": 2}}}
 },
 "oac": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Prog"], "lvalues": [], "unused_uvalues": ["Imp", "Iter", "Perf", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Hab": 1, "Prog": 1}}, "lastchanged": "2026-08-27-06-27-14", "lastchanger": "wenchao-li-zju"}
 },
 "oc": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
