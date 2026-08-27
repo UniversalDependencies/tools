@@ -1130,6 +1130,9 @@
 "baj": {"functions": [{"function": "Aspect=Prog", "rule": "Progressive auxiliary marking ongoing action", "deficient": "", "example": "Bi yav-j [baj-na].", "exampleen": "I am going", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-04-59-37", "lastchanger": "wenchao-li-zju"},
 "bol": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Change-of-state copula meaning to become", "example": "Bi bagsh [bol-son].", "exampleen": "I became a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-23-05-10-21", "lastchanger": "wenchao-li-zju"}
 },
+"mnc": {
+"o": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula in Manchu", "example": "tere niyalma [o-me].", "exampleen": "He becomes a person.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-02-23-04", "lastchanger": "wenchao-li-zju"}
+},
 "mov": {
 "iðu:m": {"functions": [{"function": "", "rule": "", "deficient": "", "example": "", "exampleen": "", "comment": ""}], "status": "undocumented", "lastchanged": "", "lastchanger": ""}
 },
