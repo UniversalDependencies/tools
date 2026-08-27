@@ -1113,6 +1113,7 @@
 "эрявомс": {"functions": [{"function": "Mood=Nec", "rule": "combination of the conjugated auxiliary and main verb with obl agent", "deficient": "", "example": "Аф [эряви] тянь лангс ваномс суронь пачк.", "exampleen": "There is no need to look at that through one's fingers.", "comment": "MKS:2008:16:7:KishnjakovI"}], "status": "documented", "lastchanged": "2021-04-10-22-29-06", "lastchanger": "rueter"}
 },
 "mjg": {
+"nɵmbaː": {"functions": [{"function": "Aspect=Imp", "rule": "Auxiliary in Tu", "deficient": "", "example": "bi jab [nɵmbaː].", "exampleen": "I walk.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-04-06-27", "lastchanger": "wenchao-li-zju"},
 "ɕdʑa": {"functions": [{"function": "Aspect=Imp", "rule": "Continuous auxiliary in Tu", "deficient": "", "example": "bi jab [ɕdʑa].", "exampleen": "I am walking.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-04-05-46", "lastchanger": "wenchao-li-zju"},
 "ʋa": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Copula in Tu", "example": "ter bagshi [ʋa].", "exampleen": "He is a teacher.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-04-05-05", "lastchanger": "wenchao-li-zju"}
 },
