@@ -5059,7 +5059,7 @@
 "compound:lvc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-22-33", "lastchanger": "myavrum"},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-22-53", "lastchanger": "myavrum"},
 "compound:svc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-23-54", "lastchanger": "myavrum"},
-"conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-24-14", "lastchanger": "myavrum"},
