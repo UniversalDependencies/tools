@@ -1464,6 +1464,7 @@
 "zostać": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and a passive participle of the main verb", "deficient": "", "example": "Nauczycielka [została] zatrzymana.", "exampleen": "The teacher was detained.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-13-03-01", "lastchanger": "dan-zeman"}
 },
 "pro": {
+"aver": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "le Senher creayre de tot lo mo vos [a] sadolhatz de la sua magna", "exampleen": "the lord creator of the world [has] sated you with his manna", "comment": ""}], "status": "documented", "lastchanged": "2026-08-30-15-56-24", "lastchanger": "Nataroma"},
 "eser": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "e granre d' autres cavayers que [seria] trop lonc per recomtar", "exampleen": "and many other knights that it would be too long to enumerate", "comment": ""}], "status": "documented", "lastchanged": "2026-08-17-13-46-56", "lastchanger": "Nataroma"}
 },
 "prx": {
