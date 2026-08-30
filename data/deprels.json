@@ -9429,7 +9429,7 @@
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-07-27-12-06-53", "lastchanger": "chiaweilinunil"},
-"obl:goal": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obl:goal": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-39-14", "lastchanger": "khemarato"},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
