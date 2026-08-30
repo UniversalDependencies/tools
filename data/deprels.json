@@ -9400,7 +9400,7 @@
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'compound'."]},
-"compound:av": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:av": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-41-15", "lastchanger": "khemarato"},
 "compound:bv": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-41-00", "lastchanger": "khemarato"},
 "compound:dg": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-40-42", "lastchanger": "khemarato"},
 "compound:dv": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-40-26", "lastchanger": "khemarato"},
