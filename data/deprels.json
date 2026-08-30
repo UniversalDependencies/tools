@@ -9403,7 +9403,7 @@
 "compound:av": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "compound:bv": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "compound:dg": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
-"compound:dv": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:dv": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-40-26", "lastchanger": "khemarato"},
 "compound:kd": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-39-47", "lastchanger": "khemarato"},
 "compound:na": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-40-09", "lastchanger": "khemarato"},
 "compound:tp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
