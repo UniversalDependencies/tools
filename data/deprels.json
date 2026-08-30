@@ -9405,7 +9405,7 @@
 "compound:dg": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "compound:dv": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "compound:kd": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-39-47", "lastchanger": "khemarato"},
-"compound:na": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:na": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-08-30-13-40-09", "lastchanger": "khemarato"},
 "compound:tp": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
