@@ -1389,7 +1389,8 @@
 "ਹੈ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Gurmukhi script", "example": "ਮੈਂ ਭਾਸ਼ਾ–ਵਿਗਿਆਨੀ [ਹਾਂ]।", "exampleen": "I am a linguist.", "comment": ""}], "status": "documented", "lastchanged": "2026-01-13-17-51-19", "lastchanger": "rahonalab"}
 },
 "pal": {
-"būdan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for all forms but the present indicative", "example": "ōy šād [būd]", "exampleen": "(S)he was happy.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-29-07", "lastchanger": "TJuegel"}
+"būdan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for all forms but the present indicative", "example": "ōy šād [būd]", "exampleen": "(S)he was happy.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-29-07", "lastchanger": "TJuegel"},
+"h": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "ōy šād [ast]", "exampleen": "(S)he is happy.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-29-58", "lastchanger": "TJuegel"}
 },
 "pay": {
 "ak": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past or bare form of the verb.", "deficient": "", "example": "toʔ arwã ma pak [aki] wiʃã akaki ya", "exampleen": "‘The Mother of the Fish had already taken that man’.", "comment": ""}], "status": "documented", "lastchanged": "2024-10-30-23-18-18", "lastchanger": "natalia-caceres-arandia"},
