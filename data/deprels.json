@@ -9030,7 +9030,7 @@
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-10-54", "lastchanger": "bulbulistan"},
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"dep:conj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"dep:conj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-12-13", "lastchanger": "bulbulistan"},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "det:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
