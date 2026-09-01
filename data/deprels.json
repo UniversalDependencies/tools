@@ -9059,7 +9059,7 @@
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"reparandum:res": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"reparandum:res": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-25-44", "lastchanger": "bulbulistan"},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "vocative": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
