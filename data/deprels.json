@@ -9032,7 +9032,7 @@
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dep:conj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-12-13", "lastchanger": "bulbulistan"},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"det:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-12-50", "lastchanger": "bulbulistan"},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:res": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
