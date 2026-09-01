@@ -9028,7 +9028,7 @@
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"csubj:pass": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"csubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-10-54", "lastchanger": "bulbulistan"},
 "dep": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dep:conj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "det": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
