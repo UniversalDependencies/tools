@@ -9054,7 +9054,7 @@
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-24-12", "lastchanger": "bulbulistan"},
 "obl:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-24-46", "lastchanger": "bulbulistan"},
-"obl:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obl:tmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-26-04", "lastchanger": "bulbulistan"},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
