@@ -9013,7 +9013,7 @@
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"appos:cl": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"appos:cl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-07-54", "lastchanger": "bulbulistan"},
 "apposcl": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "aux": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
