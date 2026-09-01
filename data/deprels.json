@@ -9048,7 +9048,7 @@
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-20-35", "lastchanger": "bulbulistan"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-21-37", "lastchanger": "bulbulistan"},
-"nsubj:xsubj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nsubj:xsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-23-10", "lastchanger": "bulbulistan"},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
