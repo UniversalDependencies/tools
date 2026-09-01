@@ -9035,7 +9035,7 @@
 "det:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-12-50", "lastchanger": "bulbulistan"},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"dislocated:res": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"dislocated:res": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-13-42", "lastchanger": "bulbulistan"},
 "dislocated:topic": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
