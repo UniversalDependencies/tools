@@ -9046,7 +9046,7 @@
 "mark": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"nsubj:outer": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nsubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-20-35", "lastchanger": "bulbulistan"},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nsubj:xsubj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "nummod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
