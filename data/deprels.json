@@ -9019,7 +9019,7 @@
 "case": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cc:nc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-09-42", "lastchanger": "bulbulistan"},
-"cc:preconj": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"cc:preconj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-09-56", "lastchanger": "bulbulistan"},
 "ccomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
