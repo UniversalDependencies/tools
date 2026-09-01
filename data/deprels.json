@@ -9005,7 +9005,7 @@
 "pal": {
 "acl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "acl:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-08-19", "lastchanger": "bulbulistan"},
-"acl:relcl": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"acl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-08-35", "lastchanger": "bulbulistan"},
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
