@@ -9009,7 +9009,7 @@
 "advcl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "advmod:emph": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-08-52", "lastchanger": "bulbulistan"},
-"advmod:lmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"advmod:lmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-01-14-09-11", "lastchanger": "bulbulistan"},
 "advmod:tmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "amod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
