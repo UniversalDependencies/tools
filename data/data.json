@@ -1390,7 +1390,7 @@
 },
 "pal": {
 "būdan": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used for all forms but the present indicative", "example": "ōy šād [būd]", "exampleen": "(S)he was happy.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-29-07", "lastchanger": "TJuegel"},
-"h": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "ōy šād [ast]", "exampleen": "(S)he is happy.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-29-58", "lastchanger": "TJuegel"},
+"h": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "ōy šād [ast]", "exampleen": "(S)he is happy.", "comment": ""}, {"function": "Tense=Past", "rule": "combination of the auxiliary and a past participle of the main verb except for the third person singular", "deficient": "", "example": "awēšādan raft [hēnd]", "exampleen": "They went.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-36-35", "lastchanger": "TJuegel"},
 "ēstādan": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "ōy raft [ēstēd]", "exampleen": "(S)he has gone.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-01-13-33-03", "lastchanger": "TJuegel"}
 },
 "pay": {
