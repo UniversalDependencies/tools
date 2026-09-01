@@ -218,7 +218,7 @@ class Data:
             msg += ', '.join(sorted_documented_features) + "\n"
             msg += "If a language needs a feature that is not documented in the universal guidelines, the feature must\n"
             msg += "have a language-specific documentation page in a prescribed format.\n"
-            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+            msg += "See https://universaldependencies.org/contributing/language_specific.html for further guidelines.\n"
             msg += "All features including universal must be specifically turned on for each language in which they are used.\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_feature.pl for details.\n"
         self._explanation_feats[lcode] = msg
@@ -258,7 +258,7 @@ class Data:
             msg += ', '.join(sorted_documented_relations) + "\n"
             msg += "If a language needs a relation subtype that is not documented in the universal guidelines, the relation\n"
             msg += "must have a language-specific documentation page in a prescribed format.\n"
-            msg += "See https://universaldependencies.org/contributing_language_specific.html for further guidelines.\n"
+            msg += "See https://universaldependencies.org/contributing/language_specific.html for further guidelines.\n"
             msg += "Documented dependency relations can be specifically turned on/off for each language in which they are used.\n"
             msg += "See https://quest.ms.mff.cuni.cz/udvalidator/cgi-bin/unidep/langspec/specify_deprel.pl for details.\n"
         self._explanation_deprel[lcode] = msg
