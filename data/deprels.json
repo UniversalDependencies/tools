@@ -5075,7 +5075,7 @@
 "dislocated": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["Documentation does not belong to UD v2 guidelines."]},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"flat": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'flat'."]},
+"flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat:dist": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:frac": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-25-02", "lastchanger": "myavrum"},
