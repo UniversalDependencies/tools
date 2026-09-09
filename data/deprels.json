@@ -3279,7 +3279,7 @@
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "conj:coord": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
 "conj:dicto": {"type": "lspec", "doc": "none", "permitted": 0, "errors": []},
-"conj:reform": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"conj:reform": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-09-10-57-35", "lastchanger": "bguil"},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-02-24-21-07-01", "lastchanger": "bguil"},
