@@ -3291,7 +3291,7 @@
 "det:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse:filler": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-08-16-50-16", "lastchanger": "bguil"},
-"discourse:tag": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"discourse:tag": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-09-09-10-57-53", "lastchanger": "bguil"},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "dislocated:mod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-22-35", "lastchanger": "bguil"},
 "dislocated:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-14-18-22-54", "lastchanger": "bguil"},
