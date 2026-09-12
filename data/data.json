@@ -1456,6 +1456,9 @@
 "çɵ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Negative copula (negation of second series, object variant).", "example": "tʰər dʑəmsan bi [çɵ]", "exampleen": "That is not the reason.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-28-03-22-26", "lastchanger": "wenchao-li-zju"},
 "ʂagə": {"functions": [{"function": "Mood=Pot", "rule": "Modal auxiliary expressing ability (can, be able to).", "deficient": "", "example": "tɕi udʑi-sa ənə nad anaʁa [ʂagə] mbɵ-u", "exampleen": "Do you think that this illness can be treated?", "comment": ""}], "status": "documented", "lastchanged": "2026-08-28-03-43-38", "lastchanger": "wenchao-li-zju"}
 },
+"pi": {
+"atthi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "only used in the present and preterite ", "example": "Aññepi kira bho [santi] sattā idhūpapannāti", "exampleen": "So, it seems other sentient beings [have been] reborn here!", "comment": "When it means “exists” it's not an AUX"}], "status": "documented", "lastchanged": "2026-09-12-08-39-58", "lastchanger": "khemarato"}
+},
 "pl": {
 "by": {"functions": [{"function": "Mood=Cnd", "rule": "combination of the auxiliary and a past participle of the main verb", "deficient": "", "example": "Bardzo chciał[by]m z nim pogadać.", "exampleen": "I'd love to talk to him.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-12-59-27", "lastchanger": "dan-zeman"},
 "bywać": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "iterative paradigm", "example": "Ostatnio nie [bywał] delikatny.", "exampleen": "He hasn't been gentle lately.", "comment": ""}], "status": "documented", "lastchanged": "2020-11-03-12-57-24", "lastchanger": "dan-zeman"},
