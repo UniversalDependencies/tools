@@ -5100,7 +5100,7 @@
 "obl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "obl:agent": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2021-05-01-11-21-50", "lastchanger": "myavrum"},
 "orphan": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"parataxis": {"type": "universal", "doc": "lerror", "permitted": 0, "errors": ["No examples found for relation 'parataxis'."]},
+"parataxis": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "root": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
