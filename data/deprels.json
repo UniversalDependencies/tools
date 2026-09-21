@@ -1246,7 +1246,7 @@
 "xcomp": {"type": "universal", "doc": "local", "permitted": 1, "errors": []}
 },
 "bgs": {
-"acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-09-21-12-22-24", "lastchanger": "garanes"},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
