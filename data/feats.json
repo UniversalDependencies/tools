@@ -547,7 +547,7 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Act": 521, "Pass": 965}, "AUX": {"Act": 4600}, "VERB": {"Act": 15495, "Pass": 1085}}}
 },
 "bgs": {
-
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf", "Prosp"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prog"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Imp": 1, "Perf": 1, "Prosp": 1}}, "lastchanged": "2026-09-21-12-26-04", "lastchanger": "garanes"}
 },
 "bho": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
