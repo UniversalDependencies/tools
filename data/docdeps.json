@@ -1517,7 +1517,7 @@
 "reparandum": {"type": "universal", "errors": []},
 "root": {"type": "universal", "errors": []},
 "vocative": {"type": "universal", "errors": []},
-"xcomp": {"type": "universal", "errors": ["No examples found for relation 'xcomp'.", "Documentation does not belong to UD v2 guidelines."]}
+"xcomp": {"type": "universal", "errors": ["Documentation does not belong to UD v2 guidelines."]}
 },
 "id": {
 "acl:relcl": {"type": "local", "errors": []},
