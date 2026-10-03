@@ -12148,6 +12148,7 @@
 "clf": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
+"compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-03-16-37-23", "lastchanger": "UD_Thai-TDT"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
