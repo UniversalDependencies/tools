@@ -1709,6 +1709,7 @@
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-03-22-09-45", "lastchanger": "AnnaVeselovsky"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
