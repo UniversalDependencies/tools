@@ -13919,6 +13919,7 @@
 "mark:adv": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "mark:rel": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-05-10-55-51", "lastchanger": "dan-zeman"},
 "nsubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nsubj:periph": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
