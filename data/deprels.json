@@ -11348,6 +11348,7 @@
 "mark:rel": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-25-23-31-31", "lastchanger": "hzh1-cl"},
+"nmod:tmod": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-05-14-56-04", "lastchanger": "dan-zeman"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2021-10-26-00-40-00", "lastchanger": "hzh1-cl"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
