@@ -5303,7 +5303,7 @@
 "det:predet": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "discourse:emo": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"discourse:filler": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"discourse:filler": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-06-12-53-39", "lastchanger": "ellepannitto"},
 "discourse:tag": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "dislocated": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
