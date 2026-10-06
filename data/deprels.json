@@ -5290,7 +5290,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
-"conj:reform": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"conj:reform": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-06-12-53-24", "lastchanger": "ellepannitto"},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-10-27-13-36-30", "lastchanger": "ClaudiaCorbe"},
