@@ -5344,7 +5344,7 @@
 "parataxis:insert": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:nsubj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "parataxis:obj": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"parataxis:parenth": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"parataxis:parenth": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-06-12-53-55", "lastchanger": "ellepannitto"},
 "parataxis:restart": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "punct": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "reparandum": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
