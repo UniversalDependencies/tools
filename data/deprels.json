@@ -10653,6 +10653,7 @@
 "nmod:poss": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-58-41", "lastchanger": "kiratul"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-58-55", "lastchanger": "kiratul"},
+"nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-08-10-25-33", "lastchanger": "kiratulchynska"},
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:appl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-03-31-10-59-03", "lastchanger": "kiratul"},
