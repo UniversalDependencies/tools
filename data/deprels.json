@@ -1708,7 +1708,7 @@
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "ccomp": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"ccomp:reported": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"ccomp:reported": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-09-22-13-17", "lastchanger": "AnnaVeselovsky"},
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-03-22-09-45", "lastchanger": "AnnaVeselovsky"},
