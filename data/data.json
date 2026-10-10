@@ -258,7 +258,7 @@
 },
 "ce": {
 "du": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "durative", "example": "seenax [du] tatnash?", "exampleen": "where.from is noises?", "comment": ""}], "status": "documented", "lastchanged": "2026-10-10-14-52-32", "lastchanger": "AnnaVeselovsky"},
-"xila": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "verbal auxiliary", "example": "vaxan [xilla]", "exampleen": "he went", "comment": ""}], "status": "documented", "lastchanged": "2026-10-10-14-42-28", "lastchanger": "AnnaVeselovsky"}
+"xila": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "non-durative, iterative", "example": "vaxan [xilla]", "exampleen": "he went", "comment": ""}], "status": "documented", "lastchanged": "2026-10-10-14-53-40", "lastchanger": "AnnaVeselovsky"}
 },
 "ckb": {
 "bûn": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "âşeke hetâ zû [bû] le şârî he[bû]", "exampleen": "‘Until recently, the mill, it was found in the city.’", "comment": ""}], "status": "documented", "lastchanged": "2025-07-29-12-41-07", "lastchanger": "hiwasan"}
