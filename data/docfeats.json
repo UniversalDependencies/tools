@@ -619,6 +619,7 @@
 "Voice": {"type": "universal", "values": ["Cau", "Pass", "CauPass", "CauInc"], "errors": []}
 },
 "ce": {
+"ConvType": {"type": "local", "values": [], "errors": ["Unrecognized level 3 heading '### <a name=\"CVBas\">`CVBwhen`</a>: converb 'as soon as''."]},
 "Log": {"type": "local", "values": ["Yes"], "errors": []},
 "NounClass": {"type": "universal", "values": ["Vclass", "Jclass", "Dclass", "Bclass"], "errors": []}
 },
