@@ -53,6 +53,9 @@ class Level5(Level4):
             lang = self.lang
             altlang = utils.get_alt_language(node)
             if altlang:
+                if not self.data.is_known_language(altlang):
+                    # Allow any auxiliary if we do not know the language.
+                    return
                 lang = altlang
             auxlist = self.data.get_aux_for_language(lang)
             if not auxlist or not node.lemma in auxlist:
@@ -97,6 +100,9 @@ class Level5(Level4):
             lang = self.lang
             altlang = utils.get_alt_language(node)
             if altlang:
+                if not self.data.is_known_language(altlang):
+                    # Allow any copula if we do not know the language.
+                    return
                 lang = altlang
             coplist = self.data.get_cop_for_language(lang)
             if not coplist or not node.lemma in coplist:

@@ -71,6 +71,27 @@ class Data:
         self._explanation_cop = {}
         self._explanation_tospace = {}
 
+    def is_known_language(self, lcode):
+        """
+        Checks a language code against all dictionaries of language-specific
+        validation rules. If at least one dictionary has an entry for that
+        code, the language is considered known. This may be useful to know
+        when the Lang attribute in MISC tries to switch the validator to
+        a different set of guidelines. For example, the list of auxiliaries
+        of an unknown language is by default empty; but we may want to allow
+        any auxiliary on such a position, not to ban them all.
+
+        Parameters
+        ----------
+        lcode : str
+            ISO 639 language code to be tested.
+
+        Returns
+        -------
+        bool
+        """
+        return lcode == 'ud' or lcode in self.feats or lcode in self.deprel or lcode in self.edeprel or lcode in self.auxcop or lcode in self.tospace
+
     def get_feats_for_language(self, lcode):
         """
         Searches the previously loaded database of feature-value-UPOS combinations.

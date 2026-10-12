@@ -14,11 +14,11 @@ import regex as re
 # from udtools import Validator.
 try:
     import udtools.src.udtools.utils as utils
-    from udtools.src.udtools.incident import Incident, Error, TestClass
+    from udtools.src.udtools.incident import Incident, Error, Warning, TestClass
     from udtools.src.udtools.level3 import Level3
 except ModuleNotFoundError:
     import udtools.utils as utils
-    from udtools.incident import Incident, Error, TestClass
+    from udtools.incident import Incident, Error, Warning, TestClass
     from udtools.level3 import Level3
 
 
@@ -137,6 +137,18 @@ class Level4(Level3):
         lang = default_lang
         altlang = utils.get_alt_language(node)
         if altlang:
+            if not self.data.is_known_language(altlang):
+                # Allow any feature=value pair if we do not know the language.
+                # Warn about the unknown language. Do it only once, here.
+                # There are other places such as auxcop at level 5, where we
+                # test altlangs but we do not have to repeat the warning there.
+                Warning(
+                    state=state, config=self.incfg,
+                    nodeid=node.ord,
+                    testid='unknown-lang',
+                    message=f"Unknown language [{altlang}]."
+                ).confirm()
+                return
             lang = altlang
             featset = self.data.get_feats_for_language(altlang)
         for f in node.feats:
