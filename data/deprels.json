@@ -812,7 +812,7 @@
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-04-29-08-42-42", "lastchanger": "myavrum"},
 "compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-04-29-09-13-49", "lastchanger": "myavrum"},
-"compound:svc": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"compound:svc": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-13-11-50-09", "lastchanger": "myavrum"},
 "conj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
