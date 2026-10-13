@@ -146,7 +146,7 @@ class Level4(Level3):
                     state=state, config=self.incfg,
                     nodeid=node.ord,
                     testid='unknown-lang',
-                    message=f"Unknown language [{altlang}]."
+                    message=f"Language [{altlang}] is unknown in Universal Dependencies."
                 ).confirm()
                 return
             lang = altlang
