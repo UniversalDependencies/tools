@@ -12382,7 +12382,7 @@
 "tn": {
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advcl:relcl": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"advcl:relcl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-14-11-18-46", "lastchanger": "dan-zeman"},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
