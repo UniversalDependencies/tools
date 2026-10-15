@@ -828,7 +828,7 @@
 "flat": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat:name": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "flat:range": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-12-07-42-09", "lastchanger": "myavrum"},
-"flat:redup": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"flat:redup": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-15-07-26-59", "lastchanger": "myavrum"},
 "goeswith": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "iobj": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "iobj:agent": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
