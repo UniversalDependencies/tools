@@ -949,7 +949,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 2079, "Pass": 1}, "VERB": {"Act": 12166, "Pass": 467}}}
 },
 "cux": {
-
+"VerbForm": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Fin"], "lvalues": [], "unused_uvalues": ["Conv", "Gdv", "Ger", "Inf", "Part", "Sup", "Vnoun"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Fin": 1}}, "lastchanged": "2026-10-15-16-36-09", "lastchanger": "huhaiwei"}
 },
 "cy": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Yes": 1}, "NOUN": {"Yes": 1}, "PROPN": {"Yes": 1}}, "lastchanged": "2020-12-28-22-58-40", "lastchanger": "jheinecke"},
