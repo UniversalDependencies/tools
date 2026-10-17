@@ -11958,6 +11958,7 @@
 "expl": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
 "flat": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"flat:foreign": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-17-16-17-37", "lastchanger": "jnivre"},
 "flat:name": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "foreign": {"type": "", "doc": "none", "permitted": 0, "errors": []},
 "goeswith": {"type": "universal", "doc": "local", "permitted": 1, "errors": []},
