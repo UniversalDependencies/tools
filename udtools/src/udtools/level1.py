@@ -2,6 +2,7 @@
 # Original code (2015) by Filip Ginter and Sampo Pyysalo.
 # DZ 2018-11-04: Porting the validator to Python 3.
 # DZ: Many subsequent changes. See the git history.
+import regex as re
 import unicodedata
 ###!!!import logging
 # Allow using this module from the root folder of tools even if it is not
@@ -80,6 +81,7 @@ class Level1:
         empty-sentence
         invalid-line
         missing-empty-line
+        + those issued by check_utf8_encoding()
         + those issued by check_unicode_normalization()
 
         Returns
@@ -103,6 +105,7 @@ class Level1:
         for i in range(n_lines):
             lineno = state.comment_start_line + i
             line = lines[i]
+            self.check_utf8_encoding(state, line, lineno)
             self.check_unicode_normalization(state, line, lineno)
             # Comment lines.
             if line and line[0] == '#':
@@ -264,6 +267,57 @@ class Level1:
 
 
 
+    def check_utf8_encoding(self, state, text, lineno):
+        """
+        Tests that the input was well-encoded UTF-8. Reports an error if the
+        string contains U+FFFD (REPLACEMENT CHARACTER), which signals encoding
+        errors. Will not recognize errors where the text contains other than
+        intended characters but those are encoded as valid UTF-8 byte sequences.
+
+        Parameters
+        ----------
+        state : udtools.state.State
+            The state of the validation run.
+        text : str
+            The input line to be tested. If the line consists of TAB-separated
+            fields (token line), errors reports will specify the field where the
+            error occurred. Otherwise (comment line), the error report will not be
+            localized.
+        lineno : int
+            Number of the line in the file.
+
+        Incidents
+        ---------
+        invalid-utf
+        """
+        if re.search('\ufffd', text):
+            # Find the first unmatched character and include it in the report.
+            firsti = -1
+            firstj = -1
+            tcols = text.split("\t")
+            for i in range(len(tcols)):
+                for j in range(len(tcols[i])):
+                    if tcols[i][j] == '\ufffd':
+                        firsti = i
+                        firstj = j
+                        break
+                if firsti >= 0:
+                    break
+            if len(tcols) > 1:
+                testmessage = f"Invalid byte in the UTF-8 encoding: {COLNAMES[firsti]}.character[{firstj}] ('{tcols[i]}')."
+            else:
+                testmessage = f"Invalid byte in the UTF-8 encoding: character[{firstj}]."
+            Error(
+                state=state, config=self.incfg, lineno=lineno,
+                level=1,
+                testclass=TestClass.UNICODE,
+                testid='invalid-utf',
+                message=testmessage
+            ).confirm()
+            ###!!!logger.debug("'invalid-utf' error triggered by line '%s'", lineno)
+
+
+
     def check_unicode_normalization(self, state, text, lineno):
         """
         Tests that letters composed of multiple Unicode characters (such as a base
@@ -279,6 +333,8 @@ class Level1:
             fields (token line), errors reports will specify the field where the
             error occurred. Otherwise (comment line), the error report will not be
             localized.
+        lineno : int
+            Number of the line in the file.
 
         Incidents
         ---------
