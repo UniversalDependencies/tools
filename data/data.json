@@ -1465,6 +1465,7 @@
 },
 "pi": {
 "atthi": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "only used in the present and preterite ", "example": "Aññepi kira bho [santi] sattā idhūpapannāti", "exampleen": "So, it seems other sentient beings [have been] reborn here!", "comment": "When it means “exists” it's not an AUX"}], "status": "documented", "lastchanged": "2026-09-12-08-39-58", "lastchanger": "khemarato"},
+"bhavati": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "supplements the remaining forms of atthi", "example": "Bandhumatī nāma devī mātā [ahosi]", "exampleen": "His mother [was] Queen Bandhumatī.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-19-10-46-53", "lastchanger": "chiaweilinunil"},
 "hoti": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Supplies the remaining forms of atthi", "example": "Bandhumatī nāma devī mātā [ahosi]", "exampleen": "His mother [was] Queen Bandhumatī.", "comment": ""}], "status": "documented", "lastchanged": "2026-09-12-08-45-29", "lastchanger": "khemarato"}
 },
 "pl": {
