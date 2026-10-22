@@ -2555,7 +2555,7 @@
 "Voice": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Act", "Pass"], "lvalues": [], "unused_uvalues": ["Antip", "Bfoc", "Cau", "Dir", "Inv", "Lfoc", "Mid", "Rcp"], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Act": 2, "Pass": 5}, "ADV": {"Act": 1}, "AUX": {"Act": 115}, "CCONJ": {"Act": 5}, "VERB": {"Act": 240, "Pass": 50}}}
 },
 "ks": {
-
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Art", "Dem", "Ind", "Int", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Emp", "Exc", "Neg", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Art": 1, "Dem": 1, "Ind": 1, "Int": 1, "Tot": 1}, "PRON": {"Dem": 1, "Ind": 1, "Int": 1, "Prs": 1}}, "lastchanged": "2026-10-22-16-12-06", "lastchanger": "rahonalab"}
 },
 "kv": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}}, "lastchanged": "2024-04-30-13-07-16", "lastchanger": "rueter"},
