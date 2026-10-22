@@ -1026,6 +1026,7 @@
 },
 "ks": {
 "آسُن": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "combination of the copula with adjective or noun", "example": "سُہ [اوس] اَکھ سؠٹھا بۆڈ رَہنُما", "exampleen": "He was a great leader.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-22-16-31-50", "lastchanger": "rahonalab"},
+"چھُنہِ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the past participle", "deficient": "", "example": "نا [چھُم] تۄہہِ کێنٛہہ تہِ لیٛوٗکھمُت", "exampleen": "nor have I written anything to you", "comment": ""}], "status": "documented", "lastchanged": "2026-10-22-16-53-45", "lastchanger": "rahonalab"},
 "یُن": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and the infinitive", "deficient": "", "example": "یِم [آیہِ] 1931 کانٛگرٛیس اِجلاسَس مَنٛز اعلان کَرنہٕ", "exampleen": "These were declared at the 1931 Congress session.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-22-16-45-15", "lastchanger": "rahonalab"}
 },
 "kv": {
