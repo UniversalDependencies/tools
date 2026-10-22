@@ -1025,7 +1025,8 @@
 "voija": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary with first infinitive", "deficient": "", "example": "Jokahini ehokaš [voit] ošallistuo aktijoh.", "exampleen": "Anyone [can] participate in the event.", "comment": ""}], "status": "documented", "lastchanged": "2025-04-18-15-54-19", "lastchanger": "dan-zeman"}
 },
 "ks": {
-"آسُن": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "combination of the copula with adjective or noun", "example": "سُہ [اوس] اَکھ سؠٹھا بۆڈ رَہنُما", "exampleen": "He was a great leader.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-22-16-31-50", "lastchanger": "rahonalab"}
+"آسُن": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "combination of the copula with adjective or noun", "example": "سُہ [اوس] اَکھ سؠٹھا بۆڈ رَہنُما", "exampleen": "He was a great leader.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-22-16-31-50", "lastchanger": "rahonalab"},
+"یُن": {"functions": [{"function": "Voice=Pass", "rule": "combination of the auxiliary and the infinitive", "deficient": "", "example": "یِم [آیہِ] 1931 کانٛگرٛیس اِجلاسَس مَنٛز اعلان کَرنہٕ", "exampleen": "These were declared at the 1931 Congress session.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-22-16-45-15", "lastchanger": "rahonalab"}
 },
 "kv": {
 "оз": {"functions": [{"function": "neg", "rule": "combination of the auxiliary and a connegative form of the verb", "deficient": "", "example": "[ин] мун!", "exampleen": "Do[n't] go!", "comment": "the auxiliary indicates person, number and mood"}], "status": "documented", "lastchanged": "2024-04-30-13-02-19", "lastchanger": "rueter"}
