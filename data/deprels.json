@@ -12919,6 +12919,7 @@
 "conj:svc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
+"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-22-19-54-17", "lastchanger": "shvedova"},
 "csubj:pred": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
