@@ -3492,7 +3492,7 @@
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "discourse": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"discourse:participant": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"discourse:participant": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-22-21-30-29", "lastchanger": "bguil"},
 "dislocated": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "expl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "fixed": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
