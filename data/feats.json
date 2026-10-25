@@ -2380,7 +2380,7 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Antip", "Inv"], "lvalues": ["Appl"], "unused_uvalues": [], "unused_lvalues": [], "evalues": ["Bfoc", "Cau", "Dir", "Lfoc", "Mid", "Pass", "Rcp"], "byupos": {"VERB": {"Act": 1, "Antip": 1, "Appl": 1, "Inv": 1}}, "lastchanged": "2026-03-19-02-22-55", "lastchanger": "leoalenc"}
 },
 "kdn": {
-
+"NounClass": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Bantu1", "Bantu10", "Bantu12", "Bantu13", "Bantu14", "Bantu16", "Bantu2", "Bantu3", "Bantu4", "Bantu5", "Bantu6", "Bantu7", "Bantu8", "Bantu9"], "lvalues": [], "unused_uvalues": ["Bantu11", "Bantu15", "Bantu17", "Bantu18", "Bantu19", "Bantu20", "Bantu21", "Bantu22", "Bantu23", "Wol1", "Wol10", "Wol11", "Wol12", "Wol2", "Wol3", "Wol4", "Wol5", "Wol6", "Wol7", "Wol8", "Wol9"], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Bantu1": 1, "Bantu10": 1, "Bantu12": 1, "Bantu13": 1, "Bantu14": 1, "Bantu16": 1, "Bantu2": 1, "Bantu3": 1, "Bantu4": 1, "Bantu5": 1, "Bantu6": 1, "Bantu7": 1, "Bantu8": 1, "Bantu9": 1}}, "lastchanged": "2026-10-25-22-14-19", "lastchanger": "bguil"}
 },
 "kfm": {
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
