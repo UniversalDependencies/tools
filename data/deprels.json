@@ -3523,7 +3523,7 @@
 "compound:svc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-10-22-13-14-53", "lastchanger": "bguil"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "conj:chaining": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-21-09-02-18", "lastchanger": "bguil"},
-"conj:dbl": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"conj:dbl": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-27-20-54-13", "lastchanger": "bguil"},
 "conj:illustrate": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-21-09-02-34", "lastchanger": "bguil"},
 "conj:reform": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-21-09-02-52", "lastchanger": "bguil"},
 "conj:zoom": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-21-09-03-10", "lastchanger": "bguil"},
