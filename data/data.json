@@ -1119,6 +1119,7 @@
 "須": {"functions": [{"function": "Mood=Nec", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "我[須]爲之", "exampleen": "I should make it", "comment": ""}], "status": "documented", "lastchanged": "2022-04-27-12-50-39", "lastchanger": "KoichiYasuoka"}
 },
 "lzz": {
+"on": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in present tense only", "example": "Şana noseri [on].", "exampleen": "Şana [is] smart.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-29-20-47-33", "lastchanger": "dan-zeman"},
 "ortʼu": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "used in past tense only", "example": "Alişi odit’sinu odit’sinoni [ortʼu]", "exampleen": "Ali's laughter funny [was]", "comment": ""}], "status": "documented", "lastchanged": "2026-10-29-20-41-14", "lastchanger": "dan-zeman"}
 },
 "mdf": {
