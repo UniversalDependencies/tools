@@ -8985,7 +8985,7 @@
 "list": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "mark": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"nmod:pronmod": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"nmod:pronmod": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-10-29-15-09-48", "lastchanger": "olesar"},
 "nsubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "nsubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2023-04-17-19-18-01", "lastchanger": "hanneme"},
 "nsubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": []},
