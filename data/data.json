@@ -639,7 +639,8 @@
 "zâi": {"functions": [{"function": "Tense=Fut", "rule": "combination of AUX, including subject marker and TAM, with and a VERB or a Verbal NOUN", "deficient": "", "example": "[zâi] kasànceː àbù mài tsàːdar̃ gàske", "exampleen": "it will become a very expensive thing", "comment": ""}], "status": "documented", "lastchanged": "2026-04-16-02-38-38", "lastchanger": "CARON-B"}
 },
 "hac": {
-"bî": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "present and past finite forms", "example": "heywandar [bo]", "exampleen": "He was a herdsman.", "comment": "Finite forms of Hewrami to be, used as the copula."}], "status": "documented", "lastchanged": "2026-10-30-13-24-31", "lastchanger": "amirmojiry"}
+"bî": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "present and past finite forms", "example": "heywandar [bo]", "exampleen": "He was a herdsman.", "comment": "Finite forms of Hewrami to be, used as the copula."}], "status": "documented", "lastchanged": "2026-10-30-13-24-31", "lastchanger": "amirmojiry"},
+"bîyê": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "participial stem of to be", "example": "hardîşa [bîyênêw]", "exampleen": "The water had risen to the level of the flour sacks that they had.", "comment": "Participial lemma of Hewrami to be in the first conversion."}], "status": "documented", "lastchanged": "2026-10-30-13-24-36", "lastchanger": "amirmojiry"}
 },
 "hbo": {
 "היה": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "הוא [היה] איש", "exampleen": "he was a man", "comment": ""}], "status": "documented", "lastchanged": "2021-12-21-03-25-52", "lastchanger": "mr-martian"}
