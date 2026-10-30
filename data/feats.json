@@ -1899,7 +1899,7 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Cau"], "lvalues": ["Stat"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Cau": 1, "Stat": 1}}, "lastchanged": "2024-04-24-16-34-54", "lastchanger": "bguil"}
 },
 "hac": {
-
+"Case": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Acc", "Nom"], "lvalues": [], "unused_uvalues": ["Abe", "Abl", "Abs", "Add", "Ade", "All", "Ben", "Cau", "Cmp", "Cns", "Com", "Dat", "Del", "Dis", "Ela", "Equ", "Erg", "Ess", "Gen", "Ill", "Ine", "Ins", "Lat", "Loc", "Par", "Per", "Sbe", "Sbl", "Spl", "Sub", "Sup", "Tem", "Ter", "Tra", "Voc"], "unused_lvalues": [], "evalues": [], "byupos": {"ADP": {"Acc": 1}, "ADV": {"Acc": 1}, "NOUN": {"Acc": 1, "Nom": 1}, "PRON": {"Acc": 1, "Nom": 1}, "PROPN": {"Acc": 1}}, "lastchanged": "2026-10-30-13-22-35", "lastchanger": "amirmojiry"}
 },
 "hbo": {
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Imp", "Perf"], "lvalues": [], "unused_uvalues": ["Hab", "Iter", "Prog", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Imp": 1, "Perf": 1}, "VERB": {"Imp": 1, "Perf": 1}}, "lastchanged": "2021-12-21-03-39-33", "lastchanger": "mr-martian"},
