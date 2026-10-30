@@ -1,7 +1,7 @@
 @echo off
 REM Test the UD validator on a set of short CoNLL-U files.
 REM The log file is versioned, so we can check git diff and see if it is OK.
-REM Usage: tools\validator\tests\test-cases\test.bat 2> tools\validator\tests\test-cases\test.log
+REM Usage: tools\udtools\tests\test-cases\test.bat 2> tools\udtools\tests\test-cases\test.log
 SET "SCRIPT_DIR=%~dp0"
 for %%f in ("%SCRIPT_DIR%invalid-level1\*.conllu") do (
     @echo -------------------------------------------------------------------------------- 1>&2

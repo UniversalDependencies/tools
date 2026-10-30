@@ -506,6 +506,8 @@ class Level3(Level2):
             nsubj or csubj without the :outer subtype. Alternatively, instead of the
             :outer subtype, the node could have Subject=Outer in MISC.
             """
+            if node.deprel is None:
+                return False
             if not re.search(r'subj', node.udeprel):
                 return False
             if re.match(r'^[nc]subj:outer$', node.deprel):
