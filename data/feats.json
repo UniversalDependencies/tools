@@ -5224,6 +5224,7 @@
 },
 "yi": {
 "ExtPos": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["ADP", "ADV"], "unused_uvalues": [], "unused_lvalues": ["ADJ", "AUX", "CCONJ", "DET", "INTJ", "PRON", "PROPN", "SCONJ"], "evalues": [], "byupos": {"ADP": {"ADV": 1}, "DET": {"ADP": 1}}, "lastchanged": "2025-10-29-19-18-40", "lastchanger": "shoowadoo"},
+"Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Yes": 1}}, "lastchanged": "2026-10-31-20-08-52", "lastchanger": "shoowadoo"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 1}, "ADP": {"Yes": 1}, "ADV": {"Yes": 1}, "AUX": {"Yes": 1}, "CCONJ": {"Yes": 1}, "DET": {"Yes": 1}, "INTJ": {"Yes": 1}, "NOUN": {"Yes": 1}, "NUM": {"Yes": 1}, "PART": {"Yes": 1}, "PRON": {"Yes": 1}, "PROPN": {"Yes": 1}, "PUNCT": {"Yes": 1}, "SCONJ": {"Yes": 1}, "SYM": {"Yes": 1}, "VERB": {"Yes": 1}, "X": {"Yes": 1}}, "lastchanged": "2025-10-30-18-11-36", "lastchanger": "shoowadoo"}
 },
 "yo": {
