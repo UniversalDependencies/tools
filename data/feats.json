@@ -4796,6 +4796,7 @@
 
 },
 "txg": {
+"Polarity": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Neg"], "lvalues": [], "unused_uvalues": ["Pos"], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Neg": 1}, "AUX": {"Neg": 1}, "PART": {"Neg": 1}, "VERB": {"Neg": 1}}, "lastchanged": "2026-10-31-17-47-32", "lastchanger": "wjhuah"},
 "PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Ind", "Int", "Neg", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Dem": 1, "Ind": 1, "Tot": 1}, "DET": {"Dem": 1, "Ind": 1, "Int": 1, "Neg": 1, "Tot": 1}, "PRON": {"Dem": 1, "Ind": 1, "Prs": 1, "Tot": 1}}, "lastchanged": "2026-10-31-17-43-08", "lastchanger": "wjhuah"}
 },
 "ude": {
