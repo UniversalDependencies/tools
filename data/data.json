@@ -1137,6 +1137,9 @@
 "улемс": {"functions": [{"function": "cop.AUX", "rule": "future, past", "deficient": "future, past", "example": "Сёксень вирсь [ульсь] пяк мазы,", "exampleen": "The autumn forest was very beautiful", "comment": "present and some past tense marking in copula complement"}], "status": "documented", "lastchanged": "2021-02-22-19-38-28", "lastchanger": "rueter"},
 "эрявомс": {"functions": [{"function": "Mood=Nec", "rule": "combination of the conjugated auxiliary and main verb with obl agent", "deficient": "", "example": "Аф [эряви] тянь лангс ваномс суронь пачк.", "exampleen": "There is no need to look at that through one's fingers.", "comment": "MKS:2008:16:7:KishnjakovI"}], "status": "documented", "lastchanged": "2021-04-10-22-29-06", "lastchanger": "rueter"}
 },
+"mga": {
+"is": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "[Ba] lán Hériu di a airdircus in chon.", "exampleen": "Ireland [was] full of the renown of the dog.", "comment": ""}], "status": "documented", "lastchanged": "2026-10-31-11-12-49", "lastchanger": "dan-zeman"}
+},
 "mjg": {
 "nɵmbaː": {"functions": [{"function": "Aspect=Imp", "rule": "Auxiliary in Tu", "deficient": "", "example": "bi jab [nɵmbaː].", "exampleen": "I walk.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-04-06-27", "lastchanger": "wenchao-li-zju"},
 "sain": {"functions": [{"function": "Aspect=Imp", "rule": "Auxiliary in Tu", "deficient": "", "example": "bi jab [sain].", "exampleen": "I walk well.", "comment": ""}], "status": "documented", "lastchanged": "2026-08-27-04-07-00", "lastchanger": "wenchao-li-zju"},
