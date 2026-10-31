@@ -4796,7 +4796,7 @@
 
 },
 "txg": {
-
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Ind", "Int", "Neg", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"ADV": {"Dem": 1, "Ind": 1, "Tot": 1}, "DET": {"Dem": 1, "Ind": 1, "Int": 1, "Neg": 1, "Tot": 1}, "PRON": {"Dem": 1, "Ind": 1, "Prs": 1, "Tot": 1}}, "lastchanged": "2026-10-31-17-43-08", "lastchanger": "wjhuah"}
 },
 "ude": {
 "Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Hab", "Iter", "Perf", "Prosp"], "lvalues": [], "unused_uvalues": ["Imp", "Prog"], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Hab": 1, "Iter": 1, "Perf": 1, "Prosp": 1}, "VERB": {"Hab": 1, "Iter": 1, "Perf": 1, "Prosp": 1}}, "lastchanged": "2026-08-27-09-27-48", "lastchanger": "wenchao-li-zju"},
