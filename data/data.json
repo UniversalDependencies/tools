@@ -1884,6 +1884,7 @@
 },
 "txg": {
 "𗦇": {"functions": [{"function": "Mood=Nec", "rule": "Postverbal auxiliary expressing necessity or obligation, occurring with a lexical verb.", "deficient": "", "example": "𘌽𘔼𘋢𗋐𗄊𗯨𗙏𘝯𘋢𗥤𗗙𗦻𗒐𗧯[𗦇]。", "exampleen": "Therefore, all living beings should keep the name of World-Voice-Perceiver Bodhisattva.", "comment": ""}], "status": "documented", "lastchanged": "2026-11-01-17-51-54", "lastchanger": "wjhuah"},
+"𗩱": {"functions": [{"function": "Mood=Pot", "rule": "Postverbal modal auxiliary expressing ability or possibility, occurring with a lexical verb.", "deficient": "", "example": "𗧓𘀍𗗙𘓋𘎪，𗦻𗓁𘛽𘟀𗆫。𘃜𘃜𗄊𗵺𘟣，𗱕𘟣𘍔𗈞[𗩱]。", "exampleen": "I will tell you about his vow in brief. If you hear his name, and see him, And think of him constantly, You will be able to eliminate all sufferings.", "comment": ""}], "status": "documented", "lastchanged": "2026-11-01-17-54-15", "lastchanger": "wjhuah"},
 "𘟂": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "𗈪𗹙𘂎𗹙𗄑𗄑𘃽𗹙𗄑𗄑𘂎𗈪𗹙𘃽𗰜𘍦𗅋𗹪𗇋𗗙𗫻𘏚[𘟂]。", "exampleen": "Is the abode of those who subsume any single dharma within all dharmas and subsume all dharmas within any single dharma and accomplish this without interfering with any of their characteristic features.", "comment": ""}], "status": "documented", "lastchanged": "2026-11-01-17-46-58", "lastchanger": "wjhuah"}
 },
 "ude": {
