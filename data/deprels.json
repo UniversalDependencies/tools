@@ -10003,7 +10003,7 @@
 "aux:pass": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2024-07-25-01-36-34", "lastchanger": "Jankus1994"},
 "aux:perf": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "aux:pot": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
-"aux:preverb": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"aux:preverb": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-00-03-33", "lastchanger": "Jankus1994"},
 "aux:sub": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
 "case": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cc": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
