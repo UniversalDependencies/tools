@@ -1883,6 +1883,7 @@
 "үт": {"functions": [{"function": "Aspect=Dur", "rule": "combination of a converb and the auxiliary", "deficient": "", "example": "сөйләп [үт]ү", "exampleen": "to talk (for a while)", "comment": ""}], "status": "documented", "lastchanged": "2022-05-01-00-27-43", "lastchanger": "chipewyan"}
 },
 "txg": {
+"𗦇": {"functions": [{"function": "Mood=Nec", "rule": "Postverbal auxiliary expressing necessity or obligation, occurring with a lexical verb.", "deficient": "", "example": "𘌽𘔼𘋢𗋐𗄊𗯨𗙏𘝯𘋢𗥤𗗙𗦻𗒐𗧯[𗦇]。", "exampleen": "Therefore, all living beings should keep the name of World-Voice-Perceiver Bodhisattva.", "comment": ""}], "status": "documented", "lastchanged": "2026-11-01-17-51-54", "lastchanger": "wjhuah"},
 "𘟂": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "", "example": "𗈪𗹙𘂎𗹙𗄑𗄑𘃽𗹙𗄑𗄑𘂎𗈪𗹙𘃽𗰜𘍦𗅋𗹪𗇋𗗙𗫻𘏚[𘟂]。", "exampleen": "Is the abode of those who subsume any single dharma within all dharmas and subsume all dharmas within any single dharma and accomplish this without interfering with any of their characteristic features.", "comment": ""}], "status": "documented", "lastchanged": "2026-11-01-17-46-58", "lastchanger": "wjhuah"}
 },
 "ude": {
