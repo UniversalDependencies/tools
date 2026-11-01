@@ -10011,6 +10011,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "local", "doc": "local", "permitted": 1, "errors": []},
+"compound:preverb": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
 "compound:prt": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2024-07-25-01-38-06", "lastchanger": "Jankus1994"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
