@@ -12453,7 +12453,7 @@
 "clf": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "compound:lvc": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-15-20", "lastchanger": "nazarethAK"},
-"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-15-50", "lastchanger": "nazarethAK"},
+"compound:redup": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-15-53", "lastchanger": "nazarethAK"},
 "conj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
