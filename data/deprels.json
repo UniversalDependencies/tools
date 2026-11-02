@@ -12442,7 +12442,7 @@
 "acl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advcl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "advmod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
-"advmod:aff": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"advmod:aff": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-21-33", "lastchanger": "nazarethAK"},
 "amod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "appos": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "aux": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
