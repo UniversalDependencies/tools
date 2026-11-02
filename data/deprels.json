@@ -12478,7 +12478,7 @@
 "nummod": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "obj:exp": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-20-30", "lastchanger": "nazarethAK"},
-"obj:poss": {"type": "local", "doc": "local", "permitted": 0, "errors": []},
+"obj:poss": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-21-03", "lastchanger": "nazarethAK"},
 "obl": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "orphan": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "parataxis": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
