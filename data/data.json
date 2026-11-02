@@ -1835,6 +1835,9 @@
 "ได้": {"functions": [{"function": "Mood=Pot", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "ไม่ใช่ทุกคนที่สามารถอยู่เหนือมัน[ได้]", "exampleen": "Not everyone can rise above it.", "comment": ""}], "status": "documented", "lastchanged": "2021-04-10-13-13-13", "lastchanger": "dan-zeman"},
 "ได้รับ": {"functions": [{"function": "Aspect=Perf", "rule": "combination of the auxiliary and the main verb", "deficient": "", "example": "กระนั้นก็ยังคงมีคำถามที่ยังไม่[ได้รับ]คำตอบอยู่", "exampleen": "Still, there are questions left unanswered.", "comment": ""}], "status": "documented", "lastchanged": "2021-04-10-13-56-21", "lastchanger": "dan-zeman"}
 },
+"ti": {
+"እዩ": {"functions": [{"function": "cop.AUX", "rule": "combination of the copula and a nonverbal predicate", "deficient": "Present (non-past) forms only, including the negative form aykonen. The past copula is the lemma nebere, and the subordinate and non-finite forms are supplied by the lemma kone.", "example": "ካሕሳይ መምህር [እዩ] ።", "exampleen": "Kahsay is a teacher.", "comment": "Future: ክወስዳ እየ “I will take her”. Transliteration of the example: kaħsay məmhr ʔyu."}], "status": "documented", "lastchanged": "2026-11-02-22-18-34", "lastchanger": "nazarethAK"}
+},
 "tl": {
 "huwag": {"functions": [{"function": "Mood=Imp", "rule": "the auxiliary precedes the main verb", "deficient": "", "example": "[Huwag] kayong umalis.", "exampleen": "Don't leave.", "comment": "Huwag marks negative imperative/optative."}], "status": "documented", "lastchanged": "2020-11-11-10-02-13", "lastchanger": "dan-zeman"}
 },
