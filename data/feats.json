@@ -4661,7 +4661,8 @@
 },
 "ti": {
 "Gender[obj]": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No feature values found.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Values'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
-"Number[obj]": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No feature values found.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Values'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
+"Number[obj]": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No feature values found.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Values'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
+"Person[obj]": {"type": "lspec", "doc": "lerror", "permitted": 0, "errors": ["No feature values found.", "Unrecognized level 3 heading '### Examples'.", "Unrecognized level 3 heading '### Values'."], "uvalues": [], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "tk": {
 
