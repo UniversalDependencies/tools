@@ -12458,7 +12458,7 @@
 "cop": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "csubj:cleft": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-18-42", "lastchanger": "nazarethAK"},
-"csubj:outer": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-26-21", "lastchanger": "nazarethAK"},
+"csubj:outer": {"type": "local", "doc": "local", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-26-21", "lastchanger": "nazarethAK"},
 "csubj:pass": {"type": "global", "doc": "global", "permitted": 1, "errors": [], "lastchanged": "2026-11-02-21-11-11", "lastchanger": "nazarethAK"},
 "dep": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
 "det": {"type": "universal", "doc": "global", "permitted": 1, "errors": []},
