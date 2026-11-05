@@ -19,6 +19,7 @@ opendir(DIR, $path) or die("Cannot read '$path': $!");
 my @folders = sort(grep {-d "$path/$_" && m/^UD_/} (readdir(DIR)));
 closedir(DIR);
 my $n = scalar(@folders);
+my @unclean_folders;
 # Update the docs folder.
 print("docs\n");
 chdir("$path/docs") or die("Cannot read '$path/docs': $!");
@@ -44,7 +45,6 @@ if(detect_unclean_status())
     push(@unclean_folders, $folder);
 }
 # Update individual treebank folders.
-my @unclean_folders;
 foreach my $folder (@folders)
 {
     print("$folder\n");
