@@ -25,12 +25,24 @@ chdir("$path/docs") or die("Cannot read '$path/docs': $!");
 # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
 system("git checkout pages-source");
 system("git pull");
+if(detect_unclean_status())
+{
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    sleep(10);
+    push(@unclean_folders, $folder);
+}
 # Update the tools folder.
 print("tools\n");
 chdir("$path/tools") or die("Cannot read '$path/tools': $!");
 # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
 system("git checkout master");
 system("git pull");
+if(detect_unclean_status())
+{
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    sleep(10);
+    push(@unclean_folders, $folder);
+}
 # Update individual treebank folders.
 my @unclean_folders;
 foreach my $folder (@folders)
