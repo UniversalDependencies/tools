@@ -2114,7 +2114,8 @@
 "Voice": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Act", "Cau"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"AUX": {"Act": 206}, "VERB": {"Act": 3596, "Cau": 63}}}
 },
 "huv": {
-"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Perf", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Prog": 1}}, "lastchanged": "2026-11-06-08-30-07", "lastchanger": "huhaiwei"}
+"Aspect": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Prog"], "lvalues": [], "unused_uvalues": ["Hab", "Imp", "Iter", "Perf", "Prosp"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Prog": 1}}, "lastchanged": "2026-11-06-08-30-07", "lastchanger": "huhaiwei"},
+"Mood": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Irr"], "lvalues": [], "unused_uvalues": ["Adm", "Cnd", "Des", "Imp", "Ind", "Int", "Jus", "Nec", "Opt", "Pot", "Prp", "Qot", "Sub"], "unused_lvalues": [], "evalues": [], "byupos": {"VERB": {"Irr": 1}}, "lastchanged": "2026-11-06-08-31-20", "lastchanger": "huhaiwei"}
 },
 "hy": {
 "Abbr": {"type": "universal", "doc": "local", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"ADJ": {"Yes": 25}, "ADV": {"Yes": 1}, "DET": {"Yes": 2}, "NOUN": {"Yes": 114}, "NUM": {"Yes": 38}, "PROPN": {"Yes": 151}, "VERB": {"Yes": 3}, "X": {"Yes": 6}}},
