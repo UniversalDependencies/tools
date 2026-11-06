@@ -24,8 +24,8 @@ my @unclean_folders;
 print("docs\n");
 chdir("$path/docs") or die("Cannot read '$path/docs': $!");
 # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
-system("git checkout pages-source 2>&1 >/dev/null");
-system("git pull 2>&1 >/dev/null");
+system("git checkout pages-source >/dev/null 2>&1");
+system("git pull >/dev/null 2>&1");
 if(detect_unclean_status())
 {
     print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
@@ -36,8 +36,8 @@ if(detect_unclean_status())
 print("tools\n");
 chdir("$path/tools") or die("Cannot read '$path/tools': $!");
 # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
-system("git checkout master 2>&1 >/dev/null");
-system("git pull 2>&1 >/dev/null");
+system("git checkout master >/dev/null 2>&1");
+system("git pull >/dev/null 2>&1");
 if(detect_unclean_status())
 {
     print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
@@ -50,8 +50,8 @@ foreach my $folder (@folders)
     print("$folder\n");
     chdir("$path/$folder") or die("Cannot read '$path/$folder': $!");
     # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
-    system("git checkout dev 2>&1 >/dev/null");
-    system("git pull 2>&1 >/dev/null");
+    system("git checkout dev >/dev/null 2>&1");
+    system("git pull >/dev/null 2>&1");
     if(detect_unclean_status())
     {
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
