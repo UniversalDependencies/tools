@@ -83,7 +83,7 @@ sub detect_unclean_status
     # The --ignored option ensures that we detect untracked files even if they
     # match .gitignore. We do not want to release those either.
     my $command = "git status --ignored";
-    open(my $in, "$command |") or die("Cannot read from pipe '$command': $!");
+    open(my $in, "$command 2>&1 |") or die("Cannot read from pipe '$command': $!");
     while(<$in>)
     {
         if(m/(Untracked files|Ignored files|Changes|ahead of)/)
