@@ -59,12 +59,16 @@ foreach my $folder (@folders)
         push(@unclean_folders, $folder);
     }
 }
-print("Checked $n UD treebank folders.\n");
+print("Checked $n UD treebank folders + docs and tools.\n");
 my $n_unclean = scalar(@unclean_folders);
 if($n_unclean)
 {
-    print("The following $n_unclean folders are not clean (unpushed commits or untracked files):\n");
+    print("The following $n_unclean folders are not clean (unpushed changes or untracked files):\n");
     print(join(', ', @unclean_folders), "\n");
+}
+else
+{
+    print("The git status of all checked folders is clean.\n");
 }
 
 
