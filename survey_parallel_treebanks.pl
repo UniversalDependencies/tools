@@ -79,9 +79,30 @@ if(defined($tbklist))
 }
 
 my @folders = udlib::list_ud_folders($datapath);
+my $n = scalar(@folders);
+print STDERR ("Found $n UD folders in '$datapath'.\n");
+if(defined($tbklist))
+{
+    my $n = scalar(keys(%treebanks));
+    print STDERR ("We will only scan those listed in $tbklist (the list contains $n treebanks but we have not checked yet which of them exist in the folder).\n");
+}
+else
+{
+    print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
+}
+if($datapath eq '.')
+{
+    print STDERR ("Use the --datapath option to scan a different folder with UD treebanks.\n");
+}
+sleep(5);
 my %collections;
 foreach my $folder (@folders)
 {
+    # If we received the list of treebanks to be released, skip all other treebanks.
+    if(defined($tbklist) && !exists($treebanks{$folder}))
+    {
+        next;
+    }
     my $metadata = udlib::read_readme($folder, $datapath);
     next if($metadata->{Parallel} eq 'no' || $metadata->{Parallel} eq '');
     my @parallel = split(/\s+/, $metadata->{Parallel});
