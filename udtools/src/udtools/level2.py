@@ -1079,21 +1079,24 @@ class Level2(Level1):
                             alt = int(alt)
                         if part:
                             part = int(part)
+                ###!!! The validation of altN and partN sequences does not work correctly, so I am making it temporarily warnings only.
+                ###!!! The problem (see Old Church Slavonic PROIEL): alt1part1 is ok, then follows alt1part2, but validator thinks it should be alt2 already.
+                ###!!! Another problem is that the sequence of alts depends on the order of reading dev, test, train by validator (but one could argue that alternative translations of the same text should always appear in the same part).
                 if sid in state.parallel_id_lastalt:
                     if state.parallel_id_lastalt[sid] == None and alt != None or state.parallel_id_lastalt[sid] != None and alt == None:
-                        Error(
+                        Warning(
                             state=state, config=self.incfg,
                             testid='parallel-id-alt',
                             message=f"Some instances of parallel sentence '{sid}' have the 'alt' suffix while others do not."
                         ).confirm()
                     elif alt != None and alt != state.parallel_id_lastalt[sid] + 1:
-                        Error(
+                        Warning(
                             state=state, config=self.incfg,
                             testid='parallel-id-alt',
                             message=f"The alt suffix of parallel sentence '{sid}' should be {state.parallel_id_lastalt[sid]}+1 but it is {alt}."
                         ).confirm()
                 elif alt != None and alt != 1:
-                    Error(
+                    Warning(
                         state=state, config=self.incfg,
                         testid='parallel-id-alt',
                         message=f"The alt suffix of parallel sentence '{sid}' should be 1 but it is {alt}."
@@ -1101,19 +1104,19 @@ class Level2(Level1):
                 state.parallel_id_lastalt[sid] = alt
                 if sid in state.parallel_id_lastpart:
                     if state.parallel_id_lastpart[sid] == None and part != None or state.parallel_id_lastpart[sid] != None and part == None:
-                        Error(
+                        Warning(
                             state=state, config=self.incfg,
                             testid='parallel-id-part',
                             message=f"Some instances of parallel sentence '{sid}' have the 'part' suffix while others do not."
                         ).confirm()
                     elif part != None and part != state.parallel_id_lastpart[sid] + 1:
-                        Error(
+                        Warning(
                             state=state, config=self.incfg,
                             testid='parallel-id-part',
                             message=f"The part suffix of parallel sentence '{sid}' should be {state.parallel_id_lastpart[sid]}+1 but it is {part}."
                         ).confirm()
                 elif part != None and part != 1:
-                    Error(
+                    Warning(
                         state=state, config=self.incfg,
                         testid='parallel-id-part',
                         message=f"The part suffix of parallel sentence '{sid}' should be 1 but it is {part}."
