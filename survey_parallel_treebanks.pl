@@ -10,14 +10,78 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+# We need to tell Perl where to find my UD and graph modules.
+BEGIN
+{
+    use Cwd;
+    my $path = $0;
+    my $currentpath = getcwd();
+    $currentpath =~ s/\r?\n$//;
+    $libpath = $currentpath;
+    if($path =~ m:/:)
+    {
+        $path =~ s:/[^/]*$:/:;
+        chdir($path);
+        $libpath = getcwd();
+        chdir($currentpath);
+    }
+    $libpath =~ s/\r?\n$//;
+    #print STDERR ("libpath=$libpath\n");
+}
+use lib $libpath;
 use udlib;
 
-my $udpath = '.'; ###!!! to be customized later
-my @folders = udlib::list_ud_folders($udpath);
+sub usage
+{
+    print STDERR ("Usage: perl survey_parallel_treebanks.pl --datapath /net/projects/ud --tbklist udsubset.txt\n");
+    print STDERR ("       --datapath ... path to the folder where all UD_* treebank repositories reside\n");
+    print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
+    print STDERR ("                      if tbklist is not present, all treebanks in datapath will be scanned\n");
+}
+
+my $datapath = '.';
+my $tbklist;
+GetOptions
+(
+    'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
+    'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
+);
+# We need absolute path because we will be changing the current folder.
+if($datapath =~ m/^\./)
+{
+    my $currentpath = getcwd();
+    if($datapath eq '.')
+    {
+        $datapath = $currentpath;
+    }
+    else
+    {
+        $datapath = "$currentpath/$datapath";
+    }
+}
+my %treebanks;
+if(defined($tbklist))
+{
+    open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
+    while(<TBKLIST>)
+    {
+        s/^\s+//;
+        s/\s+$//;
+        my @treebanks = split(/\s+/, $_);
+        foreach my $t (@treebanks)
+        {
+            $t =~ s:/$::;
+            $treebanks{$t}++;
+        }
+    }
+    close(TBKLIST);
+}
+
+my @folders = udlib::list_ud_folders($datapath);
 my %collections;
 foreach my $folder (@folders)
 {
-    my $metadata = udlib::read_readme($folder, $udpath);
+    my $metadata = udlib::read_readme($folder, $datapath);
     next if($metadata->{Parallel} eq 'no' || $metadata->{Parallel} eq '');
     my @parallel = split(/\s+/, $metadata->{Parallel});
     foreach my $collection (@parallel)
@@ -27,12 +91,12 @@ foreach my $folder (@folders)
     }
     # Read the data and count the parallel sentences.
     # We need more details than those provided by udlib::collect_statistics_about_ud_treebank().
-    opendir(DIR, "$udpath/$folder") or die("Cannot read folder '$udpath/$folder': $!");
+    opendir(DIR, "$datapath/$folder") or die("Cannot read folder '$datapath/$folder': $!");
     my @files = grep {m/\.conllu$/} (readdir(DIR));
     closedir(DIR);
     foreach my $file (@files)
     {
-        open(my $fh, "$udpath/$folder/$file") or die("Cannot read '$udpath/$folder/$file': $!");
+        open(my $fh, "$datapath/$folder/$file") or die("Cannot read '$datapath/$folder/$file': $!");
         while(<$fh>)
         {
             chomp;
