@@ -10,6 +10,7 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
+use Getopt::Long;
 # We need to tell Perl where to find my UD and graph modules.
 BEGIN
 {
