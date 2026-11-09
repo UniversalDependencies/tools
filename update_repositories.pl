@@ -156,6 +156,9 @@ sub merge_to_master
 sub git_checkout
 {
     my $branch = shift;
+    # Expected output:
+    #   Switched to branch '$branch'
+    #   Your branch is up to date with 'origin/$branch'.
     system("git checkout $branch >/dev/null 2>&1");
 }
 
@@ -168,6 +171,8 @@ sub git_checkout
 sub git_pull
 {
     # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
+    # Expected output, option 1:
+    #   Already up to date.
     system("git pull >/dev/null 2>&1");
 }
 
@@ -181,7 +186,34 @@ sub git_pull
 sub git_merge
 {
     my $branch = shift;
-    system("git merge $branch --no-edit >/dev/null 2>&1");
+    # Expected output, option 1:
+    #   Already up to date.
+    # Expected output, option 2 (example):
+    #   Merge made by the 'ort' strategy.
+    #    README.md              |    4 +-
+    #    ab_abnc-ud-test.conllu | 2974 ++++++++++++++++++++++++++++++++++++++++
+    #    stats.xml              |  362 ++++++++++++-------------
+    #    3 files changed, 2485 insertions(+), 855 deletions(-)
+    my $command = "git merge $branch --no-edit";
+    open(my $in, "$command 2>&1 |") or die("Cannot read from pipe '$command': $!");
+    my @output;
+    my $ok = 0; ###!!! What about exit status of the git command?
+    while(<$in>)
+    {
+        chomp;
+        push(@output, $_);
+        if(m/(Already up to date|Merge made)/)
+        {
+            $ok = 1;
+        }
+    }
+    close($in);
+    if(!$ok)
+    {
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX MERGE ISSUE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+        print(join("\n", @output));
+        sleep(10);
+    }
 }
 
 
@@ -192,6 +224,18 @@ sub git_merge
 #------------------------------------------------------------------------------
 sub git_push
 {
+    # Expected output, option 1:
+    #   Everything up-to-date
+    # Expected output, option 2 (example):
+    #   Enumerating objects: 4, done.
+    #   Counting objects: 100% (4/4), done.
+    #   Delta compression using up to 8 threads
+    #   Compressing objects: 100% (2/2), done.
+    #   Writing objects: 100% (2/2), 296 bytes | 296.00 KiB/s, done.
+    #   Total 2 (delta 1), reused 0 (delta 0), pack-reused 0
+    #   remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+    #   To github.com:UniversalDependencies/UD_Abkhaz-AbNC.git
+    #      260e6ca..eab451f  master -> master
     system("git push >/dev/null 2>&1");
 }
 
