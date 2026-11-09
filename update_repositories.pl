@@ -18,57 +18,117 @@ my $path = getcwd();
 opendir(DIR, $path) or die("Cannot read '$path': $!");
 my @folders = sort(grep {-d "$path/$_" && m/^UD_/} (readdir(DIR)));
 closedir(DIR);
-my $n = scalar(@folders);
-my @unclean_folders;
-# Update the docs folder.
-print("docs\n");
-chdir("$path/docs") or die("Cannot read '$path/docs': $!");
-# I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
-system("git checkout pages-source >/dev/null 2>&1");
-system("git pull >/dev/null 2>&1");
-if(detect_unclean_status())
+update_all(@folders);
+
+
+
+#------------------------------------------------------------------------------
+# Visits docs, tools, and all UD_* folders that exist in the current working
+# folder. Makes sure they are checked out to the correct branch, up-to-date
+# (pull from GitHub) and clean (no unpushed changes, no untracked files).
+#------------------------------------------------------------------------------
+sub update_all
 {
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    sleep(10);
-    push(@unclean_folders, $folder);
-}
-# Update the tools folder.
-print("tools\n");
-chdir("$path/tools") or die("Cannot read '$path/tools': $!");
-# I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
-system("git checkout master >/dev/null 2>&1");
-system("git pull >/dev/null 2>&1");
-if(detect_unclean_status())
-{
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    sleep(10);
-    push(@unclean_folders, $folder);
-}
-# Update individual treebank folders.
-foreach my $folder (@folders)
-{
-    print("$folder\n");
-    chdir("$path/$folder") or die("Cannot read '$path/$folder': $!");
+    my @folders = @_;
+    my $n = scalar(@folders);
+    my @unclean_folders;
+    # Update the docs folder.
+    print("docs\n");
+    chdir("$path/docs") or die("Cannot read '$path/docs': $!");
     # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
-    system("git checkout dev >/dev/null 2>&1");
-    system("git pull >/dev/null 2>&1");
+    git_checkout('pages-source');
+    git_pull();
     if(detect_unclean_status())
     {
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
         sleep(10);
-        push(@unclean_folders, $folder);
+        push(@unclean_folders, 'docs');
+    }
+    # Update the tools folder.
+    print("tools\n");
+    chdir("$path/tools") or die("Cannot read '$path/tools': $!");
+    # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
+    git_checkout('master');
+    git_pull();
+    if(detect_unclean_status())
+    {
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+        sleep(10);
+        push(@unclean_folders, 'tools');
+    }
+    # Update individual treebank folders.
+    foreach my $folder (@folders)
+    {
+        print("$folder\n");
+        chdir("$path/$folder") or die("Cannot read '$path/$folder': $!");
+        # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
+        git_checkout('dev');
+        git_pull();
+        if(detect_unclean_status())
+        {
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+            sleep(10);
+            push(@unclean_folders, $folder);
+        }
+    }
+    print("Checked $n UD treebank folders + docs and tools.\n");
+    my $n_unclean = scalar(@unclean_folders);
+    if($n_unclean)
+    {
+        print("The following $n_unclean folders are not clean (unpushed changes or untracked files):\n");
+        print(join(', ', @unclean_folders), "\n");
+    }
+    else
+    {
+        print("The git status of all checked folders is clean.\n");
     }
 }
-print("Checked $n UD treebank folders + docs and tools.\n");
-my $n_unclean = scalar(@unclean_folders);
-if($n_unclean)
+
+
+
+#------------------------------------------------------------------------------
+# Calls git checkout on a branch it receives as a parameter. Assumes the
+# current working folder is the local clone of the repository.
+#------------------------------------------------------------------------------
+sub git_checkout
 {
-    print("The following $n_unclean folders are not clean (unpushed changes or untracked files):\n");
-    print(join(', ', @unclean_folders), "\n");
+    my $branch = shift;
+    system("git checkout $branch >/dev/null 2>&1");
 }
-else
+
+
+
+#------------------------------------------------------------------------------
+# Calls git pull on the current branch in the current working folder (assuming
+# it is the local clone of a git repository).
+#------------------------------------------------------------------------------
+sub git_pull
 {
-    print("The git status of all checked folders is clean.\n");
+    system("git pull >/dev/null 2>&1");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Calls git merge from a branch it receives as a parameter. Assumes the
+# current working folder is the local clone of the repository, with the target
+# branch checked out.
+#------------------------------------------------------------------------------
+sub git_merge
+{
+    my $branch = shift;
+    system("git merge $branch --no-edit >/dev/null 2>&1");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Calls git push on the current branch in the current working folder (assuming
+# it is the local clone of a git repository).
+#------------------------------------------------------------------------------
+sub git_push
+{
+    system("git push >/dev/null 2>&1");
 }
 
 
