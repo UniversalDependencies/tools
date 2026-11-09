@@ -1075,7 +1075,7 @@ class Level2(Level1):
                 ###!!! taken from an external JSON file.
                 ###!!! See also tools/survey_bible_sentences.pl and https://guide.unwsp.edu/SBL_guide/abbreviations/bible
                 if matched[0].group(2) == 'bible':
-                    if not re.fullmatch(r"(gen|exod|lev|num|deut|josh|judg|ruth|[12]sam|[12]kgs|[12]chr|ezra|neh|esth|job|ps|prov|eccl|song|isa|jer|lam|ezek|dan|hos|joel|amos|obad|jonah|mic|nah|hab|zeph|hag|zech|mal|tob|jdt|addesth|wis|sir|bar|epjer|adddan|prazar|sgthree|sus|bel|[1234]macc|[12]esd|prman|ps151|matt|mark|luke|john|acts|rom|[12]cor|gal|eph|phil|col|[12]thess|[12]tim|titus|phlm|heb|jas|[12]pet|[123]john|jude|rev)-[0-9]+-[0-9]+"):
+                    if not re.fullmatch(r"(gen|exod|lev|num|deut|josh|judg|ruth|[12]sam|[12]kgs|[12]chr|ezra|neh|esth|job|ps|prov|eccl|song|isa|jer|lam|ezek|dan|hos|joel|amos|obad|jonah|mic|nah|hab|zeph|hag|zech|mal|tob|jdt|addesth|wis|sir|bar|epjer|adddan|prazar|sgthree|sus|bel|[1234]macc|[12]esd|prman|ps151|matt|mark|luke|john|acts|rom|[12]cor|gal|eph|phil|col|[12]thess|[12]tim|titus|phlm|heb|jas|[12]pet|[123]john|jude|rev)-[0-9]+-[0-9]+", matched[0].group(3)):
                         Error(
                             state=state, config=self.incfg,
                             testid='unknown-parallel-id',
