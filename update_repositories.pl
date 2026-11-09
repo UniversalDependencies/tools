@@ -13,12 +13,35 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Cwd;
+use Getopt::Long;
+
+sub usage
+{
+    print STDERR ("Usage: perl update_repositories.pl\n");
+    print STDERR ("       perl update_repositories.pl --merge\n");
+    print STDERR ("       without --merge ... checkout correct branch, pull, check status\n");
+    print STDERR ("                           not only for UD_* treebanks but also docs and tools\n");
+    print STDERR ("       --merge ... merge dev branches of treebanks into master\n");
+}
+
+my $merge = 0;
+GetOptions
+(
+    'merge' => \$merge # action merge dev to master (without it, action checkout dev + pull)
+);
 
 my $path = getcwd();
 opendir(DIR, $path) or die("Cannot read '$path': $!");
 my @folders = sort(grep {-d "$path/$_" && m/^UD_/} (readdir(DIR)));
 closedir(DIR);
-update_all(@folders);
+if($merge)
+{
+    merge_to_master($path, @folders);
+}
+else # default
+{
+    update_all($path, @folders);
+}
 
 
 
@@ -29,13 +52,13 @@ update_all(@folders);
 #------------------------------------------------------------------------------
 sub update_all
 {
+    my $path = shift; # the root path of Universal Dependencies
     my @folders = @_;
     my $n = scalar(@folders);
     my @unclean_folders;
     # Update the docs folder.
     print("docs\n");
     chdir("$path/docs") or die("Cannot read '$path/docs': $!");
-    # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
     git_checkout('pages-source');
     git_pull();
     if(detect_unclean_status())
@@ -47,7 +70,6 @@ sub update_all
     # Update the tools folder.
     print("tools\n");
     chdir("$path/tools") or die("Cannot read '$path/tools': $!");
-    # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
     git_checkout('master');
     git_pull();
     if(detect_unclean_status())
@@ -61,7 +83,6 @@ sub update_all
     {
         print("$folder\n");
         chdir("$path/$folder") or die("Cannot read '$path/$folder': $!");
-        # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
         git_checkout('dev');
         git_pull();
         if(detect_unclean_status())
@@ -87,6 +108,48 @@ sub update_all
 
 
 #------------------------------------------------------------------------------
+# Visits all UD_* folders (provided as a parameter list) and merges their dev
+# branch to master, then checks out dev again.
+#------------------------------------------------------------------------------
+sub merge_to_master
+{
+    my $path = shift; # the root path of Universal Dependencies
+    my @folders = @_;
+    my $n = scalar(@folders);
+    my @unclean_folders;
+    # Update individual treebank folders.
+    foreach my $folder (@folders)
+    {
+        print("$folder\n");
+        chdir("$path/$folder") or die("Cannot read '$path/$folder': $!");
+        git_checkout('master');
+        git_pull();
+        git_merge('dev');
+        git_push();
+        if(detect_unclean_status())
+        {
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX UNCLEAN GIT STATUS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+            sleep(10);
+            push(@unclean_folders, $folder);
+        }
+        git_checkout('dev');
+    }
+    print("Merged dev of $n UD treebank folders into master.\n");
+    my $n_unclean = scalar(@unclean_folders);
+    if($n_unclean)
+    {
+        print("The following $n_unclean folders are not clean:\n");
+        print(join(', ', @unclean_folders), "\n");
+    }
+    else
+    {
+        print("The git status of all merged folders is clean.\n");
+    }
+}
+
+
+
+#------------------------------------------------------------------------------
 # Calls git checkout on a branch it receives as a parameter. Assumes the
 # current working folder is the local clone of the repository.
 #------------------------------------------------------------------------------
@@ -104,6 +167,7 @@ sub git_checkout
 #------------------------------------------------------------------------------
 sub git_pull
 {
+    # I used to call "git pull --no-edit" to prevent an editor from launching but my git for Windows lacks the option.
     system("git pull >/dev/null 2>&1");
 }
 
