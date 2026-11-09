@@ -1027,6 +1027,7 @@ class Level2(Level1):
             invalid-parallel-id
             multiple-parallel-id
             non-unique-parallel-id
+            unknown-parallel-id
             parallel-id-alt
             parallel-id-part
         """
@@ -1064,12 +1065,23 @@ class Level2(Level1):
                     message=f"Non-unique parallel_id attribute '{pid}'."
                 ).confirm()
             else:
-                # Additional tests when pid has altN or partN.
-                # Do them only if the whole pid is unique.
+                # Do additional tests only if the whole pid is unique.
                 sid = matched[0].group(2) + '/' + matched[0].group(3)
                 alt = None
                 part = None
                 altpart = matched[0].group(4)
+                # Check if Bible book ids follow the standard.
+                ###!!! In the future, tests like this could be based on a list
+                ###!!! taken from an external JSON file.
+                ###!!! See also tools/survey_bible_sentences.pl.
+                if matched[0].group(2) == 'bible':
+                    if not re.fullmatch(r"(gen|exod|lev|num|deut|josh|judg|ruth|[12]sam|[12]kgs|[12]chr|ezra|neh|esth|job|ps|prov|eccl|song|isa|jer|lam|ezek|dan|hos|joel|amos|obad|jonah|mic|nah|hab|zeph|hag|zech|mal|tob|jdt|addesth|wis|sir|bar|epjer|adddan|prazar|sgthree|sus|bel|[1234]macc|[12]esd|prman|ps151|matt|mark|luke|john|acts|rom|[12]cor|gal|eph|phil|col|[12]thess|[12]tim|titus|phlm|heb|jas|[12]pet|[123]john|jude|rev)-[0-9]+-[0-9]+"):
+                        Error(
+                            state=state, config=self.incfg,
+                            testid='unknown-parallel-id',
+                            message=f"Unknown parallel_id '{sid}'."
+                        ).confirm()
+                # Additional tests when pid has altN or partN.
                 if altpart:
                     apmatch = re.fullmatch(r"(?:alt([0-9]+))?(?:part([0-9]+))?", altpart)
                     if apmatch:
