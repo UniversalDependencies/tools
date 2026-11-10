@@ -235,7 +235,7 @@ sub git_merge
     if(!$ok)
     {
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX MERGE ISSUE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-        print(join("\n", @output));
+        print(join("\n", @output)."\n");
         sleep(10);
     }
 }
