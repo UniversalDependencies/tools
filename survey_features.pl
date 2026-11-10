@@ -77,43 +77,11 @@ else
 {
     $oformat = 'json';
 }
-my %treebanks;
-if(defined($tbklist))
-{
-    open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
-    while(<TBKLIST>)
-    {
-        s/^\s+//;
-        s/\s+$//;
-        my @treebanks = split(/\s+/, $_);
-        foreach my $t (@treebanks)
-        {
-            $t =~ s:/$::;
-            $treebanks{$t}++;
-        }
-    }
-    close(TBKLIST);
-}
+# We need absolute path because we will be changing the current folder.
+$datapath = udlib::absolutize_path($datapath);
+my $treebanks = udlib::read_treebank_list($tbklist);
+my @folders = udlib::list_and_filter_ud_folders($datapath, $treebanks, 1, 5);
 
-opendir(DIR, $datapath) or die("Cannot read the contents of '$datapath': $!");
-my @folders = sort(grep {-d "$datapath/$_" && m/^UD_[A-Z]/} (readdir(DIR)));
-closedir(DIR);
-my $n = scalar(@folders);
-print STDERR ("Found $n UD folders in '$datapath'.\n");
-if(defined($tbklist))
-{
-    my $n = scalar(keys(%treebanks));
-    print STDERR ("We will only scan those listed in $tbklist (the list contains $n treebanks but we have not checked yet which of them exist in the folder).\n");
-}
-else
-{
-    print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
-}
-if($datapath eq '.')
-{
-    print STDERR ("Use the --datapath option to scan a different folder with UD treebanks.\n");
-}
-sleep(5);
 # We need a mapping from the English names of the languages (as they appear in folder names) to their ISO codes.
 # There is now also the new list of languages in YAML in docs-automation; this one has also language families.
 my $languages_from_yaml = udlib::get_language_hash("$libpath/../docs-automation/codes_and_flags.yaml");
@@ -133,11 +101,6 @@ my %hash; # $hash{$feature}{$value}{$treebank/$language} = $count
 my %poshash; # $poshash{$treebank/$language}{$upos}{$feature}{$value} = $count
 foreach my $folder (@folders)
 {
-    # If we received the list of treebanks to be released, skip all other treebanks.
-    if(defined($tbklist) && !exists($treebanks{$folder}))
-    {
-        next;
-    }
     # The name of the folder: 'UD_' + language name + optional treebank identifier.
     # Example: UD_Ancient_Greek-PROIEL
     my $language = '';
