@@ -213,6 +213,14 @@ sub git_merge
     # Expected output, option 1:
     #   Already up to date.
     # Expected output, option 2 (example):
+    #   Fast-forward
+    #    README.md             |  14 +-
+    #    ae_old-ud-test.conllu | 437 ++++++++++++++++++++++++++++++++++++++++++++++++++
+    #    stats.xml             |  90 +++++++++++
+    #    3 files changed, 534 insertions(+), 7 deletions(-)
+    #    create mode 100644 ae_old-ud-test.conllu
+    #    create mode 100644 stats.xml
+    # Expected output, option 3 (example):
     #   Merge made by the 'ort' strategy.
     #    README.md              |    4 +-
     #    ab_abnc-ud-test.conllu | 2974 ++++++++++++++++++++++++++++++++++++++++
@@ -226,7 +234,7 @@ sub git_merge
     {
         chomp;
         push(@output, $_);
-        if(m/(Already up to date|Merge made)/)
+        if(m/(Already up to date|Fast-forward|Merge made)/)
         {
             $ok = 1;
         }
