@@ -25,22 +25,71 @@ sub usage
 }
 
 my $merge = 0;
+my $datapath = '.';
+my $tbklist;
 GetOptions
 (
-    'merge' => \$merge # action merge dev to master (without it, action checkout dev + pull)
+    'merge'      => \$merge,    # action merge dev to master (without it, action checkout dev + pull)
+    'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
+    'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
 );
 
-my $path = getcwd();
-opendir(DIR, $path) or die("Cannot read '$path': $!");
-my @folders = sort(grep {-d "$path/$_" && m/^UD_/} (readdir(DIR)));
-closedir(DIR);
+# We need absolute path because we will be changing the current folder.
+if($datapath =~ m/^\./)
+{
+    my $currentpath = getcwd();
+    if($datapath eq '.')
+    {
+        $datapath = $currentpath;
+    }
+    else
+    {
+        $datapath = "$currentpath/$datapath";
+    }
+}
+my %treebanks;
+if(defined($tbklist))
+{
+    open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
+    while(<TBKLIST>)
+    {
+        s/^\s+//;
+        s/\s+$//;
+        my @treebanks = split(/\s+/, $_);
+        foreach my $t (@treebanks)
+        {
+            $t =~ s:/$::;
+            $treebanks{$t}++;
+        }
+    }
+    close(TBKLIST);
+}
+
+my @folders = udlib::list_ud_folders($datapath);
+my $n = scalar(@folders);
+print STDERR ("Found $n UD folders in '$datapath'.\n");
+if(defined($tbklist))
+{
+    my $n = scalar(keys(%treebanks));
+    print STDERR ("We will only scan those listed in $tbklist (the list contains $n treebanks but we have not checked yet which of them exist in the folder).\n");
+}
+else
+{
+    print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
+}
+if($datapath eq '.')
+{
+    print STDERR ("Use the --datapath option to scan a different folder with UD treebanks.\n");
+}
+sleep(5);
+
 if($merge)
 {
-    merge_to_master($path, @folders);
+    merge_to_master($datapath, @folders);
 }
 else # default
 {
-    update_all($path, @folders);
+    update_all($datapath, @folders);
 }
 
 
