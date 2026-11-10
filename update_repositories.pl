@@ -12,8 +12,27 @@ use open ':utf8';
 binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
-use Cwd;
 use Getopt::Long;
+# We need to tell Perl where to find my UD and graph modules.
+BEGIN
+{
+    use Cwd;
+    my $path = $0;
+    my $currentpath = getcwd();
+    $currentpath =~ s/\r?\n$//;
+    $libpath = $currentpath;
+    if($path =~ m:/:)
+    {
+        $path =~ s:/[^/]*$:/:;
+        chdir($path);
+        $libpath = getcwd();
+        chdir($currentpath);
+    }
+    $libpath =~ s/\r?\n$//;
+    #print STDERR ("libpath=$libpath\n");
+}
+use lib $libpath;
+use udlib;
 
 sub usage
 {
