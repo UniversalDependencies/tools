@@ -303,6 +303,8 @@ sub get_family_piechart
         'Uralic'         => 'teal!60',
         'Tupian'         => 'yellow!40',
         'Turkic'         => 'red!60',
+        'Tungusic'       => 'teal!60!green',
+        'Mongolic'       => 'orange!60!brown',
         'Austronesian'   => 'green!60!teal',
         'Niger-Congo'    => 'brown',
         'Sino-Tibetan'   => 'magenta!60',
