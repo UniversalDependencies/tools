@@ -11,6 +11,25 @@ binmode(STDIN, ':utf8');
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
 use Getopt::Long;
+# We need to tell Perl where to find my UD and graph modules.
+BEGIN
+{
+    use Cwd;
+    my $path = $0;
+    my $currentpath = getcwd();
+    $libpath = $currentpath;
+    $path =~ s:\\:/:g;
+    if($path =~ m:/:)
+    {
+        $path =~ s:/[^/]*$:/:;
+        chdir($path);
+        $libpath = getcwd();
+        chdir($currentpath);
+    }
+    $libpath =~ s/\r?\n$//;
+    #print STDERR ("libpath=$libpath\n");
+}
+use lib $libpath;
 use udlib;
 
 sub usage
@@ -23,10 +42,13 @@ sub usage
     print STDERR ("Usage: $0 --input release --udpath /net/data/universal-dependencies-2.17 --output tbkstats > tbkstats.2.17.txt\n");
     print STDERR ("Usage: $0 --input tbkstats --output famstats|fampie < tbkstats.2.17.txt\n");
     print STDERR ("Usage: for i in 1.0 1.1 1.2 1.3 1.4 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 2.10 2.11 2.12 2.13 2.14 2.15 2.16 2.17 ; do survey_language_families.pl --input tbkstats --output fampie --relid $i < tbkstats.$i.txt ; done > log.tex\n");
+    print STDERR ("       --tbklist .... file with list of UD_* folders to consider (e.g. treebanks we are about to release)\n");
+    print STDERR ("                      if tbklist is not present, all treebanks in udpath will be scanned\n");
 }
 
 #my $udpath = 'C:/Users/zeman/Documents/lingvistika-projekty/ud-repos';
-my $udpath = '/net/data/universal-dependencies-2.12';
+my $udpath = '.'; # or official release, e.g., /net/data/universal-dependencies-2.17
+my $tbklist;
 my $langyamlpath = '/net/work/people/zeman/unidep/docs-automation/codes_and_flags.yaml';
 my $input = 'release'; # release: read directly the UD treebanks; tbkstats: read the statistics saved after reading the release previously (to be read from STDIN or file given as argument)
 my $output = 'tbkstats'; # tbkstats: write treebank stats as tsv (to speed up later analysis); famstats: write family/genus/languages/words stats as several tables; fampie: latex pie chart
@@ -39,6 +61,7 @@ my $complete_latex = 0; # print LaTeX preamble and document environment around t
 GetOptions
 (
     'udpath=s'   => \$udpath,
+    'tbklist=s'  => \$tbklist,  # path to file with treebank list; if defined, only treebanks on the list will be surveyed
     'langyaml=s' => \$langyamlpath,
     'input=s'    => \$input,
     'output=s'   => \$output,
@@ -61,7 +84,14 @@ if($input eq 'tbkstats')
 else
 {
     my $languages = udlib::get_language_hash($langyamlpath);
-    @treebank_data = read_release($udpath, $languages);
+    if
+    {
+        @treebank_data = read_selected_treebanks($udpath, $tbklist, $languages);
+    }
+    else
+    {
+        @treebank_data = read_release($udpath, $languages);
+    }
 }
 if($output eq 'tbkstats')
 {
@@ -438,6 +468,65 @@ sub read_release
         print STDERR ("Reading $folder...\n");
         my $ltcode = udlib::get_ltcode_from_repo_name($normalized_folder, $languages);
         my $stats = udlib::collect_statistics_about_ud_treebank("$udpath/$folder", $ltcode);
+        my $family = $languages->{$language}{family};
+        $family = 'Indo-European' if($family eq 'IE');
+        my $genus = $languages->{$language}{genus};
+        my $record =
+        {
+            'folder'   => $folder,
+            'family'   => $family,
+            'genus'    => $genus,
+            'language' => $language,
+            'treebank' => $treebank,
+            'ltcode'   => $ltcode,
+            'stats'    => $stats
+        };
+        push(@treebank_data, $record);
+    }
+    return @treebank_data;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Collects statistics about a set of UD treebanks (found in the given path).
+# Instead of reading all treebanks in a path (and assuming they are part of an
+# official release), it takes a path and a list of subfolder names. Useful to
+# survey treebanks that are about to be released, but still sit in the working
+# folder, next to treebanks that are not valid.
+# Returns a list of hashes, each hash describing one treebank. Treebanks of
+# unknown languages and treebanks without the underlying text are ignored.
+#------------------------------------------------------------------------------
+sub read_selected_treebanks
+{
+    my $datapath = shift;
+    my $tbklist = shift;
+    my $languages = shift;
+    $datapath = udlib::absolutize_path($datapath);
+    my $treebanks = udlib::read_treebank_list($tbklist);
+    my @folders = udlib::list_and_filter_ud_folders($datapath, $treebanks, 1, 5);
+    my @treebank_data;
+    foreach my $folder (@folders)
+    {
+        my ($language, $treebank) = udlib::decompose_repo_name($folder);
+        if(!exists($languages->{$language}))
+        {
+            ###!!! This will fail on some treebanks in older UD releases because
+            ###!!! some languages were later renamed:
+            ###!!! Kurmanji => Northern Kurdish, Old Russian => Old East Slavic, Swiss German => Alemannic
+            print STDERR ("Skipping $folder because language $language is unknown.\n");
+            next;
+        }
+        my $metadata = udlib::read_readme($folder, $datapath);
+        # Avoid 'no' but do not require 'yes' because old releases did not have this metadata field.
+        if($metadata->{'Includes text'} =~ m/^n/i)
+        {
+            print STDERR ("Skipping $folder because it lacks underlying text.\n");
+            next;
+        }
+        print STDERR ("Reading $folder...\n");
+        my $ltcode = udlib::get_ltcode_from_repo_name($folder, $languages);
+        my $stats = udlib::collect_statistics_about_ud_treebank("$datapath/$folder", $ltcode);
         my $family = $languages->{$language}{family};
         $family = 'Indo-European' if($family eq 'IE');
         my $genus = $languages->{$language}{genus};
