@@ -219,6 +219,34 @@ sub get_ltcode_from_repo_name
 
 
 #------------------------------------------------------------------------------
+# If we get a relative path to the main UD folder, we may want to convert it to
+# an absolute path if we are about to repeatedly change to subfolders and back.
+#------------------------------------------------------------------------------
+sub absolutize_path
+{
+    my $path = shift;
+    ###!!! At present, we assume that we got either '.' or './something', not
+    ###!!! directly something. We could instead check for an already absolute
+    ###!!! path but it depends: on Linux it would start with '/', on Windows it
+    ###!!! could be '\' or 'C:\' or some other disk.
+    if($path =~ m/^\./)
+    {
+        my $currentpath = getcwd();
+        if($path eq '.')
+        {
+            $path = $currentpath;
+        }
+        else
+        {
+            $path = "$currentpath/$path";
+        }
+    }
+    return $path;
+}
+
+
+
+#------------------------------------------------------------------------------
 # Returns list of UD_* folders in a given folder. Default: the current folder.
 #------------------------------------------------------------------------------
 sub list_ud_folders
@@ -228,6 +256,77 @@ sub list_ud_folders
     opendir(DIR, $path) or die("Cannot read the contents of '$path': $!");
     my @folders = sort(grep {-d "$path/$_" && m/^UD_.+/} (readdir(DIR)));
     closedir(DIR);
+    return @folders;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Many tools allow the user to provide a file with the list of the treebanks
+# the tool should be applied to (typically when building a UD release, process
+# only treebanks that will be part of the release). This function reads the
+# list and returns a reference to a hash indexed by treebank names. In the
+# list, treebanks are separated by spaces only (no commas or the like).
+#------------------------------------------------------------------------------
+sub read_treebank_list
+{
+    my $tbklist = shift; # path to the file with the list of treebanks
+    my %treebanks;
+    if(defined($tbklist))
+    {
+        # $tbklist can be undefined but if it is defined, we expect it to exist and be readable.
+        open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
+        while(<TBKLIST>)
+        {
+            s/^\s+//;
+            s/\s+$//;
+            my @treebanks = split(/\s+/, $_);
+            foreach my $t (@treebanks)
+            {
+                $t =~ s:/$::;
+                $treebanks{$t}++;
+            }
+        }
+        close(TBKLIST);
+    }
+    return \%treebanks;
+}
+
+
+
+#------------------------------------------------------------------------------
+# Scans a folder for UD_* folders (using list_ud_folders()) and filters it by
+# a treebank list (from read_treebank_list()). Optionally prints a summary to
+# STDERR.
+#------------------------------------------------------------------------------
+sub list_and_filter_ud_folders
+{
+    my $path = shift;
+    my $selected_treebanks = shift; # hash reference, indexed by UD folder names
+    my $info = shift; # boolean: print summary to STDERR?
+    my $sleeptime = shift // 5; # seconds to sleep after printing the summary
+    my @folders = udlib::list_ud_folders($path);
+    my $n = scalar(@folders);
+    print STDERR ("Found $n UD folders in '$path'.\n") if($info);
+    if(defined($selected_treebanks))
+    {
+        my $n_listed = scalar(keys(%treebanks));
+        @folders = grep {exists($selected_treebanks->{$_}) && $selected_treebanks->{$_}} (@folders);
+        my $n_filtered = scalar(@folders);
+        if($info)
+        {
+            print STDERR ("Out of them, $n_filtered are on the list and will be processed.\n");
+            if($n_listed>$n_filtered)
+            {
+                print STDERR ("Warning: The list contains $n_listed treebanks but one or more were not found.\n");
+            }
+        }
+    }
+    elsif($info)
+    {
+        print STDERR ("Warning: We will process them all, whether their data is valid or not!\n");
+    }
+    sleep($sleeptime) if($info);
     return @folders;
 }
 

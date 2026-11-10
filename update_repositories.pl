@@ -54,53 +54,9 @@ GetOptions
 );
 
 # We need absolute path because we will be changing the current folder.
-if($datapath =~ m/^\./)
-{
-    my $currentpath = getcwd();
-    if($datapath eq '.')
-    {
-        $datapath = $currentpath;
-    }
-    else
-    {
-        $datapath = "$currentpath/$datapath";
-    }
-}
-my %treebanks;
-if(defined($tbklist))
-{
-    open(TBKLIST, $tbklist) or die("Cannot read treebank list from '$tbklist': $!");
-    while(<TBKLIST>)
-    {
-        s/^\s+//;
-        s/\s+$//;
-        my @treebanks = split(/\s+/, $_);
-        foreach my $t (@treebanks)
-        {
-            $t =~ s:/$::;
-            $treebanks{$t}++;
-        }
-    }
-    close(TBKLIST);
-}
-
-my @folders = udlib::list_ud_folders($datapath);
-my $n = scalar(@folders);
-print STDERR ("Found $n UD folders in '$datapath'.\n");
-if(defined($tbklist))
-{
-    my $n = scalar(keys(%treebanks));
-    print STDERR ("We will only scan those listed in $tbklist (the list contains $n treebanks but we have not checked yet which of them exist in the folder).\n");
-}
-else
-{
-    print STDERR ("Warning: We will scan them all, whether their data is valid or not!\n");
-}
-if($datapath eq '.')
-{
-    print STDERR ("Use the --datapath option to scan a different folder with UD treebanks.\n");
-}
-sleep(5);
+$datapath = udlib::absolutize_path($datapath);
+my $treebanks = udlib::read_treebank_list($tbklist);
+my @folders = udlib::list_and_filter_ud_folders($datapath, $treebanks, 1, 5);
 
 if($merge)
 {
