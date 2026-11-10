@@ -41,14 +41,17 @@ sub usage
     print STDERR ("       without --merge ... checkout correct branch, pull, check status\n");
     print STDERR ("                           not only for UD_* treebanks but also docs and tools\n");
     print STDERR ("       --merge ... merge dev branches of treebanks into master\n");
+    print STDERR ("       --tag r2.19 ... tag the current commit of docs, tools, and treebanks with the current release number\n");
 }
 
 my $merge = 0;
+my $tag;
 my $datapath = '.';
 my $tbklist;
 GetOptions
 (
     'merge'      => \$merge,    # action merge dev to master (without it, action checkout dev + pull)
+    'tag=s'      => \$tag,      # action tag (value is the tag, e.g., 'r2.19')
     'datapath=s' => \$datapath, # UD_* folders will be sought in this folder
     'tbklist=s'  => \$tbklist   # path to file with treebank list; if defined, only treebanks on the list will be surveyed
 );
@@ -62,9 +65,13 @@ if($merge)
 {
     merge_to_master($datapath, @folders);
 }
+elsif(defined($tag))
+{
+    tag($datapath, @folders);
+}
 else # default
 {
-    update_all($datapath, @folders);
+    update($datapath, @folders);
 }
 
 
@@ -74,7 +81,7 @@ else # default
 # folder. Makes sure they are checked out to the correct branch, up-to-date
 # (pull from GitHub) and clean (no unpushed changes, no untracked files).
 #------------------------------------------------------------------------------
-sub update_all
+sub update
 {
     my $path = shift; # the root path of Universal Dependencies
     my @folders = @_;
@@ -169,6 +176,36 @@ sub merge_to_master
     {
         print("The git status of all merged folders is clean.\n");
     }
+}
+
+
+
+#------------------------------------------------------------------------------
+# Visits docs, tools, and all UD_* folders (provided as a parameter list).
+# Tags their most recent commit with the tag provided (e.g., r2.19).
+#------------------------------------------------------------------------------
+sub tag
+{
+    my $tag = shift; # the tag, e.g., 'r2.19'
+    my $path = shift; # the root path of Universal Dependencies
+    my @folders = @_;
+    my $n = scalar(@folders);
+    # Update the docs folder.
+    print("docs\n");
+    chdir("$path/docs") or die("Cannot read '$path/docs': $!");
+    git_tag($tag);
+    # Update the tools folder.
+    print("tools\n");
+    chdir("$path/tools") or die("Cannot read '$path/tools': $!");
+    git_tag($tag);
+    # Update individual treebank folders.
+    foreach my $folder (@folders)
+    {
+        print("$folder\n");
+        chdir("$path/$folder") or die("Cannot read '$path/$folder': $!");
+        git_tag($tag);
+    }
+    print("Tagged $n UD treebank folders + docs and tools as '$tag'.\n");
 }
 
 
@@ -269,6 +306,19 @@ sub git_push
     #   To github.com:UniversalDependencies/UD_Abkhaz-AbNC.git
     #      260e6ca..eab451f  master -> master
     system("git push >/dev/null 2>&1");
+}
+
+
+
+#------------------------------------------------------------------------------
+# Calls git tag on the current branch in the current working folder (assuming
+# it is the local clone of a git repository). Also pushes the tag to origin.
+#------------------------------------------------------------------------------
+sub git_tag
+{
+    my $tag = shift;
+    system("git tag $tag >/dev/null 2>&1");
+    system("git push --tags >/dev/null 2>&1");
 }
 
 
