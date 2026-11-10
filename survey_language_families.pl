@@ -84,7 +84,7 @@ if($input eq 'tbkstats')
 else
 {
     my $languages = udlib::get_language_hash($langyamlpath);
-    if
+    if(defined($tbklist))
     {
         @treebank_data = read_selected_treebanks($udpath, $tbklist, $languages);
     }
