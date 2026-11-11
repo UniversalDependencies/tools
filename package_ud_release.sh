@@ -127,7 +127,7 @@ cd release-$RELEASE
 mkdir ud-tools-v$RELEASE
 # I want to exclude __pycache__ from the copying below. ChatGPT recommends using rsync instead of cp.
 # cp -r ../tools/* ud-tools-v$RELEASE
-echo DOUBLE CHECK THAT TOOLS IS COPIED CORRECTLY (USING EXPERIMENTAL CODE FROM CHATGPT TO EXCLUDE PYCACHE)
+echo DOUBLE CHECK THAT TOOLS IS COPIED CORRECTLY '(USING EXPERIMENTAL CODE FROM CHATGPT TO EXCLUDE PYCACHE)'
 rsync -a \
     --exclude='__pycache__/' \
     --exclude='*.pyc' \
