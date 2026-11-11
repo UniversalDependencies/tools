@@ -5334,7 +5334,7 @@
 "Abbr": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "Foreign": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}},
 "NounType": {"type": "lspec", "doc": "global", "permitted": 1, "errors": [], "uvalues": [], "lvalues": ["Clf"], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {"NOUN": {"Clf": 1}}, "lastchanged": "2020-12-20-12-07-22", "lastchanger": "dan-zeman"},
-"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Ind", "Int", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Exc", "Neg", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1, "Ind": 1, "Int": 1, "Tot": 1}, "PRON": {"Dem": 1, "Ind": 1, "Int": 1, "Prs": 1, "Tot": 1}}, "lastchanged": "2026-11-11-19-35-29", "lastchanger": "chaaklau"},
+"PronType": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Dem", "Exc", "Ind", "Int", "Prs", "Tot"], "lvalues": [], "unused_uvalues": ["Art", "Emp", "Neg", "Rcp", "Rel"], "unused_lvalues": [], "evalues": [], "byupos": {"DET": {"Dem": 1, "Exc": 1, "Ind": 1, "Int": 1, "Tot": 1}, "PRON": {"Dem": 1, "Exc": 1, "Ind": 1, "Int": 1, "Prs": 1, "Tot": 1}}, "lastchanged": "2026-11-11-20-26-50", "lastchanger": "chaaklau"},
 "Typo": {"type": "universal", "doc": "global", "permitted": 1, "errors": [], "uvalues": ["Yes"], "lvalues": [], "unused_uvalues": [], "unused_lvalues": [], "evalues": [], "byupos": {}}
 },
 "zh": {
