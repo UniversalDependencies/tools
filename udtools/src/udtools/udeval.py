@@ -253,7 +253,10 @@ def load_conllu(file, path, treebank_type):
                         else:
                             continue
                     hd = int(head)
-                    parent = ud.words[sentence_start + hd -1] if hd else hd  # just assign '0' to parent for root cases
+                    try:
+                        parent = ud.words[sentence_start + hd -1] if hd else hd  # just assign '0' to parent for root cases
+                    except IndexError:
+                        raise UDError("HEAD '{}' points outside of the sentence that ends at line {}".format(head, line_idx))
                     processed_deps.append((parent,steps))
                 enhanced_deps = processed_deps
 
