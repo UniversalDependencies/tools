@@ -1593,7 +1593,7 @@
 "PronType": {"type": "universal", "values": ["Prs", "Dem", "Int", "Rel", "Rcp", "Ind", "Tot", "Neg"], "errors": []},
 "Reflex": {"type": "universal", "values": ["Yes"], "errors": []},
 "Tense": {"type": "universal", "values": ["Pres", "Past"], "errors": []},
-"Variant": {"type": "local", "values": ["Long", "Short", "Weak", "Dir"], "errors": []},
+"Variant": {"type": "local", "values": ["Short", "Long", "Weak", "Dir"], "errors": []},
 "VerbForm": {"type": "universal", "values": ["Fin", "Part", "Inf", "Vnoun"], "errors": []},
 "Voice": {"type": "universal", "values": ["Act", "Pass"], "errors": []}
 },
